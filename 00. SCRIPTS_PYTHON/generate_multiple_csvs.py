@@ -71,16 +71,16 @@ def generate_panel_0():
     print(f"📄 Generando {os.path.basename(csv_path)}...")
     
     monograficos = [
-        ("M1. Introducción a la Inteligencia Artificial",
+        ("Taller 1. Introducción a la Inteligencia Artificial",
          os.path.join(ROOT_DIR, "CLASES", "0. CLASE DE INTRODUCCION A LA IA"),
          "Sesión inaugural de motivación: qué es la IA, desmontando mitos, galería visual de impacto y primeros pasos sin agobios."),
-        ("M2. Gemini en PC y Móvil (Instalación y Uso)",
+        ("Taller 2. Gemini en PC y Móvil (Instalación y Uso)",
          os.path.join(ROOT_DIR, "CLASES", "CLASE DE GEMINI PC Y MOVIL"),
          "Nuestra IA de cabecera: manejo en ordenador, instalación de la app oficial en el móvil, dictado por voz y fotos con la cámara."),
-        ("M3. NotebookLM: Tu Cuaderno Inteligente",
+        ("Taller 3. NotebookLM: Tu Cuaderno Inteligente",
          os.path.join(ROOT_DIR, "CLASES", "CLASE DE NOTEBOOKLM"),
          "Tu biblioteca personal inteligente: cómo subir documentos familiares o recuerdos para resumir, hacer preguntas y generar guiones."),
-        ("M4. Creación de Cuentos Ilustrados para Nietos",
+        ("Taller 4. Creación de Cuentos Ilustrados para Nietos",
          os.path.join(ROOT_DIR, "CLASES", "CLASE DE CREACIÓN DE COMICS"),
          "Metodología en 3 pasos para crear historias inolvidables: el héroe, el guion por escenas y las ilustraciones para los nietos.")
     ]
