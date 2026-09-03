@@ -95,7 +95,11 @@ def generate_panel_0():
                 writer.writerow(['', tema_nombre, f"Guía Oficial: {tema_nombre}", desc_default, ''])
                 continue
                 
-            archivos = sorted([x for x in os.listdir(carpeta_path) if not x.startswith('.') and not x.startswith('~$') and x.endswith(('.pdf', '.docx', '.pptx', '.mp4'))], key=natural_sort_key)
+            # Para los alumnos en Google Classroom SOLO se publican PDFs y vídeos explicativos, CERO docx (prompts) ni pptx pesados
+            archivos = sorted([x for x in os.listdir(carpeta_path) 
+                               if not x.startswith('.') and not x.startswith('~$') 
+                               and x.endswith(('.pdf', '.mp4'))
+                               and "PROMPT" not in x.upper()], key=natural_sort_key)
             
             if not archivos:
                 writer.writerow(['', tema_nombre, f"Guía Oficial: {tema_nombre}", desc_default, ''])
