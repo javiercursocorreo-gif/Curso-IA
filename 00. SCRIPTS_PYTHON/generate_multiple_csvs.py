@@ -34,45 +34,44 @@ def clean_title(filename):
 def get_description_for_file(filename):
     f_upper = filename.upper()
     if "TXT-" in f_upper:
-        return "Paso 1: Comunicación y Lógica con la IA (Prompt de texto para conversar o resolver dudas)."
+        return "Paso 1: Prompts de Comunicación y Texto (El poder de la palabra en la IA)."
     elif "EST-" in f_upper:
         return "Paso 2: Estilos Visuales de Imagen (Aprender a pedir estilos artísticos y fotográficos)."
     elif "PRAC-" in f_upper:
         return "Paso 3: Taller Práctico con Gemini (Transformación y creatividad aplicada)."
-    elif "FRAC-" in f_upper or "FUNC-" in f_upper or "FRACTAL" in f_upper:
-        if filename.endswith(".mp4"):
+    elif "FRAC-" in f_upper or "FRACTAL" in f_upper:
+        if filename.lower().endswith('.mp4'):
             return "Paso 4: Vídeo Fractal del Día en Alta Resolución (Visualización y asombro en aula)."
         return "Paso 4: Ficha del Fractal del Día (Geometría visual explicada para mayores)."
     elif "INT-" in f_upper:
         return "Paso 5: El Mundo por Dentro y Reconstrucción Histórica (Corte transversal y arquitectura)."
     elif "FUT-" in f_upper:
         return "Paso 6: Línea de Tiempo del Futuro y Sci-Fi (Tecnología amable y robótica del mañana)."
-    elif "NAT-" in f_upper:
-        return "Paso 7: Naturaleza en Acción y Biodiversidad (Infografía científica de fauna y flora)."
+    elif "NAT-" in f_upper or "AVES-" in f_upper:
+        return "Paso 7: Biodiversidad y Naturaleza Fascinante (Fauna, flora e infografías científicas)."
     elif "ARTE-" in f_upper:
         return "Paso 8: Obras Maestras de la Historia del Arte (Los grandes genios de la pintura universal)."
     elif "NIV-" in f_upper:
-        return "Paso 9: Escalafones y Niveles (Cultura 101: clasificaciones del mundo)."
+        return "Paso 9: Escalafones y Niveles (Cultura 101: clasificaciones del mundo con Meta-Prompting)."
     elif "TRUC-" in f_upper:
-        return "Paso 10: Trucos Caseros y del Hogar (Soluciones prácticas con ingredientes domésticos)."
+        return "Paso 10: Trucos y Soluciones Cotidianas (Hogar, cocina y vida práctica con IA)."
     elif "CUENT-" in f_upper:
         return "Paso 11: Cuentos Ilustrados para Nietos (Historias personalizadas con valores)."
     elif "MOVIL" in f_upper:
-        return "Paso 12: El Salvavidas del Móvil (Generar reto en PC y consultar por voz con la app de Gemini)."
+        return "Paso 12: El Salvavidas del Móvil (Cámara y voz con la app de Gemini ante la pantalla)."
     elif "MEM" in f_upper:
-        return "Paso 13: Cápsula de la Memoria: Mi Infancia, Mi Barrio o Mi Pueblo (Recuerdos y anécdotas para los nietos)."
+        return "Paso 13: Cápsula de la Memoria (Fotos de pueblo o barrio con microrrelato para nietos)."
     else:
         return "Material didáctico de apoyo para la sesión de clase."
 
 # ==============================================================================
 # PANEL 0: CLASES MONOGRÁFICAS
-# ==============================================================================
 def generate_panel_0():
     csv_path = os.path.join(OUTPUT_DIR, "0.PANEL_MONOGRAFICOS.csv")
     print(f"📄 Generando {os.path.basename(csv_path)}...")
     
     monograficos = [
-        ("M1. Introducción a la Inteligencia Artificial", 
+        ("M1. Introducción a la Inteligencia Artificial",
          os.path.join(ROOT_DIR, "CLASES", "0. INTRODUCCION A LA IA"),
          "Sesión inaugural de motivación: qué es la IA, desmontando mitos, galería visual de impacto y primeros pasos sin agobios."),
         ("M2. Gemini en PC y Móvil (Instalación y Uso)",

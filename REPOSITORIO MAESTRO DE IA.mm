@@ -2265,7 +2265,7 @@
         <font NAME="Calibri" SIZE="11" BOLD="true" />
         </node>
       </node>
-    <node ID="ID_752" TEXT="XII. TABLA OFFLINE DE EMPAREJAMIENTOS (Ternas 01 a 60 con 10 Pasos por Terna)" POSITION="right">
+    <node ID="ID_752" TEXT="XII. TABLA OFFLINE DE EMPAREJAMIENTOS (Ternas 01 a 60 con 13 Pasos por Terna)" POSITION="right">
       <font NAME="Calibri" SIZE="13" BOLD="true" />
       <edge COLOR="#003366" WIDTH="2" />
       </node>
@@ -2450,6 +2450,374 @@
         <font NAME="Calibri" SIZE="11" BOLD="true" />
         </node>
       <node ID="ID_813" TEXT="12.60. [CUENT-060] Misterios Divertidos: El misterio del reloj que daba las 13 horas">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      </node>
+    <node ID="ID_814" TEXT="BLOQUE 13: EL SALVAVIDAS DEL MÓVIL [MOVIL]" POSITION="right">
+      <font NAME="Calibri" SIZE="13" BOLD="true" />
+      <edge COLOR="#003366" WIDTH="2" />
+      <node ID="ID_815" TEXT="13.1. [MOVIL-001] Símbolos de Lavado Textil: Jersey delicado de lana">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_816" TEXT="13.2. [MOVIL-002] Panel de Lavadora Moderna: Selector de programas y centrifugado">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_817" TEXT="13.3. [MOVIL-003] Vitrocerámica Táctil: Código de bloqueo infantil 'L'">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_818" TEXT="13.4. [MOVIL-004] Microondas Digital: Descongelar por peso o tiempo">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_819" TEXT="13.5. [MOVIL-005] Lavavajillas: Aviso de falta de sal o abrillantador">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_820" TEXT="13.6. [MOVIL-006] Mando de Aire Acondicionado: Modo bomba de calor vs frío">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_821" TEXT="13.7. [MOVIL-007] Caldera de Gas: Presión a 0.5 bar y luz roja">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_822" TEXT="13.8. [MOVIL-008] Cuadro Eléctrico: Diferencial general saltado">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_823" TEXT="13.9. [MOVIL-009] Robot Aspirador: Luz amarilla y aviso de cepillo atascado">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_824" TEXT="13.10. [MOVIL-010] Cafetera Exprés: Testigo de descalcificación encendido">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_825" TEXT="13.11. [MOVIL-011] Factura de la Luz: Término de potencia vs consumo de energía">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_826" TEXT="13.12. [MOVIL-012] Factura del Gas: Lectura estimada vs lectura real">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_827" TEXT="13.13. [MOVIL-013] Factura de Teléfono: Cargo adicional por SMS premium o suscripción">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_828" TEXT="13.14. [MOVIL-014] Ticket de Compra: Cobro duplicado en la caja del supermercado">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_829" TEXT="13.15. [MOVIL-015] Carta del Banco: Modificación de comisiones de mantenimiento">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_830" TEXT="13.16. [MOVIL-016] Multa de Estacionamiento: Plazo y descuento del 50% por pronto pago">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_831" TEXT="13.17. [MOVIL-017] Impreso de Tasas Municipales: Código de barras y modelo 046">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_832" TEXT="13.18. [MOVIL-018] Certificado de Pensión e IRPF: Retención y pensión neta">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_833" TEXT="13.19. [MOVIL-019] Prospecto de Colirio: Caducidad tras apertura y dosificación">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_834" TEXT="13.20. [MOVIL-020] Caja de Medicamento: Pictograma de conducción de vehículos">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_835" TEXT="13.21. [MOVIL-021] Envase de Jarabe: Fecha de caducidad estampada en relieve">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_836" TEXT="13.22. [MOVIL-022] Tensiómetro Digital: Código de error 'Err 2' (brazalete flojo)">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_837" TEXT="13.23. [MOVIL-023] Tira Reactiva de Glucemia o Salud: Escala de colores en el bote">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_838" TEXT="13.24. [MOVIL-024] Pomada con Cortisona: Advertencia de exposición al sol">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_839" TEXT="13.25. [MOVIL-025] Pastillero Semanal: Identificación de pastillas por forma y color">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_840" TEXT="13.26. [MOVIL-026] Receta Electrónica: Fecha límite de dispensación en farmacia">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_841" TEXT="13.27. [MOVIL-027] Salpicadero del Coche: Testigo naranja de presión de neumáticos">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_842" TEXT="13.28. [MOVIL-028] Salpicadero del Coche: Testigo de bombilla fundida o líquido limpiaparabrisas">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_843" TEXT="13.29. [MOVIL-029] Billete de Tren de Renfe: Coche, plaza y hora límite de embarque">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_844" TEXT="13.30. [MOVIL-030] Tarjeta de Embarque de Avión: Puerta y grupo de embarque">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_845" TEXT="13.31. [MOVIL-031] Parquímetro de Zona Azul: Horarios de pago y tarifa gratuita">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_846" TEXT="13.32. [MOVIL-032] Máquina de Billetes de Metro: Elegir bono de 10 viajes">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_847" TEXT="13.33. [MOVIL-033] Señal de Tráfico de Estacionamiento: Excepción por carga y descarga">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_848" TEXT="13.34. [MOVIL-034] Panel de Salidas de Estación: Localizar andén o vía">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_849" TEXT="13.35. [MOVIL-035] Router Wifi: Nombre de red (SSID) y contraseña de fábrica">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_850" TEXT="13.36. [MOVIL-036] Mando de Televisión Inteligente: Botón 'Source / Input' para ver la tele">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_851" TEXT="13.37. [MOVIL-037] Regleta con Protector: Botón Reset saltado">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_852" TEXT="13.38. [MOVIL-038] Identificación de Cables: USB-C vs USB clásico vs HDMI">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_853" TEXT="13.39. [MOVIL-039] Pantalla del PC: Mensaje de 'No hay conexión a internet'">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_854" TEXT="13.40. [MOVIL-040] Cajero Automático: Mensaje sobre comisión por retirada">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_855" TEXT="13.41. [MOVIL-041] Dispositivo de Teleasistencia: Luces verde y roja del medallón">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_856" TEXT="13.42. [MOVIL-042] Auriculares Inalámbricos: Luz parpadeante de emparejamiento Bluetooth">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_857" TEXT="13.43. [MOVIL-043] Planta de Interior: Hojas amarillentas con puntas secas">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_858" TEXT="13.44. [MOVIL-044] Radiador de Calefacción: Válvula termostática del 1 al 5">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_859" TEXT="13.45. [MOVIL-045] Contador de Agua: Números negros vs números rojos">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_860" TEXT="13.46. [MOVIL-046] Llave de Paso General del Agua: Abierta vs cerrada">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_861" TEXT="13.47. [MOVIL-047] Grifo con Manchas de Cal: Grifería cromada opaca">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_862" TEXT="13.48. [MOVIL-048] Sustrato de Jardinería: Proporción N-P-K en abono">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_863" TEXT="13.49. [MOVIL-049] Filtro de Campana Extractora: Malla metálica saturada">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_864" TEXT="13.50. [MOVIL-050] Termostato Inalámbrico: Modo automático vs manual de confort">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_865" TEXT="13.51. [MOVIL-051] Etiqueta Nutricional: Azúcares añadidos en alimentos procesados">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_866" TEXT="13.52. [MOVIL-052] Fecha de Caducidad vs Consumo Preferente: Paquete de legumbres o yogur">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_867" TEXT="13.53. [MOVIL-053] Lista de Ingredientes: Detección de alérgenos y aditivos E-xxx">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_868" TEXT="13.54. [MOVIL-054] Etiquetas de Jamón Ibérico: Precinto de color (Negro, Rojo, Verde, Blanco)">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_869" TEXT="13.55. [MOVIL-055] Etiqueta Adhesiva de Fruta: Código PLU de 4 o 5 dígitos">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_870" TEXT="13.56. [MOVIL-056] Pescado Fresco de Pescadería: Ojo brillante y agallas rojas">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_871" TEXT="13.57. [MOVIL-057] Brocas de Taladro: Madera vs Pared vs Metal">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_872" TEXT="13.58. [MOVIL-058] Tacos y Tornillos: Emparejar el grosor adecuado">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_873" TEXT="13.59. [MOVIL-059] Cinta de Teflón en Fontanería: Sentido de giro del hilo">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_874" TEXT="13.60. [MOVIL-060] Maletín de Herramientas Básico: Llave inglesa vs llave fija">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      </node>
+    <node ID="ID_875" TEXT="BLOQUE 14: CÁPSULA DE LA MEMORIA: MI PUEBLO Y MI INFANCIA [MEM]" POSITION="right">
+      <font NAME="Calibri" SIZE="13" BOLD="true" />
+      <edge COLOR="#003366" WIDTH="2" />
+      <node ID="ID_876" TEXT="14.1. [MEM-001] La Plaza o el Barrio de Mi Infancia: Juegos de Calle (Peonza y Canicas)">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_877" TEXT="14.2. [MEM-002] El Lavadero Comunal o las Corralas de Vecinos: El Olor a Jabón Casero">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_878" TEXT="14.3. [MEM-003] La Escuela de Barrio o Rural: Pupitres de Madera Dobles y el Tintero">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_879" TEXT="14.4. [MEM-004] La Tienda de Ultramarinos o la Vaquería de Barrio: Balanza de Pesas y Granel">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_880" TEXT="14.5. [MEM-005] El Primer Televisor del Barrio o del Bar Social">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_881" TEXT="14.6. [MEM-006] Juegos Tradicionales: La Rayuela, las Chapas de Refresco y la Comba">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_882" TEXT="14.7. [MEM-007] El Campo y los Parques Históricos: De las Eras a la Casa de Campo o el Retiro">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_883" TEXT="14.8. [MEM-008] El Seat 600 y los Tranvías: Los Primeros Viajes en Familia">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_884" TEXT="14.9. [MEM-009] La Radio de Válvulas y las Radionovelas de la Tarde">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_885" TEXT="14.10. [MEM-010] La Panadería de Barrio y el Pan de Horno de Leña">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_886" TEXT="14.11. [MEM-011] El Afilador con su Chiflo por las Calles de la Ciudad o del Pueblo">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_887" TEXT="14.12. [MEM-012] El Lechero y las Vaquerías Urbanas de Puerta en Puerta">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_888" TEXT="14.13. [MEM-013] Las Verbenas Castizas y Fiestas Patronales: El Baile y la Orquesta">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_889" TEXT="14.14. [MEM-014] El Botijo de Barro Blanco y el Botijo de Balcón para Enfriar el Agua">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_890" TEXT="14.15. [MEM-015] La Merienda de la Infancia: Pan con Chocolate o Pan con Aceite y Azúcar">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_891" TEXT="14.16. [MEM-016] La Bicicleta Clásica de Hierro (BH o GAC) y los Paseos de Tarde">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_892" TEXT="14.17. [MEM-017] El Quiosco de Prensa, Pipas, Regaliz de Palo y Tebeos">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_893" TEXT="14.18. [MEM-018] El Fotógrafo Ambulante con Cámara de Fuelle y Decorado">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_894" TEXT="14.19. [MEM-019] La Máquina de Coser Singer a Pedal en el Salón">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_895" TEXT="14.20. [MEM-020] La Estación de Tren, el Metro o el Ferrobús de la Época">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_896" TEXT="14.21. [MEM-021] La Mesa Camilla con Brasero y Faldillas en Invierno">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_897" TEXT="14.22. [MEM-022] La Nevera de Hielo y la Compra de Barras Heladas">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_898" TEXT="14.23. [MEM-023] El Sereno Nocturno con su Chuzo, Farol y Manojo de Llaves">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_899" TEXT="14.24. [MEM-024] El Cartero con su Cartera de Cuero y las Cartas Manuscritas">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_900" TEXT="14.25. [MEM-025] El Cine de Barrio o de Verano en la Pared Encalada">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_901" TEXT="14.26. [MEM-026] El Día de Reyes: Juguetes de Hojalata y la Ilusión Sencilla">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_902" TEXT="14.27. [MEM-027] Los Cromos de Fútbol y Naturaleza en Álbumes de Papel">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_903" TEXT="14.28. [MEM-028] El Mercado Tradicional de Abastos: Tenderetes y Bullicio">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_904" TEXT="14.29. [MEM-029] La Llegada del Hombre a la Luna (1969) en la Televisión">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_905" TEXT="14.30. [MEM-030] El Tocadiscos Portátil ('Pick-up') y los Guateques Juveniles">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_906" TEXT="14.31. [MEM-031] Las Excursiones Familiares o el Día de Campo">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_907" TEXT="14.32. [MEM-032] Los Oficios Tradicionales de la Calle: El Basurero de Carro y el Vendedor de Hielo">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_908" TEXT="14.33. [MEM-033] La Cocina de Carbón o de Gas Butano: El Sonido de la Bombona Naranja">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_909" TEXT="14.34. [MEM-034] Las Recetas Tradicionales de la Abuela: El Guiso que Llenaba la Casa de Olor">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_910" TEXT="14.35. [MEM-035] Los Domingos de Paseo Elegante por la Gran Vía, la Alameda o la Plaza">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_911" TEXT="14.36. [MEM-036] La Máquina de Escribir Portátil Olivetti y el Papel de Calco">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_912" TEXT="14.37. [MEM-037] La Cabina Telefónica Pública y las Monedas de Cinco Duros">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_913" TEXT="14.38. [MEM-038] El Zapatero Remendón con su Lezna y su Banqueta Baja">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_914" TEXT="14.39. [MEM-039] Los Refranes y Dichos Populares de Mi Tierra">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_915" TEXT="14.40. [MEM-040] El Regalo de Cumpleaños Hecho a Mano con Cariño">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_916" TEXT="14.41. [MEM-041] El Botiquín Tradicional: Agua Oxigenada, Mercromina y Manzanilla">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_917" TEXT="14.42. [MEM-042] El Arreglo y Blanqueo de las Casas en Primavera">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_918" TEXT="14.43. [MEM-043] El Vaso de Leche con Galletas María y el Cola Cao">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_919" TEXT="14.44. [MEM-044] Los Patinetes Caseros con Rodamientos de Bolas y Tablas">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_920" TEXT="14.45. [MEM-045] Las Canciones Populares del Corro y la Comba">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_921" TEXT="14.46. [MEM-046] El Primer Viaje en Autobús de Línea o en Metro">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_922" TEXT="14.47. [MEM-047] El Huerto Familiar o las Plantas de la Terraza y Balcón">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_923" TEXT="14.48. [MEM-048] La Zapatilla de Paño y la Alpargata Tradicional">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_924" TEXT="14.49. [MEM-049] Las Primeras Monedas: La Peseta Rubia, el Duro y el Billete de Mil">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_925" TEXT="14.50. [MEM-050] Las Infusiones y Tisanas Caseras: Manzanilla, Tila y Poleo">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_926" TEXT="14.51. [MEM-051] El Mapa Sentimental de Mi Infancia: Calles, Plazas y Esquinas Míticas">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_927" TEXT="14.52. [MEM-052] Las Noches de Verano al Fresco y las Historias Familiares">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_928" TEXT="14.53. [MEM-053] El Primer Empleo y el Orgullo del Esfuerzo">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_929" TEXT="14.54. [MEM-054] Las Fuentes Públicas y el Rito del Agua Fresca">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_930" TEXT="14.55. [MEM-055] El Valor del Esfuerzo y los Estudios en Familia">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_931" TEXT="14.56. [MEM-056] Las Grandes Nevadas de Invierno: Muñecos de Nieve en la Calle">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_932" TEXT="14.57. [MEM-057] La Música que Marcó Mi Juventud: De la Copla al Pop Español">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_933" TEXT="14.58. [MEM-058] Las Celebraciones Familiares: El Banquete y la Alegría Sencilla">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_934" TEXT="14.59. [MEM-059] El Tesoro del Habla Popular: Modismos y Giros de Mi Tierra">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_935" TEXT="14.60. [MEM-060] La Carta al Futuro: El Legado de un Abuelo para sus Nietos">
         <font NAME="Calibri" SIZE="11" BOLD="true" />
         </node>
       </node>

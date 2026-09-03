@@ -163,8 +163,22 @@ def create_niv_fichas():
         
         doc.build(story)
         print(f"[{idx}/60] Generado: {file_name}")
+
+        # Copiar también a la carpeta de sesión correspondiente
+        sessions_dir = os.path.join(os.path.dirname(base_out_dir), "100. [SESSIONS] TERNAS_LISTAS_PARA_CLASSROOM")
+        sess_name = f"{idx:02d}_Sesion" if idx < 60 else "60_Sesion_Cierre"
+        sess_folder = os.path.join(sessions_dir, sess_name)
+        if os.path.exists(sess_folder):
+            # Eliminar cualquier ficha NIV anterior en la carpeta
+            for ef in os.listdir(sess_folder):
+                if ef.startswith("9. NIV-") or ef.startswith("9. [NIV-"):
+                    try: os.remove(os.path.join(sess_folder, ef))
+                    except Exception: pass
+            dst_sess_pdf = os.path.join(sess_folder, f"9. NIV-{idx:03d}_{clean_title}.pdf")
+            shutil.copy2(file_path, dst_sess_pdf)
         
-    print(f"\n¡Éxito total! Las 60 fichas PDF [NIV] han sido exportadas a {base_out_dir}")
+    print(f"\n¡Éxito total! Las 60 fichas PDF [NIV] han sido exportadas y distribuidas en las 60 sesiones.")
 
 if __name__ == '__main__':
+    import shutil
     create_niv_fichas()

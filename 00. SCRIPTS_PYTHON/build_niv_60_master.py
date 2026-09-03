@@ -7,35 +7,33 @@ Estilo: Escalafones, Pirámides y Clasificación por Niveles ([NIV] - Cultura 10
 def get_niv_items():
     items = []
     
-    def make_prompt(title, num_levels, apex_desc, levels_list):
-        prompt = (
-            f"ROL Y TAREA\n"
-            f"Actúa como un Ilustrador de Enciclopedia Científica de clase mundial y Arquitecto de Diseños de Información Clara.\n"
-            f"Tu tarea es generar un \"Infográfico de Enciclopedia Científica Ilustrada\" altamente riguroso, intrincado y visualmente espectacular, en estilo clásico editorial de lujo (\"Museum-Grade\"), sin marcas de agua, sin logos y sin agencias de stock, que ilustra con exactitud técnica: \"{title.upper()}\".\n\n"
-            f"REGLA DE ORO DE IDIOMA PARA LA IA:\n"
-            f"Es absolutamente obligatorio que todo título, texto, rótulo, número o leyenda que aparezca dibujada dentro de la imagen generada esté ESCRITO EXCLUSIVAMENTE Y PERFECTAMENTE EN ESPAÑOL CASTELLANO, con ortografía intachable y sin repetir palabras. CERO INGLÉS y CERO REPETICIONES DE TEXTO.\n\n"
-            f"ARQUITECTURA VISUAL DE LA LÁMINA (ESTRUCTURA EN PIRÁMIDE ESTRATIFICADA):\n"
-            f"• Fondo: Papel pergamino crema suave y limpio, con sutil cuadrícula técnica (blueprint) y marcos de enciclopedia clásica.\n"
-            f"• Estructura en Escalera / Pirámide de {num_levels} Estratos: La lámina debe ordenarse verticalmente como una pirámide o torre arquitectónica de {num_levels} peldaños o capas horizontales bien delimitadas. Ningún elemento de un estrato debe mezclarse con otro.\n\n"
-            f"CÚSPIDE Y FIGURA CENTRAL DE ACCIÓN (\"POP-OUT\" 3D):\n"
-            f"En la cúspide o zona central prominente de la pirámide, ubicar un elemento tridimensional de alto impacto visual y dinamismo que parece sobresalir del plano del papel (\"Pop-Out 3D\"): {apex_desc}\n\n"
-            f"ILUSTRACIONES Y TEXTOS BREVES EXACTOS POR ESTRATO (DE LA BASE A LA CIMA):\n\n"
+    def make_prompt(title, concept, num_levels, apex_desc, levels_list):
+        meta_prompt = (
+            f"🧠 PASO 1 (META-PROMPTING EN EL CHAT DE GEMINI):\n"
+            f"Escribe esta orden en el cuadro de chat de Gemini para que la IA diseñe el prompt maestro:\n\n"
+            f"\"Actúa como un diseñador infográfico senior. Diseña y redacta un prompt maestro detallado en español para crear una infografía piramidal estratificada sobre '{title}' ({concept}). Describe los {num_levels} estratos desde la base hasta la cima indicando metáforas visuales claras, un icono 3D en la cúspide ({apex_desc}) y la regla estricta de cero textos en inglés.\"\n\n"
+            f"🎨 PASO 2 (GENERACIÓN EN LA MISMA CONVERSACIÓN):\n"
+            f"Una vez que Gemini te muestre la descripción del diseño, escribe a continuación en la barra de abajo:\n\n"
+            f"\"Genera ahora la imagen realista de esta infografía piramidal siguiendo exactamente la estructura y las metáforas visuales que acabas de redactar.\"\n\n"
+            f"--------------------------------------------------\n"
+            f"📋 PROMPT MAESTRO DETALLADO DE REFERENCIA (Opción directa):\n"
+            f"Tu tarea es generar un \"Infográfico de Enciclopedia Científica Ilustrada\" altamente riguroso y visualmente espectacular, sin marcas de agua, sin logos y sin agencias de stock, que ilustra con exactitud técnica: \"{title.upper()}\".\n\n"
+            f"REGLA DE ORO DE IDIOMA: Todo texto ESCRITO EXCLUSIVAMENTE EN ESPAÑOL CASTELLANO.\n"
+            f"ARQUITECTURA: Pirámide o escalera vertical de {num_levels} peldaños bien delimitados.\n"
+            f"CÚSPIDE 3D: {apex_desc}\n\n"
+            f"ESTRATOS (DE BASE A CIMA):\n"
         )
         for idx, (lvl_name, lvl_desc) in enumerate(levels_list, 1):
-            prompt += (
-                f"PELDAÑO {idx} ({lvl_name}):\n"
-                f"• Ilustración: {lvl_desc}\n"
-                f"• Texto exacto en 1 o 2 líneas cortas (en castellano estricto y sin repetir): \"{idx}. {lvl_name.upper()}\".\n\n"
-            )
-        prompt += (
-            "PROHIBICIÓN DE REPETICIÓN TIPOGRÁFICA Y MARCAS:\n"
-            "Escribe cada rótulo UNA SOLA VEZ con letra clásica grabada, limpia y legible. CERO marcas de agua, CERO logos y CERO textos duplicados o en inglés."
-        )
-        return prompt
+            meta_prompt += f"• Peldaño {idx} ({lvl_name}): {lvl_desc}\n"
+        return meta_prompt
 
     def add_it(code, title, concept, num_l, apex, levels, tips_extra):
-        p = make_prompt(title, num_l, apex, levels)
-        t = f'<b>Dinámica de Aula en Classroom:</b> Proyecta y analiza este escalafón en clase con tus alumnos debatiendo los puntos críticos de inflexión.<br/><br/><b>👉 Ahora te toca a ti: ¡Haz tú una modificación que se te ocurra y sorpréndenos!</b> Pídele a Gemini en el chat: <i>"{tips_extra}"</i>'
+        p = make_prompt(title, concept, num_l, apex, levels)
+        t = (
+            f"<b>Paso 1:</b> Pídele a Gemini que diseñe el prompt con la orden del Paso 1.<br/>"
+            f"<b>Paso 2:</b> En la misma conversación de chat, pídele que pinte la infografía.<br/><br/>"
+            f"<b>👉 Ahora te toca a ti: ¡Haz tú una modificación que se te ocurra y sorpréndenos!</b> Pídele a Gemini en el chat: <i>\"{tips_extra}\"</i>"
+        )
         items.append({
             'id_code': code,
             'block_dir': '09. [NIV] BLOQUE_9_ESCALAFONES_Y_NIVELES_CULTURA101',
