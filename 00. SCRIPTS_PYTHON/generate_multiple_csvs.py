@@ -93,10 +93,10 @@ def generate_panel_0():
             if not os.path.exists(carpeta_path):
                 continue
                 
-            # Para los alumnos en Google Classroom SOLO se publican PDFs y vídeos explicativos, CERO docx (prompts) ni pptx pesados
+            # Para los alumnos en Google Classroom se publican PDFs, vídeos explicativos y audios m4a/mp3
             archivos = sorted([x for x in os.listdir(carpeta_path) 
                                if not x.startswith('.') and not x.startswith('~$') 
-                               and x.endswith(('.pdf', '.mp4'))
+                               and x.endswith(('.pdf', '.mp4', '.m4a', '.mp3'))
                                and "PROMPT" not in x.upper()], key=natural_sort_key)
             
             for a in archivos:
