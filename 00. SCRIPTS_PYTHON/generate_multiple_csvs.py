@@ -72,7 +72,7 @@ def generate_panel_0():
     
     monograficos = [
         ("Taller 1. Introducción a la Inteligencia Artificial",
-         os.path.join(ROOT_DIR, "CLASES", "0. CLASE DE INTRODUCCION A LA IA"),
+         os.path.join(ROOT_DIR, "CLASES", "0. INTRODUCCION A LA IA"),
          "Sesión inaugural de motivación: qué es la IA, desmontando mitos, galería visual de impacto y primeros pasos sin agobios."),
         ("Taller 2. Gemini en PC y Móvil (Instalación y Uso)",
          os.path.join(ROOT_DIR, "CLASES", "1. INTRODUCCION_GEMINI"),
