@@ -91,8 +91,6 @@ def generate_panel_0():
         
         for tema_nombre, carpeta_path, desc_default in monograficos:
             if not os.path.exists(carpeta_path):
-                # Si la carpeta aún no contiene archivos físicos, añadimos el ítem de referencia
-                writer.writerow(['', tema_nombre, f"Guía Oficial: {tema_nombre}", desc_default, ''])
                 continue
                 
             # Para los alumnos en Google Classroom SOLO se publican PDFs y vídeos explicativos, CERO docx (prompts) ni pptx pesados
@@ -101,15 +99,12 @@ def generate_panel_0():
                                and x.endswith(('.pdf', '.mp4'))
                                and "PROMPT" not in x.upper()], key=natural_sort_key)
             
-            if not archivos:
-                writer.writerow(['', tema_nombre, f"Guía Oficial: {tema_nombre}", desc_default, ''])
-            else:
-                for a in archivos:
-                    rel_path = os.path.relpath(os.path.join(carpeta_path, a), ROOT_DIR)
-                    rel_path_nfc = unicodedata.normalize('NFC', rel_path)
-                    url = BASE_URL + urllib.parse.quote(rel_path_nfc)
-                    title = f"Material: {clean_title(a)}"
-                    writer.writerow(['', tema_nombre, title, desc_default, url])
+            for a in archivos:
+                rel_path = os.path.relpath(os.path.join(carpeta_path, a), ROOT_DIR)
+                rel_path_nfc = unicodedata.normalize('NFC', rel_path)
+                url = BASE_URL + urllib.parse.quote(rel_path_nfc)
+                title = f"Material: {clean_title(a)}"
+                writer.writerow(['', tema_nombre, title, desc_default, url])
 
 # ==============================================================================
 # PANELES 1 A 4: TERNAS DE SESIONES (15 SESIONES POR PANEL)
