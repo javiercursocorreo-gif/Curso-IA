@@ -162,8 +162,8 @@ def create_pdf_handout(file_path, block_name, item_id, item_title, concept_text,
         
         table_rows = []
         if isinstance(prompt_data, list):
-            if "TXT-006" in str(item_id):
-                table_rows.append([Paragraph("<b>• 🛡️ Las 3 Modalidades de Reclamación y Auditoría para el Aula (Elige tu caso o practícalas en orden):</b>", style_prompt)])
+            if any(k in str(item_id) for k in ["TXT-005", "TXT-006", "TXT-017", "TXT-021"]):
+                table_rows.append([Paragraph("<b>• 🛡️ Las Modalidades de Práctica en el Aula y Móvil (Elige tu caso o practícalas en orden):</b>", style_prompt)])
             elif "TXT-" in str(item_id):
                 table_rows.append([Paragraph("<b>• 🔗 Prompts Encadenados en Pasos para copiar y pegar en el chat de Gemini uno tras otro:</b>", style_prompt)])
             else:

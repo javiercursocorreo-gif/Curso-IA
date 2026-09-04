@@ -20,6 +20,21 @@ def get_niv_items():
             f"Tu tarea es generar un \"Infográfico de Enciclopedia Científica Ilustrada\" altamente riguroso y visualmente espectacular, sin marcas de agua, sin logos y sin agencias de stock, que ilustra con exactitud técnica: \"{title.upper()}\".\n\n"
             f"REGLA DE ORO DE IDIOMA: Todo texto ESCRITO EXCLUSIVAMENTE EN ESPAÑOL CASTELLANO.\n"
             f"ARQUITECTURA: Pirámide o escalera vertical de {num_levels} peldaños bien delimitados.\n"
+            f"CÚSPIDE 3D: {apex_desc}\n\n"
+            f"ESTRATOS (DE BASE A CIMA):\n"
+        )
+        for idx, (lvl_name, lvl_desc) in enumerate(levels_list, 1):
+            meta_prompt += f"• Peldaño {idx} ({lvl_name}): {lvl_desc}\n"
+        return meta_prompt
+
+    def add_it(code, title, concept, num_l, apex, levels, tips_extra):
+        p = make_prompt(title, concept, num_l, apex, levels)
+        t = (
+            f"<b>Paso 1:</b> Pídele a Gemini que diseñe el prompt con la orden del Paso 1.<br/>"
+            f"<b>Paso 2:</b> En la misma conversación de chat, pídele que pinte la infografía.<br/><br/>"
+            f"<b>👉 Ahora te toca a ti: ¡Haz tú una modificación que se te ocurra y sorpréndenos!</b> Pídele a Gemini en el chat: <i>\"{tips_extra}\"</i>"
+        )
+        items.append({
             'id_code': code,
             'block_dir': '09. [NIV] BLOQUE_9_ESCALAFONES_Y_NIVELES_CULTURA101',
             'block_name': 'BLOQUE X: ESCALAFONES Y NIVELES DE CLASIFICACIÓN UNIVERSAL [NIV] (Cultura 101)',
@@ -32,10 +47,18 @@ def get_niv_items():
             'tips_text': t,
             'extra': None
         })
+
+    # GRUPO A: ECONOMÍA, RIQUEZA Y PODER SOCIAL (NIV-001 a NIV-010)
     add_it('[NIV-001]', 'Los 7 Niveles de Riqueza y Libertad Financiera',
            'Análisis estratificado de la evolución económica personal y familiar según los modelos de educación financiera (estilo Cultura 101). La riqueza se mide en meses de autonomía y soberanía de tiempo.',
            7, 'Una llave dorada tridimensional abriendo un cofre de engranajes temporales luminosos, simbolizando soberanía de tiempo.',
            [
+               ("Supervivencia y Deuda", "Una persona haciendo malabares angustiosos con facturas y tarjetas al borde de un abismo financiero."),
+               ("Estabilidad Básica", "Un trabajador con sus cuentas al día, ingresos estables y cero deudas al consumo destructivas."),
+               ("Fondo de Seguridad", "Una bóveda doméstica de ladrillos dorados que representa de 6 a 12 meses de gastos cubiertos."),
+               ("Autonomía y Respiro", "Un profesional invirtiendo en activos productivos mientras disfruta de tiempo libre con su familia."),
+               ("Independencia Financiera", "Un árbol frondoso de cuyas ramas caen frutos de rentas pasivas que cubren el coste de vida básico."),
+               ("Soberanía y Abundancia", "Una brújula sobre un mapa mundial simbolizando libertad total para elegir proyectos por vocación."),
                ("Legado y Filantropía", "Un mecenas construyendo escuelas y fundaciones científicas para impactar a las futuras generaciones.")
            ],
            'Modifica el Peldaño 3 para ilustrar un escudo protector azul que detiene flechas de imprevistos económicos en castellano.')
