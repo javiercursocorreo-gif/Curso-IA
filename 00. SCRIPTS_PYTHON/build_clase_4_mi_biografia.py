@@ -2,8 +2,9 @@
 """
 Clase Monográfica 4: "4. Mi_Biografia"
 Genera:
-1. Mi_Biografia.html -> Aplicación web interactiva autónoma (sin errores de sintaxis JS).
-2. Manual_de_Instrucciones.pdf -> ÚNICO DOCUMENTO para el alumno.
+1. Mi_Biografia.html -> Aplicación web limpia, sin flechas ni botones de quitar temas.
+   Si un recuerdo se deja en blanco, la IA lo omite automáticamente.
+2. Manual_de_Instrucciones.pdf -> Manual de usuario sencillo de entender.
 """
 
 import os
@@ -41,7 +42,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; }
     body { background-color: var(--bg); color: var(--text-main); line-height: 1.6; padding: 24px 16px 80px; }
-    .container { max-width: 960px; margin: 0 auto; }
+    .container { max-width: 920px; margin: 0 auto; }
 
     /* Cabecera */
     header { background: var(--card-bg); border: 2px solid var(--border); border-radius: 16px; padding: 28px; margin-bottom: 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
@@ -58,8 +59,6 @@ HTML_CONTENT = r"""<!DOCTYPE html>
     .btn-success:hover { background-color: #15803D; }
     .btn-primary { background-color: var(--primary); color: white; }
     .btn-primary:hover { background-color: var(--primary-hover); }
-    .btn-secondary { background-color: #475569; color: white; }
-    .btn-secondary:hover { background-color: #334155; }
     .btn-outline { background: transparent; border: 2px solid var(--border); color: var(--text-main); }
     .btn-outline:hover { background: #E2E8F0; }
     .btn-sm { padding: 6px 12px; font-size: 0.9rem; border-radius: 6px; }
@@ -70,11 +69,10 @@ HTML_CONTENT = r"""<!DOCTYPE html>
 
     /* Lista de Tarjetas */
     .chapters-list { display: flex; flex-direction: column; gap: 18px; }
-    .chapter-card { background: var(--card-bg); border: 2px solid var(--border); border-radius: 14px; padding: 22px; transition: border-color 0.2s; position: relative; }
+    .chapter-card { background: var(--card-bg); border: 2px solid var(--border); border-radius: 14px; padding: 22px; transition: border-color 0.2s; }
     .chapter-card.recorded { border-color: var(--success); background: #F0FDF4; }
     .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; gap: 10px; flex-wrap: wrap; }
     .card-title { font-size: 1.35rem; font-weight: 700; color: var(--primary); display: flex; align-items: center; gap: 10px; }
-    .header-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
     .status-badge { font-size: 0.85rem; font-weight: 700; padding: 4px 10px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.5px; }
     .badge-pending { background: #E2E8F0; color: #475569; }
     .badge-recorded { background: #DCFCE7; color: #166534; }
@@ -127,9 +125,10 @@ HTML_CONTENT = r"""<!DOCTYPE html>
   </div>
 
   <div class="tricks-banner">
-    💡 <b>Dos trucos mágicos para hablar al micrófono con total tranquilidad:</b><br>
-    • <b>1. Si te equivocas o dudas al hablar:</b> ¡No pares la grabación! Di con naturalidad <i>«Espera, me he equivocado: no fue en el 65 sino en el 68»</i> o <i>«Perdón, no era Juan sino Pedro»</i>. La aplicación se encarga de que la Inteligencia Artificial corrija el error automáticamente y deje el texto limpio.<br>
-    • <b>2. Si te acuerdas de algo desordenado:</b> Cuéntalo cuando te venga a la mente, aunque haya ocurrido antes o después. La aplicación se encarga de que cada recuerdo quede colocado en su momento cronológico exacto de tu vida.
+    💡 <b>Dos cosas muy importantes para tu total tranquilidad:</b><br>
+    • <b>1. Si te equivocas o dudas al hablar:</b> ¡No pares la grabación! Di con naturalidad <i>«Espera, me he equivocado: no fue en el 65 sino en el 68»</i>. La Inteligencia Artificial corregirá el error automáticamente y dejará el texto limpio.<br>
+    • <b>2. Si no quieres hablar de algún tema:</b> Déjalo simplemente en blanco. La aplicación lo omitirá y no aparecerá en tu biografía.<br>
+    • <b>3. Orden de tu historia:</b> No te preocupes por el orden en que hables; la Inteligencia Artificial se encargará de ordenar y enlazar tus recuerdos cronológicamente.
   </div>
 
   <div id="chaptersContainer" class="chapters-list"></div>
@@ -228,7 +227,7 @@ function renderTopics() {
   if (!container) return;
   container.innerHTML = "";
   
-  topics.forEach((t, index) => {
+  topics.forEach((t) => {
     const card = document.createElement("div");
     card.className = "chapter-card" + (t.audioData ? " recorded" : "");
     card.id = "card-" + t.id;
@@ -248,12 +247,7 @@ function renderTopics() {
 
     card.innerHTML = '<div class="card-header">'
       + '<div class="card-title">📖 ' + t.title + '</div>'
-      + '<div class="header-actions">'
       + statusHtml
-      + '<button class="btn-outline btn-sm" title="Subir orden del tema" onclick="moveTopic(' + index + ', -1)">⬆️ Subir</button>'
-      + '<button class="btn-outline btn-sm" title="Bajar orden del tema" onclick="moveTopic(' + index + ', 1)">⬇️ Bajar</button>'
-      + '<button class="btn-outline btn-sm" style="color:var(--danger); border-color:#FECACA;" title="Quitar este tema de la lista" onclick="deleteTopicBlock(' + t.id + ')">✖ Quitar tema</button>'
-      + '</div>'
       + '</div>'
       + '<div class="prompt-hint">' + t.hint + '</div>'
       + '<textarea class="notes-input" placeholder="Apunta aquí nombres, fechas o recuerdos antes de hablar (opcional)..." onchange="updateNotes(' + t.id + ', this.value)">' + (t.notes || "") + '</textarea>'
@@ -272,16 +266,6 @@ function renderTopics() {
 function updateNotes(id, val) {
   const t = topics.find(x => x.id === id);
   if (t) { t.notes = val; saveState(); }
-}
-
-function moveTopic(index, direction) {
-  const newIndex = index + direction;
-  if (newIndex < 0 || newIndex >= topics.length) return;
-  const temp = topics[index];
-  topics[index] = topics[newIndex];
-  topics[newIndex] = temp;
-  saveState();
-  renderTopics();
 }
 
 async function toggleRecord(id) {
@@ -361,24 +345,13 @@ function repeatRecord(id) {
   }
 }
 
-// 1. Borrar únicamente el contenido grabado y notas (dejar el capítulo en blanco)
+// Borrar únicamente el contenido grabado y notas (dejar el capítulo en blanco)
 function clearTopicContentOnly(id) {
   const t = topics.find(x => x.id === id);
   if (!t) return;
-  if (confirm("¿Deseas borrar la grabación y notas de este tema?\n\nEl capítulo permanecerá en tu lista para que puedas volver a grabarlo.")) {
+  if (confirm("¿Deseas borrar la grabación y notas de este tema?\n\nQuedará en blanco y no se incluirá en tu biografía a menos que vuelvas a grabarlo.")) {
     t.audioData = null;
     t.notes = "";
-    saveState();
-    renderTopics();
-  }
-}
-
-// 2. Eliminar el bloque o capítulo completo de la lista
-function deleteTopicBlock(id) {
-  const t = topics.find(x => x.id === id);
-  if (!t) return;
-  if (confirm("¿Quieres quitar este tema por completo de tu biografía?")) {
-    topics = topics.filter(x => x.id !== id);
     saveState();
     renderTopics();
   }
@@ -466,27 +439,39 @@ function downloadSingleAudio(id) {
   a.remove();
 }
 
-// Generación de Biografía
+// Generación de Biografía (Omite automáticamente temas dejados en blanco)
 function generateBiographyModal() {
-  let fullPrompt = "Actúa como un biógrafo literario y escritor sensible profesional. A continuación te entrego las memorias y reflexiones recopiladas a lo largo de mi vida, organizadas por etapas y temas.\n\n";
+  let fullPrompt = "Actúa como un biógrafo literario y escritor sensible profesional. A continuación te entrego las memorias y vivencias recopiladas por el autor a lo largo de su vida.\n\n";
   fullPrompt += "🧠 REGLAS DE REDACCIÓN Y EDICIÓN:\n";
-  fullPrompt += "1. AUTO-CORRECCIÓN: Si en mis relatos digo frases como 'espera, me he equivocado', 'perdón, no fue en ese año sino en...', o 'quería decir...', interpreta la rectificación automáticamente. Elimina el error y deja únicamente el dato corregido en el texto final.\n";
-  fullPrompt += "2. REORDENACIÓN CRONOLÓGICA: Si cuento anécdotas desordenadas (por ejemplo, menciono un recuerdo de mi infancia mientras hablaba de mi trabajo), ubica cada suceso en su momento vital correspondiente para que la historia fluya en un orden temporal perfecto y natural.\n";
-  fullPrompt += "3. TONO Y ESTILO: Redacta un libro biográfico cálido, elegante y emotivo, dividido en capítulos hermosos, manteniendo mi voz auténtica y destacando las lecciones de vida y valores.\n";
-  fullPrompt += "4. FORMATO: Deja el texto impecable para copiarlo y pegarlo en Microsoft Word para guardarlo en el ordenador e imprimirlo en papel, y para usarlo en NotebookLM para generar un podcast familiar.\n\n";
-  fullPrompt += "ESTE ES EL MATERIAL Y LOS CAPÍTULOS DE MI VIDA:\n";
+  fullPrompt += "1. AUTO-CORRECCIÓN: Si en los relatos el autor dice frases como 'espera, me he equivocado', 'perdón, no fue en ese año sino en...', o 'quería decir...', interpreta la rectificación automáticamente. Elimina el error y deja únicamente el dato corregido en el texto final.\n";
+  fullPrompt += "2. ORDEN CRONOLÓGICO Y NATURAL: El autor ha ido grabando recuerdos según le venían a la mente. Ordena y entrelaza cada vivencia en su momento vital correspondiente para que la biografía fluya con una narración cronológica perfecta, hermosa y coherente.\n";
+  fullPrompt += "3. TONO Y ESTILO: Redacta un libro biográfico cálido, emotivo y respetuoso, estructurado en capítulos literarios, manteniendo la voz auténtica del autor y destacando sus valores y enseñanzas.\n";
+  fullPrompt += "4. FORMATO: Deja el texto listo para copiar y pegar en Microsoft Word para guardarlo e imprimirlo en papel, y para usarlo en NotebookLM para generar un podcast familiar.\n\n";
+  fullPrompt += "RECUERDOS Y VIVENCIAS APORTADAS POR EL AUTOR:\n";
   fullPrompt += "========================================================\n\n";
 
-  topics.forEach((t, i) => {
-    fullPrompt += "CAPÍTULO " + (i+1) + ": " + t.title.toUpperCase() + "\n";
-    fullPrompt += "• Pregunta guía: " + t.hint + "\n";
-    if (t.notes) fullPrompt += "• Notas y recuerdos del autor: " + t.notes + "\n";
-    if (t.audioData) fullPrompt += "• [Recuerdo grabado por el autor con su voz - Incluir en este capítulo]\n";
-    fullPrompt += "\n";
+  let count = 0;
+  topics.forEach((t) => {
+    const hasNotes = t.notes && t.notes.trim().length > 0;
+    const hasAudio = !!t.audioData;
+    // Solo se envían temas que contengan audio o notas escritas
+    if (hasNotes || hasAudio) {
+      count++;
+      fullPrompt += "TEMA: " + t.title.toUpperCase() + "\n";
+      fullPrompt += "• Contexto: " + t.hint + "\n";
+      if (hasNotes) fullPrompt += "• Notas del autor: " + t.notes.trim() + "\n";
+      if (hasAudio) fullPrompt += "• [Recuerdo grabado por el autor con su voz - Incluir y desarrollar en la biografía]\n";
+      fullPrompt += "\n";
+    }
   });
 
+  if (count === 0) {
+    alert("Todavía no has grabado ningún recuerdo ni añadido notas. Pulsa el botón rojo 'GRABAR RECUERDO' en el tema que quieras antes de generar tu biografía.");
+    return;
+  }
+
   fullPrompt += "========================================================\n";
-  fullPrompt += "Genera ahora la biografía completa estructurada por capítulos siguiendo las reglas anteriores.";
+  fullPrompt += "Genera ahora la biografía completa del autor estructurada por capítulos siguiendo las reglas anteriores.";
 
   document.getElementById("biographyOutputText").innerText = fullPrompt;
   document.getElementById("generateModal").classList.add("active");
@@ -587,13 +572,13 @@ def create_user_manual_pdf():
     
     # Portada / Encabezado
     story.append(Paragraph("📖 MANUAL DE INSTRUCCIONES: APLICACIÓN «MI BIOGRAFÍA»", style_main_title))
-    story.append(Paragraph("Guía práctica de uso: Cómo grabar tus recuerdos en casa, ordenarlos y crear tu libro y podcast familiar", style_subtitle))
+    story.append(Paragraph("Guía práctica de uso: Graba tus recuerdos en tu ordenador a tu ritmo y crea tu libro y podcast familiar", style_subtitle))
     story.append(HRFlowable(width="100%", thickness=1.5, color=c_primary, spaceAfter=10))
     
     # 1. Qué es la aplicación
     story.append(Paragraph("¿QUÉ ES ESTA APLICACIÓN?", style_h2))
     story.append(Paragraph(
-        "Es una herramienta diseñada para que puedas <b>grabar los recuerdos de tu vida tranquilamente desde tu propio ordenador</b>, a tu propio ritmo y sin prisas. No necesitas saber informática avanzada ni escribir textos complicados: solo abres la aplicación en la pantalla, pulsas un botón y hablas.",
+        "Es una herramienta diseñada para que puedas <b>grabar los recuerdos de tu vida tranquilamente desde tu propio ordenador</b>, a tu propio ritmo y sin prisas. No necesitas saber informática avanzada: solo abres la aplicación en la pantalla, pulsas un botón y hablas. La Inteligencia Artificial se encarga de ordenar y redactar todo por ti.",
         style_body
     ))
     
@@ -611,18 +596,17 @@ def create_user_manual_pdf():
         "• <b>🎙️ GRABAR RECUERDO:</b> Pulsa este botón y habla con calma al micrófono del ordenador contando ese momento de tu vida. Cuando termines, pulsa <b>⏹️ DETENER Y GUARDAR</b>.<br/>"
         "• <b>🔊 Tu recuerdo grabado:</b> En cuanto grabas, aparece el reproductor para escucharlo y el botón <b>💾 Guardar archivo de audio</b> si quieres guardarte ese sonido suelto en tu disco duro.<br/>"
         "• <b>🔄 Volver a grabar:</b> Si no te gusta cómo ha quedado la grabación, pulsa este botón para repetirla.<br/>"
-        "• <b>🗑️ Borrar grabación (dejar en blanco):</b> Borra el audio y las notas de esa tarjeta para empezar de cero, pero <b>mantiene el capítulo</b> en la lista.<br/>"
-        "• <b>✖ Quitar tema:</b> Elimina la tarjeta por completo si no quieres incluir ese asunto en tu vida.<br/>"
-        "• <b>⬆️ Subir / ⬇️ Bajar:</b> Mueve los capítulos hacia arriba o hacia abajo para ordenar tu historia como prefieras.<br/>"
-        "• <b>➕ Añadir nuevo tema / capítulo:</b> Te permite crear temas libres que no estén en la lista inicial (tus 30 años de trabajo, un viaje especial, una afición, tus amigos de juventud...).",
+        "• <b>🗑️ Borrar grabación (dejar en blanco):</b> Borra el audio y las notas de esa tarjeta para empezar de cero.<br/>"
+        "• <b>➕ Añadir nuevo tema / capítulo:</b> Te permite añadir temas libres que no estén en la lista inicial (tus 30 años de trabajo, un viaje especial, una afición, tus amigos de juventud...).",
         style_body
     ))
     
-    # 4. Dos trucos para hablar con tranquilidad
-    story.append(Paragraph("3. DOS TRUCOS PARA HABLAR CON TOTAL TRANQUILIDAD", style_h2))
+    # 4. Los secretos para hablar con tranquilidad
+    story.append(Paragraph("3. TRES SECRETOS PARA HABLAR CON TOTAL TRANQUILIDAD", style_h2))
     story.append(Paragraph(
-        "• <b>Si te equivocas o dudas al hablar:</b> ¡No pares la grabación! Simplemente di de forma natural: <i>«Espera, me he equivocado: no fue en el año 65 sino en el 68»</i> o <i>«Perdón, no era Juan sino Pedro»</i>. La aplicación está programada para que la Inteligencia Artificial elimine el error automáticamente y deje el texto limpio y perfecto.<br/>"
-        "• <b>Si recuerdas una anécdota fuera de orden:</b> Cuéntala en cuanto te acuerdes, aunque haya ocurrido antes o después. La aplicación se encarga de colocar cada suceso en su momento cronológico exacto.",
+        "• <b>1. Si te equivocas o dudas al hablar:</b> ¡No pares la grabación! Simplemente di de forma natural: <i>«Espera, me he equivocado: no fue en el año 65 sino en el 68»</i> o <i>«Perdón, no era Juan sino Pedro»</i>. La aplicación se encarga de que la Inteligencia Artificial elimine el error automáticamente y deje el texto limpio.<br/>"
+        "• <b>2. Si no quieres hablar de algún tema:</b> Déjalo simplemente en blanco. No te preocupes por borrarlo; la aplicación lo ignorará y no aparecerá en tu libro biográfico.<br/>"
+        "• <b>3. Orden de tu historia:</b> Habla con total libertad en cualquier orden. La Inteligencia Artificial se encargará de ordenar y mezclar todos tus recuerdos en una narración cronológica fluida y natural.",
         style_body
     ))
     
