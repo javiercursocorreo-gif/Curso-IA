@@ -108,16 +108,13 @@ HTML_CONTENT = r"""<!DOCTYPE html>
     <p class="subhead">Graba tus recuerdos paso a paso en tu ordenador, a tu propio ritmo. Cada recuerdo queda a salvo en tu sesión y cuando quieras podrás <b>Generar tu Biografía</b> con Inteligencia Artificial.</p>
     
     <div class="toolbar">
-      <button class="btn-success" onclick="exportToPendrive()">💾 Guardar copia en mi Pendrive / PC</button>
-      <button class="btn-primary" onclick="triggerImportPendrive()">📂 Abrir copia de seguridad</button>
       <button class="btn-outline" onclick="openAddTopicModal()">➕ Añadir nuevo tema / capítulo</button>
       <button class="btn-danger" style="margin-left: auto;" onclick="confirmClearClassroom()">🧹 Borrar todo al salir (Modo Aula)</button>
-      <input type="file" id="pendriveInput" style="display:none;" accept=".json" onchange="importFromPendrive(event)">
     </div>
   </header>
 
   <div class="privacy-banner">
-    🛡️ <b>Privacidad en Aula Compartida:</b> Si estás en el ordenador de clase, al terminar pulsa el botón rojo <b>«Borrar todo al salir»</b>. Así el siguiente alumno no podrá leer lo que has grabado. En el ordenador de tu casa <b>NO</b> hace falta pulsarlo; Chrome guardará tus recuerdos de un día para otro.
+    🛡️ <b>Privacidad en Aula Compartida:</b> Si estás en el ordenador de clase, al terminar tu ejercicio pulsa el botón rojo <b>«🧹 Borrar todo al salir (Modo Aula)»</b> para dejarlo limpio. En el ordenador de tu casa <b>NO</b> hace falta pulsarlo; tu navegador guardará automáticamente tus recuerdos día tras día.
   </div>
 
   <div class="tricks-banner">
@@ -419,53 +416,15 @@ function addNewTopic() {
   renderTopics();
 }
 
-// Privacidad en Aula
+// Privacidad en Aula (Modo Aula)
 function confirmClearClassroom() {
-  const ok = confirm("⚠️ ATENCIÓN MODO AULA:\n\n¿Deseas BORRAR todos tus textos de este ordenador?\n\nHaz esto SIEMPRE al terminar tu clase si el ordenador es compartido, para que nadie más lea tu vida privada.\n\n¿Confirmas el borrado total?");
+  const ok = confirm("⚠️ ATENCIÓN MODO AULA:\n\n¿Deseas BORRAR todos los textos de prueba de este ordenador?\n\nHaz esto al terminar la clase si el ordenador es compartido, para dejarlo limpio para el siguiente compañero.\n\n¿Confirmas el borrado?");
   if (ok) {
     localStorage.removeItem("mi_biografia_topics");
     topics = JSON.parse(JSON.stringify(DEFAULT_TOPICS));
     renderTopics();
-    alert("✅ Todos tus recuerdos han sido eliminados de este ordenador por seguridad.");
+    alert("✅ Todos los textos han sido eliminados de este ordenador.");
   }
-}
-
-// Pendrive: Guardar y Abrir
-function exportToPendrive() {
-  const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(topics));
-  const a = document.createElement("a");
-  a.setAttribute("href", dataStr);
-  a.setAttribute("download", "Mi_Biografia_Sesion_" + new Date().toISOString().slice(0,10) + ".json");
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  alert("💾 Tu biografía se ha descargado. Guarda este archivo en tu Pendrive para llevarlo a casa o continuar en otra clase.");
-}
-
-function triggerImportPendrive() {
-  document.getElementById("pendriveInput").click();
-}
-
-function importFromPendrive(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = e => {
-    try {
-      const imported = JSON.parse(e.target.result);
-      if (Array.isArray(imported)) {
-        topics = imported;
-        saveState();
-        renderTopics();
-        alert("✅ Tu biografía se ha cargado correctamente desde tu archivo.");
-      } else {
-        alert("El archivo no tiene el formato correcto.");
-      }
-    } catch(err) {
-      alert("Error al leer el archivo de copia de seguridad.");
-    }
-  };
-  reader.readAsText(file);
 }
 
 // Generación de Biografía con Reglas Estrictas Anti-Ficción y Corrección de Erratas de Dictado
@@ -662,8 +621,8 @@ def create_user_manual_pdf():
     # 7. Modo Casa vs Modo Aula
     story.append(Paragraph("6. PRIVACIDAD: EN CASA VS EN EL AULA", style_h2))
     story.append(Paragraph(
-        "• <b>EN TU CASA:</b> Trabajas con total tranquilidad. <b>NO</b> tienes que pulsar el botón rojo de borrar. Tu navegador guardará tus recuerdos de un día para otro para que continúes cuando quieras.<br/>"
-        "• <b>EN EL AULA COMPARTIDA:</b> Si usas un ordenador de clase que luego van a usar otras personas, antes de marcharte pulsa el botón verde <b>«💾 Guardar copia en mi Pendrive / PC»</b> para llevarte tus archivos, y luego pulsa el botón rojo <b>«🧹 Borrar todo al salir (Modo Aula)»</b>. Así tus recuerdos íntimos no quedarán guardados en ese ordenador.",
+        "• <b>EN TU CASA:</b> Trabajas con total tranquilidad. <b>NO</b> tienes que pulsar el botón rojo de borrar. Tu navegador guardará tus recuerdos automáticamente de un día para otro para que continúes cuando quieras.<br/>"
+        "• <b>EN EL AULA COMPARTIDA:</b> En clase haremos prácticas y ejercicios de prueba. Antes de marcharte, pulsa el botón rojo <b>«🧹 Borrar todo al salir (Modo Aula)»</b> para dejar limpio el ordenador para el siguiente compañero. Tu verdadera biografía la irás grabando cómodamente en el ordenador de tu casa.",
         style_body
     ))
     
