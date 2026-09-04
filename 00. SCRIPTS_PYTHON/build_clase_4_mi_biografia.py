@@ -2,10 +2,7 @@
 """
 Clase Monográfica 4: "4. Mi_Biografia"
 Genera:
-1. Mi_Biografia.html -> Aplicación web donde NUNCA se borra el texto al detener la grabación:
-   - Captura inmediata de interim + final.
-   - Guarda el valor exacto del textarea antes de detener.
-   - oninput en tiempo real para cualquier edición con teclado.
+1. Mi_Biografia.html -> Aplicación web con un solo botón en el modal final (Ir a Google Gemini).
 2. Manual_de_Instrucciones.pdf -> Manual de usuario sencillo, claro y directo.
 """
 
@@ -155,7 +152,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
   </div>
 </div>
 
-<!-- Modal de Generar Biografía (Directo y sin código) -->
+<!-- Modal de Generar Biografía (Un solo botón claro y directo) -->
 <div id="generateModal" class="modal-overlay">
   <div class="modal-box">
     <div style="font-size: 3.2rem; margin-bottom: 12px;">✅</div>
@@ -164,12 +161,9 @@ HTML_CONTENT = r"""<!DOCTYPE html>
       Hemos empaquetado tus vivencias para que Gemini las redacte con total fidelidad a lo que has contado.
     </p>
 
-    <div style="display: flex; flex-direction: column; gap: 12px; max-width: 380px; margin: 0 auto 24px;">
-      <button class="btn-primary" style="justify-content: center; font-size: 1.15rem; padding: 15px;" onclick="openGeminiTab()">
+    <div style="max-width: 360px; margin: 0 auto 24px;">
+      <button class="btn-primary" style="justify-content: center; font-size: 1.2rem; padding: 16px 28px; width: 100%; box-shadow: 0 8px 16px -4px rgba(37,99,235,0.3);" onclick="openGeminiTab()">
         🚀 Ir a Google Gemini
-      </button>
-      <button class="btn-outline" style="justify-content: center; font-size: 0.95rem;" onclick="copyAgain()">
-        📋 Volver a copiar
       </button>
     </div>
 
@@ -221,6 +215,7 @@ function initSpeechRecognition() {
         if (el) el.style.display = 'block';
       };
 
+      // Si el navegador detiene la escucha por silencio mientras el usuario sigue grabando, REINICIAR AL INSTANTE
       recognition.onend = () => {
         if (isRecordingActive && recordingTopicId !== null) {
           try { recognition.start(); } catch(e) {}
@@ -316,7 +311,6 @@ async function startRecording(id) {
   if (speechStatus) speechStatus.style.display = 'block';
   
   const topic = topics.find(x => x.id === id);
-  // Base notes existentes para no pisar lo que ya había
   let baseNotes = (topic && topic.notes) ? topic.notes.trim() : "";
   if (txtArea && txtArea.value.trim()) {
     baseNotes = txtArea.value.trim();
@@ -342,7 +336,6 @@ async function startRecording(id) {
         txtArea.scrollTop = txtArea.scrollHeight;
       }
       if (topic) {
-        // Guardamos de inmediato para que NUNCA se pierda ni una sola palabra
         topic.notes = fullText;
         saveState();
       }
@@ -375,7 +368,6 @@ async function startRecording(id) {
 }
 
 function stopRecording() {
-  // 1. ANTES DE NADA: Asegurar que lo que hay escrito en pantalla queda grabado en topic.notes
   if (recordingTopicId !== null) {
     const currentArea = document.getElementById('notes-' + recordingTopicId);
     const currentTopic = topics.find(x => x.id === recordingTopicId);
@@ -391,8 +383,6 @@ function stopRecording() {
   }
   clearInterval(timerInterval);
   recordingTopicId = null;
-  
-  // 2. Renderizar ahora sí que todo está guardado a salvo
   renderTopics();
 }
 
@@ -524,14 +514,6 @@ function generateBiographyModal() {
 
 function openGeminiTab() {
   window.open("https://gemini.google.com", "_blank");
-}
-
-function copyAgain() {
-  if (lastFullPrompt) {
-    navigator.clipboard.writeText(lastFullPrompt).then(() => {
-      alert("📋 ¡Copiado de nuevo! Ahora ve a Gemini y pulsa Pegar (Ctrl + V).");
-    });
-  }
 }
 
 // Inicializar de inmediato y al cargar
