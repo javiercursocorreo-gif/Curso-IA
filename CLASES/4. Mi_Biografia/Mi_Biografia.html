@@ -57,8 +57,8 @@
     .prompt-hint { font-size: 1.05rem; color: var(--text-muted); font-style: italic; margin-bottom: 14px; background: #F8FAFC; padding: 10px 14px; border-left: 4px solid var(--primary); border-radius: 0 8px 8px 0; }
 
     /* Notas y Transcripción */
-    .notes-input { width: 100%; min-height: 85px; font-size: 1.05rem; padding: 12px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 14px; resize: vertical; line-height: 1.5; background: white; }
-    .speech-status { font-size: 0.9rem; color: #0284C7; margin-bottom: 8px; font-weight: 700; display: none; }
+    .notes-input { width: 100%; min-height: 95px; font-size: 1.05rem; padding: 12px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 14px; resize: vertical; line-height: 1.5; background: white; }
+    .speech-status { font-size: 0.95rem; color: #0369A1; background: #E0F2FE; border: 1px solid #BAE6FD; padding: 8px 14px; border-radius: 6px; margin-bottom: 10px; font-weight: 700; display: none; }
 
     /* Zona de Grabación */
     .record-actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
@@ -96,14 +96,14 @@
   </header>
 
   <div class="privacy-banner">
-    🛡️ <b>Privacidad en Aula Compartida:</b> Si estás en el ordenador de clase, al terminar pulsa el botón rojo <b>«Borrar todo al salir»</b>. Así el siguiente alumno no podrá leer ni escuchar lo que has grabado. En el ordenador de tu casa <b>NO</b> hace falta pulsarlo; Chrome guardará tus recuerdos de un día para otro.
+    🛡️ <b>Privacidad en Aula Compartida:</b> Si estás en el ordenador de clase, al terminar pulsa el botón rojo <b>«Borrar todo al salir»</b>. Así el siguiente alumno no podrá leer lo que has grabado. En el ordenador de tu casa <b>NO</b> hace falta pulsarlo; Chrome guardará tus recuerdos de un día para otro.
   </div>
 
   <div class="tricks-banner">
     💡 <b>Tres cosas muy importantes para tu total tranquilidad:</b><br>
-    • <b>1. Habla al micrófono:</b> Pulsa «Grabar recuerdo» y habla. Tus palabras se escribirán solas en la pantalla.<br>
-    • <b>2. Añadir más o corregir:</b> Si quieres seguir hablando o añadir algo más, vuelve a pulsar «Grabar recuerdo». Y si quieres empezar de cero ese tema, pulsa «Borrar recuerdo».<br>
-    • <b>3. Temas en blanco:</b> Si no quieres hablar de algún tema, déjalo en blanco. La aplicación lo omitirá por completo.
+    • <b>1. Habla al micrófono:</b> Pulsa «Grabar recuerdo» y habla con calma. Tus palabras se escribirán solas en la pantalla de forma continua.<br>
+    • <b>2. Si el dictado comete alguna errata:</b> No te preocupes por corregirla con el teclado si no quieres; la Inteligencia Artificial está instruida para interpretar las erratas fonéticas del micrófono y dejar el texto perfecto.<br>
+    • <b>3. Temas en blanco:</b> Si no quieres hablar de algún tema, déjalo simplemente en blanco. La aplicación lo omitirá y no aparecerá en tu libro.
   </div>
 
   <div id="chaptersContainer" class="chapters-list"></div>
@@ -176,12 +176,13 @@ const DEFAULT_TOPICS = [
 
 let topics = [];
 let recordingTopicId = null;
+let isRecordingActive = false;
 let timerInterval = null;
 let recordingSeconds = 0;
 let recognition = null;
 let lastFullPrompt = "";
 
-// Reconocimiento de voz nativo en navegador
+// Reconocimiento de voz continuo sin cortes por silencio
 function initSpeechRecognition() {
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
   if (SpeechRecognition) {
@@ -190,8 +191,27 @@ function initSpeechRecognition() {
       recognition.continuous = true;
       recognition.interimResults = true;
       recognition.lang = 'es-ES';
+
+      recognition.onstart = () => {
+        const el = document.getElementById('speech-status-' + recordingTopicId);
+        if (el) el.style.display = 'block';
+      };
+
+      // Si el navegador detiene la escucha por silencio mientras el usuario sigue grabando, REINICIAR AL INSTANTE
+      recognition.onend = () => {
+        if (isRecordingActive && recordingTopicId !== null) {
+          try { recognition.start(); } catch(e) {}
+        }
+      };
+
+      recognition.onerror = (e) => {
+        console.warn("SpeechRecognition event:", e.error);
+        if (e.error === 'no-speech' && isRecordingActive) {
+          // Pausa normal mientras la persona respira o piensa
+        }
+      };
     } catch(e) {
-      console.warn("SpeechRecognition no disponible:", e);
+      console.warn("SpeechRecognition no soportado:", e);
     }
   }
 }
@@ -241,8 +261,8 @@ function renderTopics() {
       + statusHtml
       + '</div>'
       + '<div class="prompt-hint">' + t.hint + '</div>'
-      + '<div id="speech-status-' + t.id + '" class="speech-status">🎙️ Escuchando tu voz y escribiendo en la pantalla...</div>'
-      + '<textarea id="notes-' + t.id + '" class="notes-input" placeholder="Pulsa abajo en «GRABAR RECUERDO» y habla al micrófono para que tus palabras se escriban aquí (también puedes escribir o retocar a mano)..." onchange="updateNotes(' + t.id + ', this.value)">' + (t.notes || "") + '</textarea>'
+      + '<div id="speech-status-' + t.id + '" class="speech-status">🎙️ Micrófono activado: escuchando tu voz y escribiendo...</div>'
+      + '<textarea id="notes-' + t.id + '" class="notes-input" placeholder="Pulsa abajo en «GRABAR RECUERDO» y habla con calma (también puedes escribir o retocar a mano)..." onchange="updateNotes(' + t.id + ', this.value)">' + (t.notes || "") + '</textarea>'
       + '<div class="record-actions">'
       + '<button id="rec-btn-' + t.id + '" class="rec-btn" onclick="toggleRecord(' + t.id + ')">🎙️ GRABAR RECUERDO</button>'
       + '<span id="timer-' + t.id + '" class="timer" style="display:none;">00:00</span>'
@@ -268,40 +288,42 @@ async function toggleRecord(id) {
 }
 
 async function startRecording(id) {
+  isRecordingActive = true;
+  recordingTopicId = id;
+  
   const txtArea = document.getElementById('notes-' + id);
   const speechStatus = document.getElementById('speech-status-' + id);
   if (speechStatus) speechStatus.style.display = 'block';
   
   const topic = topics.find(x => x.id === id);
-  let originalNotes = (topic && topic.notes) ? topic.notes.trim() : "";
-  let transcriptAccumulator = "";
+  let baseNotes = (topic && topic.notes) ? topic.notes.trim() : "";
 
   if (recognition) {
     recognition.onresult = (event) => {
       let interim = '';
-      let final = '';
-      for (let i = event.resultIndex; i < event.results.length; ++i) {
+      let sessionFinal = '';
+      for (let i = 0; i < event.results.length; ++i) {
         if (event.results[i].isFinal) {
-          final += event.results[i][0].transcript + ' ';
+          sessionFinal += event.results[i][0].transcript + ' ';
         } else {
           interim += event.results[i][0].transcript;
         }
       }
-      transcriptAccumulator += final;
-      const fullText = (originalNotes ? originalNotes + "\n" : "") + transcriptAccumulator + interim;
-      if (txtArea) txtArea.value = fullText.trim();
+      const fullText = (baseNotes ? baseNotes + "\n" : "") + sessionFinal + interim;
+      if (txtArea) {
+        txtArea.value = fullText.trim();
+        txtArea.scrollTop = txtArea.scrollHeight;
+      }
       if (topic) {
-        topic.notes = ((originalNotes ? originalNotes + "\n" : "") + transcriptAccumulator).trim();
+        topic.notes = ((baseNotes ? baseNotes + "\n" : "") + sessionFinal).trim();
         saveState();
       }
     };
-    recognition.onerror = (e) => { console.warn("Error reconocimiento de voz:", e); };
+
     try { recognition.start(); } catch(e) {}
   } else {
-    alert("Tu navegador no soporta dictado directo por voz. Puedes escribir tus recuerdos directamente en la caja de texto.");
+    alert("Tu navegador no tiene activado el dictado por voz directo. Puedes escribir tus recuerdos en la caja de texto.");
   }
-
-  recordingTopicId = id;
 
   const btn = document.getElementById('rec-btn-' + id);
   if (btn) {
@@ -325,6 +347,7 @@ async function startRecording(id) {
 }
 
 function stopRecording() {
+  isRecordingActive = false;
   if (recognition) {
     try { recognition.stop(); } catch(e) {}
   }
@@ -415,7 +438,7 @@ function importFromPendrive(event) {
   reader.readAsText(file);
 }
 
-// Generación de Biografía con Reglas Estrictas Anti-Ficción y Anti-Cursilería
+// Generación de Biografía con Reglas Estrictas Anti-Ficción y Corrección de Erratas de Dictado
 function generateBiographyModal() {
   let count = 0;
   let memoriesText = "";
@@ -425,7 +448,7 @@ function generateBiographyModal() {
     if (hasNotes) {
       count++;
       memoriesText += "CAPÍTULO: " + t.title.toUpperCase() + "\n";
-      memoriesText += "HECHOS REALES NARRADOS POR EL AUTOR:\n";
+      memoriesText += "RELATO DEL AUTOR (TRANSCRITO POR VOZ):\n";
       memoriesText += t.notes.trim() + "\n\n";
     }
   });
@@ -435,13 +458,14 @@ function generateBiographyModal() {
     return;
   }
 
-  let fullPrompt = "Actúa como un redactor biográfico riguroso, humano, respetuoso y sobrio. A continuación te entrego las memorias reales que el autor ha relatado sobre su propia vida.\n\n";
+  let fullPrompt = "Actúa como un biógrafo y redactor literario profesional, respetuoso, sobrio y profundamente humano. A continuación te entrego las memorias que el autor ha relatado con su propia voz sobre su vida real.\n\n";
   fullPrompt += "🛑 REGLAS ESTRICTAS DE REDACCIÓN (OBLIGATORIAS):\n";
   fullPrompt += "1. TOTALMENTE PROHIBIDO INVENTAR: No inventes nombres de personas, calles, pueblos, trabajos, anécdotas ni sucesos que el autor no haya contado. Cíñete fielmente a sus palabras y vivencias reales.\n";
   fullPrompt += "2. PROHIBIDO EL TONO CURSI O MELODRAMÁTICO: Prohibido usar clichés vacíos como 'si cierras los ojos', 'en el ocaso de la vida', 'ecos del ayer' o poesías artificiales. Escribe con un lenguaje natural, directo, digno y auténtico, como una persona real contando su historia verdadera a sus hijos y nietos.\n";
-  fullPrompt += "3. AUTO-CORRECCIÓN AL HABLAR: Si en el relato el autor duda o dice 'espera, me he equivocado', 'perdón, fue en...', interpreta la rectificación y deja únicamente el dato final correcto.\n";
-  fullPrompt += "4. HILO CRONOLÓGICO NATURAL: Organiza los recuerdos aportados en una narración fluida y coherente, respetando la cronología vital del autor.\n";
-  fullPrompt += "5. FORMATO: Devuelve el texto estructurado por capítulos con títulos claros, listo para copiar a Microsoft Word.\n\n";
+  fullPrompt += "3. CORRECCIÓN INTELIGENTE DE ERRATAS DEL DICTADO: El texto proviene de un dictado por voz a través del micrófono. Interpreta y corrige con sentido común cualquier palabra mal capturada fonéticamente por el micrófono, faltas ortográficas o ausencias de puntuación, para que la narración final quede impecable y fiel a lo que el autor quiso decir.\n";
+  fullPrompt += "4. AUTO-CORRECCIÓN AL HABLAR: Si en el relato el autor duda o dice 'espera, me he equivocado', 'perdón, no fue en el 65 sino en el 68', interpreta la rectificación y deja únicamente el dato final correcto.\n";
+  fullPrompt += "5. HILO CRONOLÓGICO NATURAL: Organiza los recuerdos aportados en una narración fluida y coherente, respetando la cronología vital del autor.\n";
+  fullPrompt += "6. FORMATO FINAL: Devuelve el texto estructurado por capítulos con títulos claros, listo para copiar directamente a Microsoft Word.\n\n";
   fullPrompt += "ESTAS SON LAS MEMORIAS REALES QUE TE ENTREGA EL AUTOR:\n";
   fullPrompt += "========================================================\n\n";
   fullPrompt += memoriesText;
