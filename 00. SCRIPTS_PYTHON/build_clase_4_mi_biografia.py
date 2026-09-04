@@ -2,9 +2,10 @@
 """
 Clase Monográfica 4: "4. Mi_Biografia"
 Genera:
-1. Mi_Biografia.html -> Aplicación web con dictado por voz continuo (sin cortes por silencio),
-   indicador visual claro de grabación activa, corrección automática de erratas de dictado
-   y reglas anti-ficción y anti-cursilería estrictas para Gemini.
+1. Mi_Biografia.html -> Aplicación web donde NUNCA se borra el texto al detener la grabación:
+   - Captura inmediata de interim + final.
+   - Guarda el valor exacto del textarea antes de detener.
+   - oninput en tiempo real para cualquier edición con teclado.
 2. Manual_de_Instrucciones.pdf -> Manual de usuario sencillo, claro y directo.
 """
 
@@ -220,7 +221,6 @@ function initSpeechRecognition() {
         if (el) el.style.display = 'block';
       };
 
-      // Si el navegador detiene la escucha por silencio mientras el usuario sigue grabando, REINICIAR AL INSTANTE
       recognition.onend = () => {
         if (isRecordingActive && recordingTopicId !== null) {
           try { recognition.start(); } catch(e) {}
@@ -229,9 +229,6 @@ function initSpeechRecognition() {
 
       recognition.onerror = (e) => {
         console.warn("SpeechRecognition event:", e.error);
-        if (e.error === 'no-speech' && isRecordingActive) {
-          // Pausa normal mientras la persona respira o piensa
-        }
       };
     } catch(e) {
       console.warn("SpeechRecognition no soportado:", e);
@@ -285,7 +282,7 @@ function renderTopics() {
       + '</div>'
       + '<div class="prompt-hint">' + t.hint + '</div>'
       + '<div id="speech-status-' + t.id + '" class="speech-status">🎙️ Micrófono activado: escuchando tu voz y escribiendo...</div>'
-      + '<textarea id="notes-' + t.id + '" class="notes-input" placeholder="Pulsa abajo en «GRABAR RECUERDO» y habla con calma (también puedes escribir o retocar a mano)..." onchange="updateNotes(' + t.id + ', this.value)">' + (t.notes || "") + '</textarea>'
+      + '<textarea id="notes-' + t.id + '" class="notes-input" placeholder="Pulsa abajo en «GRABAR RECUERDO» y habla con calma (también puedes escribir o retocar a mano)..." oninput="updateNotes(' + t.id + ', this.value)">' + (t.notes || "") + '</textarea>'
       + '<div class="record-actions">'
       + '<button id="rec-btn-' + t.id + '" class="rec-btn" onclick="toggleRecord(' + t.id + ')">🎙️ GRABAR RECUERDO</button>'
       + '<span id="timer-' + t.id + '" class="timer" style="display:none;">00:00</span>'
@@ -319,7 +316,11 @@ async function startRecording(id) {
   if (speechStatus) speechStatus.style.display = 'block';
   
   const topic = topics.find(x => x.id === id);
+  // Base notes existentes para no pisar lo que ya había
   let baseNotes = (topic && topic.notes) ? topic.notes.trim() : "";
+  if (txtArea && txtArea.value.trim()) {
+    baseNotes = txtArea.value.trim();
+  }
 
   if (recognition) {
     recognition.onresult = (event) => {
@@ -332,13 +333,17 @@ async function startRecording(id) {
           interim += event.results[i][0].transcript;
         }
       }
-      const fullText = (baseNotes ? baseNotes + "\n" : "") + sessionFinal + interim;
+      
+      const newSpoken = (sessionFinal + interim).trim();
+      const fullText = (baseNotes ? baseNotes + " " + newSpoken : newSpoken).trim();
+      
       if (txtArea) {
-        txtArea.value = fullText.trim();
+        txtArea.value = fullText;
         txtArea.scrollTop = txtArea.scrollHeight;
       }
       if (topic) {
-        topic.notes = ((baseNotes ? baseNotes + "\n" : "") + sessionFinal).trim();
+        // Guardamos de inmediato para que NUNCA se pierda ni una sola palabra
+        topic.notes = fullText;
         saveState();
       }
     };
@@ -370,12 +375,24 @@ async function startRecording(id) {
 }
 
 function stopRecording() {
+  // 1. ANTES DE NADA: Asegurar que lo que hay escrito en pantalla queda grabado en topic.notes
+  if (recordingTopicId !== null) {
+    const currentArea = document.getElementById('notes-' + recordingTopicId);
+    const currentTopic = topics.find(x => x.id === recordingTopicId);
+    if (currentArea && currentTopic) {
+      currentTopic.notes = currentArea.value.trim();
+      saveState();
+    }
+  }
+
   isRecordingActive = false;
   if (recognition) {
     try { recognition.stop(); } catch(e) {}
   }
   clearInterval(timerInterval);
   recordingTopicId = null;
+  
+  // 2. Renderizar ahora sí que todo está guardado a salvo
   renderTopics();
 }
 
