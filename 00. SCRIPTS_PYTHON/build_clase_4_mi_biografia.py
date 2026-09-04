@@ -1,21 +1,15 @@
 # -*- coding: utf-8 -*-
 """
-Generador de la Clase Monográfica 4: "4. Mi_Biografia"
-Crea la aplicación interactiva autónoma en HTML puro (Mi_Biografia.html)
-y UNA ÚNICA FICHA GUÍA COMPLETA en PDF (Guia_Completa_Mi_Biografia.pdf)
-con todo el flujo paso a paso:
-- Grabación en casa día a día con micrófono de PC.
-- Auto-corrección al hablar y reordenación cronológica.
-- Generación y afinado con Gemini.
-- Guardado, maquetación con fotos e impresión en MICROSOFT WORD.
-- Creación de podcast familiar en NotebookLM para WhatsApp.
-- Privacidad: Modo Aula vs Modo Casa.
+Clase Monográfica 4: "4. Mi_Biografia"
+Genera:
+1. Mi_Biografia.html -> Aplicación web interactiva autónoma.
+2. Manual_de_Instrucciones.pdf -> ÚNICO DOCUMENTO para el alumno (Manual de usuario puro, sin prompts).
 """
 
 import os
 from reportlab.lib.pagesizes import letter
 from reportlab.lib import colors
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, HRFlowable, Table, TableStyle, PageBreak
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, HRFlowable, PageBreak
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -64,8 +58,6 @@ HTML_CONTENT = """<!DOCTYPE html>
     .btn-success:hover { background-color: #15803D; }
     .btn-primary { background-color: var(--primary); color: white; }
     .btn-primary:hover { background-color: var(--primary-hover); }
-    .btn-secondary { background-color: #475569; color: white; }
-    .btn-secondary:hover { background-color: #334155; }
     .btn-outline { background: transparent; border: 2px solid var(--border); color: var(--text-main); }
     .btn-outline:hover { background: #E2E8F0; }
     .btn-sm { padding: 6px 12px; font-size: 0.9rem; border-radius: 6px; }
@@ -134,8 +126,8 @@ HTML_CONTENT = """<!DOCTYPE html>
 
   <div class="tricks-banner">
     💡 <b>Dos trucos mágicos para hablar al micrófono con total tranquilidad:</b><br>
-    • <b>1. Si te equivocas o dudas al hablar:</b> ¡No pares la grabación! Di con naturalidad <i>«Espera, me he equivocado: no fue en el 65 sino en el 68»</i> o <i>«Perdón, no era Juan sino Pedro»</i>. La Inteligencia Artificial está instruida para corregirlo sola y dejar el texto final limpio y perfecto.<br>
-    • <b>2. Si te acuerdas de algo desordenado:</b> Cuéntalo cuando te venga a la mente, aunque haya ocurrido antes o después. La IA se encargará de ordenar cada recuerdo en su momento cronológico exacto de tu vida.
+    • <b>1. Si te equivocas o dudas al hablar:</b> ¡No pares la grabación! Di con naturalidad <i>«Espera, me he equivocado: no fue en el 65 sino en el 68»</i> o <i>«Perdón, no era Juan sino Pedro»</i>. La aplicación se encarga de que la Inteligencia Artificial corrija el error automáticamente y deje el texto limpio.<br>
+    • <b>2. Si te acuerdas de algo desordenado:</b> Cuéntalo cuando te venga a la mente, aunque haya ocurrido antes o después. La aplicación se encarga de que cada recuerdo quede colocado en su momento cronológico exacto de tu vida.
   </div>
 
   <div id="chaptersContainer" class="chapters-list"></div>
@@ -172,16 +164,16 @@ HTML_CONTENT = """<!DOCTYPE html>
       <button class="btn-outline" onclick="closeModal('generateModal')">✕</button>
     </div>
     <div style="background:#F0FDF4; border:1px solid #86EFAC; border-radius:10px; padding:14px 18px; margin-bottom:16px; font-size:0.95rem; color:#166534; line-height:1.5;">
-      <b>📋 Pasos siguientes para completar tu obra:</b><br>
-      1. Pulsa en <b>«📋 Copiar todo para Gemini»</b> y pégalo en Google Gemini para que redacte tu historia.<br>
-      2. Lee la biografía en Gemini. Si quieres añadir un detalle que olvidaste, escríbelo en el chat (ej: <i>«En el capítulo 3 añade mi Seat 600...»</i>).<br>
-      3. Copia el texto final de Gemini, abre <b>Microsoft Word</b> en tu ordenador y pulsa <b>Pegar</b> (Ctrl + V) para guardarlo o imprimirlo en papel con fotos.<br>
-      4. Si quieres el podcast de radio para enviar por WhatsApp, sube el texto a <b>NotebookLM</b>.
+      <b>📋 Pasos para completar tu obra:</b><br>
+      1. Pulsa en <b>«📋 Copiar todo»</b>.<br>
+      2. Abre <b>Google Gemini</b> en tu navegador y pulsa <b>Pegar</b> (Ctrl + V) y Enviar.<br>
+      3. Lee tu historia redactada. Si quieres añadir un detalle, escríbelo en la conversación (ej: <i>«En el capítulo 3 añade mi Seat 600...»</i>).<br>
+      4. Copia el resultado final de Gemini, abre <b>Microsoft Word</b> en tu ordenador y pulsa <b>Pegar</b> para guardarlo como documento (.docx) o imprimirlo con fotos.
     </div>
     <div id="biographyOutputText" class="modal-content"></div>
     <div class="modal-actions">
       <button class="btn-outline" onclick="downloadTextFile()">⬇️ Descargar texto (.txt)</button>
-      <button class="btn-primary" onclick="copyBiographyText()">📋 Copiar todo para Gemini</button>
+      <button class="btn-primary" onclick="copyBiographyText()">📋 Copiar todo</button>
     </div>
   </div>
 </div>
@@ -462,11 +454,11 @@ function downloadSingleAudio(id) {
   a.remove();
 }
 
-// Generación de Biografía para Gemini, Word y NLM con Auto-corrección y Cronología
+// Generación de Biografía
 function generateBiographyModal() {
   let fullPrompt = "Actúa como un biógrafo literario y escritor sensible profesional. A continuación te entrego las memorias y reflexiones recopiladas a lo largo de mi vida, organizadas por etapas y temas.\\n\\n";
-  fullPrompt += "🧠 REGLAS CRÍTICAS DE REDACCIÓN Y EDICIÓN INTELIGENTE:\\n";
-  fullPrompt += "1. AUTO-CORRECCIÓN INTELIGENTE: Si en mis relatos digo frases como 'espera, me he equivocado', 'perdón, no fue en ese año sino en...', o 'quería decir...', interpreta la rectificación automáticamente. Elimina el error y deja únicamente el dato corregido en el texto final.\\n";
+  fullPrompt += "🧠 REGLAS DE REDACCIÓN Y EDICIÓN:\\n";
+  fullPrompt += "1. AUTO-CORRECCIÓN: Si en mis relatos digo frases como 'espera, me he equivocado', 'perdón, no fue en ese año sino en...', o 'quería decir...', interpreta la rectificación automáticamente. Elimina el error y deja únicamente el dato corregido en el texto final.\\n";
   fullPrompt += "2. REORDENACIÓN CRONOLÓGICA: Si cuento anécdotas desordenadas (por ejemplo, menciono un recuerdo de mi infancia mientras hablaba de mi trabajo), ubica cada suceso en su momento vital correspondiente para que la historia fluya en un orden temporal perfecto y natural.\\n";
   fullPrompt += "3. TONO Y ESTILO: Redacta un libro biográfico cálido, elegante y emotivo, dividido en capítulos hermosos, manteniendo mi voz auténtica y destacando las lecciones de vida y valores.\\n";
   fullPrompt += "4. FORMATO: Deja el texto impecable para copiarlo y pegarlo en Microsoft Word para guardarlo en el ordenador e imprimirlo en papel, y para usarlo en NotebookLM para generar un podcast familiar.\\n\\n";
@@ -512,10 +504,10 @@ window.onload = init;
 """
 
 # ==============================================================================
-# 2. GENERADOR DE LA FICHA GUÍA COMPLETA ÚNICA EN PDF
+# 2. GENERADOR DEL ÚNICO DOCUMENTO: MANUAL DE INSTRUCCIONES EN PDF
 # ==============================================================================
-def create_single_guide_pdf():
-    filename = "Guia_Completa_Mi_Biografia.pdf"
+def create_user_manual_pdf():
+    filename = "Manual_de_Instrucciones.pdf"
     file_path = os.path.join(TARGET_DIR, filename)
     doc = SimpleDocTemplate(
         file_path,
@@ -531,8 +523,6 @@ def create_single_guide_pdf():
     c_dark = colors.HexColor('#0F172A')
     c_body = colors.HexColor('#1E293B')
     c_accent = colors.HexColor('#B45309')
-    c_box_bg = colors.HexColor('#F8FAFC')
-    c_box_border = colors.HexColor('#CBD5E1')
     
     style_main_title = ParagraphStyle(
         'MainTitle',
@@ -559,7 +549,7 @@ def create_single_guide_pdf():
         fontSize=12,
         leading=16,
         textColor=c_primary,
-        spaceBefore=12,
+        spaceBefore=14,
         spaceAfter=6
     )
     style_body = ParagraphStyle(
@@ -567,142 +557,108 @@ def create_single_guide_pdf():
         parent=styles['Normal'],
         fontName='Helvetica',
         fontSize=9.5,
-        leading=14,
+        leading=14.5,
         textColor=c_body,
         spaceAfter=6
     )
-    style_prompt = ParagraphStyle(
-        'PromptBox',
+    style_tip = ParagraphStyle(
+        'Tip',
         parent=styles['Normal'],
         fontName='Helvetica-Oblique',
         fontSize=9,
-        leading=13,
+        leading=13.5,
         textColor=colors.HexColor('#334155')
     )
     
     story = []
     
-    # Cabecera principal
-    story.append(Paragraph("📖 GUÍA COMPLETA: MI BIOGRAFÍA («LA VOZ DE MI VIDA»)", style_main_title))
-    story.append(Paragraph("Proyecto Integral: Graba tus recuerdos en casa, redacta con Gemini, maqueta en Microsoft Word y crea tu podcast familiar", style_subtitle))
+    # Portada / Encabezado
+    story.append(Paragraph("📖 MANUAL DE INSTRUCCIONES: APLICACIÓN «MI BIOGRAFÍA»", style_main_title))
+    story.append(Paragraph("Guía práctica de uso: Cómo grabar tus recuerdos en casa, ordenarlos y crear tu libro y podcast familiar", style_subtitle))
     story.append(HRFlowable(width="100%", thickness=1.5, color=c_primary, spaceAfter=10))
     
-    # Resumen del proyecto
-    intro_txt = (
-        "Este proyecto te permite construir tu propio libro biográfico y un podcast con tu voz para tus hijos y nietos. "
-        "En clase aprendemos la herramienta y <b>en tu casa grabas tranquilamente día a día</b>, sin prisas y a tu propio ritmo."
-    )
-    story.append(Paragraph(intro_txt, style_body))
+    # 1. Qué es la aplicación
+    story.append(Paragraph("¿QUÉ ES ESTA APLICACIÓN?", style_h2))
+    story.append(Paragraph(
+        "Es una herramienta diseñada para que puedas <b>grabar los recuerdos de tu vida tranquilamente desde tu propio ordenador</b>, a tu propio ritmo y sin prisas. No necesitas saber informática avanzada ni escribir textos complicados: solo abres la aplicación en la pantalla, pulsas un botón y hablas.",
+        style_body
+    ))
     
-    # ETAPA 1
-    story.append(Paragraph("🎙️ ETAPA 1: GRABAR TUS RECUERDOS EN CASA DÍA A DÍA", style_h2))
-    e1_txt = (
-        "<b>1. Abrir la aplicación:</b> Haz doble clic sobre <b>Mi_Biografia.html</b>. Se abrirá en tu navegador (Edge o Chrome). No hay que instalar nada.<br/>"
-        "<b>2. Grabar con calma:</b> Elige el capítulo que quieras contar hoy y pulsa <b>«🎙️ GRABAR RECUERDO»</b>. Habla con naturalidad frente a la pantalla. Al terminar, pulsa <b>«⏹️ DETENER Y GUARDAR»</b>.<br/>"
-        "<b>3. Memoria automática en casa:</b> En el ordenador de tu casa <b>NO</b> tienes que borrar nada. Chrome recuerda tus grabaciones de una semana a otra automáticamente.<br/>"
-        "<b>4. Dos trucos mágicos al hablar:</b><br/>"
-        "&nbsp;&nbsp;• <i>Si te equivocas o dudas:</i> ¡No pares la grabación! Di de viva voz: <i>«Espera, me he equivocado: no fue en el 65 sino en el 68»</i>. La IA está programada para eliminar el error y dejar solo el dato correcto.<br/>"
-        "&nbsp;&nbsp;• <i>Si recuerdas algo desordenado:</i> Cuéntalo cuando te venga a la mente; la IA lo colocará sola en su momento vital adecuado.<br/>"
-        "<b>5. Personalizar temas:</b> Pulsa <b>«➕ Añadir nuevo tema»</b> para incluir tu vida laboral, viajes o aficiones. Usa los botones <b>«⬆️ Subir»</b> y <b>«⬇️ Bajar»</b> para ordenar los capítulos a tu gusto."
-    )
-    story.append(Paragraph(e1_txt, style_body))
+    # 2. Cómo abrirla
+    story.append(Paragraph("1. CÓMO ABRIR LA APLICACIÓN", style_h2))
+    story.append(Paragraph(
+        "• Haz <b>doble clic</b> sobre el archivo <b>Mi_Biografia.html</b>.<br/>"
+        "• Se abrirá automáticamente en tu navegador habitual (Microsoft Edge o Google Chrome). No requiere instalar ningún programa.",
+        style_body
+    ))
     
-    # ETAPA 2
-    story.append(Paragraph("✨ ETAPA 2: GENERAR Y PERFECCIONAR TU HISTORIA CON GEMINI", style_h2))
-    e2_txt = (
-        "<b>1. Unir tus recuerdos:</b> Cuando hayas grabado varios capítulos, pulsa el botón grande azul <b>«✨ GENERAR MI BIOGRAFÍA»</b> y pulsa <b>«📋 Copiar todo para Gemini»</b>.<br/>"
-        "<b>2. Pegar en Gemini:</b> Entra en <i>gemini.google.com</i>, pulsa <i>Pegar</i> (Ctrl + V) y dale a Enviar. Gemini redactará un libro cálido y literario dividido por capítulos.<br/>"
-        "<b>3. Revisar y añadir recuerdos en el chat:</b> Lee lo que ha escrito. Si te das cuenta de que falta algo, <b>díselo directamente a Gemini en el chat</b> sin volver a empezar:<br/>"
-        "&nbsp;&nbsp;<i>«Oye Gemini, en el Capítulo 3 se me olvidó contarte que en 1974 me compré mi primer coche, un Seat 600 blanco. Incorpóralo en ese capítulo.»</i><br/>"
-        "&nbsp;&nbsp;Gemini lo integrará al momento dejando el texto pulido y perfecto."
-    )
-    story.append(Paragraph(e2_txt, style_body))
+    # 3. Los botones de la pantalla
+    story.append(Paragraph("2. CÓMO FUNCIONAN LOS BOTONES DE LA PANTALLA", style_h2))
+    story.append(Paragraph(
+        "• <b>🎙️ GRABAR RECUERDO:</b> Pulsa este botón y habla con calma al micrófono del ordenador contando ese momento de tu vida. Cuando termines, pulsa <b>⏹️ DETENER Y GUARDAR</b>.<br/>"
+        "• <b>🔊 Tu recuerdo grabado:</b> En cuanto grabas, aparece el reproductor para escucharlo y el botón <b>💾 Guardar archivo de audio</b> si quieres guardarte ese sonido suelto en tu disco duro.<br/>"
+        "• <b>🔄 Volver a grabar:</b> Si no te gusta cómo ha quedado la grabación, pulsa este botón para repetirla.<br/>"
+        "• <b>🗑️ Borrar grabación (dejar en blanco):</b> Borra el audio y las notas de esa tarjeta para empezar de cero, pero <b>mantiene el capítulo</b> en la lista.<br/>"
+        "• <b>✖ Quitar tema:</b> Elimina la tarjeta por completo si no quieres incluir ese asunto en tu vida.<br/>"
+        "• <b>⬆️ Subir / ⬇️ Bajar:</b> Mueve los capítulos hacia arriba o hacia abajo para ordenar tu historia como prefieras.<br/>"
+        "• <b>➕ Añadir nuevo tema / capítulo:</b> Te permite crear temas libres que no estén en la lista inicial (tus 30 años de trabajo, un viaje especial, una afición, tus amigos de juventud...).",
+        style_body
+    ))
     
-    # Salto de página para que quede espacioso y cómodo de leer
+    # 4. Dos trucos para hablar con tranquilidad
+    story.append(Paragraph("3. DOS TRUCOS PARA HABLAR CON TOTAL TRANQUILIDAD", style_h2))
+    story.append(Paragraph(
+        "• <b>Si te equivocas o dudas al hablar:</b> ¡No pares la grabación! Simplemente di de forma natural: <i>«Espera, me he equivocado: no fue en el año 65 sino en el 68»</i> o <i>«Perdón, no era Juan sino Pedro»</i>. La aplicación está programada para que la Inteligencia Artificial elimine el error automáticamente y deje el texto limpio y perfecto.<br/>"
+        "• <b>Si recuerdas una anécdota fuera de orden:</b> Cuéntala en cuanto te acuerdes, aunque haya ocurrido antes o después. La aplicación se encarga de colocar cada suceso en su momento cronológico exacto.",
+        style_body
+    ))
+    
+    # Salto de página para lectura cómoda
     story.append(PageBreak())
     
-    # ETAPA 3
-    story.append(Paragraph("📄 ETAPA 3: GUARDAR, MAQUETAR CON FOTOS E IMPRIMIR EN MICROSOFT WORD", style_h2))
-    e3_txt = (
-        "<b>1. Copiar de Gemini:</b> En la respuesta final de Gemini, haz clic en el botón de copiar (icono de dos folios) o selecciona el texto y pulsa Ctrl + C.<br/>"
-        "<b>2. Pegar en Microsoft Word:</b> Abre Microsoft Word en tu ordenador, crea un documento en blanco y pulsa <b>Pegar (Ctrl + V)</b>.<br/>"
-        "<b>3. Tu libro personalizado:</b><br/>"
-        "&nbsp;&nbsp;• Ponle un tamaño de letra cómodo de leer (por ejemplo Arial o Calibri a tamaño 12 o 14).<br/>"
-        "&nbsp;&nbsp;• Inserta fotografías familiares antiguas escaneadas entre capítulo y capítulo (<i>Insertar -> Imágenes</i>).<br/>"
-        "&nbsp;&nbsp;• Añade una dedicatoria en la primera página: <i>«Para mis hijos y nietos, con todo mi amor»</i>.<br/>"
-        "<b>4. Guardar para siempre en tu PC:</b> Pulsa <b>Archivo -> Guardar como</b> y guárdalo como archivo de Word (<b>.docx</b>). Así tendrás tu obra maestra guardada en tu disco duro para siempre.<br/>"
-        "<b>5. Imprimir en papel o PDF:</b> Pulsa <b>Archivo -> Imprimir</b> para tenerlo en papel y encuadernarlo, o <b>Guardar como PDF</b> para enviarlo por correo electrónico."
-    )
-    story.append(Paragraph(e3_txt, style_body))
+    # 5. Guardar en Microsoft Word
+    story.append(Paragraph("4. CÓMO GENERAR TU LIBRO Y GUARDARLO EN MICROSOFT WORD", style_h2))
+    story.append(Paragraph(
+        "Cuando lleves varios días grabando y sientas que ya tienes tus recuerdos listos:<br/>"
+        "<b>1.</b> En la aplicación, pulsa el botón azul grande del final: <b>«✨ GENERAR MI BIOGRAFÍA»</b>.<br/>"
+        "<b>2.</b> En la ventana que se abre, pulsa <b>«📋 Copiar todo»</b>.<br/>"
+        "<b>3.</b> Abre <b>Google Gemini</b> en tu navegador (<i>gemini.google.com</i>), pulsa <b>Pegar (Ctrl + V)</b> y dale a la flecha de enviar. Gemini redactará tu biografía completa dividida en capítulos cálidos y emotivos.<br/>"
+        "<b>4. ¿Quieres añadir algo que se te olvidó?</b> No hace falta volver a grabar: díselo directamente a Gemini en la conversación:<br/>"
+        "&nbsp;&nbsp;&nbsp;&nbsp;<i>«Oye, añade en el Capítulo 3 que en 1974 me compré mi primer Seat 600 blanco...»</i><br/>"
+        "<b>5. Pasar a Microsoft Word:</b> Copia el texto final redactado por Gemini, abre <b>Microsoft Word</b> en tu ordenador y pulsa <b>Pegar (Ctrl + V)</b>.<br/>"
+        "<b>6. Personalizar e imprimir:</b> En Word puedes poner el tamaño de letra que quieras, insertar fotos familiares antiguas escaneadas (<i>Insertar -> Imágenes</i>) y darle a <b>Archivo -> Guardar como</b> para guardarlo en tu PC, o <b>Archivo -> Imprimir</b> para tenerlo en papel encuadernado.",
+        style_body
+    ))
     
-    # ETAPA 4
-    story.append(Paragraph("🎙️ ETAPA 4: CREAR EL PODCAST EN NOTEBOOKLM PARA ENVIAR POR WHATSAPP", style_h2))
-    e4_txt = (
-        "<b>1. Entrar en NotebookLM:</b> Accede a <i>notebooklm.google.com</i> con tu cuenta de Google.<br/>"
-        "<b>2. Crear Cuaderno:</b> Pulsa en <i>«Nuevo Cuaderno»</i> y nómbralo <i>«Mi Biografía»</i>.<br/>"
-        "<b>3. Subir tu historia:</b> En Fuentes, selecciona <i>«Texto copiado»</i> y pega el texto de tu biografía.<br/>"
-        "<b>4. Generar el Podcast:</b> En la columna derecha, pulsa en <b>«Conversación de Audio» (Audio Overview)</b>. Dos locutores de radio conversarán con cariño y admiración sobre tu vida y anécdotas.<br/>"
-        "<b>5. Enviar por WhatsApp:</b> Descarga el archivo de audio generado y compártelo en el grupo de WhatsApp de tu familia. ¡Será una sorpresa inolvidable para todos!"
-    )
-    story.append(Paragraph(e4_txt, style_body))
+    # 6. El podcast familiar para WhatsApp
+    story.append(Paragraph("5. CÓMO CREAR EL PODCAST FAMILIAR PARA WHATSAPP", style_h2))
+    story.append(Paragraph(
+        "Si quieres además un programa de audio para compartir con tus hijos y nietos:<br/>"
+        "• Entra en <b>NotebookLM</b> (<i>notebooklm.google.com</i>) con tu cuenta de Google.<br/>"
+        "• Pulsa en <i>«Nuevo Cuaderno»</i>, ponle de título <i>«Mi Biografía»</i> y en Fuentes elige <i>«Texto copiado»</i> para pegar el texto de tu biografía.<br/>"
+        "• En la columna derecha pulsa en <b>«Conversación de Audio» (Audio Overview)</b>. Se generará un programa de radio donde dos presentadores conversan con enorme cariño y admiración sobre tu vida.<br/>"
+        "• Descarga ese audio y envíalo al grupo de WhatsApp familiar.",
+        style_body
+    ))
     
-    # ETAPA 5
-    story.append(Paragraph("🛡️ ETAPA 5: PRIVACIDAD (ORDENADOR DE CLASE VS ORDENADOR DE CASA)", style_h2))
-    e5_txt = (
-        "• <b>EN TU CASA:</b> Trabajas tranquilo día tras día. No toques el botón rojo de borrar. Chrome recordará siempre tus avances.<br/>"
-        "• <b>EN EL AULA COMPARTIDA:</b> Si estás haciendo una prueba en el aula con un ordenador que usan otros alumnos, antes de levantarte pulsa <b>«💾 Guardar copia en mi Pendrive»</b> para llevarte el archivo a casa, y luego pulsa el botón rojo <b>«🧹 Borrar todo al salir (Modo Aula)»</b>. Así el siguiente alumno encontrará el equipo limpio y nadie podrá escuchar tu vida privada."
-    )
-    story.append(Paragraph(e5_txt, style_body))
+    # 7. Modo Casa vs Modo Aula
+    story.append(Paragraph("6. PRIVACIDAD: EN CASA VS EN EL AULA", style_h2))
+    story.append(Paragraph(
+        "• <b>EN TU CASA:</b> Trabajas con total tranquilidad. <b>NO</b> tienes que pulsar el botón rojo de borrar. Tu navegador guardará tus recuerdos de un día para otro para que continúes cuando quieras.<br/>"
+        "• <b>EN EL AULA COMPARTIDA:</b> Si usas un ordenador de clase que luego van a usar otras personas, antes de marcharte pulsa el botón verde <b>«💾 Guardar copia en mi Pendrive / PC»</b> para llevarte tus archivos, y luego pulsa el botón rojo <b>«🧹 Borrar todo al salir (Modo Aula)»</b>. Así tus recuerdos íntimos no quedarán guardados en ese ordenador.",
+        style_body
+    ))
     
     story.append(Spacer(1, 10))
     story.append(HRFlowable(width="100%", thickness=1, color=colors.HexColor('#CBD5E1'), spaceAfter=8))
-    story.append(Paragraph("<b>💡 CONSEJO FINAL:</b> No tengas prisa por terminarlo en una sola tarde. La biografía es más rica cuando te tomas varios días recordando detalles, olores, nombres y canciones de cada época.", style_prompt))
+    story.append(Paragraph("<b>💡 CONSEJO:</b> Grabar tu biografía no es una tarea para hacer en una sola tarde. Disfruta recordando despacio cada etapa, tus maestros, tu primer trabajo y las historias que hicieron única tu vida.", style_tip))
     
     doc.build(story)
-    print(f"  ✅ Creada la Ficha Guía Completa Única: {filename}")
+    print(f"  ✅ Creado el Manual de Instrucciones: {filename}")
     return file_path
 
-# ==============================================================================
-# EJEMPLO REAL DE BIOGRAFÍA EN PDF (PARA PROBAR EN NOTEBOOKLM)
-# ==============================================================================
-EJEMPLO_BIOGRAFIA_TEXTO = """MEMORIAS DE UNA VIDA: EL CAMINO RECORRIDO
-
-CAPÍTULO 1: LA CALLE EMPEDRADA Y EL OLOR A PAN CALIENTE
-Nací en un pueblo donde el tiempo no corría por relojes digitales sino por las campanadas de la iglesia y la luz del sol sobre los campos. Mi casa tenía muros anchos de piedra que guardaban el frescor en verano y el calor del brasero en las largas noches de invierno. Jugábamos a las chapas, a la peonza de madera y a escondernos entre las eras de trillar. No teníamos pantallas, pero teníamos una imaginación infinita que convertía un trozo de madera en una espada y un viejo neumático en una nave espacial.
-
-CAPÍTULO 2: EL MAESTRO DON ANTONIO Y LA PIZARRA DE TIZA
-La escuela era un aula única donde convivíamos niños de todas las edades. Don Antonio nos enseñaba matemáticas con granos de trigo y geografía señalando mapas gastados que colgaban de la pared. De él aprendí que la curiosidad es el motor del mundo y que saber leer y escribir con soltura abre puertas que nadie puede cerrar. Aún recuerdo el olor a tinta china y el tacto áspero del papel secante.
-
-CAPÍTULO 3: CUARENTA AÑOS EN EL FERROCARRIL: EL VALOR DEL TRABAJO
-A los diecisiete años entré como aprendiz en los talleres de la estación. Vi cómo las locomotoras de vapor daban paso a las diésel y más tarde a la electrificación. En aquel taller aprendí lo que significa la solidaridad entre compañeros: cuando el trabajo era duro o una pieza se atascaba, siempre había dos manos amigas dispuestas a empujar a tu lado. Mi primer sueldo se lo entregué íntegro a mi madre en la cocina; aquel orgullo me acompañará hasta el último día.
-
-CAPÍTULO 4: EL VIAJE QUE ME CAMBIÓ LA MIRADA
-A los cincuenta años pude hacer mi primer gran viaje fuera de España. Tomar aquel tren nocturno y despertar frente a las costas del norte me demostró que el mundo es un libro inmenso y que quien no viaja solo lee la primera página. Aquellos paisajes me enseñaron que todos los seres humanos, vivamos donde vivamos, buscamos exactamente lo mismo: paz, respeto y ver felices a los que queremos.
-
-CAPÍTULO 5: LO QUE HE APRENDIDO Y QUIERO DEJAROS
-Si algo me ha enseñado este largo camino es que las posesiones materiales se gastan y se olvidan, pero las horas compartidas con la gente a la que amas son eternas. A vosotros, mis nietos, os pido que nunca tengáis prisa por crecer, que escuchéis a los mayores no porque seamos más listos, sino porque ya nos hemos equivocado muchas veces antes, y que tratéis siempre a los demás con la misma bondad con la que os gustaría ser recordados."""
-
-def create_example_biography_pdf():
-    ejemplo_pdf = os.path.join(TARGET_DIR, "EJEMPLO_A_FUENTE_BIOGRAFIA_PARA_NOTEBOOKLM.pdf")
-    doc_e = SimpleDocTemplate(ejemplo_pdf, pagesize=letter, rightMargin=50, leftMargin=50, topMargin=50, bottomMargin=50)
-    styles = getSampleStyleSheet()
-    st_t = ParagraphStyle('ETitle', parent=styles['Heading1'], fontName='Helvetica-Bold', fontSize=14, textColor=colors.HexColor('#1E3A8A'), spaceAfter=12)
-    st_b = ParagraphStyle('EBody', parent=styles['Normal'], fontName='Helvetica', fontSize=10, leading=15, textColor=colors.HexColor('#1E293B'))
-    
-    st_story = [Paragraph("MEMORIAS DE UNA VIDA: EL CAMINO RECORRIDO", st_t), HRFlowable(width="100%", thickness=1, color=colors.HexColor('#1E3A8A'), spaceAfter=12)]
-    for line in EJEMPLO_BIOGRAFIA_TEXTO.split("\n"):
-        if line.startswith("CAPÍTULO"):
-            st_story.append(Spacer(1, 8))
-            st_story.append(Paragraph(f"<b>{line}</b>", ParagraphStyle('Sub', parent=st_b, fontSize=11, textColor=colors.HexColor('#B45309'))))
-        elif line.strip():
-            st_story.append(Paragraph(line, st_b))
-        else:
-            st_story.append(Spacer(1, 4))
-    doc_e.build(st_story)
-    print("  ✅ Creado el ejemplo de biografía en PDF")
-
 def build_all():
-    print("🚀 Generando materiales para '4. Mi_Biografia'...")
+    print("🚀 Generando materiales limpios para '4. Mi_Biografia'...")
     
     # 1. Guardar la App HTML interactiva
     html_path = os.path.join(TARGET_DIR, "Mi_Biografia.html")
@@ -710,26 +666,25 @@ def build_all():
         f.write(HTML_CONTENT)
     print("  ✅ Creada la aplicación interactiva Mi_Biografia.html")
     
-    # 2. Limpiar las 4 fichas separadas anteriores si existen
-    old_files = [
+    # 2. Limpiar cualquier PDF previo para dejar solo el Manual de Instrucciones
+    prev_pdfs = [
         "0. Paso_0_Introduccion_Proyecto.pdf",
         "1. Paso_1_Grabar_Recuerdos_y_Temas.pdf",
         "2. Paso_2_Generar_Biografia_con_Gemini.pdf",
-        "3. Paso_3_Crear_Podcast_y_Libro_en_NLM.pdf"
+        "3. Paso_3_Crear_Podcast_y_Libro_en_NLM.pdf",
+        "Guia_Completa_Mi_Biografia.pdf",
+        "EJEMPLO_A_FUENTE_BIOGRAFIA_PARA_NOTEBOOKLM.pdf"
     ]
-    for old_f in old_files:
-        old_path = os.path.join(TARGET_DIR, old_f)
-        if os.path.exists(old_path):
-            os.remove(old_path)
-            print(f"  🗑️ Eliminada ficha antigua fraccionada: {old_f}")
+    for pf in prev_pdfs:
+        p_path = os.path.join(TARGET_DIR, pf)
+        if os.path.exists(p_path):
+            os.remove(p_path)
+            print(f"  🗑️ Eliminado archivo anterior: {pf}")
             
-    # 3. Generar la ÚNICA Ficha Guía Completa en PDF
-    create_single_guide_pdf()
+    # 3. Generar el ÚNICO DOCUMENTO: Manual_de_Instrucciones.pdf
+    create_user_manual_pdf()
     
-    # 4. Generar el PDF de ejemplo para probar en NotebookLM
-    create_example_biography_pdf()
-    
-    print("🎉 ¡Clase Monográfica 4. Mi_Biografia completada y actualizada con éxito!")
+    print("🎉 ¡Clase 4. Mi_Biografia: Aplicación + Manual de Instrucciones completados con éxito!")
 
 if __name__ == "__main__":
     build_all()
