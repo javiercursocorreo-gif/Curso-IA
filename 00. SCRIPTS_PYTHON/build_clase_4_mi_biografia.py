@@ -2,8 +2,9 @@
 """
 Clase Monográfica 4: "4. Mi_Biografia"
 Genera:
-1. Mi_Biografia.html -> Aplicación web limpia, sin flechas ni botones de quitar temas.
-   Si un recuerdo se deja en blanco, la IA lo omite automáticamente.
+1. Mi_Biografia.html -> Aplicación web con transcripción por voz en tiempo real,
+   sin cajas de texto confusas, sin descargas de .txt inútiles,
+   y con reglas anti-invención y anti-cursilería estrictas para Gemini.
 2. Manual_de_Instrucciones.pdf -> Manual de usuario sencillo de entender.
 """
 
@@ -78,8 +79,9 @@ HTML_CONTENT = r"""<!DOCTYPE html>
     .badge-recorded { background: #DCFCE7; color: #166534; }
     .prompt-hint { font-size: 1.05rem; color: var(--text-muted); font-style: italic; margin-bottom: 14px; background: #F8FAFC; padding: 10px 14px; border-left: 4px solid var(--primary); border-radius: 0 8px 8px 0; }
 
-    /* Notas de apoyo */
-    .notes-input { width: 100%; min-height: 55px; font-size: 1rem; padding: 10px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 14px; resize: vertical; }
+    /* Notas y Transcripción */
+    .notes-input { width: 100%; min-height: 75px; font-size: 1.02rem; padding: 12px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 14px; resize: vertical; line-height: 1.5; background: white; }
+    .speech-status { font-size: 0.88rem; color: #0284C7; margin-bottom: 8px; font-weight: 600; display: none; }
 
     /* Zona de Grabación */
     .record-actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
@@ -97,11 +99,8 @@ HTML_CONTENT = r"""<!DOCTYPE html>
     /* Modales */
     .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; align-items: center; justify-content: center; padding: 16px; }
     .modal-overlay.active { display: flex; }
-    .modal-box { background: white; border-radius: 16px; max-width: 860px; width: 100%; max-height: 90vh; overflow-y: auto; padding: 28px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2); }
-    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; border-bottom: 2px solid var(--border); padding-bottom: 12px; }
-    .modal-title { font-size: 1.4rem; color: var(--primary); font-weight: 800; }
-    .modal-content { font-size: 1rem; color: var(--text-main); margin-bottom: 20px; white-space: pre-wrap; background: #F1F5F9; padding: 16px; border-radius: 8px; border: 1px solid var(--border); max-height: 380px; overflow-y: auto; }
-    .modal-actions { display: flex; justify-content: flex-end; gap: 10px; flex-wrap: wrap; }
+    .modal-box { background: white; border-radius: 16px; max-width: 600px; width: 100%; max-height: 90vh; overflow-y: auto; padding: 32px 28px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2); text-align: center; }
+    .modal-actions { display: flex; justify-content: center; gap: 12px; margin-top: 20px; flex-wrap: wrap; }
   </style>
 </head>
 <body>
@@ -125,10 +124,10 @@ HTML_CONTENT = r"""<!DOCTYPE html>
   </div>
 
   <div class="tricks-banner">
-    💡 <b>Dos cosas muy importantes para tu total tranquilidad:</b><br>
-    • <b>1. Si te equivocas o dudas al hablar:</b> ¡No pares la grabación! Di con naturalidad <i>«Espera, me he equivocado: no fue en el 65 sino en el 68»</i>. La Inteligencia Artificial corregirá el error automáticamente y dejará el texto limpio.<br>
-    • <b>2. Si no quieres hablar de algún tema:</b> Déjalo simplemente en blanco. La aplicación lo omitirá y no aparecerá en tu biografía.<br>
-    • <b>3. Orden de tu historia:</b> No te preocupes por el orden en que hables; la Inteligencia Artificial se encargará de ordenar y enlazar tus recuerdos cronológicamente.
+    💡 <b>Tres cosas muy importantes para tu total tranquilidad:</b><br>
+    • <b>1. Habla al micrófono:</b> Al pulsar grabar y hablar, tus palabras se transcriben en la pantalla para que veas que el ordenador te escucha.<br>
+    • <b>2. Si te equivocas o dudas al hablar:</b> ¡No pares la grabación! Di con naturalidad <i>«Espera, me he equivocado: no fue en el 65 sino en el 68»</i>. La Inteligencia Artificial corregirá el error automáticamente y dejará el texto limpio.<br>
+    • <b>3. Si no quieres hablar de algún tema:</b> Déjalo simplemente en blanco. La aplicación lo omitirá y no aparecerá en tu biografía.
   </div>
 
   <div id="chaptersContainer" class="chapters-list"></div>
@@ -140,41 +139,50 @@ HTML_CONTENT = r"""<!DOCTYPE html>
 
 <!-- Modal para Añadir Tema -->
 <div id="addTopicModal" class="modal-overlay">
-  <div class="modal-box">
-    <div class="modal-header">
-      <h2 class="modal-title">➕ Añadir Nuevo Tema o Recuerdo</h2>
+  <div class="modal-box" style="text-align: left;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+      <h2 style="color:var(--primary);">➕ Añadir Nuevo Tema</h2>
       <button class="btn-outline" onclick="closeModal('addTopicModal')">✕</button>
     </div>
-    <p style="margin-bottom: 12px; color: var(--text-muted);">Puedes añadir cualquier aspecto de tu vida: tu trayectoria laboral, viajes especiales, anécdotas con amigos, aficiones, etc.</p>
     <label style="font-weight: 700; display: block; margin-bottom: 6px;">Título del tema:</label>
     <input type="text" id="newTopicTitle" placeholder="Ej: Mis 35 años de trabajo en la fábrica" style="width:100%; padding:10px; font-size:1.05rem; border:1px solid var(--border); border-radius:8px; margin-bottom:14px;">
     <label style="font-weight: 700; display: block; margin-bottom: 6px;">Pregunta o recuerdo que te inspire:</label>
     <input type="text" id="newTopicHint" placeholder="Ej: ¿Qué aprendí en mi empleo, qué compañeros recuerdo y cómo cambió el oficio?" style="width:100%; padding:10px; font-size:1.05rem; border:1px solid var(--border); border-radius:8px; margin-bottom:18px;">
-    <div class="modal-actions">
+    <div style="display:flex; justify-content:flex-end; gap:10px;">
       <button class="btn-outline" onclick="closeModal('addTopicModal')">Cancelar</button>
       <button class="btn-primary" onclick="addNewTopic()">Guardar Tema</button>
     </div>
   </div>
 </div>
 
-<!-- Modal de Generar Biografía -->
+<!-- Modal de Generar Biografía (Limpio y directo para el alumno) -->
 <div id="generateModal" class="modal-overlay">
-  <div class="modal-box" style="max-width: 860px;">
-    <div class="modal-header">
-      <h2 class="modal-title">✨ Tu Biografía Lista para Gemini, Word y NotebookLM</h2>
-      <button class="btn-outline" onclick="closeModal('generateModal')">✕</button>
+  <div class="modal-box">
+    <div style="font-size: 3.2rem; margin-bottom: 12px;">✅</div>
+    <h2 style="font-size: 1.6rem; color: var(--primary); margin-bottom: 10px;">¡Tus recuerdos ya están copiados!</h2>
+    <p style="font-size: 1.1rem; color: var(--text-muted); margin-bottom: 24px; line-height: 1.5;">
+      Hemos empaquetado tus vivencias para que Gemini las redacte con fidelidad total a lo que has contado.
+    </p>
+
+    <div style="display: flex; flex-direction: column; gap: 12px; max-width: 380px; margin: 0 auto 24px;">
+      <button class="btn-primary" style="justify-content: center; font-size: 1.15rem; padding: 15px;" onclick="openGeminiTab()">
+        🚀 Ir a Google Gemini
+      </button>
+      <button class="btn-outline" style="justify-content: center; font-size: 0.95rem;" onclick="copyAgain()">
+        📋 Volver a copiar
+      </button>
     </div>
-    <div style="background:#F0FDF4; border:1px solid #86EFAC; border-radius:10px; padding:14px 18px; margin-bottom:16px; font-size:0.95rem; color:#166534; line-height:1.5;">
-      <b>📋 Pasos para completar tu obra:</b><br>
-      1. Pulsa en <b>«📋 Copiar todo»</b>.<br>
-      2. Abre <b>Google Gemini</b> en tu navegador y pulsa <b>Pegar</b> (Ctrl + V) y Enviar.<br>
-      3. Lee tu historia redactada. Si quieres añadir un detalle, escríbelo en la conversación (ej: <i>«En el capítulo 3 añade mi Seat 600...»</i>).<br>
-      4. Copia el resultado final de Gemini, abre <b>Microsoft Word</b> en tu ordenador y pulsa <b>Pegar</b> para guardarlo como documento (.docx) o imprimirlo con fotos.
+
+    <div style="background: #F1F5F9; border-radius: 10px; padding: 14px 18px; font-size: 0.95rem; color: var(--text-main); text-align: left; line-height: 1.5;">
+      <b>📌 Qué hacer ahora:</b><br>
+      <b>1.</b> Pulsa el botón azul <b>«Ir a Google Gemini»</b>.<br>
+      <b>2.</b> En Gemini, haz clic en la casilla de escribir y pulsa <b>Pegar (Ctrl + V)</b> y dale a Enviar.<br>
+      <b>3.</b> Gemini redactará tu biografía fiel a tus hechos.<br>
+      <b>4.</b> Copia el texto final de Gemini, abre <b>Microsoft Word</b> en tu PC y pulsa <b>Pegar</b> para guardarlo e imprimirlo.
     </div>
-    <div id="biographyOutputText" class="modal-content"></div>
-    <div class="modal-actions">
-      <button class="btn-outline" onclick="downloadTextFile()">⬇️ Descargar texto (.txt)</button>
-      <button class="btn-primary" onclick="copyBiographyText()">📋 Copiar todo</button>
+
+    <div style="margin-top: 20px;">
+      <button class="btn-outline btn-sm" onclick="closeModal('generateModal')">Cerrar esta ventana</button>
     </div>
   </div>
 </div>
@@ -197,9 +205,27 @@ let audioChunks = [];
 let recordingTopicId = null;
 let timerInterval = null;
 let recordingSeconds = 0;
+let recognition = null;
+let lastFullPrompt = "";
+
+// Reconocimiento de voz nativo en navegador
+function initSpeechRecognition() {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (SpeechRecognition) {
+    try {
+      recognition = new SpeechRecognition();
+      recognition.continuous = true;
+      recognition.interimResults = true;
+      recognition.lang = 'es-ES';
+    } catch(e) {
+      console.warn("SpeechRecognition no disponible:", e);
+    }
+  }
+}
 
 // Cargar estado inicial
 function init() {
+  initSpeechRecognition();
   const saved = localStorage.getItem("mi_biografia_topics");
   if (saved) {
     try {
@@ -229,10 +255,11 @@ function renderTopics() {
   
   topics.forEach((t) => {
     const card = document.createElement("div");
-    card.className = "chapter-card" + (t.audioData ? " recorded" : "");
+    card.className = "chapter-card" + ((t.audioData || (t.notes && t.notes.trim())) ? " recorded" : "");
     card.id = "card-" + t.id;
     
-    const statusHtml = t.audioData 
+    const isDone = (t.audioData || (t.notes && t.notes.trim().length > 0));
+    const statusHtml = isDone 
       ? '<span class="status-badge badge-recorded">🟢 Grabado</span>' 
       : '<span class="status-badge badge-pending">⚪ Pendiente</span>';
 
@@ -250,7 +277,8 @@ function renderTopics() {
       + statusHtml
       + '</div>'
       + '<div class="prompt-hint">' + t.hint + '</div>'
-      + '<textarea class="notes-input" placeholder="Apunta aquí nombres, fechas o recuerdos antes de hablar (opcional)..." onchange="updateNotes(' + t.id + ', this.value)">' + (t.notes || "") + '</textarea>'
+      + '<div id="speech-status-' + t.id + '" class="speech-status">🎙️ Escuchando tu voz y escribiendo...</div>'
+      + '<textarea id="notes-' + t.id + '" class="notes-input" placeholder="Habla al micrófono y tus palabras aparecerán aquí automáticamente (también puedes escribir o retocar a mano)..." onchange="updateNotes(' + t.id + ', this.value)">' + (t.notes || "") + '</textarea>'
       + '<div class="record-actions">'
       + '<button id="rec-btn-' + t.id + '" class="rec-btn" onclick="toggleRecord(' + t.id + ')">🎙️ GRABAR RECUERDO</button>'
       + '<span id="timer-' + t.id + '" class="timer" style="display:none;">00:00</span>'
@@ -304,6 +332,38 @@ async function startRecording(id) {
     mediaRecorder.start();
     recordingTopicId = id;
     
+    // Iniciar transcripción automática de voz a texto
+    const txtArea = document.getElementById('notes-' + id);
+    const speechStatus = document.getElementById('speech-status-' + id);
+    if (speechStatus) speechStatus.style.display = 'block';
+    
+    const topic = topics.find(x => x.id === id);
+    let originalNotes = (topic && topic.notes) ? topic.notes.trim() : "";
+    let transcriptAccumulator = "";
+
+    if (recognition) {
+      recognition.onresult = (event) => {
+        let interim = '';
+        let final = '';
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
+          if (event.results[i].isFinal) {
+            final += event.results[i][0].transcript + ' ';
+          } else {
+            interim += event.results[i][0].transcript;
+          }
+        }
+        transcriptAccumulator += final;
+        const fullText = (originalNotes ? originalNotes + "\n" : "") + transcriptAccumulator + interim;
+        if (txtArea) txtArea.value = fullText.trim();
+        if (topic) {
+          topic.notes = ((originalNotes ? originalNotes + "\n" : "") + transcriptAccumulator).trim();
+          saveState();
+        }
+      };
+      recognition.onerror = (e) => { console.warn("Error speech recognition:", e); };
+      try { recognition.start(); } catch(e) {}
+    }
+
     const btn = document.getElementById('rec-btn-' + id);
     if (btn) {
       btn.innerText = "⏹️ DETENER Y GUARDAR";
@@ -331,6 +391,9 @@ async function startRecording(id) {
 }
 
 function stopRecording() {
+  if (recognition) {
+    try { recognition.stop(); } catch(e) {}
+  }
   if (mediaRecorder && mediaRecorder.state !== "inactive") {
     mediaRecorder.stop();
   }
@@ -439,59 +502,60 @@ function downloadSingleAudio(id) {
   a.remove();
 }
 
-// Generación de Biografía (Omite automáticamente temas dejados en blanco)
+// Generación de Biografía con Reglas Estrictas Anti-Ficción y Anti-Cursilería
 function generateBiographyModal() {
-  let fullPrompt = "Actúa como un biógrafo literario y escritor sensible profesional. A continuación te entrego las memorias y vivencias recopiladas por el autor a lo largo de su vida.\n\n";
-  fullPrompt += "🧠 REGLAS DE REDACCIÓN Y EDICIÓN:\n";
-  fullPrompt += "1. AUTO-CORRECCIÓN: Si en los relatos el autor dice frases como 'espera, me he equivocado', 'perdón, no fue en ese año sino en...', o 'quería decir...', interpreta la rectificación automáticamente. Elimina el error y deja únicamente el dato corregido en el texto final.\n";
-  fullPrompt += "2. ORDEN CRONOLÓGICO Y NATURAL: El autor ha ido grabando recuerdos según le venían a la mente. Ordena y entrelaza cada vivencia en su momento vital correspondiente para que la biografía fluya con una narración cronológica perfecta, hermosa y coherente.\n";
-  fullPrompt += "3. TONO Y ESTILO: Redacta un libro biográfico cálido, emotivo y respetuoso, estructurado en capítulos literarios, manteniendo la voz auténtica del autor y destacando sus valores y enseñanzas.\n";
-  fullPrompt += "4. FORMATO: Deja el texto listo para copiar y pegar en Microsoft Word para guardarlo e imprimirlo en papel, y para usarlo en NotebookLM para generar un podcast familiar.\n\n";
-  fullPrompt += "RECUERDOS Y VIVENCIAS APORTADAS POR EL AUTOR:\n";
-  fullPrompt += "========================================================\n\n";
-
   let count = 0;
+  let memoriesText = "";
+
   topics.forEach((t) => {
     const hasNotes = t.notes && t.notes.trim().length > 0;
-    const hasAudio = !!t.audioData;
-    // Solo se envían temas que contengan audio o notas escritas
-    if (hasNotes || hasAudio) {
+    if (hasNotes) {
       count++;
-      fullPrompt += "TEMA: " + t.title.toUpperCase() + "\n";
-      fullPrompt += "• Contexto: " + t.hint + "\n";
-      if (hasNotes) fullPrompt += "• Notas del autor: " + t.notes.trim() + "\n";
-      if (hasAudio) fullPrompt += "• [Recuerdo grabado por el autor con su voz - Incluir y desarrollar en la biografía]\n";
-      fullPrompt += "\n";
+      memoriesText += "CAPÍTULO: " + t.title.toUpperCase() + "\n";
+      memoriesText += "RELATO Y DATOS REALES APORTADOS POR EL AUTOR:\n";
+      memoriesText += t.notes.trim() + "\n\n";
     }
   });
 
   if (count === 0) {
-    alert("Todavía no has grabado ningún recuerdo ni añadido notas. Pulsa el botón rojo 'GRABAR RECUERDO' en el tema que quieras antes de generar tu biografía.");
+    alert("Todavía no has grabado ningún recuerdo ni añadido palabras en los temas. Pulsa el botón rojo 'GRABAR RECUERDO' y habla al micrófono antes de generar tu biografía.");
     return;
   }
 
+  let fullPrompt = "Actúa como un biógrafo y redactor profesional, sobrio, respetuoso y profundamente humano. Tu tarea es redactar el libro biográfico real del autor basándote ÚNICA Y EXCLUSIVAMENTE en las memorias y datos que te aporta a continuación.\n\n";
+  fullPrompt += "🛑 REGLAS ESTRICTAS DE REDACCIÓN (OBLIGATORIAS):\n";
+  fullPrompt += "1. PROHIBIDO TOTALMENTE INVENTAR: No inventes nombres de personas, calles, pueblos, trabajos, anécdotas ni sucesos que el autor no haya contado. Cíñete fielmente a sus palabras y vivencias reales.\n";
+  fullPrompt += "2. PROHIBIDO EL TONO CURSI O MELODRAMÁTICO: Prohibido usar clichés vacíos como 'si cierras los ojos', 'en el ocaso de la vida', 'ecos del ayer' o poesías artificiales. Escribe con un lenguaje natural, directo, digno y auténtico, como una persona real contando su historia verdadera a sus hijos y nietos.\n";
+  fullPrompt += "3. AUTO-CORRECCIÓN AL HABLAR: Si en el relato el autor duda o dice 'espera, me he equivocado', 'perdón, fue en...', interpreta la rectificación y deja únicamente el dato final correcto.\n";
+  fullPrompt += "4. HILO CRONOLÓGICO NATURAL: Organiza los recuerdos aportados en una narración fluida y coherente, respetando la cronología vital del autor.\n";
+  fullPrompt += "5. FORMATO: Devuelve el texto estructurado por capítulos con títulos claros, listo para copiar a Microsoft Word.\n\n";
+  fullPrompt += "ESTAS SON LAS MEMORIAS REALES QUE TE ENTREGA EL AUTOR:\n";
+  fullPrompt += "========================================================\n\n";
+  fullPrompt += memoriesText;
   fullPrompt += "========================================================\n";
-  fullPrompt += "Genera ahora la biografía completa del autor estructurada por capítulos siguiendo las reglas anteriores.";
+  fullPrompt += "Redacta ahora la biografía completa del autor siguiendo estrictamente todas las reglas anteriores.";
 
-  document.getElementById("biographyOutputText").innerText = fullPrompt;
-  document.getElementById("generateModal").classList.add("active");
-}
+  lastFullPrompt = fullPrompt;
 
-function copyBiographyText() {
-  const text = document.getElementById("biographyOutputText").innerText;
-  navigator.clipboard.writeText(text).then(() => {
-    alert("📋 ¡Copiado al portapapeles! Ahora abre Google Gemini y pulsa 'Pegar' (Ctrl + V).");
+  // Copiado automático al portapapeles
+  navigator.clipboard.writeText(fullPrompt).then(() => {
+    document.getElementById("generateModal").classList.add("active");
+  }).catch(() => {
+    // Si el portapapeles falla por permisos, abrir modal igualmente
+    document.getElementById("generateModal").classList.add("active");
   });
 }
 
-function downloadTextFile() {
-  const text = document.getElementById("biographyOutputText").innerText;
-  const element = document.createElement('a');
-  element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
-  element.setAttribute('download', "Mi_Biografia_para_Gemini_" + new Date().toISOString().slice(0,10) + ".txt");
-  document.body.appendChild(element);
-  element.click();
-  element.remove();
+function openGeminiTab() {
+  window.open("https://gemini.google.com", "_blank");
+}
+
+function copyAgain() {
+  if (lastFullPrompt) {
+    navigator.clipboard.writeText(lastFullPrompt).then(() => {
+      alert("📋 ¡Copiado de nuevo! Ahora ve a Gemini y pulsa Pegar (Ctrl + V).");
+    });
+  }
 }
 
 // Inicializar de inmediato y al cargar
@@ -578,7 +642,7 @@ def create_user_manual_pdf():
     # 1. Qué es la aplicación
     story.append(Paragraph("¿QUÉ ES ESTA APLICACIÓN?", style_h2))
     story.append(Paragraph(
-        "Es una herramienta diseñada para que puedas <b>grabar los recuerdos de tu vida tranquilamente desde tu propio ordenador</b>, a tu propio ritmo y sin prisas. No necesitas saber informática avanzada: solo abres la aplicación en la pantalla, pulsas un botón y hablas. La Inteligencia Artificial se encarga de ordenar y redactar todo por ti.",
+        "Es una herramienta diseñada para que puedas <b>grabar los recuerdos de tu vida tranquilamente desde tu propio ordenador</b>, a tu propio ritmo y sin prisas. No necesitas saber informática avanzada: solo abres la aplicación en la pantalla, pulsas un botón y hablas. La Inteligencia Artificial se encarga de ordenar y redactar todo por ti sin inventar nada.",
         style_body
     ))
     
@@ -593,7 +657,7 @@ def create_user_manual_pdf():
     # 3. Los botones de la pantalla
     story.append(Paragraph("2. CÓMO FUNCIONAN LOS BOTONES DE LA PANTALLA", style_h2))
     story.append(Paragraph(
-        "• <b>🎙️ GRABAR RECUERDO:</b> Pulsa este botón y habla con calma al micrófono del ordenador contando ese momento de tu vida. Cuando termines, pulsa <b>⏹️ DETENER Y GUARDAR</b>.<br/>"
+        "• <b>🎙️ GRABAR RECUERDO:</b> Pulsa este botón y habla con calma al micrófono del ordenador contando ese momento de tu vida. Tus palabras se escribirán en la pantalla mientras hablas. Cuando termines, pulsa <b>⏹️ DETENER Y GUARDAR</b>.<br/>"
         "• <b>🔊 Tu recuerdo grabado:</b> En cuanto grabas, aparece el reproductor para escucharlo y el botón <b>💾 Guardar archivo de audio</b> si quieres guardarte ese sonido suelto en tu disco duro.<br/>"
         "• <b>🔄 Volver a grabar:</b> Si no te gusta cómo ha quedado la grabación, pulsa este botón para repetirla.<br/>"
         "• <b>🗑️ Borrar grabación (dejar en blanco):</b> Borra el audio y las notas de esa tarjeta para empezar de cero.<br/>"
@@ -606,7 +670,7 @@ def create_user_manual_pdf():
     story.append(Paragraph(
         "• <b>1. Si te equivocas o dudas al hablar:</b> ¡No pares la grabación! Simplemente di de forma natural: <i>«Espera, me he equivocado: no fue en el año 65 sino en el 68»</i> o <i>«Perdón, no era Juan sino Pedro»</i>. La aplicación se encarga de que la Inteligencia Artificial elimine el error automáticamente y deje el texto limpio.<br/>"
         "• <b>2. Si no quieres hablar de algún tema:</b> Déjalo simplemente en blanco. No te preocupes por borrarlo; la aplicación lo ignorará y no aparecerá en tu libro biográfico.<br/>"
-        "• <b>3. Orden de tu historia:</b> Habla con total libertad en cualquier orden. La Inteligencia Artificial se encargará de ordenar y mezclar todos tus recuerdos en una narración cronológica fluida y natural.",
+        "• <b>3. Orden de tu historia:</b> Habla con total libertad en cualquier orden. La Inteligencia Artificial se encargará de ordenar y mezclar todos tus recuerdos en una narración cronológica fluida y natural, sin inventar nada que tú no hayas contado.",
         style_body
     ))
     
@@ -617,9 +681,9 @@ def create_user_manual_pdf():
     story.append(Paragraph("4. CÓMO GENERAR TU LIBRO Y GUARDARLO EN MICROSOFT WORD", style_h2))
     story.append(Paragraph(
         "Cuando lleves varios días grabando y sientas que ya tienes tus recuerdos listos:<br/>"
-        "<b>1.</b> En la aplicación, pulsa el botón azul grande del final: <b>«✨ GENERAR MI BIOGRAFÍA»</b>.<br/>"
-        "<b>2.</b> En la ventana que se abre, pulsa <b>«📋 Copiar todo»</b>.<br/>"
-        "<b>3.</b> Abre <b>Google Gemini</b> en tu navegador (<i>gemini.google.com</i>), pulsa <b>Pegar (Ctrl + V)</b> y dale a la flecha de enviar. Gemini redactará tu biografía completa dividida en capítulos cálidos y emotivos.<br/>"
+        "<b>1.</b> En la aplicación, pulsa el botón azul grande del final: <b>«✨ GENERAR MI BIOGRAFÍA»</b>. Se copiarán automáticamente tus recuerdos.<br/>"
+        "<b>2.</b> En la ventana que aparece, pulsa el botón azul <b>«🚀 Ir a Google Gemini»</b>.<br/>"
+        "<b>3.</b> En Gemini, haz clic en la casilla de escribir abajo, pulsa <b>Pegar (Ctrl + V)</b> y dale a la flecha de enviar. Gemini redactará tu biografía completa respetando con total fidelidad los datos reales que has contado.<br/>"
         "<b>4. ¿Quieres añadir algo que se te olvidó?</b> No hace falta volver a grabar: díselo directamente a Gemini en la conversación:<br/>"
         "&nbsp;&nbsp;&nbsp;&nbsp;<i>«Oye, añade en el Capítulo 3 que en 1974 me compré mi primer Seat 600 blanco...»</i><br/>"
         "<b>5. Pasar a Microsoft Word:</b> Copia el texto final redactado por Gemini, abre <b>Microsoft Word</b> en tu ordenador y pulsa <b>Pegar (Ctrl + V)</b>.<br/>"
