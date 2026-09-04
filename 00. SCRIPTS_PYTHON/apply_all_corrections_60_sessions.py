@@ -260,7 +260,11 @@ def main():
     update_all_mem_handouts()
     update_fut_handouts()
 
-    print("\n📊 6. Regenerando los 5 Paneles CSV para Google Classroom...")
+    print("\n🎬 6. Inyectando Retos de Vídeo de 10 segundos en Gemini (60 Sesiones)...")
+    import inject_gemini_video_prompts_60_sessions
+    inject_gemini_video_prompts_60_sessions.inject_all_video_prompts()
+
+    print("\n📊 7. Regenerando los 5 Paneles CSV para Google Classroom...")
     import generate_multiple_csvs
     generate_multiple_csvs.main()
 
