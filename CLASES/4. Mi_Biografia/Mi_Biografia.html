@@ -37,6 +37,8 @@
     .btn-success:hover { background-color: #15803D; }
     .btn-primary { background-color: var(--primary); color: white; }
     .btn-primary:hover { background-color: var(--primary-hover); }
+    .btn-secondary { background-color: #475569; color: white; }
+    .btn-secondary:hover { background-color: #334155; }
     .btn-outline { background: transparent; border: 2px solid var(--border); color: var(--text-main); }
     .btn-outline:hover { background: #E2E8F0; }
     .btn-sm { padding: 6px 12px; font-size: 0.9rem; border-radius: 6px; }
@@ -180,7 +182,16 @@ let recordingSeconds = 0;
 function init() {
   const saved = localStorage.getItem("mi_biografia_topics");
   if (saved) {
-    try { topics = JSON.parse(saved); } catch(e) { topics = DEFAULT_TOPICS; }
+    try {
+      const parsed = JSON.parse(saved);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        topics = parsed;
+      } else {
+        topics = JSON.parse(JSON.stringify(DEFAULT_TOPICS));
+      }
+    } catch(e) {
+      topics = JSON.parse(JSON.stringify(DEFAULT_TOPICS));
+    }
   } else {
     topics = JSON.parse(JSON.stringify(DEFAULT_TOPICS));
   }
@@ -193,12 +204,13 @@ function saveState() {
 
 function renderTopics() {
   const container = document.getElementById("chaptersContainer");
+  if (!container) return;
   container.innerHTML = "";
   
   topics.forEach((t, index) => {
     const card = document.createElement("div");
     card.className = "chapter-card" + (t.audioData ? " recorded" : "");
-    card.id = `card-${t.id}`;
+    card.id = "card-" + t.id;
     
     const statusHtml = t.audioData 
       ? '<span class="status-badge badge-recorded">🟢 Grabado</span>' 
@@ -206,36 +218,32 @@ function renderTopics() {
 
     let audioPlayerHtml = "";
     if (t.audioData) {
-      audioPlayerHtml = `
-        <div style="display:flex; align-items:center; gap:12px; margin-top:14px; flex-wrap:wrap; padding:12px; background:#EFF6FF; border:1px solid #BFDBFE; border-radius:10px;">
-          <span style="font-weight:700; color:var(--primary); font-size:0.95rem;">🔊 Tu recuerdo grabado:</span>
-          <audio controls src="${t.audioData}"></audio>
-          <button class="btn-outline btn-sm" style="background:white; font-weight:700;" onclick="downloadSingleAudio(${t.id})">💾 Guardar archivo de audio (.webm)</button>
-        </div>
-      `;
+      audioPlayerHtml = '<div style="display:flex; align-items:center; gap:12px; margin-top:14px; flex-wrap:wrap; padding:12px; background:#EFF6FF; border:1px solid #BFDBFE; border-radius:10px;">'
+        + '<span style="font-weight:700; color:var(--primary); font-size:0.95rem;">🔊 Tu recuerdo grabado:</span>'
+        + '<audio controls src="' + t.audioData + '"></audio>'
+        + '<button class="btn-outline btn-sm" style="background:white; font-weight:700;" onclick="downloadSingleAudio(' + t.id + ')">💾 Guardar archivo de audio (.webm)</button>'
+        + '</div>';
     }
 
-    card.innerHTML = `
-      <div class="card-header">
-        <div class="card-title">📖 ${t.title}</div>
-        <div class="header-actions">
-          ${statusHtml}
-          <button class="btn-outline btn-sm" title="Subir orden del tema" onclick="moveTopic(${index}, -1)">⬆️ Subir</button>
-          <button class="btn-outline btn-sm" title="Bajar orden del tema" onclick="moveTopic(${index}, 1)">⬇️ Bajar</button>
-          <button class="btn-outline btn-sm" style="color:var(--danger); border-color:#FECACA;" title="Quitar este tema de la lista" onclick="deleteTopicBlock(${t.id})">✖ Quitar tema</button>
-        </div>
-      </div>
-      <div class="prompt-hint">${t.hint}</div>
-      <textarea class="notes-input" placeholder="Apunta aquí nombres, fechas o recuerdos antes de hablar (opcional)..." onchange="updateNotes(${t.id}, this.value)">${t.notes || ""}</textarea>
+    card.innerHTML = '<div class="card-header">'
+      + '<div class="card-title">📖 ' + t.title + '</div>'
+      + '<div class="header-actions">'
+      + statusHtml
+      + '<button class="btn-outline btn-sm" title="Subir orden del tema" onclick="moveTopic(' + index + ', -1)">⬆️ Subir</button>'
+      + '<button class="btn-outline btn-sm" title="Bajar orden del tema" onclick="moveTopic(' + index + ', 1)">⬇️ Bajar</button>'
+      + '<button class="btn-outline btn-sm" style="color:var(--danger); border-color:#FECACA;" title="Quitar este tema de la lista" onclick="deleteTopicBlock(' + t.id + ')">✖ Quitar tema</button>'
+      + '</div>'
+      + '</div>'
+      + '<div class="prompt-hint">' + t.hint + '</div>'
+      + '<textarea class="notes-input" placeholder="Apunta aquí nombres, fechas o recuerdos antes de hablar (opcional)..." onchange="updateNotes(' + t.id + ', this.value)">' + (t.notes || "") + '</textarea>'
+      + '<div class="record-actions">'
+      + '<button id="rec-btn-' + t.id + '" class="rec-btn" onclick="toggleRecord(' + t.id + ')">🎙️ GRABAR RECUERDO</button>'
+      + '<span id="timer-' + t.id + '" class="timer" style="display:none;">00:00</span>'
+      + (t.audioData ? '<button class="btn-outline" onclick="repeatRecord(' + t.id + ')">🔄 Volver a grabar</button>' : "")
+      + (t.audioData || t.notes ? '<button class="btn-outline" style="color:#B91C1C; border-color:#FCA5A5;" onclick="clearTopicContentOnly(' + t.id + ')">🗑️ Borrar grabación (dejar en blanco)</button>' : "")
+      + '</div>'
+      + audioPlayerHtml;
       
-      <div class="record-actions">
-        <button id="rec-btn-${t.id}" class="rec-btn" onclick="toggleRecord(${t.id})">🎙️ GRABAR RECUERDO</button>
-        <span id="timer-${t.id}" class="timer" style="display:none;">00:00</span>
-        ${t.audioData ? `<button class="btn-outline" onclick="repeatRecord(${t.id})">🔄 Volver a grabar</button>` : ""}
-        ${t.audioData || t.notes ? `<button class="btn-outline" style="color:#B91C1C; border-color:#FCA5A5;" onclick="clearTopicContentOnly(${t.id})">🗑️ Borrar grabación (dejar en blanco)</button>` : ""}
-      </div>
-      ${audioPlayerHtml}
-    `;
     container.appendChild(card);
   });
 }
@@ -291,20 +299,24 @@ async function startRecording(id) {
     mediaRecorder.start();
     recordingTopicId = id;
     
-    const btn = document.getElementById(`rec-btn-${id}`);
-    btn.innerText = "⏹️ DETENER Y GUARDAR";
-    btn.classList.add("recording");
+    const btn = document.getElementById('rec-btn-' + id);
+    if (btn) {
+      btn.innerText = "⏹️ DETENER Y GUARDAR";
+      btn.classList.add("recording");
+    }
     
-    const timer = document.getElementById(`timer-${id}`);
-    timer.style.display = "inline";
-    recordingSeconds = 0;
-    timer.innerText = "00:00";
+    const timer = document.getElementById('timer-' + id);
+    if (timer) {
+      timer.style.display = "inline";
+      recordingSeconds = 0;
+      timer.innerText = "00:00";
+    }
     
     timerInterval = setInterval(() => {
       recordingSeconds++;
       const m = String(Math.floor(recordingSeconds / 60)).padStart(2, '0');
       const s = String(recordingSeconds % 60).padStart(2, '0');
-      timer.innerText = `${m}:${s}`;
+      if (timer) timer.innerText = m + ':' + s;
     }, 1000);
 
   } catch (err) {
@@ -332,10 +344,7 @@ function repeatRecord(id) {
 function clearTopicContentOnly(id) {
   const t = topics.find(x => x.id === id);
   if (!t) return;
-  if (confirm(`¿Deseas borrar la grabación y notas de:
-"${t.title}"?
-
-El capítulo permanecerá en tu lista para que puedas volver a grabarlo.`)) {
+  if (confirm("¿Deseas borrar la grabación y notas de este tema?\n\nEl capítulo permanecerá en tu lista para que puedas volver a grabarlo.")) {
     t.audioData = null;
     t.notes = "";
     saveState();
@@ -347,8 +356,7 @@ El capítulo permanecerá en tu lista para que puedas volver a grabarlo.`)) {
 function deleteTopicBlock(id) {
   const t = topics.find(x => x.id === id);
   if (!t) return;
-  if (confirm(`¿Quieres quitar este tema por completo de tu biografía?
-"${t.title}"`)) {
+  if (confirm("¿Quieres quitar este tema por completo de tu biografía?")) {
     topics = topics.filter(x => x.id !== id);
     saveState();
     renderTopics();
@@ -379,13 +387,7 @@ function addNewTopic() {
 
 // Privacidad en Aula
 function confirmClearClassroom() {
-  const ok = confirm("⚠️ ATENCIÓN MODO AULA:
-
-¿Deseas BORRAR todas tus grabaciones y textos de este ordenador?
-
-Haz esto SIEMPRE al terminar tu clase si el ordenador es compartido, para que nadie más escuche tu vida privada.
-
-¿Confirmas el borrado total?");
+  const ok = confirm("⚠️ ATENCIÓN MODO AULA:\n\n¿Deseas BORRAR todas tus grabaciones y textos de este ordenador?\n\nHaz esto SIEMPRE al terminar tu clase si el ordenador es compartido, para que nadie más escuche tu vida privada.\n\n¿Confirmas el borrado total?");
   if (ok) {
     localStorage.removeItem("mi_biografia_topics");
     topics = JSON.parse(JSON.stringify(DEFAULT_TOPICS));
@@ -399,7 +401,7 @@ function exportToPendrive() {
   const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(topics));
   const a = document.createElement("a");
   a.setAttribute("href", dataStr);
-  a.setAttribute("download", `Mi_Biografia_Sesion_${new Date().toISOString().slice(0,10)}.json`);
+  a.setAttribute("download", "Mi_Biografia_Sesion_" + new Date().toISOString().slice(0,10) + ".json");
   document.body.appendChild(a);
   a.click();
   a.remove();
@@ -437,7 +439,7 @@ function downloadSingleAudio(id) {
   if (!t || !t.audioData) return;
   const a = document.createElement("a");
   a.href = t.audioData;
-  a.download = `Recuerdo_${t.title.replace(/[^a-zA-Z0-9]/g, '_')}.webm`;
+  a.download = "Recuerdo_" + t.title.replace(/[^a-zA-Z0-9]/g, '_') + ".webm";
   document.body.appendChild(a);
   a.click();
   a.remove();
@@ -455,10 +457,10 @@ function generateBiographyModal() {
   fullPrompt += "========================================================\n\n";
 
   topics.forEach((t, i) => {
-    fullPrompt += `CAPÍTULO ${i+1}: ${t.title.toUpperCase()}\n`;
-    fullPrompt += `• Pregunta guía: ${t.hint}\n`;
-    if (t.notes) fullPrompt += `• Notas y recuerdos del autor: ${t.notes}\n`;
-    if (t.audioData) fullPrompt += `• [Recuerdo grabado por el autor con su voz - Incluir en este capítulo]\n`;
+    fullPrompt += "CAPÍTULO " + (i+1) + ": " + t.title.toUpperCase() + "\n";
+    fullPrompt += "• Pregunta guía: " + t.hint + "\n";
+    if (t.notes) fullPrompt += "• Notas y recuerdos del autor: " + t.notes + "\n";
+    if (t.audioData) fullPrompt += "• [Recuerdo grabado por el autor con su voz - Incluir en este capítulo]\n";
     fullPrompt += "\n";
   });
 
@@ -480,13 +482,15 @@ function downloadTextFile() {
   const text = document.getElementById("biographyOutputText").innerText;
   const element = document.createElement('a');
   element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
-  element.setAttribute('download', `Mi_Biografia_para_Gemini_${new Date().toISOString().slice(0,10)}.txt`);
+  element.setAttribute('download', "Mi_Biografia_para_Gemini_" + new Date().toISOString().slice(0,10) + ".txt");
   document.body.appendChild(element);
   element.click();
   element.remove();
 }
 
-window.onload = init;
+// Inicializar de inmediato y al cargar
+init();
+window.addEventListener("DOMContentLoaded", init);
 </script>
 </body>
 </html>

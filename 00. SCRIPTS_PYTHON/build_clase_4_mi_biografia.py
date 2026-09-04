@@ -2,8 +2,8 @@
 """
 Clase Monográfica 4: "4. Mi_Biografia"
 Genera:
-1. Mi_Biografia.html -> Aplicación web interactiva autónoma.
-2. Manual_de_Instrucciones.pdf -> ÚNICO DOCUMENTO para el alumno (Manual de usuario puro, sin prompts).
+1. Mi_Biografia.html -> Aplicación web interactiva autónoma (sin errores de sintaxis JS).
+2. Manual_de_Instrucciones.pdf -> ÚNICO DOCUMENTO para el alumno.
 """
 
 import os
@@ -19,7 +19,7 @@ os.makedirs(TARGET_DIR, exist_ok=True)
 # ==============================================================================
 # 1. GENERACIÓN DE LA APLICACIÓN HTML AUTÓNOMA (Mi_Biografia.html)
 # ==============================================================================
-HTML_CONTENT = """<!DOCTYPE html>
+HTML_CONTENT = r"""<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
@@ -58,6 +58,8 @@ HTML_CONTENT = """<!DOCTYPE html>
     .btn-success:hover { background-color: #15803D; }
     .btn-primary { background-color: var(--primary); color: white; }
     .btn-primary:hover { background-color: var(--primary-hover); }
+    .btn-secondary { background-color: #475569; color: white; }
+    .btn-secondary:hover { background-color: #334155; }
     .btn-outline { background: transparent; border: 2px solid var(--border); color: var(--text-main); }
     .btn-outline:hover { background: #E2E8F0; }
     .btn-sm { padding: 6px 12px; font-size: 0.9rem; border-radius: 6px; }
@@ -201,7 +203,16 @@ let recordingSeconds = 0;
 function init() {
   const saved = localStorage.getItem("mi_biografia_topics");
   if (saved) {
-    try { topics = JSON.parse(saved); } catch(e) { topics = DEFAULT_TOPICS; }
+    try {
+      const parsed = JSON.parse(saved);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        topics = parsed;
+      } else {
+        topics = JSON.parse(JSON.stringify(DEFAULT_TOPICS));
+      }
+    } catch(e) {
+      topics = JSON.parse(JSON.stringify(DEFAULT_TOPICS));
+    }
   } else {
     topics = JSON.parse(JSON.stringify(DEFAULT_TOPICS));
   }
@@ -214,12 +225,13 @@ function saveState() {
 
 function renderTopics() {
   const container = document.getElementById("chaptersContainer");
+  if (!container) return;
   container.innerHTML = "";
   
   topics.forEach((t, index) => {
     const card = document.createElement("div");
     card.className = "chapter-card" + (t.audioData ? " recorded" : "");
-    card.id = `card-${t.id}`;
+    card.id = "card-" + t.id;
     
     const statusHtml = t.audioData 
       ? '<span class="status-badge badge-recorded">🟢 Grabado</span>' 
@@ -227,36 +239,32 @@ function renderTopics() {
 
     let audioPlayerHtml = "";
     if (t.audioData) {
-      audioPlayerHtml = `
-        <div style="display:flex; align-items:center; gap:12px; margin-top:14px; flex-wrap:wrap; padding:12px; background:#EFF6FF; border:1px solid #BFDBFE; border-radius:10px;">
-          <span style="font-weight:700; color:var(--primary); font-size:0.95rem;">🔊 Tu recuerdo grabado:</span>
-          <audio controls src="${t.audioData}"></audio>
-          <button class="btn-outline btn-sm" style="background:white; font-weight:700;" onclick="downloadSingleAudio(${t.id})">💾 Guardar archivo de audio (.webm)</button>
-        </div>
-      `;
+      audioPlayerHtml = '<div style="display:flex; align-items:center; gap:12px; margin-top:14px; flex-wrap:wrap; padding:12px; background:#EFF6FF; border:1px solid #BFDBFE; border-radius:10px;">'
+        + '<span style="font-weight:700; color:var(--primary); font-size:0.95rem;">🔊 Tu recuerdo grabado:</span>'
+        + '<audio controls src="' + t.audioData + '"></audio>'
+        + '<button class="btn-outline btn-sm" style="background:white; font-weight:700;" onclick="downloadSingleAudio(' + t.id + ')">💾 Guardar archivo de audio (.webm)</button>'
+        + '</div>';
     }
 
-    card.innerHTML = `
-      <div class="card-header">
-        <div class="card-title">📖 ${t.title}</div>
-        <div class="header-actions">
-          ${statusHtml}
-          <button class="btn-outline btn-sm" title="Subir orden del tema" onclick="moveTopic(${index}, -1)">⬆️ Subir</button>
-          <button class="btn-outline btn-sm" title="Bajar orden del tema" onclick="moveTopic(${index}, 1)">⬇️ Bajar</button>
-          <button class="btn-outline btn-sm" style="color:var(--danger); border-color:#FECACA;" title="Quitar este tema de la lista" onclick="deleteTopicBlock(${t.id})">✖ Quitar tema</button>
-        </div>
-      </div>
-      <div class="prompt-hint">${t.hint}</div>
-      <textarea class="notes-input" placeholder="Apunta aquí nombres, fechas o recuerdos antes de hablar (opcional)..." onchange="updateNotes(${t.id}, this.value)">${t.notes || ""}</textarea>
+    card.innerHTML = '<div class="card-header">'
+      + '<div class="card-title">📖 ' + t.title + '</div>'
+      + '<div class="header-actions">'
+      + statusHtml
+      + '<button class="btn-outline btn-sm" title="Subir orden del tema" onclick="moveTopic(' + index + ', -1)">⬆️ Subir</button>'
+      + '<button class="btn-outline btn-sm" title="Bajar orden del tema" onclick="moveTopic(' + index + ', 1)">⬇️ Bajar</button>'
+      + '<button class="btn-outline btn-sm" style="color:var(--danger); border-color:#FECACA;" title="Quitar este tema de la lista" onclick="deleteTopicBlock(' + t.id + ')">✖ Quitar tema</button>'
+      + '</div>'
+      + '</div>'
+      + '<div class="prompt-hint">' + t.hint + '</div>'
+      + '<textarea class="notes-input" placeholder="Apunta aquí nombres, fechas o recuerdos antes de hablar (opcional)..." onchange="updateNotes(' + t.id + ', this.value)">' + (t.notes || "") + '</textarea>'
+      + '<div class="record-actions">'
+      + '<button id="rec-btn-' + t.id + '" class="rec-btn" onclick="toggleRecord(' + t.id + ')">🎙️ GRABAR RECUERDO</button>'
+      + '<span id="timer-' + t.id + '" class="timer" style="display:none;">00:00</span>'
+      + (t.audioData ? '<button class="btn-outline" onclick="repeatRecord(' + t.id + ')">🔄 Volver a grabar</button>' : "")
+      + (t.audioData || t.notes ? '<button class="btn-outline" style="color:#B91C1C; border-color:#FCA5A5;" onclick="clearTopicContentOnly(' + t.id + ')">🗑️ Borrar grabación (dejar en blanco)</button>' : "")
+      + '</div>'
+      + audioPlayerHtml;
       
-      <div class="record-actions">
-        <button id="rec-btn-${t.id}" class="rec-btn" onclick="toggleRecord(${t.id})">🎙️ GRABAR RECUERDO</button>
-        <span id="timer-${t.id}" class="timer" style="display:none;">00:00</span>
-        ${t.audioData ? `<button class="btn-outline" onclick="repeatRecord(${t.id})">🔄 Volver a grabar</button>` : ""}
-        ${t.audioData || t.notes ? `<button class="btn-outline" style="color:#B91C1C; border-color:#FCA5A5;" onclick="clearTopicContentOnly(${t.id})">🗑️ Borrar grabación (dejar en blanco)</button>` : ""}
-      </div>
-      ${audioPlayerHtml}
-    `;
     container.appendChild(card);
   });
 }
@@ -312,20 +320,24 @@ async function startRecording(id) {
     mediaRecorder.start();
     recordingTopicId = id;
     
-    const btn = document.getElementById(`rec-btn-${id}`);
-    btn.innerText = "⏹️ DETENER Y GUARDAR";
-    btn.classList.add("recording");
+    const btn = document.getElementById('rec-btn-' + id);
+    if (btn) {
+      btn.innerText = "⏹️ DETENER Y GUARDAR";
+      btn.classList.add("recording");
+    }
     
-    const timer = document.getElementById(`timer-${id}`);
-    timer.style.display = "inline";
-    recordingSeconds = 0;
-    timer.innerText = "00:00";
+    const timer = document.getElementById('timer-' + id);
+    if (timer) {
+      timer.style.display = "inline";
+      recordingSeconds = 0;
+      timer.innerText = "00:00";
+    }
     
     timerInterval = setInterval(() => {
       recordingSeconds++;
       const m = String(Math.floor(recordingSeconds / 60)).padStart(2, '0');
       const s = String(recordingSeconds % 60).padStart(2, '0');
-      timer.innerText = `${m}:${s}`;
+      if (timer) timer.innerText = m + ':' + s;
     }, 1000);
 
   } catch (err) {
@@ -353,7 +365,7 @@ function repeatRecord(id) {
 function clearTopicContentOnly(id) {
   const t = topics.find(x => x.id === id);
   if (!t) return;
-  if (confirm(`¿Deseas borrar la grabación y notas de:\n"${t.title}"?\n\nEl capítulo permanecerá en tu lista para que puedas volver a grabarlo.`)) {
+  if (confirm("¿Deseas borrar la grabación y notas de este tema?\n\nEl capítulo permanecerá en tu lista para que puedas volver a grabarlo.")) {
     t.audioData = null;
     t.notes = "";
     saveState();
@@ -365,7 +377,7 @@ function clearTopicContentOnly(id) {
 function deleteTopicBlock(id) {
   const t = topics.find(x => x.id === id);
   if (!t) return;
-  if (confirm(`¿Quieres quitar este tema por completo de tu biografía?\n"${t.title}"`)) {
+  if (confirm("¿Quieres quitar este tema por completo de tu biografía?")) {
     topics = topics.filter(x => x.id !== id);
     saveState();
     renderTopics();
@@ -410,7 +422,7 @@ function exportToPendrive() {
   const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(topics));
   const a = document.createElement("a");
   a.setAttribute("href", dataStr);
-  a.setAttribute("download", `Mi_Biografia_Sesion_${new Date().toISOString().slice(0,10)}.json`);
+  a.setAttribute("download", "Mi_Biografia_Sesion_" + new Date().toISOString().slice(0,10) + ".json");
   document.body.appendChild(a);
   a.click();
   a.remove();
@@ -448,7 +460,7 @@ function downloadSingleAudio(id) {
   if (!t || !t.audioData) return;
   const a = document.createElement("a");
   a.href = t.audioData;
-  a.download = `Recuerdo_${t.title.replace(/[^a-zA-Z0-9]/g, '_')}.webm`;
+  a.download = "Recuerdo_" + t.title.replace(/[^a-zA-Z0-9]/g, '_') + ".webm";
   document.body.appendChild(a);
   a.click();
   a.remove();
@@ -456,24 +468,24 @@ function downloadSingleAudio(id) {
 
 // Generación de Biografía
 function generateBiographyModal() {
-  let fullPrompt = "Actúa como un biógrafo literario y escritor sensible profesional. A continuación te entrego las memorias y reflexiones recopiladas a lo largo de mi vida, organizadas por etapas y temas.\\n\\n";
-  fullPrompt += "🧠 REGLAS DE REDACCIÓN Y EDICIÓN:\\n";
-  fullPrompt += "1. AUTO-CORRECCIÓN: Si en mis relatos digo frases como 'espera, me he equivocado', 'perdón, no fue en ese año sino en...', o 'quería decir...', interpreta la rectificación automáticamente. Elimina el error y deja únicamente el dato corregido en el texto final.\\n";
-  fullPrompt += "2. REORDENACIÓN CRONOLÓGICA: Si cuento anécdotas desordenadas (por ejemplo, menciono un recuerdo de mi infancia mientras hablaba de mi trabajo), ubica cada suceso en su momento vital correspondiente para que la historia fluya en un orden temporal perfecto y natural.\\n";
-  fullPrompt += "3. TONO Y ESTILO: Redacta un libro biográfico cálido, elegante y emotivo, dividido en capítulos hermosos, manteniendo mi voz auténtica y destacando las lecciones de vida y valores.\\n";
-  fullPrompt += "4. FORMATO: Deja el texto impecable para copiarlo y pegarlo en Microsoft Word para guardarlo en el ordenador e imprimirlo en papel, y para usarlo en NotebookLM para generar un podcast familiar.\\n\\n";
-  fullPrompt += "ESTE ES EL MATERIAL Y LOS CAPÍTULOS DE MI VIDA:\\n";
-  fullPrompt += "========================================================\\n\\n";
+  let fullPrompt = "Actúa como un biógrafo literario y escritor sensible profesional. A continuación te entrego las memorias y reflexiones recopiladas a lo largo de mi vida, organizadas por etapas y temas.\n\n";
+  fullPrompt += "🧠 REGLAS DE REDACCIÓN Y EDICIÓN:\n";
+  fullPrompt += "1. AUTO-CORRECCIÓN: Si en mis relatos digo frases como 'espera, me he equivocado', 'perdón, no fue en ese año sino en...', o 'quería decir...', interpreta la rectificación automáticamente. Elimina el error y deja únicamente el dato corregido en el texto final.\n";
+  fullPrompt += "2. REORDENACIÓN CRONOLÓGICA: Si cuento anécdotas desordenadas (por ejemplo, menciono un recuerdo de mi infancia mientras hablaba de mi trabajo), ubica cada suceso en su momento vital correspondiente para que la historia fluya en un orden temporal perfecto y natural.\n";
+  fullPrompt += "3. TONO Y ESTILO: Redacta un libro biográfico cálido, elegante y emotivo, dividido en capítulos hermosos, manteniendo mi voz auténtica y destacando las lecciones de vida y valores.\n";
+  fullPrompt += "4. FORMATO: Deja el texto impecable para copiarlo y pegarlo en Microsoft Word para guardarlo en el ordenador e imprimirlo en papel, y para usarlo en NotebookLM para generar un podcast familiar.\n\n";
+  fullPrompt += "ESTE ES EL MATERIAL Y LOS CAPÍTULOS DE MI VIDA:\n";
+  fullPrompt += "========================================================\n\n";
 
   topics.forEach((t, i) => {
-    fullPrompt += `CAPÍTULO ${i+1}: ${t.title.toUpperCase()}\\n`;
-    fullPrompt += `• Pregunta guía: ${t.hint}\\n`;
-    if (t.notes) fullPrompt += `• Notas y recuerdos del autor: ${t.notes}\\n`;
-    if (t.audioData) fullPrompt += `• [Recuerdo grabado por el autor con su voz - Incluir en este capítulo]\\n`;
-    fullPrompt += "\\n";
+    fullPrompt += "CAPÍTULO " + (i+1) + ": " + t.title.toUpperCase() + "\n";
+    fullPrompt += "• Pregunta guía: " + t.hint + "\n";
+    if (t.notes) fullPrompt += "• Notas y recuerdos del autor: " + t.notes + "\n";
+    if (t.audioData) fullPrompt += "• [Recuerdo grabado por el autor con su voz - Incluir en este capítulo]\n";
+    fullPrompt += "\n";
   });
 
-  fullPrompt += "========================================================\\n";
+  fullPrompt += "========================================================\n";
   fullPrompt += "Genera ahora la biografía completa estructurada por capítulos siguiendo las reglas anteriores.";
 
   document.getElementById("biographyOutputText").innerText = fullPrompt;
@@ -491,13 +503,15 @@ function downloadTextFile() {
   const text = document.getElementById("biographyOutputText").innerText;
   const element = document.createElement('a');
   element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
-  element.setAttribute('download', `Mi_Biografia_para_Gemini_${new Date().toISOString().slice(0,10)}.txt`);
+  element.setAttribute('download', "Mi_Biografia_para_Gemini_" + new Date().toISOString().slice(0,10) + ".txt");
   document.body.appendChild(element);
   element.click();
   element.remove();
 }
 
-window.onload = init;
+// Inicializar de inmediato y al cargar
+init();
+window.addEventListener("DOMContentLoaded", init);
 </script>
 </body>
 </html>
@@ -520,7 +534,6 @@ def create_user_manual_pdf():
     styles = getSampleStyleSheet()
     
     c_primary = colors.HexColor('#1E3A8A')
-    c_dark = colors.HexColor('#0F172A')
     c_body = colors.HexColor('#1E293B')
     c_accent = colors.HexColor('#B45309')
     
@@ -665,23 +678,8 @@ def build_all():
     with open(html_path, "w", encoding="utf-8") as f:
         f.write(HTML_CONTENT)
     print("  ✅ Creada la aplicación interactiva Mi_Biografia.html")
-    
-    # 2. Limpiar cualquier PDF previo para dejar solo el Manual de Instrucciones
-    prev_pdfs = [
-        "0. Paso_0_Introduccion_Proyecto.pdf",
-        "1. Paso_1_Grabar_Recuerdos_y_Temas.pdf",
-        "2. Paso_2_Generar_Biografia_con_Gemini.pdf",
-        "3. Paso_3_Crear_Podcast_y_Libro_en_NLM.pdf",
-        "Guia_Completa_Mi_Biografia.pdf",
-        "EJEMPLO_A_FUENTE_BIOGRAFIA_PARA_NOTEBOOKLM.pdf"
-    ]
-    for pf in prev_pdfs:
-        p_path = os.path.join(TARGET_DIR, pf)
-        if os.path.exists(p_path):
-            os.remove(p_path)
-            print(f"  🗑️ Eliminado archivo anterior: {pf}")
             
-    # 3. Generar el ÚNICO DOCUMENTO: Manual_de_Instrucciones.pdf
+    # 2. Generar el ÚNICO DOCUMENTO: Manual_de_Instrucciones.pdf
     create_user_manual_pdf()
     
     print("🎉 ¡Clase 4. Mi_Biografia: Aplicación + Manual de Instrucciones completados con éxito!")
