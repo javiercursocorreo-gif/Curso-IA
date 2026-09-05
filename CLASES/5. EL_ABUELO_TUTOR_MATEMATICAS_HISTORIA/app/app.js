@@ -27,76 +27,88 @@ function switchTab(tabId) {
 // ==========================================================================
 const MATH_KNOWLEDGE_BASE = {
   // --- DERIVADAS ---
+  // --- DERIVADAS Y PENDIENTE DE UNA CURVA ---
   derivada: {
-    title: "Cálculo Diferencial: La foto fija del velocímetro en una milésima de segundo",
-    intuition: `Imagínate que vas de viaje en coche de Madrid a Valencia (350 km) y tardas exactamente 3 horas y media.
-Cualquiera puede calcular la velocidad media: 350 km dividido entre 3,5 horas da 100 km/h de media.
-Pero imagínate que un radar de la Guardia Civil te saca una foto y te llega una multa a casa diciendo que ibas a 140 km/h. Si tú le dices al juez: <i>«Señoría, pero si mi media en todo el viaje fue de 100 km/h»</i>, el juez se reirá. El radar no te multa por la media de todo el viaje, sino por <b>lo que marcaba la aguja de tu velocímetro en esa milésima de segundo exacta</b> en la que pasaste por delante de la cámara.
-Eso es una <b>Derivada</b>: es el radar de las matemáticas. Mide la velocidad a la que cambia cualquier cosa en un instante congelado:
-• En una montaña rusa: cómo de empinada es la cuesta justo en la piedra donde tienes puesto el pie (la pendiente de la recta tangente).
-• En un enfermo: si la fiebre está subiendo como un cohete o si ya está empezando a frenar.
-• En un cohete espacial: la aceleración instantánea justo al despegar.`,
-    stepbystep: `¿Cómo calculamos la velocidad en un instante congelado si en un instante congelado el tiempo no avanza?
-1º Elegimos dos momentos muy juntos: el instante actual 'x' y un momento microscópico después 'x + h' (donde 'h' es un suspiro de tiempo, como 0,0001 segundos).
-2º Calculamos el espacio recorrido en ese suspiro: f(x + h) - f(x).
-3º Dividimos ese espacio minúsculo entre ese tiempo minúsculo: [f(x + h) - f(x)] / h. Esto dibuja una <b>recta secante</b> (naranja en la gráfica inferior).
-4º Hacemos que ese suspiro 'h' se vuelva prácticamente cero (el límite cuando h tiende a 0).
-¡Al acercar los dos puntos, la secante se convierte milagrosamente en la <b>recta tangente</b> (roja), dándonos la pendiente y velocidad exacta en ese punto!`,
-    graphDesc: "<b>De la Secante a la Tangente:</b> Observa cómo la recta secante naranja (velocidad media entre dos puntos P y Q) se transforma en la recta tangente roja (la Derivada instantánea en P) cuando la distancia h se aproxima a cero.",
+    title: "La Derivada y la Pendiente de una Curva: La inclinación exacta en cada punto",
+    intuition: `Dile a tu nieto: <i>«Imagínate que vas en bicicleta subiendo un puerto de montaña en los Pirineos.
+Si la carretera fuera una rampa recta de garaje, la cuesta tendría siempre la misma pendiente: por ejemplo, subes 10 metros por cada 100 metros de carretera (pendiente fija del 10%).
+Pero una montaña real es una curva: empieza suave con un falso llano, luego se empina con una cuesta brutal del 18% donde tienes que pedalear de pie sobre los pedales, luego corona en la cima en una carretera completamente horizontal (pendiente 0%), y finalmente se lanza cuesta abajo.
+¿Cómo sabes lo empinada que está la cuesta en el punto exacto donde tienes apoyada la rueda de la bicicleta en este mismo segundo?
+Apoyas una regla recta de madera (o un monopatín) sobre la rueda de la bici de forma que solo roce en ese punto sin clavarse en el suelo: esa regla es la <b>Recta Tangente</b>.
+Y la inclinación de esa regla es exactamente <b>LA DERIVADA</b>.
+<b>LA REGLA DE ORO: La Derivada en un punto ES la Pendiente de la curva en ese punto exacto:</b>
+• Si la derivada es positiva (+): Vas cuesta arriba (la curva sube).
+• Si la derivada es cero (0): Estás en la cima de la montaña (máximo) o en el fondo del valle (mínimo, terreno plano horizontal).
+• Si la derivada es negativa (-): Vas cuesta abajo (la curva decrece).
+Cuanto mayor sea el número de la derivada, ¡más empinada es la pared de la curva!»</i>`,
+    stepbystep: `¿Cómo se pasa de dos puntos a la inclinación en un punto exacto?
+1º <b>La Secante (Pendiente media entre dos puntos):</b> Si tomas dos puntos separados sobre la curva (el punto P y el punto Q), la recta que pasa por ambos es una <b>recta secante</b> (la línea naranja discontinua en la gráfica). Su pendiente mide el cambio medio entre dos momentos distantes: m_sec = [f(x + h) - f(x)] / h.
+2º <b>El paso al límite (h tiende a 0):</b> Pero nosotros no queremos la pendiente media entre dos pueblos, ¡queremos la inclinación exacta en el punto P!
+3º <b>El giro de la recta:</b> A medida que acercamos el punto Q hacia el punto P (haciendo que la distancia 'h' se encoja hacia cero), la recta secante naranja va girando sobre el punto P...
+4º <b>La Tangente definitiva:</b> En el instante exacto en que Q se funde con P, la secante se convierte en la <b>recta tangente roja</b>, que toca a la curva en ese único punto P sin atravesarla.
+5º Por eso los matemáticos definen: <b>Derivada = Pendiente de la recta tangente = lim (h → 0) [f(x + h) - f(x)] / h</b>.`,
+    graphDesc: "<b>De la Secante a la Tangente (Geometría Exacta):</b> El punto P (rojo) está sobre la curva. La recta tangente roja toca la curva en P y su inclinación es la Derivada. La recta secante naranja une P con Q, y al hacer h → 0 se convierte en la tangente.",
     getSvg: () => `
       <svg viewBox="0 0 580 250" width="100%" height="240" xmlns="http://www.w3.org/2000/svg" style="font-family: sans-serif;">
         <defs>
           <pattern id="grid-der" width="20" height="20" patternUnits="userSpaceOnUse">
             <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#f1f5f9" stroke-width="1"/>
           </pattern>
+          <marker id="arrow-der" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#ea580c"/>
+          </marker>
         </defs>
         <rect width="580" height="250" fill="url(#grid-der)" />
         
         <!-- Ejes -->
         <line x1="50" y1="210" x2="550" y2="210" stroke="#475569" stroke-width="2"/>
         <line x1="60" y1="220" x2="60" y2="20" stroke="#475569" stroke-width="2"/>
-        <text x="540" y="230" font-size="12" fill="#475569" font-weight="bold">x (Tiempo)</text>
-        <text x="70" y="30" font-size="12" fill="#475569" font-weight="bold">y = f(x) (Posición)</text>
+        <text x="540" y="230" font-size="12" fill="#475569" font-weight="bold">x</text>
+        <text x="70" y="30" font-size="12" fill="#475569" font-weight="bold">y = f(x)</text>
         
-        <!-- Curva f(x) -->
-        <path d="M 80 200 Q 240 200 480 30" fill="none" stroke="#0b2545" stroke-width="3.5"/>
+        <!-- Curva f(x): P0(80,200), P1(240,200), P2(440,40) -->
+        <path d="M 80 200 Q 240 200 440 40" fill="none" stroke="#0b2545" stroke-width="4"/>
         
-        <!-- Recta Secante (Naranja punteada que une P y Q) -->
-        <line x1="120" y1="230" x2="480" y2="25" stroke="#f97316" stroke-width="2" stroke-dasharray="6,4"/>
+        <!-- Recta Secante (Naranja discontinua): Pasa exactamente por P(250,160) y Q(362,98) -->
+        <line x1="110" y1="238" x2="440" y2="55" stroke="#f97316" stroke-width="2.5" stroke-dasharray="6,4"/>
         
-        <!-- Recta Tangente (Roja sólida en P) -->
-        <line x1="90" y1="220" x2="410" y2="35" stroke="#dc2626" stroke-width="3"/>
+        <!-- Recta Tangente (Roja sólida): Toca a la curva EXACTAMENTE en P(250,160) con pendiente -4/9 -->
+        <line x1="70" y1="240" x2="430" y2="80" stroke="#dc2626" stroke-width="3.5"/>
         
-        <!-- Puntos P y Q -->
-        <circle cx="230" cy="145" r="6" fill="#dc2626"/>
-        <text x="200" y="135" font-size="13" font-weight="bold" fill="#dc2626">P (Instante exacto)</text>
+        <!-- Punto P (250, 160) -->
+        <circle cx="250" cy="160" r="6" fill="#dc2626" stroke="#ffffff" stroke-width="2"/>
+        <text x="160" y="152" font-size="12" font-weight="bold" fill="#dc2626">P (Punto exacto)</text>
         
-        <circle cx="360" cy="72" r="6" fill="#f97316"/>
-        <text x="372" y="75" font-size="12" font-weight="bold" fill="#f97316">Q (Instante + h)</text>
+        <!-- Punto Q (362, 98) -->
+        <circle cx="362" cy="98" r="6" fill="#f97316" stroke="#ffffff" stroke-width="2"/>
+        <text x="375" y="96" font-size="12" font-weight="bold" fill="#f97316">Q (Punto x + h)</text>
         
-        <!-- Flecha h -> 0 -->
-        <path d="M 345 85 Q 290 120 250 140" fill="none" stroke="#ea580c" stroke-width="2"/>
-        <text x="290" y="115" font-size="11" font-weight="bold" fill="#ea580c">h → 0</text>
+        <!-- Flecha de convergencia de Q hacia P a lo largo de la curva -->
+        <path d="M 345 108 Q 295 138 265 154" fill="none" stroke="#ea580c" stroke-width="2" marker-end="url(#arrow-der)"/>
+        <text x="290" y="124" font-size="11" font-weight="bold" fill="#ea580c">h → 0</text>
         
-        <!-- Leyenda -->
-        <rect x="70" y="40" width="220" height="54" rx="8" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5"/>
-        <line x1="80" y1="56" x2="110" y2="56" stroke="#f97316" stroke-width="2" stroke-dasharray="4,3"/>
-        <text x="118" y="60" font-size="11" fill="#334155">Secante: Media entre P y Q</text>
-        <line x1="80" y1="76" x2="110" y2="76" stroke="#dc2626" stroke-width="3"/>
-        <text x="118" y="80" font-size="11" font-weight="bold" fill="#dc2626">Tangente: Derivada en P</text>
+        <!-- Leyenda didáctica -->
+        <rect x="70" y="36" width="230" height="54" rx="8" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5"/>
+        <line x1="80" y1="52" x2="110" y2="52" stroke="#f97316" stroke-width="2.5" stroke-dasharray="4,3"/>
+        <text x="118" y="56" font-size="11" fill="#334155">Secante: Pendiente media Δy/Δx</text>
+        <line x1="80" y1="74" x2="110" y2="74" stroke="#dc2626" stroke-width="3.5"/>
+        <text x="118" y="78" font-size="11" font-weight="bold" fill="#dc2626">Tangente: Pendiente = Derivada f'(x)</text>
       </svg>
     `,
-    formal: `<div class="math-formula">Definición formal: f'(x) = lim (h → 0) [f(x + h) - f(x)] / h</div>
-<b>Reglas de derivación inmediatas para el examen:</b>
-• Constante: (k)' = 0
-• Potencia: (xⁿ)' = n · xⁿ⁻¹   (bajas el exponente multiplicando y le restas uno arriba).
-  <i>Ejemplo: (x³)' = 3x² | (x²)' = 2x | (5x)' = 5</i>
-• Suma: (f + g)' = f' + g'
-• Producto: (u · v)' = u'·v + u·v'`,
+    formal: `<div class="math-formula">Relación Fundamental: Pendiente de la Tangente m = f'(x₀)</div>
+<b>1. Definición como límite de pendientes de secantes:</b>
+m_secante = [f(x₀ + h) - f(x₀)] / h  -->  m_tangente = f'(x₀) = lim (h → 0) [f(x₀ + h) - f(x₀)] / h
+<br/><br/>
+<b>2. Ejercicio Clásico de Examen: Ecuación de la Recta Tangente</b>
+Halla la recta tangente a la curva f(x) = x² en el punto x₀ = 3:
+• <b>Paso 1:</b> Derivamos para obtener la pendiente: f'(x) = 2x  -->  <b>m = f'(3) = 2(3) = 6</b>
+• <b>Paso 2:</b> Hallamos el punto de la curva: y₀ = f(3) = 3² = 9  -->  Punto P(3, 9)
+• <b>Paso 3:</b> Ecuación punto-pendiente: y - y₀ = m · (x - x₀)
+  y - 9 = 6 · (x - 3)  -->  y - 9 = 6x - 18  -->  <b>y = 6x - 9</b>
+<i>(Justificación para el profesor: «La pendiente de la recta tangente coincide exactamente con la derivada evaluada en el punto de tangencia»).</i>`,
     twin: `<b>Reto Gemelo para Lucas:</b><br/>
-Lanzas una pelota hacia arriba y su altura en metros según los segundos 't' viene dada por la fórmula: h(t) = 30t - 5t².<br/>
-¿A qué velocidad exacta se mueve la pelota cuando han pasado 2 segundos?<br/>
-<i>Pista del abuelo: Deriva la fórmula para hallar la velocidad: v(t) = h'(t) = 30 - 10t. Ahora sustituye t por 2: 30 - 20 = 10 metros por segundo.</i>`
+Dada la curva f(x) = x² + 2x, halla la pendiente de la recta tangente en el punto x = 1.<br/>
+<i>Pista del abuelo: Deriva la función: f'(x) = 2x + 2. Ahora sustituye x por 1: f'(1) = 2(1) + 2 = 4. ¡La pendiente de la cuesta en ese punto vale 4!</i>`
   },
 
   // --- INTEGRALES ---
