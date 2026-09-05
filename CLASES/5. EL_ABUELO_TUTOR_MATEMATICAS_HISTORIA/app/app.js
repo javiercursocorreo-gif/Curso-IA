@@ -23,7 +23,7 @@ function switchTab(tabId) {
 // 2. GENERADOR DEL PROMPT PEDAGÓGICO MAESTRO PARA GEMINI
 // ==========================================================================
 function generatePedagogicalPrompt(question, nietoName, levelText) {
-  return `Actúa como un profesor emérito de ciencias y matemáticas y a la vez como un abuelo paciente, sabio y cariñoso.
+  return `Actúa como un profesor emérito de ciencias, física, química y matemáticas y a la vez como un abuelo paciente, sabio y cariñoso.
 Mi nieto/a ${nietoName} (nivel escolar: ${levelText}) necesita entender la siguiente duda o ejercicio:
 
 «${question}»
