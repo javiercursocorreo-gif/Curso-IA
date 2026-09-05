@@ -544,6 +544,464 @@ Precio final = 80 - 24 = <b>56 €</b>`,
     twin: `<b>Reto Gemelo para Lucas:</b><br/>
 Una chaqueta de montaña cuesta 60 euros y tiene un descuento del 20%. ¿Cuánto dinero te descuentan y cuánto pagas en caja?<br/>
 <i>Pista del abuelo: El 10% de 60 son 6 euros... así que el 20% son 12 euros. Pagas 48 euros.</i>`
+  },
+
+  // --- TEOREMA / PRINCIPIO DE ARQUÍMEDES Y FLOTABILIDAD ---
+  arquimedes: {
+    title: "Principio de Arquímedes: El empuje de los fluidos, la corona de oro y el grito de ¡Eureka!",
+    intuition: `Dile a tu nieto: <i>«¿Alguna vez has intentado hundir una pelota de playa hinchada o un balón debajo del agua en la piscina?
+Tienes que empujar con todas tus fuerzas con las dos manos porque sientes una mano invisible gigante que te la devuelve disparada hacia arriba.
+O cuando juegas en el agua a coger a tu hermano o a tu abuelo en brazos: ¡fuera del agua no puedes ni levantarlo, pero dentro del agua parece que no pesa nada!
+Esa fuerza hacia arriba que hace el agua se llama <b>EMPUJE</b>.
+¿Y sabes cómo se descubrió? Hace más de 2.200 años en Siracusa (Grecia).
+El rey Hierón II le dio una barra de oro puro a un joyero para que le hiciera una corona para los dioses. Pero el rey desconfiaba: sospechaba que el joyero se había quedado con parte del oro y había rellenado la corona con plata barata. El rey le dijo al sabio Arquímedes: <i>'Descubre si me ha engañado, pero sin romper ni fundir la corona'</i>.
+Arquímedes se estaba devanando los sesos. Un día, se metió en una bañera que estaba llena de agua hasta el borde y vio cómo el agua se desbordaba por el suelo al meterse su cuerpo.
+En una fracción de segundo lo comprendió todo: <b>el volumen de agua que se desborda es exactamente igual al volumen del cuerpo que se sumerge</b>.
+Como el oro es mucho más denso y pesado que la plata, una corona de oro puro ocupa muy poco espacio; pero si tenía plata de relleno, la corona sería más gorda para el mismo peso y desalojaría mucha más agua.
+Arquímedes se puso tan eufórico que salió de la bañera y corrió desnudo por las calles gritando: <b>«¡EUREKA! ¡EUREKA!»</b> (que en griego significa <i>'¡Lo he encontrado!'</i>).
+¿Y por qué un tornillito de hierro de 10 gramos se hunde como una piedra, pero un barco petrolero de 100.000 toneladas de acero flota en el océano?
+Porque el barco tiene un casco gigante hueco lleno de aire: desaloja miles de toneladas de agua, y el empuje de toda esa agua desalojada hacia arriba es mucho mayor que el peso del acero del barco.»</i>`,
+    stepbystep: `1º <b>Las dos fuerzas enfrentadas en cualquier cuerpo bajo el agua:</b>
+• <b>El Peso (P = m · g):</b> La gravedad de la Tierra tira del objeto hacia abajo (hacia el fondo).
+• <b>El Empuje de Arquímedes (E):</b> El fluido empuja el objeto hacia arriba con una fuerza exactamente igual al peso del agua desalojada: E = ρ_líquido · V_sumergido · g.
+2º <b>Las tres situaciones de flotabilidad:</b>
+• <b>Si el Peso es mayor que el Empuje (P > E):</b> El cuerpo es más denso que el agua (ρ_cuerpo > ρ_agua) y <b>se hunde</b> hasta el fondo (como una moneda de euro o una piedra).
+• <b>Si el Peso es igual al Empuje sumergido (P = E):</b> El cuerpo se queda en <b>equilibrio entre dos aguas</b>, suspendido a media profundidad (como un pez con su vejiga natatoria o un submarino).
+• <b>Si el Empuje supera al Peso (E > P):</b> El cuerpo <b>sube a la superficie y flota</b> (como un corcho o un iceberg), sacando parte de su cuerpo fuera del agua hasta que el empuje de la parte sumergida iguala su peso total.
+3º <b>El Peso Aparente:</b> En el agua todo pesa menos porque el empuje nos ayuda:
+P_aparente = P_real - Empuje.`,
+    graphDesc: "<b>Esquema del Principio de Arquímedes y ¡Eureka!:</b> El objeto sumergido desaloja un volumen de agua idéntico hacia el vaso medidor. El líquido reacciona con una fuerza vertical de Empuje (E, flecha verde hacia arriba) que se opone al Peso gravitatorio (P, flecha roja hacia abajo).",
+    getSvg: () => `
+      <svg viewBox="0 0 580 250" width="100%" height="240" xmlns="http://www.w3.org/2000/svg" style="font-family: sans-serif;">
+        <defs>
+          <linearGradient id="waterGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.4"/>
+            <stop offset="100%" stop-color="#0284c7" stop-opacity="0.75"/>
+          </linearGradient>
+          <marker id="arrow-up" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 10 L 5 0 L 10 10 z" fill="#10b981"/>
+          </marker>
+          <marker id="arrow-down" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 0 L 10 0 L 5 10 z" fill="#ef4444"/>
+          </marker>
+        </defs>
+
+        <!-- Fondo sutil de laboratorio -->
+        <rect width="580" height="250" fill="#f8fafc"/>
+        <line x1="30" y1="225" x2="550" y2="225" stroke="#64748b" stroke-width="2.5"/>
+
+        <!-- Recipiente Principal con caño de desborde -->
+        <path d="M 80 60 L 80 220 L 250 220 L 250 100 L 300 130 L 300 138 L 250 115 L 250 220" fill="none" stroke="#334155" stroke-width="3"/>
+        
+        <!-- Agua en el recipiente principal -->
+        <path d="M 83 100 L 247 100 L 247 217 L 83 217 Z" fill="url(#waterGrad)"/>
+        
+        <!-- Chorro de agua que desborda -->
+        <path d="M 248 102 Q 275 115 295 136 Q 315 160 325 190" fill="none" stroke="#0284c7" stroke-width="3.5" stroke-dasharray="4,2"/>
+
+        <!-- Vaso medidor lateral (Agua desalojada) -->
+        <path d="M 310 160 L 310 220 L 370 220 L 370 160" fill="none" stroke="#334155" stroke-width="2.5"/>
+        <rect x="312" y="185" width="56" height="33" fill="url(#waterGrad)"/>
+        <line x1="320" y1="195" x2="330" y2="195" stroke="#0284c7" stroke-width="1.5"/>
+        <line x1="320" y1="205" x2="330" y2="205" stroke="#0284c7" stroke-width="1.5"/>
+        <text x="315" y="152" font-size="11" font-weight="bold" fill="#0284c7">Agua desalojada</text>
+        <text x="320" y="238" font-size="10" fill="#475569">V_desalojado</text>
+
+        <!-- Bloque sumergido en el agua -->
+        <rect x="135" y="125" width="60" height="60" rx="4" fill="#f59e0b" stroke="#b45309" stroke-width="2"/>
+        <text x="145" y="158" font-size="11" font-weight="bold" fill="#ffffff">Cuerpo (V)</text>
+
+        <!-- Vector Peso (P = m·g) hacia abajo -->
+        <line x1="165" y1="155" x2="165" y2="215" stroke="#ef4444" stroke-width="3" marker-end="url(#arrow-down)"/>
+        <text x="172" y="210" font-size="11" font-weight="bold" fill="#dc2626">Peso (P = m·g)</text>
+
+        <!-- Vector Empuje (E) hacia arriba -->
+        <line x1="165" y1="155" x2="165" y2="80" stroke="#10b981" stroke-width="3.5" marker-end="url(#arrow-up)"/>
+        <text x="172" y="78" font-size="11" font-weight="bold" fill="#059669">Empuje (E = ρ·V·g)</text>
+
+        <!-- Cartel explicativo de Arquímedes -->
+        <rect x="390" y="45" width="175" height="110" rx="8" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5"/>
+        <text x="402" y="68" font-size="12" font-weight="bold" fill="#0369a1">👑 ¡EUREKA!</text>
+        <text x="402" y="88" font-size="10.5" fill="#334155">• V_sumergido = V_agua</text>
+        <text x="402" y="106" font-size="10.5" fill="#059669"><b>• Empuje E = ρ_f · V · g</b></text>
+        <text x="402" y="124" font-size="10.5" fill="#dc2626"><b>• P_aparente = P - E</b></text>
+        <text x="402" y="142" font-size="10" fill="#64748b">Si E > P ➔ ¡Flota!</text>
+      </svg>
+    `,
+    formal: `<div class="math-formula">Ecuación Fundamental del Empuje: E = ρ_f · V_s · g</div>
+<b>Donde:</b>
+• E = Empuje hidrostático en Newtons (N)
+• ρ_f = Densidad del fluido (Agua dulce = 1.000 kg/m³, Agua de mar ≈ 1.030 kg/m³)
+• V_s = Volumen de la parte sumergida en metros cúbicos (m³)
+• g = Aceleración de la gravedad (9,8 m/s²)
+<br/><br/>
+<b>Problema Clásico de Examen (Física y Química 3º/4º ESO y Bachillerato):</b>
+Un cuerpo metálico tiene un volumen de 0,002 m³ (2 litros) y una masa de 5 kg. Se sumerge completamente en agua dulce.
+1º <b>Peso real fuera del agua:</b>
+P = m · g = 5 kg · 9,8 m/s² = <b>49 N</b>.
+2º <b>Empuje del agua:</b>
+E = ρ_agua · V_sumergido · g = 1000 kg/m³ · 0,002 m³ · 9,8 m/s² = <b>19,6 N</b>.
+3º <b>Peso aparente dentro del agua:</b>
+P_aparente = P_real - E = 49 N - 19,6 N = <b>29,4 N</b> (dentro del agua parece que pesa solo 3 kg).
+4º <b>¿Se hunde o flota?</b>
+Como el Peso (49 N) es mayor que el Empuje (19,6 N), la fuerza neta es hacia abajo: <b>el cuerpo se hunde hasta el fondo</b>.`,
+    twin: `<b>Reto Gemelo para Lucas:</b><br/>
+Una talla de madera decorativa tiene un volumen de 0,005 m³ y una masa de 3 kg. La tiramos a una piscina de agua dulce (densidad = 1.000 kg/m³, g = 9,8 m/s²).<br/>
+a) ¿Cuánto vale su peso real?<br/>
+b) ¿Cuánto valdría el empuje máximo si estuviera totalmente bajo el agua?<br/>
+c) ¿Se hundirá hasta el fondo o flotará en la superficie?<br/>
+<i>Pista del abuelo: Peso = 3 · 9,8 = 29,4 N. Empuje máximo sumergido = 1000 · 0,005 · 9,8 = 49 N. Como el Empuje (49 N) es mucho mayor que el Peso (29,4 N), ¡la madera sube como un tapón de corcho y flota plácidamente!</i>`
+  },
+
+  // --- PRINCIPIO DE PASCAL Y PRENSA HIDRÁULICA ---
+  pascal: {
+    title: "Principio de Pascal y Prensa Hidráulica: Levantar un camión con la fuerza de un dedo",
+    intuition: `Dile a tu nieto: <i>«Imagínate un tubo de pasta de dientes o una jeringuilla con agua.
+Si aprietas con tu dedo en la base del tubo, ¿se queda la fuerza donde pusiste el dedo? ¡Para nada! La presión viaja a toda velocidad por el líquido y sale disparada por el tapón.
+El científico francés Blaise Pascal descubrió una propiedad asombrosa: <b>los líquidos no se pueden aplastar</b> (son incompresibles).
+Si empujas el agua en un tubo estrecho, esa presión se transmite con la mismísima fuerza por centímetro cuadrado a todos los rincones del recipiente.
+¿Y qué pasa si al otro lado del tubo pones una plataforma 50 veces más ancha?
+Que cada centímetro cuadrado de esa plataforma recibe la misma presión... ¡así que tu fuerza se multiplica por 50!
+Con la fuerza de un solo dedo en un pedal de freno, eres capaz de frenar en seco un coche de dos toneladas lanzado a 120 km/h por la autopista. ¡La hidráulica es el músculo invisible de la civilización!»</i>`,
+    stepbystep: `1º <b>La Presión es la misma en todas partes:</b> P₁ = P₂.
+2º Como Presión = Fuerza / Superficie (P = F / S), tenemos:
+<b>F₁ / S₁ = F₂ / S₂</b>.
+3º <b>El Multiplicador de Fuerza:</b>
+Si la superficie grande (S₂) es 100 veces mayor que la pequeña (S₁), la fuerza de salida (F₂) será 100 veces mayor que la que hiciste con tu mano: F₂ = F₁ · (S₂ / S₁).
+4º <b>La ley de la conservación:</b> La física nunca regala nada gratis: ganas fuerza a cambio de tener que empujar el émbolo pequeño una distancia mucho más larga.`,
+    graphDesc: "<b>Prensa Hidráulica de Pascal:</b> Al aplicar una fuerza pequeña F₁ sobre el émbolo estrecho S₁, la presión hidráulica se transmite íntegra y genera una fuerza gigante F₂ sobre el émbolo ancho S₂, levantando el coche.",
+    getSvg: () => `
+      <svg viewBox="0 0 580 250" width="100%" height="240" xmlns="http://www.w3.org/2000/svg" style="font-family: sans-serif;">
+        <defs>
+          <linearGradient id="oilGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#38bdf8"/>
+            <stop offset="100%" stop-color="#0284c7"/>
+          </linearGradient>
+          <marker id="arrow-down-p" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 0 L 10 0 L 5 10 z" fill="#ef4444"/>
+          </marker>
+          <marker id="arrow-up-p" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 10 L 5 0 L 10 10 z" fill="#10b981"/>
+          </marker>
+        </defs>
+        <rect width="580" height="250" fill="#f8fafc"/>
+        
+        <!-- Tubo en U comunicado -->
+        <path d="M 80 90 L 80 210 L 460 210 L 460 120 L 320 120 L 320 180 L 140 180 L 140 90" fill="none" stroke="#334155" stroke-width="4"/>
+        
+        <!-- Líquido hidráulico azul -->
+        <path d="M 82 120 L 138 120 L 138 182 L 322 182 L 322 122 L 458 122 L 458 208 L 82 208 Z" fill="url(#oilGrad)"/>
+        
+        <!-- Émbolo Pequeño S1 -->
+        <rect x="82" y="110" width="56" height="15" fill="#475569" stroke="#1e293b" stroke-width="1.5"/>
+        <line x1="110" y1="40" x2="110" y2="105" stroke="#ef4444" stroke-width="3" marker-end="url(#arrow-down-p)"/>
+        <text x="118" y="55" font-size="12" font-weight="bold" fill="#ef4444">F₁ (Fuerza pequeña)</text>
+        <text x="95" y="142" font-size="11" font-weight="bold" fill="#ffffff">S₁</text>
+        
+        <!-- Émbolo Grande S2 -->
+        <rect x="322" y="112" width="136" height="16" fill="#475569" stroke="#1e293b" stroke-width="1.5"/>
+        <line x1="390" y1="108" x2="390" y2="40" stroke="#10b981" stroke-width="4" marker-end="url(#arrow-up-p)"/>
+        <text x="405" y="55" font-size="12" font-weight="bold" fill="#059669">F₂ (Fuerza multiplicada)</text>
+        <text x="380" y="145" font-size="11" font-weight="bold" fill="#ffffff">S₂ (Área grande)</text>
+
+        <!-- Silueta del Coche encima del émbolo grande -->
+        <rect x="340" y="70" width="100" height="28" rx="6" fill="#dc2626"/>
+        <polygon points="355,70 370,52 410,52 425,70" fill="#b91c1c"/>
+        <circle cx="360" cy="98" r="8" fill="#1e293b"/>
+        <circle cx="420" cy="98" r="8" fill="#1e293b"/>
+        <text x="365" y="86" font-size="10" font-weight="bold" fill="#ffffff">🚗 1.600 kg</text>
+        
+        <!-- Ecuación de Pascal -->
+        <rect x="155" y="25" width="150" height="42" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+        <text x="170" y="42" font-size="12" font-weight="bold" fill="#0f172a">P₁ = P₂</text>
+        <text x="170" y="58" font-size="11" fill="#0369a1">F₁ / S₁ = F₂ / S₂</text>
+      </svg>
+    `,
+    formal: `<div class="math-formula">Ecuación de la Prensa Hidráulica: F₁ / S₁ = F₂ / S₂  ⟹  F₂ = F₁ · (S₂ / S₁)</div>
+<b>Ejercicio Resuelto de Examen:</b>
+En un taller mecánico disponen de un elevador hidráulico con un pistón pequeño de sección S₁ = 20 cm² y un pistón grande de sección S₂ = 800 cm².
+Queremos elevar un coche cuya masa es de 1.600 kg.
+1º <b>Peso del coche a levantar (F₂):</b>
+F₂ = m · g = 1600 kg · 9,8 m/s² = <b>15.680 N</b>.
+2º <b>Relación de superficies (multiplicador):</b>
+S₂ / S₁ = 800 cm² / 20 cm² = <b>40 veces mayor</b>.
+3º <b>Fuerza necesaria en el émbolo pequeño (F₁):</b>
+F₁ = F₂ · (S₁ / S₂) = 15.680 N / 40 = <b>392 N</b> (equivalente a levantar apenas 40 kg).
+<i>¡Con la fuerza de un niño hemos levantado un todoterreno entero!</i>`,
+    twin: `<b>Reto Gemelo para Lucas:</b><br/>
+En una prensa hidráulica de laboratorio, el émbolo pequeño mide 5 cm² y el grande 250 cm². Si aplicamos una fuerza de 100 N sobre el pequeño, ¿cuánta fuerza se genera en el émbolo grande?<br/>
+<i>Pista del abuelo: Como la superficie grande es 50 veces mayor (250 / 5 = 50), la fuerza se multiplica por 50: 100 × 50 = 5.000 N.</i>`
+  },
+
+  // --- LEYES DE NEWTON Y DINÁMICA ---
+  newton: {
+    title: "Las Leyes de Newton y Dinámica: Los tres mandamientos del movimiento universal",
+    intuition: `Dile a tu nieto: <i>«Isaac Newton descubrió en 1687 cómo se mueve todo en el universo, desde una canica hasta los planetas:
+1. <b>1ª Ley (La Inercia o 'la ley del vago'):</b> Todo cuerpo quieto quiere seguir quieto, y todo cuerpo en movimiento rectilíneo quiere seguir en movimiento para siempre, a no ser que una fuerza lo obligue a frenar. Por eso cuando el metro o el autobús da un frenazo, sales despedido hacia adelante: ¡tu cuerpo quiere seguir viajando a 50 km/h!
+2. <b>2ª Ley (F = m · a):</b> La fuerza es igual a la masa multiplicada por la aceleración. Si empujas un carrito del supermercado vacío, acelera como un bólido con un empujón suave; pero si está lleno de sacos de patatas (mucha masa), tienes que dejarte la piel empujando para que coja la misma aceleración.
+3. <b>3ª Ley (Acción y Reacción):</b> Si tú empujas a una pared, la pared te empuja exactamente a ti con la misma fuerza en sentido contrario. ¿Por qué despega un cohete al espacio? Porque expulsa gases ardiendo hacia el suelo con furia (acción), y esos gases empujan al cohete hacia las estrellas (reacción). O cuando saltas de una canoa a la orilla: tú vas adelante pero la barca sale disparada hacia atrás en el agua.»</i>`,
+    stepbystep: `1º <b>El Diagrama de Cuerpo Libre (DCL):</b> En cualquier problema de física, aislamos el objeto y dibujamos todas las flechas de fuerza que actúan sobre él:
+• <b>Peso (P = m·g):</b> Siempre vertical hacia abajo (hacia el centro de la Tierra).
+• <b>Normal (N):</b> La fuerza perpendicular que hace el suelo para sostener el objeto y que no se hunda.
+• <b>Fuerza aplicada (F):</b> El tirón o empuje del motor o la persona.
+• <b>Fuerza de rozamiento (Fr = μ · N):</b> La fricción rugosa del suelo que siempre se opone al avance.
+2º <b>Ecuación fundamental de la Dinámica:</b> Sumatorio de Fuerzas = m · a
+Fuerza neta (F - Fr) = masa · aceleración.`,
+    graphDesc: "<b>Diagrama de Fuerzas de Newton (DCL):</b> Las 4 fuerzas que gobiernan el movimiento sobre un plano: el Peso (P) equilibrado por la Normal (N), y la Fuerza motriz (F) venciendo al rozamiento (Fr) para acelerar la masa m.",
+    getSvg: () => `
+      <svg viewBox="0 0 580 250" width="100%" height="240" xmlns="http://www.w3.org/2000/svg" style="font-family: sans-serif;">
+        <defs>
+          <marker id="arr-newt-r" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#2563eb"/>
+          </marker>
+          <marker id="arr-newt-l" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 10 0 L 0 5 L 10 10 z" fill="#ea580c"/>
+          </marker>
+          <marker id="arr-newt-u" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 10 L 5 0 L 10 10 z" fill="#10b981"/>
+          </marker>
+          <marker id="arr-newt-d" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 0 L 10 0 L 5 10 z" fill="#ef4444"/>
+          </marker>
+        </defs>
+        <rect width="580" height="250" fill="#f8fafc"/>
+        
+        <!-- Suelo con rugosidad -->
+        <line x1="40" y1="180" x2="540" y2="180" stroke="#334155" stroke-width="3"/>
+        <path d="M 50 185 L 45 195 M 80 185 L 75 195 M 110 185 L 105 195 M 140 185 L 135 195 M 170 185 L 165 195 M 200 185 L 195 195 M 230 185 L 225 195 M 260 185 L 255 195 M 290 185 L 285 195 M 320 185 L 315 195 M 350 185 L 345 195 M 380 185 L 375 195 M 410 185 L 405 195 M 440 185 L 435 195 M 470 185 L 465 195 M 500 185 L 495 195" stroke="#94a3b8" stroke-width="1.5"/>
+
+        <!-- Bloque de masa m -->
+        <rect x="230" y="110" width="90" height="70" rx="4" fill="#cbd5e1" stroke="#475569" stroke-width="2"/>
+        <text x="260" y="150" font-size="14" font-weight="bold" fill="#0f172a">m = 10 kg</text>
+
+        <!-- Vector Normal (N) hacia arriba -->
+        <line x1="275" y1="110" x2="275" y2="35" stroke="#10b981" stroke-width="3" marker-end="url(#arr-newt-u)"/>
+        <text x="285" y="45" font-size="11" font-weight="bold" fill="#059669">Normal (N)</text>
+
+        <!-- Vector Peso (P = mg) hacia abajo -->
+        <line x1="275" y1="180" x2="275" y2="245" stroke="#ef4444" stroke-width="3" marker-end="url(#arr-newt-d)"/>
+        <text x="285" y="235" font-size="11" font-weight="bold" fill="#dc2626">Peso (P = m·g)</text>
+
+        <!-- Vector Fuerza (F) hacia la derecha -->
+        <line x1="320" y1="145" x2="430" y2="145" stroke="#2563eb" stroke-width="3.5" marker-end="url(#arr-newt-r)"/>
+        <text x="350" y="135" font-size="12" font-weight="bold" fill="#2563eb">F (Tracción = 50 N)</text>
+
+        <!-- Vector Rozamiento (Fr) hacia la izquierda -->
+        <line x1="230" y1="178" x2="140" y2="178" stroke="#ea580c" stroke-width="2.5" marker-end="url(#arr-newt-l)"/>
+        <text x="145" y="170" font-size="11" font-weight="bold" fill="#ea580c">Fr = μ·N</text>
+
+        <!-- Flecha de aceleración resultante -->
+        <line x1="330" y1="95" x2="400" y2="95" stroke="#0284c7" stroke-width="2" stroke-dasharray="4,2" marker-end="url(#arr-newt-r)"/>
+        <text x="345" y="90" font-size="11" font-weight="bold" fill="#0284c7">a (aceleración)</text>
+
+        <!-- Cartel 2ª Ley -->
+        <rect x="50" y="30" width="165" height="50" rx="8" fill="#eff6ff" stroke="#93c5fd" stroke-width="1.2"/>
+        <text x="60" y="50" font-size="12" font-weight="bold" fill="#1e40af">🎯 2ª Ley de Newton</text>
+        <text x="60" y="68" font-size="11" fill="#334155">Σ F = m · a  ➔  F - Fr = m·a</text>
+      </svg>
+    `,
+    formal: `<div class="math-formula">Ecuación Fundamental: Σ F = m · a</div>
+<b>Ejercicio de Examen:</b>
+Sobre un bloque de 10 kg apoyado en un suelo horizontal se aplica una fuerza de F = 50 N hacia la derecha. El coeficiente de rozamiento entre el suelo y el bloque es μ = 0,2 (g = 9,8 m/s²).
+1º <b>Eje Vertical (Equilibrio Y):</b> N - P = 0  ⟹  N = P = m · g = 10 · 9,8 = <b>98 N</b>.
+2º <b>Fuerza de Rozamiento:</b> Fr = μ · N = 0,2 · 98 = <b>19,6 N</b>.
+3º <b>Eje Horizontal (Movimiento X):</b>
+Fuerza neta = F - Fr = 50 N - 19,6 N = <b>30,4 N</b>.
+4º <b>Aceleración del bloque:</b>
+a = Fuerza neta / masa = 30,4 N / 10 kg = <b>3,04 m/s²</b>.`,
+    twin: `<b>Reto Gemelo para Lucas:</b><br/>
+Empujamos un cajón de 5 kg con una fuerza de 30 N sobre un suelo cuyo rozamiento genera una resistencia de Fr = 10 N. ¿Con qué aceleración se moverá el cajón?<br/>
+<i>Pista del abuelo: Fuerza neta = 30 - 10 = 20 N. Ahora divide entre la masa (5 kg): a = 20 / 5 = 4 m/s².</i>`
+  },
+
+  // --- CONSERVACIÓN DE LA ENERGÍA MECÁNICA ---
+  energia: {
+    title: "Conservación de la Energía Mecánica: La física invisible de la montaña rusa",
+    intuition: `Dile a tu nieto: <i>«La energía es la moneda de cambio del universo: <b>ni se crea de la nada ni se destruye, solo cambia de disfraz</b>.
+Imagínate una vagoneta en lo alto de una montaña rusa gigantesca de 20 metros de altura.
+Cuando está parada en la cumbre antes de caer, tiene guardada una cantidad enorme de <b>Energía Potencial</b> (la energía que tiene un cuerpo solo por estar muy alto).
+De repente se tira al vacío. A medida que va cayendo y perdiendo altura, esa altura no desaparece: ¡se canjea por una velocidad vertiginosa! Se transforma en <b>Energía Cinética</b> (la energía del movimiento rápido).
+En el punto más bajo de la pista, donde la altura es cero, la energía potencial se ha gastado entera, pero la energía cinética es máxima: ¡la vagoneta va a toda pastilla!
+Y con ese impulso, vuelve a trepar la siguiente cuesta, cambiando velocidad por altura otra vez.
+La suma de las dos (Energía Mecánica = Cinética + Potencial) es un número constante y sagrado que no cambia nunca si no hay rozamiento.»</i>`,
+    stepbystep: `1º <b>Energía Potencial Gravitatoria:</b> Ep = m · g · h (depende de la altura h).
+2º <b>Energía Cinética:</b> Ec = ½ · m · v² (depende de la velocidad v).
+3º <b>Principio de Conservación de la Energía Mecánica:</b>
+Em = Ec + Ep = constante
+<b>Em (en lo alto de la cima) = Em (en el suelo)</b>
+m · g · h = ½ · m · v²
+4º ¡Fíjate que la masa 'm' se cancela en ambos lados! Una vagoneta llena de gente y una vagoneta vacía alcanzan exactamente la misma velocidad abajo si caen desde la misma altura: <b>v = √(2 · g · h)</b>.`,
+    graphDesc: "<b>Conservación de la Energía en la Montaña Rusa:</b> En el punto A (cumbre), toda la energía es Potencial (Ep max, Ec=0). En el punto B (valle), toda la energía se ha convertido en Cinética (Ec max, Ep=0). La Energía Mecánica total se mantiene constante.",
+    getSvg: () => `
+      <svg viewBox="0 0 580 250" width="100%" height="240" xmlns="http://www.w3.org/2000/svg" style="font-family: sans-serif;">
+        <rect width="580" height="250" fill="#f8fafc"/>
+        
+        <!-- Pista de Montaña Rusa -->
+        <path d="M 50 50 Q 200 240 380 210 T 540 90" fill="none" stroke="#475569" stroke-width="4"/>
+        
+        <!-- Soportes de la pista -->
+        <line x1="70" y1="60" x2="70" y2="220" stroke="#94a3b8" stroke-width="2" stroke-dasharray="3,3"/>
+        <line x1="260" y1="210" x2="260" y2="220" stroke="#94a3b8" stroke-width="2"/>
+        <line x1="520" y1="80" x2="520" y2="220" stroke="#94a3b8" stroke-width="2" stroke-dasharray="3,3"/>
+        <line x1="40" y1="220" x2="540" y2="220" stroke="#334155" stroke-width="2.5"/>
+
+        <!-- Vagoneta en Cima A -->
+        <circle cx="70" cy="55" r="9" fill="#dc2626"/>
+        <text x="50" y="38" font-size="12" font-weight="bold" fill="#dc2626">Punto A (Cima: h=20m)</text>
+        <text x="85" y="60" font-size="10" fill="#dc2626">• Ep = Máxima | Ec = 0 (v=0)</text>
+
+        <!-- Vagoneta en Valle B -->
+        <circle cx="260" cy="205" r="9" fill="#2563eb"/>
+        <text x="210" y="240" font-size="12" font-weight="bold" fill="#2563eb">Punto B (Valle: h=0)</text>
+        <text x="280" y="200" font-size="10" fill="#2563eb">• Ec = Máxima (v_max) | Ep = 0</text>
+
+        <!-- Cartel de Conservación -->
+        <rect x="360" y="25" width="200" height="65" rx="8" fill="#eff6ff" stroke="#93c5fd" stroke-width="1.5"/>
+        <text x="372" y="45" font-size="12" font-weight="bold" fill="#1e40af">⚡ Em = Ep + Ec = Cte</text>
+        <text x="372" y="62" font-size="10.5" fill="#334155">m·g·h = ½·m·v²</text>
+        <text x="372" y="78" font-size="11" font-weight="bold" fill="#047857">v = √(2 · g · h)</text>
+      </svg>
+    `,
+    formal: `<div class="math-formula">Conservación de la Energía: Em_A = Em_B  ⟹  Ep_A + Ec_A = Ep_B + Ec_B</div>
+<b>Ejercicio de Examen:</b>
+Una vagoneta de 200 kg parte del reposo (v_A = 0) desde una altura h = 20 metros en una montaña rusa. Despreciando el rozamiento (g = 9,8 m/s²), calcula la velocidad con la que llega al suelo (h_B = 0).
+1º <b>Energía en el punto A:</b>
+Ep_A = m · g · h = 200 · 9,8 · 20 = <b>39.200 Julios (J)</b>.
+Ec_A = 0 (parte del reposo).
+2º <b>Energía en el punto B:</b>
+Ep_B = 0 (en el suelo).
+Ec_B = ½ · m · v² = ½ · 200 · v² = 100 · v².
+3º <b>Igualamos las energías:</b>
+39.200 = 100 · v²  ⟹  v² = 392  ⟹  <b>v = √392 ≈ 19,8 m/s (unos 71 km/h)</b>.`,
+    twin: `<b>Reto Gemelo para Lucas:</b><br/>
+Un esquiador de 60 kg se lanza desde una colina de 5 metros de altura partiendo del reposo. ¿Con qué velocidad llegará a la base de la colina? (g = 9,8 m/s²).<br/>
+<i>Pista del abuelo: Usa la fórmula directa v = √(2 · g · h) = √(2 · 9,8 · 5) = √98 ≈ 9,9 m/s (unos 36 km/h). ¡Ni siquiera necesitaste usar los 60 kg de su peso!</i>`
+  },
+
+  // --- TEOREMA DE TALES Y SEMEJANZA ---
+  tales: {
+    title: "Teorema de Tales y Semejanza: Medir pirámides y rascacielos con un simple bastón",
+    intuition: `Dile a tu nieto: <i>«Hace 2.600 años, el sabio griego Tales de Mileto visitó Egipto. Los sacerdotes del faraón le retaron: <i>'Nadie es capaz de medir la altura de la Gran Pirámide de Keops porque es imposible trepar con una cuerda hasta su punta'</i>.
+Tales sonrió, clavó su bastón de madera en la arena del desierto de forma vertical y se sentó pacientemente a esperar bajo el sol.
+¿Qué estaba esperando? Esperó al momento exacto del mediodía en que la sombra que el bastón proyectaba en el suelo medía exactamente lo mismo que el bastón.
+En ese instante exacto, gritó: <i>'¡Medid ahora la sombra de la pirámide!'</i>. ¡La longitud de la sombra de la pirámide era idéntica a su altura!
+Tales descubrió el principio de los <b>triángulos semejantes</b>: cuando dos figuras tienen exactamente los mismos ángulos (porque los rayos del sol bajan con la misma inclinación paralela), las proporciones entre sus lados son gemelas.
+Si un árbol es 10 veces más alto que tu bastón, su sombra en el suelo medirá exactamente 10 veces más que la sombra de tu bastón.»</i>`,
+    stepbystep: `1º <b>Triángulos en Posición de Tales:</b>
+Si dos rectas secantes son cortadas por rectas paralelas (los rayos del sol), los segmentos que determinan son proporcionales:
+<b>Altura_edificio / Altura_bastón = Sombra_edificio / Sombra_bastón</b>
+2º <b>Fórmula para despejar la incógnita:</b>
+H = h · (S / s)
+(La altura desconocida H se obtiene multiplicando la altura conocida de la vara 'h' por la razón entre las dos sombras S y s).`,
+    graphDesc: "<b>Geometría de Tales:</b> Los rayos de sol paralelos forman dos triángulos semejantes rectángulos. La proporción entre la altura del objeto y su sombra es constante: H / S = h / s.",
+    getSvg: () => `
+      <svg viewBox="0 0 580 250" width="100%" height="240" xmlns="http://www.w3.org/2000/svg" style="font-family: sans-serif;">
+        <defs>
+          <linearGradient id="sunGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#fef08a"/>
+            <stop offset="100%" stop-color="#facc15"/>
+          </linearGradient>
+        </defs>
+        <rect width="580" height="250" fill="#f8fafc"/>
+        
+        <!-- Suelo arenoso -->
+        <line x1="30" y1="210" x2="550" y2="210" stroke="#78350f" stroke-width="2.5"/>
+
+        <!-- Sol en lo alto -->
+        <circle cx="80" cy="40" r="22" fill="url(#sunGrad)" stroke="#eab308" stroke-width="2"/>
+        <text x="110" y="45" font-size="12" font-weight="bold" fill="#ca8a04">☀️ Rayos solares paralelos</text>
+
+        <!-- Pirámide / Edificio grande (H) -->
+        <polygon points="120,210 220,70 320,210" fill="#fde68a" stroke="#d97706" stroke-width="2.5"/>
+        <line x1="220" y1="70" x2="220" y2="210" stroke="#b45309" stroke-width="2" stroke-dasharray="4,3"/>
+        <text x="225" y="145" font-size="13" font-weight="bold" fill="#b45309">Altura H (?)</text>
+        
+        <!-- Sombra del Edificio (S) -->
+        <line x1="220" y1="210" x2="390" y2="210" stroke="#d97706" stroke-width="4"/>
+        <text x="270" y="226" font-size="11" font-weight="bold" fill="#92400e">Sombra S = 24 m</text>
+
+        <!-- Rayo solar que roza la pirámide -->
+        <line x1="220" y1="70" x2="390" y2="210" stroke="#eab308" stroke-width="2" stroke-dasharray="5,3"/>
+
+        <!-- Bastón de Tales (h) -->
+        <line x1="450" y1="160" x2="450" y2="210" stroke="#0f172a" stroke-width="3.5"/>
+        <text x="455" y="185" font-size="11" font-weight="bold" fill="#0f172a">Vara h = 1.5 m</text>
+
+        <!-- Sombra del bastón (s) -->
+        <line x1="450" y1="210" x2="495" y2="210" stroke="#0284c7" stroke-width="4"/>
+        <text x="455" y="226" font-size="11" font-weight="bold" fill="#0369a1">s = 2 m</text>
+        <line x1="450" y1="160" x2="495" y2="210" stroke="#eab308" stroke-width="2" stroke-dasharray="5,3"/>
+
+        <!-- Cartel de proporción de Tales -->
+        <rect x="340" y="30" width="220" height="52" rx="8" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5"/>
+        <text x="352" y="50" font-size="12" font-weight="bold" fill="#0284c7">📐 H / S = h / s</text>
+        <text x="352" y="70" font-size="11" fill="#334155">H = h · (S / s) = 1.5 · (24/2) = 18 m</text>
+      </svg>
+    `,
+    formal: `<div class="math-formula">Teorema de Tales: H / S = h / s  ⟹  H = h · (S / s)</div>
+<b>Problema Clásico de Examen:</b>
+Queremos calcular la altura de la torre de una iglesia. En el mismo momento del día, un poste vertical de 2 metros proyecta una sombra de 1,5 metros en el suelo, mientras que la sombra de la torre mide 36 metros.
+1º <b>Planteamiento de semejanza:</b>
+H / 36 = 2 / 1,5
+2º <b>Despejamos la altura H:</b>
+H = (2 · 36) / 1,5 = 72 / 1,5 = <b>48 metros</b> de altura.`,
+    twin: `<b>Reto Gemelo para Lucas:</b><br/>
+Un árbol proyecta una sombra de 12 metros en el parque. Justo a su lado, Lucas (que mide 1,5 metros de alto) proyecta una sombra de 2 metros. ¿Cuánto mide el árbol?<br/>
+<i>Pista del abuelo: La sombra del árbol es 6 veces más larga que la de Lucas (12 / 2 = 6). Por tanto, el árbol mide 6 veces la altura de Lucas: 1,5 × 6 = 9 metros.</i>`
+  },
+
+  // --- PRINCIPIO DE BERNOULLI Y AERODINÁMICA ---
+  bernoulli: {
+    title: "Principio de Bernoulli: ¿Por qué vuelan los aviones gigantes de 400 toneladas?",
+    intuition: `Dile a tu nieto: <i>«¿Cómo es posible que un avión Boeing 747, que pesa 400.000 kilos de metal macizo con cientos de pasajeros y maletas, se mantenga flotando en el aire sin caerse?
+Haz este experimento en casa con una tira de papel: sostén un extremo del papel pegado a tu labio inferior y sopla fuerte por encima de él. ¿Qué hace el papel? ¡Sube hacia arriba desafiando la gravedad!
+El físico suizo Daniel Bernoulli descubrió en 1738 la razón: <b>cuando el aire viaja más rápido, ejerce menos presión</b>.
+Las alas de los aviones no son planas: tienen una forma especial de joroba (perfil alar), muy curvadas por arriba y completamente planas por abajo.
+Cuando el avión corre por la pista, el aire que pasa por encima del ala se ve obligado a viajar más rápido para sortear la curva que el aire de abajo.
+Al ir más rápido, la presión arriba baja drásticamente: se forma una zona de 'vacío' o succión que aspira el ala hacia el cielo. Esa fuerza se llama <b>Sustentación</b>. ¡El aire 'chupa' el avión hacia las nubes!»</i>`,
+    stepbystep: `1º <b>Forma asimétrica del ala (Perfil alar):</b> El camino superior es más largo que el inferior.
+2º <b>Diferencia de velocidades:</b> Velocidad superior (v₁) > Velocidad inferior (v₂).
+3º <b>Efecto Bernoulli:</b> A mayor velocidad, menor presión: Presión superior (P₁) < Presión inferior (P₂).
+4º <b>Fuerza neta de Sustentación (L):</b>
+La mayor presión de abajo empuja el ala hacia arriba con una fuerza de toneladas: Sustentación L = (P₂ - P₁) · Superficie_ala.`,
+    graphDesc: "<b>Perfil Alar y Principio de Bernoulli:</b> El aire viaja a mayor velocidad por la superficie curvada superior (Baja Presión P₁), generando una fuerza de succión hacia arriba (Sustentación) que vence al peso del avión.",
+    getSvg: () => `
+      <svg viewBox="0 0 580 250" width="100%" height="240" xmlns="http://www.w3.org/2000/svg" style="font-family: sans-serif;">
+        <defs>
+          <marker id="arr-lift" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 10 L 5 0 L 10 10 z" fill="#0284c7"/>
+          </marker>
+        </defs>
+        <rect width="580" height="250" fill="#f8fafc"/>
+        
+        <!-- Líneas de corriente de aire superiores (rápidas, comprimidas) -->
+        <path d="M 50 70 Q 220 20 450 75" fill="none" stroke="#38bdf8" stroke-width="2.5" stroke-dasharray="6,3"/>
+        <path d="M 50 85 Q 220 40 450 85" fill="none" stroke="#0284c7" stroke-width="3"/>
+        
+        <!-- Perfil alar del avión -->
+        <path d="M 120 130 C 120 70, 300 70, 420 130 C 320 140, 160 140, 120 130 Z" fill="#94a3b8" stroke="#334155" stroke-width="3"/>
+        <text x="210" y="125" font-size="13" font-weight="bold" fill="#0f172a">Ala de Avión</text>
+
+        <!-- Líneas de corriente inferiores (lentas, rectas) -->
+        <path d="M 50 155 Q 260 155 450 155" fill="none" stroke="#64748b" stroke-width="2.5"/>
+        <path d="M 50 175 Q 260 175 450 175" fill="none" stroke="#94a3b8" stroke-width="2" stroke-dasharray="6,3"/>
+
+        <!-- Textos de velocidad y presión -->
+        <text x="180" y="45" font-size="12" font-weight="bold" fill="#0369a1">Alta velocidad (v₁) ➔ BAJA PRESIÓN (P₁)</text>
+        <text x="180" y="200" font-size="12" font-weight="bold" fill="#334155">Baja velocidad (v₂) ➔ ALTA PRESIÓN (P₂)</text>
+
+        <!-- Flechas de Sustentación hacia arriba -->
+        <line x1="260" y1="110" x2="260" y2="40" stroke="#0284c7" stroke-width="4" marker-end="url(#arr-lift)"/>
+        <text x="270" y="55" font-size="13" font-weight="bold" fill="#0284c7">Sustentación (Fuerza hacia arriba)</text>
+      </svg>
+    `,
+    formal: `<div class="math-formula">Ecuación de Bernoulli: P + ½ · ρ · v² + ρ · g · h = constante</div>
+<b>Conclusión Física:</b> Al mantenerse la altura h constante entre la cara superior e inferior del ala:
+P₁ + ½ · ρ · v₁² = P₂ + ½ · ρ · v₂²
+Como v₁ > v₂  ⟹  <b>P₁ < P₂</b> (Efecto de succión ascendente).`,
+    twin: `<b>Reto Gemelo para Lucas:</b><br/>
+¿Por qué cuando estás en la ducha y abres el grifo de agua caliente con fuerza, la cortina de plástico de la ducha se mete hacia dentro y se te pega a las piernas?<br/>
+<i>Pista del abuelo: ¡Es el principio de Bernoulli! El chorro de agua arrastra el aire dentro de la ducha a gran velocidad, reduciendo la presión interna. El aire quieto de fuera tiene más presión y empuja la cortina hacia ti.</i>`
   }
 };
 
@@ -559,25 +1017,37 @@ function solveMathProblem() {
   const levelText = levelSelect.options[levelSelect.selectedIndex].text;
 
   if (!qText) {
-    alert("Por favor, escribe la duda o el problema de matemáticas que quieres explicarle a tu nieto.");
+    alert("Por favor, escribe la duda, teorema o problema que quieres explicarle a tu nieto.");
     return;
   }
 
   const qLower = qText.toLowerCase();
   let matchedData = null;
 
-  // Búsqueda semántica
-  if (qLower.includes("derivada") || qLower.includes("diferencial") || qLower.includes("tangente") || qLower.includes("velocidad instantanea")) {
+  // Búsqueda semántica inteligente (Matemáticas, Física y Teoremas Científicos)
+  if (qLower.includes("arquimedes") || qLower.includes("arquímedes") || qLower.includes("empuje") || qLower.includes("flota") || qLower.includes("eureka") || qLower.includes("desalojado") || qLower.includes("corona de oro") || qLower.includes("peso aparente")) {
+    matchedData = MATH_KNOWLEDGE_BASE.arquimedes;
+  } else if (qLower.includes("pascal") || qLower.includes("prensa hidraulica") || qLower.includes("prensa hidráulica") || qLower.includes("embolo") || qLower.includes("émbolo") || qLower.includes("elevador hidraulico") || qLower.includes("elevador hidráulico")) {
+    matchedData = MATH_KNOWLEDGE_BASE.pascal;
+  } else if (qLower.includes("newton") || qLower.includes("inercia") || qLower.includes("f = m") || qLower.includes("f=m") || qLower.includes("accion y reaccion") || qLower.includes("acción y reacción") || qLower.includes("fuerza y aceleracion") || qLower.includes("dinamica") || qLower.includes("dinámica")) {
+    matchedData = MATH_KNOWLEDGE_BASE.newton;
+  } else if (qLower.includes("energia") || qLower.includes("energía") || qLower.includes("cinetica") || qLower.includes("cinética") || qLower.includes("potencial") || qLower.includes("montaña rusa") || qLower.includes("mecanica") || qLower.includes("mecánica")) {
+    matchedData = MATH_KNOWLEDGE_BASE.energia;
+  } else if (qLower.includes("tales") || qLower.includes("thales") || qLower.includes("semejanza") || qLower.includes("triangulos semejantes") || qLower.includes("triángulos semejantes") || qLower.includes("sombra piramide") || qLower.includes("sombra del arbol")) {
+    matchedData = MATH_KNOWLEDGE_BASE.tales;
+  } else if (qLower.includes("bernoulli") || qLower.includes("venturi") || qLower.includes("avion") || qLower.includes("avión") || qLower.includes("alas") || qLower.includes("sustentacion") || qLower.includes("sustentación")) {
+    matchedData = MATH_KNOWLEDGE_BASE.bernoulli;
+  } else if (qLower.includes("derivada") || qLower.includes("diferencial") || qLower.includes("tangente") || qLower.includes("velocidad instantanea") || qLower.includes("pendiente de una curva")) {
     matchedData = MATH_KNOWLEDGE_BASE.derivada;
-  } else if (qLower.includes("integral") || qLower.includes("área bajo la curva") || qLower.includes("barrow") || qLower.includes("primitiva")) {
+  } else if (qLower.includes("integral") || qLower.includes("área bajo la curva") || qLower.includes("area bajo la curva") || qLower.includes("barrow") || qLower.includes("primitiva") || qLower.includes("riemann")) {
     matchedData = MATH_KNOWLEDGE_BASE.integral;
   } else if (qLower.includes("logaritmo") || qLower.includes("richter") || qLower.includes("decibelio") || qLower.includes("neperiano")) {
     matchedData = MATH_KNOWLEDGE_BASE.logaritmo;
-  } else if (qLower.includes("segundo grado") || qLower.includes("x²") || qLower.includes("x^2") || qLower.includes("cuadrática") || qLower.includes("cuadratica")) {
+  } else if (qLower.includes("segundo grado") || qLower.includes("x²") || qLower.includes("x^2") || qLower.includes("cuadrática") || qLower.includes("cuadratica") || qLower.includes("parabola") || qLower.includes("parábola")) {
     matchedData = MATH_KNOWLEDGE_BASE.ecuacion2;
   } else if (qLower.includes("coche") || qLower.includes("tren") || qLower.includes("velocidad") || qLower.includes("encuentr") || qLower.includes("km/h")) {
     matchedData = MATH_KNOWLEDGE_BASE.coches;
-  } else if (qLower.includes("trigonometr") || qLower.includes("seno") || qLower.includes("coseno") || qLower.includes("tangente") || qLower.includes("angulo") || qLower.includes("ángulo")) {
+  } else if (qLower.includes("trigonometr") || qLower.includes("seno") || qLower.includes("coseno") || qLower.includes("angulo") || qLower.includes("ángulo")) {
     matchedData = MATH_KNOWLEDGE_BASE.trigonometria;
   } else if (qLower.includes("pitagoras") || qLower.includes("pitágoras") || qLower.includes("hipotenusa") || qLower.includes("cateto") || qLower.includes("escalera")) {
     matchedData = MATH_KNOWLEDGE_BASE.pitagoras;
@@ -594,17 +1064,17 @@ function solveMathProblem() {
   // Generación pedagógica enriquecida si es una consulta libre diferente
   if (!matchedData) {
     matchedData = {
-      title: `Razonamiento Explicativo para ${nietoName} (${levelText})`,
+      title: `Razonamiento Explicativo para ${nietoName} (Ciencias, Física y Matemáticas - ${levelText})`,
       intuition: `Para que ${nietoName} comprenda de verdad este concepto (<i>«${qText}»</i>), lo primero que debemos hacer como abuelos es despojar a la pregunta de todo tecnicismo árido y buscar su equivalente en el mundo tangible.
-Las matemáticas no nacieron en despachos universitarios con fórmulas raras, sino en el campo, en los mercados y en los talleres: para repartir cosechas sin pelearse, para medir parcelas de tierra tras las crecidas de los ríos, para construir puentes que no se cayeran con el viento o para saber si las estrellas indicaban la época de sembrar.
-Cuando le expliques esto a ${nietoName}, dile: <i>«No mires los signos como una amenaza de examen; imagínate que es un acertijo donde alguien ha escondido un dato y nos ha dejado tres pistas a la vista para encontrarlo»</i>.`,
-      stepbystep: `<b>El protocolo del Abuelo Tutor para desgranar cualquier problema:</b><br/>
-1º <b>La lectura dramatizada:</b> Leed el enunciado juntos en voz alta. Pídele que te lo cuente con sus propias palabras como si fuera una película de intriga.<br/>
-2º <b>Separar datos de preguntas:</b> Subrayad con lápiz verde los datos seguros que nos da el problema, y con lápiz rojo la incógnita exacta que nos pide averiguar.<br/>
-3º <b>El dibujo en servilleta:</b> Aunque no sea geometría, dibujad un esquema: una línea de tiempo, dos muñequitos, una balanza de dos platos o una caja cerrada con un lazo.<br/>
+Las ciencias, la física y las matemáticas no nacieron en despachos universitarios con fórmulas abstractas, sino en los talleres, puertos, barcos y observatorios: para saber por qué flotaban los barcos de guerra, para levantar pesos gigantescos con poleas y prensas sin romperse la espalda, para calcular la trayectoria de una bala o un satélite, o para medir parcelas de tierra tras las crecidas de los ríos.
+Cuando le expliques esto a ${nietoName}, dile: <i>«No mires las fórmulas como una amenaza de examen; imagínate que es una ley del universo que describe cómo funciona la realidad que tocas con tus manos todos los días»</i>.`,
+      stepbystep: `<b>El protocolo del Abuelo Tutor para desgranar cualquier problema científico o matemático:</b><br/>
+1º <b>La lectura dramatizada:</b> Leed el enunciado juntos en voz alta. Pídele que te lo cuente con sus propias palabras como si fuera un misterio o una película de intriga.<br/>
+2º <b>Separar datos de preguntas:</b> Subrayad con lápiz verde los datos seguros que nos da el problema (masas, distancias, tiempos, densidades), y con lápiz rojo la incógnita exacta que nos pide averiguar.<br/>
+3º <b>El dibujo en servilleta (Diagrama visual):</b> Dibujad siempre un esquema físico: las fuerzas tirando hacia arriba o abajo, los recipientes de líquido, la trayectoria o el triángulo.<br/>
 4º <b>Comprobación con el sentido común:</b> Antes de dar por bueno un número, pregúntale a ${nietoName}: <i>«¿Tiene lógica este resultado en el mundo real?»</i>.`,
       formal: `<div class="math-formula">Estructura Curricular para el Cuaderno Escolar de ${nietoName}:</div>
-• <b>Planteamiento:</b> Declaración explícita de incógnitas y fórmulas del tema escolar.<br/>
+• <b>Planteamiento Físico/Matemático:</b> Declaración explícita de incógnitas, unidades en el Sistema Internacional (SI: kg, m, s, N, J, Pa) y fórmulas del currículo escolar.<br/>
 • <b>Desarrollo analítico:</b> Sustitución numérica paso a paso sin saltarse operaciones intermedias.<br/>
 • <b>Solución definitiva:</b> Resultado numérico recuadrado con sus unidades correspondientes.<br/>
 <i>💡 Si necesitas una explicación aún más detallada para este ejercicio específico, pulsa el botón morado de abajo para consultar directamente en Gemini.</i>`,
@@ -679,7 +1149,24 @@ function sendSocraticQuestion() {
   const qLower = userQ.toLowerCase();
   let aiReply = "";
 
-  if (qLower.includes("c") || qLower.includes("constante")) {
+  if (qLower.includes("arquimedes") || qLower.includes("arquímedes") || qLower.includes("empuje") || qLower.includes("barco") || qLower.includes("flota") || qLower.includes("hierro")) {
+    aiReply = `¡Fíjate qué fascinante para ${nieto}! Dile esto:
+<i>«¿Por qué un tornillo de hierro de 5 gramos se hunde hasta el fondo y un barco petrolero de 100.000 toneladas de hierro flota como una pluma en el mar?»</i><br/>
+Porque el tornillo es macizo y ocupa muy poco espacio: solo desaloja 1 mililitro de agua, y el empuje de ese mililitro hacia arriba es ridículo.<br/>
+En cambio, el barco de acero está <b>hueco por dentro lleno de aire</b>: para meterlo en el mar tiene que empujar y apartar miles de toneladas de agua salada. Y como descubrió Arquímedes, el agua devuelve el empujón hacia arriba con el peso exacto de toda esa agua apartada. ¡Esa fuerza hacia arriba supera con creces todo el peso del acero!`;
+  } else if (qLower.includes("eureka") || qLower.includes("bañera") || qLower.includes("corona")) {
+    aiReply = `¡La anécdota de la bañera de Arquímedes es la mejor para contarle a ${nieto} merendando!<br/>
+El rey de Siracusa le dio una barra de oro a un joyero para hacer una corona para los dioses. Sospechaba que el joyero le había robado oro y metido plata barata dentro, pero no quería romper la corona para comprobarlo.<br/>
+Arquímedes se estaba bañando y vio que al meter su cuerpo, el agua desbordaba por los bordes. Se dio cuenta de que la plata ocupa más volumen que el oro para el mismo peso (la plata es menos densa). Si la corona desalojaba más agua que un lingote de oro puro del mismo peso... ¡el joyero era un ladrón! Salió corriendo desnudo gritando: <b>«¡Eureka!»</b> («¡Lo encontré!»).`;
+  } else if (qLower.includes("pascal") || qLower.includes("prensa") || qLower.includes("freno")) {
+    aiReply = `El principio de Pascal es la base de cómo frenan los camiones y coches modernos.<br/>
+El líquido de frenos no se puede comprimir ni aplastar. Cuando el conductor pisa el pedal con un pie suavemente, esa presión empuja por un tubito estrecho y llega a los frenos de las cuatro ruedas gigantes, multiplicando la fuerza por 50 para frenar en seco un vehículo de dos toneladas. ¡El agua o el aceite transmiten la fuerza íntegra!`;
+  } else if (qLower.includes("newton") || qLower.includes("inercia") || qLower.includes("fuerza")) {
+    aiReply = `Para que ${nieto} entienda las leyes de Newton:<br/>
+1. <b>Inercia:</b> Si vas en patinete o autobús y frena de golpe, tu cuerpo sigue hacia adelante. ¡Las cosas quieren seguir como están a no ser que alguien las obligue!<br/>
+2. <b>F = m · a:</b> Para acelerar un balón de fútbol necesitas una patada suave; para acelerar un balón medicinal de 5 kg necesitas una patada con toda tu fuerza. A más masa, más fuerza cuesta moverlo.<br/>
+3. <b>Acción y Reacción:</b> Cuando inflas un globo y lo sueltas sin atar, el aire sale hacia abajo y el globo vuela hacia arriba disparado. ¡Toda acción produce una reacción opuesta!`;
+  } else if (qLower.includes("c") || qLower.includes("constante")) {
     aiReply = `¡Qué pregunta tan inteligente para ${nieto}! Te lo explico con la <b>metáfora del ascensor</b>:
 Imagínate que un ascensor sube 3 pisos (+3).
 Si el ascensor arrancó en la planta baja (piso 0), terminará en el piso 3. Pero si arrancó en el piso 10, terminará en el piso 13.
@@ -701,10 +1188,10 @@ Al final de la semana no multiplicas plano, sino que sumas una escalera de moned
 Las fórmulas complejas solo son el atajo de los sabios para no tener que contar monedas una a una cuando la hucha tiene millones de céntimos.`;
   } else if (qLower.includes("para que sirve") || qLower.includes("vida real") || qLower.includes("utilidad")) {
     aiReply = `Dile a ${nieto} que esto se usa todos los días en cosas que le encantan:
-1. <b>En los videojuegos (como Fortnite o FIFA):</b> Para calcular la trayectoria parabólica del balón o cómo rebota un coche tras un derrape.
-2. <b>En los teléfonos móviles:</b> Para comprimir una canción en Spotify o una foto en Instagram sin que pierda nitidez.
-3. <b>En la medicina:</b> Para calcular la dosis exacta de un antibiótico en sangre para que baje la infección sin dañar el riñón.
-4. <b>En la arquitectura:</b> Para asegurarse de que los puentes colgantes aguantan el peso de los camiones y la fuerza del viento.`;
+1. <b>En los barcos y submarinos:</b> Para no irse a pique en las tormentas y flotar con precisión de milímetros.
+2. <b>En los videojuegos (como Fortnite o FIFA):</b> Para calcular la trayectoria parabólica del balón o cómo rebota un coche tras un derrape.
+3. <b>En los teléfonos móviles y coches:</b> Para calibrar los frenos ABS, los sensores de aceleración y las pantallas táctiles.
+4. <b>En la medicina:</b> Para calcular la dosis exacta de un antibiótico en sangre para que baje la infección sin dañar el riñón.`;
   } else if (qLower.includes("negativo") || qLower.includes("raiz") || qLower.includes("raíz")) {
     aiReply = `Dile a ${nieto}: <i>«Busca dos números idénticos que multiplicados den -16»</i>.
 Si prueba con +4: 4 × 4 = +16.
@@ -713,7 +1200,7 @@ Si prueba con -4: (-4) × (-4) = ¡también +16, porque menos por menos es más!
   } else {
     aiReply = `Comprendo perfectamente tu duda, abuelo/a. Respecto a <i>«${userQ}»</i>:
 En este nivel escolar, la clave que debes transmitirle a ${nieto} es que no intente memorizar pasos mecánicamente como si fuera una receta de cocina sin sentido.
-Pregúntale siempre: <i>«¿Qué representa este número en el dibujo?»</i>. Cuando asociamos cada término a un objeto físico (un metro, un euro, un segundo o un trozo de tarta), la confusión desaparece de inmediato.
+Pregúntale siempre: <i>«¿Qué representa este número o fuerza en el dibujo?»</i>. Cuando asociamos cada término a un objeto físico (un metro, un kilogramo, una fuerza de empuje o un segundo de tiempo), la confusión desaparece de inmediato.
 <br/><br/><i>💡 Si quieres profundizar todavía más en este matiz concreto, pulsa arriba el botón «⚡ Si quieres profundizar más... (Consultar en Gemini)».</i>`;
   }
 
@@ -737,17 +1224,17 @@ function openInGemini() {
   const nivel = currentMathData.levelText || "Escolar";
   const pregunta = currentMathData.questionText;
 
-  const promptTexto = `Actúa como un profesor emérito de matemáticas y un abuelo paciente, sabio y cariñoso.
-Mi nieto/a ${nieto} tiene ${nivel} y tiene la siguiente duda o problema de matemáticas:
+  const promptTexto = `Actúa como un profesor emérito de ciencias, física y matemáticas y un abuelo paciente, sabio y cariñoso.
+Mi nieto/a ${nieto} tiene ${nivel} y tiene la siguiente duda, problema o teorema:
 
 «${pregunta}»
 
-Por favor, no me des una respuesta fría de libro de texto ni te limites a soltar fórmulas. Necesito que me des una explicación con un inmenso valor añadido pedagógico estructurada exactamente en 4 partes:
+Por favor, no me des una respuesta fría de libro de texto ni te limites a soltar fórmulas. Necesito que me des una explicación con un inmenso valor añadido pedagógico estructurada exactamente en 5 partes:
 
-1. 🌟 COMPRENSIÓN INTUITIVA COTIDIANA: Una analogía visual o historia de la vida real sin números ni miedo, para que el niño entienda para qué sirve y qué significa antes de ver una sola fórmula.
-2. 🧠 EL PASO A PASO RAZONADO: La explicación lógica desmenuzada paso a paso, explicando el «por qué» de cada movimiento matemático sin saltos mágicos.
-3. 📊 ILUSTRACIÓN O ESQUEMA GRÁFICO: Explica con claridad la gráfica (curva, secante, tangente, áreas bajo la curva o ejes) para visualizarlo con los ojos.
-4. 📝 PARA EL EXAMEN DEL COLEGIO: El rigor formal con las fórmulas del currículo escolar y el desarrollo completo para sacar la máxima nota.
+1. 🌟 COMPRENSIÓN INTUITIVA COTIDIANA: Una analogía visual, anécdota histórica (como la bañera de Arquímedes o la manzana de Newton) o historia cotidiana sin números ni miedo, para que el niño entienda para qué sirve y qué significa antes de ver fórmulas.
+2. 🧠 EL PASO A PASO RAZONADO: La explicación lógica desmenuzada paso a paso, explicando el «por qué» de cada movimiento matemático o físico sin saltos mágicos.
+3. 📊 ILUSTRACIÓN O ESQUEMA GRÁFICO: Describe con claridad cómo dibujar un esquema visual (fuerzas, vectores de empuje, curvas, secantes/tangentes o áreas) para visualizarlo con los ojos.
+4. 📝 PARA EL EXAMEN DEL COLEGIO: El rigor formal con las fórmulas del currículo escolar, unidades del Sistema Internacional (N, J, Pa, m/s²...) y el desarrollo completo para sacar la máxima nota.
 5. 🎯 EL RETO GEMELO: Un problema gemelo con números cambiados para que ${nieto} lo resuelva a solas a lápiz en su cuaderno y demuestre que lo ha aprendido.`;
 
   navigator.clipboard.writeText(promptTexto).then(() => {
@@ -759,7 +1246,7 @@ Por favor, no me des una respuesta fría de libro de texto ni te limites a solta
 }
 
 // ==========================================================================
-// 6. IMPRESIÓN DE LA FICHA DE MATEMÁTICAS CON GRÁFICA Y CUADRÍCULA
+// 6. IMPRESIÓN DE LA FICHA DE MATEMÁTICAS Y CIENCIAS CON GRÁFICA Y CUADRÍCULA
 // ==========================================================================
 function printMathWorksheet() {
   if (!currentMathData) return;
@@ -772,7 +1259,7 @@ function printMathWorksheet() {
   pDoc.innerHTML = `
     <div class="print-header">
       <div>
-        <h1>📐 Cuaderno de Matemáticas Razonadas</h1>
+        <h1>📐 Cuaderno de Ciencias y Matemáticas Razonadas</h1>
         <div style="font-size: 11pt; color: #333; margin-top: 4px;">Tutor: Educanietos IA • Nivel: ${currentMathData.levelText}</div>
       </div>
       <div class="print-meta">
@@ -782,7 +1269,7 @@ function printMathWorksheet() {
     </div>
 
     <div class="print-box">
-      <h2>📌 El Concepto o Problema a Resolver:</h2>
+      <h2>📌 El Concepto, Teorema o Problema a Resolver:</h2>
       <p style="font-size: 11pt; font-weight: bold; margin-top: 4px;">${currentMathData.questionText}</p>
     </div>
 
@@ -798,7 +1285,7 @@ function printMathWorksheet() {
 
     ${currentMathData.getSvg ? `
     <div class="print-box" style="text-align: center; page-break-inside: avoid;">
-      <h2>📊 Gráfica Explicativa:</h2>
+      <h2>📊 Ilustración Gráfica / Esquema Conceptual:</h2>
       <div style="max-width: 480px; margin: 0 auto;">
         ${currentMathData.getSvg()}
       </div>
