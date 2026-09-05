@@ -58,18 +58,26 @@ function launchGeminiWeb() {
 
   const prompt = generatePedagogicalPrompt(qText, nietoName, levelText);
 
-  // Mostrar aviso en pantalla
+  // 1. Copiar al portapapeles de forma garantizada
+  try {
+    const tempEl = document.createElement("textarea");
+    tempEl.value = prompt;
+    tempEl.style.position = "fixed";
+    tempEl.style.left = "-9999px";
+    document.body.appendChild(tempEl);
+    tempEl.select();
+    document.execCommand("copy");
+    document.body.removeChild(tempEl);
+  } catch (err) {}
+
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(prompt).catch(() => {});
+  }
+
+  // 2. ABRIR GEMINI SÍNCRONAMENTE (garantiza que Safari y Chrome en Mac NUNCA bloqueen la pestaña)
+  window.open("https://gemini.google.com", "_blank");
+
+  // 3. Mostrar aviso breve en pantalla
   const hint = document.getElementById('gemini-hint');
   if (hint) hint.style.display = 'block';
-
-  // Copiar al portapapeles y abrir Gemini
-  if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(prompt).then(() => {
-      window.open("https://gemini.google.com", "_blank");
-    }).catch(() => {
-      window.open("https://gemini.google.com", "_blank");
-    });
-  } else {
-    window.open("https://gemini.google.com", "_blank");
-  }
 }
