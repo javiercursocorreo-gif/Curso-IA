@@ -1455,7 +1455,7 @@ Pregúntale siempre: <i>«¿Qué representa este número o fuerza en el dibujo?�
   // 3. Añadir burbuja de la IA
   const aiBubble = document.createElement('div');
   aiBubble.className = 'chat-bubble bubble-ai';
-  aiBubble.innerHTML = `🎓 <strong>Tutor Socrático:</strong><br/>${aiReply}`;
+  aiBubble.innerHTML = `👴 <strong>El Abuelo Tutor:</strong><br/>${aiReply}`;
   chatHist.appendChild(aiBubble);
 
   // Auto-scroll
@@ -1486,7 +1486,7 @@ Por favor, no me des una respuesta fría de libro de texto ni te limites a solta
 5. 🎯 EL RETO GEMELO: Un problema gemelo con números cambiados para que ${nieto} lo resuelva a solas a lápiz en su cuaderno y demuestre que lo ha aprendido.`;
 
   navigator.clipboard.writeText(promptTexto).then(() => {
-    alert(`✨ ¡El Prompt Socrático ha sido copiado al portapapeles!\n\nAhora se abrirá Google Gemini en una nueva pestaña.\nSolo tienes que pulsar Ctrl+V (o Cmd+V en Mac) en el cuadro de texto de Gemini y pulsar Enter para ver la explicación en vivo de la IA.`);
+    alert(`✨ ¡La consulta explicativa ha sido copiada al portapapeles!\n\nAhora se abrirá Google Gemini en una nueva pestaña.\nSolo tienes que pulsar Ctrl+V (o Cmd+V en Mac) en el cuadro de texto de Gemini y pulsar Enter para ver la explicación en vivo de la IA.`);
     window.open("https://gemini.google.com", "_blank");
   }).catch(() => {
     window.open("https://gemini.google.com", "_blank");
@@ -1568,7 +1568,7 @@ function printMathWorksheet() {
     </div>
 
     <div style="margin-top: 20px; border-top: 1px solid #999; padding-top: 8px; font-size: 9pt; color: #555; text-align: center;">
-      Educanietos IA • Metodología de Razonamiento Socrático para el Éxito Escolar
+      Educanietos IA • Explicaciones Claras y Razonadas para el Éxito Escolar
     </div>
   `;
 
