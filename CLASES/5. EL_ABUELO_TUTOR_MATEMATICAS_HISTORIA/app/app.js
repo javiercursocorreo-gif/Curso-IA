@@ -207,6 +207,49 @@ Sirve para <b>domesticar números gigantescos que no caben en una regla</b>:
 • Convierte las potencias en multiplicaciones sencillas: log(Aⁿ) = n · log(A). (¡El exponente baja al suelo como por un tobogán!).
 2º Cuando en el colegio veas «log» sin ningún número abajo, significa que la base es 10 (logaritmo decimal).
 3º Cuando veas «ln», es el logaritmo natural o neperiano, cuya base es el famoso número 'e' (2,7182...).`,
+    graphDesc: "<b>La Escala Logarítmica:</b> Convierte saltos gigantescos de multiplicación (×10, ×100, ×1.000) en pasos iguales de una regla (1, 2, 3). Permite representar en un folio tanto un susurro como el despegue de un cohete.",
+    getSvg: () => `
+      <svg viewBox="0 0 580 250" width="100%" height="240" xmlns="http://www.w3.org/2000/svg" style="font-family: sans-serif;">
+        <rect width="580" height="250" fill="#f8fafc"/>
+        
+        <!-- Ejes -->
+        <line x1="60" y1="200" x2="540" y2="200" stroke="#334155" stroke-width="2.5"/>
+        <line x1="70" y1="210" x2="70" y2="30" stroke="#334155" stroke-width="2"/>
+        <text x="500" y="225" font-size="12" font-weight="bold" fill="#334155">Valor real x</text>
+        <text x="80" y="45" font-size="12" font-weight="bold" fill="#0284c7">y = log₁₀(x)</text>
+
+        <!-- Curva Logarítmica y = log10(x) -->
+        <path d="M 80 200 C 130 140, 260 100, 520 70" fill="none" stroke="#0284c7" stroke-width="3.5"/>
+
+        <!-- Puntos clave: x=1 -> y=0 -->
+        <circle cx="80" cy="200" r="5.5" fill="#dc2626"/>
+        <text x="75" y="218" font-size="11" font-weight="bold" fill="#dc2626">x = 1 (10⁰)</text>
+        <text x="75" y="190" font-size="11" fill="#475569">y = 0</text>
+
+        <!-- x=10 -> y=1 -->
+        <circle cx="180" cy="140" r="5.5" fill="#2563eb"/>
+        <line x1="180" y1="200" x2="180" y2="140" stroke="#94a3b8" stroke-dasharray="3,3"/>
+        <text x="160" y="218" font-size="11" font-weight="bold" fill="#2563eb">x = 10 (10¹)</text>
+        <text x="140" y="140" font-size="11" font-weight="bold" fill="#2563eb">y = 1</text>
+
+        <!-- x=100 -> y=2 -->
+        <circle cx="330" cy="100" r="5.5" fill="#059669"/>
+        <line x1="330" y1="200" x2="330" y2="100" stroke="#94a3b8" stroke-dasharray="3,3"/>
+        <text x="310" y="218" font-size="11" font-weight="bold" fill="#059669">x = 100 (10²)</text>
+        <text x="290" y="100" font-size="11" font-weight="bold" fill="#059669">y = 2</text>
+
+        <!-- x=1000 -> y=3 -->
+        <circle cx="500" cy="73" r="5.5" fill="#d97706"/>
+        <line x1="500" y1="200" x2="500" y2="73" stroke="#94a3b8" stroke-dasharray="3,3"/>
+        <text x="470" y="218" font-size="11" font-weight="bold" fill="#d97706">x = 1.000 (10³)</text>
+        <text x="455" y="75" font-size="11" font-weight="bold" fill="#d97706">y = 3</text>
+
+        <!-- Cartel explicativo -->
+        <rect x="220" y="25" width="220" height="46" rx="8" fill="#eff6ff" stroke="#93c5fd" stroke-width="1.2"/>
+        <text x="230" y="43" font-size="11.5" font-weight="bold" fill="#1e40af">💡 Domar Números Monstruosos</text>
+        <text x="230" y="58" font-size="10.5" fill="#334155">Multiplicar por 10 es solo sumar +1 en 'y'.</text>
+      </svg>
+    `,
     formal: `<div class="math-formula">Definición: log_b(a) = c  ⟺  bᶜ = a   (con b > 0, b ≠ 1, a > 0)</div>
 <b>Ejemplos típicos de examen:</b>
 • log₂(8) = 3  (porque 2³ = 8)
@@ -467,6 +510,57 @@ En la vida real: si a ti te <b>QUITAN (-)</b> una <b>DEUDA (-)</b>... ¡te está
 • Positivo × Negativo = Negativo (Un amigo que te quita caramelos: pierdes).
 • Negativo × Positivo = Negativo (Un enemigo que te da una multa: pierdes).
 • Negativo × Negativo = Positivo (Un enemigo al que le quitas su arma: ganas tú).`,
+    graphDesc: "<b>La Recta Numérica y la Regla de los Signos:</b> El cero es el espejo central. Restar un número negativo (- -) significa anular una marcha atrás y avanzar hacia el lado positivo (+).",
+    getSvg: () => `
+      <svg viewBox="0 0 580 250" width="100%" height="240" xmlns="http://www.w3.org/2000/svg" style="font-family: sans-serif;">
+        <defs>
+          <marker id="arr-num-r" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#10b981"/>
+          </marker>
+        </defs>
+        <rect width="580" height="250" fill="#f8fafc"/>
+        
+        <!-- Línea Central de la Recta Numérica -->
+        <line x1="40" y1="140" x2="540" y2="140" stroke="#334155" stroke-width="3"/>
+        <polygon points="545,140 535,135 535,145" fill="#334155"/>
+        <polygon points="35,140 45,135 45,145" fill="#334155"/>
+
+        <!-- Marcas: -4 a +4 (Centro en x=290) -->
+        <line x1="90" y1="130" x2="90" y2="150" stroke="#ef4444" stroke-width="2"/>
+        <text x="82" y="170" font-size="12" font-weight="bold" fill="#ef4444">-4</text>
+        <line x1="140" y1="130" x2="140" y2="150" stroke="#ef4444" stroke-width="2"/>
+        <text x="132" y="170" font-size="12" font-weight="bold" fill="#ef4444">-3</text>
+        <line x1="190" y1="130" x2="190" y2="150" stroke="#ef4444" stroke-width="2"/>
+        <text x="182" y="170" font-size="12" font-weight="bold" fill="#ef4444">-2</text>
+        <line x1="240" y1="130" x2="240" y2="150" stroke="#ef4444" stroke-width="2"/>
+        <text x="232" y="170" font-size="12" font-weight="bold" fill="#ef4444">-1</text>
+
+        <!-- Cero (Origen) -->
+        <line x1="290" y1="125" x2="290" y2="155" stroke="#0f172a" stroke-width="3.5"/>
+        <circle cx="290" cy="140" r="6" fill="#0f172a"/>
+        <text x="285" y="173" font-size="14" font-weight="bold" fill="#0f172a">0</text>
+
+        <!-- Positivos -->
+        <line x1="340" y1="130" x2="340" y2="150" stroke="#10b981" stroke-width="2"/>
+        <text x="332" y="170" font-size="12" font-weight="bold" fill="#10b981">+1</text>
+        <line x1="390" y1="130" x2="390" y2="150" stroke="#10b981" stroke-width="2"/>
+        <text x="382" y="170" font-size="12" font-weight="bold" fill="#10b981">+2</text>
+        <line x1="440" y1="130" x2="440" y2="150" stroke="#10b981" stroke-width="2"/>
+        <text x="432" y="170" font-size="12" font-weight="bold" fill="#10b981">+3</text>
+        <line x1="490" y1="130" x2="490" y2="150" stroke="#10b981" stroke-width="2"/>
+        <text x="482" y="170" font-size="12" font-weight="bold" fill="#10b981">+4</text>
+
+        <!-- Salto de (-) x (-) = (+) -->
+        <path d="M 140 120 Q 215 50 290 120" fill="none" stroke="#ea580c" stroke-width="2.5" stroke-dasharray="4,2"/>
+        <path d="M 290 120 Q 390 40 440 120" fill="none" stroke="#10b981" stroke-width="3" marker-end="url(#arr-num-r)"/>
+        <text x="270" y="55" font-size="12" font-weight="bold" fill="#10b981">Quitar una deuda: - (-3) = +3 ➔ Avanzas a la derecha (+)</text>
+
+        <!-- Carteles -->
+        <rect x="50" y="25" width="170" height="46" rx="8" fill="#fef2f2" stroke="#fca5a5" stroke-width="1.2"/>
+        <text x="60" y="43" font-size="11.5" font-weight="bold" fill="#b91c1c">❄️ Deuda / Bajo cero (-)</text>
+        <text x="60" y="58" font-size="10.5" fill="#475569">Moverse a la izquierda</text>
+      </svg>
+    `,
     formal: `<div class="math-formula">Regla de los signos: (+)·(+)=(+) | (+)·(-)=(-) | (-)·(+)=(-) | (-)·(-)=(+)</div>
 Ejemplos de examen:
 • (-3) · (+4) = -12
@@ -490,6 +584,37 @@ Pero el martes vuelves y compras 1 kilo de manzanas y 3 kilos de peras y te cobr
 2º Nos vamos a la segunda pista y donde ponía 'P' ponemos su disfraz (5 - 2M).
 3º Ahora la segunda ecuación ya solo tiene manzanas: calculamos el precio de la manzana.
 4º Con el precio de la manzana en la mano, descubrimos al segundo el precio de la pera.`,
+    graphDesc: "<b>Intersección de Rectas (Solución Gráfica):</b> Cada ecuación es una línea recta en el mapa cartesiano. El punto donde ambas se cortan (x=1, y=3) es la única solución que satisface ambas pistas a la vez.",
+    getSvg: () => `
+      <svg viewBox="0 0 580 250" width="100%" height="240" xmlns="http://www.w3.org/2000/svg" style="font-family: sans-serif;">
+        <rect width="580" height="250" fill="#f8fafc"/>
+        
+        <!-- Ejes -->
+        <line x1="60" y1="210" x2="520" y2="210" stroke="#334155" stroke-width="2"/>
+        <line x1="120" y1="225" x2="120" y2="25" stroke="#334155" stroke-width="2"/>
+        <text x="490" y="200" font-size="12" font-weight="bold" fill="#334155">X (Manzanas)</text>
+        <text x="130" y="40" font-size="12" font-weight="bold" fill="#334155">Y (Peras)</text>
+
+        <!-- Recta 1: 2x + y = 5 (Azul) -->
+        <line x1="100" y1="35" x2="330" y2="218" stroke="#2563eb" stroke-width="3.5"/>
+        <text x="320" y="235" font-size="11" font-weight="bold" fill="#2563eb">Recta 1: 2x + y = 5</text>
+
+        <!-- Recta 2: x + 3y = 10 (Roja) -->
+        <line x1="80" y1="80" x2="480" y2="180" stroke="#dc2626" stroke-width="3.5"/>
+        <text x="440" y="170" font-size="11" font-weight="bold" fill="#dc2626">Recta 2: x + 3y = 10</text>
+
+        <!-- Líneas guía al punto de cruce (1, 3) -->
+        <line x1="120" y1="110" x2="200" y2="110" stroke="#94a3b8" stroke-dasharray="3,3"/>
+        <line x1="200" y1="110" x2="200" y2="210" stroke="#94a3b8" stroke-dasharray="3,3"/>
+        <text x="95" y="114" font-size="11" font-weight="bold" fill="#047857">y = 3</text>
+        <text x="195" y="226" font-size="11" font-weight="bold" fill="#047857">x = 1</text>
+
+        <!-- Punto solución (1, 3) -->
+        <circle cx="200" cy="110" r="7.5" fill="#f59e0b" stroke="#ffffff" stroke-width="2.5"/>
+        <text x="215" y="105" font-size="13" font-weight="bold" fill="#b45309">⭐ Solución Única: (1, 3)</text>
+        <text x="215" y="122" font-size="11" fill="#334155">1 € Manzanas / 3 € Peras</text>
+      </svg>
+    `,
     formal: `<div class="math-formula">Sistema: { 2x + y = 5 (1) | x + 3y = 10 (2) }</div>
 Despejamos y en (1): y = 5 - 2x
 Sustituimos en (2): x + 3(5 - 2x) = 10  -->  x + 15 - 6x = 10
@@ -512,6 +637,47 @@ Ahora que las dos tartas tienen rebanadas de 1/15, ya podemos sumarlas limpiamen
 2º Convertimos la primera fracción (2/3): dividimos 15 / 3 = 5, y multiplicamos arriba: 2 × 5 = 10. Queda 10/15.
 3º Convertimos la segunda fracción (3/5): dividimos 15 / 5 = 3, y multiplicamos arriba: 3 × 3 = 9. Queda 9/15.
 4º Ahora que tienen el mismo tamaño, sumamos los trozos: 10/15 + 9/15 = 19/15.`,
+    graphDesc: "<b>Visualización de la Suma de Fracciones:</b> Al principio los trozos tienen tamaños incompatibles (tercios y quintos). Al cortarlos en trozos comunes de 1/15, sumamos 10 trozos + 9 trozos = 19/15.",
+    getSvg: () => `
+      <svg viewBox="0 0 580 250" width="100%" height="240" xmlns="http://www.w3.org/2000/svg" style="font-family: sans-serif;">
+        <rect width="580" height="250" fill="#f8fafc"/>
+        
+        <!-- Barra Fracción 1: 2/3 (Largo 180) -->
+        <text x="50" y="40" font-size="12" font-weight="bold" fill="#2563eb">Fracción 1: 2/3 (10/15)</text>
+        <rect x="50" y="48" width="180" height="32" rx="4" fill="#eff6ff" stroke="#2563eb" stroke-width="2"/>
+        <rect x="50" y="48" width="120" height="32" rx="4" fill="#3b82f6"/>
+        <line x1="110" y1="48" x2="110" y2="80" stroke="#ffffff" stroke-width="2"/>
+        <line x1="170" y1="48" x2="170" y2="80" stroke="#ffffff" stroke-width="2"/>
+        <text x="75" y="70" font-size="11" font-weight="bold" fill="#ffffff">1/3</text>
+        <text x="135" y="70" font-size="11" font-weight="bold" fill="#ffffff">1/3</text>
+        <text x="195" y="70" font-size="10" fill="#64748b">1/3</text>
+
+        <!-- Barra Fracción 2: 3/5 (Largo 180) -->
+        <text x="310" y="40" font-size="12" font-weight="bold" fill="#ea580c">Fracción 2: 3/5 (9/15)</text>
+        <rect x="310" y="48" width="180" height="32" rx="4" fill="#fff7ed" stroke="#ea580c" stroke-width="2"/>
+        <rect x="310" y="48" width="108" height="32" rx="4" fill="#f97316"/>
+        <line x1="346" y1="48" x2="346" y2="80" stroke="#ffffff" stroke-width="1.5"/>
+        <line x1="382" y1="48" x2="382" y2="80" stroke="#ffffff" stroke-width="1.5"/>
+        <line x1="418" y1="48" x2="418" y2="80" stroke="#ffffff" stroke-width="1.5"/>
+        <line x1="454" y1="48" x2="454" y2="80" stroke="#ffffff" stroke-width="1.5"/>
+        <text x="345" y="70" font-size="11" font-weight="bold" fill="#ffffff">3/5 pintados</text>
+
+        <!-- Signo más (+) -->
+        <text x="260" y="70" font-size="22" font-weight="bold" fill="#0f172a">+</text>
+
+        <!-- Barra Resultado Común: 19/15 -->
+        <text x="50" y="130" font-size="12" font-weight="bold" fill="#047857">Tarta subdividida en partes comunes (m.c.m = 15):</text>
+        <rect x="50" y="145" width="300" height="36" rx="4" fill="#10b981" stroke="#047857" stroke-width="2"/>
+        <text x="160" y="168" font-size="12" font-weight="bold" fill="#ffffff">15/15 (1 Tarta Entera)</text>
+
+        <rect x="365" y="145" width="80" height="36" rx="4" fill="#10b981" stroke="#047857" stroke-width="2"/>
+        <rect x="445" y="145" width="60" height="36" rx="4" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.5"/>
+        <text x="380" y="168" font-size="12" font-weight="bold" fill="#ffffff">4/15</text>
+
+        <!-- Resultado final -->
+        <text x="160" y="215" font-size="13" font-weight="bold" fill="#047857">Total = 10/15 + 9/15 = 19/15 (1 entero y 4/15)</text>
+      </svg>
+    `,
     formal: `<div class="math-formula">Operación: 2/3 + 3/5  -->  m.c.m.(3, 5) = 15</div>
 2/3 = (2·5)/(3·5) = 10/15
 3/5 = (3·3)/(5·3) = 9/15
@@ -537,6 +703,39 @@ Si el 10% son 8 euros...
     stepbystep: `1º Descuento en euros: 80 × 30 / 100 = 24 euros de ahorro.
 2º Precio final a pagar: 80 - 24 = 56 euros.
 3º El método exprés del comercio (Factor multiplicador): Si te descuentan el 30%, tú pagas el 70% restante: 80 × 0,70 = 56 euros en un solo paso.`,
+    graphDesc: "<b>El Truco Mental del 10%:</b> Toda la barra mide 80 € (100%). Cada pastilla del 10% vale 8 €. Para un 30% de rebaja, quitamos 3 pastillas (24 € de descuento) y quedan 7 pastillas para pagar (56 € en caja).",
+    getSvg: () => `
+      <svg viewBox="0 0 580 250" width="100%" height="240" xmlns="http://www.w3.org/2000/svg" style="font-family: sans-serif;">
+        <rect width="580" height="250" fill="#f8fafc"/>
+        
+        <!-- Título -->
+        <text x="50" y="42" font-size="12" font-weight="bold" fill="#0f172a">Barra de Precio: 80 € (100% Original)</text>
+
+        <!-- 3 pastillas descontadas (Rojo) -->
+        <rect x="50" y="55" width="132" height="48" fill="#fca5a5" stroke="#dc2626" stroke-width="2"/>
+        <line x1="94" y1="55" x2="94" y2="103" stroke="#dc2626" stroke-width="1.5" stroke-dasharray="3,3"/>
+        <line x1="138" y1="55" x2="138" y2="103" stroke="#dc2626" stroke-width="1.5" stroke-dasharray="3,3"/>
+        <text x="65" y="83" font-size="11" font-weight="bold" fill="#991b1b">-30% Descuento</text>
+        <text x="95" y="98" font-size="10" fill="#991b1b">24 €</text>
+
+        <!-- 7 pastillas a pagar (Verde) -->
+        <rect x="182" y="55" width="308" height="48" fill="#86efac" stroke="#16a34a" stroke-width="2"/>
+        <line x1="226" y1="55" x2="226" y2="103" stroke="#16a34a" stroke-width="1.5" stroke-dasharray="3,3"/>
+        <line x1="270" y1="55" x2="270" y2="103" stroke="#16a34a" stroke-width="1.5" stroke-dasharray="3,3"/>
+        <line x1="314" y1="55" x2="314" y2="103" stroke="#16a34a" stroke-width="1.5" stroke-dasharray="3,3"/>
+        <line x1="358" y1="55" x2="358" y2="103" stroke="#16a34a" stroke-width="1.5" stroke-dasharray="3,3"/>
+        <line x1="402" y1="55" x2="402" y2="103" stroke="#16a34a" stroke-width="1.5" stroke-dasharray="3,3"/>
+        <line x1="446" y1="55" x2="446" y2="103" stroke="#16a34a" stroke-width="1.5" stroke-dasharray="3,3"/>
+        <text x="250" y="83" font-size="12" font-weight="bold" fill="#14532d">70% Precio Final que pagas en caja</text>
+        <text x="330" y="98" font-size="11" font-weight="bold" fill="#14532d">56 €</text>
+
+        <!-- Clave del 10% -->
+        <rect x="50" y="130" width="440" height="60" rx="8" fill="#eff6ff" stroke="#93c5fd" stroke-width="1.2"/>
+        <text x="65" y="152" font-size="11.5" font-weight="bold" fill="#1e40af">⚡ El Secreto del 10% (Quitar un cero):</text>
+        <text x="65" y="170" font-size="10.5" fill="#334155">• 10% de 80 € = 8 € (1 pastilla)</text>
+        <text x="65" y="185" font-size="10.5" fill="#334155">• 30% = 3 × 8 € = 24 € de ahorro  ➔  Pagas: 80 - 24 = <b>56 €</b></text>
+      </svg>
+    `,
     formal: `<div class="math-formula">Precio Final = Precio Original · (1 - %/100)</div>
 Precio original: 80 € | Descuento: 30%
 Descuento = (80 · 30) / 100 = <b>24 €</b>
@@ -1079,7 +1278,60 @@ Cuando le expliques esto a ${nietoName}, dile: <i>«No mires las fórmulas como 
 • <b>Solución definitiva:</b> Resultado numérico recuadrado con sus unidades correspondientes.<br/>
 <i>💡 Si necesitas una explicación aún más detallada para este ejercicio específico, pulsa el botón morado de abajo para consultar directamente en Gemini.</i>`,
       twin: `<b>Reto Gemelo para ${nietoName}:</b><br/>
-Prueba a resolver este mismo problema pero duplicando los valores iniciales en la cuadrícula de trabajo. Si logras llegar al resultado razonando cada paso, significará que has entendido el concepto y no solo los números de memoria.`
+Prueba a resolver este mismo problema pero duplicando los valores iniciales en la cuadrícula de trabajo. Si logras llegar al resultado razonando cada paso, significará que has entendido el concepto y no solo los números de memoria.`,
+      graphDesc: `<b>Esquema Conceptual de Equilibrio y Despeje:</b> En todo problema de ciencias o matemáticas, la igualdad (=) es una balanza perfecta. En el platillo izquierdo colocamos los datos que conocemos, y en el derecho equilibramos para despejar la incógnita.`,
+      getSvg: () => {
+        const cleanQ = qText.length > 45 ? qText.substring(0, 42) + "..." : qText;
+        return `
+        <svg viewBox="0 0 580 250" width="100%" height="240" xmlns="http://www.w3.org/2000/svg" style="font-family: sans-serif;">
+          <defs>
+            <marker id="arr-bal-r" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="#0284c7"/>
+            </marker>
+          </defs>
+          <rect width="580" height="250" fill="#f8fafc"/>
+          
+          <!-- Suelo -->
+          <line x1="40" y1="220" x2="540" y2="220" stroke="#334155" stroke-width="2.5"/>
+
+          <!-- Columna central de la balanza -->
+          <polygon points="282,220 295,95 305,95 318,220" fill="#475569"/>
+          <circle cx="300" cy="90" r="8" fill="#f59e0b" stroke="#ffffff" stroke-width="2"/>
+
+          <!-- Barra horizontal de equilibrio -->
+          <line x1="120" y1="90" x2="480" y2="90" stroke="#0f172a" stroke-width="4"/>
+
+          <!-- Cuerdas y Platillo Izquierdo -->
+          <line x1="120" y1="90" x2="90" y2="150" stroke="#64748b" stroke-width="2"/>
+          <line x1="120" y1="90" x2="150" y2="150" stroke="#64748b" stroke-width="2"/>
+          <path d="M 70 150 Q 120 170 170 150 Z" fill="#94a3b8" stroke="#475569" stroke-width="2"/>
+
+          <!-- Cuerdas y Platillo Derecho -->
+          <line x1="480" y1="90" x2="450" y2="150" stroke="#64748b" stroke-width="2"/>
+          <line x1="480" y1="90" x2="510" y2="150" stroke="#64748b" stroke-width="2"/>
+          <path d="M 430 150 Q 480 170 530 150 Z" fill="#94a3b8" stroke="#475569" stroke-width="2"/>
+
+          <!-- Contenido Platillo Izquierdo (Datos conocidos) -->
+          <rect x="90" y="120" width="60" height="30" rx="4" fill="#10b981"/>
+          <text x="96" y="139" font-size="11" font-weight="bold" fill="#ffffff">DATOS</text>
+          <text x="75" y="185" font-size="11" font-weight="bold" fill="#047857">Pistas conocidas</text>
+
+          <!-- Flecha de relación lógica -->
+          <line x1="210" y1="135" x2="390" y2="135" stroke="#0284c7" stroke-width="2.5" stroke-dasharray="5,3" marker-end="url(#arr-bal-r)"/>
+          <text x="240" y="125" font-size="11" font-weight="bold" fill="#0284c7">Ecuación / Despeje</text>
+
+          <!-- Contenido Platillo Derecho (Incógnita a despejar) -->
+          <rect x="450" y="115" width="60" height="35" rx="4" fill="#dc2626"/>
+          <text x="472" y="138" font-size="16" font-weight="bold" fill="#ffffff">?</text>
+          <text x="430" y="185" font-size="11" font-weight="bold" fill="#dc2626">Incógnita a resolver</text>
+
+          <!-- Cartela superior con la consulta -->
+          <rect x="110" y="22" width="360" height="42" rx="8" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5"/>
+          <text x="125" y="40" font-size="11.5" font-weight="bold" fill="#0284c7">⚖️ Balanza Lógica para ${nietoName}:</text>
+          <text x="125" y="55" font-size="10.5" fill="#334155">«${cleanQ}»</text>
+        </svg>
+        `;
+      }
     };
   }
 
@@ -1097,18 +1349,14 @@ Prueba a resolver este mismo problema pero duplicando los valores iniciales en l
   document.getElementById('res-math-formal').innerHTML = matchedData.formal;
   document.getElementById('res-math-twin').innerHTML = matchedData.twin.replace(/Lucas/g, nietoName);
 
-  // Renderizar Gráfica SVG si existe para este concepto
+  // Renderizar Gráfica SVG SIEMPRE (Garantía pedagógica total)
   const graphBox = document.getElementById('math-graph-box');
   const graphDesc = document.getElementById('math-graph-desc');
   const graphSvgContainer = document.getElementById('math-graph-svg');
 
-  if (matchedData.getSvg) {
-    graphDesc.innerHTML = matchedData.graphDesc || "Representación gráfica visual:";
-    graphSvgContainer.innerHTML = matchedData.getSvg();
-    graphBox.style.display = 'block';
-  } else {
-    graphBox.style.display = 'none';
-  }
+  graphDesc.innerHTML = matchedData.graphDesc || "Representación gráfica visual:";
+  graphSvgContainer.innerHTML = matchedData.getSvg ? matchedData.getSvg() : "";
+  graphBox.style.display = 'block';
 
   // Limpiar el historial de conversación para la nueva duda
   const chatHist = document.getElementById('chat-history');
