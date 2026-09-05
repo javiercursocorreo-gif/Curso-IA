@@ -264,7 +264,11 @@ def main():
     import inject_gemini_video_prompts_60_sessions
     inject_gemini_video_prompts_60_sessions.inject_all_video_prompts()
 
-    print("\n📊 7. Regenerando los 5 Paneles CSV para Google Classroom...")
+    print("\n⚙️ 7. Generando Fichas [MEC] Paso 14 (Cómo Funcionan las Cosas en Vídeo 3D)...")
+    import export_mec_pdfs
+    export_mec_pdfs.main()
+
+    print("\n📊 8. Regenerando los 5 Paneles CSV para Google Classroom...")
     import generate_multiple_csvs
     generate_multiple_csvs.main()
 

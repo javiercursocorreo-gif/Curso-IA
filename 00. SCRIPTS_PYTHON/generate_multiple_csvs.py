@@ -61,6 +61,8 @@ def get_description_for_file(filename):
         return "Paso 12: El Salvavidas del Móvil (Cámara y voz con la app de Gemini ante la pantalla)."
     elif "MEM" in f_upper:
         return "Paso 13: Cápsula de la Memoria (Fotos de pueblo o barrio con microrrelato para nietos)."
+    elif "MEC" in f_upper:
+        return "Paso 14: Cómo Funcionan las Cosas (Mecánica e Ingeniería en Vídeo 3D de 10 seg con Gemini)."
     else:
         return "Material didáctico de apoyo para la sesión de clase."
 
