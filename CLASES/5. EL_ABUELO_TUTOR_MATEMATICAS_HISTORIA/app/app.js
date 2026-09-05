@@ -1201,6 +1201,111 @@ Como v₁ > v₂  ⟹  <b>P₁ < P₂</b> (Efecto de succión ascendente).`,
     twin: `<b>Reto Gemelo para Lucas:</b><br/>
 ¿Por qué cuando estás en la ducha y abres el grifo de agua caliente con fuerza, la cortina de plástico de la ducha se mete hacia dentro y se te pega a las piernas?<br/>
 <i>Pista del abuelo: ¡Es el principio de Bernoulli! El chorro de agua arrastra el aire dentro de la ducha a gran velocidad, reduciendo la presión interna. El aire quieto de fuera tiene más presión y empuja la cortina hacia ti.</i>`
+  },
+
+  // --- TERMODINÁMICA Y PRIMER PRINCIPIO ---
+  termodinamica: {
+    title: "Primer Principio de la Termodinámica: El calor, el trabajo y la energía que nunca se pierde",
+    intuition: `Dile a tu nieto: <i>«Imagínate una olla a presión en la cocina o el motor de un coche.
+¿Qué pasa cuando pones la olla al fuego? La llama le entrega <b>Calor (Q)</b> al agua.
+Ese calor que entra tiene solo dos caminos posibles:
+1º <b>Se queda dentro del caldo:</b> Aumenta la temperatura de la sopa y hace que las moléculas de agua vibren y choquen a toda velocidad como locas (aumenta su <b>Energía Interna, ΔU</b>).
+2º <b>Empuja cosas hacia afuera:</b> El vapor de agua se expande con furia, empuja la válvula metálica hacia arriba o mueve el pistón del motor de un coche haciendo girar las ruedas (realiza un <b>Trabajo mecánico, W</b>).
+La Termodinámica nos dice que la energía es como el sueldo que entra en tu cuenta bancaria:
+Si recibes un ingreso de 100 euros (Calor Q) y te compras unas zapatillas de 40 euros (Trabajo W gastado hacia afuera), en tu cuenta de ahorros te quedan obligatoriamente 60 euros (Energía Interna ΔU).
+<b>LA REGLA DE ORO: La energía ni se crea de la nada ni se destruye, solo se transforma: ΔU = Q - W</b>.
+¿Y qué dice el Segundo Principio? Que el calor es un viajero con una sola dirección: siempre va espontáneamente del cuerpo caliente al frío. Por eso un café caliente en la mesa se enfría solo, pero un café frío jamás se calienta por arte de magia robándole calor al aire de la cocina.»</i>`,
+    stepbystep: `1º <b>La Ecuación Fundamental:</b>
+<b>ΔU = Q - W</b>  (Variación de Energía Interna = Calor absorbido - Trabajo realizado).
+2º <b>El Criterio de Signos para el examen:</b>
+• <b>Calor (Q):</b> Es positivo (+) si el gas absorbe calor del fuego; es negativo (-) si el gas se enfría y cede calor al ambiente.
+• <b>Trabajo (W):</b> Es positivo (+) si el gas se expande y empuja el pistón hacia arriba (realiza trabajo hacia el exterior); es negativo (-) si una fuerza exterior comprime el gas aplastándolo.
+• <b>Energía Interna (ΔU):</b> Depende exclusivamente de la temperatura: si la temperatura sube, ΔU aumenta (+); si se enfría, ΔU disminuye (-).
+3º <b>Los 4 Procesos Termodinámicos Clásicos de Examen:</b>
+• <b>Proceso Isotermo (Temperatura constante, ΔU = 0):</b> Todo el calor que entra se convierte en trabajo (Q = W).
+• <b>Proceso Isócoro (Volumen constante, pistón trabado, W = 0):</b> Todo el calor que entra se queda dentro calentando el gas (ΔU = Q).
+• <b>Proceso Isobárico (Presión constante):</b> W = P · (V₂ - V₁).
+• <b>Proceso Adiabático (Sin intercambio de calor, Q = 0):</b> Como un termo perfecto: ΔU = -W.`,
+    graphDesc: "<b>Cilindro Termodinámico con Pistón Móvil:</b> El calor aportado por la llama (Q, flecha roja) calienta el gas aumentando su energía interna (ΔU) y expande el pistón hacia arriba realizando un trabajo mecánico útil (W, flecha verde).",
+    getSvg: () => `
+      <svg viewBox="0 0 580 250" width="100%" height="240" xmlns="http://www.w3.org/2000/svg" style="font-family: sans-serif;">
+        <defs>
+          <linearGradient id="fireGrad" x1="0%" y1="100%" x2="0%" y2="0%">
+            <stop offset="0%" stop-color="#ef4444"/>
+            <stop offset="50%" stop-color="#f97316"/>
+            <stop offset="100%" stop-color="#fde047"/>
+          </linearGradient>
+          <linearGradient id="gasGrad" x1="0%" y1="100%" x2="0%" y2="0%">
+            <stop offset="0%" stop-color="#fed7aa"/>
+            <stop offset="100%" stop-color="#ffedd5"/>
+          </linearGradient>
+          <marker id="arr-work-u" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 10 L 5 0 L 10 10 z" fill="#10b981"/>
+          </marker>
+        </defs>
+        <rect width="580" height="250" fill="#f8fafc"/>
+        
+        <!-- Suelo de soporte -->
+        <line x1="40" y1="230" x2="540" y2="230" stroke="#64748b" stroke-width="2.5"/>
+
+        <!-- Cilindro térmico (Paredes metálicas) -->
+        <path d="M 120 40 L 120 180 L 300 180 L 300 40" fill="none" stroke="#334155" stroke-width="4"/>
+
+        <!-- Gas encerrado en el cilindro -->
+        <rect x="122" y="95" width="176" height="83" fill="url(#gasGrad)"/>
+
+        <!-- Moléculas de gas en agitación (Energía Interna U) -->
+        <circle cx="150" cy="120" r="4" fill="#ea580c"/>
+        <line x1="150" y1="120" x2="160" y2="115" stroke="#c2410c" stroke-width="1.5"/>
+        <circle cx="210" cy="140" r="4" fill="#ea580c"/>
+        <line x1="210" y1="140" x2="200" y2="150" stroke="#c2410c" stroke-width="1.5"/>
+        <circle cx="260" cy="125" r="4" fill="#ea580c"/>
+        <line x1="260" y1="125" x2="270" y2="135" stroke="#c2410c" stroke-width="1.5"/>
+        <circle cx="170" cy="160" r="4" fill="#ea580c"/>
+        <circle cx="240" cy="165" r="4" fill="#ea580c"/>
+        <text x="160" y="145" font-size="13" font-weight="bold" fill="#c2410c">Gas (ΔU)</text>
+
+        <!-- Pistón móvil que se expande hacia arriba -->
+        <rect x="122" y="80" width="176" height="15" rx="2" fill="#475569" stroke="#1e293b" stroke-width="2"/>
+        <rect x="202" y="30" width="16" height="50" fill="#64748b"/>
+
+        <!-- Flecha de Trabajo W (Expansión) -->
+        <line x1="210" y1="75" x2="210" y2="25" stroke="#10b981" stroke-width="4" marker-end="url(#arr-work-u)"/>
+        <text x="225" y="45" font-size="12" font-weight="bold" fill="#059669">Trabajo W (Expansión)</text>
+
+        <!-- Llama de fuego debajo (Calor Q suministrado) -->
+        <path d="M 170 215 Q 185 185 210 185 Q 235 185 250 215 Z" fill="url(#fireGrad)"/>
+        <path d="M 185 215 Q 195 195 210 195 Q 225 195 235 215 Z" fill="#ffffff" opacity="0.6"/>
+        <text x="180" y="228" font-size="12" font-weight="bold" fill="#dc2626">🔥 Calor Q (Entrada)</text>
+
+        <!-- Cartel explicativo de la 1ª Ley -->
+        <rect x="330" y="45" width="225" height="135" rx="8" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5"/>
+        <text x="345" y="70" font-size="13" font-weight="bold" fill="#1e40af">⚡ 1ª Ley de la Termodinámica</text>
+        <text x="345" y="95" font-size="15" font-weight="bold" fill="#0369a1">ΔU = Q - W</text>
+        <text x="345" y="118" font-size="10.5" fill="#334155">• Q = Calor absorbido (+)</text>
+        <text x="345" y="136" font-size="10.5" fill="#059669">• W = Trabajo realizado (+)</text>
+        <text x="345" y="154" font-size="10.5" fill="#c2410c">• ΔU = Variación Energía Interna</text>
+        <text x="345" y="172" font-size="10" fill="#64748b">Si T es constante ➔ Q = W</text>
+      </svg>
+    `,
+    formal: `<div class="math-formula">Primer Principio: ΔU = Q - W  ⟹  Q = ΔU + W</div>
+<b>Donde:</b>
+• ΔU = Variación de la energía interna del sistema en Julios (J).
+• Q = Calor intercambiado en Julios (J) o calorías (1 cal = 4,184 J).
+• W = Trabajo intercambiado en Julios (J). En una expansión a presión constante: W = P · ΔV.
+<br/><br/>
+<b>Problema Clásico de Examen (Física y Química ESO / Bachillerato):</b>
+Un gas ideal encerrado en un cilindro absorbe 600 J de calor de un foco térmico y se expande contra un émbolo realizando un trabajo mecánico exterior de 250 J.
+1º <b>Datos con signos:</b>
+• Calor absorbido: Q = +600 J
+• Trabajo realizado por el gas: W = +250 J
+2º <b>Aplicamos el Primer Principio:</b>
+ΔU = Q - W = 600 J - 250 J = <b>+350 J</b>.
+3º <b>Interpretación física para la nota:</b>
+De los 600 julios de energía térmica que entraron en el sistema, 250 J se emplearon en mover el pistón hacia arriba y los 350 J restantes se quedaron almacenados en el gas, aumentando su temperatura interna.`,
+    twin: `<b>Reto Gemelo para Lucas:</b><br/>
+Un gas encerrado en una jeringa absorbe 450 J de calor mientras se expande realizando 180 J de trabajo contra la atmósfera. ¿Cuánto ha variado la energía interna del gas?<br/>
+<i>Pista del abuelo: Resta el trabajo del calor recibido: ΔU = 450 - 180 = 270 Julios. ¡La energía interna subió 270 J!</i>`
   }
 };
 
@@ -1224,17 +1329,20 @@ function solveMathProblem() {
   let matchedData = null;
 
   // Búsqueda semántica inteligente (Matemáticas, Física y Teoremas Científicos)
-  if (qLower.includes("arquimedes") || qLower.includes("arquímedes") || qLower.includes("empuje") || qLower.includes("flota") || qLower.includes("eureka") || qLower.includes("desalojado") || qLower.includes("corona de oro") || qLower.includes("peso aparente")) {
+  // 1. Termodinámica (se evalúa antes para no confundir con dinámica)
+  if (qLower.includes("termodinam") || qLower.includes("primer principio") || qLower.includes("segundo principio") || qLower.includes("entropia") || qLower.includes("entropía") || qLower.includes("calor y trabajo") || qLower.includes("calorimetria") || qLower.includes("calorimetría")) {
+    matchedData = MATH_KNOWLEDGE_BASE.termodinamica;
+  } else if (qLower.includes("arquimedes") || qLower.includes("arquímedes") || qLower.includes("empuje") || qLower.includes("flota") || qLower.includes("eureka") || qLower.includes("desalojado") || qLower.includes("corona de oro") || qLower.includes("peso aparente")) {
     matchedData = MATH_KNOWLEDGE_BASE.arquimedes;
   } else if (qLower.includes("pascal") || qLower.includes("prensa hidraulica") || qLower.includes("prensa hidráulica") || qLower.includes("embolo") || qLower.includes("émbolo") || qLower.includes("elevador hidraulico") || qLower.includes("elevador hidráulico")) {
     matchedData = MATH_KNOWLEDGE_BASE.pascal;
-  } else if (qLower.includes("newton") || qLower.includes("inercia") || qLower.includes("f = m") || qLower.includes("f=m") || qLower.includes("accion y reaccion") || qLower.includes("acción y reacción") || qLower.includes("fuerza y aceleracion") || qLower.includes("dinamica") || qLower.includes("dinámica")) {
+  } else if (qLower.includes("newton") || qLower.includes("inercia") || qLower.includes("f = m") || qLower.includes("f=m") || qLower.includes("accion y reaccion") || qLower.includes("acción y reacción") || qLower.includes("fuerza y aceleracion") || qLower.includes("fuerza y aceleración") || (qLower.includes("dinamica") && !qLower.includes("termodinam") && !qLower.includes("aerodinam")) || (qLower.includes("dinámica") && !qLower.includes("termodinám") && !qLower.includes("aerodinám"))) {
     matchedData = MATH_KNOWLEDGE_BASE.newton;
   } else if (qLower.includes("energia") || qLower.includes("energía") || qLower.includes("cinetica") || qLower.includes("cinética") || qLower.includes("potencial") || qLower.includes("montaña rusa") || qLower.includes("mecanica") || qLower.includes("mecánica")) {
     matchedData = MATH_KNOWLEDGE_BASE.energia;
   } else if (qLower.includes("tales") || qLower.includes("thales") || qLower.includes("semejanza") || qLower.includes("triangulos semejantes") || qLower.includes("triángulos semejantes") || qLower.includes("sombra piramide") || qLower.includes("sombra del arbol")) {
     matchedData = MATH_KNOWLEDGE_BASE.tales;
-  } else if (qLower.includes("bernoulli") || qLower.includes("venturi") || qLower.includes("avion") || qLower.includes("avión") || qLower.includes("alas") || qLower.includes("sustentacion") || qLower.includes("sustentación")) {
+  } else if (qLower.includes("bernoulli") || qLower.includes("venturi") || qLower.includes("avion") || qLower.includes("avión") || qLower.includes("alas") || qLower.includes("sustentacion") || qLower.includes("sustentación") || qLower.includes("aerodinam") || qLower.includes("aerodinám")) {
     matchedData = MATH_KNOWLEDGE_BASE.bernoulli;
   } else if (qLower.includes("derivada") || qLower.includes("diferencial") || qLower.includes("tangente") || qLower.includes("velocidad instantanea") || qLower.includes("pendiente de una curva")) {
     matchedData = MATH_KNOWLEDGE_BASE.derivada;
