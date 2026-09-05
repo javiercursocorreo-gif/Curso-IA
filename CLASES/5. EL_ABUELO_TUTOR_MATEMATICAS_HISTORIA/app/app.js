@@ -11,17 +11,13 @@ function switchTab(tabId) {
   document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
 
   const activeContent = document.getElementById(tabId);
-  if (activeContent) {
-    activeContent.classList.add('active');
-  }
+  if (activeContent) activeContent.classList.add('active');
 
   const buttons = document.querySelectorAll('.tab-btn');
   if (tabId === 'tab-mates') buttons[0].classList.add('active');
   else if (tabId === 'tab-historia-nlm') buttons[1].classList.add('active');
   else if (tabId === 'tab-guia') buttons[2].classList.add('active');
 }
-
-let currentPrompt = "";
 
 // ==========================================================================
 // 2. GENERADOR DEL PROMPT PEDAGÓGICO MAESTRO PARA GEMINI
@@ -60,54 +56,20 @@ function launchGeminiWeb() {
     return;
   }
 
-  currentPrompt = generatePedagogicalPrompt(qText, nietoName, levelText);
+  const prompt = generatePedagogicalPrompt(qText, nietoName, levelText);
 
-  // Mostrar mensaje de éxito y preparar texto
-  const successBox = document.getElementById('gemini-success-box');
-  const previewEl = document.getElementById('prompt-preview-text');
-  if (previewEl) previewEl.textContent = currentPrompt;
-  if (successBox) {
-    successBox.style.display = 'block';
-    successBox.scrollIntoView({ behavior: 'smooth' });
-  }
+  // Mostrar aviso en pantalla
+  const hint = document.getElementById('gemini-hint');
+  if (hint) hint.style.display = 'block';
 
   // Copiar al portapapeles y abrir Gemini
   if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(currentPrompt).then(() => {
+    navigator.clipboard.writeText(prompt).then(() => {
       window.open("https://gemini.google.com", "_blank");
     }).catch(() => {
       window.open("https://gemini.google.com", "_blank");
     });
   } else {
     window.open("https://gemini.google.com", "_blank");
-  }
-}
-
-// ==========================================================================
-// 4. FUNCIONES AUXILIARES
-// ==========================================================================
-function copyGeminiPrompt() {
-  if (!currentPrompt) {
-    launchGeminiWeb();
-    return;
-  }
-  if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(currentPrompt).then(() => {
-      alert("📋 ¡Prompt copiado al portapapeles! Ya puedes pegarlo en Gemini con Ctrl+V (o Cmd+V en Mac).");
-    });
-  }
-}
-
-function togglePromptPreview() {
-  const previewBox = document.getElementById('prompt-preview-inline');
-  const lbl = document.getElementById('toggle-prompt-lbl');
-  if (!previewBox) return;
-
-  if (previewBox.style.display === 'none' || previewBox.style.display === '') {
-    previewBox.style.display = 'block';
-    if (lbl) lbl.textContent = "Ocultar lo que le hemos pedido a Gemini";
-  } else {
-    previewBox.style.display = 'none';
-    if (lbl) lbl.textContent = "Ver lo que le hemos pedido a Gemini";
   }
 }
