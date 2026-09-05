@@ -32,7 +32,7 @@ Por favor, no me des una respuesta fría de libro ni un texto interminable y abu
 
 1. 🌟 COMPRENSIÓN INTUITIVA (Analogía cotidiana): Una comparación visual con la vida real (la cocina, el deporte, juguetes o la naturaleza) o anécdota histórica para que entienda el concepto sin miedo antes de ver números.
 2. 🧠 EL PASO A PASO RAZONADO (Sin rodeos): Explica la lógica de por qué se hace cada paso sin dar saltos mágicos.
-3. 📊 ESQUEMA GRÁFICO O ILUSTRACIÓN: Un diagrama visual claro (puedes usar un esquema en texto/ASCII bien formateado, flechas o una descripción visual paso a paso) para que mi nieto pueda dibujarlo fácilmente con regla y colores en su cuaderno escolar.
+3. 🎨 IMAGEN ILUSTRADA O GRÁFICA DIDÁCTICA BONITA: Genera una imagen visual ilustrada a todo color (utiliza tu generador de imágenes integrado para crear una ilustración bonita, limpia y atractiva de esta escena, concepto o gráfica). PROHIBIDO poner cuadros de texto plano (Plaintext/ASCII) con guiones o barras en blanco y negro: debe ser una imagen visual real, colorida y de alta calidad para que mi nieto la vea con los ojos.
 4. 📝 RIGOR PARA EL EXAMEN: Las fórmulas oficiales con sus unidades del Sistema Internacional (SI) y el desarrollo limpio para sacar la máxima nota en el colegio.
 5. 🎯 EL RETO GEMELO: Un problema gemelo con datos cambiados para que ${nietoName} lo resuelva a solas a lápiz en su cuaderno.
 
