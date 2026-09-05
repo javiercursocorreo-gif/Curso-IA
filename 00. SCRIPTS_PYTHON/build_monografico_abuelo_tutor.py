@@ -1,14 +1,15 @@
 # -*- coding: utf-8 -*-
 """
 Generador de la Ficha Didáctica del Monográfico 5:
-«EL ABUELO TUTOR: Ayuda a tus Nietos en Matemáticas e Historia con IA y NotebookLM»
+«EDUCANIETOS IA: Tutor de Matemáticas Razonadas y Sesiones en Pantalla con NotebookLM»
 Genera:
-- FICHA_MONOGRAFICO_EL_ABUELO_TUTOR.docx
-- FICHA_MONOGRAFICO_EL_ABUELO_TUTOR.pdf
+- FICHA_MONOGRAFICO_EDUCANIETOS_IA.docx y .pdf
+- FICHA_MONOGRAFICO_EL_ABUELO_TUTOR.docx y .pdf (para compatibilidad de enlaces)
 en CLASES/5. EL_ABUELO_TUTOR_MATEMATICAS_HISTORIA/
 """
 
 import os
+import shutil
 import docx
 from docx.shared import Inches, Pt, RGBColor
 from docx.enum.text import WD_ALIGN_PARAGRAPH
@@ -24,8 +25,11 @@ from reportlab.lib.units import cm
 
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 TARGET_DIR = os.path.join(ROOT_DIR, "CLASES", "5. EL_ABUELO_TUTOR_MATEMATICAS_HISTORIA")
-TARGET_DOCX = os.path.join(TARGET_DIR, "FICHA_MONOGRAFICO_EL_ABUELO_TUTOR.docx")
-TARGET_PDF = os.path.join(TARGET_DIR, "FICHA_MONOGRAFICO_EL_ABUELO_TUTOR.pdf")
+TARGET_DOCX = os.path.join(TARGET_DIR, "FICHA_MONOGRAFICO_EDUCANIETOS_IA.docx")
+TARGET_PDF = os.path.join(TARGET_DIR, "FICHA_MONOGRAFICO_EDUCANIETOS_IA.pdf")
+
+LEGACY_DOCX = os.path.join(TARGET_DIR, "FICHA_MONOGRAFICO_EL_ABUELO_TUTOR.docx")
+LEGACY_PDF = os.path.join(TARGET_DIR, "FICHA_MONOGRAFICO_EL_ABUELO_TUTOR.pdf")
 
 os.makedirs(TARGET_DIR, exist_ok=True)
 
@@ -91,7 +95,7 @@ def add_callout_box(doc, title_text, body_paragraphs, border_color="0B4F6C", bg_
 # GENERADOR DOCX
 # ---------------------------------------------------------------------------
 def generate_docx():
-    print("📝 Generando Ficha del Monográfico 5 en DOCX...")
+    print("📝 Generando Ficha Didáctica en DOCX...")
     doc = docx.Document()
 
     for s in doc.sections:
@@ -118,16 +122,16 @@ def generate_docx():
     p_main = doc.add_paragraph()
     p_main.alignment = WD_ALIGN_PARAGRAPH.CENTER
     p_main.paragraph_format.space_after = Pt(4)
-    r_main = p_main.add_run("MONOGRÁFICO 5: EL ABUELO TUTOR")
+    r_main = p_main.add_run("MONOGRÁFICO 5: EDUCANIETOS IA")
     r_main.font.name = "Calibri"
-    r_main.font.size = Pt(20)
+    r_main.font.size = Pt(22)
     r_main.font.bold = True
     r_main.font.color.rgb = C_NAVY
 
     p_sub = doc.add_paragraph()
     p_sub.alignment = WD_ALIGN_PARAGRAPH.CENTER
     p_sub.paragraph_format.space_after = Pt(14)
-    r_sub = p_sub.add_run("Cómo Explicar Matemáticas con Claridad y Transformar Apuntes de Historia en Fichas Escolares Imprimibles")
+    r_sub = p_sub.add_run("Tutor de Matemáticas Razonadas con IA y Sesiones en Pantalla de Historia y Ciencias con NotebookLM")
     r_sub.font.name = "Calibri"
     r_sub.font.size = Pt(11.5)
     r_sub.font.italic = True
@@ -136,11 +140,11 @@ def generate_docx():
     # Cuadro de enfoque
     add_callout_box(
         doc,
-        "🎯 El Nuevo Rol del Abuelo en la Era Digital",
+        "🎯 El Enfoque Pedagógico: Matemáticas en la App + Historia en Directo en Pantalla",
         [
-            "Muchos nietos se atascan con las matemáticas o se aburren con la historia porque los libros son áridos o sus profesores van demasiado rápido.",
-            "Los abuelos tienen el ingrediente pedagógico más valioso del mundo: paciencia, tiempo libre y cariño sin la presión del día a día.",
-            "En este taller aprenderás a usar la IA y nuestra aplicación interactiva «El Abuelo Tutor» para resolver dudas de matemáticas paso a paso y convertir fotos de libros en cuadernillos y tarjetas de juego impresas en papel."
+            "En Matemáticas: Usamos la aplicación «Educanietos IA». El abuelo introduce cualquier problema en lenguaje libre y la IA lo desglosa en 4 capas pedagógicas (analogía intuitiva, paso a paso lógico, rigor de examen y reto gemelo imprimible con cuadrícula).",
+            "En Historia y Ciencias: Trabajamos directamente en pantalla dentro de Google NotebookLM. Al ser el mapa mental interactivo, las tarjetas y los cuestionarios multipantalla herramientas vivas, abuelo y nieto se sientan juntos frente a la pantalla para explorar, jugar y contrastar citas sin necesidad de imprimir ni hacer capturas engorrosas.",
+            "El valor insustituible del abuelo tutor: Tranquilidad, paciencia sin reproches y el afecto necesario para devolverle al nieto la seguridad en sí mismo."
         ],
         border_color="0066A1",
         bg_color="F0F7FC"
@@ -158,15 +162,15 @@ def generate_docx():
 
     p = doc.add_paragraph()
     p.paragraph_format.space_after = Pt(4)
-    p.add_run("Cuando un niño dice «no entiendo las matemáticas», casi nunca es falta de inteligencia, sino que le han soltado la fórmula antes de que entienda la idea. En la aplicación ")
-    p.add_run("«El Abuelo Tutor»").bold = True
-    p.add_run(", cualquier problema introducido en el cuadro libre se descompone automáticamente en 4 niveles:")
+    p.add_run("Cuando un niño se atasca en matemáticas, casi siempre es porque le han enseñado la fórmula antes de que entienda la idea. En la aplicación ")
+    p.add_run("«Educanietos IA»").bold = True
+    p.add_run(", cualquier problema o duda planteada en lenguaje cotidiano se resuelve en 4 niveles:")
 
     pasos_mates = [
-        ("🌟 Nivel 1: Para comprenderlo (La analogía cotidiana)", "Una metáfora sencilla sin números que despierta la intuición (por ejemplo, una balanza en equilibrio o dos amigos caminando en una cinta métrica)."),
-        ("🧠 Nivel 2: El paso a paso razonado (El puente lógico)", "La explicación detallada de cada movimiento sin dar nada por sentado, eliminando los 'saltos mágicos' que confunden a los alumnos."),
-        ("📝 Nivel 3: Para el examen del colegio (El rigor formal)", "El desarrollo algebraico estricto con las fórmulas del currículo escolar para que el profesor le ponga la máxima calificación."),
-        ("🎯 Nivel 4: El Reto Gemelo (Problema espejo)", "Un problema exactamente igual pero con números cambiados para que el nieto lo resuelva a solas a lápiz y demuestre que lo ha asimilado.")
+        ("🌟 Nivel 1: Para comprenderlo sin miedo (La analogía cotidiana)", "Una metáfora sencilla sin números que conecta con la vida real (balanzas de cocina, cintas métricas, repartos de merienda o cajas sorpresa)."),
+        ("🧠 Nivel 2: El paso a paso razonado (El puente lógico)", "La explicación detallada de cada movimiento sin dar nada por sentado, eliminando los 'saltos mágicos' que confunden al estudiante."),
+        ("📝 Nivel 3: Para el examen del colegio (Rigor formal)", "El desarrollo algebraico estricto con las fórmulas del currículo escolar para que el profesor le ponga la máxima calificación."),
+        ("🎯 Nivel 4: El Reto Gemelo (Problema espejo imprimible)", "Un ejercicio idéntico con números cambiados. La aplicación permite imprimir una ficha en PDF con una cuadrícula milimetrada para que el nieto lo resuelva a lápiz y demuestre su dominio.")
     ]
 
     for tit, desc in pasos_mates:
@@ -184,7 +188,7 @@ def generate_docx():
     p_h1 = doc.add_paragraph()
     p_h1.paragraph_format.space_before = Pt(12)
     p_h1.paragraph_format.space_after = Pt(6)
-    r = p_h1.add_run("2. Módulo de Historia y Ciencias: El Puente NotebookLM a Ficha Escolar")
+    r = p_h1.add_run("2. Historia y Ciencias: La Sesión en Directo sobre Pantalla con NotebookLM")
     r.font.name = "Calibri"
     r.font.size = Pt(14)
     r.font.bold = True
@@ -192,19 +196,17 @@ def generate_docx():
 
     p = doc.add_paragraph()
     p.paragraph_format.space_after = Pt(4)
-    p.add_run("Google NotebookLM es el archivador más potente del mundo: tu nieto te pasa por WhatsApp 2 fotos de las páginas de su libro de Historia o de sus apuntes manuscritos, las subes a Fuentes y NotebookLM las analiza con rigor absoluto sin inventar nada. ").font.color.rgb = C_DARK
-    p.add_run("Pero tiene un defecto: ¡no permite guardar ni imprimir un PDF bonito con formato escolar!").bold = True
+    p.add_run("Las funciones de estudio de NotebookLM (el Mapa Mental interactivo, las Tarjetas de memoria y los Cuestionarios dinámicos) no están pensadas para imprimirse en un papel estático ni guardarse en capturas. ").font.color.rgb = C_DARK
+    p.add_run("Están diseñadas para vivirse en directo en la pantalla entre el abuelo y el nieto:").bold = True
 
     add_callout_box(
         doc,
-        "🖨️ CÓMO SOLUCIONA ESTO LA APP «EL ABUELO TUTOR»",
+        "💻 LA DINÁMICA ABUELO-NIETO FRENTE A NOTEBOOKLM",
         [
-            "1. En NotebookLM: En Studio, pulsa los botones «Preguntas frecuentes» (FAQ), «Guía de estudio» y «Línea de tiempo».",
-            "2. Copias esos textos y los pegas en el Módulo 2 de nuestra App.",
-            "3. Pulsas «Generar Cuadernillo Escolar»: La aplicación genera automáticamente:",
-            "   • Un Examen con líneas punteadas para que el nieto responda a mano con bolígrafo o lápiz.",
-            "   • Un juego de Tarjetas de Memoria Recortables (Flashcards) para jugar al trivial de preguntas y respuestas en el salón.",
-            "   • Una Hoja de Soluciones oficial y privada para que el abuelo corrija con total seguridad."
+            "1. Subir los apuntes: El nieto hace 2 fotos de las páginas del libro con el móvil y se suben a Fuentes de NotebookLM. NLM extrae el texto exacto sin inventar nada.",
+            "2. El Mapa Mental en pantalla: En Studio, pulsáis «Mapa mental». Vais desplegando juntos los nodos en pantalla para entender las causas y consecuencias visualmente.",
+            "3. El Concurso de Tarjetas: Pulsáis «Tarjetas». El abuelo lee la pregunta en voz alta, el nieto piensa la respuesta y hacen clic en la tarjeta para comprobar si acierta.",
+            "4. Cuestionario interactivo con Citas: Contestáis juntos el test pantalla a pantalla. Si el nieto duda, pulsa el número de cita y NLM resalta el renglón exacto del libro donde está la respuesta."
         ],
         border_color="0B7285",
         bg_color="E6FCF5"
@@ -214,7 +216,7 @@ def generate_docx():
     p_h1 = doc.add_paragraph()
     p_h1.paragraph_format.space_before = Pt(12)
     p_h1.paragraph_format.space_after = Pt(6)
-    r = p_h1.add_run("3. Guía Paso a Paso para usar la Aplicación Web en Clase")
+    r = p_h1.add_run("3. Guía Paso a Paso para la Sesión Práctica")
     r.font.name = "Calibri"
     r.font.size = Pt(14)
     r.font.bold = True
@@ -223,34 +225,24 @@ def generate_docx():
     p_s1 = doc.add_paragraph()
     p_s1.paragraph_format.left_indent = Inches(0.2)
     p_s1.paragraph_format.space_after = Pt(3)
-    p_s1.add_run("[  ] Paso 1: Abrir la App en el Navegador: ").bold = True
-    p_s1.add_run("Ve a la carpeta del monográfico y haz doble clic sobre ").font.color.rgb = C_DARK
+    p_s1.add_run("[  ] Paso 1: Abrir Educanietos IA en el Navegador: ").bold = True
+    p_s1.add_run("Abre ").font.color.rgb = C_DARK
     p_s1.add_run("index.html").bold = True
-    p_s1.add_run(" (o abre el enlace en tu navegador Google Chrome o Edge). Funciona de forma inmediata y sin necesidad de instalar nada.")
+    p_s1.add_run(" en Google Chrome o Edge. En el Módulo 1 escribe la duda matemática que tenga tu nieto.")
 
     p_s2 = doc.add_paragraph()
     p_s2.paragraph_format.left_indent = Inches(0.2)
     p_s2.paragraph_format.space_after = Pt(3)
-    p_s2.add_run("[  ] Paso 2: Probar el Módulo de Matemáticas: ").bold = True
-    p_s2.add_run("Pulsa el botón de ejemplo ").font.color.rgb = C_DARK
-    p_s2.add_run("«Dos coches que se cruzan (Madrid - Barcelona)»").bold = True
-    p_s2.add_run(" o teclea tu propio problema. Escribe el nombre de tu nieto y pulsa «Explicar el Problema con Pedagogía». Revisa la explicación de 4 capas.")
+    p_s2.add_run("[  ] Paso 2: Explicarle la metáfora y darle la ficha: ").bold = True
+    p_s2.add_run("Léele la analogía cotidiana mientras merendáis. Pulsa «Imprimir Ficha con Cuadrícula» y dale la hoja para que intente el Reto Gemelo a solas con lápiz.")
 
     p_s3 = doc.add_paragraph()
     p_s3.paragraph_format.left_indent = Inches(0.2)
     p_s3.paragraph_format.space_after = Pt(3)
-    p_s3.add_run("[  ] Paso 3: Probar el Módulo de Historia y Ciencias: ").bold = True
-    p_s3.add_run("Cambia a la pestaña de Historia. Pulsa el botón de ejemplo ").font.color.rgb = C_DARK
-    p_s3.add_run("«Los Reyes Católicos»").bold = True
-    p_s3.add_run(" para cargar datos de muestra procedentes de NotebookLM. Pulsa «Generar Cuadernillo Escolar».")
-
-    p_s4 = doc.add_paragraph()
-    p_s4.paragraph_format.left_indent = Inches(0.2)
-    p_s4.paragraph_format.space_after = Pt(6)
-    p_s4.add_run("[  ] Paso 4: Exportar / Imprimir en PDF: ").bold = True
-    p_s4.add_run("Pulsa el botón verde superior ").font.color.rgb = C_DARK
-    p_s4.add_run("«Imprimir Cuadernillo y Tarjetas en PDF»").bold = True
-    p_s4.add_run(". En la ventana de tu navegador, elige como destino «Guardar como PDF» o selecciona tu impresora física. ¡Tendrás el material de estudio listo en tus manos!")
+    p_s3.add_run("[  ] Paso 3: Sesión de Historia/Ciencias en NotebookLM: ").bold = True
+    p_s3.add_run("Abre ").font.color.rgb = C_DARK
+    p_s3.add_run("notebooklm.google.com").bold = True
+    p_s3.add_run(". Sube las fotos de los apuntes y jugad juntos a las Tarjetas y al Cuestionario interactivo en la pantalla.")
 
     # Tabla de Autoevaluación
     p_h1 = doc.add_paragraph()
@@ -267,7 +259,7 @@ def generate_docx():
     t_check.autofit = False
     c_col_widths = [Inches(1.0), Inches(3.8), Inches(1.7)]
 
-    c_headers = ["Paso", "Competencia del Abuelo Tutor", "¿Superado?"]
+    c_headers = ["Módulo", "Competencia del Abuelo Tutor", "¿Superado?"]
     for j, h in enumerate(c_headers):
         c = t_check.cell(0, j)
         c.width = c_col_widths[j]
@@ -281,11 +273,11 @@ def generate_docx():
         r.font.color.rgb = RGBColor(255, 255, 255)
 
     checklist_data = [
-        ("Módulo 1", "Sé meter cualquier problema de mates y explicárselo a mi nieto con una analogía.", "[  ] SÍ  /  [  ] DUDAS"),
-        ("Módulo 1", "Sé imprimir la ficha de matemáticas con el problema resuelto y el reto gemelo.", "[  ] SÍ  /  [  ] DUDAS"),
-        ("Módulo 2", "Sé subir fotos de apuntes o del libro de mi nieto a Google NotebookLM.", "[  ] SÍ  /  [  ] DUDAS"),
-        ("Módulo 2", "Sé copiar el resumen y el cuestionario de NLM y pegarlos en la aplicación.", "[  ] SÍ  /  [  ] DUDAS"),
-        ("Módulo 2", "Sé generar e imprimir el examen con huecos en blanco y las tarjetas recortables.", "[  ] SÍ  /  [  ] DUDAS")
+        ("Matemáticas", "Sé escribir cualquier problema libremente en Educanietos IA y obtener la analogía intuitiva.", "[  ] SÍ  /  [  ] DUDAS"),
+        ("Matemáticas", "Sé imprimir la ficha con cuadrícula para que mi nieto resuelva el Reto Gemelo a lápiz.", "[  ] SÍ  /  [  ] DUDAS"),
+        ("Historia/CC", "Sé subir fotos de los apuntes o libros del nieto a Google NotebookLM como fuentes.", "[  ] SÍ  /  [  ] DUDAS"),
+        ("Historia/CC", "Sé explorar el Mapa Mental y jugar a las Tarjetas interactivas en pantalla junto a mi nieto.", "[  ] SÍ  /  [  ] DUDAS"),
+        ("Historia/CC", "Sé resolver el Cuestionario dinámico de NLM usando las citas directas para investigar.", "[  ] SÍ  /  [  ] DUDAS")
     ]
 
     for i, (p_num, p_desc, p_eval) in enumerate(checklist_data, start=1):
@@ -306,16 +298,18 @@ def generate_docx():
             r.font.color.rgb = C_DARK
 
     doc.save(TARGET_DOCX)
-    print(f"✅ Documento Word generado con éxito en:\n   {TARGET_DOCX}")
+    shutil.copyfile(TARGET_DOCX, LEGACY_DOCX)
+    print(f"✅ Documento Word generado en:\n   {TARGET_DOCX}\n   {LEGACY_DOCX}")
 
 # ---------------------------------------------------------------------------
 # GENERADOR PDF
 # ---------------------------------------------------------------------------
 def generate_pdf():
-    print("\n📄 Generando Ficha del Monográfico 5 en PDF (ReportLab)...")
-    if os.path.exists(TARGET_PDF):
-        try: os.remove(TARGET_PDF)
-        except Exception: pass
+    print("\n📄 Generando Ficha Didáctica en PDF (ReportLab)...")
+    for p in [TARGET_PDF, LEGACY_PDF]:
+        if os.path.exists(p):
+            try: os.remove(p)
+            except Exception: pass
 
     doc = SimpleDocTemplate(
         TARGET_PDF,
@@ -334,7 +328,7 @@ def generate_pdf():
     c_bg_box = colors.HexColor('#F0F7FC')
 
     p_header = ParagraphStyle('Head', parent=styles['Normal'], fontName='Helvetica-Bold', fontSize=8.5, textColor=c_blue, alignment=1, spaceAfter=2)
-    p_title = ParagraphStyle('Title', parent=styles['Heading1'], fontName='Helvetica-Bold', fontSize=16, leading=19, textColor=c_primary, alignment=1, spaceAfter=4)
+    p_title = ParagraphStyle('Title', parent=styles['Heading1'], fontName='Helvetica-Bold', fontSize=17, leading=20, textColor=c_primary, alignment=1, spaceAfter=4)
     p_sub = ParagraphStyle('Sub', parent=styles['Normal'], fontName='Helvetica-Oblique', fontSize=10, leading=13, textColor=colors.HexColor('#64748B'), alignment=1, spaceAfter=10)
     
     p_h1 = ParagraphStyle('H1', parent=styles['Heading2'], fontName='Helvetica-Bold', fontSize=12, leading=15, textColor=c_primary, spaceBefore=8, spaceAfter=4)
@@ -348,14 +342,14 @@ def generate_pdf():
     story = []
 
     story.append(Paragraph("CURSO DE INTELIGENCIA ARTIFICIAL Y TECNOLOGÍA PARA ADULTOS MAYORES (60+)", p_header))
-    story.append(Paragraph("MONOGRÁFICO 5: EL ABUELO TUTOR", p_title))
-    story.append(Paragraph("Ayuda a tus Nietos en Matemáticas e Historia con IA y NotebookLM", p_sub))
+    story.append(Paragraph("MONOGRÁFICO 5: EDUCANIETOS IA", p_title))
+    story.append(Paragraph("Tutor de Matemáticas Razonadas y Sesiones en Pantalla con NotebookLM", p_sub))
     story.append(HRFlowable(width="100%", thickness=1.5, color=c_blue, spaceAfter=8))
 
     # Caja Enfoque
     obj_rows = [
-        [Paragraph("<b>🎯 El Nuevo Rol del Abuelo en la Era Digital:</b>", p_prompt)],
-        [Paragraph("Los abuelos disponen del mayor valor pedagógico del mundo: paciencia, tiempo y empatía sin la prisa del día a día. En este taller aprenderás a usar la IA y la aplicación web interactiva <b>«El Abuelo Tutor»</b> para resolver dudas de matemáticas en 4 capas intuitivas y convertir fotos de libros en cuadernillos escolares imprimibles y tarjetas recortables.", p_box)]
+        [Paragraph("<b>🎯 Metodología Diferenciada: Matemáticas en la App + Historia en Pantalla</b>", p_prompt)],
+        [Paragraph("• <b>En Matemáticas:</b> Usamos la aplicación <b>«Educanietos IA»</b> para introducir dudas en lenguaje libre y obtener una explicación desglosada en 4 niveles (analogía cotidiana, paso a paso lógico, rigor de examen y reto gemelo imprimible en cuadrícula).<br/>• <b>En Historia y Ciencias:</b> Trabajamos en directo frente a la pantalla de <b>NotebookLM</b>. Las tarjetas interactivas, el mapa mental y el cuestionario dinámico multipantalla están pensados para explorarse cara a cara entre abuelo y nieto, investigando juntos sin necesidad de imprimir ni hacer capturas engorrosas.", p_box)]
     ]
     t_obj = Table(obj_rows, colWidths=[17.4*cm], splitByRow=1)
     t_obj.setStyle(TableStyle([
@@ -368,40 +362,40 @@ def generate_pdf():
 
     # MÓDULO MATES
     story.append(Paragraph("1. Módulo de Matemáticas: La Técnica de las 4 Capas Pedagógicas", p_h1))
-    story.append(Paragraph("Cualquier problema introducido libremente en la aplicación se desglosa en 4 niveles:", p_body))
-    story.append(Paragraph("• <b>1. Para comprenderlo (Analogía cotidiana):</b> Metáfora sin números para perder el miedo.", p_body))
-    story.append(Paragraph("• <b>2. El paso a paso razonado (El puente lógico):</b> Explicación ordenada sin saltos.", p_body))
-    story.append(Paragraph("• <b>3. Para el examen del colegio (Rigor formal):</b> Fórmulas y desarrollo algebraico formal.", p_body))
-    story.append(Paragraph("• <b>4. El Reto Gemelo (Problema espejo):</b> Ejercicio idéntico con cifras cambiadas para el nieto.", p_body))
+    story.append(Paragraph("Cualquier problema introducido libremente en <b>Educanietos IA</b> se desglosa en 4 niveles:", p_body))
+    story.append(Paragraph("• <b>1. Para comprenderlo sin miedo (Analogía cotidiana):</b> Metáfora sin números que conecta con la intuición.", p_body))
+    story.append(Paragraph("• <b>2. El paso a paso razonado (El puente lógico):</b> Explicación ordenada renglón por renglón sin saltos.", p_body))
+    story.append(Paragraph("• <b>3. Para el examen del colegio (Rigor formal):</b> Fórmulas y desarrollo formal del libro de texto.", p_body))
+    story.append(Paragraph("• <b>4. El Reto Gemelo (Problema espejo):</b> Ejercicio idéntico con números cambiados e impresión con cuadrícula.", p_body))
     story.append(Spacer(1, 6))
 
     # MÓDULO HISTORIA
-    story.append(Paragraph("2. Módulo de Historia y Ciencias: El Puente NotebookLM a Cuadernillo Imprimible", p_h1))
-    story.append(Paragraph("Google NotebookLM analiza con precisión las fotos de los libros y apuntes del nieto. Como NLM no permite exportar a papel, nuestra App convierte el texto pegado en:", p_body))
-    story.append(Paragraph("• <b>Examen con líneas punteadas:</b> Espacio en blanco para que el nieto responda a lápiz.", p_body))
-    story.append(Paragraph("• <b>Tarjetas recortables (Flashcards):</b> Pregunta por delante y respuesta por detrás para jugar al trivial escolar en el salón.", p_body))
-    story.append(Paragraph("• <b>Hoja de soluciones oficial:</b> Para que el abuelo corrija con total seguridad sin dudar.", p_body))
+    story.append(Paragraph("2. Historia y Ciencias: Sesión en Vivo con NotebookLM (En Pantalla)", p_h1))
+    story.append(Paragraph("Al ser herramientas interactivas y dinámicas, no tiene sentido intentar imprimirlas; se disfrutan juntos frente al ordenador:", p_body))
+    story.append(Paragraph("• <b>Fotos a Fuentes:</b> Sube fotos de los apuntes o libros del nieto a NotebookLM sin transcribir nada a mano.", p_body))
+    story.append(Paragraph("• <b>Mapa Mental en Vivo:</b> Exploráis juntos el árbol visual de causas y consecuencias nodo a nodo.", p_body))
+    story.append(Paragraph("• <b>Concurso de Tarjetas (Flashcards):</b> El abuelo formula la pregunta y el nieto intenta adivinar antes de voltear.", p_body))
+    story.append(Paragraph("• <b>Cuestionario con Citas:</b> Resuelven el test interactivo en pantalla y usan las citas para contrastar las fuentes.", p_body))
     story.append(Spacer(1, 6))
 
     # CÓMO USAR LA APP
-    story.append(Paragraph("3. Guía Paso a Paso para Usar la Aplicación en Clase", p_h1))
-    story.append(Paragraph("<b>[  ] Paso 1:</b> Abre el archivo <code>index.html</code> en tu navegador (Google Chrome o Edge).", p_body))
-    story.append(Paragraph("<b>[  ] Paso 2:</b> En Matemáticas, pulsa un ejemplo rápido o teclea el problema del libro de tu nieto.", p_body))
-    story.append(Paragraph("<b>[  ] Paso 3:</b> En Historia, pega el texto de NLM o carga el ejemplo de 'Los Reyes Católicos'.", p_body))
-    story.append(Paragraph("<b>[  ] Paso 4:</b> Pulsa 'Imprimir / Guardar en PDF' para obtener la ficha física para tu nieto.", p_body))
+    story.append(Paragraph("3. Guía Paso a Paso para la Sesión en Casa", p_h1))
+    story.append(Paragraph("<b>[  ] Paso 1:</b> Abre la aplicación <code>app/index.html</code> en tu navegador web.", p_body))
+    story.append(Paragraph("<b>[  ] Paso 2:</b> En Matemáticas, introduce el problema, revisa la explicación y pulsa 'Imprimir Ficha'.", p_body))
+    story.append(Paragraph("<b>[  ] Paso 3:</b> En Historia, abre <code>notebooklm.google.com</code>, sube los apuntes y comparte la pantalla con tu nieto.", p_body))
     story.append(Spacer(1, 6))
 
     # TABLA EVALUACIÓN
     story.append(Paragraph("📋 Checklist de Autoevaluación del Abuelo Tutor", p_h1))
     chk_rows = [
-        [Paragraph("Paso", p_th), Paragraph("Habilidad / Competencia Práctica", p_th), Paragraph("Autoevaluación", p_th)],
-        [Paragraph("1", p_cell_b), Paragraph("Sé meter cualquier problema de mates y explicárselo a mi nieto con una analogía.", p_cell), Paragraph("[  ] SÍ  /  [  ] DUDAS", p_cell)],
-        [Paragraph("2", p_cell_b), Paragraph("Sé imprimir la ficha de matemáticas con el problema resuelto y el reto gemelo.", p_cell), Paragraph("[  ] SÍ  /  [  ] DUDAS", p_cell)],
-        [Paragraph("3", p_cell_b), Paragraph("Sé subir fotos de apuntes o del libro de mi nieto a Google NotebookLM.", p_cell), Paragraph("[  ] SÍ  /  [  ] DUDAS", p_cell)],
-        [Paragraph("4", p_cell_b), Paragraph("Sé copiar el resumen y el cuestionario de NLM y pegarlos en la aplicación.", p_cell), Paragraph("[  ] SÍ  /  [  ] DUDAS", p_cell)],
-        [Paragraph("5", p_cell_b), Paragraph("Sé generar e imprimir el examen con huecos en blanco y las tarjetas recortables.", p_cell), Paragraph("[  ] SÍ  /  [  ] DUDAS", p_cell)],
+        [Paragraph("Módulo", p_th), Paragraph("Habilidad / Competencia Práctica", p_th), Paragraph("Autoevaluación", p_th)],
+        [Paragraph("Matemáticas", p_cell_b), Paragraph("Sé escribir cualquier problema libremente en Educanietos IA y obtener la analogía intuitiva.", p_cell), Paragraph("[  ] SÍ  /  [  ] DUDAS", p_cell)],
+        [Paragraph("Matemáticas", p_cell_b), Paragraph("Sé imprimir la ficha con cuadrícula para que mi nieto resuelva el Reto Gemelo a lápiz.", p_cell), Paragraph("[  ] SÍ  /  [  ] DUDAS", p_cell)],
+        [Paragraph("Historia/CC", p_cell_b), Paragraph("Sé subir fotos de los apuntes o libros del nieto a Google NotebookLM como fuentes.", p_cell), Paragraph("[  ] SÍ  /  [  ] DUDAS", p_cell)],
+        [Paragraph("Historia/CC", p_cell_b), Paragraph("Sé explorar el Mapa Mental y jugar a las Tarjetas interactivas en pantalla junto a mi nieto.", p_cell), Paragraph("[  ] SÍ  /  [  ] DUDAS", p_cell)],
+        [Paragraph("Historia/CC", p_cell_b), Paragraph("Sé resolver el Cuestionario dinámico de NLM usando las citas directas para investigar.", p_cell), Paragraph("[  ] SÍ  /  [  ] DUDAS", p_cell)],
     ]
-    t_chk = Table(chk_rows, colWidths=[1.8*cm, 12.0*cm, 3.6*cm], splitByRow=1)
+    t_chk = Table(chk_rows, colWidths=[2.2*cm, 11.6*cm, 3.6*cm], splitByRow=1)
     t_chk.setStyle(TableStyle([
         ('BACKGROUND', (0,0), (-1,0), c_primary),
         ('GRID', (0,0), (-1,-1), 0.5, colors.HexColor('#CBD5E1')),
@@ -411,11 +405,12 @@ def generate_pdf():
     story.append(t_chk)
 
     doc.build(story)
-    print(f"✅ Documento PDF generado con éxito en:\n   {TARGET_PDF}")
+    shutil.copyfile(TARGET_PDF, LEGACY_PDF)
+    print(f"✅ Documento PDF generado en:\n   {TARGET_PDF}\n   {LEGACY_PDF}")
 
 def main():
     print("=" * 70)
-    print("🚀 GENERANDO FICHA MONOGRÁFICO 5 (EL ABUELO TUTOR) EN DOCX Y PDF")
+    print("🚀 GENERANDO FICHA DIDÁCTICA DE EDUCANIETOS IA EN DOCX Y PDF")
     print("=" * 70)
     generate_docx()
     generate_pdf()
