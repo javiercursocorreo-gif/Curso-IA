@@ -1,7 +1,7 @@
 /**
  * LÓGICA DE LA APLICACIÓN "EDUCANIETOS IA"
  * Tutor de Matemáticas Razonadas con Gran Valor Pedagógico
- * Analogías cotidianas, explicaciones profundas y ejemplos reales
+ * Analogías cotidianas, explicaciones profundas, gráficas SVG y chat socrático
  */
 
 // ==========================================================================
@@ -23,9 +23,82 @@ function switchTab(tabId) {
 }
 
 // ==========================================================================
-// 2. BASE DE CONOCIMIENTO PEDAGÓGICO AVANZADO (MATEMÁTICAS SOCRÁTICAS)
+// 2. BASE DE CONOCIMIENTO PEDAGÓGICO AVANZADO CON GRÁFICAS VECTORIALES SVG
 // ==========================================================================
 const MATH_KNOWLEDGE_BASE = {
+  // --- DERIVADAS ---
+  derivada: {
+    title: "Cálculo Diferencial: La foto fija del velocímetro en una milésima de segundo",
+    intuition: `Imagínate que vas de viaje en coche de Madrid a Valencia (350 km) y tardas exactamente 3 horas y media.
+Cualquiera puede calcular la velocidad media: 350 km dividido entre 3,5 horas da 100 km/h de media.
+Pero imagínate que un radar de la Guardia Civil te saca una foto y te llega una multa a casa diciendo que ibas a 140 km/h. Si tú le dices al juez: <i>«Señoría, pero si mi media en todo el viaje fue de 100 km/h»</i>, el juez se reirá. El radar no te multa por la media de todo el viaje, sino por <b>lo que marcaba la aguja de tu velocímetro en esa milésima de segundo exacta</b> en la que pasaste por delante de la cámara.
+Eso es una <b>Derivada</b>: es el radar de las matemáticas. Mide la velocidad a la que cambia cualquier cosa en un instante congelado:
+• En una montaña rusa: cómo de empinada es la cuesta justo en la piedra donde tienes puesto el pie (la pendiente de la recta tangente).
+• En un enfermo: si la fiebre está subiendo como un cohete o si ya está empezando a frenar.
+• En un cohete espacial: la aceleración instantánea justo al despegar.`,
+    stepbystep: `¿Cómo calculamos la velocidad en un instante congelado si en un instante congelado el tiempo no avanza?
+1º Elegimos dos momentos muy juntos: el instante actual 'x' y un momento microscópico después 'x + h' (donde 'h' es un suspiro de tiempo, como 0,0001 segundos).
+2º Calculamos el espacio recorrido en ese suspiro: f(x + h) - f(x).
+3º Dividimos ese espacio minúsculo entre ese tiempo minúsculo: [f(x + h) - f(x)] / h. Esto dibuja una <b>recta secante</b> (naranja en la gráfica inferior).
+4º Hacemos que ese suspiro 'h' se vuelva prácticamente cero (el límite cuando h tiende a 0).
+¡Al acercar los dos puntos, la secante se convierte milagrosamente en la <b>recta tangente</b> (roja), dándonos la pendiente y velocidad exacta en ese punto!`,
+    graphDesc: "<b>De la Secante a la Tangente:</b> Observa cómo la recta secante naranja (velocidad media entre dos puntos P y Q) se transforma en la recta tangente roja (la Derivada instantánea en P) cuando la distancia h se aproxima a cero.",
+    getSvg: () => `
+      <svg viewBox="0 0 580 250" width="100%" height="240" xmlns="http://www.w3.org/2000/svg" style="font-family: sans-serif;">
+        <defs>
+          <pattern id="grid-der" width="20" height="20" patternUnits="userSpaceOnUse">
+            <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#f1f5f9" stroke-width="1"/>
+          </pattern>
+        </defs>
+        <rect width="580" height="250" fill="url(#grid-der)" />
+        
+        <!-- Ejes -->
+        <line x1="50" y1="210" x2="550" y2="210" stroke="#475569" stroke-width="2"/>
+        <line x1="60" y1="220" x2="60" y2="20" stroke="#475569" stroke-width="2"/>
+        <text x="540" y="230" font-size="12" fill="#475569" font-weight="bold">x (Tiempo)</text>
+        <text x="70" y="30" font-size="12" fill="#475569" font-weight="bold">y = f(x) (Posición)</text>
+        
+        <!-- Curva f(x) -->
+        <path d="M 80 200 Q 240 200 480 30" fill="none" stroke="#0b2545" stroke-width="3.5"/>
+        
+        <!-- Recta Secante (Naranja punteada que une P y Q) -->
+        <line x1="120" y1="230" x2="480" y2="25" stroke="#f97316" stroke-width="2" stroke-dasharray="6,4"/>
+        
+        <!-- Recta Tangente (Roja sólida en P) -->
+        <line x1="90" y1="220" x2="410" y2="35" stroke="#dc2626" stroke-width="3"/>
+        
+        <!-- Puntos P y Q -->
+        <circle cx="230" cy="145" r="6" fill="#dc2626"/>
+        <text x="200" y="135" font-size="13" font-weight="bold" fill="#dc2626">P (Instante exacto)</text>
+        
+        <circle cx="360" cy="72" r="6" fill="#f97316"/>
+        <text x="372" y="75" font-size="12" font-weight="bold" fill="#f97316">Q (Instante + h)</text>
+        
+        <!-- Flecha h -> 0 -->
+        <path d="M 345 85 Q 290 120 250 140" fill="none" stroke="#ea580c" stroke-width="2"/>
+        <text x="290" y="115" font-size="11" font-weight="bold" fill="#ea580c">h → 0</text>
+        
+        <!-- Leyenda -->
+        <rect x="70" y="40" width="220" height="54" rx="8" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5"/>
+        <line x1="80" y1="56" x2="110" y2="56" stroke="#f97316" stroke-width="2" stroke-dasharray="4,3"/>
+        <text x="118" y="60" font-size="11" fill="#334155">Secante: Media entre P y Q</text>
+        <line x1="80" y1="76" x2="110" y2="76" stroke="#dc2626" stroke-width="3"/>
+        <text x="118" y="80" font-size="11" font-weight="bold" fill="#dc2626">Tangente: Derivada en P</text>
+      </svg>
+    `,
+    formal: `<div class="math-formula">Definición formal: f'(x) = lim (h → 0) [f(x + h) - f(x)] / h</div>
+<b>Reglas de derivación inmediatas para el examen:</b>
+• Constante: (k)' = 0
+• Potencia: (xⁿ)' = n · xⁿ⁻¹   (bajas el exponente multiplicando y le restas uno arriba).
+  <i>Ejemplo: (x³)' = 3x² | (x²)' = 2x | (5x)' = 5</i>
+• Suma: (f + g)' = f' + g'
+• Producto: (u · v)' = u'·v + u·v'`,
+    twin: `<b>Reto Gemelo para Lucas:</b><br/>
+Lanzas una pelota hacia arriba y su altura en metros según los segundos 't' viene dada por la fórmula: h(t) = 30t - 5t².<br/>
+¿A qué velocidad exacta se mueve la pelota cuando han pasado 2 segundos?<br/>
+<i>Pista del abuelo: Deriva la fórmula para hallar la velocidad: v(t) = h'(t) = 30 - 10t. Ahora sustituye t por 2: 30 - 20 = 10 metros por segundo.</i>`
+  },
+
   // --- INTEGRALES ---
   integral: {
     title: "Cálculo Integral: El arte de sumar infinitas rodajas invisibles",
@@ -43,6 +116,51 @@ Eso es una integral: <b>el pegamento matemático que suma infinitos trocitos mic
 3º <b>La regla mágica de la integral:</b> Si una función es x (una rampa de una dimensión), su integral es <b>(x²)/2</b>.
 4º <b>¿Por qué aparece un cuadrado (x²)?</b> ¡Porque al sumar infinitas líneas estamos creando una superficie plana (un área de 2 dimensiones)! Y si volviéramos a integrar esa área plana (x²), obtendríamos un volumen tridimensional de 3 dimensiones: <b>(x³)/3</b>.
 Integrar es como apilar hojas de papel finísimas, una sobre otra, hasta construir un libro gordo.`,
+    graphDesc: "<b>La Integral como suma de rodajas acumuladas:</b> El área azul irregular bajo la curva f(x) se calcula sumando millones de tiras o rectángulos verticales finísimos de ancho Δx (Sumas de Riemann).",
+    getSvg: () => `
+      <svg viewBox="0 0 580 250" width="100%" height="240" xmlns="http://www.w3.org/2000/svg" style="font-family: sans-serif;">
+        <defs>
+          <pattern id="grid-int" width="20" height="20" patternUnits="userSpaceOnUse">
+            <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#f1f5f9" stroke-width="1"/>
+          </pattern>
+        </defs>
+        <rect width="580" height="250" fill="url(#grid-int)" />
+        
+        <!-- Ejes -->
+        <line x1="50" y1="210" x2="550" y2="210" stroke="#475569" stroke-width="2"/>
+        <line x1="60" y1="220" x2="60" y2="20" stroke="#475569" stroke-width="2"/>
+        <text x="540" y="230" font-size="12" fill="#475569" font-weight="bold">x</text>
+        <text x="70" y="30" font-size="12" fill="#475569" font-weight="bold">y = f(x)</text>
+        
+        <!-- Rectángulos de Riemann (rodajitas verticales) -->
+        <rect x="140" y="150" width="40" height="60" fill="#bae6fd" stroke="#0284c7" stroke-width="1.5" opacity="0.8"/>
+        <rect x="180" y="115" width="40" height="95" fill="#bae6fd" stroke="#0284c7" stroke-width="1.5" opacity="0.8"/>
+        <rect x="220" y="90" width="40" height="120" fill="#bae6fd" stroke="#0284c7" stroke-width="1.5" opacity="0.8"/>
+        <rect x="260" y="75" width="40" height="135" fill="#bae6fd" stroke="#0284c7" stroke-width="1.5" opacity="0.8"/>
+        <rect x="300" y="70" width="40" height="140" fill="#bae6fd" stroke="#0284c7" stroke-width="1.5" opacity="0.8"/>
+        <rect x="340" y="80" width="40" height="130" fill="#bae6fd" stroke="#0284c7" stroke-width="1.5" opacity="0.8"/>
+        <rect x="380" y="105" width="40" height="105" fill="#bae6fd" stroke="#0284c7" stroke-width="1.5" opacity="0.8"/>
+        <rect x="420" y="140" width="40" height="70" fill="#bae6fd" stroke="#0284c7" stroke-width="1.5" opacity="0.8"/>
+        
+        <!-- Curva f(x) -->
+        <path d="M 80 190 C 180 50, 320 50, 500 200" fill="none" stroke="#0369a1" stroke-width="3.5"/>
+        
+        <!-- Puntos a y b -->
+        <line x1="140" y1="210" x2="140" y2="220" stroke="#0f172a" stroke-width="2"/>
+        <text x="136" y="235" font-size="13" font-weight="bold" fill="#0f172a">a</text>
+        <line x1="460" y1="210" x2="460" y2="220" stroke="#0f172a" stroke-width="2"/>
+        <text x="456" y="235" font-size="13" font-weight="bold" fill="#0f172a">b</text>
+        
+        <!-- Etiquetas explicativas -->
+        <text x="240" y="150" font-size="14" font-weight="bold" fill="#0369a1">Área = ∫ₐᵇ f(x) dx</text>
+        <text x="270" y="202" font-size="11" fill="#0f172a">Δx (tira)</text>
+        
+        <!-- Cartel explicativo -->
+        <rect x="340" y="25" width="220" height="44" rx="8" fill="#f0f9ff" stroke="#7dd3fc" stroke-width="1.2"/>
+        <text x="350" y="42" font-size="11" font-weight="bold" fill="#0369a1">💡 S de SUMA (∫)</text>
+        <text x="350" y="58" font-size="10" fill="#334155">Al sumar infinitas tiras, el área es exacta.</text>
+      </svg>
+    `,
     formal: `<div class="math-formula">Operador Integral: ∫ f(x) dx</div>
 <b>1. Integral Indefinida (La Primitiva):</b>
 Regla de las potencias: ∫ xⁿ dx = [xⁿ⁺¹ / (n + 1)] + C  (para n ≠ -1)
@@ -57,35 +175,6 @@ F(x) = x²
 Un grifo averiado empieza cerrado y cada hora que pasa se abre un poco más, echando agua a un ritmo de f(t) = 4t litros por hora.<br/>
 ¿Cuántos litros exactos de agua se acumularán en el cubo después de 2 horas?<br/>
 <i>Pista del abuelo: Halla la primitiva de 4t (que es 2t²) y calcula cuánto vale a las 2 horas: 2 · (2)² = 2 · 4 = 8 litros. ¡Mucho menos que si hubiera estado abierto a tope desde el principio!</i>`
-  },
-
-  // --- DERIVADAS ---
-  derivada: {
-    title: "Cálculo Diferencial: La foto fija del velocímetro en una milésima de segundo",
-    intuition: `Imagínate que vas de viaje en coche de Madrid a Valencia (350 km) y tardas exactamente 3 horas y media.
-Cualquiera puede calcular la velocidad media: 350 km dividido entre 3,5 horas da 100 km/h de media.
-Pero imagínate que un radar de la Guardia Civil te saca una foto y te llega una multa a casa diciendo que ibas a 140 km/h. Si tú le dices al juez: <i>«Señoría, pero si mi media en todo el viaje fue de 100 km/h»</i>, el juez se reirá. El radar no te multa por la media de todo el viaje, sino por <b>lo que marcaba la aguja de tu velocímetro en esa milésima de segundo exacta</b> en la que pasaste por delante de la cámara.
-Eso es una <b>Derivada</b>: es el radar de las matemáticas. Mide la velocidad a la que cambia cualquier cosa en un instante congelado:
-• En una montaña rusa: cómo de empinada es la cuesta justo en la piedra donde tienes puesto el pie (la pendiente de la recta tangente).
-• En un enfermo: si la fiebre está subiendo como un cohete o si ya está empezando a frenar.
-• En un cohete espacial: la aceleración instantánea justo al despegar.`,
-    stepbystep: `¿Cómo calculamos la velocidad en un instante congelado si en un instante congelado el tiempo no avanza?
-1º Elegimos dos momentos muy juntos: el instante actual 'x' y un momento microscópico después 'x + h' (donde 'h' es un suspiro de tiempo, como 0,0001 segundos).
-2º Calculamos el espacio recorrido en ese suspiro: f(x + h) - f(x).
-3º Dividimos ese espacio minúsculo entre ese tiempo minúsculo: [f(x + h) - f(x)] / h.
-4º Hacemos que ese suspiro 'h' se vuelva prácticamente cero (el límite cuando h tiende a 0).
-¡Magia! Las cosas que parecían imposibles de medir en parado nos dan la velocidad exacta en ese punto.`,
-    formal: `<div class="math-formula">Definición formal: f'(x) = lim (h → 0) [f(x + h) - f(x)] / h</div>
-<b>Reglas de derivación inmediatas para el examen:</b>
-• Constante: (k)' = 0
-• Potencia: (xⁿ)' = n · xⁿ⁻¹   (bajas el exponente multiplicando y le restas uno arriba).
-  <i>Ejemplo: (x³)' = 3x² | (x²)' = 2x | (5x)' = 5</i>
-• Suma: (f + g)' = f' + g'
-• Producto: (u · v)' = u'·v + u·v'`,
-    twin: `<b>Reto Gemelo para Lucas:</b><br/>
-Lanzas una pelota hacia arriba y su altura en metros según los segundos 't' viene dada por la fórmula: h(t) = 30t - 5t².<br/>
-¿A qué velocidad exacta se mueve la pelota cuando han pasado 2 segundos?<br/>
-<i>Pista del abuelo: Deriva la fórmula para hallar la velocidad: v(t) = h'(t) = 30 - 10t. Ahora sustituye t por 2: 30 - 20 = 10 metros por segundo.</i>`
   },
 
   // --- LOGARITMOS ---
@@ -134,6 +223,42 @@ Por ejemplo, si x² = 9, la x puede valer +3 (porque 3 × 3 = 9), pero también 
 • 'b' es el número pegado a la x simple (las tiras de borde).
 • 'c' es el número suelto sin letras (las esquinas).
 3º Aplicamos la célebre fórmula cuadrática general. El signo «±» (más o menos) es el cruce de caminos que nos llevará a las dos llaves de la cerradura.`,
+    graphDesc: "<b>La Parábola cortando el suelo:</b> Las dos soluciones de la ecuación x² - 5x + 6 = 0 son exactamente los dos puntos rojos (x₁=2 y x₂=3) donde la curva corta el eje horizontal del suelo.",
+    getSvg: () => `
+      <svg viewBox="0 0 580 250" width="100%" height="240" xmlns="http://www.w3.org/2000/svg" style="font-family: sans-serif;">
+        <defs>
+          <pattern id="grid-eq" width="20" height="20" patternUnits="userSpaceOnUse">
+            <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#f1f5f9" stroke-width="1"/>
+          </pattern>
+        </defs>
+        <rect width="580" height="250" fill="url(#grid-eq)" />
+        
+        <!-- Ejes -->
+        <line x1="50" y1="170" x2="530" y2="170" stroke="#334155" stroke-width="2.5"/>
+        <line x1="120" y1="230" x2="120" y2="20" stroke="#334155" stroke-width="2"/>
+        <text x="500" y="162" font-size="12" fill="#334155" font-weight="bold">Eje X (Suelo y=0)</text>
+        <text x="130" y="32" font-size="12" fill="#334155" font-weight="bold">Eje Y</text>
+        
+        <!-- Parábola y = x^2 - 5x + 6 -->
+        <path d="M 160 40 Q 280 310 400 40" fill="none" stroke="#2563eb" stroke-width="3.5"/>
+        
+        <!-- Cortes x1 = 2 y x2 = 3 -->
+        <circle cx="230" cy="170" r="6.5" fill="#dc2626" stroke="#ffffff" stroke-width="2"/>
+        <text x="205" y="196" font-size="13" font-weight="bold" fill="#dc2626">x₁ = 2</text>
+        
+        <circle cx="330" cy="170" r="6.5" fill="#dc2626" stroke="#ffffff" stroke-width="2"/>
+        <text x="325" y="196" font-size="13" font-weight="bold" fill="#dc2626">x₂ = 3</text>
+        
+        <!-- Vértice -->
+        <circle cx="280" cy="205" r="4.5" fill="#047857"/>
+        <text x="250" y="225" font-size="11" fill="#047857" font-weight="bold">Vértice (Mínimo)</text>
+        
+        <!-- Cartel explicativo -->
+        <rect x="290" y="20" width="260" height="46" rx="8" fill="#eff6ff" stroke="#93c5fd" stroke-width="1.5"/>
+        <text x="300" y="38" font-size="11.5" font-weight="bold" fill="#1e40af">🎯 Dos soluciones = Dos cortes en el suelo</text>
+        <text x="300" y="54" font-size="10" fill="#334155">En x=2 y x=3 el resultado es exactamente cero.</text>
+      </svg>
+    `,
     formal: `<div class="math-formula">x = [-b ± √(b² - 4ac)] / (2a)</div>
 Ejemplo: x² - 5x + 6 = 0  (a=1, b=-5, c=6)
 x = [-(-5) ± √((-5)² - 4·1·6)] / (2·1)
@@ -160,6 +285,52 @@ Ahora el problema se reduce a ver cuántas veces cabe 190 dentro de 570: ¡exact
 3º Tiempo hasta el choque/cruce: Tiempo = 570 / 190 = 3 horas.
 4º Hora del cruce: 11:00 + 3 horas = <b>14:00 horas (las dos de la tarde)</b>.
 5º Lugar del cruce: El coche de Madrid condujo 4 horas en total (4 × 100 = 400 km de Madrid).`,
+    graphDesc: "<b>Gráfica de Posición vs. Tiempo:</b> La línea azul representa el coche de Madrid y la roja el de Barcelona. Se cruzan exactamente en el punto de encuentro a las 14:00 h a 400 km de Madrid.",
+    getSvg: () => `
+      <svg viewBox="0 0 580 250" width="100%" height="240" xmlns="http://www.w3.org/2000/svg" style="font-family: sans-serif;">
+        <defs>
+          <pattern id="grid-c" width="20" height="20" patternUnits="userSpaceOnUse">
+            <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#f1f5f9" stroke-width="1"/>
+          </pattern>
+        </defs>
+        <rect width="580" height="250" fill="url(#grid-c)" />
+        
+        <!-- Ejes -->
+        <line x1="80" y1="200" x2="540" y2="200" stroke="#334155" stroke-width="2"/>
+        <line x1="90" y1="210" x2="90" y2="20" stroke="#334155" stroke-width="2"/>
+        
+        <!-- Marcas de tiempo en X -->
+        <text x="80" y="218" font-size="11" fill="#475569">10:00</text>
+        <text x="160" y="218" font-size="11" fill="#475569">11:00</text>
+        <text x="240" y="218" font-size="11" fill="#475569">12:00</text>
+        <text x="320" y="218" font-size="11" fill="#475569">13:00</text>
+        <text x="400" y="218" font-size="11" font-weight="bold" fill="#047857">14:00</text>
+        <text x="480" y="218" font-size="11" fill="#475569">15:00</text>
+        
+        <!-- Marcas en Y -->
+        <text x="15" y="205" font-size="10" fill="#475569">0 km (Mad)</text>
+        <text x="10" y="98" font-size="10" font-weight="bold" fill="#047857">400 km</text>
+        <text x="15" y="38" font-size="10" fill="#475569">670 km (Bcn)</text>
+        
+        <!-- Líneas guía de cruce -->
+        <line x1="90" y1="95" x2="400" y2="95" stroke="#cbd5e1" stroke-dasharray="4,4"/>
+        <line x1="400" y1="95" x2="400" y2="200" stroke="#cbd5e1" stroke-dasharray="4,4"/>
+        
+        <!-- Coche Madrid (Azul) -->
+        <line x1="90" y1="200" x2="400" y2="95" stroke="#2563eb" stroke-width="3.5"/>
+        <text x="180" y="160" font-size="11" font-weight="bold" fill="#2563eb">Madrid (100 km/h)</text>
+        
+        <!-- Coche Barcelona (Rojo) -->
+        <line x1="90" y1="35" x2="170" y2="35" stroke="#dc2626" stroke-width="2.5" stroke-dasharray="4,4"/>
+        <text x="95" y="28" font-size="9" fill="#991b1b">En garaje</text>
+        <line x1="170" y1="35" x2="400" y2="95" stroke="#dc2626" stroke-width="3.5"/>
+        <text x="250" y="58" font-size="11" font-weight="bold" fill="#dc2626">Barcelona (90 km/h)</text>
+        
+        <!-- Punto estrella de encuentro -->
+        <circle cx="400" cy="95" r="7" fill="#f59e0b" stroke="#ffffff" stroke-width="2.5"/>
+        <text x="350" y="80" font-size="12" font-weight="bold" fill="#b45309">⭐ ¡Cruce a las 14:00!</text>
+      </svg>
+    `,
     formal: `<div class="math-formula">Ecuación de Movimiento: e = v · t</div>
 Posición Coche Madrid: x₁(t) = 100 · t
 Posición Coche Barcelona: x₂(t) = 670 - 90 · (t - 1)
@@ -188,6 +359,33 @@ Las palabras raras (Seno, Coseno y Tangente) son simplemente nombres que les pus
 • Seno = Opuesto / Hipotenusa
 • Coseno = Contiguo / Hipotenusa
 • Tangente = Opuesto / Contiguo`,
+    graphDesc: "<b>El Triángulo del Árbol y la Sombra:</b> Conociendo solo la sombra en el suelo (12 m) y el ángulo solar (30º), la tangente calcula la altura vertical de 6.92 m sin subirte al árbol.",
+    getSvg: () => `
+      <svg viewBox="0 0 580 250" width="100%" height="240" xmlns="http://www.w3.org/2000/svg" style="font-family: sans-serif;">
+        <!-- Suelo -->
+        <line x1="50" y1="200" x2="530" y2="200" stroke="#64748b" stroke-width="2"/>
+        
+        <!-- Sombra en el suelo -->
+        <line x1="120" y1="200" x2="420" y2="200" stroke="#0284c7" stroke-width="5"/>
+        <text x="230" y="222" font-size="12" font-weight="bold" fill="#0369a1">Sombra = 12 metros</text>
+        
+        <!-- Altura vertical -->
+        <line x1="420" y1="200" x2="420" y2="65" stroke="#16a34a" stroke-width="5"/>
+        <text x="430" y="140" font-size="12" font-weight="bold" fill="#15803d">Altura = 6.92 m</text>
+        <circle cx="420" cy="60" r="28" fill="#22c55e" opacity="0.85"/>
+        
+        <!-- Rayo solar (Hipotenusa) -->
+        <line x1="120" y1="200" x2="420" y2="65" stroke="#f59e0b" stroke-width="3" stroke-dasharray="6,4"/>
+        <circle cx="100" cy="45" r="20" fill="#fbbf24"/>
+        
+        <!-- Ángulo -->
+        <path d="M 170 200 A 50 50 0 0 0 162 180" fill="none" stroke="#dc2626" stroke-width="2.5"/>
+        <text x="178" y="192" font-size="12" font-weight="bold" fill="#dc2626">30º</text>
+        
+        <rect x="220" y="20" width="220" height="38" rx="6" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.2"/>
+        <text x="230" y="44" font-size="12" font-weight="bold" fill="#1e293b">tg(30º) = Altura / Sombra</text>
+      </svg>
+    `,
     formal: `<div class="math-formula">tg(α) = Cateto Opuesto / Cateto Contiguo  -->  Altura = Sombra · tg(α)</div>
 Ejemplo escolar: La sombra de un árbol mide 12 metros y el ángulo de elevación solar es de 30º:
 tg(30º) = Altura / 12  -->  Altura = 12 · tg(30º) = 12 · 0,577 = <b>6,92 metros</b>.`,
@@ -196,7 +394,53 @@ Estás en la playa y clavas una sombrilla vertical. La sombra en la arena mide 2
 <i>Pista del abuelo: Como tg(45º) = 1, la altura es exactamente igual a la sombra: ¡2 metros!</i>`
   },
 
-  // --- NÚMEROS NEGATIVOS Y REGLA DE SIGNOS ---
+  // --- TEOREMA DE PITÁGORAS ---
+  pitagoras: {
+    title: "Teorema de Pitágoras: La escuadra del albañil y la pared vertical",
+    intuition: `Imagínate una pared vertical recta de 4 metros y el suelo horizontal de tu casa. La esquina entre la pared y el suelo forma un ángulo recto perfecto de 90 grados.
+Si apoyas una escalera de 5 metros de largo desde el suelo hasta lo alto de la pared, has formado un triángulo rectángulo.
+Los dos lados que forman la esquina se llaman <b>catetos</b> (la pared y el suelo). La escalera inclinada es la <b>hipotenusa</b>.
+Pitágoras descubrió una regla geométrica preciosa: si dibujas baldosas cuadradas sobre la pared (4 × 4 = 16 baldosas) y sobre el suelo (3 × 3 = 9 baldosas), y las sumas: 16 + 9 = 25 baldosas... ¡esa suma es EXACTAMENTE igual al cuadrado de baldosas dibujado sobre la escalera inclinada (5 × 5 = 25)!`,
+    stepbystep: `1º Identificamos los datos: Hipotenusa (escalera) = 5 m. Cateto vertical (pared) = 4 m. Cateto horizontal (suelo) = c.
+2º La fórmula: Hipotenusa² = Cateto₁² + Cateto₂²
+3º Sustituimos: 5² = 4² + c²  -->  25 = 16 + c²
+4º Despejamos el suelo restando: c² = 25 - 16 = 9
+5º Sacamos la raíz cuadrada: c = √9 = 3 metros de distancia.`,
+    graphDesc: "<b>Demostración Geométrica de Pitágoras:</b> El cuadrado naranja (3²=9) más el cuadrado verde (4²=16) suman exactamente las 25 baldosas del cuadrado azul de la hipotenusa (5²=25).",
+    getSvg: () => `
+      <svg viewBox="0 0 580 250" width="100%" height="240" xmlns="http://www.w3.org/2000/svg" style="font-family: sans-serif;">
+        <!-- Triángulo Rectángulo central -->
+        <polygon points="190,150 190,80 280,150" fill="#f8fafc" stroke="#0f172a" stroke-width="3"/>
+        
+        <!-- Cuadrado Cateto Vertical 3x3 -->
+        <rect x="120" y="80" width="70" height="70" fill="#fed7aa" stroke="#ea580c" stroke-width="2"/>
+        <text x="138" y="122" font-size="14" font-weight="bold" fill="#c2410c">3² = 9</text>
+        
+        <!-- Cuadrado Cateto Horizontal 4x4 -->
+        <rect x="190" y="150" width="90" height="90" fill="#bbf7d0" stroke="#16a34a" stroke-width="2"/>
+        <text x="222" y="202" font-size="15" font-weight="bold" fill="#15803d">4² = 16</text>
+        
+        <!-- Cuadrado Hipotenusa 5x5 (Rotado) -->
+        <g transform="translate(190,80) rotate(37.87)">
+          <rect x="0" y="-114" width="114" height="114" fill="#bfdbfe" stroke="#2563eb" stroke-width="2"/>
+          <text x="35" y="-50" font-size="16" font-weight="bold" fill="#1d4ed8">5² = 25</text>
+        </g>
+        
+        <!-- Cartel -->
+        <rect x="350" y="30" width="200" height="58" rx="8" fill="#eff6ff" stroke="#3b82f6" stroke-width="1.5"/>
+        <text x="365" y="52" font-size="14" font-weight="bold" fill="#1d4ed8">a² + b² = h²</text>
+        <text x="365" y="72" font-size="12" fill="#334155">9 + 16 = 25 baldosas</text>
+      </svg>
+    `,
+    formal: `<div class="math-formula">a² + b² = h²  -->  c = √(h² - b²)</div>
+Datos: h = 5 m, b = 4 m
+c² = 5² - 4² = 25 - 16 = 9  -->  c = √9 = <b>3 metros</b>.`,
+    twin: `<b>Reto Gemelo para Lucas:</b><br/>
+Quieres cruzar en diagonal un campo rectangular que mide 6 metros de ancho por 8 metros de largo. ¿Cuántos metros mide esa diagonal recta?<br/>
+<i>Pista del abuelo: 6²=36 y 8²=64. Suma 36+64=100. La raíz cuadrada de 100 son exactamente 10 metros.</i>`
+  },
+
+  // --- NÚMEROS NEGATIVOS ---
   negativo: {
     title: "Números Negativos y la Regla de los Signos: Por qué 'Menos por Menos es Más'",
     intuition: `La mayor duda que tienen todos los niños en la ESO es: <i>«¿Por qué si multiplico dos números negativos el resultado se vuelve positivo?»</i>. En el colegio se lo hacen aprender como un loro: «menos por menos, más». Pero tiene una lógica visual preciosa:
@@ -288,33 +532,13 @@ Precio final = 80 - 24 = <b>56 €</b>`,
     twin: `<b>Reto Gemelo para Lucas:</b><br/>
 Una chaqueta de montaña cuesta 60 euros y tiene un descuento del 20%. ¿Cuánto dinero te descuentan y cuánto pagas en caja?<br/>
 <i>Pista del abuelo: El 10% de 60 son 6 euros... así que el 20% son 12 euros. Pagas 48 euros.</i>`
-  },
-
-  // --- TEOREMA DE PITÁGORAS ---
-  pitagoras: {
-    title: "Teorema de Pitágoras: La escuadra del albañil y la pared vertical",
-    intuition: `Imagínate una pared vertical recta de 4 metros y el suelo horizontal de tu casa. La esquina entre la pared y el suelo forma un ángulo recto perfecto de 90 grados.
-Si apoyas una escalera de 5 metros de largo desde el suelo hasta lo alto de la pared, has formado un triángulo rectángulo.
-Los dos lados que forman la esquina se llaman <b>catetos</b> (la pared y el suelo). La escalera inclinada es la <b>hipotenusa</b>.
-Pitágoras descubrió una regla geométrica preciosa: si dibujas baldosas cuadradas sobre la pared (4 × 4 = 16 baldosas) y sobre el suelo (3 × 3 = 9 baldosas), y las sumas: 16 + 9 = 25 baldosas... ¡esa suma es EXACTAMENTE igual al cuadrado de baldosas dibujado sobre la escalera inclinada (5 × 5 = 25)!`,
-    stepbystep: `1º Identificamos los datos: Hipotenusa (escalera) = 5 m. Cateto vertical (pared) = 4 m. Cateto horizontal (suelo) = c.
-2º La fórmula: Hipotenusa² = Cateto₁² + Cateto₂²
-3º Sustituimos: 5² = 4² + c²  -->  25 = 16 + c²
-4º Despejamos el suelo restando: c² = 25 - 16 = 9
-5º Sacamos la raíz cuadrada: c = √9 = 3 metros de distancia.`,
-    formal: `<div class="math-formula">a² + b² = h²  -->  c = √(h² - b²)</div>
-Datos: h = 5 m, b = 4 m
-c² = 5² - 4² = 25 - 16 = 9  -->  c = √9 = <b>3 metros</b>.`,
-    twin: `<b>Reto Gemelo para Lucas:</b><br/>
-Quieres cruzar en diagonal un campo rectangular que mide 6 metros de ancho por 8 metros de largo. ¿Cuántos metros mide esa diagonal recta?<br/>
-<i>Pista del abuelo: 6²=36 y 8²=64. Suma 36+64=100. La raíz cuadrada de 100 son exactamente 10 metros.</i>`
   }
 };
 
 let currentMathData = null;
 
 // ==========================================================================
-// 3. MOTOR DE RESOLUCIÓN PEDAGÓGICA
+// 3. MOTOR DE RESOLUCIÓN PEDAGÓGICA CON ACTIVACIÓN DE GRÁFICA
 // ==========================================================================
 function solveMathProblem() {
   const qText = document.getElementById('math-question').value.trim();
@@ -330,11 +554,11 @@ function solveMathProblem() {
   const qLower = qText.toLowerCase();
   let matchedData = null;
 
-  // Búsqueda semántica en la base de conocimiento avanzada
-  if (qLower.includes("integral") || qLower.includes("área bajo la curva") || qLower.includes("barrow") || qLower.includes("primitiva")) {
-    matchedData = MATH_KNOWLEDGE_BASE.integral;
-  } else if (qLower.includes("derivada") || qLower.includes("diferencial") || qLower.includes("tangente") || qLower.includes("velocidad instantanea")) {
+  // Búsqueda semántica
+  if (qLower.includes("derivada") || qLower.includes("diferencial") || qLower.includes("tangente") || qLower.includes("velocidad instantanea")) {
     matchedData = MATH_KNOWLEDGE_BASE.derivada;
+  } else if (qLower.includes("integral") || qLower.includes("área bajo la curva") || qLower.includes("barrow") || qLower.includes("primitiva")) {
+    matchedData = MATH_KNOWLEDGE_BASE.integral;
   } else if (qLower.includes("logaritmo") || qLower.includes("richter") || qLower.includes("decibelio") || qLower.includes("neperiano")) {
     matchedData = MATH_KNOWLEDGE_BASE.logaritmo;
   } else if (qLower.includes("segundo grado") || qLower.includes("x²") || qLower.includes("x^2") || qLower.includes("cuadrática") || qLower.includes("cuadratica")) {
@@ -343,6 +567,8 @@ function solveMathProblem() {
     matchedData = MATH_KNOWLEDGE_BASE.coches;
   } else if (qLower.includes("trigonometr") || qLower.includes("seno") || qLower.includes("coseno") || qLower.includes("tangente") || qLower.includes("angulo") || qLower.includes("ángulo")) {
     matchedData = MATH_KNOWLEDGE_BASE.trigonometria;
+  } else if (qLower.includes("pitagoras") || qLower.includes("pitágoras") || qLower.includes("hipotenusa") || qLower.includes("cateto") || qLower.includes("escalera")) {
+    matchedData = MATH_KNOWLEDGE_BASE.pitagoras;
   } else if (qLower.includes("negativo") || qLower.includes("signos") || qLower.includes("menos por menos") || qLower.includes("entero")) {
     matchedData = MATH_KNOWLEDGE_BASE.negativo;
   } else if (qLower.includes("sistema") || qLower.includes("dos ecuaciones") || qLower.includes("incognita") || qLower.includes("incógnita")) {
@@ -351,11 +577,9 @@ function solveMathProblem() {
     matchedData = MATH_KNOWLEDGE_BASE.fracciones;
   } else if (qLower.includes("porcentaj") || qLower.includes("rebaja") || qLower.includes("descuento") || qLower.includes("%") || qLower.includes("iva")) {
     matchedData = MATH_KNOWLEDGE_BASE.porcentajes;
-  } else if (qLower.includes("pitagoras") || qLower.includes("pitágoras") || qLower.includes("hipotenusa") || qLower.includes("cateto") || qLower.includes("escalera")) {
-    matchedData = MATH_KNOWLEDGE_BASE.pitagoras;
   }
 
-  // Generación pedagógica enriquecida si es una pregunta libre diferente
+  // Generación pedagógica enriquecida si es una consulta libre diferente
   if (!matchedData) {
     matchedData = {
       title: `Razonamiento Explicativo para ${nietoName} (${levelText})`,
@@ -366,12 +590,12 @@ Cuando le expliques esto a ${nietoName}, dile: <i>«No mires los signos como una
 1º <b>La lectura dramatizada:</b> Leed el enunciado juntos en voz alta. Pídele que te lo cuente con sus propias palabras como si fuera una película de intriga.<br/>
 2º <b>Separar datos de preguntas:</b> Subrayad con lápiz verde los datos seguros que nos da el problema, y con lápiz rojo la incógnita exacta que nos pide averiguar.<br/>
 3º <b>El dibujo en servilleta:</b> Aunque no sea geometría, dibujad un esquema: una línea de tiempo, dos muñequitos, una balanza de dos platos o una caja cerrada con un lazo.<br/>
-4º <b>Comprobación con el sentido común:</b> Antes de dar por bueno un número, pregúntale a ${nietoName}: <i>«¿Tiene lógica este resultado en el mundo real?»</i> (por ejemplo: si calculamos el precio de una bicicleta, no puede darnos 3 céntimos ni 4 millones de euros).`,
+4º <b>Comprobación con el sentido común:</b> Antes de dar por bueno un número, pregúntale a ${nietoName}: <i>«¿Tiene lógica este resultado en el mundo real?»</i>.`,
       formal: `<div class="math-formula">Estructura Curricular para el Cuaderno Escolar de ${nietoName}:</div>
 • <b>Planteamiento:</b> Declaración explícita de incógnitas y fórmulas del tema escolar.<br/>
-• <b>Desarrollo analítico:</b> Sustitución numérica paso a paso sin saltarse operaciones intermedias para que el profesor vea el método.<br/>
-• <b>Solución definitiva:</b> Resultado numérico recuadrado y acompañado siempre de sus unidades dimensionales correspondientes.<br/>
-<i>💡 Consejo del abuelo: Si quieres una explicación matemática aún más especializada para este ejercicio exacto, pulsa el botón morado de abajo para consultar directamente con Gemini.</i>`,
+• <b>Desarrollo analítico:</b> Sustitución numérica paso a paso sin saltarse operaciones intermedias.<br/>
+• <b>Solución definitiva:</b> Resultado numérico recuadrado con sus unidades correspondientes.<br/>
+<i>💡 Si necesitas una explicación aún más detallada para este ejercicio específico, pulsa el botón morado de abajo para consultar directamente en Gemini.</i>`,
       twin: `<b>Reto Gemelo para ${nietoName}:</b><br/>
 Prueba a resolver este mismo problema pero duplicando los valores iniciales en la cuadrícula de trabajo. Si logras llegar al resultado razonando cada paso, significará que has entendido el concepto y no solo los números de memoria.`
     };
@@ -384,12 +608,25 @@ Prueba a resolver este mismo problema pero duplicando los valores iniciales en l
     levelText: levelText
   };
 
-  // Renderizar en la interfaz
+  // Renderizar textos
   document.getElementById('math-result-title').textContent = `📖 ${matchedData.title || 'Explicación Pedagógica'}`;
   document.getElementById('res-math-intuition').innerHTML = matchedData.intuition.replace(/Lucas/g, nietoName);
   document.getElementById('res-math-stepbystep').innerHTML = matchedData.stepbystep.replace(/Lucas/g, nietoName).replace(/\n/g, '<br/>');
   document.getElementById('res-math-formal').innerHTML = matchedData.formal;
   document.getElementById('res-math-twin').innerHTML = matchedData.twin.replace(/Lucas/g, nietoName);
+
+  // Renderizar Gráfica SVG si existe para este concepto
+  const graphBox = document.getElementById('math-graph-box');
+  const graphDesc = document.getElementById('math-graph-desc');
+  const graphSvgContainer = document.getElementById('math-graph-svg');
+
+  if (matchedData.getSvg) {
+    graphDesc.innerHTML = matchedData.graphDesc || "Representación gráfica visual:";
+    graphSvgContainer.innerHTML = matchedData.getSvg();
+    graphBox.style.display = 'block';
+  } else {
+    graphBox.style.display = 'none';
+  }
 
   // Limpiar el historial de conversación para la nueva duda
   const chatHist = document.getElementById('chat-history');
@@ -437,6 +674,8 @@ Si el ascensor arrancó en la planta baja (piso 0), terminará en el piso 3. Per
 En ambos casos, el movimiento fue exactamente el mismo (+3 pisos de subida).
 Al derivar una función matemática, solo medimos la velocidad o el movimiento del ascensor, pero se nos 'olvida' saber desde qué piso despegó originalmente en el edificio.
 Por eso en las integrales los matemáticos siempre ponen <b>«+ C»</b> (una constante desconocida), para avisar: <i>«Sabemos cuánto se movió la curva, pero no sabemos la altura exacta del suelo hasta que el problema nos dé un dato inicial extra»</i>.`;
+  } else if (qLower.includes("grafic") || qLower.includes("gráfic") || qLower.includes("dibuj") || qLower.includes("curva") || qLower.includes("secante") || qLower.includes("tangente")) {
+    aiReply = `¡Fíjate en la <b>sección gráfica de arriba</b>! Hemos incluido la gráfica interactiva donde puedes ver con total claridad la curva, el punto exacto, la recta secante naranja (que une dos momentos separados) y cómo al juntarse se convierte en la recta tangente roja. ¡Verlo con los ojos vale más que diez páginas de fórmulas!`;
   } else if (qLower.includes("divid") || qLower.includes("entre 2") || qLower.includes("partido 2") || qLower.includes("/2")) {
     aiReply = `¿Por qué se divide entre 2? Imagínate un folio de papel rectangular. Si mide 4 cm de alto por 6 cm de largo, su área entera es 4 × 6 = 24 cm².
 Ahora coge unas tijeras y corta el folio en diagonal de esquina a esquina: te quedan dos triángulos idénticos, y cada uno tiene exactamente la mitad de superficie: (4 × 6) / 2 = 12 cm².
@@ -463,7 +702,7 @@ Si prueba con -4: (-4) × (-4) = ¡también +16, porque menos por menos es más!
     aiReply = `Comprendo perfectamente tu duda, abuelo/a. Respecto a <i>«${userQ}»</i>:
 En este nivel escolar, la clave que debes transmitirle a ${nieto} es que no intente memorizar pasos mecánicamente como si fuera una receta de cocina sin sentido.
 Pregúntale siempre: <i>«¿Qué representa este número en el dibujo?»</i>. Cuando asociamos cada término a un objeto físico (un metro, un euro, un segundo o un trozo de tarta), la confusión desaparece de inmediato.
-<br/><br/><i>💡 Si quieres una respuesta matemática aún más detallada para esta pregunta específica, pulsa el botón morado superior «Consultar en Gemini con Prompt Socrático» y pégalo directamente en Gemini.</i>`;
+<br/><br/><i>💡 Si quieres profundizar todavía más en este matiz concreto, pulsa arriba el botón «⚡ Si quieres profundizar más... (Consultar en Gemini)».</i>`;
   }
 
   // 3. Añadir burbuja de la IA
@@ -495,8 +734,9 @@ Por favor, no me des una respuesta fría de libro de texto ni te limites a solta
 
 1. 🌟 COMPRENSIÓN INTUITIVA COTIDIANA: Una analogía visual o historia de la vida real sin números ni miedo, para que el niño entienda para qué sirve y qué significa antes de ver una sola fórmula.
 2. 🧠 EL PASO A PASO RAZONADO: La explicación lógica desmenuzada paso a paso, explicando el «por qué» de cada movimiento matemático sin saltos mágicos.
-3. 📝 PARA EL EXAMEN DEL COLEGIO: El rigor formal con las fórmulas del currículo escolar y el desarrollo completo para sacar la máxima nota.
-4. 🎯 EL RETO GEMELO: Un problema gemelo con números cambiados para que ${nieto} lo resuelva a solas a lápiz en su cuaderno y demuestre que lo ha aprendido.`;
+3. 📊 ILUSTRACIÓN O ESQUEMA GRÁFICO: Explica con claridad la gráfica (curva, secante, tangente, áreas bajo la curva o ejes) para visualizarlo con los ojos.
+4. 📝 PARA EL EXAMEN DEL COLEGIO: El rigor formal con las fórmulas del currículo escolar y el desarrollo completo para sacar la máxima nota.
+5. 🎯 EL RETO GEMELO: Un problema gemelo con números cambiados para que ${nieto} lo resuelva a solas a lápiz en su cuaderno y demuestre que lo ha aprendido.`;
 
   navigator.clipboard.writeText(promptTexto).then(() => {
     alert(`✨ ¡El Prompt Socrático ha sido copiado al portapapeles!\n\nAhora se abrirá Google Gemini en una nueva pestaña.\nSolo tienes que pulsar Ctrl+V (o Cmd+V en Mac) en el cuadro de texto de Gemini y pulsar Enter para ver la explicación en vivo de la IA.`);
@@ -507,7 +747,7 @@ Por favor, no me des una respuesta fría de libro de texto ni te limites a solta
 }
 
 // ==========================================================================
-// 5. IMPRESIÓN DE LA FICHA DE MATEMÁTICAS CON CUADRÍCULA
+// 6. IMPRESIÓN DE LA FICHA DE MATEMÁTICAS CON GRÁFICA Y CUADRÍCULA
 // ==========================================================================
 function printMathWorksheet() {
   if (!currentMathData) return;
@@ -543,6 +783,15 @@ function printMathWorksheet() {
       <h2>🧠 2. El Paso a Paso Razonado:</h2>
       <div style="font-size: 10pt; line-height: 1.5;">${currentMathData.stepbystep.replace(/Lucas/g, nieto).replace(/\n/g, '<br/>')}</div>
     </div>
+
+    ${currentMathData.getSvg ? `
+    <div class="print-box" style="text-align: center; page-break-inside: avoid;">
+      <h2>📊 Gráfica Explicativa:</h2>
+      <div style="max-width: 480px; margin: 0 auto;">
+        ${currentMathData.getSvg()}
+      </div>
+    </div>
+    ` : ''}
 
     <div class="print-box">
       <h2>📝 3. Solución Formal para el Examen:</h2>
