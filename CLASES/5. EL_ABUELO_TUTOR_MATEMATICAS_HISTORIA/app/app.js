@@ -1310,11 +1310,12 @@ Un gas encerrado en una jeringa absorbe 450 J de calor mientras se expande reali
 };
 
 let currentMathData = null;
+let currentPrompt = "";
 
 // ==========================================================================
 // 3. MOTOR DE RESOLUCIÓN PEDAGÓGICA CON ACTIVACIÓN DE GRÁFICA
 // ==========================================================================
-function solveMathProblem() {
+function solveMathProblem(shouldScroll = true) {
   const qText = document.getElementById('math-question').value.trim();
   const nietoName = document.getElementById('nieto-name').value.trim() || "mi nieto";
   const levelSelect = document.getElementById('math-level');
@@ -1477,7 +1478,9 @@ Prueba a resolver este mismo problema pero duplicando los valores iniciales en l
   document.getElementById('btn-print-math').style.display = 'inline-flex';
   document.getElementById('btn-gemini-math').style.display = 'inline-block';
 
-  document.getElementById('math-result').scrollIntoView({ behavior: 'smooth' });
+  if (shouldScroll) {
+    document.getElementById('math-result').scrollIntoView({ behavior: 'smooth' });
+  }
 }
 
 // ==========================================================================
@@ -1571,34 +1574,305 @@ Pregúntale siempre: <i>«¿Qué representa este número o fuerza en el dibujo?�
 }
 
 // ==========================================================================
-// 5. CONSULTA EN DIRECTO CON GEMINI (PROMPT MAESTRO SOCRÁTICO)
+// 5. GENERADOR DE PROMPT PEDAGÓGICO MAESTRO Y CONEXIÓN CON GEMINI
 // ==========================================================================
-function openInGemini() {
-  if (!currentMathData) return;
 
-  const nieto = currentMathData.nietoName || "mi nieto";
-  const nivel = currentMathData.levelText || "Escolar";
-  const pregunta = currentMathData.questionText;
+/**
+ * Carga una pregunta de ejemplo en el cuadro de texto y genera el prompt
+ */
+function setQuickQuestion(questionText) {
+  const inputEl = document.getElementById('math-question');
+  if (inputEl) {
+    inputEl.value = questionText;
+    generateAndConnectGemini();
+  }
+}
 
-  const promptTexto = `Actúa como un profesor emérito de ciencias, física y matemáticas y un abuelo paciente, sabio y cariñoso.
-Mi nieto/a ${nieto} tiene ${nivel} y tiene la siguiente duda, problema o teorema:
+/**
+ * Muestra una notificación tipo toast flotante
+ */
+function showToast(msg, duration = 4000) {
+  const toast = document.getElementById('toast-banner');
+  if (!toast) return;
+  toast.innerHTML = msg;
+  toast.style.display = 'flex';
+  
+  if (window.toastTimeout) clearTimeout(window.toastTimeout);
+  window.toastTimeout = setTimeout(() => {
+    toast.style.display = 'none';
+  }, duration);
+}
 
-«${pregunta}»
+/**
+ * Genera el Prompt Pedagógico Maestro optimizado para Gemini
+ * Petición: Tono ameno de abuelo/profesor, conciso (relativamente corto),
+ * con esquema gráfico visual, rigor formal y reto gemelo.
+ */
+function generatePedagogicalPrompt(question, nietoName, levelText) {
+  return `Actúa como un profesor emérito de ciencias, física y matemáticas y a la vez como un abuelo paciente, sabio y cariñoso.
+Mi nieto/a ${nietoName} (nivel escolar: ${levelText}) tiene la siguiente duda o problema de estudio:
 
-Por favor, no me des una respuesta fría de libro de texto ni te limites a soltar fórmulas. Necesito que me des una explicación con un inmenso valor añadido pedagógico estructurada exactamente en 5 partes:
+«${question}»
 
-1. 🌟 COMPRENSIÓN INTUITIVA COTIDIANA: Una analogía visual, anécdota histórica (como la bañera de Arquímedes o la manzana de Newton) o historia cotidiana sin números ni miedo, para que el niño entienda para qué sirve y qué significa antes de ver fórmulas.
-2. 🧠 EL PASO A PASO RAZONADO: La explicación lógica desmenuzada paso a paso, explicando el «por qué» de cada movimiento matemático o físico sin saltos mágicos.
-3. 📊 ILUSTRACIÓN O ESQUEMA GRÁFICO: Describe con claridad cómo dibujar un esquema visual (fuerzas, vectores de empuje, curvas, secantes/tangentes o áreas) para visualizarlo con los ojos.
-4. 📝 PARA EL EXAMEN DEL COLEGIO: El rigor formal con las fórmulas del currículo escolar, unidades del Sistema Internacional (N, J, Pa, m/s²...) y el desarrollo completo para sacar la máxima nota.
-5. 🎯 EL RETO GEMELO: Un problema gemelo con números cambiados para que ${nieto} lo resuelva a solas a lápiz en su cuaderno y demuestre que lo ha aprendido.`;
+Por favor, no me des una respuesta fría de libro de texto ni un texto interminable y aburrido. Necesito una explicación con un inmenso valor pedagógico, amena y RELATIVAMENTE CORTA (directa al grano para mantener la atención del niño sin cansarle), estructurada exactamente en estos 5 puntos:
 
-  navigator.clipboard.writeText(promptTexto).then(() => {
-    alert(`✨ ¡La consulta explicativa ha sido copiada al portapapeles!\n\nAhora se abrirá Google Gemini en una nueva pestaña.\nSolo tienes que pulsar Ctrl+V (o Cmd+V en Mac) en el cuadro de texto de Gemini y pulsar Enter para ver la explicación en vivo de la IA.`);
+1. 🌟 COMPRENSIÓN INTUITIVA (Analogía cotidiana): Una comparación visual con la vida real (la cocina, el deporte, el parque, juguetes o la naturaleza) o anécdota histórica (como la bañera de Arquímedes o la manzana de Newton) para que el niño entienda el concepto sin miedo antes de ver fórmulas.
+2. 🧠 EL PASO A PASO RAZONADO (Breve y sin rodeos): Explica la lógica de por qué se hace cada paso sin dar saltos mágicos.
+3. 📊 ESQUEMA GRÁFICO VISUAL (Para ver con los ojos): Describe o dibuja un esquema visual claro (puedes usar un diagrama en texto/ASCII estructurado, flechas, vectores o instrucciones claras) para que mi nieto pueda dibujarlo fácilmente con regla y colores en su cuaderno.
+4. 📝 PARA EL EXAMEN ESCOLAR (Rigor y Fórmulas): Las fórmulas oficiales del colegio con sus unidades del Sistema Internacional (SI: m, s, kg, N, J, Pa, W...) y el desarrollo exacto para obtener la máxima nota.
+5. 🎯 EL RETO GEMELO: Un problema gemelo con datos cambiados para que ${nietoName} lo resuelva a solas a lápiz en su cuaderno y consolide lo aprendido.`;
+}
+
+/**
+ * Genera el prompt, lo muestra en el panel, lo copia al portapapeles y activa la ficha local
+ */
+function generateAndConnectGemini() {
+  const qText = document.getElementById('math-question').value.trim();
+  const nietoName = document.getElementById('nieto-name').value.trim() || "mi nieto";
+  const levelSelect = document.getElementById('math-level');
+  const levelText = levelSelect.options[levelSelect.selectedIndex].text;
+
+  if (!qText) {
+    alert("Por favor, escribe primero la duda, teorema o problema que quieres explicarle a tu nieto.");
+    document.getElementById('math-question').focus();
+    return;
+  }
+
+  // 1. Generar Prompt Maestro
+  currentPrompt = generatePedagogicalPrompt(qText, nietoName, levelText);
+
+  // 2. Colocar en la vista previa del prompt
+  const previewEl = document.getElementById('prompt-preview-text');
+  if (previewEl) {
+    previewEl.textContent = currentPrompt;
+  }
+
+  // 3. Mostrar la tarjeta de Gemini
+  const geminiCard = document.getElementById('gemini-connector-card');
+  if (geminiCard) {
+    geminiCard.style.display = 'block';
+  }
+
+  // 4. Copiar automáticamente al portapapeles
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(currentPrompt).then(() => {
+      showToast("✨ ¡Prompt Pedagógico Maestro generado y copiado al portapapeles! Pulsa el botón morado para abrir Gemini en 1 clic.");
+    }).catch(() => {
+      showToast("✨ ¡Prompt Pedagógico generado con éxito! Pulsa 'Abrir Google Gemini' para consultarlo.");
+    });
+  } else {
+    showToast("✨ ¡Prompt Pedagógico generado con éxito! Pulsa 'Abrir Google Gemini' para consultarlo.");
+  }
+
+  // 5. Cargar la API key guardada si existe
+  const savedKey = localStorage.getItem('gemini_api_key');
+  const keyInput = document.getElementById('gemini-api-key');
+  if (savedKey && keyInput && !keyInput.value) {
+    keyInput.value = savedKey;
+  }
+
+  // 6. Activar también la ficha ilustrada local (sin saltar con scroll brusco)
+  solveMathProblem(false);
+
+  // 7. Scroll suave hacia el panel de Gemini
+  geminiCard.scrollIntoView({ behavior: 'smooth' });
+}
+
+/**
+ * Copia el prompt y abre Google Gemini Web en 1 clic
+ */
+function launchGeminiWeb() {
+  if (!currentPrompt) {
+    generateAndConnectGemini();
+    if (!currentPrompt) return;
+  }
+
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(currentPrompt).then(() => {
+      showToast("🚀 Abriendo Gemini... ¡El prompt ya está copiado! Pulsa Ctrl+V (o Cmd+V) en Gemini y pulsa Enter.");
+      setTimeout(() => {
+        window.open("https://gemini.google.com", "_blank");
+      }, 350);
+    }).catch(() => {
+      window.open("https://gemini.google.com", "_blank");
+    });
+  } else {
     window.open("https://gemini.google.com", "_blank");
+  }
+}
+
+/**
+ * Copia el prompt manualmente
+ */
+function copyGeminiPrompt() {
+  if (!currentPrompt) {
+    generateAndConnectGemini();
+    if (!currentPrompt) return;
+  }
+
+  navigator.clipboard.writeText(currentPrompt).then(() => {
+    showToast("📋 ¡Prompt Pedagógico copiado al portapapeles con éxito!");
   }).catch(() => {
-    window.open("https://gemini.google.com", "_blank");
+    alert("No se pudo copiar automáticamente. Puedes seleccionar el texto del prompt y copiarlo con Ctrl+C.");
   });
+}
+
+/**
+ * Muestra/Oculta el recuadro con el texto del prompt
+ */
+function togglePromptVisibility() {
+  const container = document.getElementById('prompt-preview-container');
+  const toggleText = document.getElementById('toggle-prompt-text');
+  if (!container) return;
+
+  if (container.style.display === 'none' || container.style.display === '') {
+    container.style.display = 'block';
+    if (toggleText) toggleText.textContent = "Ocultar texto del Prompt";
+  } else {
+    container.style.display = 'none';
+    if (toggleText) toggleText.textContent = "Ver texto del Prompt";
+  }
+}
+
+/**
+ * Despliega/Oculta la configuración de la API Key en la app
+ */
+function toggleApiSettings() {
+  const panel = document.getElementById('api-settings-panel');
+  const icon = document.getElementById('api-toggle-icon');
+  if (!panel) return;
+
+  if (panel.style.display === 'none' || panel.style.display === '') {
+    panel.style.display = 'block';
+    if (icon) icon.textContent = "▲";
+  } else {
+    panel.style.display = 'none';
+    if (icon) icon.textContent = "▼";
+  }
+}
+
+/**
+ * Guarda la API Key en localStorage
+ */
+function saveApiKey() {
+  const keyInput = document.getElementById('gemini-api-key');
+  const key = keyInput.value.trim();
+  if (!key) {
+    alert("Por favor, introduce una clave API válida de Google Gemini.");
+    return;
+  }
+  localStorage.setItem('gemini_api_key', key);
+  showToast("💾 ¡Clave API guardada con éxito en tu navegador!");
+}
+
+/**
+ * Consulta a la API de Google Gemini en vivo dentro de la app
+ */
+async function askGeminiInApp() {
+  if (!currentPrompt) {
+    generateAndConnectGemini();
+    if (!currentPrompt) return;
+  }
+
+  let apiKey = document.getElementById('gemini-api-key').value.trim();
+  if (!apiKey) {
+    apiKey = localStorage.getItem('gemini_api_key') || "";
+  }
+
+  if (!apiKey) {
+    alert("Para consultar directamente dentro de la aplicación necesitas una clave Gemini API (gratuita en https://aistudio.google.com).\n\nSi no tienes clave, no te preocupes: pulsa el botón '⚡ Abrir Google Gemini con este Prompt (1 Clic)' para consultar gratis en la web de Gemini.");
+    document.getElementById('gemini-api-key').focus();
+    return;
+  }
+
+  // Guardar por si la acaba de escribir
+  localStorage.setItem('gemini_api_key', apiKey);
+
+  const loadingEl = document.getElementById('gemini-loading');
+  const resultBox = document.getElementById('gemini-inapp-result');
+  const contentEl = document.getElementById('gemini-inapp-content');
+
+  loadingEl.style.display = 'block';
+  resultBox.style.display = 'none';
+
+  try {
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+    const response = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        contents: [
+          {
+            parts: [{ text: currentPrompt }]
+          }
+        ]
+      })
+    });
+
+    if (!response.ok) {
+      const errData = await response.json().catch(() => ({}));
+      throw new Error(errData.error?.message || `Error HTTP ${response.status}`);
+    }
+
+    const data = await response.json();
+    const replyText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+
+    if (!replyText) {
+      throw new Error("No se ha recibido respuesta de texto de Gemini.");
+    }
+
+    contentEl.innerHTML = renderMarkdown(replyText);
+    resultBox.style.display = 'block';
+    showToast("✨ ¡Explicación de Gemini recibida con éxito!");
+    resultBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  } catch (err) {
+    alert(`No se pudo completar la consulta con la API: ${err.message}\n\nRecuerda que siempre puedes pulsar el botón '⚡ Abrir Google Gemini con este Prompt (1 Clic)' para ver la respuesta directamente en la web de Gemini sin restricciones.`);
+  } finally {
+    loadingEl.style.display = 'none';
+  }
+}
+
+/**
+ * Copia el resultado devuelto por Gemini en la app
+ */
+function copyInAppAnswer() {
+  const contentEl = document.getElementById('gemini-inapp-content');
+  if (!contentEl) return;
+
+  navigator.clipboard.writeText(contentEl.innerText).then(() => {
+    showToast("📋 ¡Explicación de Gemini copiada al portapapeles!");
+  });
+}
+
+/**
+ * Renderizador ligero de Markdown a HTML seguro
+ */
+function renderMarkdown(md) {
+  if (!md) return "";
+  let html = md
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/```([\s\S]*?)```/g, (match, p1) => `<pre><code>${p1}</code></pre>`)
+    .replace(/`([^`]+)`/g, "<code>$1</code>")
+    .replace(/^#### (.*$)/gim, "<h5>$1</h5>")
+    .replace(/^### (.*$)/gim, "<h4>$1</h4>")
+    .replace(/^## (.*$)/gim, "<h3>$1</h3>")
+    .replace(/^# (.*$)/gim, "<h2>$1</h2>")
+    .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
+    .replace(/\*([^*]+)\*/g, "<em>$1</em>")
+    .replace(/^\s*[-*]\s+(.*$)/gim, "<li>$1</li>")
+    .replace(/\n\n+/g, "</p><p>")
+    .replace(/\n/g, "<br/>");
+
+  return `<p>${html}</p>`.replace(/<p><\/p>/g, "");
+}
+
+/**
+ * Compatibilidad con llamadas previas a openInGemini
+ */
+function openInGemini() {
+  launchGeminiWeb();
 }
 
 // ==========================================================================
@@ -1682,3 +1956,12 @@ function printMathWorksheet() {
 
   window.print();
 }
+
+// Cargar clave de Gemini guardada al inicializar la página
+window.addEventListener('DOMContentLoaded', () => {
+  const savedKey = localStorage.getItem('gemini_api_key');
+  const keyInput = document.getElementById('gemini-api-key');
+  if (savedKey && keyInput) {
+    keyInput.value = savedKey;
+  }
+});
