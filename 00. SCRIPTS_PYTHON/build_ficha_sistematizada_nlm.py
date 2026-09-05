@@ -4,25 +4,25 @@ Generador de la Ficha Práctica Sistematizada de NotebookLM en formato Word (.do
 Organiza de forma pedagógica, ordenada y exhaustiva todas las funciones de NotebookLM
 a partir de las 3 fuentes de ejemplo (TXT, PDF, YouTube):
 1. Carga y observación del resumen automático central.
-2. Resúmenes individuales y preguntas concretas con citas en cada fuente.
+2. Resúmenes individuales y preguntas concretas con citas [1] en cada fuente.
 3. Fijar resultados como notas (Pin).
-4. El panel Studio: seleccionar solo YouTube y probar los 9 botones.
-5. Seleccionar TXT + PDF: crear presentación y realizar revisión iterativa.
-6. Seleccionar las 3 fuentes: crear guion documental y vídeo en movimiento.
+4. El panel Studio: seleccionar solo YouTube y probar los botones de Studio.
+5. Seleccionar TXT + PDF: pulsar botón Presentación con estilo visual sobrio y botón Revisar sobre la marcha.
+6. Seleccionar las 3 fuentes: pulsar directamente el botón «Resumen de vídeo» en Studio sin prompts adicionales.
 """
 
 import os
 import docx
 from docx.shared import Inches, Pt, RGBColor
 from docx.enum.text import WD_ALIGN_PARAGRAPH
-from docx.enum.table import WD_TABLE_ALIGNMENT, WD_ALIGN_VERTICAL
+from docx.enum.table import WD_TABLE_ALIGNMENT
 from docx.oxml import OxmlElement, parse_xml
 from docx.oxml.ns import nsdecls, qn
 
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, HRFlowable, KeepTogether
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, HRFlowable
 from reportlab.lib.units import cm
 
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -98,20 +98,19 @@ def generate_docx():
     print("📝 Generando Ficha Práctica Sistematizada en DOCX...")
     doc = docx.Document()
 
-    # Configuración de márgenes (2 cm)
+    # Márgenes de página
     for s in doc.sections:
         s.top_margin = Inches(0.8)
         s.bottom_margin = Inches(0.8)
         s.left_margin = Inches(0.85)
         s.right_margin = Inches(0.85)
 
-    # Colores principales
     C_NAVY = RGBColor(11, 37, 69)      # #0B2545
     C_BLUE = RGBColor(0, 102, 161)     # #0066A1
     C_DARK = RGBColor(33, 37, 41)
     C_MUTED = RGBColor(100, 116, 139)
 
-    # --- ENCABEZADO Y PORTADA DIDÁCTICA ---
+    # --- ENCABEZADO Y TÍTULO ---
     p_inst = doc.add_paragraph()
     p_inst.alignment = WD_ALIGN_PARAGRAPH.CENTER
     p_inst.paragraph_format.space_after = Pt(2)
@@ -139,14 +138,14 @@ def generate_docx():
     r_sub.font.italic = True
     r_sub.font.color.rgb = C_MUTED
 
-    # Cuadro de introducción didáctica
+    # Cuadro Objetivo
     add_callout_box(
         doc,
         "🎯 Objetivo del Taller Práctico",
         [
-            "Aprender a manejar Google NotebookLM de forma rigurosa y ordenada.",
-            "Partiremos de 3 fuentes complementarias sobre un mismo acontecimiento histórico universal: La Llegada a la Luna (20 de julio de 1969).",
-            "Descubriremos cómo NotebookLM resume automáticamente, cómo buscar datos con citas [1] en cada papel, cómo fijar notas en el corcho digital, cómo exprimir los 9 botones automáticos de Studio y cómo crear una presentación y un vídeo."
+            "Aprender a manejar Google NotebookLM de forma rigurosa, visual y ordenada.",
+            "Partiremos de 3 fuentes complementarias sobre La Llegada a la Luna (20 de julio de 1969): un recuerdo familiar (TXT), un informe histórico de la NASA (PDF) y un vídeo conmemorativo (YouTube).",
+            "Descubriremos el resumen automático central, cómo hacer preguntas con citas [1] en cada papel, cómo fijar notas permanentes, cómo exprimir los botones de Studio, cómo crear una presentación con estilo y revisarla en vivo, y cómo generar un resumen de vídeo combinando las 3 fuentes."
         ],
         border_color="0066A1",
         bg_color="F0F7FC"
@@ -164,9 +163,8 @@ def generate_docx():
 
     p = doc.add_paragraph()
     p.paragraph_format.space_after = Pt(6)
-    p.add_run("En la columna izquierda de NotebookLM («Fuentes»), pulsa el botón ").font.color.rgb = C_DARK
-    r_bold = p.add_run("+ Añadir fuentes")
-    r_bold.bold = True
+    p.add_run("En la columna izquierda («Fuentes»), pulsa ").font.color.rgb = C_DARK
+    p.add_run("+ Añadir fuentes").bold = True
     p.add_run(" y carga estos 3 documentos que tienes preparados en tu carpeta:")
 
     # Tabla de las 3 Fuentes
@@ -218,8 +216,8 @@ def generate_docx():
         "💡 LA REGLA DE ORO DE LAS CASILLAS DE VERIFICACIÓN (Checkboxes)",
         [
             "Cada fuente tiene una pequeña casilla cuadrada a su izquierda [✔].",
-            "NotebookLM es un archivador inteligente que SOLO lee las casillas que tengas activadas con el tick.",
-            "Si dejas marcada una sola fuente, la IA 'olvidará' temporalmente las otras dos. ¡Esta es la clave para hacer análisis limpios e independientes!"
+            "NotebookLM es un archivador inteligente que SOLO lee las fuentes que tengan la casilla marcada.",
+            "Si dejas activada una sola fuente, la IA 'olvidará' temporalmente las otras dos. ¡Esta es la clave para hacer análisis individuales y limpios!"
         ],
         border_color="0B7285",
         bg_color="E6FCF5"
@@ -258,7 +256,7 @@ def generate_docx():
         [
             "1. NotebookLM ha elaborado por sí mismo un resumen general sin que hayamos tecleado nada.",
             "2. Ha identificado que los tres documentos tratan sobre el alunizaje de 1969.",
-            "3. En la parte inferior sugiere varias preguntas recomendadas para romper el hielo."
+            "3. En la parte inferior sugiere varias preguntas recomendadas para explorar los temas."
         ],
         border_color="D97706",
         bg_color="FFFBEB"
@@ -317,8 +315,8 @@ def generate_docx():
 
     p = doc.add_paragraph()
     p.paragraph_format.space_after = Pt(4)
-    p.add_run("Marca ahora las 3 fuentes a la vez [✔]. Vamos a hacer preguntas concretas para comprobar la mayor virtud de NotebookLM: ").font.color.rgb = C_DARK
-    p.add_run("la cita que demuestra de dónde sale cada dato:").bold = True
+    p.add_run("Marca ahora las 3 fuentes a la vez [✔]. Vamos a hacer preguntas concretas para comprobar ").font.color.rgb = C_DARK
+    p.add_run("la cita numerada [1] que demuestra de dónde sale cada dato:").bold = True
 
     p_q1 = doc.add_paragraph()
     p_q1.paragraph_format.left_indent = Inches(0.2)
@@ -371,7 +369,7 @@ def generate_docx():
         bg_color="FFF7ED"
     )
 
-    # --- FASE 2: PANEL DE STUDIO ---
+    # --- FASE 2: PANEL DE STUDIO (9 BOTONES) ---
     p_h1 = doc.add_paragraph()
     p_h1.paragraph_format.space_before = Pt(12)
     p_h1.paragraph_format.space_after = Pt(6)
@@ -383,8 +381,7 @@ def generate_docx():
 
     p = doc.add_paragraph()
     p.paragraph_format.space_after = Pt(6)
-    p.add_run("Ahora vamos a convertir a NotebookLM en una máquina de crear formatos. ").font.color.rgb = C_DARK
-    p.add_run("Sigue estos pasos con atención:").bold = True
+    p.add_run("Ahora vamos a explorar la fábrica de contenidos de Studio. Sigue estos pasos:").font.color.rgb = C_DARK
 
     p_step = doc.add_paragraph()
     p_step.paragraph_format.left_indent = Inches(0.2)
@@ -392,15 +389,15 @@ def generate_docx():
     p_step.add_run("1º En la columna izquierda: ").bold = True
     p_step.add_run("Desmarca el TXT [ ] y desmarca el PDF [ ]. Deja marcado ").font.color.rgb = C_DARK
     p_step.add_run("ÚNICAMENTE el vídeo de YouTube [✔]").bold = True
-    p_step.add_run(". De este modo, todo lo que generes se basará 100% en el vídeo.")
+    p_step.add_run(". Así todo lo generado se basará 100% en el vídeo.")
 
     p_step2 = doc.add_paragraph()
     p_step2.paragraph_format.left_indent = Inches(0.2)
     p_step2.paragraph_format.space_after = Pt(8)
     p_step2.add_run("2º En la columna derecha (Studio): ").bold = True
-    p_step2.add_run("Ve pulsando UNO A UNO los 9 botones automáticos y observa el resultado en tu pantalla:").font.color.rgb = C_DARK
+    p_step2.add_run("Ve pulsando UNO A UNO cada uno de los 9 botones automáticos y observa el resultado:").font.color.rgb = C_DARK
 
-    # Tabla de los 9 Botones de Studio
+    # Tabla de los 9 Botones
     t_botones = doc.add_table(rows=10, cols=3)
     t_botones.alignment = WD_TABLE_ALIGNMENT.CENTER
     t_botones.autofit = False
@@ -420,15 +417,15 @@ def generate_docx():
         r.font.color.rgb = RGBColor(255, 255, 255)
 
     botones_data = [
-        ("1. Resumen de audio 🎙️", "[  ] Pulsa 'Generar' en Audio Overview", "Un programa de radio tipo podcast con 2 periodistas en español debatiendo el vídeo de YouTube."),
-        ("2. Preguntas frecuentes (FAQ)", "[  ] Pulsa 'Preguntas frecuentes'", "Un cuestionario con las dudas clave que resolvería alguien que ve el vídeo de la conmemoración."),
-        ("3. Guía de estudio 📚", "[  ] Pulsa 'Guía de estudio'", "Un temario pedagógico estructurado con preguntas de repaso y términos clave explicados."),
-        ("4. Cronología / Línea de tiempo ⏱️", "[  ] Pulsa 'Línea de tiempo'", "Una lista cronológica con las fechas y años clave mencionados en el reportaje."),
-        ("5. Documento informativo 📄", "[  ] Pulsa 'Documento informativo'", "Un informe formal y ejecutivo (Briefing) listo para imprimir o enviar por correo."),
-        ("6. Tabla de contenidos 📑", "[  ] Pulsa 'Tabla de contenidos'", "Un índice estructurado con los capítulos y temas tratados a lo largo del vídeo."),
-        ("7. Puntos clave / Ideas destacadas 💡", "[  ] Pulsa 'Puntos clave'", "Un decálogo con las perlas de información más importantes sintetizadas en viñetas."),
-        ("8. Ensayo / Borrador narrativo ✍️", "[  ] Pulsa 'Borrador / Ensayo'", "Una redacción continua y literaria que narra la trascendencia histórica del acontecimiento."),
-        ("9. + Añadir nota manual 📝", "[  ] Pulsa '+ Añadir nota'", "Crea una nota propia en blanco para apuntar tus reflexiones (ej. 'Enseñar este vídeo a mis nietos').")
+        ("1. Preguntas frecuentes (FAQ)", "[  ] Pulsa 'Preguntas frecuentes'", "Un cuestionario con las dudas clave que resolvería alguien que ve el vídeo de la conmemoración."),
+        ("2. Guía de estudio 📚", "[  ] Pulsa 'Guía de estudio'", "Un temario pedagógico estructurado con preguntas de repaso y términos clave explicados."),
+        ("3. Cronología / Línea de tiempo ⏱️", "[  ] Pulsa 'Línea de tiempo'", "Una lista cronológica con las fechas y años clave mencionados en el reportaje."),
+        ("4. Documento informativo 📄", "[  ] Pulsa 'Documento informativo'", "Un informe formal y ejecutivo (Briefing) listo para imprimir o enviar por correo."),
+        ("5. Tabla de contenidos 📑", "[  ] Pulsa 'Tabla de contenidos'", "Un índice estructurado con los capítulos y temas tratados a lo largo del vídeo."),
+        ("6. Puntos clave / Ideas destacadas 💡", "[  ] Pulsa 'Puntos clave'", "Un decálogo con las perlas de información más importantes sintetizadas en viñetas."),
+        ("7. Ensayo / Borrador narrativo ✍️", "[  ] Pulsa 'Borrador / Ensayo'", "Una redacción continua y literaria que narra la trascendencia histórica del acontecimiento."),
+        ("8. Resumen breve", "[  ] Pulsa 'Resumen'", "Una síntesis rápida en un solo párrafo para entender la esencia del vídeo."),
+        ("9. + Añadir nota manual 📝", "[  ] Pulsa '+ Añadir nota'", "Crea una nota propia en blanco para apuntar tus reflexiones (ej. 'Ver este vídeo con mis nietos').")
     ]
 
     for i, (b_name, b_act, b_res) in enumerate(botones_data, start=1):
@@ -450,11 +447,11 @@ def generate_docx():
 
     doc.add_paragraph().paragraph_format.space_after = Pt(8)
 
-    # --- FASE 3: CREACIÓN Y REVISIÓN DE PRESENTACIÓN ---
+    # --- FASE 3: EL BOTÓN DE PRESENTACIÓN Y REVISIÓN EN VIVO ---
     p_h1 = doc.add_paragraph()
     p_h1.paragraph_format.space_before = Pt(12)
     p_h1.paragraph_format.space_after = Pt(6)
-    r = p_h1.add_run("FASE 3: Creación de una Presentación y Revisión Iterativa (TXT + PDF)")
+    r = p_h1.add_run("FASE 3: El Botón de Presentación y Revisión en Vivo (TXT + PDF)")
     r.font.name = "Calibri"
     r.font.size = Pt(14)
     r.font.bold = True
@@ -462,51 +459,58 @@ def generate_docx():
 
     p = doc.add_paragraph()
     p.paragraph_format.space_after = Pt(4)
-    p.add_run("En la vida real nunca nos quedamos con el primer borrador que entrega la inteligencia artificial. ").font.color.rgb = C_DARK
-    p.add_run("Vamos a combinar el texto del recuerdo familiar con el PDF técnico para crear una presentación y luego perfeccionarla:").bold = True
+    p.add_run("En esta fase no escribiremos en el chat. Utilizaremos directamente el botón de presentación de Studio para generar diapositivas con estilo propio y después revisarlas en vivo:").font.color.rgb = C_DARK
 
     p_p1 = doc.add_paragraph()
     p_p1.paragraph_format.left_indent = Inches(0.2)
-    p_p1.paragraph_format.space_after = Pt(3)
+    p_p1.paragraph_format.space_after = Pt(4)
     p_p1.add_run("[  ] Paso 3.1: Selección de Fuentes: ").bold = True
     p_p1.add_run("En la columna izquierda, marca ").font.color.rgb = C_DARK
     p_p1.add_run("el TXT [✔] y el PDF [✔]").bold = True
-    p_p1.add_run(". Desmarca el vídeo de YouTube [ ].")
+    p_p1.add_run(". Deja desmarcado el vídeo de YouTube [ ].")
 
     p_p2 = doc.add_paragraph()
     p_p2.paragraph_format.left_indent = Inches(0.2)
     p_p2.paragraph_format.space_after = Pt(4)
-    p_p2.add_run("[  ] Paso 3.2: Generar el Guion de Diapositivas: ").bold = True
-    p_p2.add_run("Escribe este prompt exacto en el chat:\n").font.color.rgb = C_DARK
-    r_p = p_p2.add_run("👉 «Crea una estructura de presentación de 4 diapositivas titulada: 'Apolo 11: Entre la Ciencia y el Salón de Casa'. En cada diapositiva incluye: Título, 3 puntos clave y una frase textual extraída de los documentos.»")
+    p_p2.add_run("[  ] Paso 3.2: Pulsar el Botón «Presentación» y fijar el estilo visual: ").bold = True
+    p_p2.add_run("En el panel lateral de Studio (a la derecha), pulsa directamente sobre el botón ").font.color.rgb = C_DARK
+    p_p2.add_run("«Presentación»").bold = True
+    p_p2.add_run(". En la ventana o casilla de personalización que te ofrece NotebookLM para guiar la presentación, escribe este prompt de estilo visual y editorial:\n")
+
+    r_p = p_p2.add_run(
+        "👉 «Crea una presentación con un estilo visual sobrio, elegante y de crónica documental histórica. "
+        "Utiliza una paleta espacial limpia (azul marino profundo, gris grafito y blanco de alto contraste), "
+        "con tipografía grande y muy legible para personas mayores. Estructura las diapositivas equilibrando el rigor técnico "
+        "de la NASA con la emoción humana del recuerdo familiar en Madrid, incorporando frases textuales entrecomilladas "
+        "y evitando totalmente ilustraciones infantiles, colores estridentes o estilos de fantasía.»"
+    )
     r_p.bold = True
     r_p.font.color.rgb = C_NAVY
 
     p_p3 = doc.add_paragraph()
     p_p3.paragraph_format.left_indent = Inches(0.2)
     p_p3.paragraph_format.space_after = Pt(6)
-    p_p3.add_run("[  ] Paso 3.3: La Revisión Crítica (Iteración Pedagógica): ").bold = True
-    p_p3.add_run("Una vez que NotebookLM te muestre las 4 diapositivas, no te conformes. Pídele un ajuste exigente:\n").font.color.rgb = C_DARK
-    r_p = p_p3.add_run("👉 «Revisa la presentación: En la diapositiva 2, dale más emoción a las lágrimas del abuelo y al calor de aquella noche en Madrid. En la diapositiva 3, destaca con fuerza el orgullo de que Fresnedillas de la Oliva escuchara el alunizaje antes que la propia NASA en Houston.»")
-    r_p.bold = True
-    r_p.font.color.rgb = C_BLUE
+    p_p3.add_run("[  ] Paso 3.3: Revisar la Presentación resultante con el Botón «Revisar»: ").bold = True
+    p_p3.add_run("Una vez generada la presentación en pantalla, entra en ella y pulsa el botón ").font.color.rgb = C_DARK
+    p_p3.add_run("«Revisar»").bold = True
+    p_p3.add_run(" (o Editar/Ajustar). En este paso no usaremos un texto cerrado: realizaremos la revisión directamente sobre la marcha en clase con el profesor, probando ajustes en vivo según lo que queramos perfeccionar.")
 
     add_callout_box(
         doc,
-        "💡 LECCIÓN DE APRENDIZAJE: LA IA COMO COLABORADORA",
+        "💡 LA CLAVE DE LA REVISIÓN EN VIVO",
         [
-            "Fíjate en cómo NotebookLM reescribe y enriquece la diapositiva en segundos respetando tus documentos originales.",
-            "Una vez revisada, pulsa 'Guardar en nota' para conservarla en Studio como tu presentación definitiva de clase."
+            "La inteligencia artificial ofrece un primer borrador excelente, pero el control pedagógico es siempre tuyo.",
+            "Al pulsar el botón «Revisar» dentro de la misma presentación, puedes modificar cualquier diapositiva, añadir más énfasis a una frase del abuelo o pulir los datos técnicos al instante."
         ],
         border_color="0066A1",
         bg_color="F0F7FC"
     )
 
-    # --- FASE 4: EL GRAN PROYECTO FINAL ---
+    # --- FASE 4: EL GRAN RESUMEN DE VÍDEO ---
     p_h1 = doc.add_paragraph()
     p_h1.paragraph_format.space_before = Pt(12)
     p_h1.paragraph_format.space_after = Pt(6)
-    r = p_h1.add_run("FASE 4: El Gran Proyecto Final Multimedia (Las 3 Fuentes Juntas)")
+    r = p_h1.add_run("FASE 4: El Gran Resumen de Vídeo (Las 3 Fuentes Juntas)")
     r.font.name = "Calibri"
     r.font.size = Pt(14)
     r.font.bold = True
@@ -514,43 +518,34 @@ def generate_docx():
 
     p = doc.add_paragraph()
     p.paragraph_format.space_after = Pt(4)
-    p.add_run("El culmen del taller: poner a trabajar la emoción humana (TXT), el rigor histórico (PDF) y el impacto audiovisual (YouTube) a la vez.").font.color.rgb = C_DARK
+    p.add_run("El momento cumbre del taller: poner a trabajar la emoción humana (TXT), el rigor histórico (PDF) y el impacto audiovisual (YouTube) de forma totalmente automatizada en Studio.").font.color.rgb = C_DARK
 
     p_f1 = doc.add_paragraph()
     p_f1.paragraph_format.left_indent = Inches(0.2)
-    p_f1.paragraph_format.space_after = Pt(3)
-    p_f1.add_run("[  ] Paso 4.1: Selección Total: ").bold = True
-    p_f1.add_run("Marca las ").font.color.rgb = C_DARK
+    p_f1.paragraph_format.space_after = Pt(4)
+    p_f1.add_run("[  ] Paso 4.1: Selección Total de Fuentes: ").bold = True
+    p_f1.add_run("En la columna izquierda, marca las ").font.color.rgb = C_DARK
     p_f1.add_run("3 fuentes a la vez [✔] TXT + [✔] PDF + [✔] YouTube").bold = True
     p_f1.add_run(".")
 
     p_f2 = doc.add_paragraph()
     p_f2.paragraph_format.left_indent = Inches(0.2)
-    p_f2.paragraph_format.space_after = Pt(4)
-    p_f2.add_run("[  ] Paso 4.2: Crear el Guion para un Vídeo Documental: ").bold = True
-    p_f2.add_run("Escribe este prompt en NotebookLM:\n").font.color.rgb = C_DARK
-    r_p = p_f2.add_run("👉 «Actúa como guionista de documentales históricos. Combinando las 3 fuentes, escribe el guion de un vídeo de 2 minutos titulado 'La Noche en que Tocamos la Luna'. Divide el guion en 3 escenas: 1. El balcón abierto y la tele en Madrid, 2. La antena de Fresnedillas y el ordenador de 4 KB, 3. La reflexión 50 años después. Incluye voz en off y música sugerida.»")
-    r_p.bold = True
-    r_p.font.color.rgb = C_NAVY
+    p_f2.paragraph_format.space_after = Pt(6)
+    p_f2.add_run("[  ] Paso 4.2: Pulsar el Botón «Resumen de vídeo» en Studio (Sin prompts en el chat): ").bold = True
+    p_f2.add_run("Dirígete al panel de Studio (a la derecha) y pulsa directamente sobre el botón ").font.color.rgb = C_DARK
+    p_f2.add_run("«Resumen de vídeo»").bold = True
+    p_f2.add_run(". No necesitas escribir ningún prompt en el chat ni añadir más instrucciones: simplemente pulsa el botón y observa cómo NotebookLM procesa e integra automáticamente las tres fuentes en una síntesis audiovisual.")
 
-    p_f3 = doc.add_paragraph()
-    p_f3.paragraph_format.left_indent = Inches(0.2)
-    p_f3.paragraph_format.space_after = Pt(4)
-    p_f3.add_run("[  ] Paso 4.3: Llevar la Escena 1 a Vídeo Real con Gemini: ").bold = True
-    p_f3.add_run("Copia la descripción de la primera escena de tu guion, abre ").font.color.rgb = C_DARK
-    p_f3.add_run("gemini.google.com").bold = True
-    p_f3.add_run(" en una pestaña nueva y genera tu clip de vídeo de 10 segundos con este prompt:\n")
-    r_vid = p_f3.add_run("🎬 «Crea un vídeo de 10 segundos: Plano cinematográfico realista en penumbra de un salón familiar de Madrid en la calurosa noche del 20 de julio de 1969. Una familia de varias generaciones y vecinos miran hipnotizados una televisión Telefunken en blanco y negro que emite las imágenes granuladas de Neil Armstrong pisando la Luna. Luz tenue azulada de la pantalla, balcón abierto con cortinas movidas por la brisa y lágrimas de emoción en un abuelo anciano.»")
-    r_vid.bold = True
-    r_vid.font.color.rgb = RGBColor(180, 40, 20)
-
-    p_f4 = doc.add_paragraph()
-    p_f4.paragraph_format.left_indent = Inches(0.2)
-    p_f4.paragraph_format.space_after = Pt(8)
-    p_f4.add_run("[  ] Paso 4.4: El Gran Podcast Final de las 3 Fuentes: ").bold = True
-    p_f4.add_run("Vuelve a NotebookLM. En la columna derecha (Studio), pulsa el botón ").font.color.rgb = C_DARK
-    p_f4.add_run("«Generar» en Resumen de audio").bold = True
-    p_f4.add_run(". Ponte cómodo y escucha la tertulia en español donde los locutores entrelazan el carro de mulas, la estación de Madrid y el aniversario espacial.")
+    add_callout_box(
+        doc,
+        "🎬 QUÉ HACE NOTEBOOKLM AL PULSAR «RESUMEN DE VÍDEO»",
+        [
+            "1. Lee al mismo tiempo la vivencia íntima del salón madrileño de 1969, la hazaña científica del Saturno V y de Fresnedillas, y la conmemoración de Euronews.",
+            "2. Estructura una narrativa audiovisual equilibrada que combina imagen, texto y datos clave en un formato dinámico y moderno listo para proyectar."
+        ],
+        border_color="0B7285",
+        bg_color="E6FCF5"
+    )
 
     # --- TABLA DE AUTOEVALUACIÓN DEL ALUMNO ---
     p_h1 = doc.add_paragraph()
@@ -582,13 +577,13 @@ def generate_docx():
 
     checklist_data = [
         ("Paso 1", "Sé subir un archivo TXT, un PDF y un enlace de YouTube a Fuentes.", "[  ] SÍ  /  [  ] DUDAS"),
-        ("Paso 2", "Sé localizar y leer el Resumen Automático Central en la Guía del Cuaderno.", "[  ] SÍ  /  [  ] DUDAS"),
+        ("Paso 2", "Sé localizar y observar el Resumen Automático Central en la Guía del Cuaderno.", "[  ] SÍ  /  [  ] DUDAS"),
         ("Paso 3", "Sé marcar y desmarcar casillas para analizar una sola fuente de forma aislada.", "[  ] SÍ  /  [  ] DUDAS"),
         ("Paso 4", "Sé hacer preguntas concretas y pulsar las citas [1] para comprobar el texto original.", "[  ] SÍ  /  [  ] DUDAS"),
-        ("Paso 5", "Sé fijar cualquier respuesta útil como Nota permanente con la chincheta (Pin).", "[  ] SÍ  /  [  ] DUDAS"),
-        ("Paso 6", "He probado los 9 botones del panel de Studio con la fuente de YouTube.", "[  ] SÍ  /  [  ] DUDAS"),
-        ("Paso 7", "Sé crear una presentación de diapositivas con TXT + PDF y pedirle que la revise.", "[  ] SÍ  /  [  ] DUDAS"),
-        ("Paso 8", "He combinado las 3 fuentes a la vez para generar un guion, un vídeo y un podcast.", "[  ] SÍ  /  [  ] DUDAS")
+        ("Paso 5", "Sé fijar cualquier respuesta útil como Nota permanente en Studio con la chincheta (Pin).", "[  ] SÍ  /  [  ] DUDAS"),
+        ("Paso 6", "He probado los botones automáticos de Studio seleccionando únicamente la fuente de YouTube.", "[  ] SÍ  /  [  ] DUDAS"),
+        ("Paso 7", "Sé pulsar el botón Presentación (TXT+PDF) con estilo sobrio y realizar la revisión en vivo.", "[  ] SÍ  /  [  ] DUDAS"),
+        ("Paso 8", "Sé seleccionar las 3 fuentes a la vez y pulsar directamente el botón Resumen de vídeo.", "[  ] SÍ  /  [  ] DUDAS")
     ]
 
     for i, (p_num, p_desc, p_eval) in enumerate(checklist_data, start=1):
@@ -609,7 +604,7 @@ def generate_docx():
             r.font.color.rgb = C_DARK
 
     doc.save(TARGET_DOCX)
-    print(f"✅ Documento Word generado con éxito en:\n   {TARGET_DOCX}")
+    print(f"✅ Documento Word actualizado con éxito en:\n   {TARGET_DOCX}")
 
 # ---------------------------------------------------------------------------
 # GENERADOR DEL DOCUMENTO PDF
@@ -641,7 +636,6 @@ def generate_pdf():
     p_sub = ParagraphStyle('Sub', parent=styles['Normal'], fontName='Helvetica-Oblique', fontSize=10, leading=13, textColor=colors.HexColor('#64748B'), alignment=1, spaceAfter=10)
     
     p_h1 = ParagraphStyle('H1', parent=styles['Heading2'], fontName='Helvetica-Bold', fontSize=12, leading=15, textColor=c_primary, spaceBefore=8, spaceAfter=4)
-    p_h2 = ParagraphStyle('H2', parent=styles['Heading3'], fontName='Helvetica-Bold', fontSize=10, leading=13, textColor=c_blue, spaceBefore=6, spaceAfter=3)
     p_body = ParagraphStyle('Body', parent=styles['Normal'], fontName='Helvetica', fontSize=8.5, leading=11.5, textColor=c_dark, spaceAfter=3)
     p_prompt = ParagraphStyle('Prompt', parent=styles['Normal'], fontName='Helvetica-Bold', fontSize=8.5, leading=12, textColor=c_primary)
     p_box = ParagraphStyle('Box', parent=styles['Normal'], fontName='Helvetica', fontSize=8.2, leading=11.5, textColor=c_dark)
@@ -659,7 +653,7 @@ def generate_pdf():
     # Caja Objetivo
     obj_rows = [
         [Paragraph("<b>🎯 Objetivo del Taller Práctico:</b>", p_prompt)],
-        [Paragraph("Aprender a manejar Google NotebookLM de forma rigurosa y ordenada a partir de 3 fuentes complementarias sobre <b>La Llegada a la Luna (20 de julio de 1969)</b>: un texto personal (TXT), un informe histórico (PDF) y un vídeo conmemorativo (YouTube). Descubriremos cómo resume automáticamente, cómo buscar datos con citas [1], cómo fijar notas, cómo exprimir los 9 botones de Studio y cómo crear una presentación y un vídeo.", p_box)]
+        [Paragraph("Aprender a manejar Google NotebookLM de forma rigurosa y ordenada a partir de 3 fuentes complementarias sobre <b>La Llegada a la Luna (20 de julio de 1969)</b>: un texto personal (TXT), un informe histórico (PDF) y un vídeo conmemorativo (YouTube). Descubriremos el resumen automático central, cómo buscar datos con citas [1], cómo fijar notas, cómo pulsar los botones de Studio, cómo crear una presentación con estilo sobrio y revisarla en vivo, y cómo pulsar directamente el botón de resumen de vídeo.", p_box)]
     ]
     t_obj = Table(obj_rows, colWidths=[17.4*cm], splitByRow=1)
     t_obj.setStyle(TableStyle([
@@ -692,7 +686,7 @@ def generate_pdf():
 
     # FASE 1
     story.append(Paragraph("FASE 1: La Zona Central (Observación, Resúmenes y Preguntas con Citas)", p_h1))
-    story.append(Paragraph("<b>1.1. Observación guiada:</b> Con las 3 fuentes marcadas [✔], observa la tarjeta central «Guía del cuaderno». Comprueba cómo NotebookLM ha generado un resumen global automático sin que hayamos tecleado nada.", p_body))
+    story.append(Paragraph("<b>1.1. Observación guiada:</b> Con las 3 fuentes marcadas [✔], observa la tarjeta central «Guía del cuaderno». Comprueba cómo NotebookLM ha generado un resumen global automático sin haber tecleado nada.", p_body))
     story.append(Paragraph("<b>1.2. Resumen individual de cada fuente:</b> Deja marcada únicamente una casilla cada vez:", p_body))
     story.append(Paragraph("• <b>Solo TXT:</b> «Resume en 3 líneas los recuerdos familiares y la emoción de aquella noche.»", p_body))
     story.append(Paragraph("• <b>Solo PDF:</b> «Resume en 3 puntos técnicos los datos más asombrosos del programa Apolo 11.»", p_body))
@@ -704,19 +698,19 @@ def generate_pdf():
     story.append(Spacer(1, 6))
 
     # FASE 2
-    story.append(Paragraph("FASE 2: El Panel de Studio — Los 9 Botones Automáticos (Solo con YouTube)", p_h1))
+    story.append(Paragraph("FASE 2: El Panel de Studio — Los Botones Automáticos (Solo con YouTube)", p_h1))
     story.append(Paragraph("Desmarca el TXT y el PDF. Deja <b>marcado únicamente el vídeo de YouTube [✔]</b>. Ve pulsando uno a uno en Studio:", p_body))
 
     b_rows = [
         [Paragraph("Botón en Studio", p_th), Paragraph("Acción", p_th), Paragraph("Resultado Automático", p_th)],
-        [Paragraph("1. Resumen de audio 🎙️", p_cell_b), Paragraph("Pulsa 'Generar'", p_cell), Paragraph("Podcast a 2 voces en español debatiendo el vídeo.", p_cell)],
-        [Paragraph("2. Preguntas frecuentes (FAQ)", p_cell_b), Paragraph("Pulsa 'Preguntas frecuentes'", p_cell), Paragraph("Cuestionario con las dudas esenciales del tema.", p_cell)],
-        [Paragraph("3. Guía de estudio 📚", p_cell_b), Paragraph("Pulsa 'Guía de estudio'", p_cell), Paragraph("Temario pedagógico con preguntas de autoevaluación.", p_cell)],
-        [Paragraph("4. Cronología ⏱️", p_cell_b), Paragraph("Pulsa 'Línea de tiempo'", p_cell), Paragraph("Eje cronológico con los hitos temporales del vídeo.", p_cell)],
-        [Paragraph("5. Documento informativo 📄", p_cell_b), Paragraph("Pulsa 'Documento informativo'", p_cell), Paragraph("Informe formal listo para imprimir o enviar.", p_cell)],
-        [Paragraph("6. Tabla de contenidos 📑", p_cell_b), Paragraph("Pulsa 'Tabla de contenidos'", p_cell), Paragraph("Índice estructurado por capítulos y temas.", p_cell)],
-        [Paragraph("7. Puntos clave 💡", p_cell_b), Paragraph("Pulsa 'Puntos clave'", p_cell), Paragraph("Decálogo con las ideas esenciales en viñetas.", p_cell)],
-        [Paragraph("8. Ensayo / Borrador ✍️", p_cell_b), Paragraph("Pulsa 'Borrador / Ensayo'", p_cell), Paragraph("Texto continuo con redacción literaria fluida.", p_cell)],
+        [Paragraph("1. Preguntas frecuentes (FAQ)", p_cell_b), Paragraph("Pulsa 'Preguntas frecuentes'", p_cell), Paragraph("Cuestionario con las dudas esenciales del tema.", p_cell)],
+        [Paragraph("2. Guía de estudio 📚", p_cell_b), Paragraph("Pulsa 'Guía de estudio'", p_cell), Paragraph("Temario pedagógico con preguntas de autoevaluación.", p_cell)],
+        [Paragraph("3. Cronología ⏱️", p_cell_b), Paragraph("Pulsa 'Línea de tiempo'", p_cell), Paragraph("Eje cronológico con los hitos temporales del vídeo.", p_cell)],
+        [Paragraph("4. Documento informativo 📄", p_cell_b), Paragraph("Pulsa 'Documento informativo'", p_cell), Paragraph("Informe formal listo para imprimir o enviar.", p_cell)],
+        [Paragraph("5. Tabla de contenidos 📑", p_cell_b), Paragraph("Pulsa 'Tabla de contenidos'", p_cell), Paragraph("Índice estructurado por capítulos y temas.", p_cell)],
+        [Paragraph("6. Puntos clave 💡", p_cell_b), Paragraph("Pulsa 'Puntos clave'", p_cell), Paragraph("Decálogo con las ideas esenciales en viñetas.", p_cell)],
+        [Paragraph("7. Ensayo / Borrador ✍️", p_cell_b), Paragraph("Pulsa 'Borrador / Ensayo'", p_cell), Paragraph("Texto continuo con redacción literaria fluida.", p_cell)],
+        [Paragraph("8. Resumen breve", p_cell_b), Paragraph("Pulsa 'Resumen'", p_cell), Paragraph("Síntesis concisa en un párrafo del vídeo.", p_cell)],
         [Paragraph("9. + Añadir nota manual 📝", p_cell_b), Paragraph("Pulsa '+ Añadir nota'", p_cell), Paragraph("Corcho personal para tus propias notas.", p_cell)],
     ]
     t_b = Table(b_rows, colWidths=[4.2*cm, 4.2*cm, 9.0*cm], splitByRow=1)
@@ -730,18 +724,17 @@ def generate_pdf():
     story.append(Spacer(1, 6))
 
     # FASE 3
-    story.append(Paragraph("FASE 3: Creación de Presentación y Revisión Iterativa (TXT + PDF)", p_h1))
-    story.append(Paragraph("<b>3.1. Selección:</b> Marca el <b>TXT [✔] y el PDF [✔]</b> (desmarca el vídeo).", p_body))
-    story.append(Paragraph("<b>3.2. Crear Presentación:</b> Escribe: <i>«Crea una presentación de 4 diapositivas: 'Apolo 11: Entre la Ciencia y el Salón de Casa'. En cada diapositiva incluye Título, 3 puntos y una frase textual.»</i>", p_body))
-    story.append(Paragraph("<b>3.3. Revisión Crítica (Iteración):</b> Pídele un ajuste: <i>«Revisa la diapositiva 2: dale más emoción a las lágrimas del abuelo. En la diapositiva 3, destaca el orgullo de que Fresnedillas (Madrid) escuchara el alunizaje antes que Houston.»</i>", p_body))
+    story.append(Paragraph("FASE 3: El Botón de Presentación y Revisión en Vivo (TXT + PDF)", p_h1))
+    story.append(Paragraph("<b>3.1. Selección:</b> Marca el <b>TXT [✔] y el PDF [✔]</b> (desmarca el vídeo de YouTube).", p_body))
+    story.append(Paragraph("<b>3.2. Pulsar Botón «Presentación» en Studio:</b> Haz clic en el botón «Presentación» y añade este prompt de estilo visual en la casilla de personalización:", p_body))
+    story.append(Paragraph("👉 <i>«Crea una presentación con un estilo visual sobrio, elegante y de crónica documental histórica. Tonos espaciales limpios (azul marino oscuro, gris grafito y blanco de alto contraste), con tipografía grande y legible para personas mayores. Equilibra la técnica de la NASA con la emoción familiar en Madrid, con citas entrecomilladas y sin estilos infantiles ni colores estridentes.»</i>", p_prompt))
+    story.append(Paragraph("<b>3.3. Revisar dentro de la presentación:</b> Entra en la presentación generada y pulsa el botón <b>«Revisar»</b> (o Editar). Realizaremos la revisión y los ajustes directamente sobre la marcha en clase según lo que queramos perfeccionar.", p_body))
     story.append(Spacer(1, 6))
 
     # FASE 4
-    story.append(Paragraph("FASE 4: El Gran Proyecto Final Multimedia (Las 3 Fuentes Juntas)", p_h1))
+    story.append(Paragraph("FASE 4: El Gran Resumen de Vídeo (Las 3 Fuentes Juntas)", p_h1))
     story.append(Paragraph("<b>4.1. Selección Total:</b> Marca las <b>3 fuentes a la vez [✔] TXT + [✔] PDF + [✔] YouTube</b>.", p_body))
-    story.append(Paragraph("<b>4.2. Guion de Vídeo:</b> Escribe: <i>«Escribe el guion para un vídeo de 2 minutos titulado 'La Noche en que Tocamos la Luna', combinando las 3 fuentes en 3 escenas: salón de Madrid, Fresnedillas y 50 años después.»</i>", p_body))
-    story.append(Paragraph("<b>4.3. Vídeo en Gemini:</b> Copia la escena 1 y pégala en <b>gemini.google.com</b>: <i>«Crea un vídeo de 10 segundos: Plano cinematográfico en penumbra de un salón de Madrid el 20 de julio de 1969. Una familia mira una tele Telefunken en blanco y negro emitiendo el alunizaje, con un anciano emocionado.»</i>", p_body))
-    story.append(Paragraph("<b>4.4. Podcast Final de las 3 Fuentes:</b> Pulsa 'Generar' en Resumen de Audio de Studio y escucha la tertulia que entrelaza la vivencia familiar, la ciencia de la NASA y la estación de Fresnedillas.", p_body))
+    story.append(Paragraph("<b>4.2. Pulsar Botón «Resumen de vídeo» en Studio (Sin prompts en el chat):</b> Haz clic directamente en el botón <b>«Resumen de vídeo»</b> en Studio. Sin escribir nada en el chat ni añadir más instrucciones, observa cómo NotebookLM genera automáticamente el vídeo integrando la vivencia familiar, la ciencia de la NASA y el aniversario de Euronews.", p_body))
     story.append(Spacer(1, 6))
 
     # TABLA EVALUACIÓN
@@ -749,13 +742,13 @@ def generate_pdf():
     chk_rows = [
         [Paragraph("Paso", p_th), Paragraph("Habilidad / Competencia Práctica", p_th), Paragraph("Autoevaluación", p_th)],
         [Paragraph("1", p_cell_b), Paragraph("Sé subir un archivo TXT, un PDF y un enlace de YouTube a Fuentes.", p_cell), Paragraph("[  ] SÍ  /  [  ] DUDAS", p_cell)],
-        [Paragraph("2", p_cell_b), Paragraph("Sé localizar y leer el Resumen Automático Central en la Guía del Cuaderno.", p_cell), Paragraph("[  ] SÍ  /  [  ] DUDAS", p_cell)],
+        [Paragraph("2", p_cell_b), Paragraph("Sé localizar y observar el Resumen Automático Central en la Guía del Cuaderno.", p_cell), Paragraph("[  ] SÍ  /  [  ] DUDAS", p_cell)],
         [Paragraph("3", p_cell_b), Paragraph("Sé marcar y desmarcar casillas para analizar una sola fuente de forma aislada.", p_cell), Paragraph("[  ] SÍ  /  [  ] DUDAS", p_cell)],
         [Paragraph("4", p_cell_b), Paragraph("Sé hacer preguntas concretas y pulsar las citas [1] para comprobar el texto original.", p_cell), Paragraph("[  ] SÍ  /  [  ] DUDAS", p_cell)],
-        [Paragraph("5", p_cell_b), Paragraph("Sé fijar cualquier respuesta útil como Nota permanente con la chincheta (Pin).", p_cell), Paragraph("[  ] SÍ  /  [  ] DUDAS", p_cell)],
-        [Paragraph("6", p_cell_b), Paragraph("He probado los 9 botones del panel de Studio con la fuente de YouTube.", p_cell), Paragraph("[  ] SÍ  /  [  ] DUDAS", p_cell)],
-        [Paragraph("7", p_cell_b), Paragraph("Sé crear una presentación de diapositivas con TXT + PDF y pedirle que la revise.", p_cell), Paragraph("[  ] SÍ  /  [  ] DUDAS", p_cell)],
-        [Paragraph("8", p_cell_b), Paragraph("He combinado las 3 fuentes a la vez para generar un guion, un vídeo y un podcast.", p_cell), Paragraph("[  ] SÍ  /  [  ] DUDAS", p_cell)],
+        [Paragraph("5", p_cell_b), Paragraph("Sé fijar cualquier respuesta útil como Nota permanente en Studio con la chincheta (Pin).", p_cell), Paragraph("[  ] SÍ  /  [  ] DUDAS", p_cell)],
+        [Paragraph("6", p_cell_b), Paragraph("He probado los botones de Studio seleccionando únicamente la fuente de YouTube.", p_cell), Paragraph("[  ] SÍ  /  [  ] DUDAS", p_cell)],
+        [Paragraph("7", p_cell_b), Paragraph("Sé pulsar el botón Presentación (TXT+PDF) con estilo sobrio y realizar la revisión en vivo.", p_cell), Paragraph("[  ] SÍ  /  [  ] DUDAS", p_cell)],
+        [Paragraph("8", p_cell_b), Paragraph("Sé seleccionar las 3 fuentes a la vez y pulsar directamente el botón Resumen de vídeo.", p_cell), Paragraph("[  ] SÍ  /  [  ] DUDAS", p_cell)],
     ]
     t_chk = Table(chk_rows, colWidths=[1.8*cm, 12.0*cm, 3.6*cm], splitByRow=1)
     t_chk.setStyle(TableStyle([
@@ -767,15 +760,15 @@ def generate_pdf():
     story.append(t_chk)
 
     doc.build(story)
-    print(f"✅ Documento PDF generado con éxito en:\n   {TARGET_PDF}")
+    print(f"✅ Documento PDF actualizado con éxito en:\n   {TARGET_PDF}")
 
 def main():
     print("=" * 70)
-    print("🚀 GENERANDO FICHA PRÁCTICA SISTEMATIZADA DE NOTEBOOKLM (DOCX Y PDF)")
+    print("🚀 ACTUALIZANDO FICHA PRÁCTICA SISTEMATIZADA DE NOTEBOOKLM (DOCX Y PDF)")
     print("=" * 70)
     generate_docx()
     generate_pdf()
-    print("\n🎉 ¡PROCESO COMPLETADO AL 100%!")
+    print("\n🎉 ¡ACTUALIZACIÓN COMPLETADA AL 100%!")
 
 if __name__ == "__main__":
     main()
