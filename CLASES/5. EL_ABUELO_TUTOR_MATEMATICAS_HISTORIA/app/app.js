@@ -391,19 +391,16 @@ Prueba a resolver este mismo problema pero duplicando los valores iniciales en l
   document.getElementById('res-math-formal').innerHTML = matchedData.formal;
   document.getElementById('res-math-twin').innerHTML = matchedData.twin.replace(/Lucas/g, nietoName);
 
-  // Reiniciar el historial de conversación para la nueva duda
+  // Limpiar el historial de conversación para la nueva duda
   const chatHist = document.getElementById('chat-history');
   if (chatHist) {
-    chatHist.innerHTML = `
-      <div class="chat-bubble bubble-ai">
-        🎓 <strong>Tutor Socrático:</strong> Esta es la explicación desglosada para <i>«${qText}»</i> adaptada a ${nietoName}. Si te surge cualquier duda, o quieres que veamos otro ejemplo diferente, ¡escribe tu pregunta aquí abajo y te respondo al momento!
-      </div>
-    `;
+    chatHist.innerHTML = '';
+    chatHist.style.display = 'none';
   }
 
   document.getElementById('math-result').classList.add('visible');
   document.getElementById('btn-print-math').style.display = 'inline-flex';
-  document.getElementById('btn-gemini-math').style.display = 'inline-flex';
+  document.getElementById('btn-gemini-math').style.display = 'inline-block';
 
   document.getElementById('math-result').scrollIntoView({ behavior: 'smooth' });
 }
@@ -418,6 +415,9 @@ function sendSocraticQuestion() {
 
   const chatHist = document.getElementById('chat-history');
   const nieto = (currentMathData && currentMathData.nietoName) || "tu nieto";
+
+  // Mostrar el contenedor de mensajes
+  chatHist.style.display = 'flex';
 
   // 1. Añadir la burbuja del usuario
   const userBubble = document.createElement('div');
