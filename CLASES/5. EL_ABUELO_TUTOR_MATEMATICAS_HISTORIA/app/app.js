@@ -391,6 +391,16 @@ Prueba a resolver este mismo problema pero duplicando los valores iniciales en l
   document.getElementById('res-math-formal').innerHTML = matchedData.formal;
   document.getElementById('res-math-twin').innerHTML = matchedData.twin.replace(/Lucas/g, nietoName);
 
+  // Reiniciar el historial de conversación para la nueva duda
+  const chatHist = document.getElementById('chat-history');
+  if (chatHist) {
+    chatHist.innerHTML = `
+      <div class="chat-bubble bubble-ai">
+        🎓 <strong>Tutor Socrático:</strong> Esta es la explicación desglosada para <i>«${qText}»</i> adaptada a ${nietoName}. Si te surge cualquier duda, o quieres que veamos otro ejemplo diferente, ¡escribe tu pregunta aquí abajo y te respondo al momento!
+      </div>
+    `;
+  }
+
   document.getElementById('math-result').classList.add('visible');
   document.getElementById('btn-print-math').style.display = 'inline-flex';
   document.getElementById('btn-gemini-math').style.display = 'inline-flex';
@@ -399,7 +409,75 @@ Prueba a resolver este mismo problema pero duplicando los valores iniciales en l
 }
 
 // ==========================================================================
-// 4. CONSULTA EN DIRECTO CON GEMINI (PROMPT MAESTRO SOCRÁTICO)
+// 4. DIÁLOGO SOCRÁTICO CONTINUO (PREGUNTAR DUDAS A LA IA)
+// ==========================================================================
+function sendSocraticQuestion() {
+  const inputEl = document.getElementById('chat-user-msg');
+  const userQ = inputEl.value.trim();
+  if (!userQ) return;
+
+  const chatHist = document.getElementById('chat-history');
+  const nieto = (currentMathData && currentMathData.nietoName) || "tu nieto";
+
+  // 1. Añadir la burbuja del usuario
+  const userBubble = document.createElement('div');
+  userBubble.className = 'chat-bubble bubble-user';
+  userBubble.textContent = userQ;
+  chatHist.appendChild(userBubble);
+  inputEl.value = '';
+
+  // 2. Generar respuesta socrática inteligente
+  const qLower = userQ.toLowerCase();
+  let aiReply = "";
+
+  if (qLower.includes("c") || qLower.includes("constante")) {
+    aiReply = `¡Qué pregunta tan inteligente para ${nieto}! Te lo explico con la <b>metáfora del ascensor</b>:
+Imagínate que un ascensor sube 3 pisos (+3).
+Si el ascensor arrancó en la planta baja (piso 0), terminará en el piso 3. Pero si arrancó en el piso 10, terminará en el piso 13.
+En ambos casos, el movimiento fue exactamente el mismo (+3 pisos de subida).
+Al derivar una función matemática, solo medimos la velocidad o el movimiento del ascensor, pero se nos 'olvida' saber desde qué piso despegó originalmente en el edificio.
+Por eso en las integrales los matemáticos siempre ponen <b>«+ C»</b> (una constante desconocida), para avisar: <i>«Sabemos cuánto se movió la curva, pero no sabemos la altura exacta del suelo hasta que el problema nos dé un dato inicial extra»</i>.`;
+  } else if (qLower.includes("divid") || qLower.includes("entre 2") || qLower.includes("partido 2") || qLower.includes("/2")) {
+    aiReply = `¿Por qué se divide entre 2? Imagínate un folio de papel rectangular. Si mide 4 cm de alto por 6 cm de largo, su área entera es 4 × 6 = 24 cm².
+Ahora coge unas tijeras y corta el folio en diagonal de esquina a esquina: te quedan dos triángulos idénticos, y cada uno tiene exactamente la mitad de superficie: (4 × 6) / 2 = 12 cm².
+En cálculo y física, cuando una velocidad empieza en cero y va subiendo en rampa constante, la figura que forma debajo no es una caja cuadrada, ¡es medio rectángulo (un triángulo)! Por eso siempre aparece ese «dividido entre 2».`;
+  } else if (qLower.includes("otro ejemplo") || qLower.includes("mas facil") || qLower.includes("más fácil") || qLower.includes("no lo entiende") || qLower.includes("no entiendo")) {
+    aiReply = `¡Vamos con un ejemplo todavía más visual para merendar con ${nieto}!
+Imagínate una hucha donde metes monedas.
+Si cada día metes exactamente 2 monedas de euro, a los 10 días tienes 2 × 10 = 20 euros (aritmética simple de multiplicar).
+Pero si el primer día metes 1 moneda, el segundo día 2, el tercer día 3, el cuarto día 4... el ritmo al que entra el dinero va acelerando.
+Al final de la semana no multiplicas plano, sino que sumas una escalera de monedas: 1 + 2 + 3 + 4 + 5 + 6 + 7 = 28 monedas.
+Las fórmulas complejas solo son el atajo de los sabios para no tener que contar monedas una a una cuando la hucha tiene millones de céntimos.`;
+  } else if (qLower.includes("para que sirve") || qLower.includes("vida real") || qLower.includes("utilidad")) {
+    aiReply = `Dile a ${nieto} que esto se usa todos los días en cosas que le encantan:
+1. <b>En los videojuegos (como Fortnite o FIFA):</b> Para calcular la trayectoria parabólica del balón o cómo rebota un coche tras un derrape.
+2. <b>En los teléfonos móviles:</b> Para comprimir una canción en Spotify o una foto en Instagram sin que pierda nitidez.
+3. <b>En la medicina:</b> Para calcular la dosis exacta de un antibiótico en sangre para que baje la infección sin dañar el riñón.
+4. <b>En la arquitectura:</b> Para asegurarse de que los puentes colgantes aguantan el peso de los camiones y la fuerza del viento.`;
+  } else if (qLower.includes("negativo") || qLower.includes("raiz") || qLower.includes("raíz")) {
+    aiReply = `Dile a ${nieto}: <i>«Busca dos números idénticos que multiplicados den -16»</i>.
+Si prueba con +4: 4 × 4 = +16.
+Si prueba con -4: (-4) × (-4) = ¡también +16, porque menos por menos es más!
+¡Es imposible que un número al cuadrado dé negativo! Por eso cuando dentro de una raíz cuadrada sale un número negativo, la balanza se rompe y en el colegio se escribe: <b>'No tiene solución real'</b>. (Para resolverlo en la universidad se inventaron los 'números imaginarios', representados con la letra 'i').`;
+  } else {
+    aiReply = `Comprendo perfectamente tu duda, abuelo/a. Respecto a <i>«${userQ}»</i>:
+En este nivel escolar, la clave que debes transmitirle a ${nieto} es que no intente memorizar pasos mecánicamente como si fuera una receta de cocina sin sentido.
+Pregúntale siempre: <i>«¿Qué representa este número en el dibujo?»</i>. Cuando asociamos cada término a un objeto físico (un metro, un euro, un segundo o un trozo de tarta), la confusión desaparece de inmediato.
+<br/><br/><i>💡 Si quieres una respuesta matemática aún más detallada para esta pregunta específica, pulsa el botón morado superior «Consultar en Gemini con Prompt Socrático» y pégalo directamente en Gemini.</i>`;
+  }
+
+  // 3. Añadir burbuja de la IA
+  const aiBubble = document.createElement('div');
+  aiBubble.className = 'chat-bubble bubble-ai';
+  aiBubble.innerHTML = `🎓 <strong>Tutor Socrático:</strong><br/>${aiReply}`;
+  chatHist.appendChild(aiBubble);
+
+  // Auto-scroll
+  chatHist.scrollTop = chatHist.scrollHeight;
+}
+
+// ==========================================================================
+// 5. CONSULTA EN DIRECTO CON GEMINI (PROMPT MAESTRO SOCRÁTICO)
 // ==========================================================================
 function openInGemini() {
   if (!currentMathData) return;
