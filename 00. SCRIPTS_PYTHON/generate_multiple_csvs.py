@@ -84,7 +84,10 @@ def generate_panel_0():
          "Tu biblioteca personal inteligente: cómo subir documentos familiares o recuerdos para resumir, hacer preguntas y generar guiones."),
         ("Taller 4. Creación de Cuentos Ilustrados para Nietos",
          os.path.join(ROOT_DIR, "CLASES", "CLASE DE CREACIÓN DE COMICS"),
-         "Metodología en 3 pasos para crear historias inolvidables: el héroe, el guion por escenas y las ilustraciones para los nietos.")
+         "Metodología en 3 pasos para crear historias inolvidables: el héroe, el guion por escenas y las ilustraciones para los nietos."),
+        ("Taller 5. El Abuelo Tutor: Ayuda a tus Nietos con IA (Matemáticas e Historia)",
+         os.path.join(ROOT_DIR, "CLASES", "5. EL_ABUELO_TUTOR_MATEMATICAS_HISTORIA"),
+         "Tu rol de mentor escolar: cómo explicar matemáticas paso a paso y convertir apuntes de historia en cuadernillos imprimibles con la App 'El Abuelo Tutor'.")
     ]
     
     with open(csv_path, 'w', newline='', encoding='utf-8') as f:
@@ -95,6 +98,13 @@ def generate_panel_0():
             if not os.path.exists(carpeta_path):
                 continue
                 
+            # Si existe la subcarpeta app/ con index.html, registrar la aplicación web interactiva
+            app_html = os.path.join(carpeta_path, "app", "index.html")
+            if os.path.exists(app_html):
+                rel_app = os.path.relpath(app_html, ROOT_DIR)
+                url_app = BASE_URL + urllib.parse.quote(unicodedata.normalize('NFC', rel_app))
+                writer.writerow(['', tema_nombre, "Aplicación Web Interactiva: El Abuelo Tutor (HTML)", desc_default, url_app])
+
             # Para los alumnos en Google Classroom se publican PDFs, vídeos explicativos y audios m4a/mp3
             archivos = sorted([x for x in os.listdir(carpeta_path) 
                                if not x.startswith('.') and not x.startswith('~$') 
