@@ -73,21 +73,21 @@ def generate_panel_0():
     print(f"📄 Generando {os.path.basename(csv_path)}...")
     
     monograficos = [
-        ("Taller 1. Introducción a la Inteligencia Artificial",
-         os.path.join(ROOT_DIR, "CLASES", "0. INTRODUCCION A LA IA"),
-         "Sesión inaugural de motivación: qué es la IA, desmontando mitos, galería visual de impacto y primeros pasos sin agobios."),
-        ("Taller 2. Gemini en PC y Móvil (Instalación y Uso)",
+        ("Monográfico 1. Gemini en PC y Móvil (Instalación y Uso)",
          os.path.join(ROOT_DIR, "CLASES", "1. INTRODUCCION_GEMINI"),
          "Nuestra IA de cabecera: manejo en ordenador, instalación de la app oficial en el móvil, dictado por voz y fotos con la cámara."),
-        ("Taller 3. NotebookLM: Tu Cuaderno Inteligente",
+        ("Monográfico 2. NotebookLM: Tu Cuaderno Inteligente",
          os.path.join(ROOT_DIR, "CLASES", "2. INTRODUCCION_NLM"),
          "Tu biblioteca personal inteligente: cómo subir documentos familiares o recuerdos para resumir, hacer preguntas y generar guiones."),
-        ("Taller 4. Creación de Cuentos Ilustrados para Nietos",
-         os.path.join(ROOT_DIR, "CLASES", "CLASE DE CREACIÓN DE COMICS"),
-         "Metodología en 3 pasos para crear historias inolvidables: el héroe, el guion por escenas y las ilustraciones para los nietos."),
-        ("Taller 5. Educanietos IA: Ayuda a tus Nietos con IA (Matemáticas e Historia)",
+        ("Monográfico 3. Cómo Crear un Cuento Ilustrado con NotebookLM",
+         os.path.join(ROOT_DIR, "CLASES", "3. COMO_HACER_UN_CUENTO_CON_NLM"),
+         "Metodología en 3 pasos para crear historias inolvidables con NotebookLM y Gemini: el héroe, el guion por escenas y las ilustraciones para los nietos."),
+        ("Monográfico 4. Mi Biografía (Escribe tus Memorias con IA)",
+         os.path.join(ROOT_DIR, "CLASES", "4. Mi_Biografia"),
+         "Escribe tus memorias familiares con ayuda de la IA: asistente interactivo para redactar vivencias, anécdotas y tu legado personal."),
+        ("Monográfico 5. Educanietos IA: Ayuda a tus Nietos con IA (Ciencias, Mates e Historia)",
          os.path.join(ROOT_DIR, "CLASES", "5. EL_ABUELO_TUTOR_MATEMATICAS_HISTORIA"),
-         "Tu rol de mentor escolar: cómo explicar matemáticas razonadas paso a paso y guiar las sesiones de estudio en pantalla con NotebookLM.")
+         "Tu rol de mentor escolar: cómo explicar ciencias y matemáticas razonadas paso a paso y guiar las sesiones de estudio en pantalla con NotebookLM.")
     ]
     
     with open(csv_path, 'w', newline='', encoding='utf-8') as f:
@@ -98,14 +98,22 @@ def generate_panel_0():
             if not os.path.exists(carpeta_path):
                 continue
                 
-            # Si existe la subcarpeta app/ con index.html, registrar la aplicación web interactiva
+            # 1. Si existe la subcarpeta app/ con index.html (como Educanietos IA)
             app_html = os.path.join(carpeta_path, "app", "index.html")
             if os.path.exists(app_html):
                 rel_app = os.path.relpath(app_html, ROOT_DIR)
                 url_app = BASE_URL + urllib.parse.quote(unicodedata.normalize('NFC', rel_app))
                 writer.writerow(['', tema_nombre, "Aplicación Web Interactiva: Educanietos IA (HTML)", desc_default, url_app])
 
-            # Para los alumnos en Google Classroom se publican PDFs, vídeos explicativos y audios m4a/mp3
+            # 2. Si existe un archivo .html en la raíz de la carpeta (como Mi_Biografia.html)
+            root_htmls = sorted([f for f in os.listdir(carpeta_path) if f.endswith('.html') and not f.startswith('.')])
+            for h in root_htmls:
+                rel_app = os.path.relpath(os.path.join(carpeta_path, h), ROOT_DIR)
+                url_app = BASE_URL + urllib.parse.quote(unicodedata.normalize('NFC', rel_app))
+                app_title = "Mi Biografía (HTML)" if "Biografia" in h else clean_title(h)
+                writer.writerow(['', tema_nombre, f"Aplicación Web Interactiva: {app_title}", desc_default, url_app])
+
+            # 3. Para los alumnos en Google Classroom se publican PDFs, vídeos explicativos y audios m4a/mp3
             archivos = sorted([x for x in os.listdir(carpeta_path) 
                                if not x.startswith('.') and not x.startswith('~$') 
                                and x.endswith(('.pdf', '.mp4', '.m4a', '.mp3'))
