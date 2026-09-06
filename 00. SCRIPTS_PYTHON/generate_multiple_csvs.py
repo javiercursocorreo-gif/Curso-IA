@@ -113,12 +113,21 @@ def generate_panel_0():
                 app_title = "Mi Biografía (HTML)" if "Biografia" in h else clean_title(h)
                 writer.writerow(['', tema_nombre, f"Aplicación Web Interactiva: {app_title}", desc_default, url_app])
 
-            # 3. Para los alumnos en Google Classroom se publican PDFs, vídeos explicativos y audios m4a/mp3
-            archivos = sorted([x for x in os.listdir(carpeta_path) 
-                               if not x.startswith('.') and not x.startswith('~$') 
-                               and x.endswith(('.pdf', '.mp4', '.m4a', '.mp3'))
-                               and "PROMPT" not in x.upper()
-                               and not (x == "FICHA_MONOGRAFICO_EL_ABUELO_TUTOR.pdf" and os.path.exists(os.path.join(carpeta_path, "FICHA_MONOGRAFICO_EDUCANIETOS_IA.pdf")))], key=natural_sort_key)
+            # 3. Archivos de la carpeta raíz
+            # Para Monográfico 2: subir todos los ficheros que empiezan por EJEMPLO_ (.txt, .png, .pdf, .mp4, .mp3) + las guías PDF
+            if "2. INTRODUCCION_NLM" in carpeta_path:
+                allowed_exts = ('.pdf', '.mp4', '.m4a', '.mp3', '.txt', '.png')
+                archivos = sorted([x for x in os.listdir(carpeta_path)
+                                   if not x.startswith('.') and not x.startswith('~$')
+                                   and x.endswith(allowed_exts)
+                                   and (x.startswith("EJEMPLO_") or x.endswith('.pdf'))
+                                   and "PROMPT" not in x.upper()], key=natural_sort_key)
+            else:
+                archivos = sorted([x for x in os.listdir(carpeta_path) 
+                                   if not x.startswith('.') and not x.startswith('~$') 
+                                   and x.endswith(('.pdf', '.mp4', '.m4a', '.mp3'))
+                                   and "PROMPT" not in x.upper()
+                                   and not (x == "FICHA_MONOGRAFICO_EL_ABUELO_TUTOR.pdf" and os.path.exists(os.path.join(carpeta_path, "FICHA_MONOGRAFICO_EDUCANIETOS_IA.pdf")))], key=natural_sort_key)
             
             for a in archivos:
                 rel_path = os.path.relpath(os.path.join(carpeta_path, a), ROOT_DIR)
@@ -126,6 +135,18 @@ def generate_panel_0():
                 url = BASE_URL + urllib.parse.quote(rel_path_nfc)
                 title = f"Material: {clean_title(a)}"
                 writer.writerow(['', tema_nombre, title, desc_default, url])
+
+            # 4. Para Monográfico 5: Subir los 2 ejemplos txt de EJEMPLOS_PRUEBA/
+            if "5. EL_ABUELO_TUTOR" in carpeta_path:
+                ejemplos_dir = os.path.join(carpeta_path, "EJEMPLOS_PRUEBA")
+                if os.path.exists(ejemplos_dir):
+                    ejemplos_txt = sorted([f for f in os.listdir(ejemplos_dir) if f.endswith('.txt') and not f.startswith('.')], key=natural_sort_key)
+                    for txt_file in ejemplos_txt:
+                        rel_path = os.path.relpath(os.path.join(ejemplos_dir, txt_file), ROOT_DIR)
+                        rel_path_nfc = unicodedata.normalize('NFC', rel_path)
+                        url = BASE_URL + urllib.parse.quote(rel_path_nfc)
+                        title = f"Ejemplo de Prueba: {clean_title(txt_file)}"
+                        writer.writerow(['', tema_nombre, title, desc_default, url])
 
 # ==============================================================================
 # PANELES 1 A 4: TERNAS DE SESIONES (15 SESIONES POR PANEL)
