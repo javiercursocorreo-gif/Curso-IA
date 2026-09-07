@@ -3,460 +3,1505 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mapa de Gestión del Proyecto con IA — Arquitectura Educativa</title>
+  <title>Mapa Dinámico de Gestión del Proyecto con IA</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg-dark: #0A1128;
-      --card-bg: rgba(255, 255, 255, 0.05);
-      --card-border: rgba(255, 255, 255, 0.12);
-      --accent-blue: #0084FF;
-      --accent-cyan: #00F2FE;
-      --accent-orange: #FF6B35;
-      --accent-green: #00E676;
-      --accent-purple: #9D4EDD;
+      --bg-space: #060B18;
+      --bg-panel: rgba(13, 22, 45, 0.75);
+      --border-soft: rgba(255, 255, 255, 0.12);
+      --border-focus: #00F2FE;
+      --pc-border: #38BDF8;
+      --cloud-border: #818CF8;
+      
+      --cyan: #00F2FE;
+      --blue: #38BDF8;
+      --purple: #A855F7;
+      --orange: #FB923C;
+      --green: #34D399;
+      --yellow: #FBBF24;
+      --pink: #F472B6;
+      
       --text-main: #F8FAFC;
       --text-muted: #94A3B8;
+      --text-dim: #64748B;
     }
+
     * { box-sizing: border-box; margin: 0; padding: 0; }
+
     body {
       font-family: 'Plus Jakarta Sans', sans-serif;
-      background: radial-gradient(circle at 50% 20%, #111D4A, var(--bg-dark) 80%);
+      background-color: var(--bg-space);
+      background-image: 
+        radial-gradient(circle at 50% 0%, rgba(56, 189, 248, 0.12) 0%, transparent 50%),
+        radial-gradient(circle at 10% 40%, rgba(168, 85, 247, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 90% 80%, rgba(52, 211, 153, 0.08) 0%, transparent 40%),
+        linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+      background-size: 100% 100%, 100% 100%, 100% 100%, 40px 40px, 40px 40px;
       color: var(--text-main);
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       overflow-x: hidden;
     }
+
+    /* HEADER */
     header {
-      padding: 30px 20px 15px;
-      text-align: center;
-      background: rgba(10, 17, 40, 0.7);
-      backdrop-filter: blur(10px);
-      border-bottom: 1px solid var(--card-border);
+      padding: 20px 24px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(6, 11, 24, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-soft);
+      position: sticky;
+      top: 0;
+      z-index: 100;
     }
-    .badge {
-      display: inline-block;
-      padding: 6px 14px;
-      background: rgba(255, 107, 53, 0.15);
-      border: 1px solid var(--accent-orange);
-      color: var(--accent-orange);
-      border-radius: 20px;
-      font-size: 0.85rem;
-      font-weight: 700;
-      letter-spacing: 1px;
-      margin-bottom: 10px;
+    .header-titles {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .header-tag {
+      font-size: 0.75rem;
+      font-weight: 800;
+      letter-spacing: 1.5px;
       text-transform: uppercase;
+      color: var(--cyan);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .header-tag .live-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--cyan);
+      box-shadow: 0 0 10px var(--cyan);
+      animation: pulse 1.8s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.4); opacity: 0.5; }
     }
     h1 {
       font-family: 'Outfit', sans-serif;
-      font-size: 2.2rem;
-      font-weight: 800;
-      background: linear-gradient(135deg, #FFFFFF, var(--accent-cyan));
+      font-size: 1.45rem;
+      font-weight: 700;
+      background: linear-gradient(90deg, #FFFFFF, #E2E8F0);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      margin-bottom: 8px;
     }
-    p.subtitle {
+    .header-quick-info {
+      font-size: 0.82rem;
       color: var(--text-muted);
-      font-size: 1.05rem;
-      max-width: 750px;
-      margin: 0 auto;
-    }
-    .main-container {
-      flex: 1;
-      max-width: 1250px;
-      margin: 0 auto;
-      padding: 30px 20px;
       display: flex;
-      flex-direction: column;
-      gap: 30px;
+      align-items: center;
+      gap: 16px;
     }
-    .flow-wrapper {
-      background: rgba(15, 23, 42, 0.6);
-      border: 1px solid var(--card-border);
-      border-radius: 24px;
-      padding: 30px 20px;
-      box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-      position: relative;
+    .badge-stat {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-soft);
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
     }
-    .zones-grid {
-      display: grid;
-      grid-template-columns: 1.2fr 0.9fr 0.9fr;
-      gap: 25px;
-    }
-    @media (max-width: 992px) {
-      .zones-grid { grid-template-columns: 1fr; }
-    }
-    .zone-box {
-      background: var(--card-bg);
-      border: 1px dashed var(--card-border);
-      border-radius: 18px;
-      padding: 20px;
+    .badge-stat b { color: var(--green); }
+
+    /* CONTROLS BAR */
+    .controls-panel {
+      padding: 12px 24px;
+      background: rgba(13, 22, 45, 0.6);
+      border-bottom: 1px solid var(--border-soft);
       display: flex;
-      flex-direction: column;
-      gap: 15px;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      z-index: 90;
     }
-    .zone-title {
-      font-family: 'Outfit', sans-serif;
-      font-size: 1rem;
-      font-weight: 700;
-      letter-spacing: 1px;
-      text-transform: uppercase;
+    .playback-group {
       display: flex;
       align-items: center;
       gap: 8px;
-      padding-bottom: 8px;
-      border-bottom: 1px solid var(--card-border);
     }
-    .node-card {
-      background: rgba(30, 41, 59, 0.7);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 14px;
-      padding: 16px;
+    .btn-main {
+      background: linear-gradient(135deg, #0084FF, #00F2FE);
+      color: #041026;
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 800;
+      padding: 8px 18px;
+      border: none;
+      border-radius: 10px;
       cursor: pointer;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      position: relative;
-    }
-    .node-card:hover {
-      transform: translateY(-3px);
-      border-color: var(--accent-cyan);
-      box-shadow: 0 10px 25px rgba(0, 242, 254, 0.2);
-    }
-    .node-card.active {
-      border-color: var(--accent-orange);
-      box-shadow: 0 0 25px rgba(255, 107, 53, 0.3);
-      background: rgba(30, 41, 59, 0.95);
-    }
-    .node-header {
       display: flex;
       align-items: center;
-      gap: 12px;
-      margin-bottom: 8px;
+      gap: 8px;
+      transition: all 0.25s ease;
+      box-shadow: 0 4px 15px rgba(0, 242, 254, 0.35);
     }
-    .node-icon {
-      font-size: 1.8rem;
-      background: rgba(255, 255, 255, 0.08);
-      width: 44px;
-      height: 44px;
+    .btn-main:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 22px rgba(0, 242, 254, 0.55);
+    }
+    .btn-ghost {
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text-main);
+      border: 1px solid var(--border-soft);
+      font-size: 0.85rem;
+      font-weight: 600;
+      padding: 8px 14px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-ghost:hover {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    /* STEP CHIPS */
+    .step-chips {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      padding: 4px 0;
+      max-width: 100%;
+    }
+    .step-chip {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border-soft);
+      color: var(--text-muted);
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+    .step-chip .step-num {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.1);
       display: flex;
       align-items: center;
       justify-content: center;
-      border-radius: 10px;
-    }
-    .node-title-text {
-      font-family: 'Outfit', sans-serif;
-      font-size: 1.15rem;
+      font-size: 0.7rem;
       font-weight: 700;
-      color: #FFF;
+      color: #fff;
     }
-    .node-role {
-      font-size: 0.8rem;
-      color: var(--accent-cyan);
-      font-weight: 600;
+    .step-chip:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
     }
-    .node-desc {
-      font-size: 0.88rem;
-      color: var(--text-muted);
-      line-height: 1.45;
+    .step-chip.active {
+      background: rgba(0, 242, 254, 0.15);
+      border-color: var(--cyan);
+      color: #FFFFFF;
+      box-shadow: 0 0 14px rgba(0, 242, 254, 0.3);
     }
-    .details-panel {
-      background: rgba(15, 23, 42, 0.9);
-      border: 1px solid var(--accent-cyan);
-      border-radius: 18px;
-      padding: 25px;
-      display: none;
-      animation: fadeIn 0.4s ease;
+    .step-chip.active .step-num {
+      background: var(--cyan);
+      color: #060B18;
     }
-    .details-panel.visible { display: block; }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
+
+    /* SPEED SELECTOR */
+    .speed-group {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      background: rgba(255, 255, 255, 0.04);
+      padding: 3px 6px;
+      border-radius: 8px;
+      border: 1px solid var(--border-soft);
     }
-    .details-panel h3 {
-      font-family: 'Outfit', sans-serif;
-      font-size: 1.5rem;
-      color: var(--accent-cyan);
-      margin-bottom: 10px;
+    .speed-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-dim);
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 3px 7px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .speed-btn.active {
+      background: var(--blue);
+      color: #060B18;
+    }
+
+    /* MAIN STAGE */
+    .stage-container {
+      flex: 1;
+      padding: 24px;
+      max-width: 1300px;
+      width: 100%;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      position: relative;
+    }
+
+    /* DIAGRAM CANVAS AREA */
+    .diagram-board {
+      position: relative;
+      background: radial-gradient(circle at 50% 50%, rgba(20, 32, 65, 0.5) 0%, rgba(10, 17, 36, 0.75) 100%);
+      border: 1px solid var(--border-soft);
+      border-radius: 24px;
+      padding: 30px;
+      min-height: 640px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 34px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+      overflow: hidden;
+    }
+
+    /* SVG CONNECTION OVERLAY */
+    #flowSvg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    /* ZONA CLOUD (ARRIBA) */
+    .cloud-zone {
+      position: relative;
+      z-index: 20;
+      display: grid;
+      grid-template-columns: 280px 300px 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+    @media (max-width: 980px) {
+      .cloud-zone {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* ZONA "MI PC" (ABAJO - Bounding Box como en el dibujo a mano) */
+    .pc-zone {
+      position: relative;
+      z-index: 20;
+      background: rgba(14, 25, 52, 0.55);
+      border: 2px dashed rgba(56, 189, 248, 0.55);
+      border-radius: 20px;
+      padding: 28px 24px 22px;
+      box-shadow: inset 0 0 40px rgba(56, 189, 248, 0.05), 0 10px 30px rgba(0,0,0,0.3);
+      display: grid;
+      grid-template-columns: 180px 290px 1fr;
+      gap: 22px;
+      align-items: center;
+    }
+    @media (max-width: 1050px) {
+      .pc-zone {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .pc-tag {
+      position: absolute;
+      bottom: 12px;
+      left: 18px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--blue);
+      letter-spacing: 2px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-transform: uppercase;
+      opacity: 0.85;
+    }
+    .pc-tag::before {
+      content: '💻';
+      font-size: 1rem;
+    }
+
+    /* NODE CARDS GENERAL */
+    .node-card {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-soft);
+      border-radius: 16px;
+      padding: 16px 18px;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      position: relative;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+      user-select: none;
+    }
+    .node-card:hover {
+      border-color: rgba(255, 255, 255, 0.35);
+      transform: translateY(-2px);
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.5);
+    }
+    .node-card.active-source {
+      border-color: var(--cyan) !important;
+      box-shadow: 0 0 25px rgba(0, 242, 254, 0.5) !important;
+      animation: glowSource 1.5s infinite alternate;
+    }
+    .node-card.active-target {
+      border-color: var(--green) !important;
+      box-shadow: 0 0 25px rgba(52, 211, 153, 0.5) !important;
+      animation: glowTarget 1.5s infinite alternate;
+    }
+    @keyframes glowSource {
+      from { box-shadow: 0 0 15px rgba(0, 242, 254, 0.3); }
+      to { box-shadow: 0 0 30px rgba(0, 242, 254, 0.7); }
+    }
+    @keyframes glowTarget {
+      from { box-shadow: 0 0 15px rgba(52, 211, 153, 0.3); }
+      to { box-shadow: 0 0 30px rgba(52, 211, 153, 0.7); }
+    }
+
+    .node-header {
       display: flex;
       align-items: center;
       gap: 10px;
-    }
-    .details-panel p {
-      color: #CBD5E1;
-      font-size: 1rem;
-      line-height: 1.6;
-      margin-bottom: 15px;
-    }
-    .pill-list {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
-    .pill {
-      background: rgba(0, 132, 255, 0.15);
-      border: 1px solid var(--accent-blue);
-      color: #93C5FD;
-      padding: 6px 14px;
-      border-radius: 20px;
-      font-size: 0.85rem;
-      font-weight: 600;
-    }
-    .benefits-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 20px;
-    }
-    @media (max-width: 768px) {
-      .benefits-grid { grid-template-columns: 1fr; }
-    }
-    .benefit-card {
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid var(--card-border);
-      border-radius: 16px;
-      padding: 20px;
-      text-align: center;
-    }
-    .benefit-card h4 {
-      font-family: 'Outfit', sans-serif;
-      font-size: 1.15rem;
-      color: #FFF;
       margin-bottom: 8px;
     }
-    .benefit-card p {
-      font-size: 0.9rem;
+    .node-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      flex-shrink: 0;
+    }
+    .node-title-box h3 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #FFFFFF;
+      letter-spacing: 0.3px;
+    }
+    .node-title-box span {
+      font-size: 0.74rem;
+      color: var(--text-muted);
+      font-weight: 500;
+      display: block;
+    }
+    .node-desc {
+      font-size: 0.8rem;
       color: var(--text-muted);
       line-height: 1.4;
     }
-    footer {
-      text-align: center;
-      padding: 20px;
-      color: var(--text-muted);
-      font-size: 0.85rem;
-      border-top: 1px solid var(--card-border);
+
+    /* CARD CUSTOMIZATIONS */
+    /* 1. GITHUB (Nube izquierda) */
+    .card-github {
+      border-top: 3px solid #F43F5E;
     }
-    .btn-action {
-      background: linear-gradient(135deg, var(--accent-orange), #FF8E53);
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 10px;
-      font-weight: 700;
-      cursor: pointer;
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      transition: opacity 0.2s;
-      margin-top: 10px;
-      display: inline-flex;
-      align-items: center;
+    .card-github .node-icon {
+      background: rgba(244, 63, 94, 0.15);
+      border: 1px solid rgba(244, 63, 94, 0.35);
+    }
+
+    /* 2. CLASSROOM (Nube centro) */
+    .card-classroom {
+      border-top: 3px solid #10B981;
+    }
+    .card-classroom .node-icon {
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.35);
+    }
+
+    /* 3. ALUMNOS LIST (Nube derecha) */
+    .alumnos-stack {
+      display: flex;
+      flex-direction: column;
       gap: 8px;
     }
-    .btn-action:hover { opacity: 0.9; }
+    .alumno-chip {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-soft);
+      border-radius: 12px;
+      padding: 9px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .alumno-chip:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+    .alumno-chip .info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .alumno-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #6366F1, #A855F7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+    .alumno-name {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #F1F5F9;
+    }
+    .alumno-badge {
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--green);
+      background: rgba(52, 211, 153, 0.12);
+      padding: 3px 8px;
+      border-radius: 6px;
+    }
+    .dots-separator {
+      text-align: center;
+      color: var(--text-dim);
+      font-weight: 900;
+      font-size: 1.1rem;
+      letter-spacing: 4px;
+      line-height: 0.8;
+      padding: 2px 0;
+    }
+
+    /* DENTRO DE MI PC: PROFESOR */
+    .card-profesor {
+      border-left: 3px solid var(--orange);
+    }
+    .card-profesor .node-icon {
+      background: rgba(251, 146, 60, 0.15);
+      border: 1px solid rgba(251, 146, 60, 0.35);
+    }
+
+    /* DENTRO DE MI PC: ANTIGRAVITY CENTRAL & URLS DE GITHUB */
+    .pc-center-column {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      position: relative;
+    }
+
+    /* URLS DE GITHUB (Justo encima de Antigravity) */
+    .card-urls {
+      border-top: 3px solid var(--yellow);
+      background: rgba(16, 26, 54, 0.85);
+    }
+    .card-urls .node-icon {
+      background: rgba(251, 191, 36, 0.15);
+      border: 1px solid rgba(251, 191, 36, 0.35);
+    }
+
+    /* ANTIGRAVITY (Bloque clave destacado) */
+    .card-antigravity {
+      border: 2px solid rgba(0, 242, 254, 0.5);
+      background: linear-gradient(145deg, rgba(8, 25, 58, 0.9), rgba(12, 18, 42, 0.95));
+      box-shadow: 0 10px 30px rgba(0, 242, 254, 0.15);
+    }
+    .card-antigravity .node-icon {
+      background: linear-gradient(135deg, #0084FF, #00F2FE);
+      color: #041026;
+      font-size: 1.4rem;
+      font-weight: 800;
+    }
+    .card-antigravity h3 {
+      color: var(--cyan);
+    }
+
+    /* DENTRO DE MI PC: LAS 3 CARPETAS ESCALONADAS (ROBÓTICA, COMÚN, IA) */
+    .folders-cluster {
+      position: relative;
+      padding: 10px 0 10px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .folder-card {
+      background: rgba(18, 29, 60, 0.85);
+      border: 1px solid var(--border-soft);
+      border-radius: 12px;
+      padding: 11px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+    .folder-card:hover {
+      transform: translateX(6px);
+      border-color: var(--blue);
+      background: rgba(24, 40, 80, 0.9);
+    }
+    .folder-card.active-target {
+      border-color: var(--green) !important;
+      box-shadow: 0 0 18px rgba(52, 211, 153, 0.6) !important;
+      transform: translateX(8px);
+    }
+
+    .folder-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .folder-icon {
+      font-size: 1.3rem;
+    }
+    .folder-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #F8FAFC;
+    }
+    .folder-sub {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+    .folder-meta {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--blue);
+      background: rgba(56, 189, 248, 0.1);
+      padding: 3px 8px;
+      border-radius: 6px;
+    }
+
+    /* STACK OFFSET EFFECT (Como en el boceto a mano) */
+    .folder-ia {
+      border-left: 4px solid #A855F7;
+      margin-left: 20px;
+    }
+    .folder-comun {
+      border-left: 4px solid #00F2FE;
+      margin-left: 10px;
+    }
+    .folder-robotica {
+      border-left: 4px solid #FB923C;
+      margin-left: 0px;
+    }
+
+    /* BOTTOM EXPLANATION BANNER */
+    .explain-banner {
+      background: rgba(13, 22, 45, 0.85);
+      border: 1px solid var(--border-soft);
+      border-radius: 18px;
+      padding: 18px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    }
+    @media (max-width: 850px) {
+      .explain-banner {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+    .explain-left {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+    }
+    .explain-step-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: rgba(0, 242, 254, 0.15);
+      border: 1px solid var(--cyan);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      flex-shrink: 0;
+      box-shadow: 0 0 15px rgba(0, 242, 254, 0.2);
+    }
+    .explain-texts h4 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #FFFFFF;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .explain-texts h4 span.tag-phase {
+      font-size: 0.72rem;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 6px;
+      background: rgba(56, 189, 248, 0.18);
+      color: var(--blue);
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+    }
+    .explain-texts p {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      max-width: 800px;
+    }
+    .explain-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .explain-pill {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: #CBD5E1;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 3px 8px;
+      border-radius: 6px;
+    }
+
+    .explain-nav-btns {
+      display: flex;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+    .btn-nav {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border-soft);
+      color: var(--text-main);
+      padding: 10px 16px;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+    .btn-nav:hover {
+      background: rgba(255, 255, 255, 0.14);
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    /* FOOTER INFO */
+    footer {
+      text-align: center;
+      padding: 18px 20px;
+      font-size: 0.8rem;
+      color: var(--text-dim);
+      border-top: 1px solid var(--border-soft);
+      background: rgba(6, 11, 24, 0.9);
+      margin-top: auto;
+    }
+    footer a {
+      color: var(--cyan);
+      text-decoration: none;
+    }
   </style>
 </head>
 <body>
 
+  <!-- HEADER -->
   <header>
-    <div class="badge">Monográfico 7 · Arquitectura del Curso</div>
-    <h1>El Mapa de la Gestión del Proyecto con IA</h1>
-    <p class="subtitle">Descubre cómo creamos, organizamos y distribuimos todo este ecosistema educativo trabajando en equipo: Profesor + Copiloto IA + Nube Gratuita de GitHub + Google Classroom.</p>
+    <div class="header-titles">
+      <div class="header-tag">
+        <span class="live-dot"></span>
+        Arquitectura Operativa del Curso con IA
+      </div>
+      <h1>Mapa Dinámico de Gestión del Proyecto</h1>
+    </div>
+    <div class="header-quick-info">
+      <div class="badge-stat">Profesor + Copiloto IA: <b>Equipo de Dos</b></div>
+      <div class="badge-stat">Servidores: <b>0 € de Coste</b></div>
+      <div class="badge-stat">Espacio Google Drive: <b>0 MB Gastados</b></div>
+    </div>
   </header>
 
-  <main class="main-container">
-    
-    <div class="flow-wrapper">
-      <div class="zones-grid">
+  <!-- CONTROLS BAR -->
+  <div class="controls-panel">
+    <div class="playback-group">
+      <button class="btn-main" id="btnPlayPause" onclick="togglePlay()">
+        <span id="playIcon">▶</span> <span id="playText">Iniciar Flujo</span>
+      </button>
+      <button class="btn-ghost" onclick="resetFlow()">⟲ Reiniciar</button>
+    </div>
+
+    <!-- STEP SELECTOR CHIPS -->
+    <div class="step-chips">
+      <div class="step-chip active" id="chip-1" onclick="goToStep(1)">
+        <span class="step-num">1</span> Profesor ➔ Antigravity
+      </div>
+      <div class="step-chip" id="chip-2" onclick="goToStep(2)">
+        <span class="step-num">2</span> Carpetas Locales
+      </div>
+      <div class="step-chip" id="chip-3" onclick="goToStep(3)">
+        <span class="step-num">3</span> Push a GitHub
+      </div>
+      <div class="step-chip" id="chip-4" onclick="goToStep(4)">
+        <span class="step-num">4</span> URLs de GitHub (CSV)
+      </div>
+      <div class="step-chip" id="chip-5" onclick="goToStep(5)">
+        <span class="step-num">5</span> Publicar en Classroom
+      </div>
+      <div class="step-chip" id="chip-6" onclick="goToStep(6)">
+        <span class="step-num">6</span> Acceso Alumnos
+      </div>
+    </div>
+
+    <!-- SPEED SELECTOR -->
+    <div class="speed-group">
+      <span style="font-size: 0.72rem; color: var(--text-dim); margin-right: 4px;">Velocidad:</span>
+      <button class="speed-btn" onclick="setSpeed(0.5, this)">0.5x</button>
+      <button class="speed-btn active" onclick="setSpeed(1.0, this)">1x</button>
+      <button class="speed-btn" onclick="setSpeed(1.8, this)">2x</button>
+    </div>
+  </div>
+
+  <!-- MAIN STAGE -->
+  <div class="stage-container">
+
+    <!-- DIAGRAM BOARD -->
+    <div class="diagram-board" id="diagramBoard">
+      <!-- SVG CONNECTOR CANVAS -->
+      <svg id="flowSvg">
+        <defs>
+          <!-- Arrow Markers -->
+          <marker id="arrow-default" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 1 L 9 5 L 0 9 z" fill="rgba(255, 255, 255, 0.25)" />
+          </marker>
+          <marker id="arrow-active" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 1 L 9 5 L 0 9 z" fill="#00F2FE" />
+          </marker>
+          <marker id="arrow-green" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 1 L 9 5 L 0 9 z" fill="#34D399" />
+          </marker>
+          <!-- Glow Filters -->
+          <filter id="glow-cyan" x="-20%" y="-20%" width="140%" height="140%">
+            <feGaussianBlur stdDeviation="3.5" result="blur" />
+            <feMerge>
+              <feMergeNode in="blur"/>
+              <feMergeNode in="SourceGraphic"/>
+            </feMerge>
+          </filter>
+        </defs>
+
+        <!-- Static Background Connector Paths -->
+        <!-- 1. Profesor -> Antigravity -->
+        <path id="path-prof-anti" stroke="rgba(255, 255, 255, 0.18)" stroke-width="2.5" fill="none" stroke-dasharray="6 6" marker-end="url(#arrow-default)" />
+
+        <!-- 2. Antigravity -> Carpetas (Robótica, Común, IA) -->
+        <path id="path-anti-robotica" stroke="rgba(255, 255, 255, 0.18)" stroke-width="2.5" fill="none" stroke-dasharray="6 6" marker-end="url(#arrow-default)" />
+        <path id="path-anti-comun" stroke="rgba(255, 255, 255, 0.18)" stroke-width="2.5" fill="none" stroke-dasharray="6 6" marker-end="url(#arrow-default)" />
+        <path id="path-anti-ia" stroke="rgba(255, 255, 255, 0.18)" stroke-width="2.5" fill="none" stroke-dasharray="6 6" marker-end="url(#arrow-default)" />
+
+        <!-- 3. Antigravity -> GitHub (sale de MI PC hacia arriba-izquierda) -->
+        <path id="path-anti-github" stroke="rgba(255, 255, 255, 0.18)" stroke-width="2.5" fill="none" stroke-dasharray="6 6" marker-end="url(#arrow-default)" />
+
+        <!-- 4. Antigravity -> URLs de GitHub -->
+        <path id="path-anti-urls" stroke="rgba(255, 255, 255, 0.18)" stroke-width="2.5" fill="none" stroke-dasharray="6 6" marker-end="url(#arrow-default)" />
+
+        <!-- 5. URLs de GitHub -> Classroom (sale de MI PC hacia arriba-centro) -->
+        <path id="path-urls-classroom" stroke="rgba(255, 255, 255, 0.18)" stroke-width="2.5" fill="none" stroke-dasharray="6 6" marker-end="url(#arrow-default)" />
+
+        <!-- 6. Classroom -> Alumnos -->
+        <path id="path-classroom-alumno1" stroke="rgba(255, 255, 255, 0.18)" stroke-width="2.5" fill="none" stroke-dasharray="6 6" marker-end="url(#arrow-default)" />
+        <path id="path-classroom-alumnon" stroke="rgba(255, 255, 255, 0.18)" stroke-width="2.5" fill="none" stroke-dasharray="6 6" marker-end="url(#arrow-default)" />
+
+        <!-- 7. GitHub -> Alumnos (Acceso directo a recursos 0€) -->
+        <path id="path-github-alumnos" stroke="rgba(52, 211, 153, 0.2)" stroke-width="2" fill="none" stroke-dasharray="4 4" marker-end="url(#arrow-green)" />
+
+        <!-- Dynamic Particle Layer (Added dynamically via JS) -->
+        <g id="particlesLayer"></g>
+      </svg>
+
+      <!-- ZONA NUBE / PLATAFORMAS REMOTAS (ARRIBA) -->
+      <div class="cloud-zone">
         
-        <!-- ZONA 1: MI PC -->
-        <div class="zone-box">
-          <div class="zone-title" style="color: var(--accent-cyan);">
-            💻 Zona 1: MI ORDENADOR (Local)
+        <!-- NODO 1: GITHUB (Arriba Izquierda) -->
+        <div class="node-card card-github" id="node-github" onclick="inspectNode('github')">
+          <div class="node-header">
+            <div class="node-icon">🐙</div>
+            <div class="node-title-box">
+              <h3>GITHUB</h3>
+              <span>Repositorio & GitHub Pages</span>
+            </div>
           </div>
+          <div class="node-desc">
+            Biblioteca permanente en la nube: aloja PDFs, simuladores 3D y vídeos a <b>0 €</b> de coste y <b>0 MB</b> en Drive.
+          </div>
+        </div>
+
+        <!-- NODO 2: CLASSROOM (Arriba Centro) -->
+        <div class="node-card card-classroom" id="node-classroom" onclick="inspectNode('classroom')">
+          <div class="node-header">
+            <div class="node-icon">🏫</div>
+            <div class="node-title-box">
+              <h3>CLASSROOM</h3>
+              <span>Google Classroom (Aula Virtual)</span>
+            </div>
+          </div>
+          <div class="node-desc">
+            El portal escolar seguro donde los alumnos ven las tareas ordenadas por temas con sus enlaces directos.
+          </div>
+        </div>
+
+        <!-- NODO 3: ALUMNOS (Arriba Derecha) -->
+        <div class="alumnos-stack" id="node-alumnos">
+          <div class="alumno-chip" id="chip-alumno-1" onclick="inspectNode('alumno1')">
+            <div class="info">
+              <div class="alumno-avatar">A1</div>
+              <div class="alumno-name">ALUMNO 1</div>
+            </div>
+            <div class="alumno-badge">Navegador Web</div>
+          </div>
+          <div class="dots-separator">⋮</div>
+          <div class="alumno-chip" id="chip-alumno-n" onclick="inspectNode('alumnon')">
+            <div class="info">
+              <div class="alumno-avatar" style="background: linear-gradient(135deg, #EC4899, #F43F5E);">AN</div>
+              <div class="alumno-name">ALUMNO N</div>
+            </div>
+            <div class="alumno-badge">Tablet / PC</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ZONA "MI PC" (ABAJO - Marco Bounding Box como en el boceto a mano) -->
+      <div class="pc-zone" id="pcZone">
+        <div class="pc-tag">MI PC (Entorno Local en Mac)</div>
+
+        <!-- SUB-NODO: PROFESOR (Izquierda) -->
+        <div class="node-card card-profesor" id="node-profesor" onclick="inspectNode('profesor')">
+          <div class="node-header">
+            <div class="node-icon">👨‍🏫</div>
+            <div class="node-title-box">
+              <h3>Profesor</h3>
+              <span>Director Pedagógico</span>
+            </div>
+          </div>
+          <div class="node-desc">
+            Diseña los temas, aporta la empatía didáctica y guía a la IA con prompts precisos en lenguaje natural.
+          </div>
+        </div>
+
+        <!-- COLUMNA CENTRAL DENTRO DE MI PC: ANTIGRAVITY + URLS DE GITHUB -->
+        <div class="pc-center-column">
           
-          <div class="node-card" onclick="showDetails('profesor')">
+          <!-- URLS DE GITHUB (Justo encima de Antigravity) -->
+          <div class="node-card card-urls" id="node-urls" onclick="inspectNode('urls')">
             <div class="node-header">
-              <div class="node-icon">🧑🏻‍🏫</div>
-              <div>
-                <div class="node-title-text">El Profesor (Tú)</div>
-                <div class="node-role">Director Pedagógico</div>
+              <div class="node-icon">📋</div>
+              <div class="node-title-box">
+                <h3>URLS DE GITHUB</h3>
+                <span>Paneles CSV & Apps Script</span>
               </div>
             </div>
-            <div class="node-desc">Aporta las ideas, los temas, el cariño didáctico y graba los vídeos de teoría.</div>
+            <div class="node-desc">
+              Tablas generadas con los títulos y enlaces web listos para volcar a Classroom con un solo clic.
+            </div>
           </div>
 
-          <div class="node-card active" onclick="showDetails('antigravity')">
+          <!-- ANTIGRAVITY (El Motor Central de IA) -->
+          <div class="node-card card-antigravity" id="node-antigravity" onclick="inspectNode('antigravity')">
             <div class="node-header">
-              <div class="node-icon">🤖</div>
-              <div>
-                <div class="node-title-text">Antigravity</div>
-                <div class="node-role">Copiloto Técnico IA</div>
+              <div class="node-icon">⚡</div>
+              <div class="node-title-box">
+                <h3>Antigravity</h3>
+                <span>Copiloto de IA Avanzada</span>
               </div>
             </div>
-            <div class="node-desc">Programa simuladores, maqueta PDFs, genera CSVs y sincroniza con GitHub.</div>
+            <div class="node-desc">
+              Genera fichas PDF con ReportLab, programa simuladores en JS/HTML5 y sincroniza los repositorios con Git.
+            </div>
           </div>
 
-          <div class="node-card" onclick="showDetails('carpetas')">
-            <div class="node-header">
-              <div class="node-icon">📁</div>
-              <div>
-                <div class="node-title-text">3 Carpetas Maestras</div>
-                <div class="node-role">Estructura Modular</div>
-              </div>
-            </div>
-            <div class="node-desc">Robótica V2 + Curso IA + Carpeta Común organizadas limpiamente en tu Mac.</div>
-          </div>
-
-          <div class="node-card" onclick="showDetails('csvs')">
-            <div class="node-header">
-              <div class="node-icon">📄</div>
-              <div>
-                <div class="node-title-text">Paneles CSV / Excel</div>
-                <div class="node-role">Puente de URLs</div>
-              </div>
-            </div>
-            <div class="node-desc">Tablas de enlaces con URLs públicas y Apps Script para inyección a Classroom.</div>
-          </div>
         </div>
 
-        <!-- ZONA 2: LA NUBE -->
-        <div class="zone-box">
-          <div class="zone-title" style="color: var(--accent-green);">
-            ☁️ Zona 2: EN LA NUBE (Internet)
-          </div>
-
-          <div class="node-card" onclick="showDetails('github')">
-            <div class="node-header">
-              <div class="node-icon">🌐</div>
+        <!-- COLUMNA DERECHA DENTRO DE MI PC: 3 CARPETAS EN CAPAS (ROBÓTICA, COMÚN, IA) -->
+        <div class="folders-cluster" id="node-carpetas">
+          
+          <!-- 1. ROBOTICA (Frente) -->
+          <div class="folder-card folder-robotica" id="folder-robotica" onclick="inspectNode('robotica')">
+            <div class="folder-info">
+              <div class="folder-icon">🤖</div>
               <div>
-                <div class="node-title-text">GitHub Pages</div>
-                <div class="node-role">Alojamiento Gratuito</div>
+                <div class="folder-title">ROBÓTICA</div>
+                <div class="folder-sub">CURSO-ROBOTICA-V2</div>
               </div>
             </div>
-            <div class="node-desc">Guarda gratis todos los vídeos y PDFs sin gastar un solo mega de tu Google Drive.</div>
+            <div class="folder-meta">8 Bloques</div>
           </div>
 
-          <div class="node-card" onclick="showDetails('classroom')">
-            <div class="node-header">
-              <div class="node-icon">🏫</div>
+          <!-- 2. COMUN (Centro) -->
+          <div class="folder-card folder-comun" id="folder-comun" onclick="inspectNode('comun')">
+            <div class="folder-info">
+              <div class="folder-icon">📦</div>
               <div>
-                <div class="node-title-text">Google Classroom</div>
-                <div class="node-role">El Aula Virtual</div>
+                <div class="folder-title">COMÚN</div>
+                <div class="folder-sub">CURSO-ROBOTICA-IA-COMUN</div>
               </div>
             </div>
-            <div class="node-desc">Organiza las clases en temas limpios y muestra las tareas en modo borrador.</div>
-          </div>
-        </div>
-
-        <!-- ZONA 3: DESTINO -->
-        <div class="zone-box">
-          <div class="zone-title" style="color: var(--accent-orange);">
-            👥 Zona 3: LOS ALUMNOS
+            <div class="folder-meta">Nexo / Presentaciones</div>
           </div>
 
-          <div class="node-card" onclick="showDetails('alumnos')">
-            <div class="node-header">
-              <div class="node-icon">🎓</div>
+          <!-- 3. IA (Fondo) -->
+          <div class="folder-card folder-ia" id="folder-ia" onclick="inspectNode('ia')">
+            <div class="folder-info">
+              <div class="folder-icon">🧠</div>
               <div>
-                <div class="node-title-text">Alumnos Sénior</div>
-                <div class="node-role">Experiencia Cero Fricción</div>
+                <div class="folder-title">IA</div>
+                <div class="folder-sub">CURSO-IA</div>
               </div>
             </div>
-            <div class="node-desc">Abren Classroom desde PC o móvil y acceden al material con un solo clic instantáneo.</div>
+            <div class="folder-meta">60 Clases + Monográficos</div>
           </div>
+
         </div>
 
       </div>
+
     </div>
 
-    <!-- PANEL DE DETALLES INTERACTIVO -->
-    <div id="detailsPanel" class="details-panel visible">
-      <h3 id="panelTitle">🤖 Antigravity: Tu Copiloto Técnico en el PC</h3>
-      <p id="panelDesc">Antigravity reside en tu ordenador y asume todas las tareas de programación pesada, maquetación de fichas en PDF con ReportLab, generación de tablas CSV de enlaces y sincronización con GitHub. Tú solo tienes que darle instrucciones en lenguaje cotidiano.</p>
-      <div class="pill-list" id="panelPills">
-        <span class="pill">Automatización en Python</span>
-        <span class="pill">Cero código para el profesor</span>
-        <span class="pill">Maquetación profesional</span>
+    <!-- BOTTOM EXPLANATION BANNER -->
+    <div class="explain-banner" id="explainBanner">
+      <div class="explain-left">
+        <div class="explain-step-icon" id="bannerIcon">👨‍🏫</div>
+        <div class="explain-texts">
+          <h4 id="bannerTitle">
+            Paso 1: El Profesor Diseña la Clase
+            <span class="tag-phase" id="bannerTag">Fase Creativa</span>
+          </h4>
+          <p id="bannerDesc">
+            Tú aportas la visión pedagógica y los objetivos de aprendizaje adaptados para personas mayores. Le pides a Antigravity crear la ficha oficial y el simulador interactivo mediante prompts claros en tu PC.
+          </p>
+          <div class="explain-pills" id="bannerPills">
+            <span class="explain-pill">Entrada: Prompt en lenguaje natural</span>
+            <span class="explain-pill">Herramienta: Chat Antigravity</span>
+            <span class="explain-pill">Ubicación: MI PC</span>
+          </div>
+        </div>
       </div>
-    </div>
-
-    <!-- BENEFICIOS -->
-    <div class="benefits-grid">
-      <div class="benefit-card">
-        <div style="font-size: 2rem; margin-bottom: 8px;">💰</div>
-        <h4>0 € en Servidores</h4>
-        <p>GitHub Pages aloja todo el contenido público del curso (vídeos, simuladores y PDFs) sin cuotas mensuales.</p>
-      </div>
-      <div class="benefit-card">
-        <div style="font-size: 2rem; margin-bottom: 8px;">☁️</div>
-        <h4>0 MB en Google Drive</h4>
-        <p>Classroom solo enlaza los archivos alojados en GitHub. Tu cuota de Google permanece 100% limpia.</p>
-      </div>
-      <div class="benefit-card">
-        <div style="font-size: 2rem; margin-bottom: 8px;">⚡</div>
-        <h4>Publicación en 10 Segundos</h4>
-        <p>Gracias a Google Apps Script, 60 lecciones se inyectan en Classroom agrupadas por temas con un solo clic.</p>
+      <div class="explain-nav-btns">
+        <button class="btn-nav" onclick="prevStep()">◀ Anterior</button>
+        <button class="btn-nav" onclick="nextStep()">Siguiente ▶</button>
       </div>
     </div>
 
-  </main>
+  </div>
 
+  <!-- FOOTER -->
   <footer>
-    Curso de Inteligencia Artificial para Mayores · Ecosistema Pedagógico de Trabajo en Equipo
+    Curso de Tecnología: Robótica e Inteligencia Artificial • Diseñado con el flujo <b>Profesor + Antigravity + GitHub + Classroom</b>
   </footer>
 
+  <!-- JAVASCRIPT: MOTOR DE FLUJO Y ANIMACIÓN VECTORIAL -->
   <script>
-    const data = {
-      profesor: {
-        title: "🧑🏻‍🏫 El Profesor (Tú): El Director Pedagógico",
-        desc: "Eres el corazón del curso. Conoces a los alumnos, decides la progresión didáctica, grabas los vídeos explicativos y garantizas que la tecnología se explique siempre con cariño, cercanía y sin tecnicismos.",
-        pills: ["Visión Didáctica", "Contenidos de Aula", "Empatía Sénior", "Supervisión Ética"]
+    // --- ESTADO DE LA APLICACIÓN ---
+    let currentStep = 1;
+    let isPlaying = false;
+    let playInterval = null;
+    let speedMultiplier = 1.0;
+    const TOTAL_STEPS = 6;
+    const STEP_DURATION = 3500; // ms por paso a 1x
+
+    // --- DATOS EDUCATIVOS DE CADA PASO ---
+    const STEPS_DATA = {
+      1: {
+        title: "Paso 1: El Profesor Plantea la Misión Pedagógica",
+        tag: "Iniciación Pedagógica",
+        icon: "👨‍🏫",
+        sourceNodes: ["node-profesor"],
+        targetNodes: ["node-antigravity"],
+        activePaths: ["path-prof-anti"],
+        desc: "El profesor define el tema didáctico (ej. ¿cómo funciona un servomotor o una red neuronal?). En lugar de programarlo manualmente durante horas, transmite las pautas didácticas a Antigravity en lenguaje natural desde su Mac.",
+        pills: ["Rol: Director Didáctico", "Medio: Prompts en lenguaje natural", "Destino: Antigravity en MI PC"]
       },
-      antigravity: {
-        title: "🤖 Antigravity: Tu Copiloto Técnico en el PC",
-        desc: "Es tu taller de desarrollo autónomo. Programa simuladores 3D interactivos, maqueta fichas didácticas oficiales en PDF, genera los índices CSV para Google Classroom y resuelve cualquier traba técnica al instante.",
-        pills: ["Automatización Python", "Cero código para el profesor", "Maquetación ReportLab", "Sincronización Git"]
+      2: {
+        title: "Paso 2: Antigravity Genera y Clasifica en Carpetas Locales",
+        tag: "Generación en MI PC",
+        icon: "⚡",
+        sourceNodes: ["node-antigravity"],
+        targetNodes: ["folder-robotica", "folder-comun", "folder-ia"],
+        activePaths: ["path-anti-robotica", "path-anti-comun", "path-anti-ia"],
+        desc: "Antigravity programa en bucle cerrado: redacta código HTML5/Three.js para simuladores, genera PDFs profesionales con ReportLab y clasifica cada archivo en las 3 carpetas locales sincronizadas con iCloud: ROBÓTICA, COMÚN e IA.",
+        pills: ["Python ReportLab", "HTML5 Canvas 3D", "Carpetas: ROBÓTICA / COMÚN / IA", "Almacenamiento: MI PC"]
       },
-      carpetas: {
-        title: "📁 Las 3 Carpetas Maestras en tu Mac",
-        desc: "El proyecto se organiza en 3 carpetas modulares: CURSO-ROBOTICA-V2 (8 bloques de robótica), CURSO-IA (60 sesiones prácticas y monográficos) y CURSO-ROBOTICA-IA-COMUN (guías y presentaciones inaugurales compartidas).",
-        pills: ["Modularidad", "Sincronización iCloud", "Reutilización de Contenidos"]
+      3: {
+        title: "Paso 3: Antigravity Hace Push Directo a GitHub",
+        tag: "Sincronización a la Nube",
+        icon: "🚀",
+        sourceNodes: ["node-antigravity"],
+        targetNodes: ["node-github"],
+        activePaths: ["path-anti-github"],
+        desc: "Antigravity ejecuta automáticamente los comandos de Git ('git add', 'git commit', 'git push'). Todo el contenido local vuela a los servidores de GitHub y se publica inmediatamente en GitHub Pages a 0 € de coste de hosting.",
+        pills: ["Git Push Automático", "GitHub Pages Web Hosting", "Coste Servidores: 0 €", "Espacio Drive: 0 MB"]
       },
-      csvs: {
-        title: "📄 Paneles CSV y Google Sheets con Apps Script",
-        desc: "Los scripts escanean automáticamente tus carpetas y generan archivos CSV con las URLs públicas exactas de GitHub. Al importar el CSV en Google Sheets, un script de Apps Script crea todos los materiales en Classroom en 10 segundos.",
-        pills: ["generate_multiple_csvs.py", "Google Apps Script", "Modo Borrador Seguro", "Subida Masiva"]
+      4: {
+        title: "Paso 4: Antigravity Construye el Panel de URLs (CSV)",
+        tag: "Automatización de Enlaces",
+        icon: "📋",
+        sourceNodes: ["node-antigravity"],
+        targetNodes: ["node-urls"],
+        activePaths: ["path-anti-urls"],
+        desc: "Antigravity escanea los archivos subidos y extrae las URLs web públicas de GitHub en una tabla CSV estructurada (Título, Tema, Descripción, Enlace directo). Esto elimina la necesidad de copiar y pegar enlaces manualmente uno a uno.",
+        pills: ["Script: generate_multiple_csvs.py", "Archivo: 0.PANEL_CLASSROOM.csv", "Enlace Permanente Web"]
       },
-      github: {
-        title: "🌐 GitHub y GitHub Pages: La Gran Nube Gratuita",
-        desc: "GitHub aloja todo el material pesado (vídeos MP4, fichas PDF y aplicaciones web interactivas). Gracias a GitHub Pages, cada archivo tiene su propia URL pública permanente sin gastar almacenamiento en tu Google Drive.",
-        pills: ["Almacenamiento Ilimitado", "0 € de Coste", "URLs Públicas Rápidas", "Actualización Transparente"]
+      5: {
+        title: "Paso 5: Vuelco Automático a Google Classroom",
+        tag: "Distribución Escolar",
+        icon: "🏫",
+        sourceNodes: ["node-urls"],
+        targetNodes: ["node-classroom"],
+        activePaths: ["path-urls-classroom"],
+        desc: "Mediante el script automatizado de Google Apps Script ('publicarTodoConTemas'), el archivo CSV se lee y en menos de 10 segundos crea los 60 materiales en el aula virtual de Google Classroom, categorizados por temas y en modo borrador.",
+        pills: ["Google Apps Script", "Google Classroom API", "Borradores Listos para Publicar", "Cero Copiar/Pegar manual"]
       },
-      classroom: {
-        title: "🏫 Google Classroom: El Aula Virtual Ordenada",
-        desc: "Es el espacio donde los alumnos acceden al curso. Cada tema agrupa sus materiales didácticos en modo borrador para que el profesor los publique poco a poco a lo largo de las semanas.",
-        pills: ["Entorno Seguro", "Organización por Temas", "Fácil Seguimiento"]
-      },
-      alumnos: {
-        title: "🎓 Los Alumnos Sénior: Cero Fricción",
-        desc: "El alumno entra en Google Classroom desde su ordenador o teléfono, pulsa sobre la ficha o el vídeo y se reproduce al instante. No necesitan instalar programas raros ni lidiar con contraseñas complejas.",
-        pills: ["Acceso con 1 Clic", "Cero Instalaciones", "Legibilidad Óptima", "Sin Estrés"]
+      6: {
+        title: "Paso 6: Los Alumnos Acceden con 1 Clic desde Cualquier Dispositivo",
+        tag: "Experiencia del Alumno",
+        icon: "🎓",
+        sourceNodes: ["node-classroom", "node-github"],
+        targetNodes: ["chip-alumno-1", "chip-alumno-n"],
+        activePaths: ["path-classroom-alumno1", "path-classroom-alumnon", "path-github-alumnos"],
+        desc: "Los alumnos sénior entran en Google Classroom en sus ordenadores o tablets. Hacen clic en la lección y los simuladores y PDFs se cargan al instante desde GitHub a máxima velocidad. ¡Cero instalaciones, cero contraseñas adicionales y cero complicaciones!",
+        pills: ["Cero Instalaciones de Software", "Velocidad Máxima", "Compatibilidad: PC / Mac / Tablet", "Acceso Directo 1 Clic"]
       }
     };
 
-    function showDetails(key) {
-      document.querySelectorAll('.node-card').forEach(c => c.classList.remove('active'));
-      event.currentTarget.classList.add('active');
-      
-      const item = data[key];
-      if (!item) return;
-      
-      document.getElementById('panelTitle').innerText = item.title;
-      document.getElementById('panelDesc').innerText = item.desc;
-      
-      const pillsContainer = document.getElementById('panelPills');
-      pillsContainer.innerHTML = item.pills.map(p => `<span class="pill">${p}</span>`).join('');
+    // --- INFORMACIÓN AL HACER CLIC EN CADA NODO ESPECÍFICO ---
+    const NODE_DETAILS = {
+      profesor: {
+        title: "👨‍🏫 El Profesor (Director Creativo)",
+        tag: "Rol Humano",
+        icon: "👨‍🏫",
+        desc: "Define qué conceptos enseñar, aporta empatía con el alumnado sénior, supervisa éticamente y valida cada material generado por la IA antes de que llegue a los alumnos.",
+        pills: ["Visión Didáctica", "Supervisión Crítica", "Prompts Clave"]
+      },
+      antigravity: {
+        title: "⚡ Antigravity (Copiloto Autónomo en MI PC)",
+        tag: "Motor de IA",
+        icon: "⚡",
+        desc: "El entorno de ejecución en tu ordenador local: ejecuta scripts de Python, genera fichas PDF con ReportLab, programa aplicaciones interactivas en HTML5 y gestiona el repositorio de Git.",
+        pills: ["Python", "ReportLab", "Git CLI", "JavaScript / 3D"]
+      },
+      robotica: {
+        title: "🤖 Carpeta: CURSO-ROBOTICA-V2",
+        tag: "Contenido Local",
+        icon: "🤖",
+        desc: "Almacena los 8 grandes bloques temáticos de robótica: servomotores, sensores ultrasónicos, cinemática 3D, androides, animatrónica y proyectos físicos.",
+        pills: ["8 Bloques Temáticos", "Simuladores Cinemáticos", "Guías de Montaje"]
+      },
+      comun: {
+        title: "📦 Carpeta: CURSO-ROBOTICA-IA-COMUN",
+        tag: "Nexo Compartido",
+        icon: "📦",
+        desc: "El puente de unión donde residen las presentaciones inaugurales compartidas, guías metodológicas y recursos transversales a los dos cursos.",
+        pills: ["Presentación Inaugural", "Guías Metodológicas", "Estándares"]
+      },
+      ia: {
+        title: "🧠 Carpeta: CURSO-IA",
+        tag: "Contenido Local",
+        icon: "🧠",
+        desc: "Contiene el temario troncal de Inteligencia Artificial: 60 sesiones prácticas, catálogo de fractales matemáticos, talleres de Gemini y monográficos especializados.",
+        pills: ["60 Clases Prácticas", "7 Monográficos", "Simuladores Interactivos"]
+      },
+      urls: {
+        title: "📋 URLs de GitHub (Paneles CSV)",
+        tag: "Estructura de Datos",
+        icon: "📋",
+        desc: "El nexo automatizado: Antigravity crea tablas CSV con los títulos, temas y URLs públicas exactas de GitHub Pages para alimentar el aula virtual sin teclear a mano.",
+        pills: ["0.PANEL_CLASSROOM.csv", "Enlace Permanente", "Apps Script Ready"]
+      },
+      github: {
+        title: "🐙 GitHub & GitHub Pages",
+        tag: "Infraestructura Nube",
+        icon: "🐙",
+        desc: "La gran biblioteca digital: almacena todos los archivos pesados (vídeos, fichas, simuladores) gratis para siempre, sin ocupar espacio de Google Drive y con URLs permanentes.",
+        pills: ["Hosting Gratuito 0 €", "0 MB en Google Drive", "Versionado Seguro"]
+      },
+      classroom: {
+        title: "🏫 Google Classroom",
+        tag: "Aula Virtual",
+        icon: "🏫",
+        desc: "El entorno intuitivo y seguro donde los alumnos encuentran sus lecciones organizadas cronológicamente con sus enlaces a GitHub y espacios para preguntas.",
+        pills: ["Temas Organizados", "Modo Borrador", "Fácil para Mayores"]
+      },
+      alumno1: {
+        title: "🎓 Alumno 1 (Experiencia Sénior)",
+        tag: "Destinatario Final",
+        icon: "🎓",
+        desc: "Accede desde su navegador web sin instalar programas raros ni descargar ZIPs. Hace clic y disfruta de una experiencia interactiva fluida y amigable.",
+        pills: ["Navegador Web", "Cero Barreras Técnicas", "Aprendizaje Activo"]
+      },
+      alumnon: {
+        title: "👥 Alumnos N (Toda la Clase)",
+        tag: "Destinatario Final",
+        icon: "👥",
+        desc: "Toda la comunidad de estudiantes dispone del mismo material simultáneamente, con enlaces siempre actualizados en tiempo real si el profesor corrige una errata.",
+        pills: ["Escalabilidad Infinita", "Actualización Instantánea", "100% Inclusivo"]
+      }
+    };
+
+    // --- RECALCULAR COORDENADAS SVG SEGÚN LAS POSICIONES REALES ---
+    function updateConnections() {
+      const board = document.getElementById('diagramBoard');
+      const boardRect = board.getBoundingClientRect();
+
+      function getCenter(elemId) {
+        const el = document.getElementById(elemId);
+        if (!el) return { x: 0, y: 0 };
+        const rect = el.getBoundingClientRect();
+        return {
+          x: (rect.left + rect.width / 2) - boardRect.left,
+          y: (rect.top + rect.height / 2) - boardRect.top,
+          top: rect.top - boardRect.top,
+          bottom: rect.bottom - boardRect.top,
+          left: rect.left - boardRect.left,
+          right: rect.right - boardRect.left
+        };
+      }
+
+      const prof = getCenter('node-profesor');
+      const anti = getCenter('node-antigravity');
+      const urls = getCenter('node-urls');
+      const robotica = getCenter('folder-robotica');
+      const comun = getCenter('folder-comun');
+      const ia = getCenter('folder-ia');
+      const github = getCenter('node-github');
+      const classroom = getCenter('node-classroom');
+      const alumno1 = getCenter('chip-alumno-1');
+      const alumnon = getCenter('chip-alumno-n');
+
+      // 1. Profesor -> Antigravity
+      setPathD('path-prof-anti', `M ${prof.right} ${prof.y} C ${prof.right + 30} ${prof.y}, ${anti.left - 30} ${anti.y}, ${anti.left} ${anti.y}`);
+
+      // 2. Antigravity -> Carpetas
+      setPathD('path-anti-robotica', `M ${anti.right} ${anti.y} C ${anti.right + 40} ${anti.y}, ${robotica.left - 30} ${robotica.y}, ${robotica.left} ${robotica.y}`);
+      setPathD('path-anti-comun', `M ${anti.right} ${anti.y} C ${anti.right + 50} ${anti.y}, ${comun.left - 30} ${comun.y}, ${comun.left} ${comun.y}`);
+      setPathD('path-anti-ia', `M ${anti.right} ${anti.y} C ${anti.right + 60} ${anti.y}, ${ia.left - 30} ${ia.y}, ${ia.left} ${ia.y}`);
+
+      // 3. Antigravity -> GitHub (sale de MI PC diagonal arriba-izquierda)
+      setPathD('path-anti-github', `M ${anti.left + 20} ${anti.top} C ${anti.left - 60} ${anti.top - 80}, ${github.x} ${github.bottom + 60}, ${github.x} ${github.bottom}`);
+
+      // 4. Antigravity -> URLs de GitHub
+      setPathD('path-anti-urls', `M ${anti.x} ${anti.top} L ${urls.x} ${urls.bottom}`);
+
+      // 5. URLs de GitHub -> Classroom (sale de MI PC vertical hacia arriba)
+      setPathD('path-urls-classroom', `M ${urls.x} ${urls.top} C ${urls.x} ${urls.top - 50}, ${classroom.x} ${classroom.bottom + 50}, ${classroom.x} ${classroom.bottom}`);
+
+      // 6. Classroom -> Alumnos
+      setPathD('path-classroom-alumno1', `M ${classroom.right} ${classroom.top + 20} C ${classroom.right + 40} ${classroom.top + 20}, ${alumno1.left - 30} ${alumno1.y}, ${alumno1.left} ${alumno1.y}`);
+      setPathD('path-classroom-alumnon', `M ${classroom.right} ${classroom.bottom - 20} C ${classroom.right + 40} ${classroom.bottom - 20}, ${alumnon.left - 30} ${alumnon.y}, ${alumnon.left} ${alumnon.y}`);
+
+      // 7. GitHub -> Alumnos (Acceso directo a los simuladores)
+      setPathD('path-github-alumnos', `M ${github.right} ${github.top + 15} C ${github.right + 200} ${github.top - 40}, ${alumno1.right + 50} ${alumno1.top - 20}, ${alumno1.right} ${alumno1.top}`);
     }
+
+    function setPathD(pathId, d) {
+      const p = document.getElementById(pathId);
+      if (p) p.setAttribute('d', d);
+    }
+
+    // --- ANIMACIÓN DE PARTÍCULAS EN LOS CAMINOS ACTIVOS ---
+    let activeAnimationFrames = [];
+
+    function clearParticles() {
+      activeAnimationFrames.forEach(id => cancelAnimationFrame(id));
+      activeAnimationFrames = [];
+      const layer = document.getElementById('particlesLayer');
+      if (layer) layer.innerHTML = '';
+    }
+
+    function spawnParticlesAlongPath(pathId, color = '#00F2FE', count = 3, size = 5) {
+      const path = document.getElementById(pathId);
+      if (!path) return;
+      const totalLen = path.getTotalLength();
+      if (totalLen <= 0) return;
+
+      const layer = document.getElementById('particlesLayer');
+
+      for (let i = 0; i < count; i++) {
+        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        circle.setAttribute('r', size);
+        circle.setAttribute('fill', color);
+        circle.setAttribute('filter', 'url(#glow-cyan)');
+        circle.style.opacity = '0.9';
+        layer.appendChild(circle);
+
+        let progress = (i / count); // Desfase para flujo constante
+        let speed = (0.0035 * speedMultiplier);
+
+        function animate() {
+          progress += speed;
+          if (progress > 1) progress = 0;
+          const pt = path.getPointAtLength(progress * totalLen);
+          circle.setAttribute('cx', pt.x);
+          circle.setAttribute('cy', pt.y);
+          const reqId = requestAnimationFrame(animate);
+          activeAnimationFrames.push(reqId);
+        }
+        animate();
+      }
+    }
+
+    // --- APLICAR PASO ACTIVO ---
+    function applyStep(stepNum) {
+      currentStep = stepNum;
+      const data = STEPS_DATA[stepNum];
+
+      // 1. Actualizar Chips de control
+      for (let i = 1; i <= TOTAL_STEPS; i++) {
+        const chip = document.getElementById(`chip-${i}`);
+        if (chip) chip.classList.toggle('active', i === stepNum);
+      }
+
+      // 2. Limpiar estilos anteriores en nodos
+      document.querySelectorAll('.node-card, .folder-card, .alumno-chip').forEach(el => {
+        el.classList.remove('active-source', 'active-target');
+      });
+
+      // 3. Activar nodos origen y destino
+      if (data.sourceNodes) {
+        data.sourceNodes.forEach(id => {
+          const el = document.getElementById(id);
+          if (el) el.classList.add('active-source');
+        });
+      }
+      if (data.targetNodes) {
+        data.targetNodes.forEach(id => {
+          const el = document.getElementById(id);
+          if (el) el.classList.add('active-target');
+        });
+      }
+
+      // 4. Actualizar colores de las líneas SVG
+      const allPathIds = [
+        'path-prof-anti', 'path-anti-robotica', 'path-anti-comun', 'path-anti-ia',
+        'path-anti-github', 'path-anti-urls', 'path-urls-classroom',
+        'path-classroom-alumno1', 'path-classroom-alumnon', 'path-github-alumnos'
+      ];
+      allPathIds.forEach(id => {
+        const p = document.getElementById(id);
+        if (p) {
+          const isActive = data.activePaths && data.activePaths.includes(id);
+          p.setAttribute('stroke', isActive ? '#00F2FE' : 'rgba(255, 255, 255, 0.15)');
+          p.setAttribute('stroke-width', isActive ? '3.5' : '2');
+          p.setAttribute('marker-end', isActive ? 'url(#arrow-active)' : 'url(#arrow-default)');
+          p.style.opacity = isActive ? '1' : '0.5';
+        }
+      });
+
+      // 5. Lanzar partículas en los caminos activos
+      clearParticles();
+      if (data.activePaths) {
+        data.activePaths.forEach(pathId => {
+          const pColor = pathId.includes('github-alumnos') ? '#34D399' : '#00F2FE';
+          spawnParticlesAlongPath(pathId, pColor, 3, 5);
+        });
+      }
+
+      // 6. Actualizar Banner Informativo
+      document.getElementById('bannerIcon').textContent = data.icon;
+      document.getElementById('bannerTitle').innerHTML = `${data.title} <span class="tag-phase">${data.tag}</span>`;
+      document.getElementById('bannerDesc').textContent = data.desc;
+      
+      const pillsBox = document.getElementById('bannerPills');
+      pillsBox.innerHTML = '';
+      data.pills.forEach(text => {
+        const pill = document.createElement('span');
+        pill.className = 'explain-pill';
+        pill.textContent = text;
+        pillsBox.appendChild(pill);
+      });
+    }
+
+    // --- REPRODUCCIÓN AUTOMÁTICA ---
+    function togglePlay() {
+      if (isPlaying) {
+        pauseFlow();
+      } else {
+        startFlow();
+      }
+    }
+
+    function startFlow() {
+      isPlaying = true;
+      document.getElementById('playIcon').textContent = '⏸';
+      document.getElementById('playText').textContent = 'Pausar Flujo';
+      document.getElementById('btnPlayPause').style.background = 'linear-gradient(135deg, #F59E0B, #EF4444)';
+
+      clearInterval(playInterval);
+      playInterval = setInterval(() => {
+        let next = currentStep + 1;
+        if (next > TOTAL_STEPS) next = 1;
+        applyStep(next);
+      }, STEP_DURATION / speedMultiplier);
+    }
+
+    function pauseFlow() {
+      isPlaying = false;
+      document.getElementById('playIcon').textContent = '▶';
+      document.getElementById('playText').textContent = 'Reanudar Flujo';
+      document.getElementById('btnPlayPause').style.background = 'linear-gradient(135deg, #0084FF, #00F2FE)';
+      clearInterval(playInterval);
+    }
+
+    function resetFlow() {
+      pauseFlow();
+      applyStep(1);
+    }
+
+    function goToStep(num) {
+      pauseFlow();
+      applyStep(num);
+    }
+
+    function nextStep() {
+      pauseFlow();
+      let next = currentStep + 1;
+      if (next > TOTAL_STEPS) next = 1;
+      applyStep(next);
+    }
+
+    function prevStep() {
+      pauseFlow();
+      let prev = currentStep - 1;
+      if (prev < 1) prev = TOTAL_STEPS;
+      applyStep(prev);
+    }
+
+    function setSpeed(speed, btn) {
+      speedMultiplier = speed;
+      document.querySelectorAll('.speed-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      if (isPlaying) {
+        // Reiniciar intervalo con nueva velocidad
+        clearInterval(playInterval);
+        playInterval = setInterval(() => {
+          let next = currentStep + 1;
+          if (next > TOTAL_STEPS) next = 1;
+          applyStep(next);
+        }, STEP_DURATION / speedMultiplier);
+      }
+      // Reaplicar partículas para adaptar velocidad
+      applyStep(currentStep);
+    }
+
+    // --- INSPECCIÓN DIRECTA AL HACER CLIC EN UN BLOQUE ---
+    const NODE_DETAILS = {
+      profesor: {
+        title: "👨‍🏫 El Profesor (Director Creativo)",
+        tag: "Rol Humano",
+        icon: "👨‍🏫",
+        desc: "Define qué conceptos enseñar, aporta empatía con el alumnado sénior, supervisa éticamente y valida cada material generado por la IA antes de que llegue a los alumnos.",
+        pills: ["Visión Didáctica", "Supervisión Crítica", "Prompts Clave"]
+      },
+      antigravity: {
+        title: "⚡ Antigravity (Copiloto Autónomo en MI PC)",
+        tag: "Motor de IA",
+        icon: "⚡",
+        desc: "El entorno de ejecución en tu ordenador local: ejecuta scripts de Python, genera fichas PDF con ReportLab, programa aplicaciones interactivas en HTML5 y gestiona el repositorio de Git.",
+        pills: ["Python", "ReportLab", "Git CLI", "JavaScript / 3D"]
+      },
+      robotica: {
+        title: "🤖 Carpeta: CURSO-ROBOTICA-V2",
+        tag: "Contenido Local",
+        icon: "🤖",
+        desc: "Almacena los 8 grandes bloques temáticos de robótica: servomotores, sensores ultrasónicos, cinemática 3D, androides, animatrónica y proyectos físicos.",
+        pills: ["8 Bloques Temáticos", "Simuladores Cinemáticos", "Guías de Montaje"]
+      },
+      comun: {
+        title: "📦 Carpeta: CURSO-ROBOTICA-IA-COMUN",
+        tag: "Nexo Compartido",
+        icon: "📦",
+        desc: "El puente de unión donde residen las presentaciones inaugurales compartidas, guías metodológicas y recursos transversales a los dos cursos.",
+        pills: ["Presentación Inaugural", "Guías Metodológicas", "Estándares"]
+      },
+      ia: {
+        title: "🧠 Carpeta: CURSO-IA",
+        tag: "Contenido Local",
+        icon: "🧠",
+        desc: "Contiene el temario troncal de Inteligencia Artificial: 60 sesiones prácticas, catálogo de fractales matemáticos, talleres de Gemini y monográficos especializados.",
+        pills: ["60 Clases Prácticas", "7 Monográficos", "Simuladores Interactivos"]
+      },
+      urls: {
+        title: "📋 URLs de GitHub (Paneles CSV)",
+        tag: "Estructura de Datos",
+        icon: "📋",
+        desc: "El nexo automatizado: Antigravity crea tablas CSV con los títulos, temas y URLs públicas exactas de GitHub Pages para alimentar el aula virtual sin teclear a mano.",
+        pills: ["0.PANEL_CLASSROOM.csv", "Enlace Permanente", "Apps Script Ready"]
+      },
+      github: {
+        title: "🐙 GitHub & GitHub Pages",
+        tag: "Infraestructura Nube",
+        icon: "🐙",
+        desc: "La gran biblioteca digital: almacena todos los archivos pesados (vídeos, fichas, simuladores) gratis para siempre, sin ocupar espacio de Google Drive y con URLs permanentes.",
+        pills: ["Hosting Gratuito 0 €", "0 MB en Google Drive", "Versionado Seguro"]
+      },
+      classroom: {
+        title: "🏫 Google Classroom",
+        tag: "Aula Virtual",
+        icon: "🏫",
+        desc: "El entorno intuitivo y seguro donde los alumnos encuentran sus lecciones organizadas cronológicamente con sus enlaces a GitHub y espacios para preguntas.",
+        pills: ["Temas Organizados", "Modo Borrador", "Fácil para Mayores"]
+      },
+      alumno1: {
+        title: "🎓 Alumno 1 (Experiencia Sénior)",
+        tag: "Destinatario Final",
+        icon: "🎓",
+        desc: "Accede desde su navegador web sin instalar programas raros ni descargar ZIPs. Hace clic y disfruta de una experiencia interactiva fluida y amigable.",
+        pills: ["Navegador Web", "Cero Barreras Técnicas", "Aprendizaje Activo"]
+      },
+      alumnon: {
+        title: "👥 Alumnos N (Toda la Clase)",
+        tag: "Destinatario Final",
+        icon: "👥",
+        desc: "Toda la comunidad de estudiantes dispone del mismo material simultáneamente, con enlaces siempre actualizados en tiempo real si el profesor corrige una errata.",
+        pills: ["Escalabilidad Infinita", "Actualización Instantánea", "100% Inclusivo"]
+      }
+    };
+
+    // --- INICIALIZACIÓN ---
+    window.addEventListener('load', () => {
+      updateConnections();
+      applyStep(1);
+
+      // Auto-iniciar la simulación para deleitar al usuario desde el primer segundo
+      startFlow();
+    });
+
+    window.addEventListener('resize', () => {
+      updateConnections();
+      applyStep(currentStep);
+    });
   </script>
 </body>
 </html>
