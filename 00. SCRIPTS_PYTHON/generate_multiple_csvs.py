@@ -26,10 +26,13 @@ def natural_sort_key(s):
 
 def clean_title(filename):
     name, ext = os.path.splitext(filename)
-    clean = re.sub(r'^\d+\.\s*', '', name)
+    clean = re.sub(r'^\*+\.?\s*', '', name)
+    clean = re.sub(r'^\d+\.\s*', '', clean)
     clean = clean.replace('_', ' ').replace('-', ' - ')
     clean = re.sub(r'\s+', ' ', clean).strip()
-    return f"{clean} ({ext[1:].upper()})"
+    if not clean and ext:
+        clean = "FICHA MONOGRAFICO EDUCANIETOS IA"
+    return f"{clean} ({ext[1:].upper()})" if ext else clean
 
 def get_description_for_file(filename):
     f_upper = filename.upper()
@@ -104,87 +107,59 @@ def generate_panel_0():
             if not os.path.exists(carpeta_path):
                 continue
                 
-            # 1. Si existe la subcarpeta app/ con index.html
-            app_html = os.path.join(carpeta_path, "app", "index.html")
-            if os.path.exists(app_html):
-                rel_app = os.path.relpath(app_html, ROOT_DIR)
-                url_app = BASE_URL + urllib.parse.quote(unicodedata.normalize('NFC', rel_app))
-                if "7. MAPA_GESTION" in carpeta_path:
-                    app_title = "Infografía Interactiva: Mapa de Gestión del Proyecto con IA (HTML)"
-                elif "5. EL_ABUELO_TUTOR" in carpeta_path:
-                    app_title = "Aplicación Web Interactiva: Educanietos IA (HTML)"
-                else:
-                    app_title = "Aplicación Web Interactiva (HTML)"
-                writer.writerow(['', tema_nombre, app_title, desc_default, url_app])
+            # 1. Buscar carpetas que empiezan por * con index.html (ej: *app/index.html)
+            for d in sorted(os.listdir(carpeta_path)):
+                d_full = os.path.join(carpeta_path, d)
+                if os.path.isdir(d_full) and d.startswith('*'):
+                    index_p = os.path.join(d_full, "index.html")
+                    if os.path.exists(index_p):
+                        rel_app = os.path.relpath(index_p, ROOT_DIR)
+                        url_app = BASE_URL + urllib.parse.quote(unicodedata.normalize('NFC', rel_app))
+                        if "5. EL_ABUELO" in carpeta_path:
+                            app_title = "Aplicación Web Interactiva: Educanietos IA (HTML)"
+                        else:
+                            app_title = "Aplicación Web Interactiva (HTML)"
+                        writer.writerow(['', tema_nombre, app_title, desc_default, url_app])
 
-            # 2. Si existe un archivo .html en la raíz de la carpeta (como Mi_Biografia.html o 1.App_SIMULACION.html)
-            root_htmls = sorted([f for f in os.listdir(carpeta_path) if f.endswith('.html') and not f.startswith('.')])
-            for h in root_htmls:
+            # 2. Buscar archivos HTML que empiezan por * en la raíz
+            for h in sorted([f for f in os.listdir(carpeta_path) if f.startswith('*') and f.endswith('.html')]):
                 rel_app = os.path.relpath(os.path.join(carpeta_path, h), ROOT_DIR)
                 url_app = BASE_URL + urllib.parse.quote(unicodedata.normalize('NFC', rel_app))
                 if "7. MAPA_GESTION" in carpeta_path:
                     app_title = "Infografía Interactiva: Mapa de Gestión del Proyecto con IA (HTML)"
-                    writer.writerow(['', tema_nombre, app_title, desc_default, url_app])
                 elif "Biografia" in h:
-                    writer.writerow(['', tema_nombre, "Aplicación Web Interactiva: Mi Biografía (HTML)", desc_default, url_app])
+                    app_title = "Aplicación Web Interactiva: Mi Biografía (HTML)"
                 else:
-                    writer.writerow(['', tema_nombre, f"Aplicación Web Interactiva: {clean_title(h)}", desc_default, url_app])
+                    app_title = f"Aplicación Web Interactiva: {clean_title(h)}"
+                writer.writerow(['', tema_nombre, app_title, desc_default, url_app])
 
-            # 3. Archivos de la carpeta raíz
-            # Para Monográfico 2: subir todos los ficheros que empiezan por EJEMPLO_ (.txt, .png, .pdf, .mp4, .mp3) + las guías PDF
-            if "2. INTRODUCCION_NLM" in carpeta_path:
-                allowed_exts = ('.pdf', '.mp4', '.m4a', '.mp3', '.txt', '.png')
-                archivos = sorted([x for x in os.listdir(carpeta_path)
-                                   if not x.startswith('.') and not x.startswith('~$')
-                                   and x.endswith(allowed_exts)
-                                   and (x.startswith("EJEMPLO_") or x.endswith('.pdf'))
-                                   and "PROMPT" not in x.upper()], key=natural_sort_key)
-            elif "6. GOOGLE_CLASSROOM" in carpeta_path:
-                allowed_exts = ('.pdf', '.png', '.txt')
-                archivos = sorted([x for x in os.listdir(carpeta_path)
-                                   if not x.startswith('.') and not x.startswith('~$')
-                                   and x.endswith(allowed_exts)], key=natural_sort_key)
-            elif "7. MAPA_GESTION" in carpeta_path:
-                allowed_exts = ('.pdf', '.png')
-                archivos = sorted([x for x in os.listdir(carpeta_path)
-                                   if not x.startswith('.') and not x.startswith('~$')
-                                   and x.endswith(allowed_exts)
-                                   and x.startswith('1.')], key=natural_sort_key)
-            else:
-                archivos = sorted([x for x in os.listdir(carpeta_path) 
-                                   if not x.startswith('.') and not x.startswith('~$') 
-                                   and x.endswith(('.pdf', '.mp4', '.m4a', '.mp3'))
-                                   and "PROMPT" not in x.upper()
-                                   and not (x == "FICHA_MONOGRAFICO_EL_ABUELO_TUTOR.pdf" and os.path.exists(os.path.join(carpeta_path, "FICHA_MONOGRAFICO_EDUCANIETOS_IA.pdf")))], key=natural_sort_key)
-            
-            for a in archivos:
+            # 3. Buscar archivos en la raíz que empiezan por * (que no sean HTML)
+            root_files = sorted([x for x in os.listdir(carpeta_path)
+                                 if x.startswith('*') and not x.endswith('.html')
+                                 and os.path.isfile(os.path.join(carpeta_path, x))], key=natural_sort_key)
+            for a in root_files:
                 rel_path = os.path.relpath(os.path.join(carpeta_path, a), ROOT_DIR)
-                rel_path_nfc = unicodedata.normalize('NFC', rel_path)
-                url = BASE_URL + urllib.parse.quote(rel_path_nfc)
-                if "FUENTE_PARA_NOTEBOOKLM" in a:
-                    title = f"Fuente para NotebookLM: {clean_title(a)}"
-                elif "PROMPT_GUIA_ESTILO" in a:
-                    title = f"Guía de Prompts de Estilo para NotebookLM: {clean_title(a)}"
-                elif "INFOFRAFIA" in a.upper() or "INFOGRAFIA" in a.upper():
-                    c_title = clean_title(a)
-                    c_title = re.sub(r'(?i)infofrafia\s*', '', c_title)
-                    c_title = re.sub(r'(?i)infografia\s*', '', c_title)
-                    c_title = c_title.strip()
-                    title = f"Infografía: {c_title}"
+                url = BASE_URL + urllib.parse.quote(unicodedata.normalize('NFC', rel_path))
+                ct = clean_title(a)
+                if "INFOFRAFIA" in a.upper() or "INFOGRAFIA" in a.upper():
+                    ct_clean = re.sub(r'(?i)infofrafia\s*', '', ct)
+                    ct_clean = re.sub(r'(?i)infografia\s*', '', ct_clean).strip()
+                    title = f"Infografía: {ct_clean}"
                 else:
-                    title = f"Material: {clean_title(a)}"
+                    title = f"Material: {ct}"
                 writer.writerow(['', tema_nombre, title, desc_default, url])
 
-            # 4. Para Monográfico 5: Subir los 2 ejemplos txt de EJEMPLOS_PRUEBA/
-            if "5. EL_ABUELO_TUTOR" in carpeta_path:
-                ejemplos_dir = os.path.join(carpeta_path, "EJEMPLOS_PRUEBA")
-                if os.path.exists(ejemplos_dir):
-                    ejemplos_txt = sorted([f for f in os.listdir(ejemplos_dir) if f.endswith('.txt') and not f.startswith('.')], key=natural_sort_key)
-                    for txt_file in ejemplos_txt:
-                        rel_path = os.path.relpath(os.path.join(ejemplos_dir, txt_file), ROOT_DIR)
-                        rel_path_nfc = unicodedata.normalize('NFC', rel_path)
-                        url = BASE_URL + urllib.parse.quote(rel_path_nfc)
-                        title = f"Ejemplo de Prueba: {clean_title(txt_file)}"
+            # 4. Buscar archivos que empiezan por * en subcarpetas (ej: EJEMPLOS_PRUEBA)
+            for d in sorted(os.listdir(carpeta_path)):
+                d_full = os.path.join(carpeta_path, d)
+                if os.path.isdir(d_full) and not d.startswith('.') and not d.startswith('*'):
+                    sub_files = sorted([sf for sf in os.listdir(d_full)
+                                        if sf.startswith('*') and os.path.isfile(os.path.join(d_full, sf))], key=natural_sort_key)
+                    for sf in sub_files:
+                        rel_path = os.path.relpath(os.path.join(d_full, sf), ROOT_DIR)
+                        url = BASE_URL + urllib.parse.quote(unicodedata.normalize('NFC', rel_path))
+                        ct = clean_title(sf)
+                        title = f"Ejemplo de Prueba: {ct}"
                         writer.writerow(['', tema_nombre, title, desc_default, url])
 
 # ==============================================================================
