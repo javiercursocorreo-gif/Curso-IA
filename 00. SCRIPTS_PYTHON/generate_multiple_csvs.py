@@ -87,7 +87,13 @@ def generate_panel_0():
          "Escribe tus memorias familiares con ayuda de la IA: asistente interactivo para redactar vivencias, anécdotas y tu legado personal."),
         ("Monográfico 5. Educanietos IA: Ayuda a tus Nietos con IA (Ciencias, Mates e Historia)",
          os.path.join(ROOT_DIR, "CLASES", "5. EL_ABUELO_TUTOR_MATEMATICAS_HISTORIA"),
-         "Tu rol de mentor escolar: cómo explicar ciencias y matemáticas razonadas paso a paso y guiar las sesiones de estudio en pantalla con NotebookLM.")
+         "Tu rol de mentor escolar: cómo explicar ciencias y matemáticas razonadas paso a paso y guiar las sesiones de estudio en pantalla con NotebookLM."),
+        ("Monográfico 6. Google Classroom: Publicación y Gestión del Aula",
+         os.path.join(ROOT_DIR, "CLASES", "6. GOOGLE_CLASSROOM"),
+         "Organización y publicación del aula virtual: estructura de temas, gestión de materiales en borrador y buenas prácticas docentes."),
+        ("Monográfico 7. Mapa de Gestión del Proyecto con IA (Arquitectura y Flujo de Trabajo)",
+         os.path.join(ROOT_DIR, "CLASES", "7. MAPA_GESTION_PROYECTO_CON_IA"),
+         "Cómo creamos y publicamos este curso en equipo: el profesor, Antigravity en el PC, sincronización en GitHub y distribución automática en Google Classroom para los alumnos.")
     ]
     
     with open(csv_path, 'w', newline='', encoding='utf-8') as f:
@@ -98,12 +104,18 @@ def generate_panel_0():
             if not os.path.exists(carpeta_path):
                 continue
                 
-            # 1. Si existe la subcarpeta app/ con index.html (como Educanietos IA)
+            # 1. Si existe la subcarpeta app/ con index.html
             app_html = os.path.join(carpeta_path, "app", "index.html")
             if os.path.exists(app_html):
                 rel_app = os.path.relpath(app_html, ROOT_DIR)
                 url_app = BASE_URL + urllib.parse.quote(unicodedata.normalize('NFC', rel_app))
-                writer.writerow(['', tema_nombre, "Aplicación Web Interactiva: Educanietos IA (HTML)", desc_default, url_app])
+                if "7. MAPA_GESTION" in carpeta_path:
+                    app_title = "Infografía Interactiva: Mapa de Gestión del Proyecto con IA (HTML)"
+                elif "5. EL_ABUELO_TUTOR" in carpeta_path:
+                    app_title = "Aplicación Web Interactiva: Educanietos IA (HTML)"
+                else:
+                    app_title = "Aplicación Web Interactiva (HTML)"
+                writer.writerow(['', tema_nombre, app_title, desc_default, url_app])
 
             # 2. Si existe un archivo .html en la raíz de la carpeta (como Mi_Biografia.html)
             root_htmls = sorted([f for f in os.listdir(carpeta_path) if f.endswith('.html') and not f.startswith('.')])
@@ -122,6 +134,11 @@ def generate_panel_0():
                                    and x.endswith(allowed_exts)
                                    and (x.startswith("EJEMPLO_") or x.endswith('.pdf'))
                                    and "PROMPT" not in x.upper()], key=natural_sort_key)
+            elif "7. MAPA_GESTION" in carpeta_path:
+                allowed_exts = ('.pdf', '.docx', '.txt')
+                archivos = sorted([x for x in os.listdir(carpeta_path)
+                                   if not x.startswith('.') and not x.startswith('~$')
+                                   and x.endswith(allowed_exts)], key=natural_sort_key)
             else:
                 archivos = sorted([x for x in os.listdir(carpeta_path) 
                                    if not x.startswith('.') and not x.startswith('~$') 
@@ -133,7 +150,12 @@ def generate_panel_0():
                 rel_path = os.path.relpath(os.path.join(carpeta_path, a), ROOT_DIR)
                 rel_path_nfc = unicodedata.normalize('NFC', rel_path)
                 url = BASE_URL + urllib.parse.quote(rel_path_nfc)
-                title = f"Material: {clean_title(a)}"
+                if "FUENTE_PARA_NOTEBOOKLM" in a:
+                    title = f"Fuente para NotebookLM: {clean_title(a)}"
+                elif "PROMPT_GUIA_ESTILO" in a:
+                    title = f"Guía de Prompts de Estilo para NotebookLM: {clean_title(a)}"
+                else:
+                    title = f"Material: {clean_title(a)}"
                 writer.writerow(['', tema_nombre, title, desc_default, url])
 
             # 4. Para Monográfico 5: Subir los 2 ejemplos txt de EJEMPLOS_PRUEBA/

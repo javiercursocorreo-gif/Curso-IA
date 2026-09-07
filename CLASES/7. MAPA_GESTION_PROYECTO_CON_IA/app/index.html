@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mapa de Gestión del Proyecto con IA — Arquitectura Educativa</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #0A1128;
+      --card-bg: rgba(255, 255, 255, 0.05);
+      --card-border: rgba(255, 255, 255, 0.12);
+      --accent-blue: #0084FF;
+      --accent-cyan: #00F2FE;
+      --accent-orange: #FF6B35;
+      --accent-green: #00E676;
+      --accent-purple: #9D4EDD;
+      --text-main: #F8FAFC;
+      --text-muted: #94A3B8;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: radial-gradient(circle at 50% 20%, #111D4A, var(--bg-dark) 80%);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+    header {
+      padding: 30px 20px 15px;
+      text-align: center;
+      background: rgba(10, 17, 40, 0.7);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--card-border);
+    }
+    .badge {
+      display: inline-block;
+      padding: 6px 14px;
+      background: rgba(255, 107, 53, 0.15);
+      border: 1px solid var(--accent-orange);
+      color: var(--accent-orange);
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+    }
+    h1 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 2.2rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #FFFFFF, var(--accent-cyan));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 8px;
+    }
+    p.subtitle {
+      color: var(--text-muted);
+      font-size: 1.05rem;
+      max-width: 750px;
+      margin: 0 auto;
+    }
+    .main-container {
+      flex: 1;
+      max-width: 1250px;
+      margin: 0 auto;
+      padding: 30px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
+    }
+    .flow-wrapper {
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid var(--card-border);
+      border-radius: 24px;
+      padding: 30px 20px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+      position: relative;
+    }
+    .zones-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 0.9fr 0.9fr;
+      gap: 25px;
+    }
+    @media (max-width: 992px) {
+      .zones-grid { grid-template-columns: 1fr; }
+    }
+    .zone-box {
+      background: var(--card-bg);
+      border: 1px dashed var(--card-border);
+      border-radius: 18px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+    .zone-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--card-border);
+    }
+    .node-card {
+      background: rgba(30, 41, 59, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 14px;
+      padding: 16px;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+    }
+    .node-card:hover {
+      transform: translateY(-3px);
+      border-color: var(--accent-cyan);
+      box-shadow: 0 10px 25px rgba(0, 242, 254, 0.2);
+    }
+    .node-card.active {
+      border-color: var(--accent-orange);
+      box-shadow: 0 0 25px rgba(255, 107, 53, 0.3);
+      background: rgba(30, 41, 59, 0.95);
+    }
+    .node-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+    .node-icon {
+      font-size: 1.8rem;
+      background: rgba(255, 255, 255, 0.08);
+      width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 10px;
+    }
+    .node-title-text {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #FFF;
+    }
+    .node-role {
+      font-size: 0.8rem;
+      color: var(--accent-cyan);
+      font-weight: 600;
+    }
+    .node-desc {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      line-height: 1.45;
+    }
+    .details-panel {
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid var(--accent-cyan);
+      border-radius: 18px;
+      padding: 25px;
+      display: none;
+      animation: fadeIn 0.4s ease;
+    }
+    .details-panel.visible { display: block; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .details-panel h3 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.5rem;
+      color: var(--accent-cyan);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .details-panel p {
+      color: #CBD5E1;
+      font-size: 1rem;
+      line-height: 1.6;
+      margin-bottom: 15px;
+    }
+    .pill-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .pill {
+      background: rgba(0, 132, 255, 0.15);
+      border: 1px solid var(--accent-blue);
+      color: #93C5FD;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+    .benefits-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+    @media (max-width: 768px) {
+      .benefits-grid { grid-template-columns: 1fr; }
+    }
+    .benefit-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 20px;
+      text-align: center;
+    }
+    .benefit-card h4 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.15rem;
+      color: #FFF;
+      margin-bottom: 8px;
+    }
+    .benefit-card p {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+    footer {
+      text-align: center;
+      padding: 20px;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      border-top: 1px solid var(--card-border);
+    }
+    .btn-action {
+      background: linear-gradient(135deg, var(--accent-orange), #FF8E53);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      transition: opacity 0.2s;
+      margin-top: 10px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .btn-action:hover { opacity: 0.9; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="badge">Monográfico 7 · Arquitectura del Curso</div>
+    <h1>El Mapa de la Gestión del Proyecto con IA</h1>
+    <p class="subtitle">Descubre cómo creamos, organizamos y distribuimos todo este ecosistema educativo trabajando en equipo: Profesor + Copiloto IA + Nube Gratuita de GitHub + Google Classroom.</p>
+  </header>
+
+  <main class="main-container">
+    
+    <div class="flow-wrapper">
+      <div class="zones-grid">
+        
+        <!-- ZONA 1: MI PC -->
+        <div class="zone-box">
+          <div class="zone-title" style="color: var(--accent-cyan);">
+            💻 Zona 1: MI ORDENADOR (Local)
+          </div>
+          
+          <div class="node-card" onclick="showDetails('profesor')">
+            <div class="node-header">
+              <div class="node-icon">🧑🏻‍🏫</div>
+              <div>
+                <div class="node-title-text">El Profesor (Tú)</div>
+                <div class="node-role">Director Pedagógico</div>
+              </div>
+            </div>
+            <div class="node-desc">Aporta las ideas, los temas, el cariño didáctico y graba los vídeos de teoría.</div>
+          </div>
+
+          <div class="node-card active" onclick="showDetails('antigravity')">
+            <div class="node-header">
+              <div class="node-icon">🤖</div>
+              <div>
+                <div class="node-title-text">Antigravity</div>
+                <div class="node-role">Copiloto Técnico IA</div>
+              </div>
+            </div>
+            <div class="node-desc">Programa simuladores, maqueta PDFs, genera CSVs y sincroniza con GitHub.</div>
+          </div>
+
+          <div class="node-card" onclick="showDetails('carpetas')">
+            <div class="node-header">
+              <div class="node-icon">📁</div>
+              <div>
+                <div class="node-title-text">3 Carpetas Maestras</div>
+                <div class="node-role">Estructura Modular</div>
+              </div>
+            </div>
+            <div class="node-desc">Robótica V2 + Curso IA + Carpeta Común organizadas limpiamente en tu Mac.</div>
+          </div>
+
+          <div class="node-card" onclick="showDetails('csvs')">
+            <div class="node-header">
+              <div class="node-icon">📄</div>
+              <div>
+                <div class="node-title-text">Paneles CSV / Excel</div>
+                <div class="node-role">Puente de URLs</div>
+              </div>
+            </div>
+            <div class="node-desc">Tablas de enlaces con URLs públicas y Apps Script para inyección a Classroom.</div>
+          </div>
+        </div>
+
+        <!-- ZONA 2: LA NUBE -->
+        <div class="zone-box">
+          <div class="zone-title" style="color: var(--accent-green);">
+            ☁️ Zona 2: EN LA NUBE (Internet)
+          </div>
+
+          <div class="node-card" onclick="showDetails('github')">
+            <div class="node-header">
+              <div class="node-icon">🌐</div>
+              <div>
+                <div class="node-title-text">GitHub Pages</div>
+                <div class="node-role">Alojamiento Gratuito</div>
+              </div>
+            </div>
+            <div class="node-desc">Guarda gratis todos los vídeos y PDFs sin gastar un solo mega de tu Google Drive.</div>
+          </div>
+
+          <div class="node-card" onclick="showDetails('classroom')">
+            <div class="node-header">
+              <div class="node-icon">🏫</div>
+              <div>
+                <div class="node-title-text">Google Classroom</div>
+                <div class="node-role">El Aula Virtual</div>
+              </div>
+            </div>
+            <div class="node-desc">Organiza las clases en temas limpios y muestra las tareas en modo borrador.</div>
+          </div>
+        </div>
+
+        <!-- ZONA 3: DESTINO -->
+        <div class="zone-box">
+          <div class="zone-title" style="color: var(--accent-orange);">
+            👥 Zona 3: LOS ALUMNOS
+          </div>
+
+          <div class="node-card" onclick="showDetails('alumnos')">
+            <div class="node-header">
+              <div class="node-icon">🎓</div>
+              <div>
+                <div class="node-title-text">Alumnos Sénior</div>
+                <div class="node-role">Experiencia Cero Fricción</div>
+              </div>
+            </div>
+            <div class="node-desc">Abren Classroom desde PC o móvil y acceden al material con un solo clic instantáneo.</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- PANEL DE DETALLES INTERACTIVO -->
+    <div id="detailsPanel" class="details-panel visible">
+      <h3 id="panelTitle">🤖 Antigravity: Tu Copiloto Técnico en el PC</h3>
+      <p id="panelDesc">Antigravity reside en tu ordenador y asume todas las tareas de programación pesada, maquetación de fichas en PDF con ReportLab, generación de tablas CSV de enlaces y sincronización con GitHub. Tú solo tienes que darle instrucciones en lenguaje cotidiano.</p>
+      <div class="pill-list" id="panelPills">
+        <span class="pill">Automatización en Python</span>
+        <span class="pill">Cero código para el profesor</span>
+        <span class="pill">Maquetación profesional</span>
+      </div>
+    </div>
+
+    <!-- BENEFICIOS -->
+    <div class="benefits-grid">
+      <div class="benefit-card">
+        <div style="font-size: 2rem; margin-bottom: 8px;">💰</div>
+        <h4>0 € en Servidores</h4>
+        <p>GitHub Pages aloja todo el contenido público del curso (vídeos, simuladores y PDFs) sin cuotas mensuales.</p>
+      </div>
+      <div class="benefit-card">
+        <div style="font-size: 2rem; margin-bottom: 8px;">☁️</div>
+        <h4>0 MB en Google Drive</h4>
+        <p>Classroom solo enlaza los archivos alojados en GitHub. Tu cuota de Google permanece 100% limpia.</p>
+      </div>
+      <div class="benefit-card">
+        <div style="font-size: 2rem; margin-bottom: 8px;">⚡</div>
+        <h4>Publicación en 10 Segundos</h4>
+        <p>Gracias a Google Apps Script, 60 lecciones se inyectan en Classroom agrupadas por temas con un solo clic.</p>
+      </div>
+    </div>
+
+  </main>
+
+  <footer>
+    Curso de Inteligencia Artificial para Mayores · Ecosistema Pedagógico de Trabajo en Equipo
+  </footer>
+
+  <script>
+    const data = {
+      profesor: {
+        title: "🧑🏻‍🏫 El Profesor (Tú): El Director Pedagógico",
+        desc: "Eres el corazón del curso. Conoces a los alumnos, decides la progresión didáctica, grabas los vídeos explicativos y garantizas que la tecnología se explique siempre con cariño, cercanía y sin tecnicismos.",
+        pills: ["Visión Didáctica", "Contenidos de Aula", "Empatía Sénior", "Supervisión Ética"]
+      },
+      antigravity: {
+        title: "🤖 Antigravity: Tu Copiloto Técnico en el PC",
+        desc: "Es tu taller de desarrollo autónomo. Programa simuladores 3D interactivos, maqueta fichas didácticas oficiales en PDF, genera los índices CSV para Google Classroom y resuelve cualquier traba técnica al instante.",
+        pills: ["Automatización Python", "Cero código para el profesor", "Maquetación ReportLab", "Sincronización Git"]
+      },
+      carpetas: {
+        title: "📁 Las 3 Carpetas Maestras en tu Mac",
+        desc: "El proyecto se organiza en 3 carpetas modulares: CURSO-ROBOTICA-V2 (8 bloques de robótica), CURSO-IA (60 sesiones prácticas y monográficos) y CURSO-ROBOTICA-IA-COMUN (guías y presentaciones inaugurales compartidas).",
+        pills: ["Modularidad", "Sincronización iCloud", "Reutilización de Contenidos"]
+      },
+      csvs: {
+        title: "📄 Paneles CSV y Google Sheets con Apps Script",
+        desc: "Los scripts escanean automáticamente tus carpetas y generan archivos CSV con las URLs públicas exactas de GitHub. Al importar el CSV en Google Sheets, un script de Apps Script crea todos los materiales en Classroom en 10 segundos.",
+        pills: ["generate_multiple_csvs.py", "Google Apps Script", "Modo Borrador Seguro", "Subida Masiva"]
+      },
+      github: {
+        title: "🌐 GitHub y GitHub Pages: La Gran Nube Gratuita",
+        desc: "GitHub aloja todo el material pesado (vídeos MP4, fichas PDF y aplicaciones web interactivas). Gracias a GitHub Pages, cada archivo tiene su propia URL pública permanente sin gastar almacenamiento en tu Google Drive.",
+        pills: ["Almacenamiento Ilimitado", "0 € de Coste", "URLs Públicas Rápidas", "Actualización Transparente"]
+      },
+      classroom: {
+        title: "🏫 Google Classroom: El Aula Virtual Ordenada",
+        desc: "Es el espacio donde los alumnos acceden al curso. Cada tema agrupa sus materiales didácticos en modo borrador para que el profesor los publique poco a poco a lo largo de las semanas.",
+        pills: ["Entorno Seguro", "Organización por Temas", "Fácil Seguimiento"]
+      },
+      alumnos: {
+        title: "🎓 Los Alumnos Sénior: Cero Fricción",
+        desc: "El alumno entra en Google Classroom desde su ordenador o teléfono, pulsa sobre la ficha o el vídeo y se reproduce al instante. No necesitan instalar programas raros ni lidiar con contraseñas complejas.",
+        pills: ["Acceso con 1 Clic", "Cero Instalaciones", "Legibilidad Óptima", "Sin Estrés"]
+      }
+    };
+
+    function showDetails(key) {
+      document.querySelectorAll('.node-card').forEach(c => c.classList.remove('active'));
+      event.currentTarget.classList.add('active');
+      
+      const item = data[key];
+      if (!item) return;
+      
+      document.getElementById('panelTitle').innerText = item.title;
+      document.getElementById('panelDesc').innerText = item.desc;
+      
+      const pillsContainer = document.getElementById('panelPills');
+      pillsContainer.innerHTML = item.pills.map(p => `<span class="pill">${p}</span>`).join('');
+    }
+  </script>
+</body>
+</html>
