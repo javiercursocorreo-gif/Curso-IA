@@ -135,7 +135,7 @@ def generate_panel_0():
                                    and (x.startswith("EJEMPLO_") or x.endswith('.pdf'))
                                    and "PROMPT" not in x.upper()], key=natural_sort_key)
             elif "7. MAPA_GESTION" in carpeta_path:
-                allowed_exts = ('.pdf', '.docx', '.txt')
+                allowed_exts = ('.pdf', '.txt')
                 archivos = sorted([x for x in os.listdir(carpeta_path)
                                    if not x.startswith('.') and not x.startswith('~$')
                                    and x.endswith(allowed_exts)], key=natural_sort_key)
