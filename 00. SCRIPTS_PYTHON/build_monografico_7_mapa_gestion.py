@@ -424,6 +424,164 @@ def create_pdf():
     doc.build(elements, canvasmaker=NumberedCanvas)
     print(f"✅ Ficha Didáctica PDF generada: {pdf_path}")
 
+def create_infografia_pdf():
+    from reportlab.lib.pagesizes import A4, landscape
+    pdf_path = os.path.join(MONO7_DIR, "INFOGRAFIA_MAPA_GESTION_PROYECTO_IA.pdf")
+    page_w, page_h = landscape(A4)
+    doc = SimpleDocTemplate(
+        pdf_path,
+        pagesize=(page_w, page_h),
+        leftMargin=25,
+        rightMargin=25,
+        topMargin=25,
+        bottomMargin=25
+    )
+    
+    styles = getSampleStyleSheet()
+    
+    style_main_title = ParagraphStyle(
+        'InfogTitle',
+        fontName='Helvetica-Bold',
+        fontSize=18,
+        leading=22,
+        textColor=colors.HexColor('#0A2540'),
+        alignment=TA_CENTER
+    )
+    style_sub = ParagraphStyle(
+        'InfogSub',
+        fontName='Helvetica-Bold',
+        fontSize=10.5,
+        leading=13,
+        textColor=colors.HexColor('#E65C00'),
+        alignment=TA_CENTER,
+        spaceAfter=12
+    )
+    style_box_header = ParagraphStyle(
+        'BoxH',
+        fontName='Helvetica-Bold',
+        fontSize=11,
+        leading=14,
+        textColor=colors.white,
+        alignment=TA_CENTER
+    )
+    style_item_title = ParagraphStyle(
+        'ItemT',
+        fontName='Helvetica-Bold',
+        fontSize=9.5,
+        leading=12,
+        textColor=colors.HexColor('#0A2540')
+    )
+    style_item_desc = ParagraphStyle(
+        'ItemD',
+        fontName='Helvetica',
+        fontSize=8,
+        leading=11,
+        textColor=colors.HexColor('#334155')
+    )
+    style_pill = ParagraphStyle(
+        'PillT',
+        fontName='Helvetica-Bold',
+        fontSize=7.5,
+        leading=9,
+        textColor=colors.HexColor('#0284C7')
+    )
+    
+    elements = []
+    
+    # Header
+    elements.append(Paragraph("MAPA DE LA GESTIÓN DEL PROYECTO EDUCATIVO CON IA", style_main_title))
+    elements.append(Paragraph("Arquitectura de Trabajo en Equipo: Profesor + Antigravity en PC + Nube de GitHub + Google Classroom + Alumnos", style_sub))
+    
+    # 3 Columnas principales (Local, Nube, Alumnos)
+    # Columna 1: Local (PC)
+    c1_elements = [
+        Paragraph("💻 <b>ZONA 1: MI ORDENADOR (LOCAL)</b>", style_box_header),
+        Spacer(1, 6),
+        Paragraph("🧑🏻‍🏫 <b>1. EL PROFESOR (TÚ) — Director Pedagógico</b>", style_item_title),
+        Paragraph("Aporta la experiencia docente, los contenidos didácticos adaptados a personas sénior y graba los vídeos de teoría.", style_item_desc),
+        Spacer(1, 4),
+        Paragraph("🤖 <b>2. ANTIGRAVITY — Copiloto Técnico en el PC</b>", style_item_title),
+        Paragraph("Desarrolla simuladores en JavaScript, maqueta fichas oficiales en PDF con ReportLab, corrige código y sincroniza con GitHub.", style_item_desc),
+        Spacer(1, 4),
+        Paragraph("📁 <b>3. TRES CARPETAS LOCALES — Archivo Modular</b>", style_item_title),
+        Paragraph("<code>CURSO-ROBOTICA-V2</code> (Robótica física) + <code>CURSO-IA</code> (60 sesiones) + <code>CURSO-ROBOTICA-IA-COMUN</code>.", style_item_desc),
+        Spacer(1, 4),
+        Paragraph("📄 <b>4. PANELES CSV Y GOOGLE SHEETS — El Puente</b>", style_item_title),
+        Paragraph("Scripts automáticos indexan todas las URLs de GitHub. Con 1 clic en Apps Script se publican todas las tareas en Classroom.", style_item_desc)
+    ]
+    
+    # Columna 2: Nube (Internet)
+    c2_elements = [
+        Paragraph("☁️ <b>ZONA 2: EN LA NUBE (INTERNET)</b>", style_box_header),
+        Spacer(1, 6),
+        Paragraph("🌐 <b>5. GITHUB & GITHUB PAGES — Almacén Gratuito</b>", style_item_title),
+        Paragraph("Aloja gratis todos los vídeos MP4, fichas PDF y aplicaciones web.", style_item_desc),
+        Paragraph("● <b>0 € de coste:</b> Sin cuotas mensuales de hosting ni servidores.", style_pill),
+        Paragraph("● <b>0 MB en Google Drive:</b> Tu espacio personal permanece 100% libre.", style_pill),
+        Paragraph("● <b>URLs públicas directas:</b> Acceso web permanente para Classroom.", style_pill),
+        Spacer(1, 10),
+        Paragraph("🏫 <b>6. GOOGLE CLASSROOM — El Aula Virtual</b>", style_item_title),
+        Paragraph("Organiza las clases en temas limpios y semanas didácticas. Mantiene los materiales en borrador para publicar al ritmo del aula.", style_item_desc)
+    ]
+    
+    # Columna 3: Alumnos
+    c3_elements = [
+        Paragraph("👥 <b>ZONA 3: LOS ALUMNOS</b>", style_box_header),
+        Spacer(1, 6),
+        Paragraph("🎓 <b>7. ALUMNOS SÉNIOR (65+) — Cero Fricción</b>", style_item_title),
+        Paragraph("Entran en Google Classroom desde su ordenador, tablet o móvil.", style_item_desc),
+        Spacer(1, 4),
+        Paragraph("● <b>Acceso con 1 Clic:</b> Los vídeos y PDFs se abren al instante en pantalla.", style_pill),
+        Paragraph("● <b>Cero instalaciones:</b> Sin descomprimir ZIPs ni instalar programas raros.", style_pill),
+        Paragraph("● <b>Tipografía y diseño senior:</b> Máxima legibilidad y contraste adaptado.", style_pill),
+        Spacer(1, 8),
+        Paragraph("🤝 <b>El profesor y los alumnos disfrutan del aula sin barreras técnicas.</b>", ParagraphStyle('Fin', fontName='Helvetica-Bold', fontSize=8.5, textColor=colors.HexColor('#E65C00'), alignment=TA_CENTER))
+    ]
+    
+    col_w1 = 330
+    col_w2 = 240
+    col_w3 = 220
+    
+    t_main = Table([[c1_elements, c2_elements, c3_elements]], colWidths=[col_w1, col_w2, col_w3])
+    t_main.setStyle(TableStyle([
+        ('VALIGN', (0,0), (-1,-1), 'TOP'),
+        ('BACKGROUND', (0,0), (0,0), colors.HexColor('#F8FAFC')),
+        ('BACKGROUND', (1,0), (1,0), colors.HexColor('#F0FDF4')),
+        ('BACKGROUND', (2,0), (2,0), colors.HexColor('#FFF7ED')),
+        ('BOX', (0,0), (0,0), 1, colors.HexColor('#0A2540')),
+        ('BOX', (1,0), (1,0), 1, colors.HexColor('#16A34A')),
+        ('BOX', (2,0), (2,0), 1, colors.HexColor('#EA580C')),
+        ('PADDING', (0,0), (-1,-1), 8),
+    ]))
+    elements.append(t_main)
+    elements.append(Spacer(1, 10))
+    
+    # Fila inferior: Los 3 grandes beneficios
+    b_col1 = [
+        Paragraph("💰 <b>0 € DE COSTE EN SERVIDORES</b>", ParagraphStyle('B1', fontName='Helvetica-Bold', fontSize=9, textColor=colors.HexColor('#0A2540'), alignment=TA_CENTER)),
+        Paragraph("Todo el almacenamiento de vídeos, fichas y simuladores se aloja gratis en GitHub Pages.", ParagraphStyle('B1d', fontName='Helvetica', fontSize=7.5, textColor=colors.HexColor('#334155'), alignment=TA_CENTER))
+    ]
+    b_col2 = [
+        Paragraph("☁️ <b>0 MB GASTADOS EN GOOGLE DRIVE</b>", ParagraphStyle('B2', fontName='Helvetica-Bold', fontSize=9, textColor=colors.HexColor('#0A2540'), alignment=TA_CENTER)),
+        Paragraph("Classroom enlaza directamente a GitHub sin almacenar copias pesadas en tu cuenta de Google.", ParagraphStyle('B2d', fontName='Helvetica', fontSize=7.5, textColor=colors.HexColor('#334155'), alignment=TA_CENTER))
+    ]
+    b_col3 = [
+        Paragraph("⚡ <b>PUBLICACIÓN EN 10 SEGUNDOS</b>", ParagraphStyle('B3', fontName='Helvetica-Bold', fontSize=9, textColor=colors.HexColor('#0A2540'), alignment=TA_CENTER)),
+        Paragraph("Con Google Apps Script se inyectan 60 materiales clasificados por temas de un solo clic.", ParagraphStyle('B3d', fontName='Helvetica', fontSize=7.5, textColor=colors.HexColor('#334155'), alignment=TA_CENTER))
+    ]
+    
+    t_beneficios = Table([[b_col1, b_col2, b_col3]], colWidths=[260, 260, 270])
+    t_beneficios.setStyle(TableStyle([
+        ('BACKGROUND', (0,0), (-1,-1), colors.HexColor('#F1F5F9')),
+        ('BOX', (0,0), (-1,-1), 1, colors.HexColor('#CBD5E1')),
+        ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),
+        ('PADDING', (0,0), (-1,-1), 6),
+    ]))
+    elements.append(t_beneficios)
+    
+    doc.build(elements)
+    print(f"✅ Infografía Póster PDF generada: {pdf_path}")
+
 # -------------------------------------------------------------------------
 # 4. GENERAR INFOGRAFÍA WEB INTERACTIVA (APP/INDEX.HTML)
 # -------------------------------------------------------------------------
@@ -921,7 +1079,10 @@ def main():
     # 4. Ficha Didáctica PDF (ReportLab)
     create_pdf()
     
-    # 5. App Web Interactiva (HTML5)
+    # 5. Infografía Póster en PDF (Apaisado)
+    create_infografia_pdf()
+    
+    # 6. App Web Interactiva (HTML5)
     create_interactive_app()
     
     print("\n🎉 ¡Monográfico 7 completado con éxito!")
