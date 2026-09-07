@@ -117,13 +117,18 @@ def generate_panel_0():
                     app_title = "Aplicación Web Interactiva (HTML)"
                 writer.writerow(['', tema_nombre, app_title, desc_default, url_app])
 
-            # 2. Si existe un archivo .html en la raíz de la carpeta (como Mi_Biografia.html)
+            # 2. Si existe un archivo .html en la raíz de la carpeta (como Mi_Biografia.html o 1.App_SIMULACION.html)
             root_htmls = sorted([f for f in os.listdir(carpeta_path) if f.endswith('.html') and not f.startswith('.')])
             for h in root_htmls:
                 rel_app = os.path.relpath(os.path.join(carpeta_path, h), ROOT_DIR)
                 url_app = BASE_URL + urllib.parse.quote(unicodedata.normalize('NFC', rel_app))
-                app_title = "Mi Biografía (HTML)" if "Biografia" in h else clean_title(h)
-                writer.writerow(['', tema_nombre, f"Aplicación Web Interactiva: {app_title}", desc_default, url_app])
+                if "7. MAPA_GESTION" in carpeta_path:
+                    app_title = "Infografía Interactiva: Mapa de Gestión del Proyecto con IA (HTML)"
+                    writer.writerow(['', tema_nombre, app_title, desc_default, url_app])
+                elif "Biografia" in h:
+                    writer.writerow(['', tema_nombre, "Aplicación Web Interactiva: Mi Biografía (HTML)", desc_default, url_app])
+                else:
+                    writer.writerow(['', tema_nombre, f"Aplicación Web Interactiva: {clean_title(h)}", desc_default, url_app])
 
             # 3. Archivos de la carpeta raíz
             # Para Monográfico 2: subir todos los ficheros que empiezan por EJEMPLO_ (.txt, .png, .pdf, .mp4, .mp3) + las guías PDF
@@ -135,10 +140,11 @@ def generate_panel_0():
                                    and (x.startswith("EJEMPLO_") or x.endswith('.pdf'))
                                    and "PROMPT" not in x.upper()], key=natural_sort_key)
             elif "7. MAPA_GESTION" in carpeta_path:
-                allowed_exts = ('.pdf', '.txt')
+                allowed_exts = ('.pdf', '.png')
                 archivos = sorted([x for x in os.listdir(carpeta_path)
                                    if not x.startswith('.') and not x.startswith('~$')
-                                   and x.endswith(allowed_exts)], key=natural_sort_key)
+                                   and x.endswith(allowed_exts)
+                                   and x.startswith('1.')], key=natural_sort_key)
             else:
                 archivos = sorted([x for x in os.listdir(carpeta_path) 
                                    if not x.startswith('.') and not x.startswith('~$') 
@@ -154,6 +160,12 @@ def generate_panel_0():
                     title = f"Fuente para NotebookLM: {clean_title(a)}"
                 elif "PROMPT_GUIA_ESTILO" in a:
                     title = f"Guía de Prompts de Estilo para NotebookLM: {clean_title(a)}"
+                elif "INFOFRAFIA" in a.upper() or "INFOGRAFIA" in a.upper():
+                    c_title = clean_title(a)
+                    c_title = re.sub(r'(?i)infofrafia\s*', '', c_title)
+                    c_title = re.sub(r'(?i)infografia\s*', '', c_title)
+                    c_title = c_title.strip()
+                    title = f"Infografía: {c_title}"
                 else:
                     title = f"Material: {clean_title(a)}"
                 writer.writerow(['', tema_nombre, title, desc_default, url])
