@@ -408,17 +408,20 @@
       </div>
     </section>
 
-    <!-- PREGUNTAS -->
-    <section class="card">
-      <div class="card-title">
-        <span>1. Equipamiento Técnico Básico</span>
-        <span style="font-size:0.75rem; color:#dc2626; font-weight:700;">Requisitos Imprescindibles</span>
+    <!-- CUADRO DE FILTRO PREVIO (EXCLUYENTE) -->
+    <section class="card" id="card-filtro-previo" style="border: 2px solid #2563eb; background: #f0f7ff;">
+      <div class="card-title" style="color: #1e3a8a; border-bottom: 2px solid #bfdbfe;">
+        <span>Filtro Previo: Requisitos Técnicos de Acceso</span>
+        <span id="filtroBadge" class="status-pill" style="background:#e2e8f0; color:#475569;">Pendiente de responder</span>
       </div>
-      
+      <p style="font-size: 0.85rem; color: #334155; margin-bottom: 12px;">
+        Condición previa imprescindible: El alumno debe disponer de ordenador en casa y no utilizar exclusivamente el móvil.
+      </p>
+
       <!-- P1 -->
-      <div class="question-row" id="row-q1">
+      <div class="question-row" id="row-q1" style="background: white; border: 1px solid #cbd5e1; margin-bottom: 8px;">
         <div class="question-desc">
-          <strong>1. Ordenador en casa</strong>
+          <strong>Ordenador en casa</strong>
           <span>¿Dispones de un PC portátil o de sobremesa?</span>
         </div>
         <div class="btn-toggle-group">
@@ -428,15 +431,27 @@
       </div>
 
       <!-- P2 -->
-      <div class="question-row" id="row-q2">
+      <div class="question-row" id="row-q2" style="background: white; border: 1px solid #cbd5e1; margin-bottom: 8px;">
         <div class="question-desc">
-          <strong>2. Solo Móvil</strong>
+          <strong>Solo móvil</strong>
           <span>¿Usas solo el móvil y no usas el ordenador?</span>
         </div>
         <div class="btn-toggle-group">
           <button class="btn-toggle" onclick="setAnswer(2, true)">SÍ</button>
           <button class="btn-toggle" onclick="setAnswer(2, false)">NO</button>
         </div>
+      </div>
+
+      <!-- MENSAJE DE DIAGNÓSTICO DEL FILTRO PREVIO -->
+      <div id="filtroPrevioAlert" style="padding: 12px 16px; border-radius: 8px; font-size: 0.92rem; font-weight: 600; display: none; margin-top: 10px;">
+      </div>
+    </section>
+
+    <!-- PREGUNTAS: SECCIÓN 1 -->
+    <section class="card" id="card-cuestionario">
+      <div class="card-title">
+        <span>1. Equipamiento Técnico Básico</span>
+        <span style="font-size:0.75rem; color:#0284c7; font-weight:700;">Herramientas para el aula</span>
       </div>
 
       <!-- P3 -->
@@ -708,6 +723,59 @@
       document.getElementById('valP1').innerHTML = p1 === null ? '-' : (p1 ? '<span style="color:#4ade80">SÍ (Correcto)</span>' : '<span style="color:#f87171">NO (Sin PC)</span>');
       document.getElementById('valP2').innerHTML = p2 === null ? '-' : (!p2 ? '<span style="color:#4ade80">NO (Correcto)</span>' : '<span style="color:#f87171">SÍ (Solo Móvil)</span>');
 
+      // GESTIÓN VISUAL DEL CUADRO PREVIO (P1 y P2)
+      const fAlert = document.getElementById('filtroPrevioAlert');
+      const fBadge = document.getElementById('filtroBadge');
+      const cardPrevio = document.getElementById('card-filtro-previo');
+
+      if (p1 === null && p2 === null) {
+        fAlert.style.display = 'none';
+        fBadge.className = 'status-pill';
+        fBadge.style.background = '#e2e8f0';
+        fBadge.style.color = '#475569';
+        fBadge.innerText = 'Pendiente de responder';
+        cardPrevio.style.borderColor = '#2563eb';
+        cardPrevio.style.background = '#f0f7ff';
+      } else if (p1 === false) {
+        fAlert.style.display = 'block';
+        fAlert.style.background = '#fef2f2';
+        fAlert.style.border = '1.5px solid #f87171';
+        fAlert.style.color = '#991b1b';
+        fAlert.innerHTML = '❌ <strong>NO APTO INICIAL:</strong> El alumno no dispone de ordenador en casa. No es posible realizar el curso (no es necesario continuar la entrevista).';
+        fBadge.className = 'status-pill pill-noapto';
+        fBadge.innerText = '🔴 NO APTO';
+        cardPrevio.style.borderColor = '#dc2626';
+        cardPrevio.style.background = '#fef2f2';
+      } else if (p2 === true) {
+        fAlert.style.display = 'block';
+        fAlert.style.background = '#fef2f2';
+        fAlert.style.border = '1.5px solid #f87171';
+        fAlert.style.color = '#991b1b';
+        fAlert.innerHTML = '❌ <strong>NO APTO INICIAL:</strong> El alumno solo utiliza el teléfono móvil y no usa el ordenador. El curso requiere PC; no es necesario continuar la entrevista.';
+        fBadge.className = 'status-pill pill-noapto';
+        fBadge.innerText = '🔴 NO APTO';
+        cardPrevio.style.borderColor = '#dc2626';
+        cardPrevio.style.background = '#fef2f2';
+      } else if (p1 === true && p2 === false) {
+        fAlert.style.display = 'block';
+        fAlert.style.background = '#f0fdf4';
+        fAlert.style.border = '1.5px solid #4ade80';
+        fAlert.style.color = '#166534';
+        fAlert.innerHTML = '✅ <strong>REQUISITOS PREVIOS SUPERADOS:</strong> El alumno dispone de ordenador. <em>Continuar con la entrevista a continuación (Puntos 1, 2 y 3).</em>';
+        fBadge.className = 'status-pill pill-apto';
+        fBadge.innerText = '🟢 REQUISITOS SUPERADOS (CONTINUAR)';
+        cardPrevio.style.borderColor = '#16a34a';
+        cardPrevio.style.background = '#f0fdf4';
+      } else {
+        fAlert.style.display = 'none';
+        fBadge.className = 'status-pill';
+        fBadge.style.background = '#e2e8f0';
+        fBadge.style.color = '#475569';
+        fBadge.innerText = 'Completar ambas preguntas';
+        cardPrevio.style.borderColor = '#2563eb';
+        cardPrevio.style.background = '#f0f7ff';
+      }
+
       // Conteo de preguntas 3 a 15
       let remainingChecks = 0;
       let answeredRemaining = 0;
@@ -744,8 +812,8 @@
       // Si aún no ha respondido las preguntas 1 o 2
       if (p1 === null || p2 === null) {
         badge.className = 'diag-badge badge-esperando';
-        badge.innerText = 'Esperando Preguntas 1 y 2';
-        explanation.innerText = 'Por favor, responde si dispone de PC en casa y si utiliza o no exclusivamente el móvil.';
+        badge.innerText = 'Esperando Filtro Previo';
+        explanation.innerText = 'Por favor, responde en el cuadro previo si dispone de PC en casa y si utiliza o no exclusivamente el móvil.';
         return 'PENDIENTE';
       }
 
@@ -762,7 +830,7 @@
       if (answeredRemaining < 13) {
         badge.className = 'diag-badge badge-evaluando';
         badge.innerText = `📋 EN EVALUACIÓN (${answeredRemaining}/13)`;
-        explanation.innerHTML = `Requisitos de equipamiento correctos (dispone de ordenador). Continúa respondiendo las preguntas de hábitos y competencias. Checks afirmativos acumulados: <strong>${remainingChecks}</strong>.`;
+        explanation.innerHTML = `Requisitos previos superados. Continúa respondiendo las preguntas de hábitos y competencias (Puntos 1, 2 y 3). Checks afirmativos acumulados: <strong>${remainingChecks}</strong>.`;
         return 'EN EVALUACIÓN';
       }
 
