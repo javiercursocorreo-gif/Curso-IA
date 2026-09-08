@@ -245,6 +245,14 @@
       background: #ef4444;
       color: #ffffff;
     }
+    .badge-evaluando {
+      background: #38bdf8;
+      color: #082f49;
+    }
+    .badge-esperando {
+      background: #94a3b8;
+      color: #ffffff;
+    }
     .diag-details {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -412,7 +420,6 @@
         <div class="question-desc">
           <strong>1. Ordenador en casa</strong>
           <span>¿Dispones de un PC portátil o de sobremesa?</span>
-          <span class="tag-rule tag-rule-danger">Filtro Excluyente: Debe ser SÍ</span>
         </div>
         <div class="btn-toggle-group">
           <button class="btn-toggle" onclick="setAnswer(1, true)">SÍ</button>
@@ -425,7 +432,6 @@
         <div class="question-desc">
           <strong>2. Solo Móvil</strong>
           <span>¿Usas solo el móvil y no usas el ordenador?</span>
-          <span class="tag-rule tag-rule-warning">Filtro Excluyente: Debe ser NO</span>
         </div>
         <div class="btn-toggle-group">
           <button class="btn-toggle" onclick="setAnswer(2, true)">SÍ</button>
@@ -608,16 +614,16 @@
     <section class="diagnosis-card">
       <div class="diag-header">
         <span class="diag-title">Diagnóstico del Alumno</span>
-        <span id="diagnosticBadge" class="diag-badge badge-noapto">Esperando respuestas</span>
+        <span id="diagnosticBadge" class="diag-badge badge-esperando">Esperando respuestas</span>
       </div>
 
       <div class="diag-details">
         <div class="diag-detail-box">
-          <div>Filtro 1 (Tiene PC): <strong id="valP1">-</strong></div>
-          <div>Filtro 2 (Solo Móvil): <strong id="valP2">-</strong></div>
+          <div>1. Ordenador en casa: <strong id="valP1">-</strong></div>
+          <div>2. Solo usa móvil: <strong id="valP2">-</strong></div>
         </div>
         <div class="diag-detail-box">
-          <div>Checks afirmativos (3-15): <strong id="valRemainingChecks">0 / 13</strong></div>
+          <div>Checks afirmativos (Preguntas 3 a 15): <strong id="valRemainingChecks">0 / 13</strong></div>
           <div>Total SÍ globales: <strong id="valTotalChecks">0 / 15</strong></div>
         </div>
       </div>
@@ -699,16 +705,18 @@
       const p1 = answers[1]; // Tiene PC (Debe ser TRUE)
       const p2 = answers[2]; // Solo móvil (Debe ser FALSE)
 
-      document.getElementById('valP1').innerHTML = p1 === null ? '-' : (p1 ? '<span style="color:#4ade80">SÍ (Correcto)</span>' : '<span style="color:#f87171">NO (Incumple)</span>');
-      document.getElementById('valP2').innerHTML = p2 === null ? '-' : (!p2 ? '<span style="color:#4ade80">NO (Correcto)</span>' : '<span style="color:#f87171">SÍ (Incumple)</span>');
+      document.getElementById('valP1').innerHTML = p1 === null ? '-' : (p1 ? '<span style="color:#4ade80">SÍ (Correcto)</span>' : '<span style="color:#f87171">NO (Sin PC)</span>');
+      document.getElementById('valP2').innerHTML = p2 === null ? '-' : (!p2 ? '<span style="color:#4ade80">NO (Correcto)</span>' : '<span style="color:#f87171">SÍ (Solo Móvil)</span>');
 
       // Conteo de preguntas 3 a 15
       let remainingChecks = 0;
+      let answeredRemaining = 0;
       let totalYes = 0;
       for (let i = 1; i <= 15; i++) {
-        if (answers[i] === true) {
-          totalYes++;
-          if (i >= 3) remainingChecks++;
+        if (answers[i] === true) totalYes++;
+        if (i >= 3) {
+          if (answers[i] !== null) answeredRemaining++;
+          if (answers[i] === true) remainingChecks++;
         }
       }
 
@@ -722,40 +730,52 @@
       if (p1 === false) {
         badge.className = 'diag-badge badge-noapto';
         badge.innerText = '🔴 NO APTO';
-        explanation.innerHTML = '<strong>Incumple Filtro 1:</strong> El alumno no dispone de ordenador en casa. Es imprescindible disponer de PC/portátil para realizar los ejercicios y prompts prácticos del curso.';
+        explanation.innerHTML = '<strong>Requisito no cumplido:</strong> El alumno no dispone de ordenador en casa. Es imprescindible disponer de PC o portátil para realizar los ejercicios prácticos del curso.';
         return 'NO APTO';
       }
 
       if (p2 === true) {
         badge.className = 'diag-badge badge-noapto';
         badge.innerText = '🔴 NO APTO';
-        explanation.innerHTML = '<strong>Incumple Filtro 2:</strong> El alumno solo utiliza el teléfono móvil y no usa ordenador. El curso requiere manejo de navegador web de escritorio, descargas y edición de documentos en ordenador.';
+        explanation.innerHTML = '<strong>Requisito no cumplido:</strong> El alumno solo utiliza el teléfono móvil y no usa ordenador. El curso no puede realizarse únicamente desde el móvil; requiere ordenador.';
         return 'NO APTO';
       }
 
-      // Si aún no ha respondido los filtros
+      // Si aún no ha respondido las preguntas 1 o 2
       if (p1 === null || p2 === null) {
-        badge.className = 'diag-badge badge-noapto';
-        badge.innerText = 'Completar Filtros 1 y 2';
-        explanation.innerText = 'Indica si dispone de PC en casa y si usa o no exclusivamente el móvil.';
+        badge.className = 'diag-badge badge-esperando';
+        badge.innerText = 'Esperando Preguntas 1 y 2';
+        explanation.innerText = 'Por favor, responde si dispone de PC en casa y si utiliza o no exclusivamente el móvil.';
         return 'PENDIENTE';
       }
 
-      // EVALUACIÓN SOBRE LAS 13 PREGUNTAS RESTANTES
+      // SI P1=SÍ y P2=NO, HA SUPERADO LOS REQUISITOS BÁSICOS
+      // Si ya acumula 10 o más checks afirmativos:
       if (remainingChecks >= 10) {
         badge.className = 'diag-badge badge-apto';
         badge.innerText = '🟢 APTO DIRECTO';
-        explanation.innerHTML = `<strong>Nivel Óptimo (${remainingChecks}/13 checks):</strong> El alumno posee autonomía digital, soltura con teclado, ratón, navegación y cuenta de Google. Puede seguir el curso con normalidad.`;
+        explanation.innerHTML = `<strong>Nivel Óptimo (${remainingChecks}/13 checks afirmativos):</strong> Dispone de autonomía digital suficiente para seguir el ritmo habitual del curso con normalidad.`;
         return 'APTO DIRECTO';
-      } else if (remainingChecks >= 7) {
+      }
+
+      // Si aún quedan preguntas por responder:
+      if (answeredRemaining < 13) {
+        badge.className = 'diag-badge badge-evaluando';
+        badge.innerText = `📋 EN EVALUACIÓN (${answeredRemaining}/13)`;
+        explanation.innerHTML = `Requisitos de equipamiento correctos (dispone de ordenador). Continúa respondiendo las preguntas de hábitos y competencias. Checks afirmativos acumulados: <strong>${remainingChecks}</strong>.`;
+        return 'EN EVALUACIÓN';
+      }
+
+      // Todas las preguntas (3 a 15) han sido respondidas:
+      if (remainingChecks >= 7) {
         badge.className = 'diag-badge badge-refuerzo';
         badge.innerText = '🟡 APTO CON REFUERZO';
-        explanation.innerHTML = `<strong>Nivel Intermedio (${remainingChecks}/13 checks):</strong> El alumno cumple los requisitos básicos pero muestra carencias en algunas áreas (ej. descargas, contraseñas o ratón). Se recomienda una sesión cero de nivelación o apoyo asistido en las primeras clases.`;
+        explanation.innerHTML = `<strong>Nivel Intermedio (${remainingChecks}/13 checks afirmativos):</strong> El alumno cumple los requisitos básicos. Se recomienda apoyo o sesión previa de nivelación (ratón, descargas o contraseñas).`;
         return 'APTO CON REFUERZO';
       } else {
         badge.className = 'diag-badge badge-noapto';
         badge.innerText = '🔴 NO APTO';
-        explanation.innerHTML = `<strong>Nivel Insuficiente (${remainingChecks}/13 checks):</strong> El alumno tiene muy baja experiencia previa en manejo de ordenador e internet. Se aconseja realizar primero un curso de alfabetización digital básica.`;
+        explanation.innerHTML = `<strong>Nivel Insuficiente (${remainingChecks}/13 checks afirmativos):</strong> Se aconseja realizar primero un curso de alfabetización informática básica.`;
         return 'NO APTO';
       }
     }
