@@ -1166,12 +1166,12 @@ doc.add_paragraph('-------------------------------------------------------------
 add_header_2("1. Módulo A: Retoque Fotográfico y Magia Personal en Retratos (Primeras Clases)")
 add_taller_item("4.1.1.", "Retrato Mágico: Disfraz de Reyes, Aristócratas o Época Clásica",
     "Transformar la vestimenta y el entorno de la persona en un espléndido retrato de época (monarca, aristócrata del Siglo de Oro o caballero clásico), manteniendo intactos sus rasgos faciales y sonrisa.",
-    ("📱 Házte una foto o selfie con el móvil → Envíatela por correo a tu cuenta → Ábrela en el correo de tu ordenador (PC/Portátil) y descárgala → ¡Arrastra tu foto desde el descargador del navegador (↓) a Gemini!",
-     "Conserva exactamente los rasgos faciales, la mirada y la sonrisa de esta persona, pero vístela con un espectacular y elegante traje de monarca del Siglo de Oro con bordados de oro, capa de terciopelo real y una sutil corona imperial frente a un majestuoso salón palaciego."))
+    ("Genera una fotografía de retrato nítido en primer plano de un hombre o mujer mayor sonriendo con expresión natural y ropa informal frente a un fondo neutro.",
+     "Conserva exactamente los rasgos faciales, la mirada y la sonrisa de esta persona de la foto anterior, pero vístela con un espectacular y elegante traje de monarca del Siglo de Oro con bordados de oro, capa de terciopelo real y una sutil corona imperial frente a un majestuoso salón palaciego."))
 
 add_taller_item("4.1.2.", "Un Café y una Charla con tu Ídolo o Celebridad Histórica",
     "Integrar de manera fotorrealista a un personaje famoso admirado (Albert Einstein, Marilyn Monroe, Elvis Presley o Cervantes) sentado compartiendo mesa y momento con el alumno.",
-    ("📱 Házte una foto en una mesa o cafetería con tu móvil → Envíatela por correo a ti mismo → Descárgala desde el correo en tu ordenador → ¡Arrastra la foto desde la barra de descargas (↓) al cajón de Gemini!",
+    ("Genera una fotografía realista de una persona mayor sonriendo sentada a la mesa de una acogedora cafetería clásica con una taza de café caliente delante y una silla vacía a su lado.",
      "Mantén el rostro, la postura y la mesa de esta persona exactamente como están, pero añade sentado en la silla vacía a su lado al genial científico Albert Einstein sonriendo cálidamente mientras levanta también su taza para brindar y charlar con él."))
 
 add_taller_item("4.1.3.", "Restauración y coloreado de fotos antiguas",
@@ -1181,7 +1181,7 @@ add_taller_item("4.1.3.", "Restauración y coloreado de fotos antiguas",
 
 add_taller_item("4.1.4.", "Viaje en el Tiempo: Volver a la Juventud en los Años 60 / Época Dorada",
     "Transportar al alumno a la estética, vestuario y peinado de su juventud dorada (años 60 o 70) frente a escenarios icónicos de la época, conservando su rostro actual.",
-    ("📱 Házte un selfie de rostro con tu teléfono móvil → Envíatelo por correo a tu propio email → Descárgalo desde el correo en tu PC/Portátil → ¡Arrastra tu foto directamente al chat de Gemini!",
+    ("Genera una fotografía de retrato nítido de una mujer sonriendo con expresión alegre y natural frente a un fondo sencillo de verano.",
      "Conserva exactamente su rostro actual intacto, pero transporta toda la escena a los años 60: vístela con un icónico vestido retro con lunares y gafas de sol vintage estilo Audrey Hepburn, situándola frente a un clásico coche descapotable en un paseo marítimo veraniego."))
 
 add_header_2("2. Módulo B: Edición Selectiva, Vestuario de Gala y Fantasía Personal")
@@ -1192,17 +1192,17 @@ add_taller_item("4.2.1.", "Eliminación de objetos o personas molestos",
 
 add_taller_item("4.2.2.", "Vestuario de Alta Costura o Gala para la Alfombra Roja",
     "Transformar la ropa informal cotidiana en un deslumbrante esmoquin de gala o vestido de noche de alta costura sobre la alfombra roja en una gran celebración.",
-    ("📱 Házte una foto de cuerpo entero o medio cuerpo con el móvil → Envíatela por correo a tu cuenta → Descárgala en tu ordenador → ¡Arrastra la imagen descargada desde tu navegador (↓) hasta Gemini!",
+    ("Genera una fotografía realista de cuerpo entero de un hombre mayor sonriendo amablemente en un jardín con ropa informal de diario.",
      "Mantén la cara y la expresión amable de este hombre exactamente iguales, pero vístelo con un impecable esmoquin negro de alta costura con pajarita de seda y cambia el jardín por la alfombra roja iluminada por focos en un gran estreno de cine en París."))
 
 add_taller_item("4.2.3.", "Protagonista de Cine Negro y Misterio Clásico (Film Noir)",
     "Convertir un retrato cotidiano en un cartel o escena de cine negro clásico de Hollywood de los años 40 con iluminación dramática, gabardina y misterio.",
-    ("📱 Házte un retrato con el móvil → Envíatelo por correo a ti mismo → Ábrelo y descárgalo en tu PC → ¡Arrastra el archivo desde la barra de descargas (↓) directamente al chat de Gemini!",
+    ("Genera una fotografía de retrato frontal de un hombre mayor con mirada pensativa e interesante en un plano medio.",
      "Transforma este retrato en una escena de cine de misterio clásico de Hollywood de 1940: mantén exactamente su rostro intacto, pero vístelo con elegante gabardina de detective y sombrero fedora, iluminación dramática en blanco y negro (Film Noir) y niebla en una calle nocturna."))
 
 add_taller_item("4.2.4.", "Mi Profesión o Afición Soñada (Director de Orquesta Sinfónica)",
     "Cumplir el sueño visual de verse ejerciendo una gran vocación artística o aventura soñada (como dirigir una gran orquesta en Viena o pintar en Montmartre).",
-    ("📱 Házte una foto sonriendo con los brazos algo levantados con el móvil → Envíatela por correo a tu email → Descárgala en tu ordenador → ¡Arrástrala desde la barra de descargas al cajón de Gemini!",
+    ("Genera una fotografía en plano medio de un hombre mayor sonriendo con energía y los brazos ligeramente alzados con expresión de entusiasmo.",
      "Conserva intactos sus rasgos faciales y sonrisa, pero vístelo de frac elegante con una batuta en la mano, convirtiéndolo en el director titular que dirige con pasión a una majestuosa orquesta sinfónica en un teatro de ópera repleto y aplaudiendo."))
 
 add_taller_item("4.2.5.", "Reconstrucción de objetos o fotos rotas",
