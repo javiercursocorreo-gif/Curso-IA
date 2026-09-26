@@ -193,10 +193,10 @@ def create_pdf_handout(file_path, block_name, item_id, item_title, concept_text,
                 p1, p2 = prompt_data
                 if str(p1).startswith('📱'):
                     op_a = str(p1).replace('📱', '').strip()
-                    table_rows.append([Paragraph("<b>• 📱 Paso 1 (¡El Flujo de Aula con tu Propia Foto del Móvil!):</b>", style_prompt)])
+                    table_rows.append([Paragraph("<b>• 📱 Paso 1 (En la App de Gemini de tu Móvil):</b>", style_prompt)])
                     for blk in re.split(r'\n\n|<br\s*/?>\s*<br\s*/?>', op_a):
                         if blk.strip(): table_rows.append([Paragraph(blk.strip(), style_prompt)])
-                    table_rows.append([Paragraph("<b>• 🟢 Paso 2 (Orden para la Magia tras arrastrar tu foto al chat de Gemini):</b>", style_prompt)])
+                    table_rows.append([Paragraph("<b>• 🟢 Paso 2 (Transformación en el mismo chat de tu Móvil):</b>", style_prompt)])
                     for blk in re.split(r'\n\n|<br\s*/?>\s*<br\s*/?>', str(p2)):
                         if blk.strip(): table_rows.append([Paragraph(blk.strip(), style_prompt)])
                 else:
@@ -624,6 +624,8 @@ def main():
         }
         for col_idx in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]:
             if col_idx >= len(row):
+                continue
+            if idx == 1 and col_idx == 11:
                 continue
             cell_str = row[col_idx]
             m = re.search(r'\[([A-Z]+-[0-9]+[A-Z\.]*)\]', cell_str)
