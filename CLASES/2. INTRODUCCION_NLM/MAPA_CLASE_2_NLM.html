@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monográfico 2 • Introducción a NotebookLM — Cuadro de Mando por Fases</title>
+    <style>
+        :root {
+            --bg-base: #070b14;
+            --bg-card: rgba(15, 23, 42, 0.92);
+            --border-glow: rgba(56, 189, 248, 0.45);
+            --text-main: #f8fafc;
+            --text-sub: #94a3b8;
+            --text-muted: #64748b;
+            --primary: #38bdf8;
+            --purple: #c084fc;
+            --emerald: #34d399;
+            --amber: #fbbf24;
+            --rose: #fb7185;
+            --cyan: #06b6d4;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: radial-gradient(circle at 50% 25%, #131d3b 0%, #080c18 65%, #030509 100%);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            user-select: none;
+        }
+
+        header {
+            padding: 28px 20px 18px;
+            text-align: center;
+            background: linear-gradient(180deg, rgba(15, 23, 42, 0.8) 0%, rgba(15, 23, 42, 0) 100%);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .header-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 5px 14px;
+            border-radius: 9999px;
+            background: rgba(56, 189, 248, 0.12);
+            border: 1px solid rgba(56, 189, 248, 0.35);
+            color: var(--primary);
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 10px;
+        }
+        h1 {
+            font-size: 1.85rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            background: linear-gradient(135deg, #ffffff 30%, #94a3b8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 6px;
+        }
+        p.subtitle {
+            color: var(--text-sub);
+            font-size: 0.95rem;
+            max-width: 650px;
+            margin: 0 auto;
+            line-height: 1.45;
+        }
+
+        .mindmap-canvas {
+            flex: 1;
+            padding: 30px 20px 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .core-node {
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.95), rgba(15, 23, 42, 0.95));
+            border: 2px solid var(--border-glow);
+            box-shadow: 0 0 35px rgba(56, 189, 248, 0.25), inset 0 0 15px rgba(56, 189, 248, 0.15);
+            border-radius: 20px;
+            padding: 18px 32px;
+            text-align: center;
+            margin-bottom: 32px;
+            max-width: 750px;
+            width: 100%;
+        }
+        .core-icon {
+            font-size: 2.2rem;
+            margin-bottom: 6px;
+            display: inline-block;
+        }
+        .core-title {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: #fff;
+            letter-spacing: -0.01em;
+        }
+        .core-desc {
+            font-size: 0.85rem;
+            color: var(--text-sub);
+            margin-top: 4px;
+        }
+
+        .branches-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 22px;
+            width: 100%;
+        }
+
+        .branch-column {
+            background: var(--bg-card);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 18px;
+            padding: 22px;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+        }
+        .branch-column:hover {
+            transform: translateY(-4px);
+            border-color: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 14px 35px rgba(0, 0, 0, 0.55);
+        }
+
+        .branch-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 18px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .branch-badge {
+            font-size: 0.78rem;
+            font-weight: 800;
+            padding: 4px 9px;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--branch-color);
+            font-family: ui-monospace, monospace;
+        }
+        .branch-title {
+            font-size: 1.12rem;
+            font-weight: 700;
+            color: #fff;
+        }
+        .branch-count {
+            margin-left: auto;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            background: rgba(0, 0, 0, 0.35);
+            padding: 3px 8px;
+            border-radius: 10px;
+        }
+
+        .file-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            flex: 1;
+        }
+        .file-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            border-radius: 12px;
+            padding: 13px 15px;
+            text-decoration: none;
+            color: var(--text-main);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .file-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: var(--branch-color);
+            transform: translateX(4px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+        }
+        .file-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 0;
+        }
+        .file-tag {
+            font-family: ui-monospace, monospace;
+            font-weight: 800;
+            font-size: 0.75rem;
+            padding: 4px 7px;
+            border-radius: 6px;
+            flex-shrink: 0;
+        }
+        .tag-pdf { background: rgba(239, 68, 68, 0.2); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.4); }
+        .tag-app { background: rgba(56, 189, 248, 0.2); color: #7dd3fc; border: 1px solid rgba(56, 189, 248, 0.4); }
+        .tag-txt { background: rgba(168, 85, 247, 0.2); color: #e9d5ff; border: 1px solid rgba(168, 85, 247, 0.4); }
+        .tag-mp3 { background: rgba(234, 179, 8, 0.2); color: #fef08a; border: 1px solid rgba(234, 179, 8, 0.4); }
+        .tag-mp4 { background: rgba(244, 63, 94, 0.2); color: #fecdd3; border: 1px solid rgba(244, 63, 94, 0.4); }
+        .tag-png { background: rgba(34, 197, 94, 0.2); color: #bbf7d0; border: 1px solid rgba(34, 197, 94, 0.4); }
+        .tag-web { background: rgba(56, 189, 248, 0.2); color: #7dd3fc; border: 1px solid rgba(56, 189, 248, 0.4); }
+
+        .file-details {
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+        .file-title {
+            font-size: 0.92rem;
+            font-weight: 600;
+            color: #f1f5f9;
+            line-height: 1.35;
+        }
+        .file-desc {
+            font-size: 0.76rem;
+            color: var(--text-muted);
+            margin-top: 2px;
+            line-height: 1.25;
+        }
+        .file-arrow {
+            font-size: 0.9rem;
+            font-weight: 700;
+            margin-left: 10px;
+            color: var(--text-muted);
+            flex-shrink: 0;
+            transition: color 0.2s, transform 0.2s;
+        }
+        .file-card:hover .file-arrow {
+            color: #fff;
+            transform: translate(2px, -2px);
+        }
+
+        .bottom-bar {
+            margin-top: 36px;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 14px;
+            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            font-size: 0.85rem;
+            color: var(--text-sub);
+        }
+</style>
+</head>
+<body>
+
+    <header>
+        <div class="header-pill">📚 Monográfico 2 • Cuaderno Inteligente</div>
+        <h1>Monográfico 2: Introducción a NotebookLM</h1>
+        <p class="subtitle">Descubre tu asistente de investigación basado en fuentes fiables: analiza documentos, genera resúmenes automáticos, podcasts de audio e infografías.</p>
+    </header>
+
+    <main class="mindmap-canvas">
+        <div class="core-node">
+            <span class="core-icon">📓</span>
+            <div class="core-title">Ecosistema NotebookLM</div>
+            <div class="core-desc">Centro de mando: guía conceptual, protocolo de práctica con fuentes y resultados generados por IA</div>
+        </div>
+
+        <div class="branches-container">
+            <!-- FASE 1 -->
+            <div class="branch-column" style="--branch-color: var(--rose);">
+                <div class="branch-header">
+                    <span class="branch-badge">FASE 1</span>
+                    <h2 class="branch-title">Guía & Acceso Oficial</h2>
+                    <span class="branch-count">2 recursos</span>
+                </div>
+                <div class="file-stack">
+                    <a href="1.%20PRESENTACIO%CC%81N%20A%20LOS%20ALUMNOS/%2A.Guia_de_NotebookLM.pdf" target="_blank" class="file-card">
+                        <div class="file-left">
+                            <span class="file-tag tag-pdf">PDF</span>
+                            <div class="file-details">
+                                <span class="file-title">Guía de NotebookLM</span>
+                                <span class="file-desc">Presentación completa para los alumnos</span>
+                            </div>
+                        </div>
+                        <span class="file-arrow">↗</span>
+                    </a>
+                    <a href="https://notebooklm.google.com" target="_blank" class="file-card">
+                        <div class="file-left">
+                            <span class="file-tag tag-web">WEB</span>
+                            <div class="file-details">
+                                <span class="file-title">Portal Oficial NotebookLM</span>
+                                <span class="file-desc">Acceso directo a la plataforma de Google</span>
+                            </div>
+                        </div>
+                        <span class="file-arrow">↗</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- FASE 2 -->
+            <div class="branch-column" style="--branch-color: var(--primary);">
+                <div class="branch-header">
+                    <span class="branch-badge">FASE 2</span>
+                    <h2 class="branch-title">Práctica & Fuentes</h2>
+                    <span class="branch-count">4 archivos</span>
+                </div>
+                <div class="file-stack">
+                    <a href="2.%20PRACTICA/1.%20PASOS%20DE%20LA%20PRACTICA/%2AFICHA_PRACTICA_SISTEMATIZADA_NOTEBOOKLM.pdf" target="_blank" class="file-card">
+                        <div class="file-left">
+                            <span class="file-tag tag-pdf">PDF</span>
+                            <div class="file-details">
+                                <span class="file-title">Ficha Práctica Sistematizada</span>
+                                <span class="file-desc">Pasos detallados de la práctica guiada</span>
+                            </div>
+                        </div>
+                        <span class="file-arrow">↗</span>
+                    </a>
+                    <a href="2.%20PRACTICA/2.%20FUENTES%20PARA%20EL%20EJEMPLO/%2A.EJEMPLO_A_FUENTE_HISTORIA_APOLO_11.pdf" target="_blank" class="file-card">
+                        <div class="file-left">
+                            <span class="file-tag tag-pdf">PDF</span>
+                            <div class="file-details">
+                                <span class="file-title">Fuente 1: Historia Apolo 11</span>
+                                <span class="file-desc">Documento histórico para el cuaderno</span>
+                            </div>
+                        </div>
+                        <span class="file-arrow">↗</span>
+                    </a>
+                    <a href="2.%20PRACTICA/2.%20FUENTES%20PARA%20EL%20EJEMPLO/%2A.EJEMPLO_A_FUENTE_TEXTO_RECUERDO_LUNA_1969.txt" target="_blank" class="file-card">
+                        <div class="file-left">
+                            <span class="file-tag tag-txt">TXT</span>
+                            <div class="file-details">
+                                <span class="file-title">Fuente 2: Recuerdos de la Luna</span>
+                                <span class="file-desc">Testimonio personal sobre la llegada en 1969</span>
+                            </div>
+                        </div>
+                        <span class="file-arrow">↗</span>
+                    </a>
+                    <a href="2.%20PRACTICA/2.%20FUENTES%20PARA%20EL%20EJEMPLO/%2A.EJEMPLO_A_FUENTE_ENLACE_YOUTUBE_APOLO_11.txt" target="_blank" class="file-card">
+                        <div class="file-left">
+                            <span class="file-tag tag-txt">TXT</span>
+                            <div class="file-details">
+                                <span class="file-title">Fuente 3: Enlace Vídeo YouTube</span>
+                                <span class="file-desc">Documental de YouTube para cargar en NLM</span>
+                            </div>
+                        </div>
+                        <span class="file-arrow">↗</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- FASE 3 -->
+            <div class="branch-column" style="--branch-color: var(--purple);">
+                <div class="branch-header">
+                    <span class="branch-badge">FASE 3</span>
+                    <h2 class="branch-title">Resultados Generados por IA</h2>
+                    <span class="branch-count">6 resultados</span>
+                </div>
+                <div class="file-stack">
+                    <a href="2.%20PRACTICA/4.%20RESULTADOS%20DEL%20EJEMPLO/%2A.EJEMPLO_RESULTADO_AUDIO.mp3" target="_blank" class="file-card">
+                        <div class="file-left">
+                            <span class="file-tag tag-mp3">MP3</span>
+                            <div class="file-details">
+                                <span class="file-title">Audio Resumen (Podcast IA)</span>
+                                <span class="file-desc">Conversación de locutores IA sobre las fuentes</span>
+                            </div>
+                        </div>
+                        <span class="file-arrow">↗</span>
+                    </a>
+                    <a href="2.%20PRACTICA/4.%20RESULTADOS%20DEL%20EJEMPLO/%2A.EJEMPLO_RESULTADO_PRESENTACION_3_FUENTES.pdf" target="_blank" class="file-card">
+                        <div class="file-left">
+                            <span class="file-tag tag-pdf">PDF</span>
+                            <div class="file-details">
+                                <span class="file-title">Presentación Ejecutiva (3 Fuentes)</span>
+                                <span class="file-desc">Informe visual sintético generado</span>
+                            </div>
+                        </div>
+                        <span class="file-arrow">↗</span>
+                    </a>
+                    <a href="2.%20PRACTICA/4.%20RESULTADOS%20DEL%20EJEMPLO/%2A.EJEMPLO_RESULTADO_VIDEO_3_Fuentes.mp4" target="_blank" class="file-card">
+                        <div class="file-left">
+                            <span class="file-tag tag-mp4">MP4</span>
+                            <div class="file-details">
+                                <span class="file-title">Vídeo Resumen del Ejemplo</span>
+                                <span class="file-desc">Vídeo explicativo generado a partir de 3 fuentes</span>
+                            </div>
+                        </div>
+                        <span class="file-arrow">↗</span>
+                    </a>
+                    <a href="2.%20PRACTICA/4.%20RESULTADOS%20DEL%20EJEMPLO/%2A.EJEMPLO_RESULTADO_INFOGRAFIA_1_Fuente.png" target="_blank" class="file-card">
+                        <div class="file-left">
+                            <span class="file-tag tag-png">PNG</span>
+                            <div class="file-details">
+                                <span class="file-title">Infografía: 1 Fuente</span>
+                                <span class="file-desc">Esquema visual a partir de 1 fuente</span>
+                            </div>
+                        </div>
+                        <span class="file-arrow">↗</span>
+                    </a>
+                    <a href="2.%20PRACTICA/4.%20RESULTADOS%20DEL%20EJEMPLO/%2A.EJEMPLO_RESULTADO_INFOGRAFIA_3_Fuentes.png" target="_blank" class="file-card">
+                        <div class="file-left">
+                            <span class="file-tag tag-png">PNG</span>
+                            <div class="file-details">
+                                <span class="file-title">Infografía: 3 Fuentes Combinadas</span>
+                                <span class="file-desc">Esquema visual cruzando todas las fuentes</span>
+                            </div>
+                        </div>
+                        <span class="file-arrow">↗</span>
+                    </a>
+                    <a href="2.%20PRACTICA/4.%20RESULTADOS%20DEL%20EJEMPLO/%2A.EJEMPLO_RESULTADO_INFOGRAFIA_%20SoloYoutube.png" target="_blank" class="file-card">
+                        <div class="file-left">
+                            <span class="file-tag tag-png">PNG</span>
+                            <div class="file-details">
+                                <span class="file-title">Infografía: Solo YouTube</span>
+                                <span class="file-desc">Esquema visual generado del vídeo</span>
+                            </div>
+                        </div>
+                        <span class="file-arrow">↗</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="bottom-bar">
+            <span>📚 <strong>Curso de Inteligencia Artificial</strong> • Monográfico 2</span>
+            <span>Acceso interactivo unificado para Google Classroom</span>
+        </div>
+    </main>
+
+</body>
+</html>
