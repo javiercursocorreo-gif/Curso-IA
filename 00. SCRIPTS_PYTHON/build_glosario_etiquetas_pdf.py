@@ -386,3 +386,4 @@ def update_csv_indices():
 if __name__ == "__main__":
     build_pdf()
     update_csv_indices()
+

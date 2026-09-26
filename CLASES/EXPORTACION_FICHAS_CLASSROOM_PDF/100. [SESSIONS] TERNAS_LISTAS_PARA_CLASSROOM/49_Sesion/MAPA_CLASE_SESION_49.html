@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sesión 49 • Cuadro de Mando Radial — Curso de IA</title>
+    <style>
+        :root {
+            --bg-base: #060913;
+            --bg-card: rgba(15, 23, 42, 0.92);
+            --border-glow: rgba(56, 189, 248, 0.4);
+            --text-main: #f8fafc;
+            --text-sub: #94a3b8;
+            --text-muted: #64748b;
+            --primary: #38bdf8;
+            --purple: #a855f7;
+            --emerald: #10b981;
+            --amber: #f59e0b;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: radial-gradient(circle at 50% 40%, #0f172a 0%, #070b14 60%, #030509 100%);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            user-select: none;
+        }
+
+        header {
+            padding: 20px 20px 14px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(12px);
+            z-index: 20;
+        }
+        .header-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(56, 189, 248, 0.12);
+            color: #7dd3fc;
+            border: 1px solid rgba(56, 189, 248, 0.4);
+            border-radius: 9999px;
+            padding: 4px 16px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+        h1 {
+            font-size: 2rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, #ffffff 30%, #38bdf8 70%, #c084fc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 6px;
+        }
+        .subtitle {
+            font-size: 0.9rem;
+            color: var(--text-sub);
+            max-width: 720px;
+            margin: 0 auto;
+        }
+
+        .radial-canvas {
+            flex: 1;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 30px 20px 70px;
+            min-height: 740px;
+            overflow: visible;
+        }
+
+        .orbit-ring {
+            position: absolute;
+            border-radius: 50%;
+            border: 1px dashed rgba(56, 189, 248, 0.14);
+            pointer-events: none;
+            z-index: 1;
+        }
+        .ring-1 { width: 440px; height: 440px; }
+        .ring-2 { width: 780px; height: 780px; border-color: rgba(168, 85, 247, 0.14); }
+
+        .sun-node {
+            width: 220px;
+            height: 220px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 35% 30%, #1e293b 0%, #090d16 85%);
+            border: 3px solid var(--primary);
+            box-shadow: 0 0 50px rgba(56, 189, 248, 0.4), inset 0 0 25px rgba(255, 255, 255, 0.08);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+            z-index: 10;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .sun-node:hover {
+            transform: scale(1.06);
+            box-shadow: 0 0 70px rgba(56, 189, 248, 0.65);
+            border-color: #7dd3fc;
+        }
+        .sun-tag {
+            font-size: 0.75rem;
+            font-weight: 800;
+            color: var(--primary);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        .sun-title {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: #fff;
+            margin: 6px 0 4px;
+            line-height: 1.2;
+        }
+        .sun-desc {
+            font-size: 0.75rem;
+            color: var(--text-sub);
+        }
+
+        .planets-orbit {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            max-width: 1160px;
+            max-height: 820px;
+            z-index: 8;
+            pointer-events: none;
+        }
+
+        .planet-node {
+            position: absolute;
+            pointer-events: auto;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--bg-card);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 14px;
+            padding: 8px 14px;
+            color: var(--text-main);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(12px);
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            max-width: 270px;
+            transform: translate(-50%, -50%);
+        }
+        .planet-node:hover {
+            transform: translate(-50%, -50%) scale(1.08);
+            border-color: var(--p-color, var(--primary));
+            box-shadow: 0 0 25px var(--p-color, var(--primary));
+            z-index: 15;
+            background: rgba(30, 41, 59, 0.95);
+        }
+
+        .step-number {
+            font-family: ui-monospace, monospace;
+            font-size: 0.85rem;
+            font-weight: 900;
+            background: var(--p-color, var(--primary));
+            color: #04060b;
+            padding: 3px 8px;
+            border-radius: 8px;
+            flex-shrink: 0;
+            letter-spacing: -0.5px;
+        }
+
+        .planet-info {
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+        .planet-title {
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: #f1f5f9;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            line-height: 1.25;
+        }
+        .planet-cat {
+            font-size: 0.7rem;
+            color: var(--text-sub);
+            font-weight: 500;
+        }
+
+        .file-tag {
+            font-family: ui-monospace, monospace;
+            font-weight: 800;
+            font-size: 0.7rem;
+            padding: 2px 6px;
+            border-radius: 4px;
+            flex-shrink: 0;
+        }
+        .tag-pdf { background: rgba(239, 68, 68, 0.2); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.4); }
+        .tag-mp4 { background: rgba(168, 85, 247, 0.2); color: #e9d5ff; border: 1px solid rgba(168, 85, 247, 0.4); }
+        .tag-png { background: rgba(56, 189, 248, 0.2); color: #7dd3fc; border: 1px solid rgba(56, 189, 248, 0.4); }
+        .tag-txt { background: rgba(148, 163, 184, 0.2); color: #cbd5e1; border: 1px solid rgba(148, 163, 184, 0.4); }
+
+        .planet-arrow {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-left: auto;
+            flex-shrink: 0;
+        }
+        .planet-node:hover .planet-arrow {
+            color: #fff;
+        }
+
+        .bottom-guide {
+            position: fixed;
+            bottom: 16px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(15, 23, 42, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 30px;
+            padding: 8px 24px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            backdrop-filter: blur(16px);
+            z-index: 25;
+            font-size: 0.82rem;
+            color: var(--text-sub);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+        }
+        .guide-badge {
+            background: rgba(56, 189, 248, 0.15);
+            color: var(--primary);
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 0.75rem;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-pill">🪐 Sesión 49 • Cuadro de Mando</div>
+        <h1>Sesión 49: Prácticas y Retos con IA</h1>
+        <p class="subtitle">Pulsa en cada satélite numerado (#01 al #17) para abrir la ficha o recurso correspondiente.</p>
+    </header>
+
+    <main class="radial-canvas">
+        <div class="orbit-ring ring-1"></div>
+        <div class="orbit-ring ring-2"></div>
+
+        <div class="sun-node">
+            <span class="sun-tag">Clase Individual</span>
+            <h2 class="sun-title">SESIÓN 49</h2>
+            <p class="sun-desc">17 Recursos Guiados</p>
+        </div>
+
+        <div class="planets-orbit">
+            
+            <a href="1.%20TXT-049_Gu%C3%ADa%20de%20Ciberseguridad%20para%20Redes%20Sociales%20%28Facebook%20y%20WhatsApp%29.pdf" target="_blank" class="planet-node" style="top: 12.0%; left: 50.0%; --p-color: #38bdf8;">
+                <span class="step-number">#01</span>
+                <div class="planet-info">
+                    <span class="planet-title">Guía de Ciberseguridad para Redes Sociales (Facebook y WhatsApp)</span>
+                    <span class="planet-cat">TXT • Comunicación y Texto</span>
+                </div>
+                <span class="file-tag tag-pdf">PDF</span>
+                <span class="planet-arrow">↗</span>
+            </a>
+            <a href="10.%20TRUC-049_Limpieza%20Ecol%C3%B3gica%20y%20Manchas_%20Juntas%20de%20azulejos%20ennegrecidas.pdf" target="_blank" class="planet-node" style="top: 14.6%; left: 65.2%; --p-color: #2dd4bf;">
+                <span class="step-number">#02</span>
+                <div class="planet-info">
+                    <span class="planet-title">Limpieza Ecológica y Manchas  Juntas de azulejos ennegrecidas</span>
+                    <span class="planet-cat">TRUC • Trucos Cotidianos</span>
+                </div>
+                <span class="file-tag tag-pdf">PDF</span>
+                <span class="planet-arrow">↗</span>
+            </a>
+            <a href="11.CUENT-049_Paso_0_Introduccion_Proyecto.pdf" target="_blank" class="planet-node" style="top: 21.9%; left: 78.3%; --p-color: #fb7185;">
+                <span class="step-number">#03</span>
+                <div class="planet-info">
+                    <span class="planet-title">Paso 0 Introduccion Proyecto</span>
+                    <span class="planet-cat">INT • Mundo por Dentro</span>
+                </div>
+                <span class="file-tag tag-pdf">PDF</span>
+                <span class="planet-arrow">↗</span>
+            </a>
+            <a href="11.CUENT-049_Paso_1_Perros_%20El%20ping%C3%BCino%20que%20construy%C3%B3%20un%20trineo.pdf" target="_blank" class="planet-node" style="top: 33.1%; left: 87.6%; --p-color: #38bdf8;">
+                <span class="step-number">#04</span>
+                <div class="planet-info">
+                    <span class="planet-title">Paso 1 Perros  El pingüino que construyó un trineo</span>
+                    <span class="planet-cat">CUENT • Cuentos para Nietos</span>
+                </div>
+                <span class="file-tag tag-pdf">PDF</span>
+                <span class="planet-arrow">↗</span>
+            </a>
+            <a href="11.CUENT-049_Paso_2_Perros_%20El%20ping%C3%BCino%20que%20construy%C3%B3%20un%20trineo.pdf" target="_blank" class="planet-node" style="top: 46.5%; left: 91.8%; --p-color: #38bdf8;">
+                <span class="step-number">#05</span>
+                <div class="planet-info">
+                    <span class="planet-title">Paso 2 Perros  El pingüino que construyó un trineo</span>
+                    <span class="planet-cat">CUENT • Cuentos para Nietos</span>
+                </div>
+                <span class="file-tag tag-pdf">PDF</span>
+                <span class="planet-arrow">↗</span>
+            </a>
+            <a href="11.CUENT-049_Paso_3_Perros_%20El%20ping%C3%BCino%20que%20construy%C3%B3%20un%20trineo.pdf" target="_blank" class="planet-node" style="top: 60.4%; left: 90.4%; --p-color: #38bdf8;">
+                <span class="step-number">#06</span>
+                <div class="planet-info">
+                    <span class="planet-title">Paso 3 Perros  El pingüino que construyó un trineo</span>
+                    <span class="planet-cat">CUENT • Cuentos para Nietos</span>
+                </div>
+                <span class="file-tag tag-pdf">PDF</span>
+                <span class="planet-arrow">↗</span>
+            </a>
+            <a href="12.%20MOVIL-049_Filtro%20de%20Campana%20Extractora_%20Malla%20met%C3%A1lica%20saturada.pdf" target="_blank" class="planet-node" style="top: 72.9%; left: 83.5%; --p-color: #60a5fa;">
+                <span class="step-number">#07</span>
+                <div class="planet-info">
+                    <span class="planet-title">Filtro de Campana Extractora  Malla metálica saturada</span>
+                    <span class="planet-cat">MOVIL • Salvavidas del Móvil</span>
+                </div>
+                <span class="file-tag tag-pdf">PDF</span>
+                <span class="planet-arrow">↗</span>
+            </a>
+            <a href="13.%20MEM-049_Las%20Primeras%20Monedas_%20La%20Peseta%20Rubia%2C%20el%20Duro%20y%20el%20Billete%20de%20Mi.pdf" target="_blank" class="planet-node" style="top: 82.3%; left: 72.1%; --p-color: #a78bfa;">
+                <span class="step-number">#08</span>
+                <div class="planet-info">
+                    <span class="planet-title">Las Primeras Monedas  La Peseta Rubia, el Duro y el Billete de Mi</span>
+                    <span class="planet-cat">MEM • Cápsula de Memoria</span>
+                </div>
+                <span class="file-tag tag-pdf">PDF</span>
+                <span class="planet-arrow">↗</span>
+            </a>
+            <a href="14.%20MEC-049_El%20Tubo%20Pitot%20y%20la%20Sonda%20de%20Velocidad%20A%C3%A9rea.pdf" target="_blank" class="planet-node" style="top: 87.4%; left: 57.7%; --p-color: #f59e0b;">
+                <span class="step-number">#09</span>
+                <div class="planet-info">
+                    <span class="planet-title">El Tubo Pitot y la Sonda de Velocidad Aérea</span>
+                    <span class="planet-cat">MEC • Mecánica & Vídeo</span>
+                </div>
+                <span class="file-tag tag-pdf">PDF</span>
+                <span class="planet-arrow">↗</span>
+            </a>
+            <a href="2.%20EST-049_CINEMATOGR%C3%81FICO%20NOIR%20_%20%C3%89PICO%20Y%20GRANDES%20BATALLAS%20-%20Carreras%20de%20Cua.pdf" target="_blank" class="planet-node" style="top: 87.4%; left: 42.3%; --p-color: #818cf8;">
+                <span class="step-number">#10</span>
+                <div class="planet-info">
+                    <span class="planet-title">CINEMATOGRÁFICO NOIR   ÉPICO Y GRANDES BATALLAS - Carreras de Cua</span>
+                    <span class="planet-cat">EST • Estilo de Imagen IA</span>
+                </div>
+                <span class="file-tag tag-pdf">PDF</span>
+                <span class="planet-arrow">↗</span>
+            </a>
+            <a href="3.%20PRAC-049_Recreaci%C3%B3n%20de%20Indumentaria%20y%20Trajes%20Regionales%20Hist%C3%B3ricos.pdf" target="_blank" class="planet-node" style="top: 82.3%; left: 27.9%; --p-color: #c084fc;">
+                <span class="step-number">#11</span>
+                <div class="planet-info">
+                    <span class="planet-title">Recreación de Indumentaria y Trajes Regionales Históricos</span>
+                    <span class="planet-cat">PRAC • Taller Práctico</span>
+                </div>
+                <span class="file-tag tag-pdf">PDF</span>
+                <span class="planet-arrow">↗</span>
+            </a>
+            <a href="4.%202.%20NO.%20CantorConjunto.mp4" target="_blank" class="planet-node" style="top: 72.9%; left: 16.5%; --p-color: #c084fc;">
+                <span class="step-number">#12</span>
+                <div class="planet-info">
+                    <span class="planet-title">2. NO. CantorConjunto</span>
+                    <span class="planet-cat">PRAC • Taller Práctico</span>
+                </div>
+                <span class="file-tag tag-mp4">MP4</span>
+                <span class="planet-arrow">↗</span>
+            </a>
+            <a href="4.%20FRAC-018%202.%20CantorConjunto.pdf" target="_blank" class="planet-node" style="top: 60.4%; left: 9.6%; --p-color: #f472b6;">
+                <span class="step-number">#13</span>
+                <div class="planet-info">
+                    <span class="planet-title">2. CantorConjunto</span>
+                    <span class="planet-cat">FRAC • Fractales & Vídeo</span>
+                </div>
+                <span class="file-tag tag-pdf">PDF</span>
+                <span class="planet-arrow">↗</span>
+            </a>
+            <a href="5.%20INT-049_Reconstrucci%C3%B3n%20virtual%20del%20Circo%20M%C3%A1ximo%20de%20Roma%20en%20plena%20carrera%20.pdf" target="_blank" class="planet-node" style="top: 46.5%; left: 8.2%; --p-color: #fb7185;">
+                <span class="step-number">#14</span>
+                <div class="planet-info">
+                    <span class="planet-title">Reconstrucción virtual del Circo Máximo de Roma en plena carrera</span>
+                    <span class="planet-cat">INT • Mundo por Dentro</span>
+                </div>
+                <span class="file-tag tag-pdf">PDF</span>
+                <span class="planet-arrow">↗</span>
+            </a>
+            <a href="7.%20NAT-049_Meteorolog%C3%ADa%20y%20Termodin%C3%A1mica%20del%20Mar%20de%20Nubes%20en%20Cumbres%20%28Infogra.pdf" target="_blank" class="planet-node" style="top: 33.1%; left: 12.4%; --p-color: #facc15;">
+                <span class="step-number">#15</span>
+                <div class="planet-info">
+                    <span class="planet-title">Meteorología y Termodinámica del Mar de Nubes en Cumbres (Infogra</span>
+                    <span class="planet-cat">NAT • Naturaleza en Acción</span>
+                </div>
+                <span class="file-tag tag-pdf">PDF</span>
+                <span class="planet-arrow">↗</span>
+            </a>
+            <a href="8.%20ARTE-049_La%20Gitana%20Dormida%20de%20Henri%20Rousseau%20%281897%29.pdf" target="_blank" class="planet-node" style="top: 21.9%; left: 21.7%; --p-color: #a3e635;">
+                <span class="step-number">#16</span>
+                <div class="planet-info">
+                    <span class="planet-title">La Gitana Dormida de Henri Rousseau (1897)</span>
+                    <span class="planet-cat">ARTE • Historia del Arte</span>
+                </div>
+                <span class="file-tag tag-pdf">PDF</span>
+                <span class="planet-arrow">↗</span>
+            </a>
+            <a href="9.%20NIV-049_Los%206%20Niveles%20de%20Capacidad%20y%20Superc%C3%B3mputo%20Mundial.pdf" target="_blank" class="planet-node" style="top: 14.6%; left: 34.8%; --p-color: #4ade80;">
+                <span class="step-number">#17</span>
+                <div class="planet-info">
+                    <span class="planet-title">Los 6 Niveles de Capacidad y Supercómputo Mundial</span>
+                    <span class="planet-cat">NIV • Escalafones 101</span>
+                </div>
+                <span class="file-tag tag-pdf">PDF</span>
+                <span class="planet-arrow">↗</span>
+            </a>
+        </div>
+    </main>
+
+    <div class="bottom-guide">
+        <span class="guide-badge">Ruta Guiada</span>
+        <span>Sigue la numeración correlativa del <strong>#01 al #17</strong></span>
+        <span style="opacity: 0.4">•</span>
+        <span>Publicación independiente para Google Classroom</span>
+    </div>
+
+</body>
+</html>
