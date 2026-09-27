@@ -523,13 +523,17 @@ def process_all_sessions():
         files = os.listdir(session_path)
         html_content = generate_columns_html(session_num, session_path, files)
         
-        html_filename = f"MAPA_CLASE_SESION_{session_num:02d}.html"
+        html_filename = f"MAPA_SESION_{session_num:02d}.html"
         html_path = os.path.join(session_path, html_filename)
-        
         with open(html_path, 'w', encoding='utf-8') as f:
             f.write(html_content)
         
-        # Calcular URL de GitHub Pages
+        # También guardar copia como MAPA_CLASE_SESION_XX.html para enlaces previos
+        legacy_path = os.path.join(session_path, f"MAPA_CLASE_SESION_{session_num:02d}.html")
+        with open(legacy_path, 'w', encoding='utf-8') as f:
+            f.write(html_content)
+        
+        # Calcular URL de GitHub Pages con el nuevo archivo para refrescar miniaturas en Classroom
         rel_path = os.path.relpath(html_path, BASE_DIR)
         url_github = GITHUB_BASE_URL + urllib.parse.quote(rel_path)
         
@@ -539,7 +543,7 @@ def process_all_sessions():
         
         sessions_data.append((session_num, tema, titulo, desc, url_github))
         
-    print(f"✅ Generados {len(sessions_data)} mapas en 2/3 columnas MAPA_CLASE_SESION_XX.html")
+    print(f"✅ Generados {len(sessions_data)} mapas en 3 columnas (MAPA_SESION_XX.html)")
 
     # Exportar los 4 CSVs por lotes
     lotes = [
