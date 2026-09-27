@@ -26,22 +26,22 @@ GITHUB_BASE_URL = "https://javiercursocorreo-gif.github.io/Curso-IA/"
 
 # Configuración de pasos, colores y columnas
 STEP_CONFIG = {
-    "TXT":   {"color": "#38bdf8", "cat": "Paso 1 • Prompts y Texto",        "icon": "✍️", "col": 1},
-    "EST":   {"color": "#818cf8", "cat": "Paso 2 • Estilo de Imagen IA",    "icon": "🎨", "col": 1},
-    "PRAC":  {"color": "#c084fc", "cat": "Paso 3 • Taller Práctico Gemini",  "icon": "⚡", "col": 1},
-    "FRAC":  {"color": "#f472b6", "cat": "Paso 4 • Fractal & Vídeo HD",     "icon": "🌀", "col": 1},
-    "FUNC":  {"color": "#f472b6", "cat": "Paso 4 • Función 3D & IA",        "icon": "📐", "col": 1},
-    "INT":   {"color": "#fb7185", "cat": "Paso 5 • Mundo por Dentro",       "icon": "🏛️", "col": 2},
-    "FUT":   {"color": "#fb923c", "cat": "Paso 6 • Sci-Fi & Futuro",        "icon": "🚀", "col": 2},
-    "NAT":   {"color": "#facc15", "cat": "Paso 7 • Naturaleza Fascinante",  "icon": "🌿", "col": 2},
-    "AVES":  {"color": "#facc15", "cat": "Paso 7 • Naturaleza Fascinante",  "icon": "🦅", "col": 2},
-    "ARTE":  {"color": "#a3e635", "cat": "Paso 8 • Historia del Arte",      "icon": "🖼️", "col": 2},
-    "NIV":   {"color": "#4ade80", "cat": "Paso 9 • Escalafones y Niveles",  "icon": "📊", "col": 3},
-    "TRUC":  {"color": "#2dd4bf", "cat": "Paso 10 • Trucos Cotidianos",     "icon": "💡", "col": 3},
-    "CUENT": {"color": "#38bdf8", "cat": "Paso 11 • Cuentos Ilustrados",    "icon": "📖", "col": 3},
-    "MOVIL": {"color": "#60a5fa", "cat": "Paso 12 • Salvavidas del Móvil",  "icon": "📱", "col": 3},
-    "MEM":   {"color": "#a78bfa", "cat": "Paso 13 • Cápsula de Memoria",   "icon": "🕰️", "col": 3},
-    "MEC":   {"color": "#f59e0b", "cat": "Paso 14 • Mecánica & Vídeo",     "icon": "⚙️", "col": 3}
+    "TXT":   {"color": "#38bdf8", "cat": "Paso 1 • Prompts y Texto",        "icon": "✍️", "col": 1, "order": 1},
+    "EST":   {"color": "#818cf8", "cat": "Paso 2 • Estilo de Imagen IA",    "icon": "🎨", "col": 1, "order": 2},
+    "PRAC":  {"color": "#c084fc", "cat": "Paso 3 • Taller Práctico Gemini",  "icon": "⚡", "col": 1, "order": 3},
+    "FRAC":  {"color": "#f472b6", "cat": "Paso 4 • Fractal & Vídeo HD",     "icon": "🌀", "col": 1, "order": 4},
+    "FUNC":  {"color": "#f472b6", "cat": "Paso 4 • Función 3D & IA",        "icon": "📐", "col": 1, "order": 4},
+    "INT":   {"color": "#fb7185", "cat": "Paso 5 • Mundo por Dentro",       "icon": "🏛️", "col": 2, "order": 5},
+    "FUT":   {"color": "#fb923c", "cat": "Paso 6 • Sci-Fi & Futuro",        "icon": "🚀", "col": 2, "order": 6},
+    "NAT":   {"color": "#facc15", "cat": "Paso 7 • Naturaleza Fascinante",  "icon": "🌿", "col": 2, "order": 7},
+    "AVES":  {"color": "#facc15", "cat": "Paso 7 • Naturaleza Fascinante",  "icon": "🦅", "col": 2, "order": 7},
+    "ARTE":  {"color": "#a3e635", "cat": "Paso 8 • Historia del Arte",      "icon": "🖼️", "col": 2, "order": 8},
+    "NIV":   {"color": "#4ade80", "cat": "Paso 9 • Escalafones y Niveles",  "icon": "📊", "col": 3, "order": 9},
+    "TRUC":  {"color": "#2dd4bf", "cat": "Paso 10 • Trucos Cotidianos",     "icon": "💡", "col": 3, "order": 10},
+    "MOVIL": {"color": "#60a5fa", "cat": "Paso 11 • Salvavidas del Móvil",  "icon": "📱", "col": 3, "order": 11},
+    "MEM":   {"color": "#a78bfa", "cat": "Paso 12 • Cápsula de Memoria",   "icon": "🕰️", "col": 3, "order": 12},
+    "MEC":   {"color": "#f59e0b", "cat": "Paso 12 • Mecánica & Vídeo",     "icon": "⚙️", "col": 3, "order": 12},
+    "CUENT": {"color": "#ec4899", "cat": "Paso 13 • Cuentos Ilustrados",    "icon": "📖", "col": 3, "order": 99}
 }
 
 COLUMNS_CONFIG = [
@@ -64,8 +64,8 @@ COLUMNS_CONFIG = [
     {
         "col_id": 3,
         "badge": "FASE 3",
-        "title": "Vida Práctica & Memoria",
-        "desc": "Niveles culturales, soluciones para el hogar, cámara del móvil y recuerdos",
+        "title": "Vida Práctica, Memoria & Cuentos",
+        "desc": "Escalafones, trucos cotidianos, móvil, recuerdos y proyecto final de cómic con IA",
         "color": "#34d399",
         "icon": "💡"
     }
@@ -73,11 +73,25 @@ COLUMNS_CONFIG = [
 
 def clean_title_from_filename(filename):
     name, _ = os.path.splitext(filename)
-    # Quitar prefijo de número y tag: ej "1. TXT-001_La IA como Consejera..."
+    if 'CUENT' in filename:
+        m_step = re.search(r'Paso_([0-3])(?:_|\s*)(.*)', name)
+        if m_step:
+            step_num = m_step.group(1)
+            rest = m_step.group(2).replace('_', ' ').strip()
+            rest = re.sub(r'\s+', ' ', rest)
+            if step_num == '0':
+                return 'Paso 0 • Proyecto Cómic Ilustrado (Introducción)'
+            elif step_num == '1':
+                return f'Paso 1 • Crear el Cuento: {rest}'
+            elif step_num == '2':
+                return f'Paso 2 • Guión del Cómic: {rest}'
+            elif step_num == '3':
+                return f'Paso 3 • Ilustrador Visual: {rest}'
     name = re.sub(r'^\d+\.\s*', '', name)
     name = re.sub(r'^[A-Z0-9\-_]+\s*-\s*\d+\s*', '', name)
     name = re.sub(r'^[A-Z0-9\-_]+_\d+\s*', '', name)
     name = name.replace('_', ' ').strip()
+    name = re.sub(r'\s+', ' ', name)
     return name
 
 def parse_step_code(filename):
@@ -91,9 +105,25 @@ def parse_step_code(filename):
     return "PRAC"
 
 def file_sort_key(filename):
+    code = parse_step_code(filename)
+    if code == 'CUENT':
+        if 'Paso_0' in filename:
+            step_order = 0
+        elif 'Paso_1' in filename:
+            step_order = 1
+        elif 'Paso_2' in filename:
+            step_order = 2
+        elif 'Paso_3' in filename:
+            step_order = 3
+        else:
+            step_order = 4
+        return (3, 99, step_order, filename.lower())
+    cfg = STEP_CONFIG.get(code, {'col': 1, 'order': 99})
+    col = cfg.get('col', 1)
+    order = cfg.get('order', 99)
     m = re.match(r'^(\d+)\.', filename)
     num = int(m.group(1)) if m else 99
-    return (num, filename.lower())
+    return (col, order, num, filename.lower())
 
 def generate_columns_html(session_num, session_folder, files):
     session_str = f"{session_num:02d}"
@@ -478,7 +508,7 @@ def generate_columns_html(session_num, session_folder, files):
     <header>
         <div class="header-pill">🪐 Sesión {session_num} • Cuadro de Mando Didáctico</div>
         <h1>Sesión {session_num}: Prácticas y Retos con IA</h1>
-        <p class="subtitle">Cuadro de mando interactivo organizado en 3 fases: Taller Creativo, Ciencia & Futuro, y Vida Práctica.</p>
+        <p class="subtitle">Cuadro de mando interactivo organizado en 3 fases: Taller Creativo, Ciencia & Futuro, y Vida Práctica & Cuentos.</p>
     </header>
 
     <main class="mindmap-canvas">
