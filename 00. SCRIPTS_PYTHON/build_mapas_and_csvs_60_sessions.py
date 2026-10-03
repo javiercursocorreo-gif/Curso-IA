@@ -128,10 +128,24 @@ def file_sort_key(filename):
 def generate_columns_html(session_num, session_folder, files):
     session_str = f"{session_num:02d}"
     
-    # Filtrar archivos reales de contenido
+    def session_file_sort_key(filename):
+        if session_num == 1:
+            # En Sesión 01, intercambiar el video 4. FRAC-058 (#06) con el reto visual 4. FRAC-000_B (#07)
+            if 'FRAC-000_A_Teoria' in filename:
+                return (2, 5, 1, filename.lower())
+            if 'FRAC-058' in filename and filename.lower().endswith('.mp4'):
+                return (2, 5, 2, filename.lower())
+            if 'FRAC-000_B_Reto' in filename:
+                return (2, 5, 3, filename.lower())
+            if 'FRAC-058' in filename and filename.lower().endswith('.pdf'):
+                return (2, 5, 4, filename.lower())
+        return file_sort_key(filename)
+
+    # Filtrar archivos reales de contenido (En Sesión 1 se omiten del 16 al 19 los cuentos NLM)
     valid_files = [
-        f for f in sorted(files, key=file_sort_key)
+        f for f in sorted(files, key=session_file_sort_key)
         if not f.startswith('.') and not f.startswith('MAPA_CLASE') and not f.endswith('.html') and not f.startswith('~$')
+        and not (session_num == 1 and 'CUENT' in f)
     ]
     
     # Clasificar archivos por columna (1, 2 o 3)
@@ -173,9 +187,18 @@ def generate_columns_html(session_num, session_folder, files):
     for i, it in enumerate(parsed_items, 1):
         it["step_num"] = f"#{i:02d}"
 
+    # Configuración de columnas (ajustar título y descripción de fase 3 en sesión 1)
+    current_columns_config = []
+    for col_info in COLUMNS_CONFIG:
+        col_copy = dict(col_info)
+        if session_num == 1 and col_copy["col_id"] == 3:
+            col_copy["title"] = "Vida Práctica & Memoria"
+            col_copy["desc"] = "Escalafones, trucos cotidianos, cámara del móvil y recuerdos de infancia"
+        current_columns_config.append(col_copy)
+
     # Agrupar en las 3 columnas
     columns_html = ""
-    for col_info in COLUMNS_CONFIG:
+    for col_info in current_columns_config:
         c_id = col_info["col_id"]
         col_items = [it for it in parsed_items if it["col"] == c_id]
         count_text = f"{len(col_items)} recursos" if len(col_items) != 1 else "1 recurso"
@@ -211,6 +234,12 @@ def generate_columns_html(session_num, session_folder, files):
                     {cards_html}
                 </div>
             </div>"""
+
+    subtitle_text = (
+        "Cuadro de mando interactivo organizado en 3 fases: Taller Creativo, Ciencia & Futuro, y Vida Práctica & Memoria."
+        if session_num == 1
+        else "Cuadro de mando interactivo organizado en 3 fases: Taller Creativo, Ciencia & Futuro, y Vida Práctica & Cuentos."
+    )
 
     html = f"""<!DOCTYPE html>
 <html lang="es">
@@ -508,7 +537,7 @@ def generate_columns_html(session_num, session_folder, files):
     <header>
         <div class="header-pill">🪐 Sesión {session_num} • Cuadro de Mando Didáctico</div>
         <h1>Sesión {session_num}: Prácticas y Retos con IA</h1>
-        <p class="subtitle">Cuadro de mando interactivo organizado en 3 fases: Taller Creativo, Ciencia & Futuro, y Vida Práctica & Cuentos.</p>
+        <p class="subtitle">{subtitle_text}</p>
     </header>
 
     <main class="mindmap-canvas">
