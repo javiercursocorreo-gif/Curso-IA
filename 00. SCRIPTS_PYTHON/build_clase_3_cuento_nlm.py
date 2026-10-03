@@ -13,7 +13,7 @@ from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, HRFlowable,
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-TARGET_DIR = os.path.join(BASE_DIR, "CLASES", "3. COMO_HACER_UN_CUENTO_CON_Gemini Notebook")
+TARGET_DIR = os.path.join(BASE_DIR, "CLASES", "3. COMO_HACER_UN_CUENTO_CON_NLM")
 os.makedirs(TARGET_DIR, exist_ok=True)
 
 # Título y tema del nuevo cuento para este monográfico
