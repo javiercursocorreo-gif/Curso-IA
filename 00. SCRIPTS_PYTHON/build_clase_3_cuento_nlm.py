@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 Generador de Fichas y Materiales para la Clase Monográfica 3:
-"3. Cómo hacer un cuento con NLM"
+"3. Cómo hacer un cuento con Gemini Notebook"
 Crea las fichas PDF con el formato idéntico a las ternas de las sesiones y los archivos complementarios.
 """
 
@@ -13,7 +13,7 @@ from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, HRFlowable,
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-TARGET_DIR = os.path.join(BASE_DIR, "CLASES", "3. COMO_HACER_UN_CUENTO_CON_NLM")
+TARGET_DIR = os.path.join(BASE_DIR, "CLASES", "3. COMO_HACER_UN_CUENTO_CON_Gemini Notebook")
 os.makedirs(TARGET_DIR, exist_ok=True)
 
 # Título y tema del nuevo cuento para este monográfico
@@ -67,9 +67,9 @@ Para cada viñeta, incluye SIEMPRE:
 TRANSFORMA EL CUENTO QUE ACABAMOS DE GENERAR EN EL MENSAJE ANTERIOR EN EL GUION DE 10 PÁGINAS AHORA MISMO."""
 
 # ==============================================================================
-# PROMPT MAESTRO DEL PASO 3 (NOTEBOOKLM - IDÉNTICO A LAS TERNAS)
+# PROMPT MAESTRO DEL PASO 3 (GEMINI NOTEBOOK - IDÉNTICO A LAS TERNAS)
 # ==============================================================================
-PROMPT_PASO_3_NLM = f"""PROMPT FINAL PARA NOTEBOOKLM
+PROMPT_PASO_3_GEMINI_NOTEBOOK = f"""PROMPT FINAL PARA GEMINI NOTEBOOK
 
 Aplica estrictamente los siguientes parámetros visuales y estéticos para generar la presentación visual de este cómic, basándote en el guion adjunto en las fuentes.
 No resumas ni recortes la historia. Genera las 10 páginas manteniendo este estilo visual de forma estricta:
@@ -101,25 +101,30 @@ def create_pdf_ficha(filename, title, content, is_step2=False):
     
     if "PASO 0" in title:
         paso0_text = (
-            "En esta clase monográfica vamos a hacer magia pura. Vamos a combinar el poder narrativo de Gemini con el motor de generación visual de NotebookLM para crear un cómic ilustrado de 10 páginas para tus nietos (o para ti mismo).<br/><br/>"
-            "Para lograrlo, siempre seguiremos estos 3 pasos (verás que en esta carpeta hay fichas de prompts, una para cada paso):<br/><br/>"
-            "- <b>PASO 1 (Gemini): CREAR EL CUENTO.</b> Aquí le damos a Gemini el tema y le pedimos que redacte el cuento adaptado a la edad del niño.<br/>"
-            "- <b>PASO 2 (Gemini): GENERADOR DE GUION.</b> Usamos a Gemini como guionista para que transforme el cuento del Paso 1 en un guion estructurado en 10 páginas.<br/>"
-            "- <b>PASO 3 (NotebookLM): ILUSTRADOR VISUAL.</b> Nos llevamos el guion entero a NotebookLM y le pasamos el último prompt para que dibuje y maquete el cómic visualmente."
+            "En esta clase monográfica vamos a hacer magia pura gracias a la conexión automática y directa entre <b>Google Gemini</b> y <b>Gemini Notebook</b>.<br/><br/>"
+            "Ya no necesitas copiar textos largos ni subir archivos manualmente. Tu flujo de trabajo es directo y fascinante:<br/><br/>"
+            "• <b>PASO 1 (En tu Cuaderno CUENTOS de Gemini): CREAR EL CUENTO.</b><br/>"
+            "Le pasas a Gemini el prompt del Paso 1 para redactar la historia con valores y adaptada a la edad del niño.<br/><br/>"
+            "• <b>PASO 2 (En la misma conversación de Gemini): GENERADOR DE GUION.</b><br/>"
+            "A continuación pegas el prompt del Paso 2. Gemini transformará el cuento en un guion cinematográfico estructurado en 10 páginas.<br/><br/>"
+            "• <b>EL PUENTE AUTOMÁTICO A GEMINI NOTEBOOK:</b><br/>"
+            "Al entrar en Gemini Notebook con tu cuenta, abre tu cuaderno <b>CUENTOS</b>. ¡Tu conversación con el cuento y el guion ya estará lista como fuente conectada!<br/><br/>"
+            "• <b>PASO 3 (En Gemini Notebook): PRESENTACIÓN VISUAL EN 3D (Nano Banana).</b><br/>"
+            "Pulsa directamente el botón <b>Presentación</b> en Gemini Notebook y pega el prompt del Paso 3. Gemini Notebook generará una presentación espectacular donde los personajes y escenarios se pintan con volumen y tridimensionalidad asombrosa."
         )
         story.append(Paragraph(paso0_text, style_body))
     elif "PASO 1" in title:
-        story.append(Paragraph("📝 INSTRUCCIONES GUÍA (1/3): Selecciona todo este texto y pégalo en Gemini. Añade al principio del prompt: \"Este cuento es para un niño de X años\".", style_body))
+        story.append(Paragraph("📝 INSTRUCCIONES GUÍA (1/3): Abre tu cuaderno <b>CUENTOS</b> en Gemini. Selecciona todo este texto y pégalo en la conversación. Añade al principio del prompt: \"Este cuento es para un niño de X años\".", style_body))
     elif "PASO 2" in title:
-        story.append(Paragraph("📝 INSTRUCCIONES GUÍA (2/3): Una vez que Gemini haya escrito tu cuento en la pantalla, pega el prompt del PASO 2. Con esto, le estás pidiendo a Gemini que transforme tu historia en un guion detallado para un cómic.", style_body))
+        story.append(Paragraph("📝 INSTRUCCIONES GUÍA (2/3): En la misma conversación de Gemini donde tienes tu cuento, pega el prompt del PASO 2. Con esto, Gemini transformará tu historia en un guion secuencial de 10 páginas.", style_body))
     elif "PASO 3" in title:
-        story.append(Paragraph('📝 INSTRUCCIONES GUÍA (3/3): Copia el GUION que te acaba de hacer Gemini (el texto entero) y pégalo como "Texto Copiado" en las fuentes de un nuevo cuaderno de NotebookLM.<br/>Luego, copia el PROMPT FINAL que tienes justo debajo de estas instrucciones y pégalo en el botón "Presentación" de NotebookLM para generar por fin la magia de tu cómic ilustrado.', style_body))
+        story.append(Paragraph('📝 INSTRUCCIONES GUÍA (3/3): Abre Gemini Notebook y entra en tu cuaderno <b>CUENTOS</b> (verás que la conversación de Gemini ya aparece como fuente automáticamente).<br/>Pulsa el botón <b>"Presentación"</b>, pega el PROMPT FINAL que tienes debajo y genera tu cuento ilustrado en 3D.', style_body))
         
     story.append(HRFlowable(width="100%", thickness=1, color=colors.HexColor('#CCCCCC'), spaceAfter=14))
     
     if is_step2:
         prompt_2 = (
-            f"PROMPT FINAL PARA NOTEBOOKLM<br/><br/>"
+            f"PROMPT FINAL PARA GEMINI NOTEBOOK<br/><br/>"
             f"Aplica estrictamente los siguientes parámetros visuales y estéticos para generar la presentación visual de este cómic, basándote en el guion adjunto en PDF.<br/>"
             f"No resumas ni recortes la historia. Genera las 10 páginas manteniendo este estilo visual de forma estricta:<br/><br/>"
             f"{ESTILO_VISUAL}<br/><br/>"
@@ -301,8 +306,8 @@ def build_all():
         is_step2=True
     )
     
-    # PDF del guion para quien prefiera subirlo como PDF a NotebookLM
-    guion_pdf_path = os.path.join(TARGET_DIR, "EJEMPLO_A_FUENTE_GUION_PARA_NOTEBOOKLM.pdf")
+    # PDF del guion para quien prefiera subirlo como PDF a Gemini Notebook
+    guion_pdf_path = os.path.join(TARGET_DIR, "EJEMPLO_A_FUENTE_GUION_PARA_GEMINI NOTEBOOK.pdf")
     doc_g = SimpleDocTemplate(guion_pdf_path, pagesize=letter, rightMargin=50, leftMargin=50, topMargin=50, bottomMargin=50)
     styles = getSampleStyleSheet()
     st_title = ParagraphStyle('GTitle', parent=styles['Heading1'], fontName='Helvetica-Bold', fontSize=14, textColor=colors.HexColor('#2C3E50'), spaceAfter=12)

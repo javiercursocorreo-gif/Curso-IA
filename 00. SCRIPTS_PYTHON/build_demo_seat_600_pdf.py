@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Genera el PDF de demostración para la clase práctica de NotebookLM:
+Genera el PDF de demostración para la clase práctica de Gemini Notebook:
 DEMO_HISTORIA_SEAT_600.pdf en CLASES/2. INTRODUCCION_NLM
 """
 

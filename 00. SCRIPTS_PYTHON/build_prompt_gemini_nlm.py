@@ -60,7 +60,7 @@ def create_docx():
 
     p_sub = doc.add_paragraph()
     p_sub.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    r_sub = p_sub.add_run("PROMPT MAESTRO PARA NOTEBOOKLM (NLM)\nGUÍA VISUAL PASO A PASO: TU PANTALLA DE GEMINI EN PC Y MÓVIL")
+    r_sub = p_sub.add_run("PROMPT MAESTRO PARA GEMINI NOTEBOOK (Gemini Notebook)\nGUÍA VISUAL PASO A PASO: TU PANTALLA DE GEMINI EN PC Y MÓVIL")
     r_sub.font.name = 'Calibri'
     r_sub.font.size = Pt(15)
     r_sub.font.bold = True
@@ -70,7 +70,7 @@ def create_docx():
     p_inst = doc.add_paragraph()
     p_inst.paragraph_format.space_before = Pt(8)
     p_inst.paragraph_format.space_after = Pt(12)
-    r_inst = p_inst.add_run("📋 INSTRUCCIÓN: Copia todo el texto del recuadro inferior y pégalo directamente en el chat de tu cuaderno de NotebookLM (o Gemini) para generar la presentación completa diapositiva por diapositiva que se llevarán los alumnos a casa.")
+    r_inst = p_inst.add_run("📋 INSTRUCCIÓN: Copia todo el texto del recuadro inferior y pégalo directamente en el chat de tu cuaderno de Gemini Notebook (o Gemini) para generar la presentación completa diapositiva por diapositiva que se llevarán los alumnos a casa.")
     r_inst.font.name = 'Calibri'
     r_inst.font.size = Pt(10)
     r_inst.font.italic = True

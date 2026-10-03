@@ -168,7 +168,7 @@ HTML_CONTENT = r"""<!DOCTYPE html>
       <b>📌 Qué hacer ahora para tener tus 2 resultados:</b><br>
       <b>1. En Gemini:</b> Pulsa el botón azul «Ir a Google Gemini», haz clic en la casilla de abajo y pulsa <b>Pegar (Ctrl + V)</b>.<br>
       <b>2. Para tu libro en Word:</b> Copia el texto redactado por Gemini, abre <b>Microsoft Word</b> en tu ordenador y dale a <b>Pegar</b> para guardarlo e imprimirlo en papel con fotos.<br>
-      <b>3. Para tu audio en WhatsApp:</b> Copia ese mismo texto en <b>NotebookLM</b> para generar el podcast tipo programa de radio.
+      <b>3. Para tu audio en WhatsApp:</b> Copia ese mismo texto en <b>Gemini Notebook</b> para generar el podcast tipo programa de radio.
     </div>
 
     <div style="margin-top: 20px;">
@@ -611,7 +611,7 @@ def create_user_manual_pdf():
     story.append(Paragraph("5. CÓMO CREAR EL PODCAST FAMILIAR PARA WHATSAPP", style_h2))
     story.append(Paragraph(
         "Si quieres además un programa de audio para compartir con tus hijos y nietos:<br/>"
-        "• Entra en <b>NotebookLM</b> (<i>notebooklm.google.com</i>) con tu cuenta de Google.<br/>"
+        "• Entra en <b>Gemini Notebook</b> (<i>gemini.google.com</i>) con tu cuenta de Google.<br/>"
         "• Pulsa en <i>«Nuevo Cuaderno»</i>, ponle de título <i>«Mi Biografía»</i> y en Fuentes elige <i>«Texto copiado»</i> para pegar el texto de tu biografía.<br/>"
         "• En la columna derecha pulsa en <b>«Conversación de Audio» (Audio Overview)</b>. Se generará un programa de radio donde dos presentadores conversan con enorme cariño y admiración sobre tu vida.<br/>"
         "• Descarga ese audio y envíalo al grupo de WhatsApp familiar.",

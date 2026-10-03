@@ -2,7 +2,7 @@
 """
 Generador de Paneles CSV para Google Classroom (CURSO-IA)
 Genera exactamente 5 paneles CSV:
-- 0.PANEL_MONOGRAFICOS.csv: Las 4 Clases Monográficas (Intro IA, Gemini PC+Móvil, NotebookLM, Cuentos/Cómics)
+- 0.PANEL_MONOGRAFICOS.csv: Las 4 Clases Monográficas (Intro IA, Gemini PC+Móvil, Gemini Notebook, Cuentos/Cómics)
 - 1.PANEL_SESIONES_01_AL_15.csv: Ternas 01 a 15 (con filtro de cuentos en Sesión 01 para antes del Monográfico 3/4)
 - 2.PANEL_SESIONES_16_AL_30.csv: Ternas 16 a 30
 - 3.PANEL_SESIONES_31_AL_45.csv: Ternas 31 a 45
@@ -79,18 +79,18 @@ def generate_panel_0():
         ("Monográfico 1. Gemini en PC y Móvil (Instalación y Uso)",
          os.path.join(ROOT_DIR, "CLASES", "1. INTRODUCCION_GEMINI"),
          "Nuestra IA de cabecera: manejo en ordenador, instalación de la app oficial en el móvil, dictado por voz y fotos con la cámara."),
-        ("Monográfico 2. NotebookLM: Tu Cuaderno Inteligente",
+        ("Monográfico 2. Gemini Notebook: Tu Cuaderno Inteligente",
          os.path.join(ROOT_DIR, "CLASES", "2. INTRODUCCION_NLM"),
          "Tu biblioteca personal inteligente: cómo subir documentos familiares o recuerdos para resumir, hacer preguntas y generar guiones."),
-        ("Monográfico 3. Cómo Crear un Cuento Ilustrado con NotebookLM",
+        ("Monográfico 3. Cómo Crear un Cuento Ilustrado con Gemini Notebook",
          os.path.join(ROOT_DIR, "CLASES", "3. COMO_HACER_UN_CUENTO_CON_NLM"),
-         "Metodología en 3 pasos para crear historias inolvidables con NotebookLM y Gemini: el héroe, el guion por escenas y las ilustraciones para los nietos."),
+         "Metodología en 3 pasos para crear historias inolvidables con Gemini Notebook y Gemini: el héroe, el guion por escenas y las ilustraciones para los nietos."),
         ("Monográfico 4. Mi Biografía (Escribe tus Memorias con IA)",
          os.path.join(ROOT_DIR, "CLASES", "4. Mi_Biografia"),
          "Escribe tus memorias familiares con ayuda de la IA: asistente interactivo para redactar vivencias, anécdotas y tu legado personal."),
         ("Monográfico 5. Educanietos IA: Ayuda a tus Nietos con IA (Ciencias, Mates e Historia)",
          os.path.join(ROOT_DIR, "CLASES", "5. EL_ABUELO_TUTOR_MATEMATICAS_HISTORIA"),
-         "Tu rol de mentor escolar: cómo explicar ciencias y matemáticas razonadas paso a paso y guiar las sesiones de estudio en pantalla con NotebookLM."),
+         "Tu rol de mentor escolar: cómo explicar ciencias y matemáticas razonadas paso a paso y guiar las sesiones de estudio en pantalla con Gemini Notebook."),
         ("Monográfico 6. Google Classroom: Publicación y Gestión del Aula",
          os.path.join(ROOT_DIR, "CLASES", "6. GOOGLE_CLASSROOM"),
          "Organización y publicación del aula virtual: estructura de temas, gestión de materiales en borrador y buenas prácticas docentes."),
@@ -209,7 +209,7 @@ def generate_panels_sessions():
                 files = sorted([x for x in os.listdir(session_path) if not x.startswith('.') and not x.startswith('~$') and x.endswith(('.pdf', '.mp4'))], key=natural_sort_key)
                 
                 for file_item in files:
-                    # En la Sesión 1: aplazar los cuentos para impartirlos tras la clase monográfica de NLM/Cuentos
+                    # En la Sesión 1: aplazar los cuentos para impartirlos tras la clase monográfica de Gemini Notebook/Cuentos
                     if s_idx == 1 and "CUENT" in file_item.upper():
                         continue
                         

@@ -988,9 +988,9 @@ add_taller_item("5.3.1.", "Definición y Ejemplificación Poética de las 7 Figu
                 "Defíneme con claridad y ponme un ejemplo poético breve de estas 7 figuras retóricas: anáfora, antítesis, anadiplosis, tricolon, quiasmo, epífora y metáfora.")
 
 # 5.4
-add_header_2("5.4. Flujo Rápido de Trabajo con Documentos PDF (y la Revolución NotebookLM)")
+add_header_2("5.4. Flujo Rápido de Trabajo con Documentos PDF (y la Revolución Gemini Notebook)")
 add_taller_item("5.4.1.", "El Flujo de 4 Pasos: Resumen, Artículo, Cambio de Tono y Diapositivas", 
-                "Ejecutar las 4 fases de procesamiento de documentos: 1. Resumen -> 2. Artículo divulgativo para principiantes -> 3. Cambio de tono profesional -> 4. Estructura por diapositivas. NOTA PEDAGÓGICA CLAVE (60+): Hoy en día la herramienta líder y más sencilla para documentos largos, apuntes de clase y libros es NotebookLM de Google, permitiendo chatear con hasta 50 documentos y crear podcasts explicativos de audio con un solo clic.", 
+                "Ejecutar las 4 fases de procesamiento de documentos: 1. Resumen -> 2. Artículo divulgativo para principiantes -> 3. Cambio de tono profesional -> 4. Estructura por diapositivas. NOTA PEDAGÓGICA CLAVE (60+): Hoy en día la herramienta líder y más sencilla para documentos largos, apuntes de clase y libros es Gemini Notebook de Google, permitiendo chatear con hasta 50 documentos y crear podcasts explicativos de audio con un solo clic.", 
                 "Hazme un resumen en 3 puntos clave de este documento y luego escribe un artículo de 150 palabras con tono divulgativo y sencillo para principiantes.")
 
 # 5.5
@@ -1063,8 +1063,7 @@ for p in doc.paragraphs:
         ET.SubElement(current_h3, 'font', {'NAME': 'Calibri', 'SIZE': '11', 'BOLD': 'true'})
 
 def indent(elem, level=0):
-    i = '
-' + level * '  '
+    i = '\n' + level * '  '
     if len(elem):
         if not elem.text or not elem.text.strip(): elem.text = i + '  '
         if not elem.tail or not elem.tail.strip(): elem.tail = i
@@ -1074,8 +1073,7 @@ def indent(elem, level=0):
         if level and (not elem.tail or not elem.tail.strip()): elem.tail = i
 
 indent(root_xml)
-xml_str = '<?xml version="1.0" encoding="UTF-8"?>
-' + ET.tostring(root_xml, encoding='utf-8').decode('utf-8')
+xml_str = '<?xml version="1.0" encoding="UTF-8"?>\n' + ET.tostring(root_xml, encoding='utf-8').decode('utf-8')
 
 with open(mm_path, 'w', encoding='utf-8') as f:
     f.write(xml_str)

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Genera el PDF de demostración histórica/intelectual para NotebookLM:
+Genera el PDF de demostración histórica/intelectual para Gemini Notebook:
 DEMO_HISTORIA_APOLO_11.pdf en CLASES/2. INTRODUCCION_NLM
 """
 

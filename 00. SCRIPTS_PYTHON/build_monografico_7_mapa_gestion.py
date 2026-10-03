@@ -4,7 +4,7 @@
 build_monografico_7_mapa_gestion.py
 Genera todos los materiales para el Monográfico 7:
 "Mapa de la Gestión del Proyecto con IA (Arquitectura y Flujo de Trabajo)"
-Optimizado para su explotación con NotebookLM (fuente + prompts),
+Optimizado para su explotación con Gemini Notebook (fuente + prompts),
 ficha oficial en PDF (ReportLab) y DOCX, e infografía interactiva en HTML.
 """
 
@@ -31,7 +31,7 @@ APP_DIR = os.path.join(MONO7_DIR, "app")
 os.makedirs(APP_DIR, exist_ok=True)
 
 # -------------------------------------------------------------------------
-# 1. GENERAR FUENTE DE TEXTO Y DOCX PARA NOTEBOOKLM
+# 1. GENERAR FUENTE DE TEXTO Y DOCX PARA GEMINI NOTEBOOK
 # -------------------------------------------------------------------------
 FUENTE_TEXTO = """# 🗺️ EL MAPA DE LA GESTIÓN DEL PROYECTO CON IA
 ## Cómo Diseñamos, Construimos y Publicamos este Curso Trabajando en Equipo (Profesor + IA + GitHub + Classroom)
@@ -115,12 +115,12 @@ El resultado es un ecosistema educativo de máxima calidad profesional, 100% gra
 Este mapa demuestra a los alumnos una lección fundamental: la Inteligencia Artificial no viene a sustituir la creatividad ni el afecto del profesor; es un exoesqueleto técnico que multiplica su capacidad de enseñar, liberándole de la burocracia digital para que pueda concentrarse en lo más valioso: acompañar, escuchar y orientar a sus alumnos en el aula.
 """
 
-PROMPT_NOTEBOOKLM_TEXTO = """# 🎯 PROMPT MAESTRO PARA GENERAR LA PRESENTACIÓN Y MATERIALES EN NOTEBOOKLM
+PROMPT_GEMINI_NOTEBOOK_TEXTO = """# 🎯 PROMPT MAESTRO PARA GENERAR LA PRESENTACIÓN Y MATERIALES EN GEMINI NOTEBOOK
 # Monográfico 7: Mapa de la Gestión del Proyecto con IA
 
 Instrucciones para el profesor:
-1. Abre tu cuaderno en NotebookLM (notebooklm.google.com).
-2. Añade como fuente el archivo: "0.FUENTE_PARA_NOTEBOOKLM_MAPA_GESTION_PROYECTO_IA.docx" (o .txt).
+1. Abre tu cuaderno en Gemini Notebook (gemini.google.com).
+2. Añade como fuente el archivo: "0.FUENTE_PARA_GEMINI NOTEBOOK_MAPA_GESTION_PROYECTO_IA.docx" (o .txt).
 3. En el cuadro de diálogo inferior, copia y pega cualquiera de los siguientes prompts según lo que desees obtener:
 
 ---
@@ -156,7 +156,7 @@ Copia y pega este prompt:
 # 2. GENERAR ARCHIVO .DOCX CON PYTHON-DOCX
 # -------------------------------------------------------------------------
 def create_docx():
-    docx_path = os.path.join(MONO7_DIR, "0.FUENTE_PARA_NOTEBOOKLM_MAPA_GESTION_PROYECTO_IA.docx")
+    docx_path = os.path.join(MONO7_DIR, "0.FUENTE_PARA_GEMINI NOTEBOOK_MAPA_GESTION_PROYECTO_IA.docx")
     doc = docx.Document()
     
     # Configurar márgenes
@@ -598,19 +598,19 @@ def create_interactive_app():
 def main():
     print("🚀 Construyendo todos los materiales del Monográfico 7...")
     
-    # 1. Archivo de texto para NotebookLM
-    txt_path = os.path.join(MONO7_DIR, "0.FUENTE_PARA_NOTEBOOKLM_MAPA_GESTION_PROYECTO_IA.txt")
+    # 1. Archivo de texto para Gemini Notebook
+    txt_path = os.path.join(MONO7_DIR, "0.FUENTE_PARA_GEMINI NOTEBOOK_MAPA_GESTION_PROYECTO_IA.txt")
     with open(txt_path, 'w', encoding='utf-8') as f:
         f.write(FUENTE_TEXTO)
-    print(f"✅ Fuente TXT para NotebookLM: {txt_path}")
+    print(f"✅ Fuente TXT para Gemini Notebook: {txt_path}")
     
-    # 2. Prompt guía para NotebookLM
-    prompt_path = os.path.join(MONO7_DIR, "0.PROMPT_GUIA_ESTILO_NOTEBOOKLM.txt")
+    # 2. Prompt guía para Gemini Notebook
+    prompt_path = os.path.join(MONO7_DIR, "0.PROMPT_GUIA_ESTILO_GEMINI NOTEBOOK.txt")
     with open(prompt_path, 'w', encoding='utf-8') as f:
-        f.write(PROMPT_NOTEBOOKLM_TEXTO)
-    print(f"✅ Prompt para NotebookLM: {prompt_path}")
+        f.write(PROMPT_GEMINI_NOTEBOOK_TEXTO)
+    print(f"✅ Prompt para Gemini Notebook: {prompt_path}")
     
-    # 3. Documento Word (.docx) para subir a NotebookLM
+    # 3. Documento Word (.docx) para subir a Gemini Notebook
     create_docx()
     
     # 4. Ficha Didáctica PDF (ReportLab)

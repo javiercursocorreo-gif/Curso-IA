@@ -141,7 +141,7 @@ def generate_columns_html(session_num, session_folder, files):
                 return (2, 5, 4, filename.lower())
         return file_sort_key(filename)
 
-    # Filtrar archivos reales de contenido (En Sesión 1 se omiten del 16 al 19 los cuentos NLM)
+    # Filtrar archivos reales de contenido (En Sesión 1 se omiten del 16 al 19 los cuentos Gemini Notebook)
     valid_files = [
         f for f in sorted(files, key=session_file_sort_key)
         if not f.startswith('.') and not f.startswith('MAPA_CLASE') and not f.endswith('.html') and not f.startswith('~$')

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-Generador de la Ficha Práctica Sistematizada de NotebookLM en formato Word (.docx) y PDF.
-Organiza de forma pedagógica, ordenada y exhaustiva todas las funciones de NotebookLM
+Generador de la Ficha Práctica Sistematizada de Gemini Notebook en formato Word (.docx) y PDF.
+Organiza de forma pedagógica, ordenada y exhaustiva todas las funciones de Gemini Notebook
 a partir de las 3 fuentes de ejemplo (TXT, PDF, YouTube):
 1. Carga y observación del resumen automático central.
 2. Resúmenes individuales y preguntas concretas con citas [1] en cada fuente.
@@ -27,8 +27,8 @@ from reportlab.lib.units import cm
 
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 TARGET_DIR = os.path.join(ROOT_DIR, "CLASES", "2. INTRODUCCION_NLM")
-TARGET_DOCX = os.path.join(TARGET_DIR, "FICHA_PRACTICA_SISTEMATIZADA_NOTEBOOKLM.docx")
-TARGET_PDF = os.path.join(TARGET_DIR, "FICHA_PRACTICA_SISTEMATIZADA_NOTEBOOKLM.pdf")
+TARGET_DOCX = os.path.join(TARGET_DIR, "FICHA_PRACTICA_SISTEMATIZADA_GEMINI NOTEBOOK.docx")
+TARGET_PDF = os.path.join(TARGET_DIR, "FICHA_PRACTICA_SISTEMATIZADA_GEMINI NOTEBOOK.pdf")
 
 os.makedirs(TARGET_DIR, exist_ok=True)
 
@@ -123,7 +123,7 @@ def generate_docx():
     p_main = doc.add_paragraph()
     p_main.alignment = WD_ALIGN_PARAGRAPH.CENTER
     p_main.paragraph_format.space_after = Pt(4)
-    r_main = p_main.add_run("TALLER MONOGRÁFICO DE NOTEBOOKLM")
+    r_main = p_main.add_run("TALLER MONOGRÁFICO DE GEMINI NOTEBOOK")
     r_main.font.name = "Calibri"
     r_main.font.size = Pt(20)
     r_main.font.bold = True
@@ -143,7 +143,7 @@ def generate_docx():
         doc,
         "🎯 Objetivo del Taller Práctico",
         [
-            "Aprender a manejar Google NotebookLM de forma rigurosa, visual y ordenada.",
+            "Aprender a manejar Google Gemini Notebook de forma rigurosa, visual y ordenada.",
             "Partiremos de 3 fuentes complementarias sobre La Llegada a la Luna (20 de julio de 1969): un recuerdo familiar (TXT), un informe histórico de la NASA (PDF) y un vídeo conmemorativo (YouTube).",
             "Descubriremos el resumen automático central, cómo hacer preguntas con citas [1] en cada papel, cómo fijar notas permanentes, cómo exprimir los botones de Studio, cómo crear una presentación con estilo y revisarla en vivo, y cómo generar un resumen de vídeo combinando las 3 fuentes."
         ],
@@ -216,7 +216,7 @@ def generate_docx():
         "💡 LA REGLA DE ORO DE LAS CASILLAS DE VERIFICACIÓN (Checkboxes)",
         [
             "Cada fuente tiene una pequeña casilla cuadrada a su izquierda [✔].",
-            "NotebookLM es un archivador inteligente que SOLO lee las fuentes que tengan la casilla marcada.",
+            "Gemini Notebook es un archivador inteligente que SOLO lee las fuentes que tengan la casilla marcada.",
             "Si dejas activada una sola fuente, la IA 'olvidará' temporalmente las otras dos. ¡Esta es la clave para hacer análisis individuales y limpios!"
         ],
         border_color="0B7285",
@@ -254,7 +254,7 @@ def generate_docx():
         doc,
         "👀 QUÉ DEBE OBSERVAR EL ALUMNO EN EL CENTRO:",
         [
-            "1. NotebookLM ha elaborado por sí mismo un resumen general sin que hayamos tecleado nada.",
+            "1. Gemini Notebook ha elaborado por sí mismo un resumen general sin que hayamos tecleado nada.",
             "2. Ha identificado que los tres documentos tratan sobre el alunizaje de 1969.",
             "3. En la parte inferior sugiere varias preguntas recomendadas para explorar los temas."
         ],
@@ -361,7 +361,7 @@ def generate_docx():
         doc,
         "📌 PASO OBLIGATORIO: FIJAR COMO NOTA (Pin)",
         [
-            "1. En cuanto NotebookLM te responda con la tabla comparativa, sitúa el ratón encima de la respuesta.",
+            "1. En cuanto Gemini Notebook te responda con la tabla comparativa, sitúa el ratón encima de la respuesta.",
             "2. En la esquina superior derecha del mensaje verás el icono de una chincheta o botón «Guardar en nota» (Pin). ¡Haz clic en él!",
             "3. Observa el panel lateral derecho (Studio): la respuesta se ha convertido en una Nota permanente. Nunca se borrará aunque cierres el chat o apagues el ordenador."
         ],
@@ -403,7 +403,7 @@ def generate_docx():
     t_botones.autofit = False
     b_col_widths = [Inches(1.5), Inches(2.2), Inches(2.8)]
 
-    b_headers = ["Botón en Studio", "Acción del Alumno", "¿Qué crea NotebookLM?"]
+    b_headers = ["Botón en Studio", "Acción del Alumno", "¿Qué crea Gemini Notebook?"]
     for j, h in enumerate(b_headers):
         c = t_botones.cell(0, j)
         c.width = b_col_widths[j]
@@ -475,7 +475,7 @@ def generate_docx():
     p_p2.add_run("[  ] Paso 3.2: Pulsar el Botón «Presentación» y fijar el estilo visual: ").bold = True
     p_p2.add_run("En el panel lateral de Studio (a la derecha), pulsa directamente sobre el botón ").font.color.rgb = C_DARK
     p_p2.add_run("«Presentación»").bold = True
-    p_p2.add_run(". En la ventana o casilla de personalización que te ofrece NotebookLM para guiar la presentación, escribe este prompt de estilo visual y editorial:\n")
+    p_p2.add_run(". En la ventana o casilla de personalización que te ofrece Gemini Notebook para guiar la presentación, escribe este prompt de estilo visual y editorial:\n")
 
     r_p = p_p2.add_run(
         "👉 «Crea una presentación con un estilo visual sobrio, elegante y de crónica documental histórica. "
@@ -534,11 +534,11 @@ def generate_docx():
     p_f2.add_run("[  ] Paso 4.2: Pulsar el Botón «Resumen de vídeo» en Studio (Sin prompts en el chat): ").bold = True
     p_f2.add_run("Dirígete al panel de Studio (a la derecha) y pulsa directamente sobre el botón ").font.color.rgb = C_DARK
     p_f2.add_run("«Resumen de vídeo»").bold = True
-    p_f2.add_run(". No necesitas escribir ningún prompt en el chat ni añadir más instrucciones: simplemente pulsa el botón y observa cómo NotebookLM procesa e integra automáticamente las tres fuentes en una síntesis audiovisual.")
+    p_f2.add_run(". No necesitas escribir ningún prompt en el chat ni añadir más instrucciones: simplemente pulsa el botón y observa cómo Gemini Notebook procesa e integra automáticamente las tres fuentes en una síntesis audiovisual.")
 
     add_callout_box(
         doc,
-        "🎬 QUÉ HACE NOTEBOOKLM AL PULSAR «RESUMEN DE VÍDEO»",
+        "🎬 QUÉ HACE GEMINI NOTEBOOK AL PULSAR «RESUMEN DE VÍDEO»",
         [
             "1. Lee al mismo tiempo la vivencia íntima del salón madrileño de 1969, la hazaña científica del Saturno V y de Fresnedillas, y la conmemoración de Euronews.",
             "2. Estructura una narrativa audiovisual equilibrada que combina imagen, texto y datos clave en un formato dinámico y moderno listo para proyectar."
@@ -646,14 +646,14 @@ def generate_pdf():
     story = []
 
     story.append(Paragraph("CURSO DE INTELIGENCIA ARTIFICIAL Y TECNOLOGÍA PARA ADULTOS MAYORES (60+)", p_header))
-    story.append(Paragraph("TALLER MONOGRÁFICO DE NOTEBOOKLM", p_title))
+    story.append(Paragraph("TALLER MONOGRÁFICO DE GEMINI NOTEBOOK", p_title))
     story.append(Paragraph("Ficha de Práctica Sistemática: Todas las Funciones de la Pantalla Real Paso a Paso", p_sub))
     story.append(HRFlowable(width="100%", thickness=1.5, color=c_blue, spaceAfter=8))
 
     # Caja Objetivo
     obj_rows = [
         [Paragraph("<b>🎯 Objetivo del Taller Práctico:</b>", p_prompt)],
-        [Paragraph("Aprender a manejar Google NotebookLM de forma rigurosa y ordenada a partir de 3 fuentes complementarias sobre <b>La Llegada a la Luna (20 de julio de 1969)</b>: un texto personal (TXT), un informe histórico (PDF) y un vídeo conmemorativo (YouTube). Descubriremos el resumen automático central, cómo buscar datos con citas [1], cómo fijar notas, cómo pulsar los botones de Studio, cómo crear una presentación con estilo sobrio y revisarla en vivo, y cómo pulsar directamente el botón de resumen de vídeo.", p_box)]
+        [Paragraph("Aprender a manejar Google Gemini Notebook de forma rigurosa y ordenada a partir de 3 fuentes complementarias sobre <b>La Llegada a la Luna (20 de julio de 1969)</b>: un texto personal (TXT), un informe histórico (PDF) y un vídeo conmemorativo (YouTube). Descubriremos el resumen automático central, cómo buscar datos con citas [1], cómo fijar notas, cómo pulsar los botones de Studio, cómo crear una presentación con estilo sobrio y revisarla en vivo, y cómo pulsar directamente el botón de resumen de vídeo.", p_box)]
     ]
     t_obj = Table(obj_rows, colWidths=[17.4*cm], splitByRow=1)
     t_obj.setStyle(TableStyle([
@@ -686,7 +686,7 @@ def generate_pdf():
 
     # FASE 1
     story.append(Paragraph("FASE 1: La Zona Central (Observación, Resúmenes y Preguntas con Citas)", p_h1))
-    story.append(Paragraph("<b>1.1. Observación guiada:</b> Con las 3 fuentes marcadas [✔], observa la tarjeta central «Guía del cuaderno». Comprueba cómo NotebookLM ha generado un resumen global automático sin haber tecleado nada.", p_body))
+    story.append(Paragraph("<b>1.1. Observación guiada:</b> Con las 3 fuentes marcadas [✔], observa la tarjeta central «Guía del cuaderno». Comprueba cómo Gemini Notebook ha generado un resumen global automático sin haber tecleado nada.", p_body))
     story.append(Paragraph("<b>1.2. Resumen individual de cada fuente:</b> Deja marcada únicamente una casilla cada vez:", p_body))
     story.append(Paragraph("• <b>Solo TXT:</b> «Resume en 3 líneas los recuerdos familiares y la emoción de aquella noche.»", p_body))
     story.append(Paragraph("• <b>Solo PDF:</b> «Resume en 3 puntos técnicos los datos más asombrosos del programa Apolo 11.»", p_body))
@@ -734,7 +734,7 @@ def generate_pdf():
     # FASE 4
     story.append(Paragraph("FASE 4: El Gran Resumen de Vídeo (Las 3 Fuentes Juntas)", p_h1))
     story.append(Paragraph("<b>4.1. Selección Total:</b> Marca las <b>3 fuentes a la vez [✔] TXT + [✔] PDF + [✔] YouTube</b>.", p_body))
-    story.append(Paragraph("<b>4.2. Pulsar Botón «Resumen de vídeo» en Studio (Sin prompts en el chat):</b> Haz clic directamente en el botón <b>«Resumen de vídeo»</b> en Studio. Sin escribir nada en el chat ni añadir más instrucciones, observa cómo NotebookLM genera automáticamente el vídeo integrando la vivencia familiar, la ciencia de la NASA y el aniversario de Euronews.", p_body))
+    story.append(Paragraph("<b>4.2. Pulsar Botón «Resumen de vídeo» en Studio (Sin prompts en el chat):</b> Haz clic directamente en el botón <b>«Resumen de vídeo»</b> en Studio. Sin escribir nada en el chat ni añadir más instrucciones, observa cómo Gemini Notebook genera automáticamente el vídeo integrando la vivencia familiar, la ciencia de la NASA y el aniversario de Euronews.", p_body))
     story.append(Spacer(1, 6))
 
     # TABLA EVALUACIÓN
@@ -764,7 +764,7 @@ def generate_pdf():
 
 def main():
     print("=" * 70)
-    print("🚀 ACTUALIZANDO FICHA PRÁCTICA SISTEMATIZADA DE NOTEBOOKLM (DOCX Y PDF)")
+    print("🚀 ACTUALIZANDO FICHA PRÁCTICA SISTEMATIZADA DE GEMINI NOTEBOOK (DOCX Y PDF)")
     print("=" * 70)
     generate_docx()
     generate_pdf()

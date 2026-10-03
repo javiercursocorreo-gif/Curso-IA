@@ -66,9 +66,9 @@ def create_docx(path, title, content, style_preset=None):
         
     # Instructions
     if "PASO 1" in title:
-        doc.add_paragraph("📝 INSTRUCCIONES: Copia todo el texto que aparece debajo de la línea y pégalo en Gemini. ¡No olvides sustituir la última línea pegando el cuento que generaste en la clase de hoy!")
+        doc.add_paragraph("📝 INSTRUCCIONES: En tu cuaderno CUENTOS de Gemini, copia todo el texto que aparece debajo de la línea y pégalo en la misma conversación de tu cuento para generar el guion de 10 páginas.")
     elif "PASO 2" in title:
-        doc.add_paragraph("📝 INSTRUCCIONES: Sube el PDF de tu guion a NotebookLM. Luego, copia todo el texto que aparece debajo de la línea y pégalo en el botón 'Presentación' de NotebookLM para generar tu cómic final.")
+        doc.add_paragraph("📝 INSTRUCCIONES: Abre Gemini Notebook y entra en tu cuaderno CUENTOS (verás tu cuento y guion conectados como fuente). Pulsa el botón 'Presentación', pega el texto que aparece debajo y genera tu cómic 3D con Nano Banana.")
         
     doc.add_paragraph("_" * 50)
     doc.add_paragraph()
@@ -77,7 +77,7 @@ def create_docx(path, title, content, style_preset=None):
     p = doc.add_paragraph()
     
     if "PASO 2" in title:
-        prompt_2 = f"""PROMPT FINAL PARA NOTEBOOKLM
+        prompt_2 = f"""PROMPT FINAL PARA GEMINI NOTEBOOK
 
 Aplica estrictamente los siguientes parámetros visuales y estéticos para generar la presentación visual de este cómic, basándote en el guion adjunto en PDF.
 No resumas ni recortes la historia. Genera las 10 páginas manteniendo este estilo visual de forma estricta:
@@ -129,19 +129,16 @@ def generate_guide_pdf(output_path):
     
     flowables.append(Paragraph("Esta guía te explica cómo transformar el cuento que inventaste hoy en un cómic ilustrado de 10 páginas para leérselo a tus nietos. Hemos simplificado el proceso a solo dos pasos.", body_style))
     
-    flowables.append(Paragraph("FASE 1: CONVERTIR EL CUENTO EN GUION (En Gemini)", h2_style))
-    flowables.append(Paragraph("1. Genera tu cuento en Gemini de forma normal con la ficha del curso.", body_style))
-    flowables.append(Paragraph("2. Abre el archivo <b>'1. PASO 1 - Prompt para Gemini.docx'</b> que está en tu carpeta.", body_style))
-    flowables.append(Paragraph("3. Copia todo el texto de ese archivo y pégalo en la barra de chat de Gemini.", body_style))
-    flowables.append(Paragraph("4. Justo debajo del texto que acabas de pegar, pega el Cuento que generaste en el paso 1 y pulsa Enviar.", body_style))
-    flowables.append(Paragraph("5. Gemini te escribirá un guion detallado de 10 páginas. Exporta o copia esa respuesta y guárdala como un PDF en tu ordenador (llámalo 'Guion_Comic.pdf').", body_style))
+    flowables.append(Paragraph("FASE 1: CREAR Y GUIONIZAR EL CUENTO (En tu Cuaderno CUENTOS de Gemini)", h2_style))
+    flowables.append(Paragraph("1. Abre tu cuaderno <b>CUENTOS</b> en Gemini y genera el cuento con la ficha del curso.", body_style))
+    flowables.append(Paragraph("2. En la misma conversación, copia el texto de <b>'1. PASO 1 - Prompt para Gemini.docx'</b> y envíalo para generar el guion de 10 páginas.", body_style))
+    flowables.append(Paragraph("3. ¡Listo! No necesitas guardar ni exportar nada a mano: tu conversación ya se sincroniza sola con Gemini Notebook.", body_style))
 
-    flowables.append(Paragraph("FASE 2: ILUSTRAR EL CÓMIC (En NotebookLM)", h2_style))
-    flowables.append(Paragraph("1. Abre NotebookLM y crea un nuevo cuaderno llamado 'Cómic para Nietos'.", body_style))
-    flowables.append(Paragraph("2. Sube como fuente el archivo PDF 'Guion_Comic.pdf' que guardaste antes.", body_style))
-    flowables.append(Paragraph("3. Abre el archivo <b>'2. PASO 2 - Prompt para NotebookLM.docx'</b> que está en tu carpeta.", body_style))
-    flowables.append(Paragraph("4. Copia el texto. Fíjate que tiene un 'estilo artístico' asignado especialmente para ti (por ejemplo: Acuarela, Pixar, etc.).", body_style))
-    flowables.append(Paragraph("5. En NotebookLM, ve a la opción 'Presentación' o 'Studio', pega ese texto y genera tu cómic final.", body_style))
+    flowables.append(Paragraph("FASE 2: ILUSTRAR EL CÓMIC EN 3D (En Gemini Notebook con Nano Banana)", h2_style))
+    flowables.append(Paragraph("1. Abre Gemini Notebook y entra en tu cuaderno <b>CUENTOS</b> (verás que tu conversación de Gemini ya está conectada como fuente).", body_style))
+    flowables.append(Paragraph("2. Pulsa directamente en el botón <b>'Presentación'</b>.", body_style))
+    flowables.append(Paragraph("3. Abre el archivo <b>'2. PASO 2 - Prompt para Gemini Notebook.docx'</b>, copia el texto con tu estilo visual asignado y pégalo.", body_style))
+    flowables.append(Paragraph("4. ¡El motor visual de Nano Banana creará tu cómic con personajes tridimensionales y escenas cinematográficas espectaculares!", body_style))
     
     flowables.append(Spacer(1, 20))
     flowables.append(Paragraph("¡Felicidades! Ya tienes un cómic profesional y personalizado para regalar.", body_style))
@@ -180,7 +177,7 @@ def main():
         )
         
         create_docx(
-            os.path.join(folder_path, "2. PASO 2 - Prompt para NotebookLM.docx"),
+            os.path.join(folder_path, "2. PASO 2 - Prompt para Gemini Notebook.docx"),
             "PASO 2: ILUSTRADOR VISUAL",
             "",
             style_preset=estilo

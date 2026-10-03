@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 Generador de la Ficha Didáctica del Monográfico 5:
-«EDUCANIETOS IA: Tutor de Ciencias, Física, Química y Matemáticas con Gemini y Sesiones en Pantalla de Historia con NotebookLM»
+«EDUCANIETOS IA: Tutor de Ciencias, Física, Química y Matemáticas con Gemini y Sesiones en Pantalla de Historia con Gemini Notebook»
 Genera exclusivamente:
 - FICHA_MONOGRAFICO_EDUCANIETOS_IA.docx y .pdf
 en CLASES/5. EL_ABUELO_TUTOR_MATEMATICAS_HISTORIA/
@@ -127,7 +127,7 @@ def generate_docx():
     p_sub = doc.add_paragraph()
     p_sub.alignment = WD_ALIGN_PARAGRAPH.CENTER
     p_sub.paragraph_format.space_after = Pt(14)
-    r_sub = p_sub.add_run("Tutor de Ciencias, Física, Química y Matemáticas (Gemini) y Sesiones en Pantalla de Historia (NotebookLM)")
+    r_sub = p_sub.add_run("Tutor de Ciencias, Física, Química y Matemáticas (Gemini) y Sesiones en Pantalla de Historia (Gemini Notebook)")
     r_sub.font.name = "Calibri"
     r_sub.font.size = Pt(11.5)
     r_sub.font.italic = True
@@ -136,12 +136,12 @@ def generate_docx():
     # Cuadro de enfoque pedagógico
     add_callout_box(
         doc,
-        "🎯 Metodología Diferenciada: Ciencias en 1 Clic con Gemini + Historia en Pantalla con NotebookLM",
+        "🎯 Metodología Diferenciada: Ciencias en 1 Clic con Gemini + Historia en Pantalla con Gemini Notebook",
         [
             "1. Todas las materias de Ciencias: Sirve para Matemáticas, Física, Química, Biología, Geología y Tecnología. El abuelo escribe cualquier duda en lenguaje cotidiano (desde por qué flotan los barcos o la fórmula del etanol, hasta una integral o el ciclo del agua).",
             "2. Calibración cognitiva por edad (Botones táctiles): Se adapta radicalmente al nieto mediante 3 botones: 👶 8-11 años (juegos, bolitas LEGO, sin tecnicismos), 🧒 12-14 años (ciencias prácticas de la ESO) y 🧑 15-18 años (rigor oficial, nomenclatura IUPAC, unidades SI y Selectividad).",
             "3. Conexión directa con Google Gemini en 1 Clic: La app genera un prompt maestro optimizado, lo copia al portapapeles y abre Gemini sincronizadamente. Con Ctrl+V / Cmd+V y Enter, Gemini responde con ilustraciones visuales a color (prohibidos cuadros feos en texto ASCII).",
-            "4. Historia y Letras en Directo con NotebookLM: Abuelo y nieto se sientan juntos frente a la pantalla para explorar el mapa mental, concursar con tarjetas de memoria y resolver cuestionarios dinámicos con citas directas al libro escolar."
+            "4. Historia y Letras en Directo con Gemini Notebook: Abuelo y nieto se sientan juntos frente a la pantalla para explorar el mapa mental, concursar con tarjetas de memoria y resolver cuestionarios dinámicos con citas directas al libro escolar."
         ],
         border_color="6D28D9",
         bg_color="F5F3FF"
@@ -215,11 +215,11 @@ def generate_docx():
 
     doc.add_paragraph().paragraph_format.space_after = Pt(4)
 
-    # Sección 3: Historia con NotebookLM
+    # Sección 3: Historia con Gemini Notebook
     p_h1 = doc.add_paragraph()
     p_h1.paragraph_format.space_before = Pt(12)
     p_h1.paragraph_format.space_after = Pt(6)
-    r = p_h1.add_run("3. Módulo de Historia y Ciencias: La Sesión en Vivo con NotebookLM")
+    r = p_h1.add_run("3. Módulo de Historia y Ciencias: La Sesión en Vivo con Gemini Notebook")
     r.font.name = "Calibri"
     r.font.size = Pt(14)
     r.font.bold = True
@@ -229,10 +229,10 @@ def generate_docx():
         doc,
         "💻 Dinámica de Estudio Abuelo-Nieto en Pantalla",
         [
-            "1. Subir los apuntes: El nieto hace 2 fotos de las páginas del libro con el móvil y se suben a Fuentes de NotebookLM. NLM extrae el texto exacto sin inventar nada.",
+            "1. Subir los apuntes: El nieto hace 2 fotos de las páginas del libro con el móvil y se suben a Fuentes de Gemini Notebook. Gemini Notebook extrae el texto exacto sin inventar nada.",
             "2. Mapa Mental interactivo: En Studio, pulsáis «Mapa mental». Desplegáis juntos los nodos en pantalla para entender las causas y consecuencias visualmente.",
             "3. Concurso de Tarjetas (Flashcards): Pulsáis «Tarjetas». El abuelo lee la pregunta en voz alta, el nieto piensa la respuesta y hacen clic en la tarjeta para comprobar si acierta.",
-            "4. Cuestionario con Citas directas: Contestáis juntos el test pantalla a pantalla. Si el nieto duda, pulsa el número de cita y NLM resalta el renglón exacto del libro donde está la prueba documental."
+            "4. Cuestionario con Citas directas: Contestáis juntos el test pantalla a pantalla. Si el nieto duda, pulsa el número de cita y Gemini Notebook resalta el renglón exacto del libro donde está la prueba documental."
         ],
         border_color="0066A1",
         bg_color="F0F7FC"
@@ -270,7 +270,7 @@ def generate_docx():
         ("Ciencias / Mates", "Sé escribir dudas de Matemáticas, Física o Química y seleccionar el botón de edad de mi nieto.", "[  ] SÍ  /  [  ] DUDAS"),
         ("Ciencias / Mates", "Sé pulsar 'Preguntar a Gemini', pegar en la ventana abierta y revisar la ilustración a color generada.", "[  ] SÍ  /  [  ] DUDAS"),
         ("Ciencias / Mates", "Sé proponerle el Reto Gemelo para que mi nieto lo resuelva a solas a lápiz en su cuaderno.", "[  ] SÍ  /  [  ] DUDAS"),
-        ("Historia / Letras", "Sé subir fotos de los apuntes o libros del nieto a Google NotebookLM como fuentes fiables.", "[  ] SÍ  /  [  ] DUDAS"),
+        ("Historia / Letras", "Sé subir fotos de los apuntes o libros del nieto a Google Gemini Notebook como fuentes fiables.", "[  ] SÍ  /  [  ] DUDAS"),
         ("Historia / Letras", "Sé explorar el Mapa Mental y jugar al concurso de Tarjetas y Cuestionarios interactivos en pantalla.", "[  ] SÍ  /  [  ] DUDAS")
     ]
 
@@ -336,13 +336,13 @@ def generate_pdf():
 
     story.append(Paragraph("CURSO DE INTELIGENCIA ARTIFICIAL Y TECNOLOGÍA PARA ADULTOS MAYORES (60+)", p_header))
     story.append(Paragraph("MONOGRÁFICO 5: EDUCANIETOS IA", p_title))
-    story.append(Paragraph("Tutor de Ciencias, Física, Química y Matemáticas (Gemini) y Sesiones en Pantalla de Historia (NotebookLM)", p_sub))
+    story.append(Paragraph("Tutor de Ciencias, Física, Química y Matemáticas (Gemini) y Sesiones en Pantalla de Historia (Gemini Notebook)", p_sub))
     story.append(HRFlowable(width="100%", thickness=1.5, color=c_purple, spaceAfter=7))
 
     # Caja Enfoque
     obj_rows = [
-        [Paragraph("<b>🎯 Metodología Diferenciada: Ciencias con Gemini + Historia con NotebookLM</b>", p_prompt)],
-        [Paragraph("• <b>En Ciencias, Física, Química y Matemáticas:</b> Usamos la app <b>«Educanietos IA»</b>. Escribes la duda (fotosíntesis, leyes de Newton, derivadas o fórmula del etanol) y seleccionas la edad de tu nieto. En 1 clic se genera el prompt optimizado, se abre Gemini y este responde con analogías intuitivas, explicaciones paso a paso e ilustraciones a todo color (sin cuadros feos en texto plano ASCII).<br/>• <b>En Historia y Ciencias Sociales:</b> Nos sentamos juntos abuelo y nieto frente a la pantalla de <b>NotebookLM</b> para explorar el Mapa Mental interactivo, jugar al concurso de Tarjetas y resolver Cuestionarios con citas directas al libro escolar.", p_box)]
+        [Paragraph("<b>🎯 Metodología Diferenciada: Ciencias con Gemini + Historia con Gemini Notebook</b>", p_prompt)],
+        [Paragraph("• <b>En Ciencias, Física, Química y Matemáticas:</b> Usamos la app <b>«Educanietos IA»</b>. Escribes la duda (fotosíntesis, leyes de Newton, derivadas o fórmula del etanol) y seleccionas la edad de tu nieto. En 1 clic se genera el prompt optimizado, se abre Gemini y este responde con analogías intuitivas, explicaciones paso a paso e ilustraciones a todo color (sin cuadros feos en texto plano ASCII).<br/>• <b>En Historia y Ciencias Sociales:</b> Nos sentamos juntos abuelo y nieto frente a la pantalla de <b>Gemini Notebook</b> para explorar el Mapa Mental interactivo, jugar al concurso de Tarjetas y resolver Cuestionarios con citas directas al libro escolar.", p_box)]
     ]
     t_obj = Table(obj_rows, colWidths=[17.4*cm], splitByRow=1)
     t_obj.setStyle(TableStyle([
@@ -371,8 +371,8 @@ def generate_pdf():
     story.append(Spacer(1, 5))
 
     # MÓDULO HISTORIA
-    story.append(Paragraph("3. Módulo de Historia: Sesión en Vivo con NotebookLM (En Pantalla)", p_h1))
-    story.append(Paragraph("• <b>Fotos de Apuntes:</b> Sube fotos del libro a Fuentes de NotebookLM sin transcribir nada a mano.", p_body))
+    story.append(Paragraph("3. Módulo de Historia: Sesión en Vivo con Gemini Notebook (En Pantalla)", p_h1))
+    story.append(Paragraph("• <b>Fotos de Apuntes:</b> Sube fotos del libro a Fuentes de Gemini Notebook sin transcribir nada a mano.", p_body))
     story.append(Paragraph("• <b>Mapa Mental en Vivo:</b> Exploráis juntos el árbol visual de causas y consecuencias.", p_body))
     story.append(Paragraph("• <b>Concurso de Tarjetas (Flashcards):</b> El abuelo lee la pregunta y el nieto adivina antes de voltear la tarjeta.", p_body))
     story.append(Paragraph("• <b>Cuestionario con Citas:</b> Resuelven el test y usan las citas para comprobar la prueba documental del texto.", p_body))
@@ -385,7 +385,7 @@ def generate_pdf():
         [Paragraph("Ciencias / Mates", p_cell_b), Paragraph("Sé escribir dudas de Ciencias o Matemáticas y seleccionar el botón de edad de mi nieto.", p_cell), Paragraph("[  ] SÍ  /  [  ] DUDAS", p_cell)],
         [Paragraph("Ciencias / Mates", p_cell_b), Paragraph("Sé pulsar 'Preguntar a Gemini', pegar en la ventana abierta y revisar la ilustración a color.", p_cell), Paragraph("[  ] SÍ  /  [  ] DUDAS", p_cell)],
         [Paragraph("Ciencias / Mates", p_cell_b), Paragraph("Sé proponerle el Reto Gemelo para que mi nieto lo resuelva a lápiz en su cuaderno.", p_cell), Paragraph("[  ] SÍ  /  [  ] DUDAS", p_cell)],
-        [Paragraph("Historia / Letras", p_cell_b), Paragraph("Sé subir fotos de los apuntes o libros del nieto a Google NotebookLM como fuentes fiables.", p_cell), Paragraph("[  ] SÍ  /  [  ] DUDAS", p_cell)],
+        [Paragraph("Historia / Letras", p_cell_b), Paragraph("Sé subir fotos de los apuntes o libros del nieto a Google Gemini Notebook como fuentes fiables.", p_cell), Paragraph("[  ] SÍ  /  [  ] DUDAS", p_cell)],
         [Paragraph("Historia / Letras", p_cell_b), Paragraph("Sé explorar el Mapa Mental y jugar al concurso de Tarjetas y Cuestionarios en pantalla.", p_cell), Paragraph("[  ] SÍ  /  [  ] DUDAS", p_cell)],
     ]
     t_chk = Table(chk_rows, colWidths=[2.4*cm, 11.4*cm, 3.6*cm], splitByRow=1)
