@@ -256,7 +256,7 @@ def generate_columns_html(session_num, session_folder, files):
                     <p class="fase-zero-desc">
                         Para evitar que las prácticas de las 60 sesiones queden desperdigadas en cientos de chats anónimos, 
                         organizamos todo el trabajo por materias mediante la función <strong>Cuadernos</strong>. 
-                        <strong>Regla de oro:</strong> Cada vez que abras una nueva etiqueta en clase, abres su cuaderno con su nombre completo oficial. 
+                        <strong>Regla de oro:</strong> Cada vez que abras una nueva etiqueta en clase, abres su cuaderno nombrando exactamente la palabra de la tabla (ej. <em>TEXTO</em>, <em>ESTILO</em>, <em>PRÁCTICA</em>...). 
                         Las siguientes veces que aparezca esa etiqueta, ¡reutilizas ese mismo cuaderno!
                     </p>
                 </div>
@@ -266,7 +266,7 @@ def generate_columns_html(session_num, session_folder, files):
                             <span class="fase-zero-card-icon">📋</span>
                             <div>
                                 <div class="fase-zero-card-title">0. FASE 0 • GUÍA Y TABLA DE CUADERNOS</div>
-                                <div class="fase-zero-card-sub">PDF de referencia • Tabla completa de las 15 etiquetas y nombres oficiales</div>
+                                <div class="fase-zero-card-sub">PDF de referencia • Tabla completa de las 15 etiquetas y nombres para Gemini</div>
                             </div>
                         </div>
                         <span class="fase-zero-card-btn">Abrir Guía PDF ↗</span>
