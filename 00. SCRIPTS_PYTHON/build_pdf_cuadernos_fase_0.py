@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 build_pdf_cuadernos_fase_0.py
-Genera el PDF oficial:
+Genera el PDF oficial de 1 SOLA PÁGINA:
 0. FASE_0_GUIA_CUADERNOS_GEMINI.pdf
 en CLASES/EXPORTACION_FICHAS_CLASSROOM_PDF/100. [SESSIONS] TERNAS_LISTAS_PARA_CLASSROOM/01_Sesion/
 """
@@ -12,25 +12,24 @@ import subprocess
 
 OUTPUT_DIR = "/Users/externo/Library/Mobile Documents/com~apple~CloudDocs/PERSONAL/CLASES DE TECNOLOGÍA/CURSO-IA/CLASES/EXPORTACION_FICHAS_CLASSROOM_PDF/100. [SESSIONS] TERNAS_LISTAS_PARA_CLASSROOM/01_Sesion"
 PDF_PATH = os.path.join(OUTPUT_DIR, "0. FASE_0_GUIA_CUADERNOS_GEMINI.pdf")
-PS_PATH = "/tmp/cuadernos_fase_0.ps"
+PS_PATH = "/tmp/cuadernos_fase_0_1pag.ps"
 
-# ETIQUETAS: (Sigla, Nombre a escribir en Gemini, Qué guardaremos en este Cuaderno)
 ETIQUETAS = [
-    ("[TXT]", "TEXTO", "Cartas formales, reclamaciones, comparativas de compra, menús de salud y consultas."),
-    ("[EST]", "ESTILO", "Fotografía realista, acuarela, grabado, cine negro, texturas 3D y técnicas visuales."),
-    ("[PRAC]", "PRÁCTICA", "Ejercicios guiados paso a paso y desafíos interactivos en clase con Gemini."),
-    ("[ARTE]", "ARTE", "Obras maestras de la pinacoteca universal, genios de la pintura y análisis estético."),
-    ("[FRAC]", "FRACTALES", "Formas de la naturaleza, matemáticas visuales y vídeos en alta definición."),
-    ("[FUNC]", "FUNCIONES", "Fórmulas matemáticas en 3D, superficies complejas y geometría computacional."),
-    ("[INT]", "INTERIOR", "Cortes transversales, arquitectura interior, monumentos y maquinaria por dentro."),
-    ("[FUT]", "FUTURO", "El mundo del mañana, hábitats espaciales, robótica avanzada y vida futura."),
-    ("[NAT]", "NATURALEZA", "Biomecánica animal, aves del mundo, botánica y maravillas del reino natural."),
-    ("[NIV]", "NIVELES", "Pirámides de conocimiento, escalas jerárquicas y clasificaciones universales (101)."),
-    ("[TRUC]", "TRUCOS", "Remedios prácticos, bricolaje rápido, limpieza ecológica y soluciones caseras."),
-    ("[MOVIL]", "MÓVIL", "Símbolos de pantalla, configuración rápida, alertas del hogar y cámara útil."),
-    ("[MEM]", "MEMORIA", "Lugares de infancia, objetos de época, oficios antiguos y memoria compartida."),
-    ("[MEC]", "MECÁNICA", "Funcionamiento de ingenios mecánicos, motores clásicos y tecnología histórica."),
-    ("[CUENT]", "CUENTOS", "Historias ilustradas y cómics secuenciales con IA (tras la lección de NotebookLM).")
+    ("[TXT]", "TEXTO", "Cartas formales, consultas, comparativas de compra y recetas de salud."),
+    ("[EST]", "ESTILO", "Fotografía fotorrealista, acuarela, grabado, cine negro y texturas 3D."),
+    ("[PRAC]", "PRÁCTICA", "Retos paso a paso y desafíos interactivos en clase con Gemini."),
+    ("[ARTE]", "ARTE", "Obras maestras de la pinacoteca universal y análisis artístico."),
+    ("[FRAC]", "FRACTALES", "Geometría en la naturaleza, biomimética y vídeos en alta definición."),
+    ("[FUNC]", "FUNCIONES", "Fórmulas matemáticas en 3D, curvas y geometría computacional."),
+    ("[INT]", "INTERIOR", "Cortes transversales: arquitectura, monumentos y maquinaria por dentro."),
+    ("[FUT]", "FUTURO", "Ciencia ficción, hábitats espaciales y robótica avanzada del mañana."),
+    ("[NAT]", "NATURALEZA", "Biomecánica animal, aves del mundo y maravillas del reino natural."),
+    ("[NIV]", "NIVELES", "Escalafones del conocimiento y clasificaciones universales (101)."),
+    ("[TRUC]", "TRUCOS", "Remedios prácticos del hogar, bricolaje rápido y limpieza ecológica."),
+    ("[MOVIL]", "MÓVIL", "Símbolos de pantalla, salvavidas de configuración y cámara útil."),
+    ("[MEM]", "MEMORIA", "Cápsula de recuerdos: lugares de infancia y objetos de época."),
+    ("[MEC]", "MECÁNICA", "Engranajes, motores clásicos e inventos tecnológicos históricos."),
+    ("[CUENT]", "CUENTOS", "Historias ilustradas y cómics secuenciales generados con IA.")
 ]
 
 def escape_ps(text):
@@ -55,7 +54,7 @@ def generate_ps():
     lines = []
     lines.append("%!PS-Adobe-3.0")
     lines.append("%%BoundingBox: 0 0 595 842")
-    lines.append("%%Pages: 2")
+    lines.append("%%Pages: 1")
     lines.append("%%DocumentData: Clean7Bit")
     
     setup_font = """
@@ -73,13 +72,14 @@ def generate_ps():
 /Helvetica-Bold-ISO /Helvetica-Bold reencodeISO
 /Helvetica-Oblique-ISO /Helvetica-Oblique reencodeISO
 
-/FHead { /Helvetica-Bold-ISO findfont 15 scalefont setfont } bind def
-/FSub  { /Helvetica-Oblique-ISO findfont 10 scalefont setfont } bind def
-/FSec  { /Helvetica-Bold-ISO findfont 11 scalefont setfont } bind def
-/FTxt  { /Helvetica-ISO findfont 9 scalefont setfont } bind def
-/FTxtB { /Helvetica-Bold-ISO findfont 9 scalefont setfont } bind def
-/FSmall { /Helvetica-ISO findfont 8 scalefont setfont } bind def
-/FSmallB { /Helvetica-Bold-ISO findfont 8.5 scalefont setfont } bind def
+/FHead  { /Helvetica-Bold-ISO findfont 14 scalefont setfont } bind def
+/FSub   { /Helvetica-Oblique-ISO findfont 9 scalefont setfont } bind def
+/FSec   { /Helvetica-Bold-ISO findfont 9.5 scalefont setfont } bind def
+/FTxt   { /Helvetica-ISO findfont 8.2 scalefont setfont } bind def
+/FTxtB  { /Helvetica-Bold-ISO findfont 8.2 scalefont setfont } bind def
+/FTable { /Helvetica-ISO findfont 8 scalefont setfont } bind def
+/FTableB{ /Helvetica-Bold-ISO findfont 8.5 scalefont setfont } bind def
+/FSmall { /Helvetica-ISO findfont 7.5 scalefont setfont } bind def
 
 /roundrect {
   /r exch def
@@ -97,172 +97,83 @@ def generate_ps():
 """
     lines.append(setup_font)
 
-    # =========================================================================
-    # PÁGINA 1: Introducción didáctica y primeras 8 etiquetas
-    # =========================================================================
     lines.append("%%Page: 1 1")
     
-    # Barra superior decorativa
-    lines.append("0.08 0.12 0.22 setrgbcolor 0 760 595 82 rectfill")
-    lines.append("0.22 0.74 0.97 setrgbcolor 0 757 595 3 rectfill")
+    # 1. Cabecera (Y: 780..842)
+    lines.append("0.08 0.12 0.22 setrgbcolor 0 782 595 60 rectfill")
+    lines.append("0.22 0.74 0.97 setrgbcolor 0 779 595 3 rectfill")
     
-    # Títulos cabecera
     lines.append("1 1 1 setrgbcolor")
-    lines.append("FHead 40 790 moveto (" + escape_ps("FASE 0 - GUÍA METODOLÓGICA: TU SISTEMA DE CUADERNOS EN GEMINI") + ") show")
+    lines.append("FHead 35 814 moveto (" + escape_ps("FASE 0 - GUÍA METODOLÓGICA: TU SISTEMA DE CUADERNOS EN GEMINI") + ") show")
     lines.append("0.75 0.85 0.95 setrgbcolor")
-    lines.append("FSub 40 770 moveto (" + escape_ps("Organización de prácticas durante las 60 sesiones del Curso de Inteligencia Artificial") + ") show")
+    lines.append("FSub 35 796 moveto (" + escape_ps("Organización de prácticas durante las 60 sesiones del Curso de Inteligencia Artificial") + ") show")
     
-    # Caja explicativa: El problema y la solución
+    # 2. Caja Metodológica superior (Y: 712..770, h=58)
     lines.append("0.96 0.97 0.99 setrgbcolor")
-    lines.append("40 670 515 72 8 roundrect fill")
+    lines.append("35 712 525 58 6 roundrect fill")
     lines.append("0.22 0.74 0.97 setrgbcolor")
-    lines.append("40 670 515 72 8 roundrect stroke")
+    lines.append("35 712 525 58 6 roundrect stroke")
     
     lines.append("0.05 0.15 0.35 setrgbcolor")
-    lines.append("FSec 55 722 moveto (" + escape_ps("¿Por qué usamos el Sistema de Cuadernos en lugar de abrir chats sueltos?") + ") show")
+    lines.append("FSec 48 754 moveto (" + escape_ps("¿Por qué usamos Cuadernos? Regla de oro para trabajar en clase") + ") show")
     lines.append("0.2 0.25 0.3 setrgbcolor")
-    lines.append("FTxt 55 707 moveto (" + escape_ps("1. En Gemini, si abrimos un chat nuevo para cada práctica, quedarán desperdigados en el historial.") + ") show")
-    lines.append("FTxt 55 694 moveto (" + escape_ps("2. Con la función CUADERNOS de Gemini, agrupamos todo el trabajo por MATERIAS y TEMÁTICAS.") + ") show")
-    lines.append("FTxtB 55 680 moveto (" + escape_ps("Regla de Oro: La 1ª vez que veas una etiqueta creas su Cuaderno; en las siguientes ¡reutilizas ese cuaderno!") + ") show")
+    lines.append("FTxt 48 740 moveto (" + escape_ps("1. Si abrimos un chat nuevo para cada práctica, al cabo de semanas quedarán perdidas en el historial de chats.") + ") show")
+    lines.append("FTxt 48 728 moveto (" + escape_ps("2. Con Cuadernos agrupamos por materia. La 1ª vez que ves una etiqueta, creas su cuaderno; en las siguientes ¡lo reutilizas!") + ") show")
+    lines.append("FTxtB 48 716 moveto (" + escape_ps("3. Nombra tu cuaderno exactamente con la palabra de la columna verde para tener todo tu portafolio clasificado.") + ") show")
 
-    # Los 3 pasos del alumno
-    lines.append("0.94 0.98 0.95 setrgbcolor")
-    lines.append("40 585 515 70 8 roundrect fill")
-    lines.append("0.2 0.7 0.4 setrgbcolor")
-    lines.append("40 585 515 70 8 roundrect stroke")
-    
-    lines.append("0.1 0.4 0.2 setrgbcolor")
-    lines.append("FSec 55 635 moveto (" + escape_ps("Cómo funciona en clase: 3 Pasos muy sencillos") + ") show")
-    lines.append("0.2 0.25 0.3 setrgbcolor")
-    lines.append("FTxt 55 621 moveto (" + escape_ps("Paso A: Mira la etiqueta del ejercicio que vas a realizar (ejemplo: TXT, EST, ARTE, NIV...).") + ") show")
-    lines.append("FTxt 55 608 moveto (" + escape_ps("Paso B: Entra en Gemini > Cuadernos. Si aún no existe, pulsa [+] y ponle el NOMBRE OFICIAL.") + ") show")
-    lines.append("FTxt 55 595 moveto (" + escape_ps("Paso C: Si ya lo creaste en una clase anterior, ábrelo y haz allí tu práctica. ¡Todo ordenado!") + ") show")
-
-    # Título de la tabla
+    # 3. Título de la tabla (Y: 695)
     lines.append("0.1 0.15 0.25 setrgbcolor")
-    lines.append("FSec 40 562 moveto (" + escape_ps("TABLA OFICIAL DE REFERENCIA: ETIQUETAS Y PALABRA PARA EL CUADERNO") + ") show")
-    lines.append("FSub 40 550 moveto (" + escape_ps("Escribe en Gemini exactamente la palabra de la 2ª columna para nombrar cada cuaderno:") + ") show")
+    lines.append("FSec 35 696 moveto (" + escape_ps("TABLA OFICIAL DE REFERENCIA COMPLETA (15 ETIQUETAS DEL CURSO)") + ") show")
+    lines.append("FSub 35 685 moveto (" + escape_ps("Escribe en Gemini exactamente la palabra de la 2ª columna para titular cada uno de tus cuadernos:") + ") show")
 
-    # Coordenadas X:
-    # Margen izquierdo: 40 | Ancho total: 515
-    # Col 1 (Sigla): 40..105 (65 pt)
-    # Col 2 (Palabra a escribir como Nombre de Cuaderno): 105..250 (145 pt)
-    # Col 3 (Qué guardaremos en este Cuaderno): 250..555 (305 pt)
-    
-    def draw_table_header(y):
-        lines.append(f"0.15 0.22 0.35 setrgbcolor 40 {y} 515 20 rectfill")
-        lines.append("1 1 1 setrgbcolor")
-        lines.append(f"FSmallB 48 {y+6} moveto (" + escape_ps("Etiqueta") + ") show")
-        lines.append(f"FSmallB 115 {y+6} moveto (" + escape_ps("Nombre a escribir en Gemini") + ") show")
-        lines.append(f"FSmallB 260 {y+6} moveto (" + escape_ps("Qué prácticas guardaremos en este Cuaderno") + ") show")
-
-    draw_table_header(524)
-
-    # Dibujar filas de la Página 1 (primeras 8 etiquetas)
-    y_row = 502
-    for idx, (sigla, palabra, desc) in enumerate(ETIQUETAS[:8]):
-        bg_col = "0.96 0.98 1.0" if idx % 2 == 0 else "1.0 1.0 1.0"
-        lines.append(f"{bg_col} setrgbcolor 40 {y_row} 515 22 rectfill")
-        lines.append(f"0.85 0.88 0.92 setrgbcolor 40 {y_row} 515 0.5 rectstroke")
-        
-        # Col 1: Sigla
-        lines.append("0.1 0.45 0.8 setrgbcolor")
-        lines.append(f"FSmallB 48 {y_row+7} moveto (" + escape_ps(sigla) + ") show")
-        
-        # Col 2: Palabra a escribir en Gemini (destacada en verde oscuro / bold)
-        lines.append("0.05 0.45 0.25 setrgbcolor")
-        lines.append(f"FSmallB 115 {y_row+7} moveto (" + escape_ps(palabra) + ") show")
-        
-        # Col 3: Descripción de qué guardaremos
-        lines.append("0.25 0.3 0.35 setrgbcolor")
-        words = desc.split()
-        l1, l2 = [], []
-        curr = l1
-        for w in words:
-            if curr is l1 and len(" ".join(l1 + [w])) <= 65:
-                l1.append(w)
-            else:
-                curr = l2
-                l2.append(w)
-        lines.append(f"FSmall 260 {y_row+11} moveto (" + escape_ps(" ".join(l1)) + ") show")
-        if l2:
-            lines.append(f"FSmall 260 {y_row+2} moveto (" + escape_ps(" ".join(l2)) + ") show")
-            
-        y_row -= 23
-
-    # Pie de página 1
-    lines.append("0.6 0.65 0.7 setrgbcolor")
-    lines.append("FSmall 40 40 moveto (" + escape_ps("Curso de Inteligencia Artificial - Fase 0: Guía Metodológica de Cuadernos - Página 1 de 2") + ") show")
-    lines.append("showpage")
-
-    # =========================================================================
-    # PÁGINA 2: Resto de etiquetas (7 restantes) y consejo
-    # =========================================================================
-    lines.append("%%Page: 2 2")
-    
-    # Barra superior decorativa
-    lines.append("0.08 0.12 0.22 setrgbcolor 0 760 595 82 rectfill")
-    lines.append("0.22 0.74 0.97 setrgbcolor 0 757 595 3 rectfill")
-    
-    # Títulos cabecera pág 2
+    # 4. Cabecera de la tabla (Y: 663..681)
+    y_th = 663
+    lines.append(f"0.15 0.22 0.35 setrgbcolor 35 {y_th} 525 18 rectfill")
     lines.append("1 1 1 setrgbcolor")
-    lines.append("FHead 40 790 moveto (" + escape_ps("FASE 0 - TABLA DE CUADERNOS DE GEMINI (CONTINUACIÓN)") + ") show")
-    lines.append("0.75 0.85 0.95 setrgbcolor")
-    lines.append("FSub 40 770 moveto (" + escape_ps("Etiquetas de Ciencias, Vida Práctica, Teléfono Móvil, Memoria y Cuentos") + ") show")
+    lines.append(f"FTableB 45 {y_th+5} moveto (" + escape_ps("Etiqueta") + ") show")
+    lines.append(f"FTableB 115 {y_th+5} moveto (" + escape_ps("Escribe en Gemini (Nombre)") + ") show")
+    lines.append(f"FTableB 265 {y_th+5} moveto (" + escape_ps("Qué prácticas guardaremos en este Cuaderno") + ") show")
 
-    draw_table_header(726)
-
-    # Dibujar filas de la Página 2 (etiquetas 8 a 14)
-    y_row = 704
-    for idx, (sigla, palabra, desc) in enumerate(ETIQUETAS[8:]):
+    # 5. Filas de la tabla (15 filas completas en la misma página)
+    # y_th = 663, h_row = 18 pt. 15 filas = 270 pt -> Y va de 643 hasta 373
+    y_row = 643
+    for idx, (sigla, palabra, desc) in enumerate(ETIQUETAS):
         bg_col = "0.96 0.98 1.0" if idx % 2 == 0 else "1.0 1.0 1.0"
-        lines.append(f"{bg_col} setrgbcolor 40 {y_row} 515 22 rectfill")
-        lines.append(f"0.85 0.88 0.92 setrgbcolor 40 {y_row} 515 0.5 rectstroke")
+        lines.append(f"{bg_col} setrgbcolor 35 {y_row} 525 18 rectfill")
+        lines.append(f"0.86 0.89 0.93 setrgbcolor 35 {y_row} 525 0.5 rectstroke")
         
         # Col 1: Sigla
         lines.append("0.1 0.45 0.8 setrgbcolor")
-        lines.append(f"FSmallB 48 {y_row+7} moveto (" + escape_ps(sigla) + ") show")
+        lines.append(f"FTableB 45 {y_row+5} moveto (" + escape_ps(sigla) + ") show")
         
-        # Col 2: Palabra a escribir en Gemini
-        lines.append("0.05 0.45 0.25 setrgbcolor")
-        lines.append(f"FSmallB 115 {y_row+7} moveto (" + escape_ps(palabra) + ") show")
+        # Col 2: Palabra a escribir (verde oscuro destacado)
+        lines.append("0.05 0.48 0.25 setrgbcolor")
+        lines.append(f"FTableB 115 {y_row+5} moveto (" + escape_ps(palabra) + ") show")
         
-        # Col 3: Descripción
+        # Col 3: Qué guardaremos
         lines.append("0.25 0.3 0.35 setrgbcolor")
-        words = desc.split()
-        l1, l2 = [], []
-        curr = l1
-        for w in words:
-            if curr is l1 and len(" ".join(l1 + [w])) <= 65:
-                l1.append(w)
-            else:
-                curr = l2
-                l2.append(w)
-        lines.append(f"FSmall 260 {y_row+11} moveto (" + escape_ps(" ".join(l1)) + ") show")
-        if l2:
-            lines.append(f"FSmall 260 {y_row+2} moveto (" + escape_ps(" ".join(l2)) + ") show")
-            
-        y_row -= 23
+        lines.append(f"FTable 280 {y_row+5} moveto (" + escape_ps(desc) + ") show")
+        
+        y_row -= 18
 
-    # Caja de Consejo de Oro: ¿Qué pasa cuando abres una sesión?
-    # Se eliminó el párrafo final de [INICIO], dejando esta caja con amplio respiro
-    box1_top = y_row - 35
+    # 6. Caja inferior de beneficio / resumen didáctico (Y: 275..355, h=80)
+    box_y = 275
     lines.append("0.99 0.96 0.92 setrgbcolor")
-    lines.append(f"40 {box1_top-110} 515 110 8 roundrect fill")
+    lines.append(f"35 {box_y} 525 80 6 roundrect fill")
     lines.append("0.95 0.65 0.2 setrgbcolor")
-    lines.append(f"40 {box1_top-110} 515 110 8 roundrect stroke")
+    lines.append(f"35 {box_y} 525 80 6 roundrect stroke")
 
     lines.append("0.55 0.3 0.05 setrgbcolor")
-    lines.append(f"FSec 55 {box1_top-22} moveto (" + escape_ps("[CONSEJO] El Gran Beneficio: Tu Portafolio Personal Ordenado") + ") show")
+    lines.append(f"FSec 48 {box_y+62} moveto (" + escape_ps("[CONSEJO] El Gran Beneficio: Tu Portafolio Personal Ordenado") + ") show")
     lines.append("0.2 0.25 0.3 setrgbcolor")
-    lines.append(f"FTxt 55 {box1_top-42} moveto (" + escape_ps("- A lo largo de las 60 sesiones realizarás decenas de ejercicios fascinantes.") + ") show")
-    lines.append(f"FTxt 55 {box1_top-58} moveto (" + escape_ps("- Con este método, cuando busques una receta o redacción formal, irás directo a tu cuaderno TEXTO.") + ") show")
-    lines.append(f"FTxt 55 {box1_top-74} moveto (" + escape_ps("- Si quieres revisar tus cuadros e ilustraciones, abrirás ESTILO y los tendrás todos reunidos.") + ") show")
-    lines.append(f"FTxtB 55 {box1_top-92} moveto (" + escape_ps("- ¡Nunca más volverás a perder una práctica valiosa entre cientos de conversaciones dispersas!") + ") show")
+    lines.append(f"FTxt 48 {box_y+47} moveto (" + escape_ps("- A lo largo de las 60 sesiones realizarás decenas de prácticas fascinantes con inteligencia artificial.") + ") show")
+    lines.append(f"FTxt 48 {box_y+34} moveto (" + escape_ps("- Cuando quieras recuperar una receta o redacción formal, irás directo a tu cuaderno TEXTO.") + ") show")
+    lines.append(f"FTxt 48 {box_y+21} moveto (" + escape_ps("- Si quieres admirar tus ilustraciones y cuadros generados, abrirás ESTILO y los tendrás todos juntos.") + ") show")
+    lines.append(f"FTxtB 48 {box_y+8} moveto (" + escape_ps("- ¡Nunca más volverás a perder una práctica valiosa entre cientos de conversaciones dispersas!") + ") show")
 
-    # Pie de página 2
+    # 7. Pie de página
     lines.append("0.6 0.65 0.7 setrgbcolor")
-    lines.append("FSmall 40 40 moveto (" + escape_ps("Curso de Inteligencia Artificial - Fase 0: Guía Metodológica de Cuadernos - Página 2 de 2") + ") show")
+    lines.append("FSmall 35 245 moveto (" + escape_ps("Curso de Inteligencia Artificial - Fase 0: Guía Metodológica de Cuadernos - Hoja Oficial de Referencia") + ") show")
     lines.append("showpage")
 
     return "\n".join(lines)
@@ -276,9 +187,9 @@ def build_pdf():
     cmd = ["/usr/bin/pstopdf", PS_PATH, "-o", PDF_PATH]
     res = subprocess.run(cmd, capture_output=True)
     if res.returncode == 0:
-        print(f"✅ PDF generado con éxito ({os.path.getsize(PDF_PATH)} bytes): {PDF_PATH}")
+        print(f"OK:{PDF_PATH}")
     else:
-        print(f"❌ Error al compilar PDF: {res.stderr.decode()}")
+        print(f"ERR:{res.stderr.decode()}")
 
 if __name__ == "__main__":
     build_pdf()
