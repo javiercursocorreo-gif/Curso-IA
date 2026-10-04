@@ -308,18 +308,18 @@ def create_pdf_handout(file_path, block_name, item_id, item_title, concept_text,
 
 
 ESTILOS_VISUALES = [
-    "PRESET: CÓMIC CLÁSICO 90s (Línea definida, color limitado, máxima claridad narrativa)",
-    "PRESET: ACUARELA INFANTIL (Tonos pastel, trazo cálido, estilo cuento clásico)",
-    "PRESET: ESTILO ANIME / STUDIO GHIBLI (Colores vibrantes, naturaleza detallada, emotivo)",
-    "PRESET: ANIMACIÓN 3D TIPO PIXAR (Personajes 3D, iluminación cinematográfica, texturas suaves)",
-    "PRESET: LÁPICES DE COLORES VINTAGE (Trazo orgánico, sombreado manual, nostálgico)",
-    "PRESET: LIBRO POP-UP TRIDIMENSIONAL (Elementos de papel maché recortados, estilo maqueta)",
-    "PRESET: ARCILLA / PLASTILINA STOP-MOTION (Estilo Wallace y Gromit, texturas moldeadas)",
-    "PRESET: ARTE VECTORIAL MINIMALISTA (Formas geométricas limpias, colores sólidos brillantes)",
-    "PRESET: ILUSTRACIÓN DE FANTASÍA ÉPICA (Claroscuro marcado, pintura digital detallada)",
-    "PRESET: TRAZOS DE CERA ESCOLARES (Crayón, estilo dibujo a mano, colores primarios vivos)",
-    "PRESET: STEAMPUNK NARRATIVO (Tonos sepia, engranajes, retro-futurista, aventura)",
-    "PRESET: ILUSTRACIÓN BOTÁNICA ORGÁNICA (Detalle en naturaleza, colores terrosos, línea fina)"
+    "PRESET 1: CÓMIC EUROPEO DE LÍNEA CLARA (Trazo de tinta negro limpio, colores planos luminosos, estilo Hergé / Tintín y Blake & Mortimer, fondos detallados, máxima claridad narrativa)",
+    "PRESET 2: TEBEO CLÁSICO ESPAÑOL Y DE AVENTURAS (Trazo dinámico a plumilla, tramas mecánicas vintage, estética entrañable de los años 50-70 tipo Bruguera y cómic histórico)",
+    "PRESET 3: STEAMPUNK Y GRABADO VICTORIANO (Tonos sepia y bronce bruñido, engranajes y manómetros retro-industriales, atmósfera de novela de aventuras de Julio Verne)",
+    "PRESET 4: ESTILO ANIME Y STUDIO GHIBLI (Fondos pictóricos detallados, cielos celestes con nubes algodonosas, vegetación vibrante, iluminación mágica y gran expresividad emotiva)",
+    "PRESET 5: ANIMACIÓN 3D CINEMATOGRÁFICA (Personajes 3D con volumen y texturas táctiles, iluminación cálida global, estética de gran producción cinematográfica animada)",
+    "PRESET 6: CINE NOIR Y NOVELA GRÁFICA DE MISTERIO (Alto contraste de claroscuro, sombras venecianas, lluvia sobre adoquines, gabardinas y farolas en la niebla)",
+    "PRESET 7: ACUARELA ARTÍSTICA Y CUENTO ILUSTRADO (Manchas de pigmento al agua sobre papel de grano rugoso, tonos luminosos cálidos y pinceladas fluidas)",
+    "PRESET 8: PINTURA AL ÓLEO HISTÓRICA (Pinceladas con textura de lienzo y empaste, claroscuro dramático, iluminación clásica de grandes museos)",
+    "PRESET 9: RETRO SCI-FI Y PULP AÑOS 50 (Cohetes cromados con aletas, trajes espaciales con escafandras esféricas de cristal, colores saturados de cómic espacial pionero)",
+    "PRESET 10: LÁPIZ DE COLOR Y DIARIO DE VIAJE (Trazo visible a mano alzada, sombreados con lápices policromos, textura de cuaderno de campo de naturalista)",
+    "PRESET 11: PAPEL RECORTADO Y MAQUETA POP-UP (Capas tridimensionales de cartulina con sombras proyectadas reales, aspecto artesanal de libro troquelado)",
+    "PRESET 12: PIXEL ART CINEMÁTICO HD (Estética nostálgica de videojuego clásico de aventuras pero con iluminación volumétrica moderna, reflejos y profundidad)"
 ]
 
 PROMPT_PASO_1 = """Toma el texto de la respuesta anterior y genera el guión de un comic secuencial según las siguientes instrucciones.
@@ -363,16 +363,16 @@ def create_pdf_for_cuento(lote_path, item, style_preset):
         
         if "PASO 0" in title:
             paso0_text = (
-                "En este bloque final vamos a hacer magia pura gracias a la conexión automática y directa entre <b>Google Gemini</b> y <b>Gemini Notebook</b>.<br/><br/>"
-                "Ya no necesitas copiar textos largos ni subir archivos manualmente. Tu flujo de trabajo es directo y fascinante:<br/><br/>"
-                "• <b>PASO 1 (En tu Cuaderno CUENTOS de Gemini): CREAR EL CUENTO.</b><br/>"
-                "Le pasas a Gemini el prompt del Paso 1 para redactar la historia con valores y adaptada a la edad del niño.<br/><br/>"
-                "• <b>PASO 2 (En la misma conversación de Gemini): GENERADOR DE GUION.</b><br/>"
-                "A continuación pegas el prompt del Paso 2. Gemini transformará el cuento en un guion cinematográfico estructurado en 10 páginas.<br/><br/>"
+                "<b>ESTRATEGIA DE AULA (LANZAMIENTO TEMPRANO EN FASE 1):</b><br/>"
+                "Como la generación visual de 10 páginas en <b>Gemini Notebook</b> tarda varios minutos, <b>iniciamos el cómic al arrancar la clase</b>. Lo dejamos procesando en segundo plano y continuamos haciendo las prácticas de la sesión. Al finalizar la clase, ¡volvemos a Gemini Notebook para disfrutar de la proyección a pantalla completa!<br/><br/>"
+                "• <b>PASO 1 (En tu Cuaderno CUENTOS de Gemini): CREAR LA HISTORIA.</b><br/>"
+                "Pega el prompt del Paso 1. Si tu nieto es menor de 6 años, usa el tono dulce y sensorial; si es mayor de 6 años, Gemini aumentará la intriga, el misterio y los desafíos formativos.<br/><br/>"
+                "• <b>PASO 2 (En la misma conversación de Gemini): GENERADOR DE GUION SECUENCIAL.</b><br/>"
+                "A continuación pega el prompt del Paso 2. Gemini actuará como director audiovisual y estructurará el guion exacto de 10 páginas.<br/><br/>"
                 "• <b>EL PUENTE AUTOMÁTICO A GEMINI NOTEBOOK:</b><br/>"
-                "Al entrar en Gemini Notebook con tu cuenta, abre tu cuaderno <b>CUENTOS</b>. ¡Tu conversación con el cuento y el guion ya estará lista como fuente conectada!<br/><br/>"
+                "Abre Gemini Notebook con tu cuenta y entra en tu cuaderno <b>CUENTOS</b>. ¡Tu historia y guion ya aparecen como fuente conectada sin copiar nada!<br/><br/>"
                 "• <b>PASO 3 (En Gemini Notebook): PRESENTACIÓN VISUAL EN 3D (Nano Banana).</b><br/>"
-                "Pulsa directamente el botón <b>Presentación</b> en Gemini Notebook y pega el prompt del Paso 3. Gemini Notebook generará una presentación espectacular donde los personajes y escenarios se pintan con volumen y tridimensionalidad asombrosa."
+                "Pulsa el botón <b>Presentación</b>, pega el prompt del Paso 3 con su estilo visual asignado y <b>déjalo generando</b> mientras realizas las siguientes actividades de la sesión. <i>(Nota: Usa nombres de personajes originales sin marcas comerciales para que Gemini Notebook genere la presentación sin restricciones).</i>"
             )
             story.append(Paragraph(paso0_text, style_body))
         elif "PASO 1" in title:
@@ -396,7 +396,7 @@ def create_pdf_for_cuento(lote_path, item, style_preset):
         doc.build(story)
         return file_path
 
-    texto_edad = "INSTRUCCIÓN INICIAL OBLIGATORIA: Ajusta la complejidad narrativa, el vocabulario y el tono emocional estrictamente a su nivel cognitivo. Si es mayor de 6 años, elimina por completo cualquier tono excesivamente infantil o 'ñoño', añadiendo más aventura, misterio y dilemas maduros.\\n\\n"
+    texto_edad = "INSTRUCCIÓN PEDAGÓGICA Y DE EDAD (OBLIGATORIA): Ajusta la complejidad narrativa, el vocabulario y el tono estrictamente a la edad del nieto:\n- SI EL NIETO ES MENOR DE 6 AÑOS: Usa un tono cálido, dulce, mágico y reconfortante, con frases rítmicas y finales tranquilos que ayuden a dormir.\n- SI EL NIETO ES MAYOR DE 6 AÑOS: Elimina cualquier tono ñoño o infantil; añade intriga, misterio, dilemas éticos formativos, aventura y superación personal.\nREGLA DE ORIGINALIDAD: Usa siempre nombres propios originales para héroes, compañeros o droides (evita marcas registradas o comerciales para garantizar la generación visual en Gemini Notebook).\n\n"
     id_clean = re.sub(r'[^A-Z0-9-]', '', item['id_code'])
     safe_title = sanitize_name(item['title'])
     

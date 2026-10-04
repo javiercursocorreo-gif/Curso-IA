@@ -2272,184 +2272,184 @@
     <node ID="ID_753" TEXT="BLOQUE 12: CUENTOS PARA NIETOS [CUENT]" POSITION="right">
       <font NAME="Calibri" SIZE="13" BOLD="true" />
       <edge COLOR="#003366" WIDTH="2" />
-      <node ID="ID_754" TEXT="12.1. [CUENT-001] Perros: El perro bombero que salvó a los gatitos">
+      <node ID="ID_754" TEXT="12.1. [CUENT-001] Cuentos Infantiles: El perro bombero que salvó a los gatitos">
         <font NAME="Calibri" SIZE="11" BOLD="true" />
         </node>
-      <node ID="ID_755" TEXT="12.2. [CUENT-002] Leyendas Tradicionales: El zapatero y los duendes mágicos">
+      <node ID="ID_755" TEXT="12.2. [CUENT-002] Grandes Genios: Nikola Tesla y el misterio de la luz invisible">
         <font NAME="Calibri" SIZE="11" BOLD="true" />
         </node>
-      <node ID="ID_756" TEXT="12.3. [CUENT-003] Aventuras Históricas Reales: Cristóbal Colón y el nuevo mundo">
+      <node ID="ID_756" TEXT="12.3. [CUENT-003] Grandes Genios: Marie Curie y las piedras que brillaban en la noche">
         <font NAME="Calibri" SIZE="11" BOLD="true" />
         </node>
-      <node ID="ID_757" TEXT="12.4. [CUENT-004] Exploradores del Espacio: El robot oxidado que quería abrazar">
+      <node ID="ID_757" TEXT="12.4. [CUENT-004] Grandes Genios: Leonardo da Vinci y el sueño de volar como las aves">
         <font NAME="Calibri" SIZE="11" BOLD="true" />
         </node>
-      <node ID="ID_758" TEXT="12.5. [CUENT-005] Cuentos Personalizados: El abuelo y el nieto encuentran un tesoro">
+      <node ID="ID_758" TEXT="12.5. [CUENT-005] Grandes Genios: Ada Lovelace y la máquina que tejía números">
         <font NAME="Calibri" SIZE="11" BOLD="true" />
         </node>
-      <node ID="ID_759" TEXT="12.6. [CUENT-006] Misterios Divertidos: El misterio de los calcetines desaparecidos">
+      <node ID="ID_759" TEXT="12.6. [CUENT-006] Grandes Genios: Alexander Fleming y el guardián microscópico">
         <font NAME="Calibri" SIZE="11" BOLD="true" />
         </node>
-      <node ID="ID_760" TEXT="12.7. [CUENT-007] Perros: El loro que aprendió a cantar ópera">
+      <node ID="ID_760" TEXT="12.7. [CUENT-007] Grandes Genios: Amelia Earhart y la brújula de las nubes">
         <font NAME="Calibri" SIZE="11" BOLD="true" />
         </node>
-      <node ID="ID_761" TEXT="12.8. [CUENT-008] Leyendas Tradicionales: La princesa que domó al dragón sin luchar">
+      <node ID="ID_761" TEXT="12.8. [CUENT-008] Grandes Genios: Galileo Galilei y los secretos de la Luna">
         <font NAME="Calibri" SIZE="11" BOLD="true" />
         </node>
-      <node ID="ID_762" TEXT="12.9. [CUENT-009] Aventuras Históricas Reales: Amelia Earhart cruzando las nubes">
+      <node ID="ID_762" TEXT="12.9. [CUENT-009] Grandes Genios: Los Hermanos Wright y la cometa que aprendió a volar">
         <font NAME="Calibri" SIZE="11" BOLD="true" />
         </node>
-      <node ID="ID_763" TEXT="12.10. [CUENT-010] Exploradores del Espacio: La niña que plantó un árbol en Marte">
+      <node ID="ID_763" TEXT="12.10. [CUENT-010] Grandes Genios: Arquímedes y la corona del rey">
         <font NAME="Calibri" SIZE="11" BOLD="true" />
         </node>
-      <node ID="ID_764" TEXT="12.11. [CUENT-011] Cuentos Personalizados: La máquina del tiempo en el desván de los abuelos">
+      <node ID="ID_764" TEXT="12.11. [CUENT-011] Grandes Genios: Johannes Gutenberg y el bosque de letras de plomo">
         <font NAME="Calibri" SIZE="11" BOLD="true" />
         </node>
-      <node ID="ID_765" TEXT="12.12. [CUENT-012] Misterios Divertidos: La agencia de detectives del patio del colegio">
+      <node ID="ID_765" TEXT="12.12. [CUENT-012] Hazañas Históricas: El viaje del Apolo 11 y la huella en el polvo lunar">
         <font NAME="Calibri" SIZE="11" BOLD="true" />
         </node>
-      <node ID="ID_766" TEXT="12.13. [CUENT-013] Perros: El gato detective del barrio">
+      <node ID="ID_766" TEXT="12.13. [CUENT-013] Hazañas Históricas: Shackleton y la tripulación valiente del hielo">
         <font NAME="Calibri" SIZE="11" BOLD="true" />
         </node>
-      <node ID="ID_767" TEXT="12.14. [CUENT-014] Leyendas Tradicionales: El bosque de los árboles susurrantes">
+      <node ID="ID_767" TEXT="12.14. [CUENT-014] Hazañas Históricas: Magallanes y Elcano: El abrazo alrededor del mundo">
         <font NAME="Calibri" SIZE="11" BOLD="true" />
         </node>
-      <node ID="ID_768" TEXT="12.15. [CUENT-015] Aventuras Históricas Reales: Neil Armstrong pisando la Luna">
+      <node ID="ID_768" TEXT="12.15. [CUENT-015] Hazañas Históricas: La construcción de la Torre de Hierro de París">
         <font NAME="Calibri" SIZE="11" BOLD="true" />
         </node>
-      <node ID="ID_769" TEXT="12.16. [CUENT-016] Exploradores del Espacio: El cohete que se perdió en la Vía Láctea">
+      <node ID="ID_769" TEXT="12.16. [CUENT-016] Hazañas Históricas: Howard Carter y los tesoros dorados de Tutankamón">
         <font NAME="Calibri" SIZE="11" BOLD="true" />
         </node>
-      <node ID="ID_770" TEXT="12.17. [CUENT-017] Cuentos Personalizados: El día que la abuela se convirtió en superheroína">
+      <node ID="ID_770" TEXT="12.17. [CUENT-017] Hazañas Históricas: Marco Polo y las campanas de las caravanas de seda">
         <font NAME="Calibri" SIZE="11" BOLD="true" />
         </node>
-      <node ID="ID_771" TEXT="12.18. [CUENT-018] Misterios Divertidos: El caso del pastel de chocolate mordido">
+      <node ID="ID_771" TEXT="12.18. [CUENT-018] Hazañas Históricas: La pequeña María y los bisontes mágicos de Altamira">
         <font NAME="Calibri" SIZE="11" BOLD="true" />
         </node>
-      <node ID="ID_772" TEXT="12.19. [CUENT-019] Perros: El caballo que cruzó las montañas nevadas">
+      <node ID="ID_772" TEXT="12.19. [CUENT-019] Hazañas Históricas: El tren de vapor cruzando la cordillera salvaje">
         <font NAME="Calibri" SIZE="11" BOLD="true" />
         </node>
-      <node ID="ID_773" TEXT="12.20. [CUENT-020] Leyendas Tradicionales: La leyenda del hilo rojo del destino">
+      <node ID="ID_773" TEXT="12.20. [CUENT-020] Hazañas Históricas: El rescate del batiscafo en las fosas del océano">
         <font NAME="Calibri" SIZE="11" BOLD="true" />
         </node>
-      <node ID="ID_774" TEXT="12.21. [CUENT-021] Aventuras Históricas Reales: Marco Polo y el viaje a Oriente">
+      <node ID="ID_774" TEXT="12.21. [CUENT-021] Hazañas Históricas: El gran reloj astronómico de la plaza medieval">
         <font NAME="Calibri" SIZE="11" BOLD="true" />
         </node>
-      <node ID="ID_775" TEXT="12.22. [CUENT-022] Exploradores del Espacio: La patrulla galáctica rescata un cometa">
+      <node ID="ID_775" TEXT="12.22. [CUENT-022] Clásicos del Cómic: El Caballero del Antifaz y el castillo de la niebla">
         <font NAME="Calibri" SIZE="11" BOLD="true" />
         </node>
-      <node ID="ID_776" TEXT="12.23. [CUENT-023] Cuentos Personalizados: Cocinando galletas mágicas con el abuelo">
+      <node ID="ID_776" TEXT="12.23. [CUENT-023] Clásicos del Cómic: El Capitán Valiente y el torneo de la paz">
         <font NAME="Calibri" SIZE="11" BOLD="true" />
         </node>
-      <node ID="ID_777" TEXT="12.24. [CUENT-024] Misterios Divertidos: El fantasma que tenía miedo a la oscuridad">
+      <node ID="ID_777" TEXT="12.24. [CUENT-024] Clásicos del Cómic: El Corsario de la Nao Blanca y el galeón perdido">
         <font NAME="Calibri" SIZE="11" BOLD="true" />
         </node>
-      <node ID="ID_778" TEXT="12.25. [CUENT-025] Perros: El delfín que guiaba a los barcos">
+      <node ID="ID_778" TEXT="12.25. [CUENT-025] Clásicos del Cómic: El misterio de la locomotora fantasma">
         <font NAME="Calibri" SIZE="11" BOLD="true" />
         </node>
-      <node ID="ID_779" TEXT="12.26. [CUENT-026] Leyendas Tradicionales: El pastorcillo y la estrella fugaz">
+      <node ID="ID_779" TEXT="12.26. [CUENT-026] Clásicos del Cómic: Los exploradores del cráter de los dinosaurios">
         <font NAME="Calibri" SIZE="11" BOLD="true" />
         </node>
-      <node ID="ID_780" TEXT="12.27. [CUENT-027] Aventuras Históricas Reales: Marie Curie y los polvos brillantes">
+      <node ID="ID_780" TEXT="12.27. [CUENT-027] Clásicos del Cómic: El guardián de la muralla y el halcón mensajero">
         <font NAME="Calibri" SIZE="11" BOLD="true" />
         </node>
-      <node ID="ID_781" TEXT="12.28. [CUENT-028] Exploradores del Espacio: El alienígena que probó el chocolate">
+      <node ID="ID_781" TEXT="12.28. [CUENT-028] Clásicos del Cómic: Los tres aprendices de la imprenta secreta">
         <font NAME="Calibri" SIZE="11" BOLD="true" />
         </node>
-      <node ID="ID_782" TEXT="12.29. [CUENT-029] Cuentos Personalizados: El viaje en globo del abuelo y su nieta">
+      <node ID="ID_782" TEXT="12.29. [CUENT-029] Clásicos del Cómic: El enigma de la esfinge de alabastro">
         <font NAME="Calibri" SIZE="11" BOLD="true" />
         </node>
-      <node ID="ID_783" TEXT="12.30. [CUENT-030] Misterios Divertidos: El enigma del loro que no quería hablar">
+      <node ID="ID_783" TEXT="12.30. [CUENT-030] Clásicos del Cómic: El joven Quijote y el molino de las sorpresas">
         <font NAME="Calibri" SIZE="11" BOLD="true" />
         </node>
-      <node ID="ID_784" TEXT="12.31. [CUENT-031] Perros: El perro pastor que adoptó a un pato">
+      <node ID="ID_784" TEXT="12.31. [CUENT-031] Clásicos del Cómic: El detective de la boina y el gato de la discordia">
         <font NAME="Calibri" SIZE="11" BOLD="true" />
         </node>
-      <node ID="ID_785" TEXT="12.32. [CUENT-032] Leyendas Tradicionales: La montaña de cristal y el caballero">
+      <node ID="ID_785" TEXT="12.32. [CUENT-032] Mitos y Héroes: Robin del Bosque Verde y la flecha de la diana de oro">
         <font NAME="Calibri" SIZE="11" BOLD="true" />
         </node>
-      <node ID="ID_786" TEXT="12.33. [CUENT-033] Aventuras Históricas Reales: Leonardo da Vinci soñando con volar">
+      <node ID="ID_786" TEXT="12.33. [CUENT-033] Mitos y Héroes: El joven Arturo y la espada en el yunque de piedra">
         <font NAME="Calibri" SIZE="11" BOLD="true" />
         </node>
-      <node ID="ID_787" TEXT="12.34. [CUENT-034] Exploradores del Espacio: La escuela flotante en los anillos de Saturno">
+      <node ID="ID_787" TEXT="12.34. [CUENT-034] Mitos y Héroes: Teseo, Ariadna y el laberinto de la sombra">
         <font NAME="Calibri" SIZE="11" BOLD="true" />
         </node>
-      <node ID="ID_788" TEXT="12.35. [CUENT-035] Cuentos Personalizados: El jardín secreto detrás de la casa de los abuelos">
+      <node ID="ID_788" TEXT="12.35. [CUENT-035] Mitos y Héroes: Guillermo Tell y la manzana en los picos nevados">
         <font NAME="Calibri" SIZE="11" BOLD="true" />
         </node>
-      <node ID="ID_789" TEXT="12.36. [CUENT-036] Misterios Divertidos: El misterio de las huellas de barro gigantes">
+      <node ID="ID_789" TEXT="12.36. [CUENT-036] Mitos y Héroes: El flautista viajero y la melodía del bosque">
         <font NAME="Calibri" SIZE="11" BOLD="true" />
         </node>
-      <node ID="ID_790" TEXT="12.37. [CUENT-037] Perros: La tortuga que ganó la maratón del bosque">
+      <node ID="ID_790" TEXT="12.37. [CUENT-037] Mitos y Héroes: El caballero Jorge y el dragón de las aguas claras">
         <font NAME="Calibri" SIZE="11" BOLD="true" />
         </node>
-      <node ID="ID_791" TEXT="12.38. [CUENT-038] Leyendas Tradicionales: El pescador y el pez de oro">
+      <node ID="ID_791" TEXT="12.38. [CUENT-038] Mitos y Héroes: La valiente Mulan y el estandarte de la nieve">
         <font NAME="Calibri" SIZE="11" BOLD="true" />
         </node>
-      <node ID="ID_792" TEXT="12.39. [CUENT-039] Aventuras Históricas Reales: Cleopatra y la biblioteca de Alejandría">
+      <node ID="ID_792" TEXT="12.39. [CUENT-039] Mitos y Héroes: El guardián de barro de la vieja Praga">
         <font NAME="Calibri" SIZE="11" BOLD="true" />
         </node>
-      <node ID="ID_793" TEXT="12.40. [CUENT-040] Exploradores del Espacio: El astronauta que perdió sus llaves">
+      <node ID="ID_793" TEXT="12.40. [CUENT-040] Mitos y Héroes: El martillo del trueno y el gigante juguetón">
         <font NAME="Calibri" SIZE="11" BOLD="true" />
         </node>
-      <node ID="ID_794" TEXT="12.41. [CUENT-041] Cuentos Personalizados: Cuando el abuelo enseñó a montar en bicicleta">
+      <node ID="ID_794" TEXT="12.41. [CUENT-041] Mitos y Héroes: Ulises y el misterio del canto de las olas">
         <font NAME="Calibri" SIZE="11" BOLD="true" />
         </node>
-      <node ID="ID_795" TEXT="12.42. [CUENT-042] Misterios Divertidos: La lupa mágica que veía colores ocultos">
+      <node ID="ID_795" TEXT="12.42. [CUENT-042] Ciencia Ficción Clásica: Veinte mil leguas en el submarino Nautilus">
         <font NAME="Calibri" SIZE="11" BOLD="true" />
         </node>
-      <node ID="ID_796" TEXT="12.43. [CUENT-043] Perros: El oso que no quería dormir en invierno">
+      <node ID="ID_796" TEXT="12.43. [CUENT-043] Ciencia Ficción Clásica: Viaje al interior de la Tierra de Julio Verne">
         <font NAME="Calibri" SIZE="11" BOLD="true" />
         </node>
-      <node ID="ID_797" TEXT="12.44. [CUENT-044] Leyendas Tradicionales: El flautista de la aldea feliz">
+      <node ID="ID_797" TEXT="12.44. [CUENT-044] Ciencia Ficción Clásica: La nave esférica rumbo a la Luna">
         <font NAME="Calibri" SIZE="11" BOLD="true" />
         </node>
-      <node ID="ID_798" TEXT="12.45. [CUENT-045] Aventuras Históricas Reales: Mozart el niño prodigio">
+      <node ID="ID_798" TEXT="12.45. [CUENT-045] Ciencia Ficción Clásica: La máquina del tiempo y el reloj del futuro">
         <font NAME="Calibri" SIZE="11" BOLD="true" />
         </node>
-      <node ID="ID_799" TEXT="12.46. [CUENT-046] Exploradores del Espacio: El reloj que podía viajar al futuro">
+      <node ID="ID_799" TEXT="12.46. [CUENT-046] Ciencia Ficción Clásica: El autómata de latón que jugaba al ajedrez">
         <font NAME="Calibri" SIZE="11" BOLD="true" />
         </node>
-      <node ID="ID_800" TEXT="12.47. [CUENT-047] Cuentos Personalizados: La abuela cuenta cómo era la vida sin internet">
+      <node ID="ID_800" TEXT="12.47. [CUENT-047] Ciencia Ficción Clásica: La ciudad de los zepelines y puentes de bronce">
         <font NAME="Calibri" SIZE="11" BOLD="true" />
         </node>
-      <node ID="ID_801" TEXT="12.48. [CUENT-048] Misterios Divertidos: El caso del juguete que se movía solo">
+      <node ID="ID_801" TEXT="12.48. [CUENT-048] Ciencia Ficción Clásica: El centinela del faro en el fin del universo">
         <font NAME="Calibri" SIZE="11" BOLD="true" />
         </node>
-      <node ID="ID_802" TEXT="12.49. [CUENT-049] Perros: El pingüino que construyó un trineo">
+      <node ID="ID_802" TEXT="12.49. [CUENT-049] Ciencia Ficción Clásica: Los robots mensajeros de la ciudad de cobre">
         <font NAME="Calibri" SIZE="11" BOLD="true" />
         </node>
-      <node ID="ID_803" TEXT="12.50. [CUENT-050] Leyendas Tradicionales: La leyenda del guardián del fuego">
+      <node ID="ID_803" TEXT="12.50. [CUENT-050] Ciencia Ficción Clásica: El tren que atravesaba los anillos de Saturno">
         <font NAME="Calibri" SIZE="11" BOLD="true" />
         </node>
-      <node ID="ID_804" TEXT="12.51. [CUENT-051] Aventuras Históricas Reales: El viaje en el tren Orient Express">
+      <node ID="ID_804" TEXT="12.51. [CUENT-051] Ciencia Ficción Clásica: El jardín botánico dentro de la nave cúpula">
         <font NAME="Calibri" SIZE="11" BOLD="true" />
         </node>
-      <node ID="ID_805" TEXT="12.52. [CUENT-052] Exploradores del Espacio: Las estrellas que jugaban al escondite">
+      <node ID="ID_805" TEXT="12.52. [CUENT-052] Literatura Clásica: El Principito y el secreto del zorro sabio">
         <font NAME="Calibri" SIZE="11" BOLD="true" />
         </node>
-      <node ID="ID_806" TEXT="12.53. [CUENT-053] Cuentos Personalizados: El campeonato de pesca en el río">
+      <node ID="ID_806" TEXT="12.53. [CUENT-053] Literatura Clásica: El viaje de Gulliver a la isla de los diminutos">
         <font NAME="Calibri" SIZE="11" BOLD="true" />
         </node>
-      <node ID="ID_807" TEXT="12.54. [CUENT-054] Misterios Divertidos: El detective que usaba un periscopio casero">
+      <node ID="ID_807" TEXT="12.54. [CUENT-054] Literatura Clásica: El Mago de Oz y el camino de baldosas amarillas">
         <font NAME="Calibri" SIZE="11" BOLD="true" />
         </node>
-      <node ID="ID_808" TEXT="12.55. [CUENT-055] Perros: El perro de rescate en la nieve alpina">
+      <node ID="ID_808" TEXT="12.55. [CUENT-055] Literatura Clásica: Pinocho y el grillo de la buena conciencia">
         <font NAME="Calibri" SIZE="11" BOLD="true" />
         </node>
-      <node ID="ID_809" TEXT="12.56. [CUENT-056] Leyendas Tradicionales: El molino mágico que molía sal">
+      <node ID="ID_809" TEXT="12.56. [CUENT-056] Literatura Clásica: La isla del tesoro y el mapa del viejo marinero">
         <font NAME="Calibri" SIZE="11" BOLD="true" />
         </node>
-      <node ID="ID_810" TEXT="12.57. [CUENT-057] Aventuras Históricas Reales: Los constructores de las Pirámides">
+      <node ID="ID_810" TEXT="12.57. [CUENT-057] Literatura Clásica: Alicia en el jardín de las maravillas parlantes">
         <font NAME="Calibri" SIZE="11" BOLD="true" />
         </node>
-      <node ID="ID_811" TEXT="12.58. [CUENT-058] Exploradores del Espacio: El niño que fabricó una nave con cartón">
+      <node ID="ID_811" TEXT="12.58. [CUENT-058] Literatura Clásica: El bosque de Mowgli y las enseñanzas del oso Baloo">
         <font NAME="Calibri" SIZE="11" BOLD="true" />
         </node>
-      <node ID="ID_812" TEXT="12.59. [CUENT-059] Cuentos Personalizados: El día que acampamos en el salón">
+      <node ID="ID_812" TEXT="12.59. [CUENT-059] Literatura Clásica: Heidi y el aire puro de las cumbres alpinas">
         <font NAME="Calibri" SIZE="11" BOLD="true" />
         </node>
-      <node ID="ID_813" TEXT="12.60. [CUENT-060] Misterios Divertidos: El misterio del reloj que daba las 13 horas">
+      <node ID="ID_813" TEXT="12.60. [CUENT-060] Literatura Clásica: Don Quijote y el gran banquete de la amistad en la ínsula">
         <font NAME="Calibri" SIZE="11" BOLD="true" />
         </node>
       </node>

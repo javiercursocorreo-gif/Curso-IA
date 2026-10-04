@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sesión 54 • Cuadro de Mando Didáctico — Curso de IA</title>
+    <style>
+        :root {
+            --bg-base: #070b14;
+            --bg-card: rgba(15, 23, 42, 0.92);
+            --border-glow: rgba(56, 189, 248, 0.45);
+            --text-main: #f8fafc;
+            --text-sub: #94a3b8;
+            --text-muted: #64748b;
+            --primary: #38bdf8;
+            --purple: #c084fc;
+            --emerald: #34d399;
+            --amber: #fbbf24;
+            --rose: #fb7185;
+            --cyan: #06b6d4;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: radial-gradient(circle at 50% 20%, #151e3f 0%, #080c18 60%, #030509 100%);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            user-select: none;
+        }
+
+        header {
+            padding: 28px 20px 18px;
+            text-align: center;
+            background: linear-gradient(180deg, rgba(15, 23, 42, 0.8) 0%, rgba(15, 23, 42, 0) 100%);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .header-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 5px 16px;
+            border-radius: 9999px;
+            background: rgba(56, 189, 248, 0.12);
+            border: 1px solid rgba(56, 189, 248, 0.35);
+            color: var(--primary);
+            font-size: 0.82rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 10px;
+        }
+        h1 {
+            font-size: 1.95rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            background: linear-gradient(135deg, #ffffff 40%, #94a3b8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 6px;
+        }
+        p.subtitle {
+            color: var(--text-sub);
+            font-size: 0.95rem;
+            max-width: 720px;
+            margin: 0 auto;
+            line-height: 1.45;
+        }
+
+        .mindmap-canvas {
+            flex: 1;
+            padding: 28px 24px 44px;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .core-node {
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.95), rgba(15, 23, 42, 0.95));
+            border: 2px solid var(--border-glow);
+            box-shadow: 0 0 35px rgba(56, 189, 248, 0.25), inset 0 0 15px rgba(56, 189, 248, 0.15);
+            border-radius: 20px;
+            padding: 16px 28px;
+            text-align: center;
+            margin-bottom: 28px;
+            max-width: 820px;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+        }
+        .core-badge {
+            font-family: ui-monospace, monospace;
+            font-size: 1.15rem;
+            font-weight: 900;
+            color: #04060b;
+            background: var(--primary);
+            padding: 6px 14px;
+            border-radius: 12px;
+            letter-spacing: -0.5px;
+            flex-shrink: 0;
+        }
+        .core-text {
+            text-align: left;
+        }
+        .core-title {
+            font-size: 1.18rem;
+            font-weight: 800;
+            color: #fff;
+            letter-spacing: -0.01em;
+        }
+        .core-desc {
+            font-size: 0.82rem;
+            color: var(--text-sub);
+            margin-top: 2px;
+        }
+
+        /* DISPOSICIÓN EN 2 O 3 COLUMNAS */
+        .branches-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 24px;
+            width: 100%;
+        }
+
+        .branch-column {
+            background: var(--bg-card);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 18px;
+            padding: 22px;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+        }
+        .branch-column:hover {
+            transform: translateY(-3px);
+            border-color: rgba(255, 255, 255, 0.22);
+            box-shadow: 0 14px 35px rgba(0, 0, 0, 0.55);
+        }
+
+        .branch-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .branch-badge {
+            font-size: 0.75rem;
+            font-weight: 900;
+            padding: 4px 8px;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--branch-color);
+            font-family: ui-monospace, monospace;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+        .branch-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #fff;
+            line-height: 1.25;
+        }
+        .branch-desc {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 3px;
+            line-height: 1.25;
+        }
+        .branch-count {
+            margin-left: auto;
+            font-size: 0.75rem;
+            color: var(--text-sub);
+            background: rgba(0, 0, 0, 0.4);
+            padding: 3px 8px;
+            border-radius: 10px;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .file-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 11px;
+            flex: 1;
+        }
+        .file-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            border-radius: 12px;
+            padding: 11px 14px;
+            text-decoration: none;
+            color: var(--text-main);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .file-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: var(--branch-color);
+            transform: translateX(4px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+        }
+        .file-left {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            min-width: 0;
+        }
+        .file-num {
+            font-family: ui-monospace, monospace;
+            font-size: 0.8rem;
+            font-weight: 800;
+            color: var(--branch-color);
+            background: rgba(255, 255, 255, 0.05);
+            padding: 3px 6px;
+            border-radius: 6px;
+            flex-shrink: 0;
+        }
+        .file-tag {
+            font-family: ui-monospace, monospace;
+            font-weight: 800;
+            font-size: 0.72rem;
+            padding: 3px 6px;
+            border-radius: 6px;
+            flex-shrink: 0;
+        }
+        .tag-pdf { background: rgba(239, 68, 68, 0.2); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.4); }
+        .tag-mp4 { background: rgba(168, 85, 247, 0.25); color: #e9d5ff; border: 1px solid rgba(168, 85, 247, 0.45); }
+        .tag-png { background: rgba(56, 189, 248, 0.2); color: #7dd3fc; border: 1px solid rgba(56, 189, 248, 0.4); }
+        .tag-txt { background: rgba(148, 163, 184, 0.2); color: #cbd5e1; border: 1px solid rgba(148, 163, 184, 0.4); }
+
+        .file-details {
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+        .file-title {
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: #f1f5f9;
+            line-height: 1.3;
+        }
+        .file-desc {
+            font-size: 0.74rem;
+            color: var(--text-muted);
+            margin-top: 2px;
+            line-height: 1.2;
+        }
+        .file-arrow {
+            font-size: 0.9rem;
+            font-weight: 700;
+            margin-left: 10px;
+            color: var(--text-muted);
+            flex-shrink: 0;
+            transition: color 0.2s, transform 0.2s;
+        }
+        .file-card:hover .file-arrow {
+            color: #fff;
+            transform: translate(2px, -2px);
+        }
+
+        .bottom-bar {
+            margin-top: 32px;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 14px;
+            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            font-size: 0.85rem;
+            color: var(--text-sub);
+        }
+        .bottom-bar strong {
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-pill">🪐 Sesión 54 • Cuadro de Mando Didáctico</div>
+        <h1>Sesión 54: Prácticas y Retos con IA</h1>
+        <p class="subtitle">Cuadro de mando interactivo organizado en 3 fases: Taller Creativo, Ciencia & Futuro, y Vida Práctica & Cuentos.</p>
+    </header>
+
+    <main class="mindmap-canvas">
+        <div class="core-node">
+            <span class="core-badge">SESIÓN 54</span>
+            <div class="core-text">
+                <div class="core-title">Itinerario Formativo Completo • 16 Recursos Guiados</div>
+                <div class="core-desc">Sigue la numeración correlativa del #01 al #16 o explora directamente la fase que prefieras.</div>
+            </div>
+        </div>
+
+        <div class="branches-container">
+            
+            <!-- COLUMNA 1 -->
+            <div class="branch-column" style="--branch-color: #38bdf8;">
+                <div class="branch-header">
+                    <span class="branch-badge">FASE 1</span>
+                    <div>
+                        <h2 class="branch-title">🎨 Taller Creativo, Visual & Arte</h2>
+                        <p class="branch-desc">Prompts de texto, estilos de imagen, práctica guiada y pinacoteca clásica</p>
+                    </div>
+                    <span class="branch-count">5 recursos</span>
+                </div>
+                <div class="file-stack">
+                    
+                    <a href="1.%20TXT-054_Traductor%20de%20Novedades%20Tecnol%C3%B3gicas%20del%20Telediario%20en%20Claro.pdf" target="_blank" class="file-card">
+                        <div class="file-left">
+                            <span class="file-num">#01</span>
+                            <span class="file-tag tag-pdf">PDF</span>
+                            <div class="file-details">
+                                <span class="file-title">Traductor de Novedades Tecnológicas del Telediario en Claro</span>
+                                <span class="file-desc">Paso 1 • Prompts y Texto</span>
+                            </div>
+                        </div>
+                        <span class="file-arrow">↗</span>
+                    </a>
+                    <a href="2.%20EST-054_DOBLE%20EXPOSICI%C3%93N%20-%20Perfil%20con%20Bosque.pdf" target="_blank" class="file-card">
+                        <div class="file-left">
+                            <span class="file-num">#02</span>
+                            <span class="file-tag tag-pdf">PDF</span>
+                            <div class="file-details">
+                                <span class="file-title">DOBLE EXPOSICIÓN - Perfil con Bosque</span>
+                                <span class="file-desc">Paso 2 • Estilo de Imagen IA</span>
+                            </div>
+                        </div>
+                        <span class="file-arrow">↗</span>
+                    </a>
+                    <a href="3.%20PRAC-054_Dise%C3%B1o%20de%20Maquetas%20Navales%20y%20Barcos%20de%20%C3%89poca%20en%20Botella.pdf" target="_blank" class="file-card">
+                        <div class="file-left">
+                            <span class="file-num">#03</span>
+                            <span class="file-tag tag-pdf">PDF</span>
+                            <div class="file-details">
+                                <span class="file-title">Diseño de Maquetas Navales y Barcos de Época en Botella</span>
+                                <span class="file-desc">Paso 3 • Taller Práctico Gemini</span>
+                            </div>
+                        </div>
+                        <span class="file-arrow">↗</span>
+                    </a>
+                    <a href="4.%2025.%20NO.%20Pythagoras_Tree.mp4" target="_blank" class="file-card">
+                        <div class="file-left">
+                            <span class="file-num">#04</span>
+                            <span class="file-tag tag-mp4">MP4</span>
+                            <div class="file-details">
+                                <span class="file-title">25. NO. Pythagoras Tree</span>
+                                <span class="file-desc">Paso 3 • Taller Práctico Gemini</span>
+                            </div>
+                        </div>
+                        <span class="file-arrow">↗</span>
+                    </a>
+                    <a href="8.%20ARTE-054_El%20Hijo%20del%20Hombre%20%28El%20bomb%C3%ADn%20y%20la%20manzana%29%20de%20Ren%C3%A9%20Magritte%20%28196.pdf" target="_blank" class="file-card">
+                        <div class="file-left">
+                            <span class="file-num">#05</span>
+                            <span class="file-tag tag-pdf">PDF</span>
+                            <div class="file-details">
+                                <span class="file-title">El Hijo del Hombre (El bombín y la manzana) de René Magritte (196</span>
+                                <span class="file-desc">Paso 4 • Historia del Arte</span>
+                            </div>
+                        </div>
+                        <span class="file-arrow">↗</span>
+                    </a>
+                </div>
+            </div>
+            <!-- COLUMNA 2 -->
+            <div class="branch-column" style="--branch-color: #fb7185;">
+                <div class="branch-header">
+                    <span class="branch-badge">FASE 2</span>
+                    <div>
+                        <h2 class="branch-title">🔬 Ciencia, Naturaleza & Futuro</h2>
+                        <p class="branch-desc">Fractales y biomimética, cortes transversales, sci-fi y biodiversidad</p>
+                    </div>
+                    <span class="branch-count">3 recursos</span>
+                </div>
+                <div class="file-stack">
+                    
+                    <a href="4.%20FRAC-032%2025.%20Pythagoras_Tree.pdf" target="_blank" class="file-card">
+                        <div class="file-left">
+                            <span class="file-num">#06</span>
+                            <span class="file-tag tag-pdf">PDF</span>
+                            <div class="file-details">
+                                <span class="file-title">25. Pythagoras Tree</span>
+                                <span class="file-desc">Paso 5 • Geometría Fractal & HD</span>
+                            </div>
+                        </div>
+                        <span class="file-arrow">↗</span>
+                    </a>
+                    <a href="5.%20INT-054_Reconstrucci%C3%B3n%20del%20Palacio%20de%20Cnossos%20en%20Creta_%20frescos%20del%20salto.pdf" target="_blank" class="file-card">
+                        <div class="file-left">
+                            <span class="file-num">#07</span>
+                            <span class="file-tag tag-pdf">PDF</span>
+                            <div class="file-details">
+                                <span class="file-title">Reconstrucción del Palacio de Cnossos en Creta frescos del salto</span>
+                                <span class="file-desc">Paso 6 • Mundo por Dentro</span>
+                            </div>
+                        </div>
+                        <span class="file-arrow">↗</span>
+                    </a>
+                    <a href="7.%20NAT-054_Gen%C3%A9tica%20del%20Leucismo%20y%20Adaptaci%C3%B3n%20Polar%20del%20Tigre%20Siberiano%20%28Inf.pdf" target="_blank" class="file-card">
+                        <div class="file-left">
+                            <span class="file-num">#08</span>
+                            <span class="file-tag tag-pdf">PDF</span>
+                            <div class="file-details">
+                                <span class="file-title">Genética del Leucismo y Adaptación Polar del Tigre Siberiano (Inf</span>
+                                <span class="file-desc">Paso 8 • Naturaleza Fascinante</span>
+                            </div>
+                        </div>
+                        <span class="file-arrow">↗</span>
+                    </a>
+                </div>
+            </div>
+            <!-- COLUMNA 3 -->
+            <div class="branch-column" style="--branch-color: #34d399;">
+                <div class="branch-header">
+                    <span class="branch-badge">FASE 3</span>
+                    <div>
+                        <h2 class="branch-title">💡 Vida Práctica, Memoria & Cuentos</h2>
+                        <p class="branch-desc">Escalafones, trucos cotidianos, móvil, recuerdos y proyecto final de cómic con IA</p>
+                    </div>
+                    <span class="branch-count">8 recursos</span>
+                </div>
+                <div class="file-stack">
+                    
+                    <a href="9.%20NIV-054_Los%205%20Niveles%20de%20Gesti%C3%B3n%20y%20Suministro%20del%20Agua%20Potable.pdf" target="_blank" class="file-card">
+                        <div class="file-left">
+                            <span class="file-num">#09</span>
+                            <span class="file-tag tag-pdf">PDF</span>
+                            <div class="file-details">
+                                <span class="file-title">Los 5 Niveles de Gestión y Suministro del Agua Potable</span>
+                                <span class="file-desc">Paso 9 • Escalafones y Niveles</span>
+                            </div>
+                        </div>
+                        <span class="file-arrow">↗</span>
+                    </a>
+                    <a href="10.%20TRUC-054_Organizaci%C3%B3n_%20Proteger%20el%20cepillo%20de%20dientes%20en%20viaje.pdf" target="_blank" class="file-card">
+                        <div class="file-left">
+                            <span class="file-num">#10</span>
+                            <span class="file-tag tag-pdf">PDF</span>
+                            <div class="file-details">
+                                <span class="file-title">Organización Proteger el cepillo de dientes en viaje</span>
+                                <span class="file-desc">Paso 10 • Trucos Cotidianos</span>
+                            </div>
+                        </div>
+                        <span class="file-arrow">↗</span>
+                    </a>
+                    <a href="12.%20MOVIL-054_Etiquetas%20de%20Jam%C3%B3n%20Ib%C3%A9rico_%20Precinto%20de%20color%20%28Negro%2C%20Rojo%2C%20Verde.pdf" target="_blank" class="file-card">
+                        <div class="file-left">
+                            <span class="file-num">#11</span>
+                            <span class="file-tag tag-pdf">PDF</span>
+                            <div class="file-details">
+                                <span class="file-title">Etiquetas de Jamón Ibérico Precinto de color (Negro, Rojo, Verde</span>
+                                <span class="file-desc">Paso 11 • Salvavidas del Móvil</span>
+                            </div>
+                        </div>
+                        <span class="file-arrow">↗</span>
+                    </a>
+                    <a href="13.%20MEM-054_Las%20Fuentes%20P%C3%BAblicas%20y%20el%20Rito%20del%20Agua%20Fresca.pdf" target="_blank" class="file-card">
+                        <div class="file-left">
+                            <span class="file-num">#12</span>
+                            <span class="file-tag tag-pdf">PDF</span>
+                            <div class="file-details">
+                                <span class="file-title">Las Fuentes Públicas y el Rito del Agua Fresca</span>
+                                <span class="file-desc">Paso 12 • Cápsula de Memoria</span>
+                            </div>
+                        </div>
+                        <span class="file-arrow">↗</span>
+                    </a>
+                    <a href="11.CUENT-054_Paso_0_Introduccion_Proyecto.pdf" target="_blank" class="file-card">
+                        <div class="file-left">
+                            <span class="file-num">#13</span>
+                            <span class="file-tag tag-pdf">PDF</span>
+                            <div class="file-details">
+                                <span class="file-title">Paso 0 • Proyecto Cómic Ilustrado (Introducción)</span>
+                                <span class="file-desc">Paso 13 • Cuentos Ilustrados</span>
+                            </div>
+                        </div>
+                        <span class="file-arrow">↗</span>
+                    </a>
+                    <a href="11.CUENT-054_Paso_1_Misterios%20Divertidos_%20El%20detective%20que%20usaba%20un%20periscopio%20casero.pdf" target="_blank" class="file-card">
+                        <div class="file-left">
+                            <span class="file-num">#14</span>
+                            <span class="file-tag tag-pdf">PDF</span>
+                            <div class="file-details">
+                                <span class="file-title">Paso 1 • Crear el Cuento: Misterios Divertidos El detective que usaba un periscopio casero</span>
+                                <span class="file-desc">Paso 13 • Cuentos Ilustrados</span>
+                            </div>
+                        </div>
+                        <span class="file-arrow">↗</span>
+                    </a>
+                    <a href="11.CUENT-054_Paso_2_Misterios%20Divertidos_%20El%20detective%20que%20usaba%20un%20periscopio%20casero.pdf" target="_blank" class="file-card">
+                        <div class="file-left">
+                            <span class="file-num">#15</span>
+                            <span class="file-tag tag-pdf">PDF</span>
+                            <div class="file-details">
+                                <span class="file-title">Paso 2 • Guión del Cómic: Misterios Divertidos El detective que usaba un periscopio casero</span>
+                                <span class="file-desc">Paso 13 • Cuentos Ilustrados</span>
+                            </div>
+                        </div>
+                        <span class="file-arrow">↗</span>
+                    </a>
+                    <a href="11.CUENT-054_Paso_3_Misterios%20Divertidos_%20El%20detective%20que%20usaba%20un%20periscopio%20casero.pdf" target="_blank" class="file-card">
+                        <div class="file-left">
+                            <span class="file-num">#16</span>
+                            <span class="file-tag tag-pdf">PDF</span>
+                            <div class="file-details">
+                                <span class="file-title">Paso 3 • Ilustrador Visual: Misterios Divertidos El detective que usaba un periscopio casero</span>
+                                <span class="file-desc">Paso 13 • Cuentos Ilustrados</span>
+                            </div>
+                        </div>
+                        <span class="file-arrow">↗</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="bottom-bar">
+            <span>🤖 <strong>Curso de Inteligencia Artificial</strong> • Sesión 54</span>
+            <span>Publicación unificada para Google Classroom</span>
+        </div>
+    </main>
+
+</body>
+</html>

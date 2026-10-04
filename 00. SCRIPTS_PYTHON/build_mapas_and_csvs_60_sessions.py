@@ -26,46 +26,46 @@ GITHUB_BASE_URL = "https://javiercursocorreo-gif.github.io/Curso-IA/"
 
 # Configuración de pasos, colores y columnas
 STEP_CONFIG = {
-    "TXT":   {"color": "#38bdf8", "cat": "Paso 1 • Prompts y Texto",        "icon": "✍️", "col": 1, "order": 1},
-    "EST":   {"color": "#818cf8", "cat": "Paso 2 • Estilo de Imagen IA",    "icon": "🎨", "col": 1, "order": 2},
-    "PRAC":  {"color": "#c084fc", "cat": "Paso 3 • Taller Práctico Gemini",  "icon": "⚡", "col": 1, "order": 3},
-    "ARTE":  {"color": "#a3e635", "cat": "Paso 4 • Historia del Arte",      "icon": "🖼️", "col": 1, "order": 4},
-    "FRAC":  {"color": "#f472b6", "cat": "Paso 5 • Geometría Fractal & HD",  "icon": "🌀", "col": 2, "order": 5},
-    "FUNC":  {"color": "#f472b6", "cat": "Paso 5 • Función 3D & IA",        "icon": "📐", "col": 2, "order": 5},
-    "INT":   {"color": "#fb7185", "cat": "Paso 6 • Mundo por Dentro",       "icon": "🏛️", "col": 2, "order": 6},
-    "FUT":   {"color": "#fb923c", "cat": "Paso 7 • Sci-Fi & Futuro",        "icon": "🚀", "col": 2, "order": 7},
-    "NAT":   {"color": "#facc15", "cat": "Paso 8 • Naturaleza Fascinante",  "icon": "🌿", "col": 2, "order": 8},
-    "AVES":  {"color": "#facc15", "cat": "Paso 8 • Naturaleza Fascinante",  "icon": "🦅", "col": 2, "order": 8},
-    "NIV":   {"color": "#4ade80", "cat": "Paso 9 • Escalafones y Niveles",  "icon": "📊", "col": 3, "order": 9},
-    "TRUC":  {"color": "#2dd4bf", "cat": "Paso 10 • Trucos Cotidianos",     "icon": "💡", "col": 3, "order": 10},
-    "MOVIL": {"color": "#60a5fa", "cat": "Paso 11 • Salvavidas del Móvil",  "icon": "📱", "col": 3, "order": 11},
-    "MEM":   {"color": "#a78bfa", "cat": "Paso 12 • Cápsula de Memoria",   "icon": "🕰️", "col": 3, "order": 12},
-    "MEC":   {"color": "#f59e0b", "cat": "Paso 12 • Mecánica & Vídeo",     "icon": "⚙️", "col": 3, "order": 12},
-    "CUENT": {"color": "#ec4899", "cat": "Paso 13 • Cuentos Ilustrados",    "icon": "📖", "col": 3, "order": 99}
+    "CUENT": {"color": "#ec4899", "cat": "Paso 1 • Proyecto Cómic & Literatura", "icon": "📖", "col": 1, "order": 0},
+    "TXT":   {"color": "#38bdf8", "cat": "Paso 2 • Prompts y Texto",        "icon": "✍️", "col": 1, "order": 1},
+    "EST":   {"color": "#818cf8", "cat": "Paso 3 • Estilo de Imagen IA",    "icon": "🎨", "col": 1, "order": 2},
+    "PRAC":  {"color": "#c084fc", "cat": "Paso 4 • Taller Práctico Gemini",  "icon": "⚡", "col": 1, "order": 3},
+    "ARTE":  {"color": "#a3e635", "cat": "Paso 5 • Historia del Arte",      "icon": "🖼️", "col": 2, "order": 4},
+    "FRAC":  {"color": "#f472b6", "cat": "Paso 6 • Geometría Fractal & HD",  "icon": "🌀", "col": 2, "order": 5},
+    "FUNC":  {"color": "#f472b6", "cat": "Paso 6 • Función 3D & IA",        "icon": "📐", "col": 2, "order": 5},
+    "INT":   {"color": "#fb7185", "cat": "Paso 7 • Mundo por Dentro",       "icon": "🏛️", "col": 2, "order": 6},
+    "FUT":   {"color": "#fb923c", "cat": "Paso 8 • Sci-Fi & Futuro",        "icon": "🚀", "col": 2, "order": 7},
+    "NAT":   {"color": "#facc15", "cat": "Paso 9 • Naturaleza Fascinante",  "icon": "🌿", "col": 2, "order": 8},
+    "AVES":  {"color": "#facc15", "cat": "Paso 9 • Naturaleza Fascinante",  "icon": "🦅", "col": 2, "order": 8},
+    "NIV":   {"color": "#4ade80", "cat": "Paso 10 • Escalafones y Niveles", "icon": "📊", "col": 3, "order": 9},
+    "TRUC":  {"color": "#2dd4bf", "cat": "Paso 11 • Trucos Cotidianos",     "icon": "💡", "col": 3, "order": 10},
+    "MOVIL": {"color": "#60a5fa", "cat": "Paso 12 • Salvavidas del Móvil",  "icon": "📱", "col": 3, "order": 11},
+    "MEM":   {"color": "#a78bfa", "cat": "Paso 13 • Cápsula de Memoria",   "icon": "🕰️", "col": 3, "order": 12},
+    "MEC":   {"color": "#f59e0b", "cat": "Paso 13 • Mecánica & Vídeo",     "icon": "⚙️", "col": 3, "order": 12}
 }
 
 COLUMNS_CONFIG = [
     {
         "col_id": 1,
         "badge": "FASE 1",
-        "title": "Taller Creativo, Visual & Arte",
-        "desc": "Prompts de texto, estilos de imagen, práctica guiada y pinacoteca clásica",
-        "color": "#38bdf8",
-        "icon": "🎨"
+        "title": "Lanzamiento del Cómic & Taller Creativo",
+        "desc": "Lanzamiento temprano del cómic en Gemini Notebook (procesando en 2º plano), prompts y estilos de imagen",
+        "color": "#ec4899",
+        "icon": "📖"
     },
     {
         "col_id": 2,
         "badge": "FASE 2",
-        "title": "Ciencia, Naturaleza & Futuro",
-        "desc": "Fractales y biomimética, cortes transversales, sci-fi y biodiversidad",
+        "title": "Pinacoteca, Ciencia & Futuro",
+        "desc": "Historia del arte, fractales y biomimética, cortes transversales, sci-fi y biodiversidad",
         "color": "#fb7185",
         "icon": "🔬"
     },
     {
         "col_id": 3,
         "badge": "FASE 3",
-        "title": "Vida Práctica, Memoria & Cuentos",
-        "desc": "Escalafones, trucos cotidianos, móvil, recuerdos y proyecto final de cómic con IA",
+        "title": "Vida Práctica, Memoria & Proyección Final",
+        "desc": "Escalafones, trucos cotidianos, móvil, recuerdos de infancia y proyección final del cómic generado",
         "color": "#34d399",
         "icon": "💡"
     }
@@ -117,7 +117,8 @@ def file_sort_key(filename):
             step_order = 3
         else:
             step_order = 4
-        return (3, 99, step_order, filename.lower())
+        # Columna 1, Orden 0 (al principio de Fase 1)
+        return (1, 0, step_order, filename.lower())
     cfg = STEP_CONFIG.get(code, {'col': 1, 'order': 99})
     col = cfg.get('col', 1)
     order = cfg.get('order', 99)
@@ -191,6 +192,10 @@ def generate_columns_html(session_num, session_folder, files):
     current_columns_config = []
     for col_info in COLUMNS_CONFIG:
         col_copy = dict(col_info)
+        if session_num == 1 and col_copy["col_id"] == 1:
+            col_copy["title"] = "Taller Creativo & Visual"
+            col_copy["desc"] = "Prompts de texto, estilos de imagen y práctica guiada con Gemini"
+            col_copy["icon"] = "🎨"
         if session_num == 1 and col_copy["col_id"] == 3:
             col_copy["title"] = "Vida Práctica & Memoria"
             col_copy["desc"] = "Escalafones, trucos cotidianos, cámara del móvil y recuerdos de infancia"
@@ -238,7 +243,7 @@ def generate_columns_html(session_num, session_folder, files):
     subtitle_text = (
         "Cuadro de mando interactivo organizado en 3 fases: Taller Creativo, Ciencia & Futuro, y Vida Práctica & Memoria."
         if session_num == 1
-        else "Cuadro de mando interactivo organizado en 3 fases: Taller Creativo, Ciencia & Futuro, y Vida Práctica & Cuentos."
+        else "Cuadro de mando interactivo organizado en 3 fases: Lanzamiento del Cómic en 2º plano, Pinacoteca & Ciencia, y Vida Práctica & Proyección Final."
     )
 
     fase_0_html = ""
