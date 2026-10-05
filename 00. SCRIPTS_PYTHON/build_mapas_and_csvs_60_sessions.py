@@ -142,10 +142,12 @@ def generate_columns_html(session_num, session_folder, files):
                 return (2, 5, 4, filename.lower())
         return file_sort_key(filename)
 
-    # Filtrar archivos reales de contenido (En Sesión 1 se omiten del 16 al 19 los cuentos Gemini Notebook)
+    # Filtrar archivos reales de contenido (ignorando duplicados de sincronización de iCloud ' 2.pdf', etc.)
     valid_files = [
         f for f in sorted(files, key=session_file_sort_key)
         if not f.startswith('.') and not f.startswith('MAPA_CLASE') and not f.endswith('.html') and not f.startswith('~$')
+        and not re.search(r'\s[2-9]\.(pdf|mp4|html)$', f, re.IGNORECASE)
+        and not f.startswith('0. FASE_0')
         and not (session_num == 1 and 'CUENT' in f)
     ]
     
