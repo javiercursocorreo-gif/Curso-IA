@@ -28,7 +28,7 @@ GLOSARIO_PDF_REL = "CLASES/EXPORTACION_FICHAS_CLASSROOM_PDF/00. [GUIA] GLOSARIO_
 
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
-# 14 Etiquetas Oficiales del Curso
+# 15 Etiquetas Oficiales del Curso
 TAG_DEFINITIONS = [
     ("TXT",   "01. [TXT] Prompts de Comunicación y Texto",       "Paso 1: Prompts de Comunicación y Texto (El poder de la palabra en la IA)."),
     ("EST",   "02. [EST] Estilos Visuales de Imagen",             "Paso 2: Estilos Visuales de Imagen (Aprender a pedir estilos artísticos y fotográficos)."),
@@ -40,10 +40,11 @@ TAG_DEFINITIONS = [
     ("ARTE",  "08. [ARTE] Obras Maestras del Arte Universal",     "Paso 8: Obras Maestras de la Historia del Arte (Los grandes genios de la pintura)."),
     ("NIV",   "09. [NIV] Escalafones y Niveles (Cultura 101)",    "Paso 9: Escalafones y Niveles (Cultura 101: clasificaciones del mundo)."),
     ("TRUC",  "10. [TRUC] Trucos y Soluciones Cotidianas",        "Paso 10: Trucos y Soluciones Cotidianas (Hogar, cocina y vida práctica con IA)."),
-    ("CUENT", "11. [CUENT] Cuentos Ilustrados para Nietos",       "Paso 11: Cuentos Ilustrados para Nietos (Historias personalizadas con valores)."),
-    ("MOVIL", "12. [MOVIL] El Salvavidas del Móvil (Cámara y Voz)","Paso 12: El Salvavidas del Móvil (Cámara y voz con la app de Gemini ante la pantalla)."),
-    ("MEM",   "13. [MEM] Cápsula de la Memoria",                  "Paso 13: Cápsula de la Memoria (Fotos de pueblo o barrio con microrrelato para nietos)."),
-    ("MEC",   "14. [MEC] Cómo Funcionan las Cosas (Vídeo 3D)",    "Paso 14: Cómo Funcionan las Cosas (Mecánica e Ingeniería en Vídeo 3D de 10 seg con Gemini)."),
+    ("PAT",   "11. [PAT] Cultura Patrimonial y Finanzas Claras",  "Paso 11: Cultura Patrimonial, Derechos y Finanzas Claras (Tranquilidad legal, notaría y ahorro)."),
+    ("CUENT", "12. [CUENT] Cuentos Ilustrados para Nietos",       "Paso 12: Cuentos Ilustrados para Nietos (Historias personalizadas con valores)."),
+    ("MOVIL", "13. [MOVIL] El Salvavidas del Móvil (Cámara y Voz)","Paso 13: El Salvavidas del Móvil (Cámara y voz con la app de Gemini ante la pantalla)."),
+    ("MEM",   "14. [MEM] Cápsula de la Memoria",                  "Paso 14: Cápsula de la Memoria (Fotos de pueblo o barrio con microrrelato para nietos)."),
+    ("MEC",   "15. [MEC] Cómo Funcionan las Cosas (Vídeo 3D)",    "Paso 15: Cómo Funcionan las Cosas (Mecánica e Ingeniería en Vídeo 3D de 10 seg con Gemini)."),
 ]
 
 def natural_sort_key(s):

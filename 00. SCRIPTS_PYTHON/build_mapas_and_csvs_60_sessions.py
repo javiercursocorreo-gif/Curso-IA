@@ -39,9 +39,10 @@ STEP_CONFIG = {
     "AVES":  {"color": "#facc15", "cat": "Paso 9 • Naturaleza Fascinante",  "icon": "🦅", "col": 2, "order": 8},
     "NIV":   {"color": "#4ade80", "cat": "Paso 10 • Escalafones y Niveles", "icon": "📊", "col": 3, "order": 9},
     "TRUC":  {"color": "#2dd4bf", "cat": "Paso 11 • Trucos Cotidianos",     "icon": "💡", "col": 3, "order": 10},
-    "MOVIL": {"color": "#60a5fa", "cat": "Paso 12 • Salvavidas del Móvil",  "icon": "📱", "col": 3, "order": 11},
-    "MEM":   {"color": "#a78bfa", "cat": "Paso 13 • Cápsula de Memoria",   "icon": "🕰️", "col": 3, "order": 12},
-    "MEC":   {"color": "#f59e0b", "cat": "Paso 13 • Mecánica & Vídeo",     "icon": "⚙️", "col": 3, "order": 12}
+    "PAT":   {"color": "#10b981", "cat": "Paso 12 • Cultura Patrimonial & Derechos", "icon": "🏛️", "col": 3, "order": 11},
+    "MOVIL": {"color": "#60a5fa", "cat": "Paso 13 • Salvavidas del Móvil",  "icon": "📱", "col": 3, "order": 12},
+    "MEM":   {"color": "#a78bfa", "cat": "Paso 14 • Cápsula de Memoria",   "icon": "🕰️", "col": 3, "order": 13},
+    "MEC":   {"color": "#f59e0b", "cat": "Paso 14 • Mecánica & Vídeo",     "icon": "⚙️", "col": 3, "order": 13}
 }
 
 COLUMNS_CONFIG = [
@@ -64,8 +65,8 @@ COLUMNS_CONFIG = [
     {
         "col_id": 3,
         "badge": "FASE 3",
-        "title": "Vida Práctica, Memoria & Proyección Final",
-        "desc": "Escalafones, trucos cotidianos, móvil, recuerdos de infancia y proyección final del cómic generado",
+        "title": "Vida Práctica, Patrimonio & Memoria",
+        "desc": "Escalafones, trucos cotidianos, cultura patrimonial 101, móvil, recuerdos de infancia y proyección final",
         "color": "#34d399",
         "icon": "💡"
     }
@@ -206,8 +207,8 @@ def generate_columns_html(session_num, session_folder, files):
             col_copy["desc"] = "Prompts de texto, estilos de imagen y práctica guiada con Gemini"
             col_copy["icon"] = "🎨"
         if session_num == 1 and col_copy["col_id"] == 3:
-            col_copy["title"] = "Vida Práctica & Memoria"
-            col_copy["desc"] = "Escalafones, trucos cotidianos, cámara del móvil y recuerdos de infancia"
+            col_copy["title"] = "Vida Práctica, Patrimonio & Memoria"
+            col_copy["desc"] = "Escalafones, cultura patrimonial 101, cámara del móvil y recuerdos de infancia"
         current_columns_config.append(col_copy)
 
     # Agrupar en las 3 columnas

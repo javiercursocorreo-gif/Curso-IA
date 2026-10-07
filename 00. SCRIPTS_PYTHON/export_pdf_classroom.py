@@ -238,6 +238,13 @@ def create_pdf_handout(file_path, block_name, item_id, item_title, concept_text,
                     table_rows.append([Paragraph("<b>• 🟢 Paso 2 (Transformación en el mismo chat de tu Móvil):</b>", style_prompt)])
                     for blk in re.split(r'\n\n|<br\s*/?>\s*<br\s*/?>', str(p2)):
                         if blk.strip(): table_rows.append([Paragraph(blk.strip(), style_prompt)])
+                elif "[PAT-" in str(item_id):
+                    table_rows.append([Paragraph("<b>• 🟢 Paso 1 (Pídele a Gemini que actúe como tu asesor y estructure el documento):</b>", style_prompt)])
+                    for blk in re.split(r'\n\n|<br\s*/?>\s*<br\s*/?>', str(p1)):
+                        if blk.strip(): table_rows.append([Paragraph(blk.strip(), style_prompt)])
+                    table_rows.append([Paragraph("<br/><b>• 🎨 Paso 2 (Ordena en el mismo chat generar la infografía visual / esquema):</b>", style_prompt)])
+                    for blk in re.split(r'\n\n|<br\s*/?>\s*<br\s*/?>', str(p2)):
+                        if blk.strip(): table_rows.append([Paragraph(blk.strip(), style_prompt)])
                 else:
                     table_rows.append([Paragraph("<b>• 🔴 Paso 1 (Prompt Previo para Generar la Foto Base en IA):</b>", style_prompt)])
                     for blk in re.split(r'\n\n|<br\s*/?>\s*<br\s*/?>', str(p1)):
@@ -274,6 +281,9 @@ def create_pdf_handout(file_path, block_name, item_id, item_title, concept_text,
         elif "[NIV-" in str(item_id):
             p_bg = colors.HexColor('#FAF0FA')
             p_border = colors.HexColor('#800080')
+        elif "[PAT-" in str(item_id):
+            p_bg = colors.HexColor('#ECFDF5')
+            p_border = colors.HexColor('#059669')
         else:
             p_bg = colors.HexColor('#F0F4F8')
             p_border = colors.HexColor('#005A9E')
@@ -808,14 +818,15 @@ def main():
             8: "8.",
             9: "9.",
             10: "10.",
-            11: "",
-            12: "12.",
-            13: "13."
+            11: "11.",
+            12: "",
+            13: "13.",
+            14: "14."
         }
-        for col_idx in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]:
+        for col_idx in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]:
             if col_idx >= len(row):
                 continue
-            if idx == 1 and col_idx == 11:
+            if idx == 1 and col_idx == 12:
                 continue
             cell_str = row[col_idx]
             m = re.search(r'\[([A-Z]+-[0-9]+[A-Z\.]*)\]', cell_str)
@@ -909,6 +920,7 @@ def main():
         has_arte = False
         has_niv = False
         has_truc = False
+        has_pat = False
         has_cuent = False
         if os.path.exists(t_path):
             for f in os.listdir(t_path):
@@ -929,13 +941,15 @@ def main():
                     has_niv = True
                 elif f.startswith("10.") and f.lower().endswith(".pdf"):
                     has_truc = True
-                elif f.startswith("11."):
+                elif f.startswith("11.") and f.lower().endswith(".pdf"):
+                    has_pat = True
+                elif f.startswith("12."):
                     has_cuent = True
-        if not (has_pdf and has_mp4 and has_int and has_fut and has_nat and has_arte and has_niv and has_truc and has_cuent):
+        if not (has_pdf and has_mp4 and has_int and has_fut and has_nat and has_arte and has_niv and has_truc and has_pat and has_cuent):
             missing_media_count += 1
-            print(f"   ⚠️ Alerta en {terna_folder}: PDF_Paso4={has_pdf}, MP4_Paso4={has_mp4}, INT_Paso5={has_int}, FUT_Paso6={has_fut}, NAT_Paso7={has_nat}, ARTE_Paso8={has_arte}, NIV_Paso9={has_niv}, TRUC_Paso10={has_truc}, CUENT_Paso11={has_cuent}")
+            print(f"   ⚠️ Alerta en {terna_folder}: PDF_Paso4={has_pdf}, MP4_Paso4={has_mp4}, INT_Paso5={has_int}, FUT_Paso6={has_fut}, NAT_Paso7={has_nat}, ARTE_Paso8={has_arte}, NIV_Paso9={has_niv}, TRUC_Paso10={has_truc}, PAT_Paso11={has_pat}, CUENT_Paso12={has_cuent}")
     if missing_media_count == 0:
-        print("   ✅ VERIFICACIÓN 100% CORRECTA: Las 60 Ternas cuentan con exactamente al menos 1 PDF y 1 MP4 en su paso 4, más las fichas 5 [INT], 6 [FUT], 7 [NAT], 8 [ARTE], 9 [NIV], 10 [TRUC] y 11 [CUENT].")
+        print("   ✅ VERIFICACIÓN 100% CORRECTA: Las 60 Ternas cuentan con exactamente al menos 1 PDF y 1 MP4 en su paso 4, más las fichas 5 [INT], 6 [FUT], 7 [NAT], 8 [ARTE], 9 [NIV], 10 [TRUC], 11 [PAT] y 12 [CUENT].")
 
             
     # Final sweep: remove any " 2.pdf" or " 2.mp4" conflict files that iCloud sync might have spawned

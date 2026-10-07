@@ -3045,7 +3045,7 @@ add_header_1("XII. TABLA OFFLINE DE EMPAREJAMIENTOS (Ternas 01 a 60 con 13 Pasos
 p_intro_b8 = doc.add_paragraph()
 p_intro_b8.add_run("Esta tabla pre-calculada offline representa una LISTA INFINITA / ITINERARIO DE ROTACIÓN CONTINUA (Ternas 01 a 60). Como las clases son de 1 hora y media (90 minutos), el ritmo es totalmente flexible: el profesor puede abarcar 2, 4, 6 o más prompts y actividades en una sola sesión según el debate y la curiosidad del aula. Por tanto, la tabla no se divide rígidamente por fechas ni 'clase por clase', sino en pasos o ternas ordenadas (Terna 01, Terna 02, etc.). El profesor simplemente avanza por la lista y, al terminar cada clase, anota por qué número de terna se quedó para retomar exactamente en ese punto el próximo día sin perder la continuidad pedagógica:")
 
-table = doc.add_table(rows=1, cols=14)
+table = doc.add_table(rows=1, cols=15)
 table.style = 'Table Grid'
 
 # Formato de cabecera de tabla
@@ -3062,9 +3062,10 @@ headers = [
     "Paso 8: Obras de Arte [ARTE]",
     "Paso 9: Niveles [NIV]",
     "Paso 10: Trucos Caseros [TRUC]",
-    "Paso 11: Cuentos Nietos [CUENT]",
-    "Paso 12: Salvavidas Móvil [MOVIL]",
-    "Paso 13: Cápsula Memoria [MEM]"
+    "Paso 11: Cultura Patrimonial [PAT]",
+    "Paso 12: Cuentos Nietos [CUENT]",
+    "Paso 13: Salvavidas Móvil [MOVIL]",
+    "Paso 14: Cápsula Memoria [MEM]"
 ]
 for i, header_text in enumerate(headers):
     hdr_cells[i].text = header_text
@@ -3225,7 +3226,60 @@ for idx, item in enumerate(get_memoria_items(), 1):
     p_t = doc.add_paragraph()
     r_ht = p_t.add_run('• 💬 Para Contar a los Nietos: ')
     r_ht.bold = True
-    p_t.add_run(tips_text)
+    doc.add_paragraph()
+
+# ==============================================================================
+# BLOQUE 15: CULTURA PATRIMONIAL, DERECHOS Y FINANZAS CLARAS [PAT]
+# ==============================================================================
+doc.add_page_break()
+add_header_1("BLOQUE 15: CULTURA PATRIMONIAL, DERECHOS Y FINANZAS CLARAS [PAT]")
+p_intro_pat = doc.add_paragraph("Educación patrimonial, tranquilidad notarial, derechos bancarios y vivienda clara 101 adaptada a personas mayores.")
+p_intro_pat.alignment = WD_ALIGN_PARAGRAPH.CENTER
+
+from build_pat_60_master import get_pat_items
+
+for idx, item in enumerate(get_pat_items(), 1):
+    id_code = item["id_code"]
+    title = item["title"]
+    desc = item["concept"]
+    prompt_data = item["prompt"]
+    tips_text = item["tips"]
+    
+    classroom_export_items.append({
+        'block_dir': '14. [PAT] BLOQUE_14_CULTURA_PATRIMONIAL_Y_DERECHOS',
+        'block_name': 'BLOQUE 15: CULTURA PATRIMONIAL, DERECHOS Y FINANZAS CLARAS [PAT]',
+        'id_code': id_code,
+        'title': title,
+        'concept': desc,
+        'prompt': prompt_data,
+        'tips': tips_text,
+        'extra': item.get('extra')
+    })
+    
+    p_h = doc.add_heading(f'15.{idx}. {id_code} {title}', level=3)
+    for r in p_h.runs:
+        r.font.size = Pt(12)
+        r.font.color.rgb = RGBColor(0x10, 0x7C, 0x41) # Dark Emerald Green
+        
+    p_d = doc.add_paragraph()
+    p_d.add_run('• Concepto y Valor Patrimonial: ').bold = True
+    p_d.add_run(desc)
+    
+    p_g = doc.add_paragraph()
+    r_hg = p_g.add_run('• 🏛️ Metodología en 2 Pasos para IA:\n')
+    r_hg.bold = True
+    if isinstance(prompt_data, (list, tuple)) and len(prompt_data) == 2:
+        prompt_str = f"PASO 1 (Encargo a Gemini):\n{prompt_data[0]}\n\nPASO 2 (Generar Esquema Visual):\n{prompt_data[1]}"
+    else:
+        prompt_str = str(prompt_data)
+    r_gt = p_g.add_run(prompt_str)
+    r_gt.italic = True
+    r_gt.font.color.rgb = RGBColor(0x10, 0x7C, 0x41)
+    
+    p_t = doc.add_paragraph()
+    r_ht = p_t.add_run('• 🧪 Reto de Aula: ')
+    r_ht.bold = True
+    p_t.add_run(tips_text.replace('<br/>', '\n').replace('<b>', '').replace('</b>', '').replace('<i>', '').replace('</i>', ''))
     
     doc.add_paragraph()
 
@@ -3311,6 +3365,7 @@ nat_lookup = {f"[NAT-{i:03d}]": f"[NAT-{i:03d}] {it['title']}" for i, it in enum
 arte_lookup = {f"[ARTE-{i:03d}]": f"[ARTE-{i:03d}] {it['title']}" for i, it in enumerate([x for x in classroom_export_items if '[ARTE]' in x['block_dir']], 1)}
 niv_lookup = {f"[NIV-{i:03d}]": f"[NIV-{i:03d}] {it['title']}" for i, it in enumerate([x for x in classroom_export_items if '[NIV]' in x['block_dir']], 1)}
 truc_lookup = {f"[TRUC-{i:03d}]": f"[TRUC-{i:03d}] {it['title']}" for i, it in enumerate([x for x in classroom_export_items if '[TRUC]' in x['block_dir']], 1)}
+pat_lookup = {f"[PAT-{i:03d}]": f"[PAT-{i:03d}] {it['title']}" for i, it in enumerate([x for x in classroom_export_items if '[PAT]' in x['block_dir']], 1)}
 cuent_lookup = {f"[CUENT-{i:03d}]": f"[CUENT-{i:03d}] {it['title']}" for i, it in enumerate([x for x in classroom_export_items if '[CUENT]' in x['block_dir']], 1)}
 movil_lookup = {f"[MOVIL-{i:03d}]": f"[MOVIL-{i:03d}] {it['title']}" for i, it in enumerate([x for x in classroom_export_items if '[MOVIL]' in x['block_dir']], 1)}
 mem_lookup = {f"[MEM-{i:03d}]": f"[MEM-{i:03d}] {it['title']}" for i, it in enumerate([x for x in classroom_export_items if '[MEM]' in x['block_dir']], 1)}
@@ -3328,10 +3383,11 @@ for idx, row in enumerate(itinerario_data_raw, 1):
     arte_cell = arte_lookup.get(f"[ARTE-{idx:03d}]", f"[ARTE-{idx:03d}]")
     niv_cell = niv_lookup.get(f"[NIV-{idx:03d}]", f"[NIV-{idx:03d}]")
     truc_cell = truc_lookup.get(f"[TRUC-{idx:03d}]", f"[TRUC-{idx:03d}]")
+    pat_cell = pat_lookup.get(f"[PAT-{idx:03d}]", f"[PAT-{idx:03d}]")
     cuent_cell = cuent_lookup.get(f"[CUENT-{idx:03d}]", f"[CUENT-{idx:03d}]")
     movil_cell = movil_lookup.get(f"[MOVIL-{idx:03d}]", f"[MOVIL-{idx:03d}]")
     mem_cell = mem_lookup.get(f"[MEM-{idx:03d}]", f"[MEM-{idx:03d}]")
-    itinerario_data.append((t_name, txt_cell, est_cell, prac_cell, frac_cell, int_cell, fut_cell, nat_cell, arte_cell, niv_cell, truc_cell, cuent_cell, movil_cell, mem_cell))
+    itinerario_data.append((t_name, txt_cell, est_cell, prac_cell, frac_cell, int_cell, fut_cell, nat_cell, arte_cell, niv_cell, truc_cell, pat_cell, cuent_cell, movil_cell, mem_cell))
 
 
 for row_data in itinerario_data:

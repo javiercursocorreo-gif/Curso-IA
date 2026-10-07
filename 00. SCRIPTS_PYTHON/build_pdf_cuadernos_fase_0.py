@@ -26,6 +26,7 @@ ETIQUETAS = [
     ("[NAT]", "NATURALEZA", "Biomecánica animal, aves del mundo y maravillas del reino natural."),
     ("[NIV]", "NIVELES", "Escalafones del conocimiento y clasificaciones universales (101)."),
     ("[TRUC]", "TRUCOS", "Remedios prácticos del hogar, bricolaje rápido y limpieza ecológica."),
+    ("[PAT]", "PATRIMONIO", "Testamentos, herencias, derechos bancarios y vivienda clara 101."),
     ("[MOVIL]", "MÓVIL", "Símbolos de pantalla, salvavidas de configuración y cámara útil."),
     ("[MEM]", "MEMORIA", "Cápsula de recuerdos: lugares de infancia y objetos de época."),
     ("[MEC]", "MECÁNICA", "Engranajes, motores clásicos e inventos tecnológicos históricos.")
@@ -122,41 +123,41 @@ def generate_ps():
 
     # 3. Título de la tabla (Y: 695)
     lines.append("0.1 0.15 0.25 setrgbcolor")
-    lines.append("FSec 35 696 moveto (" + escape_ps("TABLA OFICIAL DE REFERENCIA COMPLETA (14 ETIQUETAS DEL CURSO)") + ") show")
+    lines.append("FSec 35 696 moveto (" + escape_ps("TABLA OFICIAL DE REFERENCIA COMPLETA (15 ETIQUETAS DEL CURSO)") + ") show")
     lines.append("FSub 35 685 moveto (" + escape_ps("Escribe en Gemini exactamente la palabra de la 2ª columna para titular cada uno de tus cuadernos:") + ") show")
 
-    # 4. Cabecera de la tabla (Y: 663..681)
-    y_th = 663
-    lines.append(f"0.15 0.22 0.35 setrgbcolor 35 {y_th} 525 18 rectfill")
+    # 4. Cabecera de la tabla (Y: 665..682)
+    y_th = 665
+    lines.append(f"0.15 0.22 0.35 setrgbcolor 35 {y_th} 525 17 rectfill")
     lines.append("1 1 1 setrgbcolor")
-    lines.append(f"FTableB 45 {y_th+5} moveto (" + escape_ps("Etiqueta") + ") show")
-    lines.append(f"FTableB 115 {y_th+5} moveto (" + escape_ps("Escribe en Gemini (Nombre)") + ") show")
-    lines.append(f"FTableB 265 {y_th+5} moveto (" + escape_ps("Qué prácticas guardaremos en este Cuaderno") + ") show")
+    lines.append(f"FTableB 45 {y_th+4} moveto (" + escape_ps("Etiqueta") + ") show")
+    lines.append(f"FTableB 115 {y_th+4} moveto (" + escape_ps("Escribe en Gemini (Nombre)") + ") show")
+    lines.append(f"FTableB 265 {y_th+4} moveto (" + escape_ps("Qué prácticas guardaremos en este Cuaderno") + ") show")
 
     # 5. Filas de la tabla (15 filas completas en la misma página)
-    # y_th = 663, h_row = 18 pt. 15 filas = 270 pt -> Y va de 643 hasta 373
-    y_row = 643
+    # y_th = 665, h_row = 17 pt. 15 filas = 255 pt -> Y va de 647 hasta 409
+    y_row = 647
     for idx, (sigla, palabra, desc) in enumerate(ETIQUETAS):
         bg_col = "0.96 0.98 1.0" if idx % 2 == 0 else "1.0 1.0 1.0"
-        lines.append(f"{bg_col} setrgbcolor 35 {y_row} 525 18 rectfill")
+        lines.append(f"{bg_col} setrgbcolor 35 {y_row} 525 17 rectfill")
         lines.append(f"0.86 0.89 0.93 setrgbcolor 35 {y_row} 525 0.5 rectstroke")
         
         # Col 1: Sigla
         lines.append("0.1 0.45 0.8 setrgbcolor")
-        lines.append(f"FTableB 45 {y_row+5} moveto (" + escape_ps(sigla) + ") show")
+        lines.append(f"FTableB 45 {y_row+4} moveto (" + escape_ps(sigla) + ") show")
         
         # Col 2: Palabra a escribir (verde oscuro destacado)
         lines.append("0.05 0.48 0.25 setrgbcolor")
-        lines.append(f"FTableB 115 {y_row+5} moveto (" + escape_ps(palabra) + ") show")
+        lines.append(f"FTableB 115 {y_row+4} moveto (" + escape_ps(palabra) + ") show")
         
         # Col 3: Qué guardaremos
         lines.append("0.25 0.3 0.35 setrgbcolor")
-        lines.append(f"FTable 280 {y_row+5} moveto (" + escape_ps(desc) + ") show")
+        lines.append(f"FTable 280 {y_row+4} moveto (" + escape_ps(desc) + ") show")
         
-        y_row -= 18
+        y_row -= 17
 
-    # 6. Caja inferior de beneficio / resumen didáctico (Y: 275..355, h=80)
-    box_y = 275
+    # 6. Caja inferior de beneficio / resumen didáctico (Y: 285..365, h=80)
+    box_y = 285
     lines.append("0.99 0.96 0.92 setrgbcolor")
     lines.append(f"35 {box_y} 525 80 6 roundrect fill")
     lines.append("0.95 0.65 0.2 setrgbcolor")

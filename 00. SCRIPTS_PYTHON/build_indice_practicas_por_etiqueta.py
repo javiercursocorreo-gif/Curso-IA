@@ -45,6 +45,7 @@ TAG_COLORS = {
     "ARTE":  {"bg": "#831843", "text": "#f9a8d4", "border": "#f43f5e", "name": "Obras Maestras del Arte Universal"},
     "NIV":   {"bg": "#312e81", "text": "#a5b4fc", "border": "#6366f1", "name": "Escalafones y Niveles (Cultura 101)"},
     "TRUC":  {"bg": "#713f12", "text": "#fde047", "border": "#eab308", "name": "Trucos y Soluciones Cotidianas"},
+    "PAT":   {"bg": "#064e3b", "text": "#a7f3d0", "border": "#10b981", "name": "Cultura Patrimonial, Derechos y Finanzas Claras"},
     "CUENT": {"bg": "#881337", "text": "#fda4af", "border": "#f43f5e", "name": "Cuentos Ilustrados para Nietos"},
     "MOVIL": {"bg": "#1e293b", "text": "#38bdf8", "border": "#0ea5e9", "name": "El Salvavidas del Móvil (Cámara y Voz)"},
     "MEM":   {"bg": "#451a03", "text": "#fdba74", "border": "#d97706", "name": "Cápsula de la Memoria"},

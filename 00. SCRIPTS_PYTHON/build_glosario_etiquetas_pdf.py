@@ -105,6 +105,13 @@ ETIQUETAS_DATA = [
         "ejemplos": "Eliminación ecológica de manchas difíciles, recetas con restos de nevera, orden del hogar y cuidado de plantas."
     },
     {
+        "sigla": "[PAT]",
+        "nombre": "Cultura Patrimonial, Derechos y Finanzas Claras",
+        "area": "Tranquilidad Legal, Notaría y Protección del Ahorro",
+        "descripcion": "Aprender a descodificar el banco, testamentos, herencias, usufructos y derechos de la vivienda sin riesgos ni tecnicismos.",
+        "ejemplos": "Testamento abierto, legítima y mejora, usufructo del viudo, Fondo de Garantía de 100.000€, hipoteca inversa y factura de la luz."
+    },
+    {
         "sigla": "[CUENT]",
         "nombre": "Cuentos Ilustrados para Nietos",
         "area": "Narrativa Familiar y Vínculo Afectivo",

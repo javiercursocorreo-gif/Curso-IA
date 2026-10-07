@@ -2821,5 +2821,189 @@
         <font NAME="Calibri" SIZE="11" BOLD="true" />
         </node>
       </node>
+    <node ID="ID_936" TEXT="BLOQUE 15: CULTURA PATRIMONIAL, DERECHOS Y FINANZAS CLARAS [PAT]" POSITION="right">
+      <font NAME="Calibri" SIZE="13" BOLD="true" />
+      <edge COLOR="#003366" WIDTH="2" />
+      <node ID="ID_937" TEXT="15.1. [PAT-001] El Testamento Abierto ante Notario: Claves, precio y mitos">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_938" TEXT="15.2. [PAT-002] El Fondo de Garantía de Depósitos (FGD): El límite de 100.000 €">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_939" TEXT="15.3. [PAT-003] La Hipoteca Inversa: Qué es de verdad, ventajas y precauciones">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_940" TEXT="15.4. [PAT-004] Cómo Leer la Nómina de la Pensión: Bruto, neto y retención de IRPF">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_941" TEXT="15.5. [PAT-005] Los Tres Tercios de la Herencia: Legítima, Mejora y Libre Disposición">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_942" TEXT="15.6. [PAT-006] Titular vs. Autorizado en Cuentas Bancarias: Efectos tras el fallecimiento">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_943" TEXT="15.7. [PAT-007] La Venta de la Nuda Propiedad con Usufructo Vitalicio">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_944" TEXT="15.8. [PAT-008] La Factura de la Luz: Mercado Regulado (PVPC) vs. Mercado Libre">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_945" TEXT="15.9. [PAT-009] El Usufructo del Cónyuge Viudo: Vivir tranquilo en la propia casa">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_946" TEXT="15.10. [PAT-010] Renta Fija vs. Renta Variable: Entender el riesgo sin miedo">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_947" TEXT="15.11. [PAT-011] La Renta Vitalicia Inmobiliaria: Tu casa como complemento de pensión">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_948" TEXT="15.12. [PAT-012] El Bono Social Eléctrico y Térmico para Pensionistas">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_949" TEXT="15.13. [PAT-013] Donación en Vida vs. Dejar en Herencia: La balanza fiscal">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_950" TEXT="15.14. [PAT-014] La Ley de Atención Presencial Bancaria a Mayores de 65 Años">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_951" TEXT="15.15. [PAT-015] La Exención de IRPF al Vender la Vivienda Habitual (+65 años)">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_952" TEXT="15.16. [PAT-016] La Declaración de la Renta en Jubilados: Cuándo es obligatorio presentarla">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_953" TEXT="15.17. [PAT-017] El Poder Notarial Preventivo: Blindar tus decisiones futuras">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_954" TEXT="15.18. [PAT-018] Comisiones Bancarias Abusivas: Cómo identificarlas y reclamarlas">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_955" TEXT="15.19. [PAT-019] Vender una Segunda Vivienda y Reinyectar en Renta Vitalicia">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_956" TEXT="15.20. [PAT-020] Rescatar un Plan de Pensiones: En forma de renta o en capital">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_957" TEXT="15.21. [PAT-021] La Aceptación de Herencia a Beneficio de Inventario">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_958" TEXT="15.22. [PAT-022] La Inflación Explicada con el Carrito de la Compra">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_959" TEXT="15.23. [PAT-023] Derramas Comunitarias e Instalación de Ascensores a Cota Cero">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_960" TEXT="15.24. [PAT-024] El Complemento para la Reducción de la Brecha de Género">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_961" TEXT="15.25. [PAT-025] La Declaración de Herederos Abintestato (Sin testamento)">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_962" TEXT="15.26. [PAT-026] La Cuenta de Pago Básica: El derecho legal a una cuenta por 3 € al mes">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_963" TEXT="15.27. [PAT-027] El Alquiler Seguro de un Piso Propio: Avales y seguros de impago">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_964" TEXT="15.28. [PAT-028] La Pensión de Viudedad: Porcentajes y compatibilidad con el trabajo">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_965" TEXT="15.29. [PAT-029] El Impuesto sobre Sucesiones y las Bonificaciones por Comunidades">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_966" TEXT="15.30. [PAT-030] Seguros Vinculados a Cuentas y Tarjetas: Lo que pagas sin saberlo">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_967" TEXT="15.31. [PAT-031] El Contrato de Alquiler de Renta Antigua: Derechos y subrogaciones">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_968" TEXT="15.32. [PAT-032] La Ley de Dependencia: Grados, prestaciones y copago residencial">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_969" TEXT="15.33. [PAT-033] La Plusvalía Municipal en Inmuebles Heredados">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_970" TEXT="15.34. [PAT-034] Las Cuentas Indivisas y los Conflictos de Bloqueo Bancario">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_971" TEXT="15.35. [PAT-035] El Cohousing Senior y las Cooperativas de Vivienda Colaborativa">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_972" TEXT="15.36. [PAT-036] El Certificado Digital de la FNMT y Cl@ve Permanente: Tu firma pública">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_973" TEXT="15.37. [PAT-037] El Albacea y el Contador-Partidor: Mediadores de paz familiar">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_974" TEXT="15.38. [PAT-038] El Defensor del Cliente y el Reclamo ante el Banco de España">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_975" TEXT="15.39. [PAT-039] La Extinción de Condominio entre Hermanos: Reparto de un piso heredado">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_976" TEXT="15.40. [PAT-040] El Documento de Voluntades Anticipadas o Testamento Vital">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_977" TEXT="15.41. [PAT-041] El Registro de la Propiedad: Inscribir los bienes a tu nombre">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_978" TEXT="15.42. [PAT-042] El Depósito a Plazo Fijo: Cómo negociar intereses y penalizaciones">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_979" TEXT="15.43. [PAT-043] El Seguro de Hogar: Coberturas esenciales y qué no te cubre">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_980" TEXT="15.44. [PAT-044] La Carpeta Familiar de Emergencia: Todo organizado para tus seres queridos">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_981" TEXT="15.45. [PAT-045] La Desheredación en España: Requisitos estrictos de la ley">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_982" TEXT="15.46. [PAT-046] Las Tarjetas Revolving: La trampa de las cuotas pequeñas e intereses infinitos">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_983" TEXT="15.47. [PAT-047] La Descalificación de una Vivienda de Protección Oficial (VPO)">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_984" TEXT="15.48. [PAT-048] Desahucios de Vivienda Arrendada a Mayores Vulnerables">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_985" TEXT="15.49. [PAT-049] El Cuaderno Particional: El reparto formal ante notario">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_986" TEXT="15.50. [PAT-050] El Secreto Bancario y la Transparencia con los Hijos">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_987" TEXT="15.51. [PAT-051] La Segregación o División de un Piso Grande en Dos Pequeños">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_988" TEXT="15.52. [PAT-052] Derecho de Desistimiento en Compras por Teléfono o a Domicilio">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_989" TEXT="15.53. [PAT-053] La Legítima de los Nietos y el Derecho de Representación">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_990" TEXT="15.54. [PAT-054] La CIRBE del Banco de España: Saber qué deudas figuran a tu nombre">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_991" TEXT="15.55. [PAT-055] El Certificado de Eficiencia Energética: Obligaciones al vender o alquilar">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_992" TEXT="15.56. [PAT-056] La Tarjeta Dorada de Renfe y Descuentos en Transportes Senior">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_993" TEXT="15.57. [PAT-057] El Registro General de Actos de Última Voluntad">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_994" TEXT="15.58. [PAT-058] El Peligro de Avalar Préstamos Ajenos: Responsabilidad solidaria">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_995" TEXT="15.59. [PAT-059] La Donación del Dinero de la Venta de una Casa a los Hijos">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      <node ID="ID_996" TEXT="15.60. [PAT-060] El Pacto Intergeneracional: Ayudar a los hijos sin poner en riesgo tu vejez">
+        <font NAME="Calibri" SIZE="11" BOLD="true" />
+        </node>
+      </node>
     </node>
   </map>
