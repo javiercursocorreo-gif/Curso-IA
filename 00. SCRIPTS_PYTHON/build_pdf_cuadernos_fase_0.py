@@ -15,12 +15,12 @@ PDF_PATH = os.path.join(OUTPUT_DIR, "0. FASE_0_GUIA_CUADERNOS_GEMINI.pdf")
 PS_PATH = "/tmp/cuadernos_fase_0_1pag.ps"
 
 ETIQUETAS = [
+    ("[COMICS]", "CÓMICS", "Novelas gráficas, narrativa secuencial e historietas con IA."),
     ("[TXT]", "TEXTO", "Cartas formales, consultas, comparativas de compra y recetas de salud."),
     ("[EST]", "ESTILO", "Fotografía fotorrealista, acuarela, grabado, cine negro y texturas 3D."),
     ("[PRAC]", "PRÁCTICA", "Retos paso a paso y desafíos interactivos en clase con Gemini."),
     ("[ARTE]", "ARTE", "Obras maestras de la pinacoteca universal y análisis artístico."),
     ("[FRAC]", "FRACTALES", "Geometría en la naturaleza, biomimética y vídeos en alta definición."),
-    ("[FUNC]", "FUNCIONES", "Fórmulas matemáticas en 3D, curvas y geometría computacional."),
     ("[INT]", "INTERIOR", "Cortes transversales: arquitectura, monumentos y maquinaria por dentro."),
     ("[FUT]", "FUTURO", "Ciencia ficción, hábitats espaciales y robótica avanzada del mañana."),
     ("[NAT]", "NATURALEZA", "Biomecánica animal, aves del mundo y maravillas del reino natural."),
@@ -28,8 +28,7 @@ ETIQUETAS = [
     ("[TRUC]", "TRUCOS", "Remedios prácticos del hogar, bricolaje rápido y limpieza ecológica."),
     ("[MOVIL]", "MÓVIL", "Símbolos de pantalla, salvavidas de configuración y cámara útil."),
     ("[MEM]", "MEMORIA", "Cápsula de recuerdos: lugares de infancia y objetos de época."),
-    ("[MEC]", "MECÁNICA", "Engranajes, motores clásicos e inventos tecnológicos históricos."),
-    ("[CUENT]", "CUENTOS", "Historias ilustradas y cómics secuenciales generados con IA.")
+    ("[MEC]", "MECÁNICA", "Engranajes, motores clásicos e inventos tecnológicos históricos.")
 ]
 
 def escape_ps(text):
@@ -123,7 +122,7 @@ def generate_ps():
 
     # 3. Título de la tabla (Y: 695)
     lines.append("0.1 0.15 0.25 setrgbcolor")
-    lines.append("FSec 35 696 moveto (" + escape_ps("TABLA OFICIAL DE REFERENCIA COMPLETA (15 ETIQUETAS DEL CURSO)") + ") show")
+    lines.append("FSec 35 696 moveto (" + escape_ps("TABLA OFICIAL DE REFERENCIA COMPLETA (14 ETIQUETAS DEL CURSO)") + ") show")
     lines.append("FSub 35 685 moveto (" + escape_ps("Escribe en Gemini exactamente la palabra de la 2ª columna para titular cada uno de tus cuadernos:") + ") show")
 
     # 4. Cabecera de la tabla (Y: 663..681)

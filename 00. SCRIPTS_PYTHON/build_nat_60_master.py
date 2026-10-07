@@ -27,14 +27,13 @@ NAT_ITEMS = [
         "details_es": "1. El casco amortiguador de 1 tonelada de impacto; 2. La columna vertebral flexible; 3. El pistón intestinal que acopla la respiración al galope; 4. Los cuartos traseros propulsores.",
         "concept": "Descubre cómo el galope de un caballo no es solo fuerza bruta, sino una perfecta máquina de palancas biológicas donde la respiración y los pasos están matemáticamente acoplados.",
         "short_prompt": (
-            "Actúa como un ilustrador científico del Renacimiento y experto en biomecánica equina. "
-            "Quiero una lámina anatómica sobre el CABALLO SALVAJE en estilo boceto de Leonardo da Vinci "
-            "a tinta sepia sobre papel de lino tostado. La composición debe estar organizada en una cuadrícula "
-            "de 4 viñetas explicativas alrededor de un gran dibujo central del caballo al galope: "
-            "1. Corte del casco y almohadilla amortiguadora; 2. Columna vertebral elástica; "
-            "3. Pistón visceral acoplado a los pulmones; 4. Musculatura de los cuartos traseros. "
-            "Redáctame el prompt maestro completo en inglés, con máxima resolución y sin textos borrosos, "
-            "para generar esta infografía con IA."
+            "Actúa como un arquitecto de prompts y biólogo experto. "
+            "Redáctame el prompt maestro completo en español, ultra detallado y con formato de infografía de museo, "
+            "para generar una lámina sobre el CABALLO SALVAJE en estilo boceto de Leonardo da Vinci a tinta sepia "
+            "sobre papel de lino tostado, dividida en una cuadrícula de 4 viñetas explicativas alrededor del dibujo central "
+            "que expliquen: 1. Corte del casco amortiguador; 2. Columna vertebral elástica; "
+            "3. Pistón visceral acoplado a la respiración; 4. Musculatura propulsora trasera. "
+            "NO generes la imagen todavía, solo entrégame el prompt de texto listo para copiar."
         ),
         "master_prompt_en": (
             "A masterwork Renaissance scientific codex in the style of Leonardo da Vinci's anatomical notebooks. "
@@ -62,13 +61,12 @@ NAT_ITEMS = [
         "details_es": "1. Pelaje de triple capa y glándulas sebáceas; 2. Joroba lipídica de reserva calórica; 3. Colmillos curvados quitanieves para desbrozar pastos helados.",
         "concept": "Explora cómo este titán del Pleistoceno sobrevivía a temperaturas de 50 grados bajo cero gracias a un blindaje térmico natural y una sangre anticongelante.",
         "short_prompt": (
-            "Actúa como un naturalista y explorador ártico del siglo XIX. "
-            "Quiero una lámina científica sobre el MAMUT LANUDO en estilo diario de expedición siberiana, "
-            "dibujada a tinta negra y aguadas grises sobre papel envejecido de cuaderno de campo. "
-            "Organiza la lámina en un tríptico de 3 paneles anatómicos: "
-            "1. Corte del pelaje de triple capa con aislamiento térmico; 2. La joroba de grasa en el lomo; "
-            "3. La curvatura de los colmillos gigantes como palas quitanieves. "
-            "Redáctame el prompt maestro completo en inglés para generar esta infografía con rigor paleontológico."
+            "Actúa como un arquitecto de prompts y paleontólogo experto. "
+            "Redáctame el prompt maestro completo en español, ultra detallado y con formato de infografía de museo, "
+            "para generar una lámina sobre el MAMUT LANUDO en estilo diario de expedición polar siberiana a tinta negra "
+            "y aguadas grises sobre papel envejecido de cuaderno de campo, organizada en un tríptico de 3 paneles anatómicos "
+            "que expliquen: 1. Corte del pelaje de triple capa; 2. Joroba de grasa dorsal; 3. Colmillos gigantes quitanieves. "
+            "NO generes la imagen todavía, solo entrégame el prompt de texto listo para copiar."
         ),
         "master_prompt_en": (
             "A 19th-century Arctic expedition field journal page illustrating the anatomy and survival mechanisms of the Woolly Mammoth (Mammuthus primigenius). "
@@ -95,13 +93,12 @@ NAT_ITEMS = [
         "details_es": "1. Cápside icosaédrica con ADN presurizado; 2. Collarín y rotor central; 3. Vaina contráctil inyectora; 4. Las 6 patas basales articuladas de aterrizaje.",
         "concept": "Descubre el virus con forma de módulo lunar que parece una máquina diseñada por ingenieros y funciona como una jeringuilla molecular microscópica.",
         "short_prompt": (
-            "Actúa como un ingeniero en nanotecnología y microbiólogo. "
-            "Quiero una infografía técnica sobre el BACTERIÓFAGO T4 en estilo plano blueprint arquitectónico, "
-            "con fondo azul cobalto oscuro y líneas vectoriales blancas de alta precisión. "
-            "La lámina debe mostrar un despiece esquemático de 4 piezas numeradas: "
-            "1. La cabeza icosaédrica con ADN empaquetado; 2. El cuello o collarín mecánico; "
-            "3. La vaina contráctil que perfora la membrana; 4. Las 6 patas basales de anclaje. "
-            "Redáctame el prompt maestro completo en inglés para generar este plano de nanotecnología."
+            "Actúa como un arquitecto de prompts y microbiólogo experto. "
+            "Redáctame el prompt maestro completo en español, ultra detallado y con formato de plano técnico industrial, "
+            "para generar una lámina sobre el BACTERIÓFAGO T4 en estilo plano blueprint cianotipia de fondo azul cobalto "
+            "con líneas vectoriales blancas, organizada en un despiece de 4 piezas numeradas que expliquen: "
+            "1. Cabeza icosaédrica con ADN empaquetado; 2. Collarín mecánico; 3. Vaina contráctil perforadora; 4. Seis patas basales de anclaje. "
+            "NO generes la imagen todavía, solo entrégame el prompt de texto listo para copiar."
         ),
         "master_prompt_en": (
             "An ultra-detailed technical engineering blueprint schematic of the T4 Bacteriophage virus, treating it as biological nanotechnology. "
@@ -129,15 +126,12 @@ NAT_ITEMS = [
         "details_es": "1. Teorema del panal: por qué el hexágono gasta menos cera que el triángulo o el cuadrado; 2. Glándulas cereras del abdomen; 3. Inclinación de 13° de las celdas para que no caiga la miel; 4. La danza del ocho para indicar flores.",
         "concept": "Comprende por qué matemáticos y arquitectos llevan siglos fascinados con las abejas: construyen la estructura más resistente y ligera posible con el mínimo gasto de material.",
         "short_prompt": (
-            "Actúa como un matemático y botánico renacentista. "
-            "Quiero una lámina infográfica sobre LA ABEJA Y EL PANAL HEXAGONAL en estilo tratado de geometría "
-            "de Euclides sobre pergamino vitela, con líneas de compás en tinta sepia. "
-            "Distribuye la información en 4 recuadros geométricos: "
-            "1. Demostración geométrica del hexágono frente al círculo y cuadrado; "
-            "2. Las glándulas cereras del abdomen de la abeja; "
-            "3. La inclinación de 13 grados de las celdas para retener la miel líquida; "
-            "4. Diagrama de la danza en ocho con ángulos respecto al sol. "
-            "Redáctame el prompt maestro completo en inglés con máxima precisión gráfica."
+            "Actúa como un arquitecto de prompts y geómetra experto. "
+            "Redáctame el prompt maestro completo en español, ultra detallado y con formato de manuscrito renacentista, "
+            "para generar una lámina sobre LA ABEJA Y EL PANAL HEXAGONAL en estilo tratado de geometría de Euclides "
+            "sobre pergamino vitela a tinta sepia, distribuida en 4 recuadros geométricos que expliquen: "
+            "1. Demostración geométrica del hexágono; 2. Glándulas cereras abdominales; 3. Inclinación de 13° antigoteo; 4. Danza en ocho solar. "
+            "NO generes la imagen todavía, solo entrégame el prompt de texto listo para copiar."
         ),
         "master_prompt_en": (
             "A classical Renaissance mathematical treatise and natural philosophy manuscript illustrating the architectural genius of the Honeybee (Apis mellifera) and the hexagonal comb. "
@@ -165,13 +159,12 @@ NAT_ITEMS = [
         "details_es": "1. Fusión ósea del cuerno en la sutura frontal del cráneo; 2. Estrías helicoidales de queratina y calcita; 3. Cascos hendidos de ciervo para escalar riscos escarpados; 4. Neutralización química de toxinas en manantiales.",
         "concept": "Imagina cómo habría analizado un erudito medieval la anatomía fantástica del unicornio, considerándolo una especie real de los bosques boreales.",
         "short_prompt": (
-            "Actúa como un monje miniaturista y naturalista del siglo XIII. "
-            "Quiero una lámina anatómica de bestiario medieval sobre EL UNICORNIO, "
-            "pintada sobre pergamino iluminado con pan de oro y tintas minerales (rojo bermellón y azul lapislázuli). "
-            "Organiza la lámina en 4 medallones góticos circulares: "
-            "1. Anclaje del cuerno en el hueso frontal del cráneo; 2. Corte transversal de la espiral helicoidal; "
-            "3. Pezuñas hendidas de antílope; 4. Reacción del cuerno al purificar agua envenenada. "
-            "Redáctame el prompt maestro completo en inglés para generar esta obra de arte medieval."
+            "Actúa como un arquitecto de prompts y erudito medieval. "
+            "Redáctame el prompt maestro completo en español, ultra detallado y con formato de códice iluminado, "
+            "para generar una lámina anatómica sobre EL UNICORNIO en estilo bestiario medieval del siglo XIII con pan de oro "
+            "y tintas minerales sobre pergamino vitela, organizada en 4 medallones góticos circulares que expliquen: "
+            "1. Anclaje del cuerno en la sutura frontal; 2. Espiral helicoidal de calcita; 3. Pezuñas de risco; 4. Purificación de aguas ponzoñosas. "
+            "NO generes la imagen todavía, solo entrégame el prompt de texto listo para copiar."
         ),
         "master_prompt_en": (
             "A genuine 13th-century illuminated medieval bestiary manuscript page depicting the mythical anatomy of the Unicorn (Monoceros). "
@@ -199,15 +192,12 @@ NAT_ITEMS = [
         "details_es": "1. Los 300 millones de receptores olfativos del hocico; 2. Los 18 músculos de la oreja para captar ultrasonidos de socorro; 3. El pelaje de doble capa aislante; 4. El mapa cognitivo de memoria de rutas.",
         "concept": "Descubre la ciencia real detrás del perro más famoso de la historia: cómo la genética del perro de pastor le otorga una capacidad de rescate y memoria que parece sobrenatural.",
         "short_prompt": (
-            "Actúa como un ilustrador editorial de los años 50 y veterinario canino. "
-            "Quiero una lámina infográfica sobre LASSIE (EL ROUGH COLLIE DE PASTOR) en estilo litografía "
-            "retro de mediados del siglo XX sobre papel crema con marcos clásicos. "
-            "La infografía debe tener 4 viñetas explicativas: "
-            "1. Corte del hocico con sus 300 millones de receptores olfativos; "
-            "2. Sistema de 18 músculos que orientan las orejas hacia llamadas lejanas; "
-            "3. Corte del pelaje impermeable de rescate; "
-            "4. Mapa mental de orientación para regresar a casa desde cientos de kilómetros. "
-            "Redáctame el prompt maestro completo en inglés con estética entrañable y rigurosa."
+            "Actúa como un arquitecto de prompts y veterinario experto. "
+            "Redáctame el prompt maestro completo en español, ultra detallado y con formato de cartel litográfico de época, "
+            "para generar una lámina sobre LASSIE (ROUGH COLLIE) en estilo litografía retro años 50 sobre papel crema envejecido, "
+            "organizada en 4 viñetas explicativas que detallen: "
+            "1. Hocico con 300 millones de receptores olfativos; 2. Sistema auricular de 18 músculos; 3. Pelaje impermeable de rescate; 4. Mapa cognitivo de orientación. "
+            "NO generes la imagen todavía, solo entrégame el prompt de texto listo para copiar."
         ),
         "master_prompt_en": (
             "A 1950s classic vintage lithograph and canine veterinary chart celebrating the heroic biology of Lassie the Rough Collie sheepdog. "
@@ -235,13 +225,12 @@ NAT_ITEMS = [
         "details_es": "1. Cromatóforos elásticos y papilas de piel reflectante; 2. Tres corazones independientes; 3. Sistema nervioso distribuido con un minicerebro en cada tentáculo; 4. El sifón de propulsión a chorro de agua.",
         "concept": "Descubre al invertebrado más inteligente del océano: una criatura que ve con la piel, piensa con sus brazos y cambia de color y textura en milisegundos.",
         "short_prompt": (
-            "Actúa como un maestro del grabado japonés Ukiyo-e y biólogo marino. "
-            "Quiero una infografía sobre EL PULPO COMÚN en estilo grabado en madera sobre papel de arroz Washi, "
-            "con tinta china sumi-e y tonos añil y coral. "
-            "Organiza la lámina en un diagrama circular con 4 áreas explicativas: "
-            "1. La piel con cromatóforos que cambian de color como píxeles; 2. Los 3 corazones que bombean sangre azul; "
-            "3. La red de 9 cerebros distribuidos por los tentáculos; 4. El sifón de propulsión a chorro. "
-            "Redáctame el prompt maestro completo en inglés para generar este grabado japonés de museo."
+            "Actúa como un arquitecto de prompts y biólogo marino. "
+            "Redáctame el prompt maestro completo en español, ultra detallado y con formato de grabado japonés Ukiyo-e, "
+            "para generar una lámina sobre EL PULPO COMÚN en estilo xilografía de Edo con tinta sumi-e sobre papel de arroz Washi, "
+            "organizada en un diagrama circular de 4 áreas explicativas que muestren: "
+            "1. Cromatóforos miméticos; 2. Tres corazones con sangre azul; 3. Red de 9 cerebros periféricos; 4. Sifón de hidropropulsión. "
+            "NO generes la imagen todavía, solo entrégame el prompt de texto listo para copiar."
         ),
         "master_prompt_en": (
             "A master Japanese Edo-period Ukiyo-e woodblock print infographical chart of the Common Octopus (Octopus vulgaris). "
@@ -269,14 +258,12 @@ NAT_ITEMS = [
         "details_es": "1. Huesos nasales fusionados para soportar 6 toneladas de mordida; 2. Dientes serrados de 30 cm en forma de plátano que perforan blindajes; 3. Visión estereoscópica profunda binocular como la de un halcón.",
         "concept": "Descubre la física de la mordedura más demoledora de la historia terrestre: un cráneo reforzado capaz de pulverizar los huesos de un Triceratops sin romperse.",
         "short_prompt": (
-            "Actúa como un paleontólogo de museos y dibujante anatómico de 1900. "
-            "Quiero una lámina científica sobre EL CRÁNEO DEL TIRANOSAURIO REX en estilo atlas "
-            "paleontológico sobre cartulina sepia envejecida con grabado a tinta. "
-            "Estructura la lámina en 3 bloques anatómicos: "
-            "1. La arquitectura de huesos fusionados que absorbía 50.000 Newtons de fuerza; "
-            "2. Corte de un diente serrado con raíz profunda; "
-            "3. Ángulo de visión binocular estereoscópica frontal. "
-            "Redáctame el prompt maestro completo en inglés con absoluto rigor fósil."
+            "Actúa como un arquitecto de prompts y paleontólogo de museos. "
+            "Redáctame el prompt maestro completo en español, ultra detallado y con formato de atlas científico de 1900, "
+            "para generar una lámina sobre EL CRÁNEO DEL TIRANOSAURIO REX en grabado litográfico sepia sobre cartulina gruesa de archivo, "
+            "estructurada en 3 bloques anatómicos que expliquen: "
+            "1. Huesos nasales reforzados para disipar 50.000 N de mordida; 2. Corte de diente serrado de 30 cm; 3. Ángulo de visión binocular estereoscópica. "
+            "NO generes la imagen todavía, solo entrégame el prompt de texto listo para copiar."
         ),
         "master_prompt_en": (
             "An early 20th-century academic paleontological museum atlas plate illustrating the cranial biomechanics of the Tyrannosaurus rex. "
@@ -303,15 +290,12 @@ NAT_ITEMS = [
         "details_es": "1. El estado de 'ton' (barril desecado al 1% de agua); 2. Proteínas Dsup que blindan el ADN contra radiación; 3. Sus 8 patas con garras telescópicas; 4. Supervivencia en el vacío absoluto del espacio y a -200 °C.",
         "concept": "Conoce al ser vivo más indestructible del planeta: puede congelarse, hervirse, someterse a la radiación espacial o pasar 30 años sin comer ni beber y revivir con una gota de agua.",
         "short_prompt": (
-            "Actúa como un pionero de la microscopía del siglo XVIII. "
-            "Quiero una lámina científica sobre EL TARDÍGRADO (OSO DE AGUA) en estilo grabado antiguo "
-            "de microscopio con marco circular de latón pulido sobre pergamino. "
-            "Organiza la infografía en 4 módulos explicativos: "
-            "1. El proceso de desecación hasta convertirse en barrilete inerte (criptobiosis); "
-            "2. Las proteínas especiales que protegen su ADN de la radiación; "
-            "3. Anatomía de sus 8 patas con garfios; "
-            "4. Su resistencia al vacío del espacio exterior y temperaturas extremas. "
-            "Redáctame el prompt maestro completo en inglés con encanto histórico y detalle celular."
+            "Actúa como un arquitecto de prompts y microbiólogo histórico. "
+            "Redáctame el prompt maestro completo en español, ultra detallado y con estética de microscopio del siglo XVIII, "
+            "para generar una lámina sobre EL TARDÍGRADO (OSO DE AGUA) en grabado sepia con marco circular de latón pulido sobre pergamino, "
+            "organizada en 4 módulos microscópicos que expliquen: "
+            "1. Criptobiosis y estado de barrilete inerte al 1% de agua; 2. Proteínas Dsup escudo de ADN; 3. Ocho patas con garras; 4. Resistencia al vacío espacial y cero absoluto. "
+            "NO generes la imagen todavía, solo entrégame el prompt de texto listo para copiar."
         ),
         "master_prompt_en": (
             "An 18th-century early microscopy scientific manuscript illustration of the Water Bear or Tardigrade (Hypsibius dujardini). "
@@ -339,15 +323,12 @@ NAT_ITEMS = [
         "details_es": "1. Mandíbulas cortadoras que cortan hojas como tijeras mecánicas; 2. Cámaras de cultivo del hongo Leucoagaricus; 3. Sistema de chimeneas de ventilación por convección; 4. Vertedero profundo de residuos tóxicos.",
         "concept": "Descubre a las primeras agricultoras del planeta: las hormigas no comen hojas, sino que las recolectan para cultivar un hongo que es su única fuente de alimento.",
         "short_prompt": (
-            "Actúa como un ingeniero de minas y entomólogo del siglo XIX. "
-            "Quiero una infografía sobre EL HORMIGUERO DE HORMIGAS CORTAHOJAS en estilo corte geológico "
-            "transversal de la tierra, sobre papel cuadriculado sepia de minería. "
-            "La infografía debe mostrar un gran corte de tierra con 4 cámaras subterráneas: "
-            "1. La superficie con hormigas talando hojas con sus mandíbulas; "
-            "2. Las cámaras de cultivo donde fermentan el hongo; "
-            "3. Las chimeneas que renuevan el aire caliente por efecto chimenea; "
-            "4. La fosa séptica profunda donde aíslan la basura tóxica. "
-            "Redáctame el prompt maestro completo en inglés con riqueza arquitectónica subterránea."
+            "Actúa como un arquitecto de prompts y entomólogo experto. "
+            "Redáctame el prompt maestro completo en español, ultra detallado y con formato de corte técnico subterráneo, "
+            "para generar una lámina sobre EL HORMIGUERO DE HORMIGAS CORTAHOJAS en estilo corte geológico del siglo XIX "
+            "sobre papel de topografía sepia, organizada en 4 niveles de cámaras que muestren: "
+            "1. Hormigas recolectoras en superficie; 2. Cámaras agrícolas del hongo; 3. Chimeneas de ventilación térmica; 4. Fosa séptica de residuos tóxicos. "
+            "NO generes la imagen todavía, solo entrégame el prompt de texto listo para copiar."
         ),
         "master_prompt_en": (
             "A 19th-century geological mining cross-section plate illustrating the subterranean agricultural mega-nest of the Leafcutter Ants (Atta cephalotes). "
@@ -684,11 +665,11 @@ for item in REST_ITEMS_DATA:
         "details_es": details,
         "concept": f"Infografía científica y artística para la sesión {num:02d}. Aprende a pedir a Gemini que redacte el prompt maestro y cree una obra de arte visual.",
         "short_prompt": (
-            f"Actúa como un ilustrador científico y experto en diseño editorial. "
-            f"Quiero una lámina infográfica sobre {subj.upper()} en estilo {style} "
-            f"sobre {paper}. Organiza la composición en {layout} que explique: {details}. "
-            f"Redáctame el prompt maestro completo en inglés, con máxima resolución y sin textos borrosos, "
-            f"para generar esta infografía con IA."
+            f"Actúa como un arquitecto de prompts y biólogo experto. "
+            f"Redáctame el prompt maestro completo en español, ultra detallado y con formato de infografía de museo, "
+            f"para generar una lámina sobre {subj.upper()} en estilo {style} "
+            f"sobre {paper}, organizada en {layout} que explique: {details}. "
+            f"NO generes la imagen todavía, solo entrégame el prompt de texto listo para copiar."
         ),
         "master_prompt_en": (
             f"A magnificent scientific and historical infographic illustration of {subj}. "

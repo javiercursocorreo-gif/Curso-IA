@@ -137,9 +137,8 @@ def create_nat_pdf(file_path, item):
     prompt_rows = [
         [Paragraph("<b>🟢 PASO 1: Copia y pega esta orden corta en tu chat de Gemini:</b>", style_prompt)],
         [Paragraph(f'<i>"{item["short_prompt"]}"</i>', style_prompt)],
-        [Paragraph("<br/><b>⚙️ PASO 2: Gemini actuará como tu redactor científico y generará este Súper Prompt Maestro:</b>", style_prompt)],
-        [Paragraph(f'<font color="#004d20"><b>{item["master_prompt_en"]}</b></font>', style_prompt)],
-        [Paragraph("<br/><b>🎨 PASO 3: En el mismo chat, solo tienes que escribir:</b>", style_prompt)],
+        [Paragraph("<br/><b>⚙️ PASO 2: Gemini actuará como tu redactor científico y generará tu Súper Prompt Maestro detallado.</b>", style_prompt)],
+        [Paragraph("<br/><b>🎨 PASO 3: En el mismo chat, solo tienes que escribir a continuación:</b>", style_prompt)],
         [Paragraph('<b>"Perfecto. Ahora genera la imagen con ese prompt."</b> <i>(Y Gemini pintará tu lámina de museo con máxima nitidez y en español).</i>', style_prompt)]
     ]
 

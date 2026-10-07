@@ -26,13 +26,13 @@ GITHUB_BASE_URL = "https://javiercursocorreo-gif.github.io/Curso-IA/"
 
 # Configuración de pasos, colores y columnas
 STEP_CONFIG = {
-    "CUENT": {"color": "#ec4899", "cat": "Paso 1 • Proyecto Cómic & Literatura", "icon": "📖", "col": 1, "order": 0},
+    "COMICS":{"color": "#ec4899", "cat": "Paso 1 • Proyecto Cómic & Novela Gráfica", "icon": "📖", "col": 1, "order": 0},
+    "CUENT": {"color": "#ec4899", "cat": "Paso 1 • Proyecto Cómic & Novela Gráfica", "icon": "📖", "col": 1, "order": 0},
     "TXT":   {"color": "#38bdf8", "cat": "Paso 2 • Prompts y Texto",        "icon": "✍️", "col": 1, "order": 1},
     "EST":   {"color": "#818cf8", "cat": "Paso 3 • Estilo de Imagen IA",    "icon": "🎨", "col": 1, "order": 2},
     "PRAC":  {"color": "#c084fc", "cat": "Paso 4 • Taller Práctico Gemini",  "icon": "⚡", "col": 1, "order": 3},
     "ARTE":  {"color": "#a3e635", "cat": "Paso 5 • Historia del Arte",      "icon": "🖼️", "col": 2, "order": 4},
     "FRAC":  {"color": "#f472b6", "cat": "Paso 6 • Geometría Fractal & HD",  "icon": "🌀", "col": 2, "order": 5},
-    "FUNC":  {"color": "#f472b6", "cat": "Paso 6 • Función 3D & IA",        "icon": "📐", "col": 2, "order": 5},
     "INT":   {"color": "#fb7185", "cat": "Paso 7 • Mundo por Dentro",       "icon": "🏛️", "col": 2, "order": 6},
     "FUT":   {"color": "#fb923c", "cat": "Paso 8 • Sci-Fi & Futuro",        "icon": "🚀", "col": 2, "order": 7},
     "NAT":   {"color": "#facc15", "cat": "Paso 9 • Naturaleza Fascinante",  "icon": "🌿", "col": 2, "order": 8},
@@ -186,9 +186,10 @@ def generate_columns_html(session_num, session_folder, files):
         
     total_recursos = len(parsed_items)
     
-    # Asignar número correlativo general #01, #02...
+    # Asignar número correlativo general con etiqueta: #01 [TXT], #02 [EST], etc.
     for i, it in enumerate(parsed_items, 1):
-        it["step_num"] = f"#{i:02d}"
+        code_tag = f"[{it['code']}]" if it.get("code") else ""
+        it["step_num"] = f"#{i:02d} {code_tag}".strip()
 
     # Configuración de columnas (ajustar título y descripción de fase 3 en sesión 1)
     current_columns_config = []
