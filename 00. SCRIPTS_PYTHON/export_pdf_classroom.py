@@ -447,6 +447,124 @@ def purge_duplicate_conflict_files(base_path):
                             pass
     return removed_count
 
+def build_frac_000_b_reto_pdf(output_path):
+    os.makedirs(os.path.dirname(output_path), exist_ok=True)
+    if os.path.exists(output_path):
+        try: os.remove(output_path)
+        except Exception: pass
+
+    doc = SimpleDocTemplate(
+        output_path,
+        pagesize=letter,
+        rightMargin=45, leftMargin=45, topMargin=40, bottomMargin=40
+    )
+    styles = getSampleStyleSheet()
+    
+    style_header = ParagraphStyle(
+        'HeaderStyle', parent=styles['Normal'],
+        fontName='Helvetica-Bold', fontSize=9,
+        textColor=colors.HexColor('#8E24AA'), alignment=1, spaceAfter=4
+    )
+    style_block = ParagraphStyle(
+        'BlockStyle', parent=styles['Normal'],
+        fontName='Helvetica-Bold', fontSize=10.5,
+        textColor=colors.HexColor('#1A0A2E'), alignment=1, spaceAfter=8
+    )
+    style_title = ParagraphStyle(
+        'TitleStyle', parent=styles['Heading1'],
+        fontName='Helvetica-Bold', fontSize=13.5, leading=17,
+        textColor=colors.HexColor('#1A0A2E'), spaceAfter=8
+    )
+    style_section_h = ParagraphStyle(
+        'SectionHStyle', parent=styles['Heading2'],
+        fontName='Helvetica-Bold', fontSize=10.5, leading=13.5,
+        textColor=colors.HexColor('#8E24AA'), spaceBefore=6, spaceAfter=4
+    )
+    style_body = ParagraphStyle(
+        'BodyStyle', parent=styles['BodyText'],
+        fontName='Helvetica', fontSize=9, leading=13,
+        textColor=colors.HexColor('#2C3E50'), spaceAfter=5
+    )
+    style_prompt = ParagraphStyle(
+        'PromptStyle', parent=styles['Normal'],
+        fontName='Helvetica', fontSize=8.5, leading=12,
+        textColor=colors.HexColor('#1A0A2E')
+    )
+    style_meta = ParagraphStyle(
+        'MetaStyle', parent=styles['Normal'],
+        fontName='Helvetica', fontSize=8.5, leading=11.5,
+        textColor=colors.HexColor('#4A154B')
+    )
+
+    story = []
+    story.append(Paragraph("CURSO DE INTELIGENCIA ARTIFICIAL Y TECNOLOGÍA PARA ADULTOS MAYORES (60+)", style_header))
+    story.append(Paragraph("BLOQUE IV: GEOMETRÍA FRACTAL Y CIENCIA EN LA NATURALEZA [FRAC]", style_block))
+    story.append(HRFlowable(width="100%", thickness=1.5, color=colors.HexColor('#8E24AA'), spaceAfter=8))
+
+    story.append(Paragraph("<b>[FRAC-000_B] Reto Visual: Lámina Científica de un Fractal en la Naturaleza</b>", style_title))
+
+    story.append(Paragraph("💡 <b>Contexto y Objetivo Didáctico del Reto:</b>", style_section_h))
+    story.append(Paragraph(
+        "En este taller práctico vamos a pedirle a la Inteligencia Artificial que diseñe una espectacular <b>lámina infográfica de museo</b> "
+        "sobre cómo la geometría fractal rige los seres vivos y la física del mundo natural. "
+        "Para que no tengas que escribir ni memorizar textos técnicos largos y complejos, utilizaremos el <b>método en 2 pasos</b>: "
+        "primero le damos un encargo breve a Gemini para que él redacte el prompt maestro técnico, y después le ordenamos generar la imagen con un solo clic.",
+        style_body
+    ))
+
+    # Ficha de ingredientes
+    story.append(Paragraph("🌿 <b>Los 4 Ingredientes de la Lámina (Tu Receta Maestra):</b>", style_section_h))
+    meta_table_data = [
+        [Paragraph("• <b>Figura Central:</b> Árbol milenario bifurcado (mitad corteza real hiperrealista, mitad ramas fractales azul luminoso).", style_meta)],
+        [Paragraph("• <b>Estilo Artístico:</b> Grabado de historia natural del siglo XIX sobre pergamino vintage envejecido en sepia.", style_meta)],
+        [Paragraph("• <b>4 Módulos Periféricos:</b> 1. Copos de nieve; 2. Rayos de tormenta; 3. Pulmones humanos; 4. Hojas de helecho.", style_meta)],
+        [Paragraph("• <b>Regla de Oro de Idioma:</b> Todas las etiquetas, flechas, leyendas y rótulos explicativos 100% en español.", style_meta)],
+    ]
+    meta_table = Table(meta_table_data, colWidths=[letter[0] - 90])
+    meta_table.setStyle(TableStyle([
+        ('BACKGROUND', (0,0), (-1,-1), colors.HexColor('#F8F0FA')),
+        ('BOX', (0,0), (-1,-1), 1, colors.HexColor('#CE93D8')),
+        ('TOPPADDING', (0,0), (-1,-1), 3),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 3),
+        ('LEFTPADDING', (0,0), (-1,-1), 8),
+        ('RIGHTPADDING', (0,0), (-1,-1), 8),
+    ]))
+    story.append(meta_table)
+    story.append(Spacer(1, 4))
+
+    # Método en 2 pasos
+    story.append(Paragraph("✍️ <b>El Método del Alumno en 2 Pasos (Sencillo y Sin Complicaciones):</b>", style_section_h))
+    
+    prompt_rows = [
+        [Paragraph("<b>🟢 PASO 1 • Pídele a Gemini que diseñe tu Prompt Maestro (Copia y pega esto en el chat):</b>", style_prompt)],
+        [Paragraph('<i>"Actúa como un arquitecto de prompts y divulgador científico experto. Redáctame un prompt maestro y ultra detallado en español para generar una lámina infográfica de historia natural del siglo XIX sobre \'Los Fractales en la Naturaleza\'. Debe incluir: un árbol milenario central mitad madera real y mitad ramas fractales azul luminoso, rodeado de 4 recuadros explicativos (copos de nieve, rayos de tormenta, pulmones humanos y hojas de helecho), todo sobre fondo de pergamino envejecido y con rótulos 100% en español. NO generes la imagen todavía, solo entrégame el prompt de texto listo para copiar."</i>', style_prompt)],
+        [Paragraph("<br/><b>⚙️ Gemini responderá redactando la ficha técnica completa con todo lujo de detalles artísticos y científicos.</b>", style_prompt)],
+        [Paragraph("<br/><b>🎨 PASO 2 • Ordena a Gemini crear la imagen definitiva:</b>", style_prompt)],
+        [Paragraph('En el mismo chat, solo tienes que responder a continuación:<br/><b>"¡Perfecto! Ahora genera la imagen a partir de esa descripción con máxima nitidez 8K."</b><br/><i>(Y Gemini dibujará de inmediato tu lámina infográfica de museo con sus 4 recuadros explicativos en perfecto español).</i>', style_prompt)]
+    ]
+
+    p_table = Table(prompt_rows, colWidths=[letter[0] - 90])
+    p_table.setStyle(TableStyle([
+        ('BACKGROUND', (0,0), (-1,-1), colors.HexColor('#F3E5F5')),
+        ('BOX', (0,0), (-1,-1), 1, colors.HexColor('#AB47BC')),
+        ('TOPPADDING', (0,0), (-1,-1), 4),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 4),
+        ('LEFTPADDING', (0,0), (-1,-1), 8),
+        ('RIGHTPADDING', (0,0), (-1,-1), 8),
+    ]))
+    story.append(p_table)
+    story.append(Spacer(1, 4))
+
+    story.append(Paragraph("💡 <b>Desafío de Autonomía (Ahora te toca a ti):</b>", style_section_h))
+    story.append(Paragraph(
+        "👉 <b>¡Prueba con otro fenómeno fractal!</b> Pídele a Gemini: "
+        "<i>«Ahora haz lo mismo pero para una lámina científica sobre el brócoli Romanesco de la verdulería (con sus espirales cónicas matemáticas)»</i> "
+        "o sobre el <i>delta de un gran río</i> visto desde el espacio.",
+        style_body
+    ))
+
+    doc.build(story)
+
 def main():
     print("🚀 Re-generando sistema exacto de Fichas PDF y Vídeos MP4 para Google Classroom...")
     
@@ -660,12 +778,12 @@ def main():
                 # INJECTION: Custom Fractal Introduction for Terna 01
                 if "FRAC-058" in id_clean and col_idx == 4:
                     intro_src_a = "/Users/externo/.gemini/antigravity/brain/f982b9ea-ba9d-4840-9be1-22ee2ca7b56b/scratch/4. FRAC-000_A_Teoria_Fractal.pdf"
-                    intro_src_b = "/Users/externo/.gemini/antigravity/brain/f982b9ea-ba9d-4840-9be1-22ee2ca7b56b/scratch/4. FRAC-000_B_Reto_Visual.pdf"
-                    if os.path.exists(intro_src_a) and os.path.exists(intro_src_b):
-                        intro_dst_a = os.path.join(t_path, "4. FRAC-000_A_Teoria_Fractal.pdf")
-                        intro_dst_b = os.path.join(t_path, "4. FRAC-000_B_Reto_Visual.pdf")
+                    intro_dst_a = os.path.join(t_path, "4. FRAC-000_A_Teoria_Fractal.pdf")
+                    intro_dst_b = os.path.join(t_path, "4. FRAC-000_B_Reto_Visual.pdf")
+                    if os.path.exists(intro_src_a):
                         shutil.copy2(intro_src_a, intro_dst_a)
-                        shutil.copy2(intro_src_b, intro_dst_b)
+                    # Generar directamente la ficha de Reto Visual con el nuevo formato pedagógico en 2 pasos
+                    build_frac_000_b_reto_pdf(intro_dst_b)
                         
                 # INJECTION: Custom Mandelbrot Introduction for Terna 02
                 if "FRAC-001" in id_clean and col_idx == 4:

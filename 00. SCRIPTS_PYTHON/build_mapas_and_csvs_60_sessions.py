@@ -73,6 +73,10 @@ COLUMNS_CONFIG = [
 
 def clean_title_from_filename(filename):
     name, _ = os.path.splitext(filename)
+    if 'FRAC-000_B' in filename:
+        return 'Reto Visual • Infografía de un Fractal en la Naturaleza'
+    if 'FRAC-000_A' in filename:
+        return 'Teoría Didáctica • ¿Qué es un Fractal?'
     if 'CUENT' in filename or 'COMIC' in filename:
         m_step = re.search(r'Paso_([0-3])(?:_|\s*)(.*)', name)
         if m_step:
