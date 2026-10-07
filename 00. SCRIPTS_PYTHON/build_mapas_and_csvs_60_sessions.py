@@ -33,6 +33,8 @@ STEP_CONFIG = {
     "PRAC":  {"color": "#c084fc", "cat": "Paso 4 • Taller Práctico Gemini",  "icon": "⚡", "col": 1, "order": 3},
     "ARTE":  {"color": "#a3e635", "cat": "Paso 5 • Historia del Arte",      "icon": "🖼️", "col": 2, "order": 4},
     "FRAC":  {"color": "#f472b6", "cat": "Paso 6 • Geometría Fractal & HD",  "icon": "🌀", "col": 2, "order": 5},
+    "3D":    {"color": "#e11d48", "cat": "Paso 6B • Simuladores 3D & Ciencia", "icon": "🫀", "col": 2, "order": 5.5},
+    "SIM":   {"color": "#e11d48", "cat": "Paso 6B • Simuladores 3D & Ciencia", "icon": "🫀", "col": 2, "order": 5.5},
     "INT":   {"color": "#fb7185", "cat": "Paso 7 • Mundo por Dentro",       "icon": "🏛️", "col": 2, "order": 6},
     "FUT":   {"color": "#fb923c", "cat": "Paso 8 • Sci-Fi & Futuro",        "icon": "🚀", "col": 2, "order": 7},
     "NAT":   {"color": "#facc15", "cat": "Paso 9 • Naturaleza Fascinante",  "icon": "🌿", "col": 2, "order": 8},
