@@ -301,6 +301,18 @@ def add_taller_item(num_str, title, desc_taller, prompt_gemini):
             r_t2 = p_g2.add_run(f'"{p2}"')
             r_t2.bold = True
             r_t2.font.color.rgb = RGBColor(0x00, 0x5A, 0x9E)
+    elif isinstance(prompt_gemini, list):
+        p_intro = doc.add_paragraph()
+        p_intro.add_run('• 🔗 Secuencia Encadenada Paso a Paso en el Mismo Chat de Gemini:\n').bold = True
+        for step_title, step_prompt in prompt_gemini:
+            p_step = doc.add_paragraph()
+            p_step.paragraph_format.left_indent = Pt(14)
+            r_st = p_step.add_run(f'o [{step_title}] -> Prompt exacto: ')
+            r_st.bold = True
+            r_st.font.color.rgb = RGBColor(0xB2, 0x22, 0x22) if 'Paso 1' in step_title else RGBColor(0x00, 0x64, 0x00)
+            r_sp = p_step.add_run(f'"{step_prompt}"')
+            r_sp.bold = True
+            r_sp.font.color.rgb = RGBColor(0x00, 0x5A, 0x9E)
     else:
         p_g = doc.add_paragraph()
         r_hg = p_g.add_run('• 🧪 Orden / Prompt listo para pegar en Gemini (gemini.google.com): ')
@@ -1175,9 +1187,18 @@ add_taller_item("4.1.2.", "Un Café y una Charla con tu Ídolo o Celebridad Hist
      "Mantén mi rostro, mi postura y la mesa exactamente como están en esta foto, pero añade sentado en la silla vacía a mi lado al genial científico Albert Einstein sonriendo cálidamente mientras levanta también su taza para brindar y charlar conmigo."))
 
 add_taller_item("4.1.3.", "Restauración y coloreado de fotos antiguas",
-    "Recuperar fotos familiares en blanco y negro, sepia o dañadas por el paso del tiempo, devolviéndoles la nitidez y un color realista 8K.",
-    ("Genera una fotografía antigua y deteriorada en blanco y negro de los años 40 de una pareja de novios, con rasguños en el papel, manchas amarillentas del paso del tiempo y bordes desgastados.",
-     "Restaura por completo esta foto antigua: repara los rasguños del papel, elimina las manchas amarillentas, devuélvele una nitidez impecable 8K y coloréala con tonos reales y naturales."))
+    "Recuperar fotos familiares en blanco y negro, sepia o dañadas por el paso del tiempo, devolviéndoles la nitidez y un color realista 8K mediante una secuencia progresiva de 9 transformaciones encadenadas en el mismo chat de Gemini.",
+    [
+        ("Paso 1: Generar la foto base", "Genera una fotografía antigua y deteriorada en tonos sepia de los años 40 de una pareja de novios, con rasguños en el papel, manchas amarillentas del paso del tiempo y bordes desgastados."),
+        ("Paso 2: Restaurar soporte", "Restaura por completo esta foto antigua: repara los rasguños del papel, elimina las manchas amarillentas."),
+        ("Paso 3: Pasar a blanco y negro", "Pasa la foto a blanco y negro."),
+        ("Paso 4: Colorear y nitidez 8K", "Colorea la foto y devuélvele una nitidez impecable 8K."),
+        ("Paso 5: Beso en la boca", "Haz que la pareja se estén dando un beso en la boca."),
+        ("Paso 6: Pierna hacia atrás", "Haz que la mujer levante una pierna hacia atrás."),
+        ("Paso 7: Rosa roja en la mano", "Haz que el hombre tenga una rosa roja en la mano."),
+        ("Paso 8: Fondo Torre Eiffel", "Cambia el fondo por la Torre Eiffel."),
+        ("Paso 9: El beso icónico fin de la 2ª GM", "Haz que el beso que se estén dando sea como el famoso beso del marinero a la enfermera del fin de la Segunda Guerra Mundial.")
+    ])
 
 add_taller_item("4.1.4.", "Viaje en el Tiempo: Volver a la Juventud en los Años 60 / Época Dorada",
     "Transportar tu retrato a la estética, vestuario y peinado de la juventud dorada (años 60 o 70) frente a escenarios icónicos de la época, conservando tu rostro actual.",

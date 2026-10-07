@@ -166,6 +166,8 @@ def create_pdf_handout(file_path, block_name, item_id, item_title, concept_text,
                 table_rows.append([Paragraph("<b>• 🛡️ Las Modalidades de Práctica en el Aula y Móvil (Elige tu caso o practícalas en orden):</b>", style_prompt)])
             elif "TXT-" in str(item_id):
                 table_rows.append([Paragraph("<b>• 🔗 Prompts Encadenados en Pasos para copiar y pegar en el chat de Gemini uno tras otro:</b>", style_prompt)])
+            elif "PRAC-" in str(item_id):
+                table_rows.append([Paragraph("<b>• 🔗 Secuencia Progresiva Paso a Paso en el Mismo Chat de Gemini (Pega cada orden una tras otra):</b>", style_prompt)])
             else:
                 table_rows.append([Paragraph("<b>• Diapositivas listadas para copiar en tu IA una a una:</b>", style_prompt)])
                 
@@ -173,7 +175,7 @@ def create_pdf_handout(file_path, block_name, item_id, item_title, concept_text,
                 if isinstance(slide_item, tuple) and len(slide_item) == 2:
                     s_title, s_prompt = slide_item
                 else:
-                    s_title, s_prompt = f"Diapositiva {s_idx}", str(slide_item)
+                    s_title, s_prompt = f"Paso {s_idx}", str(slide_item)
                 table_rows.append([Paragraph(f"<b>🔸 [{s_title}]:</b>", style_prompt)])
                 for blk in re.split(r'\n\n|<br\s*/?>\s*<br\s*/?>', str(s_prompt)):
                     if blk.strip(): table_rows.append([Paragraph(blk.strip(), style_prompt)])

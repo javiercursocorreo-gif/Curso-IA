@@ -69,9 +69,18 @@ add_taller_item("4.1.2.", "Corrección e iluminación facial de retratos",
      "Retoca suavemente este retrato como un fotógrafo profesional: elimina los brillos cegadores en la frente, suaviza las sombras bajo los ojos y borra las rojeces manteniendo una piel niquelada y natural."))
 
 add_taller_item("4.1.3.", "Restauración y coloreado de fotos antiguas",
-    "Recuperar fotos familiares en blanco y negro, sepia o dañadas por el paso del tiempo, devolviéndoles la nitidez y un color realista 8K.",
-    ("Genera una fotografía antigua y deteriorada en blanco y negro de los años 40 de una pareja de novios, con rasguños en el papel, manchas amarillentas del paso del tiempo y bordes desgastados.",
-     "Restaura por completo esta foto antigua: repara los rasguños del papel, elimina las manchas amarillentas, devuélvele una nitidez impecable 8K y coloréala con tonos reales y naturales."))
+    "Recuperar fotos familiares en blanco y negro, sepia o dañadas por el paso del tiempo, devolviéndoles la nitidez y un color realista 8K mediante una secuencia progresiva de 9 transformaciones encadenadas en el mismo chat de Gemini.",
+    [
+        ("Paso 1: Generar la foto base", "Genera una fotografía antigua y deteriorada en tonos sepia de los años 40 de una pareja de novios, con rasguños en el papel, manchas amarillentas del paso del tiempo y bordes desgastados."),
+        ("Paso 2: Restaurar soporte", "Restaura por completo esta foto antigua: repara los rasguños del papel, elimina las manchas amarillentas."),
+        ("Paso 3: Pasar a blanco y negro", "Pasa la foto a blanco y negro."),
+        ("Paso 4: Colorear y nitidez 8K", "Colorea la foto y devuélvele una nitidez impecable 8K."),
+        ("Paso 5: Beso en la boca", "Haz que la pareja se estén dando un beso en la boca."),
+        ("Paso 6: Pierna hacia atrás", "Haz que la mujer levante una pierna hacia atrás."),
+        ("Paso 7: Rosa roja en la mano", "Haz que el hombre tenga una rosa roja en la mano."),
+        ("Paso 8: Fondo Torre Eiffel", "Cambia el fondo por la Torre Eiffel."),
+        ("Paso 9: El beso icónico fin de la 2ª GM", "Haz que el beso que se estén dando sea como el famoso beso del marinero a la enfermera del fin de la Segunda Guerra Mundial.")
+    ])
 
 add_taller_item("4.1.4.", "Foto de Perfil Profesional para LinkedIn / Currículum",
     "Transformar una foto informal (de vacaciones o callejera) en un retrato profesional de estudio con vestimenta elegante y fondo sobrio.",

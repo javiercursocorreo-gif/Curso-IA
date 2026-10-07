@@ -837,12 +837,25 @@ def add_taller_item(num_str, title, desc_taller, prompt_gemini):
     p_d.add_run('• Objetivo del Taller: ').bold = True
     p_d.add_run(desc_taller)
     
-    p_g = doc.add_paragraph()
-    p_g.add_run('• 🧪 Orden / Prompt listo para pegar en Gemini (gemini.google.com): ').bold = True
-    r_gt = p_g.add_run(f'\"{prompt_gemini}\"')
-    r_gt.bold = True
-    r_gt.font.color.rgb = RGBColor(0x00, 0x5A, 0x9E)
-    p_g.add_run(f'  [{len(prompt_gemini)} car.]').italic = True
+    if isinstance(prompt_gemini, list):
+        p_intro = doc.add_paragraph()
+        p_intro.add_run('• 🔗 Secuencia Encadenada Paso a Paso en el Mismo Chat de Gemini:\n').bold = True
+        for step_title, step_prompt in prompt_gemini:
+            p_step = doc.add_paragraph()
+            p_step.paragraph_format.left_indent = Pt(14)
+            r_st = p_step.add_run(f'o [{step_title}] -> Prompt exacto: ')
+            r_st.bold = True
+            r_st.font.color.rgb = RGBColor(0xB2, 0x22, 0x22) if 'Paso 1' in step_title else RGBColor(0x00, 0x64, 0x00)
+            r_sp = p_step.add_run(f'"{step_prompt}"')
+            r_sp.bold = True
+            r_sp.font.color.rgb = RGBColor(0x00, 0x5A, 0x9E)
+    else:
+        p_g = doc.add_paragraph()
+        p_g.add_run('• 🧪 Orden / Prompt listo para pegar en Gemini (gemini.google.com): ').bold = True
+        r_gt = p_g.add_run(f'"{prompt_gemini}"')
+        r_gt.bold = True
+        r_gt.font.color.rgb = RGBColor(0x00, 0x5A, 0x9E)
+        p_g.add_run(f'  [{len(str(prompt_gemini))} car.]').italic = True
     doc.add_paragraph()
 
 add_header_2('1. Módulo A: Retoque Fotográfico y Mejora Cotidiana')
@@ -855,8 +868,18 @@ add_taller_item('4.1.2.', 'Corrección e iluminación facial de retratos',
                 'Retoca suavemente el rostro de esta foto: elimina pequeñas marcas o imperfecciones de la piel, suaviza la textura y aporta una iluminación facial clara y favorecedora de estudio.')
 
 add_taller_item('4.1.3.', 'Restauración y coloreado de fotos antiguas',
-                'Recuperar fotos familiares en blanco y negro, sepia o dañadas por el paso del tiempo, devolviéndoles la nitidez y un color realista 8K.',
-                'Restaura esta fotografía antigua en blanco y negro: repara los arañazos y zonas borrosas, mejora la nitidez facial y colóreala con tonos realistas y naturales de alta definición.')
+                'Recuperar fotos familiares en blanco y negro, sepia o dañadas por el paso del tiempo, devolviéndoles la nitidez y un color realista 8K mediante una secuencia progresiva de 9 transformaciones encadenadas en el mismo chat de Gemini.',
+                [
+                    ('Paso 1: Generar la foto base', 'Genera una fotografía antigua y deteriorada en tonos sepia de los años 40 de una pareja de novios, con rasguños en el papel, manchas amarillentas del paso del tiempo y bordes desgastados.'),
+                    ('Paso 2: Restaurar soporte', 'Restaura por completo esta foto antigua: repara los rasguños del papel, elimina las manchas amarillentas.'),
+                    ('Paso 3: Pasar a blanco y negro', 'Pasa la foto a blanco y negro.'),
+                    ('Paso 4: Colorear y nitidez 8K', 'Colorea la foto y devuélvele una nitidez impecable 8K.'),
+                    ('Paso 5: Beso en la boca', 'Haz que la pareja se estén dando un beso en la boca.'),
+                    ('Paso 6: Pierna hacia atrás', 'Haz que la mujer levante una pierna hacia atrás.'),
+                    ('Paso 7: Rosa roja en la mano', 'Haz que el hombre tenga una rosa roja en la mano.'),
+                    ('Paso 8: Fondo Torre Eiffel', 'Cambia el fondo por la Torre Eiffel.'),
+                    ('Paso 9: El beso icónico fin de la 2ª GM', 'Haz que el beso que se estén dando sea como el famoso beso del marinero a la enfermera del fin de la Segunda Guerra Mundial.')
+                ])
 
 add_taller_item('4.1.4.', 'Foto de Perfil Profesional para LinkedIn / Currículum',
                 'Transformar una foto informal (de vacaciones o callejera) en un retrato profesional de estudio con vestimenta elegante y fondo sobrio.',
