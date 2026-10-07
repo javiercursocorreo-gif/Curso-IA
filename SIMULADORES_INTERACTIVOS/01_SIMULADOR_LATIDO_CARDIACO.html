@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laboratorio Anatómico Interactivo • El Latido Cardíaco y el Flujo Sanguíneo</title>
+    <style>
+        :root {
+            --bg: #090d16;
+            --panel: #111827;
+            --panel-border: #1f293d;
+            --accent-red: #ef4444;
+            --accent-blue: #3b82f6;
+            --accent-cyan: #06b6d4;
+            --accent-gold: #f59e0b;
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* HEADER */
+        header {
+            background: linear-gradient(180deg, rgba(17, 24, 39, 0.95) 0%, rgba(17, 24, 39, 0.7) 100%);
+            border-bottom: 1px solid var(--panel-border);
+            padding: 16px 28px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            backdrop-filter: blur(10px);
+            z-index: 10;
+        }
+
+        .header-title {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .header-icon {
+            font-size: 2rem;
+            animation: pulse-icon 1.2s infinite ease-in-out;
+        }
+
+        @keyframes pulse-icon {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+        }
+
+        h1 {
+            font-size: 1.35rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            color: #ffffff;
+        }
+
+        .header-subtitle {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .badge-live {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            color: #fca5a5;
+            padding: 6px 14px;
+            border-radius: 9999px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .pulse-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--accent-red);
+            box-shadow: 0 0 10px var(--accent-red);
+            animation: blink 0.8s infinite;
+        }
+
+        @keyframes blink {
+            50% { opacity: 0.3; }
+        }
+
+        /* MAIN LAYOUT */
+        main {
+            display: grid;
+            grid-template-columns: 1fr 340px;
+            flex: 1;
+            gap: 20px;
+            padding: 20px 28px;
+            max-width: 1440px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* SIMULATION CANVAS WRAPPER */
+        .stage-card {
+            background: var(--panel);
+            border: 1px solid var(--panel-border);
+            border-radius: 18px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+        }
+
+        .canvas-container {
+            flex: 1;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 520px;
+            background: radial-gradient(circle at center, #162035 0%, #0d1322 75%);
+        }
+
+        canvas {
+            display: block;
+            max-width: 100%;
+            height: auto;
+        }
+
+        .ecg-overlay {
+            position: absolute;
+            bottom: 16px;
+            left: 20px;
+            right: 20px;
+            height: 64px;
+            background: rgba(10, 16, 28, 0.85);
+            border: 1px solid #1e293b;
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            padding: 0 16px;
+            gap: 16px;
+        }
+
+        .ecg-title {
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            color: #38bdf8;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        #ecgCanvas {
+            flex: 1;
+            height: 48px;
+        }
+
+        /* CONTROL PANEL */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .control-box {
+            background: var(--panel);
+            border: 1px solid var(--panel-border);
+            border-radius: 16px;
+            padding: 20px;
+        }
+
+        .box-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .bpm-display {
+            text-align: center;
+            padding: 16px;
+            background: rgba(0, 0, 0, 0.35);
+            border: 1px solid #1f293d;
+            border-radius: 14px;
+            margin-bottom: 18px;
+        }
+
+        .bpm-number {
+            font-size: 3.2rem;
+            font-weight: 800;
+            color: #ffffff;
+            line-height: 1;
+            letter-spacing: -0.04em;
+        }
+
+        .bpm-unit {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-weight: 600;
+            margin-top: 4px;
+        }
+
+        .state-pill {
+            display: inline-block;
+            margin-top: 8px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 3px 10px;
+            border-radius: 9999px;
+            background: rgba(16, 185, 129, 0.2);
+            color: #6ee7b7;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        /* SLIDERS & BUTTONS */
+        .slider-group {
+            margin-bottom: 16px;
+        }
+
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.82rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #d1d5db;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            border-radius: 4px;
+            background: #243048;
+            outline: none;
+            -webkit-appearance: none;
+            accent-color: var(--accent-red);
+        }
+
+        .preset-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .btn-preset {
+            background: #1a2336;
+            border: 1px solid #2d3b55;
+            color: #e5e7eb;
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 10px 8px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            text-align: center;
+        }
+
+        .btn-preset:hover {
+            background: #24324f;
+            border-color: #4b638b;
+            color: #ffffff;
+        }
+
+        .btn-preset.active {
+            background: var(--accent-red);
+            border-color: var(--accent-red);
+            color: #ffffff;
+            box-shadow: 0 0 14px rgba(239, 68, 68, 0.4);
+        }
+
+        /* ANATOMICAL KEY */
+        .legend-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            font-size: 0.82rem;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 10px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .legend-color {
+            width: 14px;
+            height: 14px;
+            border-radius: 4px;
+            flex-shrink: 0;
+        }
+
+        .legend-text {
+            line-height: 1.3;
+        }
+
+        .legend-name {
+            font-weight: 700;
+            color: #f9fafb;
+        }
+
+        .legend-desc {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+        }
+
+        /* EXPLANATION FOOTER */
+        .pedagogic-banner {
+            background: linear-gradient(90deg, rgba(239, 68, 68, 0.08) 0%, rgba(59, 130, 246, 0.08) 100%);
+            border: 1px solid #28354f;
+            border-radius: 14px;
+            padding: 14px 20px;
+            margin-top: 4px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .banner-icon {
+            font-size: 1.8rem;
+            flex-shrink: 0;
+        }
+
+        .banner-text {
+            font-size: 0.84rem;
+            color: #d1d5db;
+            line-height: 1.45;
+        }
+
+        .banner-text strong {
+            color: #ffffff;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-title">
+            <span class="header-icon">🫀</span>
+            <div>
+                <h1>Laboratorio Interactivo • El Latido Cardíaco y el Flujo en 4 Cavidades</h1>
+                <div class="header-subtitle">Simulador biológico visual para entender la sístole, diástole y apertura valvular en tiempo real</div>
+            </div>
+        </div>
+        <div class="badge-live">
+            <span class="pulse-dot"></span>
+            <span id="valveStatus">VÁLVULAS: FLUJO ACTIVO</span>
+        </div>
+    </header>
+
+    <main>
+        <!-- STAGE -->
+        <section class="stage-card">
+            <div class="canvas-container">
+                <canvas id="heartCanvas" width="760" height="540"></canvas>
+            </div>
+            <div class="ecg-overlay">
+                <span class="ecg-title">Electrocardiograma (ECG):</span>
+                <canvas id="ecgCanvas" width="560" height="48"></canvas>
+            </div>
+        </section>
+
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <!-- RITMO -->
+            <div class="control-box">
+                <div class="box-title">⚡ Ritmo del Corazón</div>
+                
+                <div class="bpm-display">
+                    <div class="bpm-number" id="bpmVal">65</div>
+                    <div class="bpm-unit">Pulsaciones por Minuto (BPM)</div>
+                    <span class="state-pill" id="statePill">En Reposo Plácido</span>
+                </div>
+
+                <div class="slider-group">
+                    <div class="slider-label">
+                        <span>Ajustar Ritmo Cardíaco</span>
+                        <span id="sliderValDisplay">65 BPM</span>
+                    </div>
+                    <input type="range" id="bpmSlider" min="40" max="150" value="65">
+                </div>
+
+                <div class="preset-buttons">
+                    <button class="btn-preset active" data-bpm="60" data-label="En Reposo Plácido">🛋️ En Reposo (60)</button>
+                    <button class="btn-preset" data-bpm="90" data-label="Paseo Activo">🚶 Paseando (90)</button>
+                    <button class="btn-preset" data-bpm="120" data-label="Ejercicio Ligero">🚴 Subir Cuestas (120)</button>
+                    <button class="btn-preset" data-bpm="45" data-label="Bradicardia de Sueño">😴 Durmiendo (45)</button>
+                </div>
+            </div>
+
+            <!-- ANATOMICAL KEY -->
+            <div class="control-box">
+                <div class="box-title">🔍 Leyenda Anatómica</div>
+                <div class="legend-list">
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #3b82f6;"></div>
+                        <div class="legend-text">
+                            <div class="legend-name">Lado Derecho (Azul)</div>
+                            <div class="legend-desc">Sangre con CO₂ que vuelve del cuerpo hacia los pulmones.</div>
+                        </div>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #ef4444;"></div>
+                        <div class="legend-text">
+                            <div class="legend-name">Lado Izquierdo (Rojo)</div>
+                            <div class="legend-desc">Sangre recién oxigenada que va con fuerza a todo el cuerpo.</div>
+                        </div>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #facc15;"></div>
+                        <div class="legend-text">
+                            <div class="legend-name">4 Válvulas Mecánicas</div>
+                            <div class="legend-desc">Compuertas que impiden que la sangre retroceda hacia atrás.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PEDAGOGIC TIP -->
+            <div class="pedagogic-banner">
+                <span class="banner-icon">💡</span>
+                <div class="banner-text">
+                    <strong>¿Qué estamos viendo?</strong> El corazón es una bomba doble con 4 cámaras (2 aurículas arriba y 2 ventrículos abajo). Observa cómo las válvulas se abren al llenarse y se cierran al bombear para que la sangre avance siempre en una única dirección.
+                </div>
+            </div>
+        </aside>
+    </main>
+
+    <script>
+        // CONFIG & DOM
+        const heartCanvas = document.getElementById('heartCanvas');
+        const hCtx = heartCanvas.getContext('2d');
+        const ecgCanvas = document.getElementById('ecgCanvas');
+        const eCtx = ecgCanvas.getContext('2d');
+
+        const bpmSlider = document.getElementById('bpmSlider');
+        const bpmVal = document.getElementById('bpmVal');
+        const sliderValDisplay = document.getElementById('sliderValDisplay');
+        const statePill = document.getElementById('statePill');
+        const valveStatus = document.getElementById('valveStatus');
+        const presetBtns = document.querySelectorAll('.btn-preset');
+
+        let currentBpm = 65;
+        let beatPhase = 0; // 0 to 1 cycle
+        let lastTime = performance.now();
+
+        // PARTICLES (BLOOD CELLS)
+        const particles = [];
+        const TOTAL_PARTICLES = 140;
+
+        class BloodCell {
+            constructor(side) {
+                this.side = side; // 'right' (blue) or 'left' (red)
+                this.reset();
+            }
+
+            reset() {
+                this.progress = Math.random(); // 0 to 1 along path
+                this.speed = 0.003 + Math.random() * 0.002;
+                this.offset = (Math.random() - 0.5) * 16;
+                this.size = 3.5 + Math.random() * 2;
+            }
+
+            update(speedMultiplier) {
+                this.progress += this.speed * speedMultiplier;
+                if (this.progress > 1) {
+                    this.reset();
+                    this.progress = 0;
+                }
+            }
+
+            getPosition() {
+                // Return x, y along anatomical flow circuit
+                // Side 'right' (Left visual, blue blood)
+                // Side 'left' (Right visual, red oxygenated blood)
+                const cx = heartCanvas.width / 2;
+                const cy = heartCanvas.height / 2;
+
+                if (this.side === 'right') {
+                    // Cava -> Auricula D -> Ventriculo D -> Arteria Pulmonar
+                    const xBase = cx - 100;
+                    if (this.progress < 0.3) {
+                        // Entrando por arriba a auricula
+                        const t = this.progress / 0.3;
+                        return { x: xBase - 20 + this.offset, y: cy - 180 + t * 90 };
+                    } else if (this.progress < 0.7) {
+                        // Pasando por valvula tricúspide a ventrículo
+                        const t = (this.progress - 0.3) / 0.4;
+                        return { x: xBase + Math.sin(t * Math.PI) * 20 + this.offset, y: cy - 90 + t * 140 };
+                    } else {
+                        // Saliendo por arteria pulmonar hacia arriba
+                        const t = (this.progress - 0.7) / 0.3;
+                        return { x: xBase + 40 - t * 30 + this.offset, y: cy + 50 - t * 190 };
+                    }
+                } else {
+                    // Venas Pulmonares -> Auricula I -> Ventriculo I -> Aorta
+                    const xBase = cx + 100;
+                    if (this.progress < 0.3) {
+                        // Entrando por arriba a auricula izq
+                        const t = this.progress / 0.3;
+                        return { x: xBase + 20 + this.offset, y: cy - 180 + t * 90 };
+                    } else if (this.progress < 0.7) {
+                        // Pasando por válvula mitral a ventrículo izq
+                        const t = (this.progress - 0.3) / 0.4;
+                        return { x: xBase - Math.sin(t * Math.PI) * 20 + this.offset, y: cy - 90 + t * 150 };
+                    } else {
+                        // Saliendo con gran impulso por la Aorta arqueada
+                        const t = (this.progress - 0.7) / 0.3;
+                        const arcX = Math.sin(t * Math.PI) * 45;
+                        return { x: xBase - 40 - arcX + this.offset, y: cy + 60 - t * 210 };
+                    }
+                }
+            }
+
+            draw(ctx) {
+                const pos = this.getPosition();
+                ctx.save();
+                ctx.beginPath();
+                ctx.arc(pos.x, pos.y, this.size, 0, Math.PI * 2);
+                if (this.side === 'right') {
+                    ctx.fillStyle = '#60a5fa';
+                    ctx.shadowColor = '#3b82f6';
+                } else {
+                    ctx.fillStyle = '#f87171';
+                    ctx.shadowColor = '#ef4444';
+                }
+                ctx.shadowBlur = 6;
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+
+        // Initialize particles
+        for (let i = 0; i < TOTAL_PARTICLES / 2; i++) {
+            particles.push(new BloodCell('right'));
+            particles.push(new BloodCell('left'));
+        }
+
+        // ECG DRAWING BUFFER
+        const ecgData = [];
+        const MAX_ECG_POINTS = 560;
+        let ecgX = 0;
+
+        // ANIMATION LOOP
+        function draw(now) {
+            const dt = (now - lastTime) / 1000;
+            lastTime = now;
+
+            // Update beat phase (0 to 1) based on BPM
+            const cycleDuration = 60 / currentBpm;
+            beatPhase = (beatPhase + dt / cycleDuration) % 1;
+
+            // Heart contraction scale factor (Systole vs Diastole)
+            // Diastole (filling): expansion; Systole (pumping): sharp squeeze
+            let contraction = 0;
+            if (beatPhase < 0.15) {
+                // Auricular systole
+                contraction = Math.sin((beatPhase / 0.15) * Math.PI) * 0.05;
+            } else if (beatPhase >= 0.25 && beatPhase < 0.55) {
+                // Ventricular systole (main pulse)
+                const vPhase = (beatPhase - 0.25) / 0.3;
+                contraction = Math.sin(vPhase * Math.PI) * 0.16;
+            }
+
+            const scale = 1 + contraction;
+
+            // CLEAR
+            hCtx.clearRect(0, 0, heartCanvas.width, heartCanvas.height);
+
+            const cx = heartCanvas.width / 2;
+            const cy = heartCanvas.height / 2;
+
+            // 1. DRAW ANATOMICAL HEART SILHOUETTE & CAVITIES
+            hCtx.save();
+            hCtx.translate(cx, cy);
+            hCtx.scale(scale, scale);
+            hCtx.translate(-cx, -cy);
+
+            // Muscular Wall (Miocardio) background
+            hCtx.beginPath();
+            hCtx.moveTo(cx, cy + 190);
+            // Curva izquierda (anatómica derecha)
+            hCtx.bezierCurveTo(cx - 220, cy + 120, cx - 210, cy - 130, cx - 70, cy - 140);
+            // Centro superior
+            hCtx.bezierCurveTo(cx - 20, cy - 140, cx, cy - 110, cx, cy - 100);
+            // Curva derecha (anatómica izquierda - más gruesa)
+            hCtx.bezierCurveTo(cx, cy - 110, cx + 20, cy - 140, cx + 80, cy - 140);
+            hCtx.bezierCurveTo(cx + 230, cy - 130, cx + 230, cy + 110, cx, cy + 190);
+            hCtx.closePath();
+
+            const myoGrad = hCtx.createRadialGradient(cx, cy, 30, cx, cy, 220);
+            myoGrad.addColorStop(0, '#581c25');
+            myoGrad.addColorStop(0.7, '#3b1218');
+            myoGrad.addColorStop(1, '#230a0e');
+            hCtx.fillStyle = myoGrad;
+            hCtx.strokeStyle = '#991b1b';
+            hCtx.lineWidth = 4;
+            hCtx.shadowColor = 'rgba(239, 68, 68, 0.25)';
+            hCtx.shadowBlur = 25;
+            hCtx.fill();
+            hCtx.stroke();
+            hCtx.shadowBlur = 0;
+
+            // Grand Vessels (Arriba): Aorta (Rojo intenso) y Pulmonar (Azul)
+            // Aorta
+            hCtx.beginPath();
+            hCtx.arc(cx + 25, cy - 165, 36, Math.PI, 0, false);
+            hCtx.lineWidth = 26;
+            hCtx.strokeStyle = '#dc2626';
+            hCtx.stroke();
+
+            // Pulmonar
+            hCtx.beginPath();
+            hCtx.arc(cx - 45, cy - 160, 30, Math.PI, 0, false);
+            hCtx.lineWidth = 22;
+            hCtx.strokeStyle = '#2563eb';
+            hCtx.stroke();
+
+            // Cavidad Derecha (Azul) - Aurícula y Ventrículo
+            hCtx.beginPath();
+            hCtx.ellipse(cx - 95, cy - 80, 50, 40, -0.2, 0, Math.PI * 2);
+            hCtx.fillStyle = 'rgba(30, 58, 138, 0.45)';
+            hCtx.fill();
+            hCtx.strokeStyle = 'rgba(59, 130, 246, 0.7)';
+            hCtx.lineWidth = 2.5;
+            hCtx.stroke();
+
+            hCtx.beginPath();
+            hCtx.ellipse(cx - 85, cy + 45, 65, 80, 0.15, 0, Math.PI * 2);
+            hCtx.fillStyle = 'rgba(30, 58, 138, 0.55)';
+            hCtx.fill();
+            hCtx.stroke();
+
+            // Cavidad Izquierda (Roja) - Aurícula y Ventrículo
+            hCtx.beginPath();
+            hCtx.ellipse(cx + 95, cy - 80, 50, 40, 0.2, 0, Math.PI * 2);
+            hCtx.fillStyle = 'rgba(153, 27, 27, 0.45)';
+            hCtx.fill();
+            hCtx.strokeStyle = 'rgba(239, 68, 68, 0.7)';
+            hCtx.lineWidth = 2.5;
+            hCtx.stroke();
+
+            hCtx.beginPath();
+            hCtx.ellipse(cx + 85, cy + 45, 68, 90, -0.15, 0, Math.PI * 2);
+            hCtx.fillStyle = 'rgba(153, 27, 27, 0.6)';
+            hCtx.fill();
+            hCtx.stroke();
+
+            // Septum interventricular (Tabique central)
+            hCtx.beginPath();
+            hCtx.moveTo(cx, cy - 100);
+            hCtx.lineTo(cx, cy + 180);
+            hCtx.lineWidth = 14;
+            hCtx.strokeStyle = '#450a0a';
+            hCtx.stroke();
+
+            // 2. VÁLVULAS (Tricúspide y Mitral)
+            // Abiertas durante sístole auricular o llenado ventricular, cerradas en sístole ventricular
+            const isVentricularSystole = beatPhase >= 0.25 && beatPhase < 0.55;
+            const valveOpenAngle = isVentricularSystole ? 0.05 : 0.65;
+
+            // Válvula Tricúspide (Derecha visual)
+            drawValve(hCtx, cx - 92, cy - 25, valveOpenAngle, '#facc15');
+            // Válvula Mitral (Izquierda visual)
+            drawValve(hCtx, cx + 92, cy - 25, valveOpenAngle, '#facc15');
+
+            // Etiquetas de cavidades
+            hCtx.fillStyle = '#93c5fd';
+            hCtx.font = 'bold 11px system-ui';
+            hCtx.textAlign = 'center';
+            hCtx.fillText('AURÍCULA DERECHA', cx - 95, cy - 80);
+            hCtx.fillText('VENTRÍCULO DERECHO', cx - 85, cy + 50);
+
+            hCtx.fillStyle = '#fca5a5';
+            hCtx.fillText('AURÍCULA IZQUIERDA', cx + 95, cy - 80);
+            hCtx.fillText('VENTRÍCULO IZQUIERDO', cx + 85, cy + 50);
+
+            hCtx.restore();
+
+            // 3. DRAW PARTICLES
+            const speedMultiplier = currentBpm / 60;
+            particles.forEach(p => {
+                p.update(speedMultiplier);
+                p.draw(hCtx);
+            });
+
+            // Update UI status
+            if (isVentricularSystole) {
+                valveStatus.innerText = 'SÍSTOLE: IMPULSO AÓRTICO (VÁLVULAS CERRADAS)';
+                valveStatus.style.color = '#ef4444';
+            } else {
+                valveStatus.innerText = 'DIÁSTOLE: LLENADO VENTRICULAR (VÁLVULAS ABIERTAS)';
+                valveStatus.style.color = '#38bdf8';
+            }
+
+            // 4. DRAW ECG (ELECTROCARDIOGRAM TRACE)
+            updateEcg(dt);
+
+            requestAnimationFrame(draw);
+        }
+
+        function drawValve(ctx, x, y, angle, color) {
+            ctx.save();
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 3.5;
+            ctx.lineCap = 'round';
+            // Valva izquierda
+            ctx.beginPath();
+            ctx.moveTo(x - 24, y);
+            ctx.lineTo(x - 24 + Math.cos(angle) * 22, y + Math.sin(angle) * 16);
+            ctx.stroke();
+            // Valva derecha
+            ctx.beginPath();
+            ctx.moveTo(x + 24, y);
+            ctx.lineTo(x + 24 - Math.cos(angle) * 22, y + Math.sin(angle) * 16);
+            ctx.stroke();
+            ctx.restore();
+        }
+
+        // ECG SYNTHESIZER
+        let ecgPhase = 0;
+        function updateEcg(dt) {
+            const cycleDuration = 60 / currentBpm;
+            ecgPhase = (ecgPhase + dt / cycleDuration) % 1;
+
+            // Calcular voltaje según onda P-Q-R-S-T
+            let v = 0;
+            if (ecgPhase > 0.08 && ecgPhase < 0.16) {
+                // Onda P (despolarización auricular)
+                v = Math.sin(((ecgPhase - 0.08) / 0.08) * Math.PI) * 7;
+            } else if (ecgPhase >= 0.23 && ecgPhase < 0.26) {
+                // Onda Q (pequeña bajada)
+                v = -5;
+            } else if (ecgPhase >= 0.26 && ecgPhase < 0.32) {
+                // Complejo R (pico ventricular potente)
+                const rP = (ecgPhase - 0.26) / 0.06;
+                v = Math.sin(rP * Math.PI) * 36;
+            } else if (ecgPhase >= 0.32 && ecgPhase < 0.35) {
+                // Onda S (bajada profunda)
+                v = -9;
+            } else if (ecgPhase > 0.45 && ecgPhase < 0.60) {
+                // Onda T (repolarización ventricular)
+                v = Math.sin(((ecgPhase - 0.45) / 0.15) * Math.PI) * 11;
+            }
+
+            const yMid = ecgCanvas.height / 2;
+            const yPlot = yMid - v;
+
+            ecgData.push(yPlot);
+            if (ecgData.length > ecgCanvas.width) {
+                ecgData.shift();
+            }
+
+            // Redraw ECG trace
+            eCtx.clearRect(0, 0, ecgCanvas.width, ecgCanvas.height);
+            eCtx.beginPath();
+            eCtx.strokeStyle = '#38bdf8';
+            eCtx.lineWidth = 2;
+            eCtx.shadowColor = '#0284c7';
+            eCtx.shadowBlur = 6;
+
+            for (let i = 0; i < ecgData.length; i++) {
+                if (i === 0) eCtx.moveTo(i, ecgData[i]);
+                else eCtx.lineTo(i, ecgData[i]);
+            }
+            eCtx.stroke();
+            eCtx.shadowBlur = 0;
+        }
+
+        // EVENT LISTENERS
+        bpmSlider.addEventListener('input', (e) => {
+            setBpm(parseInt(e.target.value));
+        });
+
+        presetBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                presetBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                const bpm = parseInt(btn.dataset.bpm);
+                const label = btn.dataset.label;
+                setBpm(bpm, label);
+            });
+        });
+
+        function setBpm(val, label = null) {
+            currentBpm = val;
+            bpmSlider.value = val;
+            bpmVal.innerText = val;
+            sliderValDisplay.innerText = `${val} BPM`;
+
+            if (!label) {
+                if (val < 55) label = "Bradicardia en Sueño";
+                else if (val <= 75) label = "En Reposo Plácido";
+                else if (val <= 100) label = "Paseo y Actividad Moderada";
+                else label = "Esfuerzo Físico Intenso";
+            }
+            statePill.innerText = label;
+        }
+
+        // START
+        requestAnimationFrame(draw);
+    </script>
+</body>
+</html>
+

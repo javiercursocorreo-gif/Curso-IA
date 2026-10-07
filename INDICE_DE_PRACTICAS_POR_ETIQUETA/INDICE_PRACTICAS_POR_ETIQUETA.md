@@ -14,6 +14,7 @@
 | **`[EST]`** | 02. [EST] Estilos Visuales de Imagen | **61** |
 | **`[PRAC]`** | 03. [PRAC] Talleres Prácticos con Gemini | **55** |
 | **`[FRAC]`** | 04. [FRAC] Fractales en IA (Vídeos y Fichas) | **126** |
+| **`[3D]`** | 15. [3D] Simuladores 3D y Dinámicas en Vivo | **1** |
 | **`[INT]`** | 05. [INT] El Mundo por Dentro y Reconstrucción | **61** |
 | **`[FUT]`** | 06. [FUT] Línea de Tiempo del Futuro (2030+) | **41** |
 | **`[NAT]`** | 07. [NAT] Naturaleza Fascinante y Biodiversidad | **64** |
@@ -23,7 +24,7 @@
 | **`[CUENT]`** | 12. [CUENT] Cuentos Ilustrados para Nietos | **289** |
 | **`[MOVIL]`** | 13. [MOVIL] El Salvavidas del Móvil (Cámara y Voz) | **59** |
 | **`[MEM]`** | 14. [MEM] Cápsula de la Memoria | **59** |
-| **TOTAL** | **Todas las categorías** | **1058** |
+| **TOTAL** | **Todas las categorías** | **1059** |
 
 ---
 
@@ -362,6 +363,14 @@
 | `Sesión 60` | FRAC - 001 0 B Reto Visual Matematico (PDF) | **PDF** | [Abrir Archivo](https://javiercursocorreo-gif.github.io/Curso-IA/CLASES/EXPORTACION_FICHAS_CLASSROOM_PDF/100.%20%5BSESSIONS%5D%20TERNAS_LISTAS_PARA_CLASSROOM/60_Sesion_Cierre/4.%20FRAC-001%200_B_Reto_Visual_Matematico.pdf) |
 | `Sesión 60` | FRAC - 001 MandelBrot CascadaDeFeigenbaum (MP4) | **MP4** | [Abrir Archivo](https://javiercursocorreo-gif.github.io/Curso-IA/CLASES/EXPORTACION_FICHAS_CLASSROOM_PDF/100.%20%5BSESSIONS%5D%20TERNAS_LISTAS_PARA_CLASSROOM/60_Sesion_Cierre/4.%20FRAC-001%20MandelBrot_CascadaDeFeigenbaum.mp4) |
 | `Sesión 60` | FRAC - 001 MandelBrot CascadaDeFeigenbaum (PDF) | **PDF** | [Abrir Archivo](https://javiercursocorreo-gif.github.io/Curso-IA/CLASES/EXPORTACION_FICHAS_CLASSROOM_PDF/100.%20%5BSESSIONS%5D%20TERNAS_LISTAS_PARA_CLASSROOM/60_Sesion_Cierre/4.%20FRAC-001%20MandelBrot_CascadaDeFeigenbaum.pdf) |
+
+---
+
+## 🏷️ 15. [3D] Simuladores 3D y Dinámicas en Vivo (1 prácticas)
+
+| Sesión | Título de la Práctica / Ficha | Tipo | Enlace Directo |
+| :---: | :--- | :---: | :---: |
+| `Sesión 01` | 3D - 001 Simulador 3D del Latido Cardíaco Humano (HTML) | **HTML** | [Abrir Archivo](https://javiercursocorreo-gif.github.io/Curso-IA/CLASES/EXPORTACION_FICHAS_CLASSROOM_PDF/100.%20%5BSESSIONS%5D%20TERNAS_LISTAS_PARA_CLASSROOM/01_Sesion/SIMULADOR_CORAZON_3D.html) |
 
 ---
 

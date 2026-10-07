@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laboratorio Anatómico 3D Ultra-Realista • El Corazón Humano (GLB + Babylon.js)</title>
+    <!-- Babylon.js CDN Oficial -->
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+    <script src="heart_b64.js"></script>
+    <style>
+        :root {
+            --bg: #07090e;
+            --panel: rgba(15, 23, 42, 0.88);
+            --border: rgba(51, 65, 85, 0.7);
+            --red: #ef4444;
+            --blue: #3b82f6;
+            --cyan: #38bdf8;
+            --gold: #f59e0b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: #f8fafc;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* HEADER HUD */
+        header {
+            position: absolute;
+            top: 20px;
+            left: 24px;
+            right: 24px;
+            z-index: 10;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            pointer-events: none;
+        }
+
+        .brand-card {
+            background: var(--panel);
+            backdrop-filter: blur(14px);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 14px 22px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            box-shadow: 0 14px 35px rgba(0,0,0,0.6);
+            pointer-events: auto;
+        }
+
+        .brand-icon {
+            font-size: 2.2rem;
+            animation: pulse-icon 1s infinite ease-in-out;
+        }
+
+        @keyframes pulse-icon {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+        }
+
+        .brand-title {
+            font-size: 1.18rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            color: #ffffff;
+        }
+
+        .brand-sub {
+            font-size: 0.76rem;
+            color: #94a3b8;
+            margin-top: 2px;
+        }
+
+        .live-tag {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            color: #fca5a5;
+            padding: 8px 16px;
+            border-radius: 9999px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            pointer-events: auto;
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.2);
+        }
+
+        .pulse-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--red);
+            box-shadow: 0 0 10px var(--red);
+            animation: blink 0.7s infinite;
+        }
+
+        @keyframes blink { 50% { opacity: 0.2; } }
+
+        /* 3D CANVAS FULLSCREEN */
+        #renderCanvas {
+            width: 100%;
+            height: 100%;
+            touch-action: none;
+            outline: none;
+        }
+
+        /* LOADING OVERLAY */
+        #loadingOverlay {
+            position: absolute;
+            inset: 0;
+            background: #07090e;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            z-index: 50;
+            transition: opacity 0.5s ease;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #1e293b;
+            border-top-color: var(--red);
+            border-radius: 50%;
+            animation: spin 1s infinite linear;
+        }
+
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        /* FLOATING HUD CONTROLS (RIGHT) */
+        .hud-sidebar {
+            position: absolute;
+            top: 96px;
+            right: 24px;
+            width: 320px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            z-index: 10;
+        }
+
+        .panel-box {
+            background: var(--panel);
+            backdrop-filter: blur(14px);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 18px;
+            box-shadow: 0 16px 30px rgba(0,0,0,0.5);
+        }
+
+        .box-title {
+            font-size: 0.78rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: #94a3b8;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .bpm-metric {
+            text-align: center;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            margin-bottom: 14px;
+        }
+
+        .bpm-num {
+            font-size: 2.8rem;
+            font-weight: 900;
+            color: #ffffff;
+            line-height: 1;
+        }
+
+        .bpm-txt {
+            font-size: 0.75rem;
+            color: #94a3b8;
+            font-weight: 600;
+            margin-top: 4px;
+        }
+
+        .status-pill {
+            display: inline-block;
+            margin-top: 6px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 3px 10px;
+            border-radius: 9999px;
+            background: rgba(16, 185, 129, 0.2);
+            color: #6ee7b7;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .slider-wrap {
+            margin-bottom: 12px;
+        }
+
+        .slider-head {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.78rem;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: #cbd5e1;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            border-radius: 4px;
+            background: #334155;
+            outline: none;
+            -webkit-appearance: none;
+            accent-color: var(--red);
+        }
+
+        .btn-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+        }
+
+        .btn-preset {
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid #334155;
+            color: #e2e8f0;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 8px 6px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            text-align: center;
+        }
+
+        .btn-preset:hover {
+            background: #334155;
+            color: #ffffff;
+        }
+
+        .btn-preset.active {
+            background: var(--red);
+            border-color: var(--red);
+            color: #ffffff;
+            box-shadow: 0 0 12px rgba(239, 68, 68, 0.4);
+        }
+
+        .view-btns {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .btn-view {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid #334155;
+            color: #94a3b8;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 8px 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: left;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .btn-view:hover {
+            background: rgba(51, 65, 85, 0.5);
+            color: #f1f5f9;
+        }
+
+        .btn-view.active {
+            border-color: var(--cyan);
+            color: #ffffff;
+            background: rgba(56, 189, 248, 0.15);
+        }
+
+        /* BOTTOM ECG DOCK */
+        .hud-bottom {
+            position: absolute;
+            bottom: 24px;
+            left: 24px;
+            right: 360px;
+            height: 70px;
+            background: var(--panel);
+            backdrop-filter: blur(14px);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 8px 20px;
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            z-index: 10;
+        }
+
+        .ecg-title {
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--cyan);
+            white-space: nowrap;
+        }
+
+        #ecgCanvas {
+            flex: 1;
+            height: 48px;
+        }
+
+        .hint-badge {
+            position: absolute;
+            bottom: 104px;
+            left: 24px;
+            background: rgba(15, 23, 42, 0.75);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(8px);
+            padding: 8px 14px;
+            border-radius: 20px;
+            font-size: 0.76rem;
+            color: #cbd5e1;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="loadingOverlay">
+        <div class="spinner"></div>
+        <div style="font-weight: 600; color: #94a3b8; font-size: 0.9rem;">Cargando modelo anatómico hiperrealista 3D...</div>
+    </div>
+
+    <header>
+        <div class="brand-card">
+            <span class="brand-icon">🫀</span>
+            <div>
+                <div class="brand-title">Corazón Humano Anatómico 3D • Babylon.js</div>
+                <div class="brand-sub">Modelo Fotométrico de Órgano Real, Tejido Miocárdico y Arterias Coronarias</div>
+            </div>
+        </div>
+        <div class="live-tag">
+            <span class="pulse-dot"></span>
+            <span id="valveStatus">SÍSTOLE ACTIVA • 8K PBR</span>
+        </div>
+    </header>
+
+    <!-- 3D BABYLON CANVAS -->
+    <canvas id="renderCanvas"></canvas>
+
+    <!-- HINT -->
+    <div class="hint-badge">
+        <span>🖱️ <strong>Control 360°:</strong> Arrastra con el ratón para rotar el órgano en cualquier ángulo • Rueda para zoom microscópico</span>
+    </div>
+
+    <!-- RIGHT HUD -->
+    <aside class="hud-sidebar">
+        <!-- RITMO -->
+        <div class="panel-box">
+            <div class="box-title">⚡ Ritmo del Latido (BPM)</div>
+            
+            <div class="bpm-metric">
+                <div class="bpm-num" id="bpmVal">65</div>
+                <div class="bpm-txt">Pulsaciones por Minuto</div>
+                <span class="status-pill" id="statusPill">En Reposo Plácido</span>
+            </div>
+
+            <div class="slider-wrap">
+                <div class="slider-head">
+                    <span>Frecuencia Cardíaca</span>
+                    <span id="sliderVal">65 BPM</span>
+                </div>
+                <input type="range" id="bpmSlider" min="40" max="150" value="65">
+            </div>
+
+            <div class="btn-grid">
+                <button class="btn-preset active" data-bpm="60" data-label="En Reposo Plácido">🛋️ Reposo (60)</button>
+                <button class="btn-preset" data-bpm="90" data-label="Paseo Activo">🚶 Paseo (90)</button>
+                <button class="btn-preset" data-bpm="120" data-label="Subir Cuestas">🚴 Esfuerzo (120)</button>
+                <button class="btn-preset" data-bpm="45" data-label="Sueño Profundo">😴 Sueño (45)</button>
+            </div>
+        </div>
+
+        <!-- ACCIONES Y CÁMARA -->
+        <div class="panel-box">
+            <div class="box-title">🔍 Inspección Visual 3D</div>
+            <div class="view-btns">
+                <button class="btn-view active" id="btnAutoRotate">
+                    <span>Rotación Orbital Suave</span>
+                    <span style="color:#38bdf8;">ON</span>
+                </button>
+                <button class="btn-view" id="btnResetCam">
+                    <span>Vista Frontal Anterior</span>
+                    <span>↺</span>
+                </button>
+                <button class="btn-view" id="btnPosteriorCam">
+                    <span>Vista Posterior (Aurículas)</span>
+                    <span>↻</span>
+                </button>
+            </div>
+        </div>
+    </aside>
+
+    <!-- BOTTOM ECG DOCK -->
+    <div class="hud-bottom">
+        <span class="ecg-title">Electrocardiograma (ECG):</span>
+        <canvas id="ecgCanvas" width="600" height="48"></canvas>
+    </div>
+
+    <script>
+        const canvas = document.getElementById("renderCanvas");
+        const loadingOverlay = document.getElementById("loadingOverlay");
+        const engine = new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true });
+
+        let currentBpm = 65;
+        let beatPhase = 0;
+        let heartMeshRoot = null;
+        let autoRotate = true;
+        let fixedBaseScale = 1.0;
+        let isModelLoaded = false;
+        let beatAnimEnabled = true;
+
+        const createScene = function () {
+            const scene = new BABYLON.Scene(engine);
+            scene.clearColor = new BABYLON.Color4(0.04, 0.05, 0.08, 1.0);
+
+            // CÁMARA ORBITAL
+            const camera = new BABYLON.ArcRotateCamera("Camera", -Math.PI / 2, Math.PI / 2.2, 5.8, new BABYLON.Vector3(0, 0, 0), scene);
+            camera.attachControl(canvas, true);
+            camera.wheelPrecision = 45;
+            camera.lowerRadiusLimit = 2;
+            camera.upperRadiusLimit = 16;
+
+            // ILUMINACIÓN ESTUDIO MÉDICO (3 Puntos + Iluminación de rebote)
+            const hemiLight = new BABYLON.HemisphericLight("hemiLight", new BABYLON.Vector3(0, 1, 0), scene);
+            hemiLight.intensity = 0.9;
+            hemiLight.groundColor = new BABYLON.Color3(0.12, 0.14, 0.2);
+
+            const keyLight = new BABYLON.DirectionalLight("keyLight", new BABYLON.Vector3(-1, -2, -1), scene);
+            keyLight.position = new BABYLON.Vector3(5, 8, 5);
+            keyLight.intensity = 1.6;
+            keyLight.diffuse = new BABYLON.Color3(1.0, 0.98, 0.95);
+
+            const fillLight = new BABYLON.PointLight("fillLight", new BABYLON.Vector3(-6, -2, -4), scene);
+            fillLight.diffuse = new BABYLON.Color3(0.2, 0.5, 0.9);
+            fillLight.intensity = 1.2;
+
+            const rimLight = new BABYLON.PointLight("rimLight", new BABYLON.Vector3(4, 4, 6), scene);
+            rimLight.diffuse = new BABYLON.Color3(1.0, 0.3, 0.3);
+            rimLight.intensity = 1.4;
+
+            // GLOW SUTIL PARA REALZAR EL TEJIDO ORGÁNICO
+            const gl = new BABYLON.GlowLayer("glow", scene);
+            gl.intensity = 0.3;
+
+            // CARGA DEL MODELO ANATÓMICO REAL .GLB (Data URI embebido o local)
+            const modelSource = (window.HEART_GLB_B64) ? window.HEART_GLB_B64 : "heart.glb";
+            BABYLON.SceneLoader.ImportMesh("", "", modelSource, scene, function (meshes) {
+                loadingOverlay.style.opacity = "0";
+                setTimeout(() => loadingOverlay.style.display = "none", 500);
+
+                heartMeshRoot = new BABYLON.TransformNode("heartRoot", scene);
+
+                meshes.forEach(m => {
+                    if (m.parent === null) {
+                        m.parent = heartMeshRoot;
+                    }
+                });
+
+                // Calcular caja envolvente y escala fija EXACTA UNA SOLA VEZ
+                const hierarchy = heartMeshRoot.getHierarchyBoundingVectors();
+                const center = hierarchy.max.add(hierarchy.min).scale(0.5);
+                const size = hierarchy.max.subtract(hierarchy.min);
+                const maxDim = Math.max(size.x, size.y, size.z);
+
+                if (maxDim > 0) {
+                    fixedBaseScale = 2.6 / maxDim;
+                    heartMeshRoot.scaling = new BABYLON.Vector3(fixedBaseScale, fixedBaseScale, fixedBaseScale);
+                    heartMeshRoot.position = center.scale(-fixedBaseScale);
+                }
+
+                camera.radius = 5.8;
+                camera.target = new BABYLON.Vector3(0, 0, 0);
+                isModelLoaded = true;
+            }, null, function (scene, message) {
+                console.error("Error loading heart.glb:", message);
+                loadingOverlay.innerHTML = '<div style="color:#ef4444;font-weight:700;">Error al cargar el archivo 3D</div>';
+            });
+
+            return scene;
+        };
+
+        const scene = createScene();
+
+        // ANIMATION LOOP: LATIDO BIOMECÁNICO SUAVE SIN VIBRACIONES
+        let lastTime = performance.now();
+        engine.runRenderLoop(function () {
+            const now = performance.now();
+            const dt = (now - lastTime) / 1000;
+            lastTime = now;
+
+            const cycleDuration = 60 / currentBpm;
+            beatPhase = (beatPhase + dt / cycleDuration) % 1;
+
+            // Curva biológica suave y continua (sin sacudidas discontinuas)
+            let sScale = 1.0;
+            let isSystole = false;
+
+            if (beatAnimEnabled) {
+                // Golpe sistólico suave con forma de campana cosenoidal continua
+                if (beatPhase >= 0.20 && beatPhase < 0.45) {
+                    const t = (beatPhase - 0.20) / 0.25;
+                    sScale = 1.0 + (0.5 - 0.5 * Math.cos(t * Math.PI * 2)) * 0.08;
+                    isSystole = true;
+                }
+            }
+
+            if (isModelLoaded && heartMeshRoot) {
+                // Escala fluida y matemática sin oscilaciones
+                heartMeshRoot.scaling.x = fixedBaseScale * sScale;
+                heartMeshRoot.scaling.y = fixedBaseScale * (1.0 + (sScale - 1.0) * 1.3);
+                heartMeshRoot.scaling.z = fixedBaseScale * sScale;
+
+                if (autoRotate) {
+                    heartMeshRoot.rotation.y += 0.004;
+                }
+            }
+
+            // Actualizar estado HUD
+            const valveStatus = document.getElementById("valveStatus");
+            if (isSystole) {
+                valveStatus.innerText = "SÍSTOLE • EXPULSIÓN VENTRICULAR";
+                valveStatus.style.color = "#ef4444";
+            } else {
+                valveStatus.innerText = "DIÁSTOLE • LLENADO DE CAVIDADES";
+                valveStatus.style.color = "#38bdf8";
+            }
+
+            updateEcg(dt);
+            scene.render();
+        });
+
+        window.addEventListener("resize", () => engine.resize());
+
+        // ELECTROCARDIOGRAMA (ECG DOCK)
+        const ecgCanvas = document.getElementById("ecgCanvas");
+        const eCtx = ecgCanvas.getContext("2d");
+        const ecgData = [];
+        let ecgPhase = 0;
+
+        function updateEcg(dt) {
+            const cycleDuration = 60 / currentBpm;
+            ecgPhase = (ecgPhase + dt / cycleDuration) % 1;
+
+            let v = 0;
+            if (ecgPhase > 0.06 && ecgPhase < 0.14) {
+                v = Math.sin(((ecgPhase - 0.06) / 0.08) * Math.PI) * 8; // P
+            } else if (ecgPhase >= 0.20 && ecgPhase < 0.23) {
+                v = -6; // Q
+            } else if (ecgPhase >= 0.23 && ecgPhase < 0.29) {
+                const rP = (ecgPhase - 0.23) / 0.06;
+                v = Math.sin(rP * Math.PI) * 38; // R
+            } else if (ecgPhase >= 0.29 && ecgPhase < 0.32) {
+                v = -10; // S
+            } else if (ecgPhase > 0.42 && ecgPhase < 0.58) {
+                v = Math.sin(((ecgPhase - 0.42) / 0.16) * Math.PI) * 12; // T
+            }
+
+            const yMid = ecgCanvas.height / 2;
+            ecgData.push(yMid - v);
+            if (ecgData.length > ecgCanvas.width) ecgData.shift();
+
+            eCtx.clearRect(0, 0, ecgCanvas.width, ecgCanvas.height);
+            eCtx.beginPath();
+            eCtx.strokeStyle = "#38bdf8";
+            eCtx.lineWidth = 2.2;
+            eCtx.shadowColor = "#0284c7";
+            eCtx.shadowBlur = 8;
+
+            for (let i = 0; i < ecgData.length; i++) {
+                if (i === 0) eCtx.moveTo(i, ecgData[i]);
+                else eCtx.lineTo(i, ecgData[i]);
+            }
+            eCtx.stroke();
+            eCtx.shadowBlur = 0;
+        }
+
+        // CONTROLES UI
+        const bpmSlider = document.getElementById("bpmSlider");
+        const bpmVal = document.getElementById("bpmVal");
+        const sliderVal = document.getElementById("sliderVal");
+        const statusPill = document.getElementById("statusPill");
+        const presetBtns = document.querySelectorAll(".btn-preset");
+
+        bpmSlider.addEventListener("input", (e) => setBpm(parseInt(e.target.value)));
+
+        presetBtns.forEach(btn => {
+            btn.addEventListener("click", () => {
+                presetBtns.forEach(b => b.classList.remove("active"));
+                btn.classList.add("active");
+                setBpm(parseInt(btn.dataset.bpm), btn.dataset.label);
+            });
+        });
+
+        function setBpm(val, label = null) {
+            currentBpm = val;
+            bpmSlider.value = val;
+            bpmVal.innerText = val;
+            sliderVal.innerText = `${val} BPM`;
+
+            if (!label) {
+                if (val < 55) label = "Sueño Profundo";
+                else if (val <= 75) label = "En Reposo Plácido";
+                else if (val <= 100) label = "Paseo y Actividad Moderada";
+                else label = "Esfuerzo Físico Intenso";
+            }
+            statusPill.innerText = label;
+        }
+
+        document.getElementById("btnAutoRotate").addEventListener("click", function () {
+            autoRotate = !autoRotate;
+            this.querySelector("span:last-child").innerText = autoRotate ? "ON" : "OFF";
+            this.querySelector("span:last-child").style.color = autoRotate ? "#38bdf8" : "#94a3b8";
+        });
+
+        document.getElementById("btnResetCam").addEventListener("click", function () {
+            autoRotate = false;
+            document.getElementById("btnAutoRotate").querySelector("span:last-child").innerText = "OFF";
+            document.getElementById("btnAutoRotate").querySelector("span:last-child").style.color = "#94a3b8";
+            const camera = scene.activeCamera;
+            camera.alpha = -Math.PI / 2;
+            camera.beta = Math.PI / 2.2;
+            camera.radius = 5;
+        });
+
+        document.getElementById("btnPosteriorCam").addEventListener("click", function () {
+            autoRotate = false;
+            document.getElementById("btnAutoRotate").querySelector("span:last-child").innerText = "OFF";
+            document.getElementById("btnAutoRotate").querySelector("span:last-child").style.color = "#94a3b8";
+            const camera = scene.activeCamera;
+            camera.alpha = Math.PI / 2;
+            camera.beta = Math.PI / 2.2;
+            camera.radius = 5;
+        });
+    </script>
+</body>
+</html>
+

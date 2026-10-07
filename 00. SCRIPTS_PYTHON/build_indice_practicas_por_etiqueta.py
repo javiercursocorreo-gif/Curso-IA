@@ -18,12 +18,16 @@ import re
 import urllib.parse
 import unicodedata
 import json
-import docx
-from docx.shared import Inches, Pt, RGBColor
-from docx.enum.text import WD_ALIGN_PARAGRAPH
-from docx.enum.table import WD_TABLE_ALIGNMENT
-from docx.oxml import OxmlElement, parse_xml
-from docx.oxml.ns import nsdecls, qn
+try:
+    import docx
+    from docx.shared import Inches, Pt, RGBColor
+    from docx.enum.text import WD_ALIGN_PARAGRAPH
+    from docx.enum.table import WD_TABLE_ALIGNMENT
+    from docx.oxml import OxmlElement, parse_xml
+    from docx.oxml.ns import nsdecls, qn
+    HAS_DOCX = True
+except ImportError:
+    HAS_DOCX = False
 
 ROOT_DIR = "/Users/externo/Library/Mobile Documents/com~apple~CloudDocs/PERSONAL/CLASES DE TECNOLOGÍA/CURSO-IA"
 CSV_PATH = os.path.join(ROOT_DIR, "PANELES_CSV", "IA_INDICE_COMPLETO_60_SESIONES.csv")
@@ -50,6 +54,8 @@ TAG_COLORS = {
     "MOVIL": {"bg": "#1e293b", "text": "#38bdf8", "border": "#0ea5e9", "name": "El Salvavidas del Móvil (Cámara y Voz)"},
     "MEM":   {"bg": "#451a03", "text": "#fdba74", "border": "#d97706", "name": "Cápsula de la Memoria"},
     "MEC":   {"bg": "#3f3f46", "text": "#e4e4e7", "border": "#a1a1aa", "name": "Cómo Funcionan las Cosas (Vídeo 3D)"},
+    "3D":    {"bg": "#881337", "text": "#fda4af", "border": "#f43f5e", "name": "Simuladores 3D y Dinámicas en Vivo"},
+    "SIM":   {"bg": "#881337", "text": "#fda4af", "border": "#f43f5e", "name": "Simuladores Interactivos 3D"},
     "GUIA":  {"bg": "#18181b", "text": "#fafafa", "border": "#71717a", "name": "Glosario de Etiquetas y Guía"},
 }
 
@@ -74,8 +80,13 @@ def parse_csv():
             # Clean title
             clean_t = re.sub(r'\[Sesión\s*\d+\]\s*', '', title).strip()
             
-            # Type of file (PDF or MP4)
-            file_type = "MP4" if "(MP4)" in title.upper() or url.lower().endswith(".mp4") else "PDF"
+            # Type of file (PDF, MP4, HTML)
+            if "(HTML)" in title.upper() or url.lower().endswith(".html"):
+                file_type = "HTML"
+            elif "(MP4)" in title.upper() or url.lower().endswith(".mp4"):
+                file_type = "MP4"
+            else:
+                file_type = "PDF"
             
             # Local relative link from INDICE_DE_PRACTICAS_POR_ETIQUETA/
             # URL_GITHUB format: https://javiercursocorreo-gif.github.io/Curso-IA/CLASES/...
@@ -792,7 +803,10 @@ def main():
     categories = parse_csv()
     build_markdown(categories)
     build_html(categories)
-    build_docx(categories)
+    if HAS_DOCX:
+        build_docx(categories)
+    else:
+        print("ℹ️ python-docx no está disponible. HTML y Markdown generados perfectamente.")
     print("🎉 ¡Proceso completado con éxito!")
 
 if __name__ == "__main__":
