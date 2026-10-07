@@ -681,6 +681,8 @@ def main():
                         orig_name = os.path.basename(fpath)
                         # Remove brackets from original filenames to keep them clean
                         orig_name = orig_name.replace('[', '').replace(']', '')
+                        # Eliminar numeración secundaria como '2.' tras el código (ej. FRAC-058 2. TÚ ERES...)
+                        orig_name = re.sub(r'^(FRAC-\d+|FUNC-\d+)\s+\d+\.\s*', r'\1 ', orig_name)
                         
                         # Fix spacing issue where prefix is empty
                         if prefix == "":
@@ -688,6 +690,15 @@ def main():
                         else:
                             sess_fname = f"{prefix} {orig_name}"
                         dst_sess = os.path.join(t_path, sess_fname)
+                        
+                        # Limpiar archivos obsoletos con numeración secundaria residual si existen
+                        if "FRAC-058" in orig_name:
+                            for old_f in os.listdir(t_path):
+                                if "FRAC-058" in old_f and " 2." in old_f:
+                                    try:
+                                        os.remove(os.path.join(t_path, old_f))
+                                    except Exception:
+                                        pass
                         try:
                             if os.path.exists(dst_sess):
                                 if os.path.isdir(dst_sess):

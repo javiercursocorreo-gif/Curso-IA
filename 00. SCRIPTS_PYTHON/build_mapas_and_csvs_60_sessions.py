@@ -90,6 +90,7 @@ def clean_title_from_filename(filename):
     name = re.sub(r'^\d+\.\s*', '', name)
     name = re.sub(r'^[A-Z0-9\-_]+\s*-\s*\d+\s*', '', name)
     name = re.sub(r'^[A-Z0-9\-_]+_\d+\s*', '', name)
+    name = re.sub(r'^\d+(\.\d+)*\.?\s*', '', name)
     name = name.replace('_', ' ').strip()
     name = re.sub(r'\s+', ' ', name)
     return name
@@ -131,14 +132,14 @@ def generate_columns_html(session_num, session_folder, files):
     
     def session_file_sort_key(filename):
         if session_num == 1:
-            # En Sesión 01, intercambiar el video 4. FRAC-058 (#06) con el reto visual 4. FRAC-000_B (#07)
+            # En Sesión 01: 1º Teoría (#05), 2º Ficha PDF Fractal (#06 introductoria), 3º Vídeo MP4 (#07), 4º Reto Visual (#08)
             if 'FRAC-000_A_Teoria' in filename:
                 return (2, 5, 1, filename.lower())
-            if 'FRAC-058' in filename and filename.lower().endswith('.mp4'):
-                return (2, 5, 2, filename.lower())
-            if 'FRAC-000_B_Reto' in filename:
-                return (2, 5, 3, filename.lower())
             if 'FRAC-058' in filename and filename.lower().endswith('.pdf'):
+                return (2, 5, 2, filename.lower())
+            if 'FRAC-058' in filename and filename.lower().endswith('.mp4'):
+                return (2, 5, 3, filename.lower())
+            if 'FRAC-000_B_Reto' in filename:
                 return (2, 5, 4, filename.lower())
         return file_sort_key(filename)
 
@@ -149,6 +150,7 @@ def generate_columns_html(session_num, session_folder, files):
         and not re.search(r'\s[2-9]\.(pdf|mp4|html)$', f, re.IGNORECASE)
         and not f.startswith('0. FASE_0')
         and not (session_num == 1 and 'CUENT' in f)
+        and not ('FRAC-058' in f and ' 2. ' in f)
     ]
     
     # Clasificar archivos por columna (1, 2 o 3)
