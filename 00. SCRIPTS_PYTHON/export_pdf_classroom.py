@@ -178,6 +178,26 @@ def create_pdf_handout(file_path, block_name, item_id, item_title, concept_text,
             table_rows.append([Paragraph("<br/><b>⚙️ Gemini responderá redactando la ficha técnica completa con todo lujo de detalles.</b>", style_prompt)])
             table_rows.append([Paragraph("<br/><b>🎨 PASO 2 • Ordena a Gemini crear la lámina definitiva:</b>", style_prompt)])
             table_rows.append([Paragraph(f'En el mismo chat, solo tienes que responder a continuación:<br/><b>"{step2_order}"</b><br/><i>(Y Gemini dibujará de inmediato tu lámina infográfica en altísima resolución y en perfecto español).</i>', style_prompt)])
+        elif "[NIV-" in str(item_id):
+            if isinstance(prompt_data, tuple) and len(prompt_data) == 2:
+                step1, step2 = prompt_data
+            else:
+                clean_item_title = re.sub(r'^[A-Z0-9\-_]+\s*', '', str(item_title)).strip()
+                step1 = (
+                    f'Actúa como un diseñador infográfico senior y docente divulgador. '
+                    f'Diseña y redacta un prompt maestro detallado en español para crear una infografía piramidal o escalafón vertical '
+                    f'sobre "{clean_item_title}". '
+                    f'Describe con gran rigor los estratos desde la base hasta la cima con metáforas visuales claras '
+                    f'y la regla estricta de todos los rótulos 100% en español. '
+                    f'NO generes la imagen todavía, solo entrégame el prompt de texto listo para copiar.'
+                )
+                step2 = '¡Perfecto! Genera ahora la imagen de esta infografía piramidal en máxima resolución 8K siguiendo exactamente la estructura y metáforas visuales que acabas de redactar.'
+            
+            table_rows.append([Paragraph("<b>🟢 PASO 1 • Pídele a Gemini que diseñe tu Pirámide o Escalafón (Copia y pega esto en el chat):</b>", style_prompt)])
+            table_rows.append([Paragraph(f'<i>"{step1}"</i>', style_prompt)])
+            table_rows.append([Paragraph("<br/><b>⚙️ Gemini responderá desglosando los niveles de la pirámide con metáforas visuales claras.</b>", style_prompt)])
+            table_rows.append([Paragraph("<br/><b>🎨 PASO 2 • Ordena a Gemini pintar la infografía definitiva:</b>", style_prompt)])
+            table_rows.append([Paragraph(f'En el mismo chat, solo tienes que responder a continuación:<br/><b>"{step2}"</b><br/><i>(Y Gemini dibujará de inmediato tu infografía piramidal en altísima resolución y en perfecto español).</i>', style_prompt)])
         elif isinstance(prompt_data, list):
             if any(k in str(item_id) for k in ["TXT-005", "TXT-006", "TXT-017", "TXT-021"]):
                 table_rows.append([Paragraph("<b>• 🛡️ Las Modalidades de Práctica en el Aula y Móvil (Elige tu caso o practícalas en orden):</b>", style_prompt)])

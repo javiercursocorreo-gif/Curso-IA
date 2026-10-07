@@ -2986,7 +2986,11 @@ for niv_item in b_niv.get_niv_items():
     p_g = doc.add_paragraph()
     r_hg = p_g.add_run('• ✍️ Prompt Estructurado por Niveles para IA: \n')
     r_hg.bold = True
-    r_gt = p_g.add_run(f'{prompt_data}')
+    if isinstance(prompt_data, (list, tuple)) and len(prompt_data) == 2:
+        prompt_str = f"PASO 1 (Encargo a Gemini):\n{prompt_data[0]}\n\nPASO 2 (Generar Imagen):\n{prompt_data[1]}"
+    else:
+        prompt_str = str(prompt_data)
+    r_gt = p_g.add_run(prompt_str)
     r_gt.italic = True
     r_gt.font.color.rgb = RGBColor(0x4A, 0x15, 0x4B)
     

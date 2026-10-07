@@ -8,24 +8,16 @@ def get_niv_items():
     items = []
     
     def make_prompt(title, concept, num_levels, apex_desc, levels_list):
-        meta_prompt = (
-            f"🧠 PASO 1 (META-PROMPTING EN EL CHAT DE GEMINI):\n"
-            f"Escribe esta orden en el cuadro de chat de Gemini para que la IA diseñe el prompt maestro:\n\n"
-            f"\"Actúa como un diseñador infográfico senior. Diseña y redacta un prompt maestro detallado en español para crear una infografía piramidal estratificada sobre '{title}' ({concept}). Describe los {num_levels} estratos desde la base hasta la cima indicando metáforas visuales claras, un icono 3D en la cúspide ({apex_desc}) y la regla estricta de cero textos en inglés.\"\n\n"
-            f"🎨 PASO 2 (GENERACIÓN EN LA MISMA CONVERSACIÓN):\n"
-            f"Una vez que Gemini te muestre la descripción del diseño, escribe a continuación en la barra de abajo:\n\n"
-            f"\"Genera ahora la imagen realista de esta infografía piramidal siguiendo exactamente la estructura y las metáforas visuales que acabas de redactar.\"\n\n"
-            f"--------------------------------------------------\n"
-            f"📋 PROMPT MAESTRO DETALLADO DE REFERENCIA (Opción directa):\n"
-            f"Tu tarea es generar un \"Infográfico de Enciclopedia Científica Ilustrada\" altamente riguroso y visualmente espectacular, sin marcas de agua, sin logos y sin agencias de stock, que ilustra con exactitud técnica: \"{title.upper()}\".\n\n"
-            f"REGLA DE ORO DE IDIOMA: Todo texto ESCRITO EXCLUSIVAMENTE EN ESPAÑOL CASTELLANO.\n"
-            f"ARQUITECTURA: Pirámide o escalera vertical de {num_levels} peldaños bien delimitados.\n"
-            f"CÚSPIDE 3D: {apex_desc}\n\n"
-            f"ESTRATOS (DE BASE A CIMA):\n"
+        step1 = (
+            f"Actúa como un diseñador infográfico senior y docente divulgador. "
+            f"Diseña y redacta un prompt maestro detallado en español para crear una infografía piramidal o escalafón vertical "
+            f"sobre '{title}' ({concept}). "
+            f"Describe con gran rigor los {num_levels} estratos desde la base hasta la cima con metáforas visuales claras, "
+            f"un icono 3D en la cúspide ({apex_desc}) y la regla estricta de todos los rótulos 100% en español. "
+            f"NO generes la imagen todavía, solo entrégame el prompt de texto listo para copiar."
         )
-        for idx, (lvl_name, lvl_desc) in enumerate(levels_list, 1):
-            meta_prompt += f"• Peldaño {idx} ({lvl_name}): {lvl_desc}\n"
-        return meta_prompt
+        step2 = "¡Perfecto! Genera ahora la imagen de esta infografía piramidal en máxima resolución 8K siguiendo exactamente la estructura y metáforas visuales que acabas de redactar."
+        return (step1, step2)
 
     def add_it(code, title, concept, num_l, apex, levels, tips_extra):
         p = make_prompt(title, concept, num_l, apex, levels)
