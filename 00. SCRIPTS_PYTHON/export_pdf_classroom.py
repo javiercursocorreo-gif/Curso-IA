@@ -161,7 +161,24 @@ def create_pdf_handout(file_path, block_name, item_id, item_title, concept_text,
         story.append(Paragraph("✍️ Prompts y Órdenes Exactas para Pegar en IA", style_section_h))
         
         table_rows = []
-        if isinstance(prompt_data, list):
+        if "[INT-" in str(item_id) or "[FUT-" in str(item_id):
+            is_int = "[INT-" in str(item_id)
+            role = "historiador y arquitecto infográfico experto" if is_int else "diseñador conceptual y futurista experto"
+            subject_type = "corte transversal y reconstrucción histórica en 3D" if is_int else "visión tecnológica del futuro y ciencia ficción en 3D"
+            clean_item_title = re.sub(r'^[A-Z0-9\-_]+\s*', '', str(item_title)).strip()
+            short_prompt = (
+                f'Actúa como un {role}. Redáctame un prompt maestro y ultra detallado en español '
+                f'para generar una infografía de {subject_type} sobre "{clean_item_title}". '
+                f'Debe incluir figuras clave, detalles explicativos y rótulos 100% en español. '
+                f'NO generes la imagen todavía, solo entrégame el prompt de texto listo para copiar.'
+            )
+            step2_order = '¡Perfecto! Ahora genera la imagen a partir de esa descripción con máxima nitidez 8K.'
+            table_rows.append([Paragraph("<b>🟢 PASO 1 • Pídele a Gemini que diseñe tu Prompt Maestro (Copia y pega esto en el chat):</b>", style_prompt)])
+            table_rows.append([Paragraph(f'<i>"{short_prompt}"</i>', style_prompt)])
+            table_rows.append([Paragraph("<br/><b>⚙️ Gemini responderá redactando la ficha técnica completa con todo lujo de detalles.</b>", style_prompt)])
+            table_rows.append([Paragraph("<br/><b>🎨 PASO 2 • Ordena a Gemini crear la lámina definitiva:</b>", style_prompt)])
+            table_rows.append([Paragraph(f'En el mismo chat, solo tienes que responder a continuación:<br/><b>"{step2_order}"</b><br/><i>(Y Gemini dibujará de inmediato tu lámina infográfica en altísima resolución y en perfecto español).</i>', style_prompt)])
+        elif isinstance(prompt_data, list):
             if any(k in str(item_id) for k in ["TXT-005", "TXT-006", "TXT-017", "TXT-021"]):
                 table_rows.append([Paragraph("<b>• 🛡️ Las Modalidades de Práctica en el Aula y Móvil (Elige tu caso o practícalas en orden):</b>", style_prompt)])
             elif "TXT-" in str(item_id):
@@ -707,6 +724,28 @@ def main():
                     generated_paths = create_pdf_for_cuento(full_path, it, ESTILOS_VISUALES[idx % len(ESTILOS_VISUALES)])
                     total_pdfs_created += 3
                     generated_files_by_id[id_clean].extend(generated_paths)
+                elif "[NAT" in b_dir:
+                    from build_nat_60_master import get_nat_items
+                    from export_nat_pdfs import create_nat_pdf
+                    if not hasattr(main, '_nat_cache'):
+                        main._nat_cache = {it_nat['id']: it_nat for it_nat in get_nat_items()}
+                    nat_data = main._nat_cache.get(id_clean)
+                    fname = f"{id_clean}_{safe_title}.pdf"
+                    full_path = os.path.join(EXPORT_BASE, b_dir, lote_folder, fname)
+                    if nat_data:
+                        create_nat_pdf(full_path, nat_data)
+                    else:
+                        create_pdf_handout(
+                            full_path,
+                            it['block_name'],
+                            it['id_code'],
+                            it['title'],
+                            it['concept'],
+                            it['prompt'],
+                            it['tips']
+                        )
+                    total_pdfs_created += 1
+                    generated_files_by_id[id_clean].append(full_path)
                 else:
                     fname = f"{id_clean}_{safe_title}.pdf"
                     full_path = os.path.join(EXPORT_BASE, b_dir, lote_folder, fname)
