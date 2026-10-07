@@ -160,7 +160,7 @@ def add_style_multi(num, title, desc, examples_list):
             r_b_h = p_bridge.add_run(f'• 🧪 Reto Práctico de Edición ({label}) con Gemini:\n')
             r_b_h.bold = True
             r_b_h.font.color.rgb = RGBColor(0x8B, 0x00, 0x8B)
-            p_bridge.add_run('Descarga la imagen generada en tu IA, súbela a Gemini (gemini.google.com) y escríbele lo siguiente:\n')
+            p_bridge.add_run('En el mismo chat de Gemini, toma la imagen que acabas de generar arriba y pídele lo siguiente:\n')
             
             r_edit = p_bridge.add_run(f'"{bridge_edit}"\n')
             r_edit.bold = True
@@ -203,7 +203,7 @@ def add_style_multi(num, title, desc, examples_list):
             r_b_h = p_bridge.add_run('• 🧪 Reto Práctico de Edición de Serie con Gemini:\n')
             r_b_h.bold = True
             r_b_h.font.color.rgb = RGBColor(0x8B, 0x00, 0x8B)
-            p_bridge.add_run('Descarga cualquiera de las fotos de esta serie o sube el cuadro original a Gemini (gemini.google.com) y escríbele lo siguiente:\n')
+            p_bridge.add_run('En el mismo chat de Gemini, toma la imagen generada y pídele lo siguiente:\n')
             
             r_edit = p_bridge.add_run(f'"{bridge_edit}"\n')
             r_edit.bold = True
@@ -768,7 +768,7 @@ add_style_multi('2.4.', 'PRIMERÍSIMOS PLANOS, MACRO REAL Y ORFEBRERÍA HIPERREA
              ('Dama Veneciana Cloisonné', 'Retrato fotorrealista 8K de una mujer con máscara veneciana de alta orfebrería en estilo Cloisonné turquesa y oro brillante, microesculturas en relieve y reflejos de luz sobre esmalte y piedras.'),
              ('Carnaval de Venecia en Relieve', 'Primer plano de detalle de una dama con máscara de porcelana turquesa labrada en filigrana de oro Cloisonné, relieves en miniatura inspirados en canales venecianos, ojos expresivos y luz de atardecer.')
          ],
-         'Descarga la foto de la mujer con máscara turquesa y oro, súbela a Gemini y escríbele: "Colorea las partes de oro amarillo en un brillante platino plateado, y haz que en los ojos tras la máscara brille un misterioso fulgor de color amatista púrpura."')
+         'En el mismo chat de Gemini, toma la imagen generada de la mujer con máscara y pídele: "Colorea las partes de oro amarillo en un brillante platino plateado, y haz que en los ojos tras la máscara brille un misterioso fulgor de color amatista púrpura."')
     ]
 )
 

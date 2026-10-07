@@ -254,8 +254,8 @@ def create_pdf_handout(file_path, block_name, item_id, item_title, concept_text,
         
         r_rows = []
         if 'EST-' in item_id:
-            r_rows.append([Paragraph("Descarga la imagen generada en tu IA, súbela a Gemini (gemini.google.com) y escríbele lo siguiente:", style_reto)])
-            r_rows.append([Paragraph("<b>Prompt de edición:</b>", style_reto)])
+            r_rows.append([Paragraph("En el mismo chat de Gemini, toma la imagen que acabas de generar arriba y pídele lo siguiente:", style_reto)])
+            r_rows.append([Paragraph("<b>Prompt de edición sobre la imagen anterior:</b>", style_reto)])
             for blk in re.split(r'\n\n|<br\s*/?>\s*<br\s*/?>', str(tips_text)):
                 if not blk.strip(): continue
                 r_rows.append([Paragraph(blk.strip().replace('\n', '<br/>'), style_reto)])
