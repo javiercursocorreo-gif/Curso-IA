@@ -73,7 +73,7 @@ COLUMNS_CONFIG = [
 
 def clean_title_from_filename(filename):
     name, _ = os.path.splitext(filename)
-    if 'CUENT' in filename:
+    if 'CUENT' in filename or 'COMIC' in filename:
         m_step = re.search(r'Paso_([0-3])(?:_|\s*)(.*)', name)
         if m_step:
             step_num = m_step.group(1)
@@ -82,7 +82,7 @@ def clean_title_from_filename(filename):
             if step_num == '0':
                 return 'Paso 0 • Proyecto Cómic Ilustrado (Introducción)'
             elif step_num == '1':
-                return f'Paso 1 • Crear el Cuento: {rest}'
+                return f'Paso 1 • Historia del Cómic: {rest}'
             elif step_num == '2':
                 return f'Paso 2 • Guión del Cómic: {rest}'
             elif step_num == '3':
@@ -98,15 +98,15 @@ def parse_step_code(filename):
     f_up = filename.upper()
     for code in STEP_CONFIG.keys():
         if f"{code}-" in f_up or f"_{code}_" in f_up or f" {code} " in f_up or f" {code}-" in f_up:
-            return code
+            return "COMICS" if code == "CUENT" else code
     for code in STEP_CONFIG.keys():
         if code in f_up:
-            return code
+            return "COMICS" if code == "CUENT" else code
     return "PRAC"
 
 def file_sort_key(filename):
     code = parse_step_code(filename)
-    if code == 'CUENT':
+    if code in ('COMICS', 'CUENT'):
         if 'Paso_0' in filename:
             step_order = 0
         elif 'Paso_1' in filename:
