@@ -22,7 +22,7 @@ NAT_ITEMS = [
         "category": "Fauna Salvaje Noble & Depredadores",
         "subject": "El Caballo Salvaje (Equus ferus)",
         "style_art": "Códice Renacentista de Leonardo da Vinci a tinta sepia y sanguina",
-        "paper": "Papel de lino renacentista tostado con leves manchas de cera",
+        "paper": "Lienzo de lino crudo envejecido con trama rústica y motas de cera",
         "layout": "Cuadrícula de 4 viñetas explicativas más boceto central en movimiento",
         "details_es": "1. El casco amortiguador de 1 tonelada de impacto; 2. La columna vertebral flexible; 3. El pistón intestinal que acopla la respiración al galope; 4. Los cuartos traseros propulsores.",
         "concept": "Descubre cómo el galope de un caballo no es solo fuerza bruta, sino una perfecta máquina de palancas biológicas donde la respiración y los pasos están matemáticamente acoplados.",
@@ -30,14 +30,14 @@ NAT_ITEMS = [
             "Actúa como un arquitecto de prompts y biólogo experto. "
             "Redáctame el prompt maestro completo en español, ultra detallado y con formato de infografía de museo, "
             "para generar una lámina sobre el CABALLO SALVAJE en estilo boceto de Leonardo da Vinci a tinta sepia "
-            "sobre papel de lino tostado, dividida en una cuadrícula de 4 viñetas explicativas alrededor del dibujo central "
+            "sobre lienzo de lino crudo envejecido con textura textil, dividida en una cuadrícula de 4 viñetas explicativas alrededor del dibujo central "
             "que expliquen: 1. Corte del casco amortiguador; 2. Columna vertebral elástica; "
             "3. Pistón visceral acoplado a la respiración; 4. Musculatura propulsora trasera. "
             "NO generes la imagen todavía, solo entrégame el prompt de texto listo para copiar."
         ),
         "master_prompt_en": (
             "A masterwork Renaissance scientific codex in the style of Leonardo da Vinci's anatomical notebooks. "
-            "Subject: The Wild Horse (Equus ferus) in full gallop. Drawn with sepia ink, fine cross-hatching, and sanguine red chalk on aged textured toasted linen paper with subtle foxing and deckled edges. "
+            "Subject: The Wild Horse (Equus ferus) in full gallop. Drawn with sepia ink, fine cross-hatching, and sanguine red chalk on rustic aged raw linen canvas with tactile weave and subtle wax stains. "
             "Composition: Centered around a highly detailed dynamic sketch of a wild stallion galloping at full speed, breaking into the foreground. "
             "Surrounding the central subject are precisely 4 numbered rectangular modular inset sketches connected by delicate calligraphic guide lines: "
             "Inset 1: Cross-section anatomical diagram of the equine hoof showing the digital cushion absorbing high-impact shock. "
@@ -120,22 +120,22 @@ NAT_ITEMS = [
         "title": "La Abeja Melífera y el Panal: Matemáticas del Hexágono",
         "category": "Arquitectura Animal & Supercolonias",
         "subject": "La Abeja Melífera (Apis mellifera) y la Celda Hexagonal",
-        "style_art": "Tratado de Geometría Sagrada euclidiana y manuscrito renacentista",
-        "paper": "Pergamino de vitela con círculos de compás en tinta sepia y toques dorados",
+        "style_art": "Tratado de Geometría Sagrada euclidiana y grabado renacentista",
+        "paper": "Papiro dorado con cera de abejas pulida y diagramas geométricos al compás",
         "layout": "4 viñetas geométricas concéntricas con demostración matemática",
         "details_es": "1. Teorema del panal: por qué el hexágono gasta menos cera que el triángulo o el cuadrado; 2. Glándulas cereras del abdomen; 3. Inclinación de 13° de las celdas para que no caiga la miel; 4. La danza del ocho para indicar flores.",
         "concept": "Comprende por qué matemáticos y arquitectos llevan siglos fascinados con las abejas: construyen la estructura más resistente y ligera posible con el mínimo gasto de material.",
         "short_prompt": (
             "Actúa como un arquitecto de prompts y geómetra experto. "
-            "Redáctame el prompt maestro completo en español, ultra detallado y con formato de manuscrito renacentista, "
-            "para generar una lámina sobre LA ABEJA Y EL PANAL HEXAGONAL en estilo tratado de geometría de Euclides "
-            "sobre pergamino vitela a tinta sepia, distribuida en 4 recuadros geométricos que expliquen: "
+            "Redáctame el prompt maestro completo en español, ultra detallado y con formato de lámina geométrica de museo, "
+            "para generar una lámina sobre LA ABEJA Y EL PANAL HEXAGONAL en estilo grabado euclidiano sobre papiro dorado pulido a la cera de abejas "
+            "con líneas de compás en tinta sepia, distribuida en 4 recuadros geométricos que expliquen: "
             "1. Demostración geométrica del hexágono; 2. Glándulas cereras abdominales; 3. Inclinación de 13° antigoteo; 4. Danza en ocho solar. "
             "NO generes la imagen todavía, solo entrégame el prompt de texto listo para copiar."
         ),
         "master_prompt_en": (
             "A classical Renaissance mathematical treatise and natural philosophy manuscript illustrating the architectural genius of the Honeybee (Apis mellifera) and the hexagonal comb. "
-            "Drawn in sepia ink with compass construction lines, golden section ratios, and faint gold leaf highlights on antique vellum parchment. "
+            "Drawn in sepia ink with compass construction lines, golden section ratios, and faint gold leaf highlights on polished beeswax golden papyrus. "
             "Composition: Centered around an intricate cross-section of a honeycomb frame populated by worker bees. "
             "Surrounded by 4 geometric explanatory insets: "
             "Inset 1: Mathematical proof of the Honeycomb Conjecture comparing circle packing, triangles, and hexagons showing minimum wax surface area. "
@@ -154,21 +154,21 @@ NAT_ITEMS = [
         "category": "Animales Mitológicos, Fantásticos & Legendarios",
         "subject": "El Unicornio Clásico (Monoceros)",
         "style_art": "Bestiario Iluminado Medieval del siglo XIII con pan de oro",
-        "paper": "Pergamino de cuero de vitela con orlas góticas florales y miniaturas doradas",
+        "paper": "Tapiz de terciopelo azul noche medieval con bordados en hilo de oro y plata",
         "layout": "4 medallones heráldicos circulares alrededor de la criatura mítica",
         "details_es": "1. Fusión ósea del cuerno en la sutura frontal del cráneo; 2. Estrías helicoidales de queratina y calcita; 3. Cascos hendidos de ciervo para escalar riscos escarpados; 4. Neutralización química de toxinas en manantiales.",
         "concept": "Imagina cómo habría analizado un erudito medieval la anatomía fantástica del unicornio, considerándolo una especie real de los bosques boreales.",
         "short_prompt": (
             "Actúa como un arquitecto de prompts y erudito medieval. "
-            "Redáctame el prompt maestro completo en español, ultra detallado y con formato de códice iluminado, "
-            "para generar una lámina anatómica sobre EL UNICORNIO en estilo bestiario medieval del siglo XIII con pan de oro "
-            "y tintas minerales sobre pergamino vitela, organizada en 4 medallones góticos circulares que expliquen: "
+            "Redáctame el prompt maestro completo en español, ultra detallado y con formato de tapiz histórico de museo, "
+            "para generar una lámina sobre EL UNICORNIO en estilo bestiario medieval sobre tapiz de terciopelo azul noche con pan de oro "
+            "y bordados en hilo de plata, organizada en 4 medallones heráldicos circulares que expliquen: "
             "1. Anclaje del cuerno en la sutura frontal; 2. Espiral helicoidal de calcita; 3. Pezuñas de risco; 4. Purificación de aguas ponzoñosas. "
             "NO generes la imagen todavía, solo entrégame el prompt de texto listo para copiar."
         ),
         "master_prompt_en": (
             "A genuine 13th-century illuminated medieval bestiary manuscript page depicting the mythical anatomy of the Unicorn (Monoceros). "
-            "Executed with lapis lazuli blues, vermilion red gouache, intricate burnished gold leaf filigree, and gall ink calligraphy on aged calfskin vellum with Gothic border flourishes. "
+            "Executed with gold and silver thread embroidery texture on rich midnight-blue antique velvet tapestry with Gothic floral borders. "
             "Composition: Centered on an elegant, noble white unicorn reclining beside an enchanted forest fountain. "
             "Arranged with 4 circular Gothic medallion vignettes revealing mythical anatomy: "
             "Medallion 1: Cranial osteology showing the seamless fusion of the frontal suture anchoring the spiral horn. "
@@ -284,29 +284,29 @@ NAT_ITEMS = [
         "title": "El Tardígrado: Criptobiosis y Resistencia al Espacio",
         "category": "Micro-Mundo, Virus, Bacterias & Insectos",
         "subject": "El Tardígrado / Oso de Agua (Hypsibius dujardini)",
-        "style_art": "Ilustración de microscopio del siglo XVIII estilo Anton van Leeuwenhoek",
-        "paper": "Placa circular con marco de latón envejecido y pergamino iluminado",
+        "style_art": "Diagrama científico de cátedra en pizarra académica del siglo XIX",
+        "paper": "Pizarra negra escolar de roca pizarra con trazos de tiza blanca, polvo y carbón vegetal",
         "layout": "4 módulos microscópicos de estados de resistencia extrema",
         "details_es": "1. El estado de 'ton' (barril desecado al 1% de agua); 2. Proteínas Dsup que blindan el ADN contra radiación; 3. Sus 8 patas con garras telescópicas; 4. Supervivencia en el vacío absoluto del espacio y a -200 °C.",
         "concept": "Conoce al ser vivo más indestructible del planeta: puede congelarse, hervirse, someterse a la radiación espacial o pasar 30 años sin comer ni beber y revivir con una gota de agua.",
         "short_prompt": (
             "Actúa como un arquitecto de prompts y microbiólogo histórico. "
-            "Redáctame el prompt maestro completo en español, ultra detallado y con estética de microscopio del siglo XVIII, "
-            "para generar una lámina sobre EL TARDÍGRADO (OSO DE AGUA) en grabado sepia con marco circular de latón pulido sobre pergamino, "
+            "Redáctame el prompt maestro completo en español, ultra detallado y con estética de pizarra académica de aula magistral, "
+            "para generar una lámina sobre EL TARDÍGRADO (OSO DE AGUA) dibujada a tiza blanca y polvillo sobre una auténtica pizarra negra de piedra, "
             "organizada en 4 módulos microscópicos que expliquen: "
             "1. Criptobiosis y estado de barrilete inerte al 1% de agua; 2. Proteínas Dsup escudo de ADN; 3. Ocho patas con garras; 4. Resistencia al vacío espacial y cero absoluto. "
             "NO generes la imagen todavía, solo entrégame el prompt de texto listo para copiar."
         ),
         "master_prompt_en": (
-            "An 18th-century early microscopy scientific manuscript illustration of the Water Bear or Tardigrade (Hypsibius dujardini). "
-            "Drawn with sepia ink engraving inside an ornate circular polished brass microscope lens frame on warm aged parchment with hand-tinted watercolor washes. "
-            "Composition: Centered around a highly magnified, transparent view of a tardigrade crawling among aquatic moss droplets. "
-            "Arranged into 4 circular micro-insets detailing extreme survival biology: "
+            "A master 19th-century lecture hall scientific diagram of the Water Bear or Tardigrade (Hypsibius dujardini). "
+            "Drawn with crisp white chalk, charcoal shading, and chalk dust textures on authentic dark natural black slate chalkboard. "
+            "Composition: Centered around a highly magnified view of a tardigrade crawling among aquatic moss droplets. "
+            "Arranged into 4 chalk-drawn micro-insets detailing extreme survival biology: "
             "Inset 1: Cryptobiosis transformation diagram showing water loss down to 1% contracting into an indestructible glass-like tun state. "
             "Inset 2: Molecular shield study illustrating unique Dsup (damage suppressor) proteins coating and repairing DNA strands against lethal radiation. "
             "Inset 3: Micro-anatomy of the 8 lobopodial legs terminating in microscopic curved chitinous claws. "
             "Inset 4: Environmental resilience chart showing survival at absolute zero (-272 °C), boiling points (150 °C), and open cosmic space vacuum. "
-            "Historic Enlightenment engraving style, delicate hand-drawn calligraphy, 8k resolution, authentic antique plate."
+            "Academic university blackboard drawing, handwritten chalk annotations, 8k resolution, authentic vintage classroom aesthetics."
         ),
         "scientific_tip": "¿Sabías que en 2007 se enviaron tardígrados vivos a la órbita terrestre expuestos al vacío espacial y regresaron a la Tierra sanos y capaces de poner huevos?",
         "creative_challenge": "Pide a Gemini: 'Genera este mismo estilo de grabado de microscopio del siglo XVIII para EL ROTÍFERO Y SU CORONA CILIADA'."
