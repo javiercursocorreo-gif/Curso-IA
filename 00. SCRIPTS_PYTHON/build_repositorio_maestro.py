@@ -614,7 +614,7 @@ add_style_multi('1.1.', 'REALISTA (FOTORREALISMO)',
     'Imágenes detalladas y fotorrealistas que imitan la realidad con nitidez fotográfica.',
     [
         ('Faro al Amanecer', 'Ejemplo A (Paisaje Costero)',
-         'Fotografía profesional 8K de un viejo faro costero resistiendo el oleaje al amanecer, luz dorada, enfoque nítido en la piedra húmeda, texturas hiperrealistas, National Geographic.',
+         'Crea una fotografía profesional 8K de un viejo faro costero resistiendo el oleaje al amanecer, luz dorada, enfoque nítido en la piedra húmeda, texturas hiperrealistas, National Geographic.',
          'Conserva exactamente el faro y las rocas del mar, pero cambia el amanecer por una noche de tormenta dramática con rayos iluminando el cielo oscuro y quita la espuma blanca más alta de las olas.'),
         ('Bodegón de Frutas', 'Ejemplo B (Naturaleza Muerta Clásica)',
          'Fotografía fotorrealista de un bodegón clásico con frutas variadas, jarra de vino de latón grabada, copa medio llena, cuchillo de madera y pan rústico sobre paño de lino arrugado.',
