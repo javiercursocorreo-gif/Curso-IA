@@ -236,7 +236,11 @@ def create_pdf_handout(file_path, block_name, item_id, item_title, concept_text,
                     for blk in re.split(r'\n\n|<br\s*/?>\s*<br\s*/?>', op_a):
                         if blk.strip(): table_rows.append([Paragraph(blk.strip(), style_prompt)])
                     table_rows.append([Paragraph("<b>• 🟢 Paso 2 (Transformación en el mismo chat de tu Móvil):</b>", style_prompt)])
-                    for blk in re.split(r'\n\n|<br\s*/?>\s*<br\s*/?>', str(p2)):
+                    p2_str = str(p2)
+                    if ("selfie" in str(p1).lower() or "rasgos faciales" in p2_str.lower()) and "dicta por el micrófono" not in p2_str.lower():
+                        p2_str = f"Dicta por el micrófono del móvil: {p2_str}"
+                    p2_str = re.sub(r'^(Dicta por el micr[oó]fono del m[oó]vil:\s*)', r'<b>\1</b>', p2_str, flags=re.IGNORECASE)
+                    for blk in re.split(r'\n\n|<br\s*/?>\s*<br\s*/?>', p2_str):
                         if blk.strip(): table_rows.append([Paragraph(blk.strip(), style_prompt)])
                 elif "[PAT-" in str(item_id):
                     table_rows.append([Paragraph("<b>• 🟢 Paso 1 (Pídele a Gemini que actúe como tu asesor y estructure el documento):</b>", style_prompt)])

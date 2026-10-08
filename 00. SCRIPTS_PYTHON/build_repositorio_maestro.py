@@ -1179,12 +1179,12 @@ add_header_2("1. Módulo A: Retoque Fotográfico y Magia Personal en Retratos (P
 add_taller_item("4.1.1.", "Retrato Mágico: Disfraz de Reyes, Aristócratas o Época Clásica",
     "Transformar la vestimenta y el entorno de tu propio retrato en un espléndido cuadro de época (monarca, aristócrata del Siglo de Oro o caballero clásico), manteniendo intactos tus rasgos faciales y sonrisa.",
     ("📱 Abre la app de Gemini en tu móvil, pulsa el icono de la cámara 📷 dentro del chat y hazte un selfie sonriendo (o adjunta una foto tuya de la galería).",
-     "Conserva exactamente mis rasgos faciales, mi mirada y mi sonrisa de esta foto, pero vísteme con un espectacular y elegante traje de monarca del Siglo de Oro con bordados de oro, capa de terciopelo real y una sutil corona imperial frente a un majestuoso salón palaciego."))
+     "Dicta por el micrófono del móvil: Conserva exactamente mis rasgos faciales, mi mirada y mi sonrisa de esta foto, pero vísteme con un espectacular y elegante traje de monarca del Siglo de Oro con bordados de oro, capa de terciopelo real y una sutil corona imperial frente a un majestuoso salón palaciego."))
 
 add_taller_item("4.1.2.", "Un Café y una Charla con tu Ídolo o Celebridad Histórica",
     "Integrar de manera fotorrealista a un personaje famoso admirado (Albert Einstein, Marilyn Monroe, Elvis Presley o Cervantes) sentado a tu lado compartiendo mesa y café contigo.",
     ("📱 Abre la app de Gemini en tu móvil, pulsa el icono de la cámara 📷 dentro del chat y hazte un selfie sonriendo (o adjunta una foto tuya de la galería).",
-     "Conserva exactamente mi rostro y mi expresión de esta foto, pero sitúame sentado en la mesa de una cafetería clásica con una taza de café humeante y añade sentado a mi lado al genial científico Albert Einstein sonriendo cálidamente mientras levanta también su taza para brindar y charlar conmigo."))
+     "Dicta por el micrófono del móvil: Conserva exactamente mis rasgos faciales y mi expresión de esta foto, pero sitúame sentado en la mesa de una cafetería clásica con una taza de café humeante y añade sentado a mi lado al genial científico Albert Einstein sonriendo cálidamente mientras levanta también su taza para brindar y charlar conmigo."))
 
 add_taller_item("4.1.3.", "Restauración y coloreado de fotos antiguas",
     "Recuperar fotos familiares en blanco y negro, sepia o dañadas por el paso del tiempo, devolviéndoles la nitidez y un color realista 8K mediante una secuencia progresiva de 9 transformaciones encadenadas en el mismo chat de Gemini.",
@@ -1203,7 +1203,7 @@ add_taller_item("4.1.3.", "Restauración y coloreado de fotos antiguas",
 add_taller_item("4.1.4.", "Viaje en el Tiempo: Volver a la Juventud en los Años 60 / Época Dorada",
     "Transportar tu retrato a la estética, vestuario y peinado de la juventud dorada (años 60 o 70) frente a escenarios icónicos de la época, conservando tu rostro actual.",
     ("📱 Abre la app de Gemini en tu móvil, pulsa el icono de la cámara 📷 dentro del chat y hazte un selfie sonriendo (o sube una foto tuya de la galería).",
-     "Conserva exactamente mi rostro de esta foto intacto, pero transporta toda la escena a los años 60: vísteme con indumentaria icónica de la época (elegante traje o vestido retro con gafas de sol vintage estilo años 60), situándome junto a un clásico coche descapotable en un animado paseo marítimo veraniego."))
+     "Dicta por el micrófono del móvil: Conserva exactamente mis rasgos faciales de esta foto intactos, pero transporta toda la escena a los años 60: vísteme con indumentaria icónica de la época (elegante traje o vestido retro con gafas de sol vintage estilo años 60), situándome junto a un clásico coche descapotable en un animado paseo marítimo veraniego."))
 
 add_header_2("2. Módulo B: Edición Selectiva, Vestuario de Gala y Fantasía Personal")
 add_taller_item("4.2.1.", "Eliminación de objetos o personas molestos",
@@ -1214,17 +1214,17 @@ add_taller_item("4.2.1.", "Eliminación de objetos o personas molestos",
 add_taller_item("4.2.2.", "Vestuario de Alta Costura o Gala para la Alfombra Roja",
     "Transformar tu ropa cotidiana en un deslumbrante esmoquin de gala o vestido de noche de alta costura sobre la alfombra roja en una gran celebración.",
     ("📱 Abre la app de Gemini en tu móvil, pulsa el icono de la cámara 📷 dentro del chat y hazte un selfie sonriendo (o sube una foto tuya de la galería).",
-     "Mantén mi cara y mi expresión sonriente exactamente iguales a esta foto, pero vísteme de cuerpo entero con un impecable esmoquin negro de alta costura con pajarita de seda (o un vestido de noche de gala deslumbrante) y sitúame sobre una alfombra roja iluminada por focos en un gran estreno en París."))
+     "Dicta por el micrófono del móvil: Mantén mis rasgos faciales y mi expresión sonriente exactamente iguales a esta foto, pero vísteme de cuerpo entero con un impecable esmoquin negro de alta costura con pajarita de seda (o un vestido de noche de gala deslumbrante) y sitúame sobre una alfombra roja iluminada por focos en un gran estreno en París."))
 
 add_taller_item("4.2.3.", "Protagonista de Cine Negro y Misterio Clásico (Film Noir)",
     "Convertir tu propio retrato en un cartel o escena de cine negro clásico de Hollywood de los años 40 con iluminación dramática, gabardina y misterio.",
     ("📱 Abre la app de Gemini en tu móvil, pulsa el icono de la cámara 📷 dentro del chat y hazte un selfie sonriendo (o sube una foto tuya de la galería).",
-     "Transforma mi foto en una escena de cine de misterio clásico de Hollywood de 1940: mantén exactamente mi rostro intacto, pero vísteme con una elegante gabardina de detective y sombrero fedora clásico, con iluminación dramática en blanco y negro (Film Noir) y niebla en una calle nocturna."))
+     "Dicta por el micrófono del móvil: Transforma mi foto en una escena de cine de misterio clásico de Hollywood de 1940: conserva exactamente mis rasgos faciales intactos, pero vísteme con una elegante gabardina de detective y sombrero fedora clásico, con iluminación dramática en blanco y negro (Film Noir) y niebla en una calle nocturna."))
 
 add_taller_item("4.2.4.", "Mi Profesión o Afición Soñada (Director de Orquesta Sinfónica)",
     "Cumplir el sueño visual de verte ejerciendo una gran vocación artística o afición soñada (como dirigir una gran orquesta sinfónica, pintar en Montmartre o pilotar un velero).",
     ("📱 Abre la app de Gemini en tu móvil, pulsa el icono de la cámara 📷 dentro del chat y hazte un selfie sonriendo (o sube una foto tuya de la galería).",
-     "Conserva intactos mis rasgos faciales y mi sonrisa de esta foto, pero vísteme de frac elegante con una batuta en la mano, convirtiéndome en el director titular que dirige con pasión a una majestuosa orquesta sinfónica en un gran teatro de ópera repleto y aplaudiendo."))
+     "Dicta por el micrófono del móvil: Conserva intactos mis rasgos faciales y mi sonrisa de esta foto, pero vísteme de frac elegante con una batuta en la mano, convirtiéndome en el director titular que dirige con pasión a una majestuosa orquesta sinfónica en un gran teatro de ópera repleto y aplaudiendo."))
 
 add_taller_item("4.2.5.", "Reconstrucción de objetos o fotos rotas",
     "Reconstruir una imagen cortada por la mitad o reparar objetos rotos que aparezcan en ella (como una cerámica o espejo fracturado).",
@@ -1721,7 +1721,7 @@ add_taller_item("5.5.11.", "Diseño de Caligrafía Artística y Letras Capitales
 add_taller_item("5.5.12.", "Recreación de Indumentaria y Trajes Regionales Históricos",
     "Recrear y vestirte con el traje regional tradicional auténtico de tu tierra (traje de chulapo madrileño, baturro aragonés, fallero/a valenciano, charro salmantino, etc.) con máximo rigor folclórico y textil.",
     ("📱 Abre la app de Gemini en tu móvil, pulsa el icono de la cámara 📷 dentro del chat y hazte un selfie sonriendo (o sube una foto tuya de la galería).",
-     "Conserva exactamente mis rasgos faciales y mi expresión de esta foto, pero vísteme de cuerpo entero con el traje regional tradicional y de gala de [tu región / ej: Madrid / Valencia / Aragón / Salamanca / Andalucía], con bordados auténticos, chaleco, fajín o mantón tradicional, situándome en una plaza empedrada histórica con arquitectura tradicional."))
+     "Dicta por el micrófono del móvil: Conserva exactamente mis rasgos faciales y mi expresión de esta foto, pero vísteme de cuerpo entero con el traje regional tradicional y de gala de [tu región / ej: Madrid / Valencia / Aragón / Salamanca / Andalucía], con bordados auténticos, chaleco, fajín o mantón tradicional, situándome en una plaza empedrada histórica con arquitectura tradicional."))
 
 add_taller_item("5.5.13.", "Diseño de Tarjetas de Visita y Jubilación Activa",
     "Crear una tarjeta de presentación simpática y distinguida que refleje tus aficiones actuales, voluntariado o pasiones personales.",
