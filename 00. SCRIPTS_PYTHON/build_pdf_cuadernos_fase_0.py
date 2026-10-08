@@ -2,17 +2,16 @@
 # -*- coding: utf-8 -*-
 """
 build_pdf_cuadernos_fase_0.py
-Genera el PDF oficial de 1 SOLA PÁGINA:
+Genera el PDF oficial de 1 SOLA PÁGINA (A4):
 0. FASE_0_GUIA_CUADERNOS_GEMINI.pdf
 en CLASES/EXPORTACION_FICHAS_CLASSROOM_PDF/100. [SESSIONS] TERNAS_LISTAS_PARA_CLASSROOM/01_Sesion/
 """
 
 import os
-import subprocess
+import sys
 
 OUTPUT_DIR = "/Users/externo/Library/Mobile Documents/com~apple~CloudDocs/PERSONAL/CLASES DE TECNOLOGÍA/CURSO-IA/CLASES/EXPORTACION_FICHAS_CLASSROOM_PDF/100. [SESSIONS] TERNAS_LISTAS_PARA_CLASSROOM/01_Sesion"
 PDF_PATH = os.path.join(OUTPUT_DIR, "0. FASE_0_GUIA_CUADERNOS_GEMINI.pdf")
-PS_PATH = "/tmp/cuadernos_fase_0_1pag.ps"
 
 ETIQUETAS = [
     ("[COMICS]", "CÓMICS", "Novelas gráficas, narrativa secuencial e historietas con IA."),
@@ -32,164 +31,224 @@ ETIQUETAS = [
     ("[MEC]", "MECÁNICA", "Engranajes, motores clásicos e inventos tecnológicos históricos.")
 ]
 
-def escape_ps(text):
-    res = []
-    text = text.replace("•", "-")
-    for ch in text:
-        if ch == '(':
-            res.append(r'\(')
-        elif ch == ')':
-            res.append(r'\)')
-        elif ch == '\\':
-            res.append(r'\\')
-        else:
-            b = ch.encode('latin1', errors='replace')[0]
-            if b < 32 or b >= 127:
-                res.append(f'\\{b:03o}')
-            else:
-                res.append(chr(b))
-    return ''.join(res)
+def build_pdf_reportlab():
+    from reportlab.lib.pagesizes import A4
+    from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
+    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+    from reportlab.lib import colors
 
-def generate_ps():
-    lines = []
-    lines.append("%!PS-Adobe-3.0")
-    lines.append("%%BoundingBox: 0 0 595 842")
-    lines.append("%%Pages: 1")
-    lines.append("%%DocumentData: Clean7Bit")
-    
-    setup_font = """
-/reencodeISO {
-  findfont
-  dup length dict begin
-    {1 index /FID ne {def} {pop pop} ifelse} forall
-    /Encoding ISOLatin1Encoding def
-    currentdict
-  end
-  definefont pop
-} bind def
-
-/Helvetica-ISO /Helvetica reencodeISO
-/Helvetica-Bold-ISO /Helvetica-Bold reencodeISO
-/Helvetica-Oblique-ISO /Helvetica-Oblique reencodeISO
-
-/FHead  { /Helvetica-Bold-ISO findfont 14 scalefont setfont } bind def
-/FSub   { /Helvetica-Oblique-ISO findfont 9 scalefont setfont } bind def
-/FSec   { /Helvetica-Bold-ISO findfont 9.5 scalefont setfont } bind def
-/FTxt   { /Helvetica-ISO findfont 8.2 scalefont setfont } bind def
-/FTxtB  { /Helvetica-Bold-ISO findfont 8.2 scalefont setfont } bind def
-/FTable { /Helvetica-ISO findfont 8 scalefont setfont } bind def
-/FTableB{ /Helvetica-Bold-ISO findfont 8.5 scalefont setfont } bind def
-/FSmall { /Helvetica-ISO findfont 7.5 scalefont setfont } bind def
-
-/roundrect {
-  /r exch def
-  /h exch def
-  /w exch def
-  /y exch def
-  /x exch def
-  x r add y moveto
-  x w add y x w add y h add r arcto 4 {pop} repeat
-  x w add y h add x y h add r arcto 4 {pop} repeat
-  x y h add x y r arcto 4 {pop} repeat
-  x y x w add y r arcto 4 {pop} repeat
-  closepath
-} bind def
-"""
-    lines.append(setup_font)
-
-    lines.append("%%Page: 1 1")
-    
-    # 1. Cabecera (Y: 780..842)
-    lines.append("0.08 0.12 0.22 setrgbcolor 0 782 595 60 rectfill")
-    lines.append("0.22 0.74 0.97 setrgbcolor 0 779 595 3 rectfill")
-    
-    lines.append("1 1 1 setrgbcolor")
-    lines.append("FHead 35 814 moveto (" + escape_ps("FASE 0 - GUÍA METODOLÓGICA: TU SISTEMA DE CUADERNOS EN GEMINI") + ") show")
-    lines.append("0.75 0.85 0.95 setrgbcolor")
-    lines.append("FSub 35 796 moveto (" + escape_ps("Organización de prácticas durante las 60 sesiones del Curso de Inteligencia Artificial") + ") show")
-    
-    # 2. Caja Metodológica superior (Y: 712..770, h=58)
-    lines.append("0.96 0.97 0.99 setrgbcolor")
-    lines.append("35 712 525 58 6 roundrect fill")
-    lines.append("0.22 0.74 0.97 setrgbcolor")
-    lines.append("35 712 525 58 6 roundrect stroke")
-    
-    lines.append("0.05 0.15 0.35 setrgbcolor")
-    lines.append("FSec 48 754 moveto (" + escape_ps("¿Por qué usamos Cuadernos? Regla de oro para trabajar en clase") + ") show")
-    lines.append("0.2 0.25 0.3 setrgbcolor")
-    lines.append("FTxt 48 740 moveto (" + escape_ps("1. Si abrimos un chat nuevo para cada práctica, al cabo de semanas quedarán perdidas en el historial de chats.") + ") show")
-    lines.append("FTxt 48 728 moveto (" + escape_ps("2. Con Cuadernos agrupamos por materia. La 1ª vez que ves una etiqueta, creas su cuaderno; en las siguientes ¡lo reutilizas!") + ") show")
-    lines.append("FTxtB 48 716 moveto (" + escape_ps("3. Nombra tu cuaderno exactamente con la palabra de la columna verde para tener todo tu portafolio clasificado.") + ") show")
-
-    # 3. Título de la tabla (Y: 695)
-    lines.append("0.1 0.15 0.25 setrgbcolor")
-    lines.append("FSec 35 696 moveto (" + escape_ps("TABLA OFICIAL DE REFERENCIA COMPLETA (15 ETIQUETAS DEL CURSO)") + ") show")
-    lines.append("FSub 35 685 moveto (" + escape_ps("Escribe en Gemini exactamente la palabra de la 2ª columna para titular cada uno de tus cuadernos:") + ") show")
-
-    # 4. Cabecera de la tabla (Y: 665..682)
-    y_th = 665
-    lines.append(f"0.15 0.22 0.35 setrgbcolor 35 {y_th} 525 17 rectfill")
-    lines.append("1 1 1 setrgbcolor")
-    lines.append(f"FTableB 45 {y_th+4} moveto (" + escape_ps("Etiqueta") + ") show")
-    lines.append(f"FTableB 115 {y_th+4} moveto (" + escape_ps("Escribe en Gemini (Nombre)") + ") show")
-    lines.append(f"FTableB 265 {y_th+4} moveto (" + escape_ps("Qué prácticas guardaremos en este Cuaderno") + ") show")
-
-    # 5. Filas de la tabla (15 filas completas en la misma página)
-    # y_th = 665, h_row = 17 pt. 15 filas = 255 pt -> Y va de 647 hasta 409
-    y_row = 647
-    for idx, (sigla, palabra, desc) in enumerate(ETIQUETAS):
-        bg_col = "0.96 0.98 1.0" if idx % 2 == 0 else "1.0 1.0 1.0"
-        lines.append(f"{bg_col} setrgbcolor 35 {y_row} 525 17 rectfill")
-        lines.append(f"0.86 0.89 0.93 setrgbcolor 35 {y_row} 525 0.5 rectstroke")
-        
-        # Col 1: Sigla
-        lines.append("0.1 0.45 0.8 setrgbcolor")
-        lines.append(f"FTableB 45 {y_row+4} moveto (" + escape_ps(sigla) + ") show")
-        
-        # Col 2: Palabra a escribir (verde oscuro destacado)
-        lines.append("0.05 0.48 0.25 setrgbcolor")
-        lines.append(f"FTableB 115 {y_row+4} moveto (" + escape_ps(palabra) + ") show")
-        
-        # Col 3: Qué guardaremos
-        lines.append("0.25 0.3 0.35 setrgbcolor")
-        lines.append(f"FTable 280 {y_row+4} moveto (" + escape_ps(desc) + ") show")
-        
-        y_row -= 17
-
-    # 6. Caja inferior de beneficio / resumen didáctico (Y: 285..365, h=80)
-    box_y = 285
-    lines.append("0.99 0.96 0.92 setrgbcolor")
-    lines.append(f"35 {box_y} 525 80 6 roundrect fill")
-    lines.append("0.95 0.65 0.2 setrgbcolor")
-    lines.append(f"35 {box_y} 525 80 6 roundrect stroke")
-
-    lines.append("0.55 0.3 0.05 setrgbcolor")
-    lines.append(f"FSec 48 {box_y+62} moveto (" + escape_ps("[CONSEJO] El Gran Beneficio: Tu Portafolio Personal Ordenado") + ") show")
-    lines.append("0.2 0.25 0.3 setrgbcolor")
-    lines.append(f"FTxt 48 {box_y+47} moveto (" + escape_ps("- A lo largo de las 60 sesiones realizarás decenas de prácticas fascinantes con inteligencia artificial.") + ") show")
-    lines.append(f"FTxt 48 {box_y+34} moveto (" + escape_ps("- Cuando quieras recuperar una receta o redacción formal, irás directo a tu cuaderno TEXTO.") + ") show")
-    lines.append(f"FTxt 48 {box_y+21} moveto (" + escape_ps("- Si quieres admirar tus ilustraciones y cuadros generados, abrirás ESTILO y los tendrás todos juntos.") + ") show")
-    lines.append(f"FTxtB 48 {box_y+8} moveto (" + escape_ps("- ¡Nunca más volverás a perder una práctica valiosa entre cientos de conversaciones dispersas!") + ") show")
-
-    # 7. Pie de página
-    lines.append("0.6 0.65 0.7 setrgbcolor")
-    lines.append("FSmall 35 245 moveto (" + escape_ps("Curso de Inteligencia Artificial - Fase 0: Guía Metodológica de Cuadernos - Hoja Oficial de Referencia") + ") show")
-    lines.append("showpage")
-
-    return "\n".join(lines)
-
-def build_pdf():
     os.makedirs(OUTPUT_DIR, exist_ok=True)
-    ps_content = generate_ps()
-    with open(PS_PATH, "w", encoding="latin1") as f:
-        f.write(ps_content)
-    
-    cmd = ["/usr/bin/pstopdf", PS_PATH, "-o", PDF_PATH]
-    res = subprocess.run(cmd, capture_output=True)
-    if res.returncode == 0:
-        print(f"OK:{PDF_PATH}")
-    else:
-        print(f"ERR:{res.stderr.decode()}")
+    doc = SimpleDocTemplate(
+        PDF_PATH,
+        pagesize=A4,
+        leftMargin=32,
+        rightMargin=32,
+        topMargin=26,
+        bottomMargin=22
+    )
 
-if __name__ == "__main__":
-    build_pdf()
+    styles = getSampleStyleSheet()
+    
+    # Estilos
+    style_header_title = ParagraphStyle(
+        'HeaderTitle',
+        parent=styles['Normal'],
+        fontName='Helvetica-Bold',
+        fontSize=12.5,
+        leading=15,
+        textColor=colors.white,
+        alignment=1
+    )
+    style_header_sub = ParagraphStyle(
+        'HeaderSub',
+        parent=styles['Normal'],
+        fontName='Helvetica-Oblique',
+        fontSize=8.5,
+        leading=11,
+        textColor=colors.HexColor('#7DD3FC'),
+        alignment=1
+    )
+    style_callout_title = ParagraphStyle(
+        'CalloutTitle',
+        parent=styles['Normal'],
+        fontName='Helvetica-Bold',
+        fontSize=8.5,
+        leading=11,
+        textColor=colors.HexColor('#0369A1')
+    )
+    style_callout_body = ParagraphStyle(
+        'CalloutBody',
+        parent=styles['Normal'],
+        fontName='Helvetica',
+        fontSize=7.8,
+        leading=10.5,
+        textColor=colors.HexColor('#334155')
+    )
+    style_tbl_head = ParagraphStyle(
+        'TblHead',
+        parent=styles['Normal'],
+        fontName='Helvetica-Bold',
+        fontSize=8,
+        leading=10,
+        textColor=colors.white,
+        alignment=1
+    )
+    style_tag = ParagraphStyle(
+        'TagCol',
+        parent=styles['Normal'],
+        fontName='Helvetica-Bold',
+        fontSize=7.8,
+        leading=9.5,
+        textColor=colors.HexColor('#0284C7'),
+        alignment=1
+    )
+    style_notebook = ParagraphStyle(
+        'NotebookCol',
+        parent=styles['Normal'],
+        fontName='Helvetica-Bold',
+        fontSize=8,
+        leading=9.5,
+        textColor=colors.HexColor('#047857'),
+        alignment=1
+    )
+    style_desc = ParagraphStyle(
+        'DescCol',
+        parent=styles['Normal'],
+        fontName='Helvetica',
+        fontSize=7.5,
+        leading=9.5,
+        textColor=colors.HexColor('#1E293B')
+    )
+    style_tip_title = ParagraphStyle(
+        'TipTitle',
+        parent=styles['Normal'],
+        fontName='Helvetica-Bold',
+        fontSize=8,
+        leading=10.5,
+        textColor=colors.HexColor('#B45309')
+    )
+    style_tip_body = ParagraphStyle(
+        'TipBody',
+        parent=styles['Normal'],
+        fontName='Helvetica',
+        fontSize=7.3,
+        leading=9.5,
+        textColor=colors.HexColor('#78350F')
+    )
+    style_footer = ParagraphStyle(
+        'FooterStyle',
+        parent=styles['Normal'],
+        fontName='Helvetica-Oblique',
+        fontSize=7,
+        leading=9,
+        textColor=colors.HexColor('#64748B'),
+        alignment=1
+    )
+
+    story = []
+
+    # 1. Cabecera Banner
+    header_content = [
+        [Paragraph("FASE 0 • GUÍA METODOLÓGICA: TU SISTEMA DE CUADERNOS EN GEMINI", style_header_title)],
+        [Paragraph("Organización de prácticas durante las 60 sesiones del Curso de Inteligencia Artificial", style_header_sub)]
+    ]
+    t_header = Table(header_content, colWidths=[531])
+    t_header.setStyle(TableStyle([
+        ('BACKGROUND', (0,0), (-1,-1), colors.HexColor('#0F172A')),
+        ('TOPPADDING', (0,0), (-1,-1), 7),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 7),
+        ('LEFTPADDING', (0,0), (-1,-1), 10),
+        ('RIGHTPADDING', (0,0), (-1,-1), 10),
+        ('ALIGN', (0,0), (-1,-1), 'CENTER'),
+        ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),
+    ]))
+    story.append(t_header)
+    story.append(Spacer(1, 6))
+
+    # 2. Caja Explicativa de Regla de Oro
+    callout_html = (
+        "<b>¿Por qué usamos Cuadernos? Regla de oro para trabajar en clase:</b><br/>"
+        "• <b>1. Evitar el desorden:</b> Si abrimos un chat nuevo para cada práctica, al cabo de semanas quedarán perdidas en el historial.<br/>"
+        "• <b>2. Reutilización continua:</b> Con Cuadernos agrupamos por temática. La 1ª vez que ves una etiqueta, creas su cuaderno; en las siguientes sesiones <b>¡lo reutilizas!</b><br/>"
+        "• <b>3. Nombres estandarizados:</b> Nombra tu cuaderno exactamente con la palabra de la columna verde para tener todo tu portafolio perfectamente ordenado."
+    )
+    callout_table = Table([[Paragraph(callout_html, style_callout_body)]], colWidths=[531])
+    callout_table.setStyle(TableStyle([
+        ('BACKGROUND', (0,0), (-1,-1), colors.HexColor('#F0F9FF')),
+        ('BOX', (0,0), (-1,-1), 1, colors.HexColor('#0284C7')),
+        ('TOPPADDING', (0,0), (-1,-1), 6),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 6),
+        ('LEFTPADDING', (0,0), (-1,-1), 10),
+        ('RIGHTPADDING', (0,0), (-1,-1), 10),
+    ]))
+    story.append(callout_table)
+    story.append(Spacer(1, 6))
+
+    # 3. Tabla Principal de 15 Etiquetas y Cuadernos
+    table_data = [
+        [
+            Paragraph("Etiqueta en Clase", style_tbl_head),
+            Paragraph("Nombre de tu Cuaderno", style_tbl_head),
+            Paragraph("¿Qué guardaremos en este cuaderno?", style_tbl_head)
+        ]
+    ]
+
+    for tag, nombre, desc in ETIQUETAS:
+        table_data.append([
+            Paragraph(tag, style_tag),
+            Paragraph(nombre, style_notebook),
+            Paragraph(desc, style_desc)
+        ])
+
+    t_main = Table(table_data, colWidths=[85, 120, 326])
+    t_style = [
+        ('BACKGROUND', (0,0), (-1,0), colors.HexColor('#0284C7')),
+        ('ALIGN', (0,0), (1,-1), 'CENTER'),
+        ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),
+        ('TOPPADDING', (0,0), (-1,-1), 3),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 3),
+        ('LEFTPADDING', (0,0), (-1,-1), 5),
+        ('RIGHTPADDING', (0,0), (-1,-1), 5),
+        ('GRID', (0,0), (-1,-1), 0.5, colors.HexColor('#CBD5E1')),
+    ]
+    # Colores alternos en filas
+    for i in range(1, len(table_data)):
+        bg = colors.HexColor('#F8FAFC') if i % 2 == 1 else colors.white
+        t_style.append(('BACKGROUND', (0, i), (-1, i), bg))
+
+    t_main.setStyle(TableStyle(t_style))
+    story.append(t_main)
+    story.append(Spacer(1, 6))
+
+    # 4. Caja Inferior de Beneficio y Portafolio
+    tip_html = (
+        "<b>💡 [CONSEJO] El Gran Beneficio: Tu Portafolio Personal Ordenado</b><br/>"
+        "• A lo largo de las 60 sesiones realizarás decenas de prácticas fascinantes con inteligencia artificial.<br/>"
+        "• Cuando quieras recuperar una receta o redacción formal, irás directo a tu cuaderno <b>TEXTO</b>.<br/>"
+        "• Si quieres admirar tus ilustraciones y cuadros generados, abrirás <b>ESTILO</b> y los tendrás todos juntos.<br/>"
+        "• <b>¡Nunca más volverás a perder una práctica valiosa entre cientos de conversaciones dispersas!</b>"
+    )
+    t_tip = Table([[Paragraph(tip_html, style_tip_body)]], colWidths=[531])
+    t_tip.setStyle(TableStyle([
+        ('BACKGROUND', (0,0), (-1,-1), colors.HexColor('#FFFBEB')),
+        ('BOX', (0,0), (-1,-1), 1, colors.HexColor('#F59E0B')),
+        ('TOPPADDING', (0,0), (-1,-1), 5),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 5),
+        ('LEFTPADDING', (0,0), (-1,-1), 10),
+        ('RIGHTPADDING', (0,0), (-1,-1), 10),
+    ]))
+    story.append(t_tip)
+    story.append(Spacer(1, 5))
+
+    # 5. Pie de página
+    story.append(Paragraph("Curso de Inteligencia Artificial • Fase 0: Guía Metodológica de Cuadernos • Hoja Oficial de Referencia", style_footer))
+
+    doc.build(story)
+    print(f"✅ PDF generado con éxito en: {PDF_PATH}")
+
+if __name__ == '__main__':
+    try:
+        build_pdf_reportlab()
+    except Exception as e:
+        print(f"❌ Error al generar el PDF: {e}")
+        sys.exit(1)
