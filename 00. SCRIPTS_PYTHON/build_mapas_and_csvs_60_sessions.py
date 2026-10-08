@@ -76,6 +76,8 @@ COLUMNS_CONFIG = [
 
 def clean_title_from_filename(filename):
     name, _ = os.path.splitext(filename)
+    if 'SIMULADOR_CORAZON' in filename.upper() or 'LATIDO_CARDIACO' in filename.upper():
+        return 'Simulador 3D del Latido Cardíaco Humano'
     if 'FRAC-000_B' in filename:
         return 'Reto Visual • Infografía de un Fractal en la Naturaleza'
     if 'FRAC-000_A' in filename:
@@ -104,6 +106,8 @@ def clean_title_from_filename(filename):
 
 def parse_step_code(filename):
     f_up = filename.upper()
+    if 'SIMULADOR' in f_up or 'CORAZON' in f_up:
+        return '3D'
     for code in STEP_CONFIG.keys():
         if f"{code}-" in f_up or f"_{code}_" in f_up or f" {code} " in f_up or f" {code}-" in f_up:
             return "COMICS" if code == "CUENT" else code
@@ -139,7 +143,7 @@ def generate_columns_html(session_num, session_folder, files):
     
     def session_file_sort_key(filename):
         if session_num == 1:
-            # En Sesión 01: 1º Teoría (#05), 2º Ficha PDF Fractal (#06 introductoria), 3º Vídeo MP4 (#07), 4º Reto Visual (#08)
+            # En Sesión 01: 1º Teoría (#05), 2º Ficha PDF Fractal (#06 introductoria), 3º Vídeo MP4 (#07), 4º Reto Visual (#08), 5º Simulador 3D (#09)
             if 'FRAC-000_A_Teoria' in filename:
                 return (2, 5, 1, filename.lower())
             if 'FRAC-058' in filename and filename.lower().endswith('.pdf'):
@@ -148,12 +152,16 @@ def generate_columns_html(session_num, session_folder, files):
                 return (2, 5, 3, filename.lower())
             if 'FRAC-000_B_Reto' in filename:
                 return (2, 5, 4, filename.lower())
+            if 'SIMULADOR' in filename.upper() or 'CORAZON' in filename.upper():
+                return (2, 5, 5, filename.lower())
         return file_sort_key(filename)
 
     # Filtrar archivos reales de contenido (ignorando duplicados de sincronización de iCloud ' 2.pdf', etc.)
     valid_files = [
         f for f in sorted(files, key=session_file_sort_key)
-        if not f.startswith('.') and not f.startswith('MAPA_CLASE') and not f.endswith('.html') and not f.startswith('~$')
+        if not f.startswith('.') and not f.startswith('MAPA_') and not f.startswith('~$')
+        and (not f.endswith('.html') or 'SIMULADOR' in f.upper())
+        and not f.endswith('.js') and not f.endswith('.mp3')
         and not re.search(r'\s[2-9]\.(pdf|mp4|html)$', f, re.IGNORECASE)
         and not f.startswith('0. FASE_0')
         and not (session_num in (1, 2) and 'CUENT' in f)
@@ -174,6 +182,9 @@ def generate_columns_html(session_num, session_folder, files):
         elif ext == 'pdf':
             tag_class = 'tag-pdf'
             tag_text = 'PDF'
+        elif ext == 'html':
+            tag_class = 'tag-html'
+            tag_text = '3D'
         elif ext in ('png', 'jpg', 'jpeg'):
             tag_class = 'tag-png'
             tag_text = 'IMG'
@@ -644,6 +655,7 @@ def generate_columns_html(session_num, session_folder, files):
             flex-shrink: 0;
         }}
         .tag-pdf {{ background: rgba(239, 68, 68, 0.2); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.4); }}
+        .tag-html {{ background: rgba(225, 29, 72, 0.25); color: #fda4af; border: 1px solid rgba(225, 29, 72, 0.45); }}
         .tag-mp4 {{ background: rgba(168, 85, 247, 0.25); color: #e9d5ff; border: 1px solid rgba(168, 85, 247, 0.45); }}
         .tag-png {{ background: rgba(56, 189, 248, 0.2); color: #7dd3fc; border: 1px solid rgba(56, 189, 248, 0.4); }}
         .tag-txt {{ background: rgba(148, 163, 184, 0.2); color: #cbd5e1; border: 1px solid rgba(148, 163, 184, 0.4); }}

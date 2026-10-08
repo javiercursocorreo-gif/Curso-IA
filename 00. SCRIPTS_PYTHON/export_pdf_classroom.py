@@ -627,6 +627,8 @@ def main():
     # 1. Clean export base completely to avoid old folders (like BLOQUE_6 and BLOQUE_7)
     if os.path.exists(EXPORT_BASE):
         for sub in os.listdir(EXPORT_BASE):
+            if "100. [SESSIONS]" in sub:
+                continue
             full_sub = os.path.join(EXPORT_BASE, sub)
             if os.path.isdir(full_sub):
                 shutil.rmtree(full_sub)
@@ -852,7 +854,7 @@ def main():
                         if id_clean in gid or gid in id_clean:
                             matched_paths.extend(gpaths)
                             
-                # INJECTION: Custom Fractal Introduction for Terna 01
+                # INJECTION: Custom Fractal Introduction and 3D Simulator for Terna 01
                 if "FRAC-058" in id_clean and col_idx == 4:
                     intro_src_a = "/Users/externo/.gemini/antigravity/brain/f982b9ea-ba9d-4840-9be1-22ee2ca7b56b/scratch/4. FRAC-000_A_Teoria_Fractal.pdf"
                     intro_dst_a = os.path.join(t_path, "4. FRAC-000_A_Teoria_Fractal.pdf")
@@ -861,6 +863,22 @@ def main():
                         shutil.copy2(intro_src_a, intro_dst_a)
                     # Generar directamente la ficha de Reto Visual con el nuevo formato pedagógico en 2 pasos
                     build_frac_000_b_reto_pdf(intro_dst_b)
+                    
+                    # Copiar simulador 3D del latido cardíaco, dependencias 3D y audio de fonendoscopio
+                    sim_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "SIMULADORES_INTERACTIVOS")
+                    sim_src = os.path.join(sim_dir, "01_SIMULADOR_LATIDO_CARDIACO_3D_REALISTA.html")
+                    heart_src = os.path.join(sim_dir, "heart_b64.js")
+                    audio_js_src = os.path.join(sim_dir, "heartbeat_audio_b64.js")
+                    audio_mp3_src = os.path.join(sim_dir, "heartbeat.mp3")
+
+                    if os.path.exists(sim_src):
+                        shutil.copy2(sim_src, os.path.join(t_path, "SIMULADOR_CORAZON_3D.html"))
+                    if os.path.exists(heart_src):
+                        shutil.copy2(heart_src, os.path.join(t_path, "heart_b64.js"))
+                    if os.path.exists(audio_js_src):
+                        shutil.copy2(audio_js_src, os.path.join(t_path, "heartbeat_audio_b64.js"))
+                    if os.path.exists(audio_mp3_src):
+                        shutil.copy2(audio_mp3_src, os.path.join(t_path, "heartbeat.mp3"))
                         
                 # INJECTION: Custom Mandelbrot Introduction for Terna 02
                 if "FRAC-001" in id_clean and col_idx == 4:
@@ -969,6 +987,14 @@ def main():
     print(f"   • Archivos originales PDF + MP4 copiados a lotes de Classroom (Bloques 4 y 5): {total_physical_copied}")
     print(f"   • Archivos en carpetas por Terna [SESSIONS] para Classroom: {total_sessions_copied}")
     print(f"   Ruta maestra: {EXPORT_BASE}")
+
+    print("\n🗺️ Generando y actualizando automáticamente los 60 Mapas de Sesión y Paneles CSV...")
+    try:
+        from build_mapas_and_csvs_60_sessions import process_all_sessions
+        process_all_sessions()
+        print("   ✅ Mapas de sesión interactivos sincronizados con simuladores 3D.")
+    except Exception as e:
+        print(f"   ⚠️ Error generando mapas interactivos: {e}")
 
 if __name__ == '__main__':
     main()
