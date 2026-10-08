@@ -327,7 +327,7 @@ def add_texto_item(num_str, title, desc, prompt_text, tips_custom=None):
     id_code = f"[TXT-{txt_id_counter:03d}]"
     txt_id_counter += 1
     
-    tips_val = tips_custom if tips_custom is not None else "👉 Reto Práctico en Casa o en Clase: Copia este prompt en Gemini y personalízalo cambiando los datos, el producto o tus preferencias personales. ¡Observa cómo la IA adapta su respuesta exactamente a lo que le pidas!"
+    tips_val = tips_custom if tips_custom is not None else "Personaliza el prompt anterior cambiando los datos, el producto o tus preferencias personales. ¡Observa cómo la IA adapta su respuesta exactamente a lo que le pidas!"
     
     classroom_export_items.append({
         'block_dir': '01. [TXT] BLOQUE_1_PROMPTS_DE_COMUNICACION_Y_TEXTO',

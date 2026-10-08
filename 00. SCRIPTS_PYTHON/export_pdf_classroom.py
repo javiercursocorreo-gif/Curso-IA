@@ -297,6 +297,11 @@ def create_pdf_handout(file_path, block_name, item_id, item_title, concept_text,
         story.append(Spacer(1, 10))
         
     if tips_text:
+        # Normalizar frase de reto si contiene la fórmula antigua de copiar el prompt
+        old_pattern = r'(?:[■👉]\s*)?(?:Reto Pr[aá]ctico en Casa o en Clase:\s*)?Copia este prompt en Gemini y personal[ií]zalo cambiando los datos(?:,\s*el producto o tus preferencias personales)?\.?(?:\s*¡Observa c[oó]mo la IA adapta su respuesta exactamente a lo que le pidas!)?'
+        new_reto_text = "Personaliza el prompt anterior cambiando los datos, el producto o tus preferencias personales. ¡Observa cómo la IA adapta su respuesta exactamente a lo que le pidas!"
+        tips_text = re.sub(old_pattern, new_reto_text, str(tips_text), flags=re.IGNORECASE)
+
         story.append(Paragraph("🧪 El Reto Práctico / Aplicación en Aula con Gemini", style_section_h))
         exact_phrase = "👉 Ahora te toca a ti: ¡Haz tú una modificación que se te ocurra y sorpréndenos!"
         exact_phrase_bold = f"<b>{exact_phrase}</b>"
