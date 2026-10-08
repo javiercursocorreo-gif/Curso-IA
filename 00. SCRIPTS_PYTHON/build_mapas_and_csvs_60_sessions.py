@@ -156,7 +156,7 @@ def generate_columns_html(session_num, session_folder, files):
         if not f.startswith('.') and not f.startswith('MAPA_CLASE') and not f.endswith('.html') and not f.startswith('~$')
         and not re.search(r'\s[2-9]\.(pdf|mp4|html)$', f, re.IGNORECASE)
         and not f.startswith('0. FASE_0')
-        and not (session_num == 1 and 'CUENT' in f)
+        and not (session_num in (1, 2) and 'CUENT' in f)
         and not ('FRAC-058' in f and ' 2. ' in f)
     ]
     
@@ -200,15 +200,15 @@ def generate_columns_html(session_num, session_folder, files):
         code_tag = f"[{it['code']}]" if it.get("code") else ""
         it["step_num"] = f"#{i:02d} {code_tag}".strip()
 
-    # Configuración de columnas (ajustar título y descripción de fase 3 en sesión 1)
+    # Configuración de columnas (ajustar título y descripción en sesiones 1 y 2)
     current_columns_config = []
     for col_info in COLUMNS_CONFIG:
         col_copy = dict(col_info)
-        if session_num == 1 and col_copy["col_id"] == 1:
+        if session_num in (1, 2) and col_copy["col_id"] == 1:
             col_copy["title"] = "Taller Creativo & Visual"
             col_copy["desc"] = "Prompts de texto, estilos de imagen y práctica guiada con Gemini"
             col_copy["icon"] = "🎨"
-        if session_num == 1 and col_copy["col_id"] == 3:
+        if session_num in (1, 2) and col_copy["col_id"] == 3:
             col_copy["title"] = "Vida Práctica, Patrimonio & Memoria"
             col_copy["desc"] = "Escalafones, cultura patrimonial 101, cámara del móvil y recuerdos de infancia"
         current_columns_config.append(col_copy)
@@ -254,7 +254,7 @@ def generate_columns_html(session_num, session_folder, files):
 
     subtitle_text = (
         "Cuadro de mando interactivo organizado en 3 fases: Taller Creativo, Ciencia & Futuro, y Vida Práctica & Memoria."
-        if session_num == 1
+        if session_num in (1, 2)
         else "Cuadro de mando interactivo organizado en 3 fases: Lanzamiento del Cómic en 2º plano, Pinacoteca & Ciencia, y Vida Práctica & Proyección Final."
     )
 
