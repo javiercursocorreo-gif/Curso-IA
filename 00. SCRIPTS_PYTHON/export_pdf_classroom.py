@@ -795,8 +795,6 @@ def main():
             
     print("\n📦 Generando carpetas por sesión 100. [SESSIONS] TERNAS_LISTAS_PARA_CLASSROOM (Terna 01 a 60)...")
     sessions_dir = os.path.join(EXPORT_BASE, "100. [SESSIONS] TERNAS_LISTAS_PARA_CLASSROOM")
-    if os.path.exists(sessions_dir):
-        shutil.rmtree(sessions_dir)
     os.makedirs(sessions_dir, exist_ok=True)
     
     total_sessions_copied = 0
