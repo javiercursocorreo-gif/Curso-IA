@@ -165,7 +165,7 @@ def create_pdf_handout(file_path, block_name, item_id, item_title, concept_text,
             is_int = "[INT-" in str(item_id)
             role = "historiador y arquitecto infográfico experto" if is_int else "diseñador conceptual y futurista experto"
             subject_type = "corte transversal y reconstrucción histórica en 3D" if is_int else "visión tecnológica del futuro y ciencia ficción en 3D"
-            clean_item_title = re.sub(r'^[A-Z0-9\-_]+\s*', '', str(item_title)).strip()
+            clean_item_title = re.sub(r'^(?:\[[A-Z0-9\-_]+\]\s*|[A-Z]{2,6}-\d{2,4}\s*[:\-_]?\s*)', '', str(item_title)).strip()
             short_prompt = (
                 f'Actúa como un {role}. Redáctame un prompt maestro y ultra detallado en español '
                 f'para generar una infografía de {subject_type} sobre "{clean_item_title}". '
@@ -182,7 +182,7 @@ def create_pdf_handout(file_path, block_name, item_id, item_title, concept_text,
             if isinstance(prompt_data, tuple) and len(prompt_data) == 2:
                 step1, step2 = prompt_data
             else:
-                clean_item_title = re.sub(r'^[A-Z0-9\-_]+\s*', '', str(item_title)).strip()
+                clean_item_title = re.sub(r'^(?:\[[A-Z0-9\-_]+\]\s*|[A-Z]{2,6}-\d{2,4}\s*[:\-_]?\s*)', '', str(item_title)).strip()
                 step1 = (
                     f'Actúa como un diseñador infográfico senior y docente divulgador. '
                     f'Diseña y redacta un prompt maestro detallado en español para crear una infografía piramidal o escalafón vertical '
