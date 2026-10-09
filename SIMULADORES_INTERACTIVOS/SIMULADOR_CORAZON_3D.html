@@ -535,6 +535,7 @@
 
         // ANIMATION LOOP: LATIDO BIOMECÁNICO SUAVE SIN VIBRACIONES
         let lastTime = performance.now();
+        let wasSystole = false;
         engine.runRenderLoop(function () {
             const now = performance.now();
             const dt = (now - lastTime) / 1000;
@@ -555,6 +556,12 @@
                     isSystole = true;
                 }
             }
+
+            // Sincronización acústica milimétrica en el fotograma del bombeo (0 ms latencia)
+            if (isSystole && !wasSystole && isAudioPlaying) {
+                playSingleBeat();
+            }
+            wasSystole = isSystole;
 
             if (isModelLoaded && heartMeshRoot) {
                 // Escala fluida y matemática sin oscilaciones
@@ -656,67 +663,140 @@
                 else label = "Esfuerzo Físico Intenso";
             }
             statusPill.innerText = label;
-            updateAudioPlaybackRate();
         }
 
-        // MOTOR DE AUDIO DEL CORAZÓN (FREESOUND MP3 + BPM DINÁMICO)
-        let audioPlayer = null;
+        // MOTOR DE AUDIO PROFESIONAL (WEB AUDIO API • 0 MS LATENCIA • SINCRONIZACIÓN MILIMÉTRICA)
+        let audioCtx = null;
+        let heartbeatBuffer = null;
+        let masterGain = null;
         let isAudioPlaying = false;
-        const BASE_AUDIO_BPM = 50.0;
 
         function initAudio() {
-            if (audioPlayer) return;
-            const src = (window.HEARTBEAT_AUDIO_B64) ? window.HEARTBEAT_AUDIO_B64 : "heartbeat.mp3";
-            audioPlayer = new Audio(src);
-            audioPlayer.loop = true;
-            audioPlayer.volume = 0.8;
-            updateAudioPlaybackRate();
-        }
-
-        function updateAudioPlaybackRate() {
-            if (audioPlayer) {
-                // Sincroniza dinámicamente la velocidad del latido acústico con los BPM seleccionados
-                const rate = Math.max(0.5, Math.min(3.0, currentBpm / BASE_AUDIO_BPM));
-                audioPlayer.playbackRate = rate;
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                masterGain = audioCtx.createGain();
+                masterGain.gain.value = 0.8;
+                masterGain.connect(audioCtx.destination);
             }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            loadHeartbeatBuffer();
         }
 
-        function playHeartbeatAudio() {
-            initAudio();
-            audioPlayer.play().then(() => {
-                isAudioPlaying = true;
-                updateAudioBtnUI(true);
-            }).catch(e => {
-                console.log("Audio en espera de interacción del usuario:", e);
-                const unlock = () => {
-                    if (audioPlayer && !isAudioPlaying) {
-                        audioPlayer.play().then(() => {
-                            isAudioPlaying = true;
-                            updateAudioBtnUI(true);
-                        }).catch(() => {});
+        function loadHeartbeatBuffer() {
+            if (heartbeatBuffer) return;
+            const b64Data = (window.HEARTBEAT_AUDIO_B64) ? window.HEARTBEAT_AUDIO_B64 : null;
+            
+            if (b64Data && b64Data.startsWith("data:audio")) {
+                try {
+                    const base64Str = b64Data.split(",")[1];
+                    const binaryStr = atob(base64Str);
+                    const len = binaryStr.length;
+                    const bytes = new Uint8Array(len);
+                    for (let i = 0; i < len; i++) {
+                        bytes[i] = binaryStr.charCodeAt(i);
                     }
-                    window.removeEventListener('click', unlock);
-                    window.removeEventListener('touchstart', unlock);
-                };
-                window.addEventListener('click', unlock);
-                window.addEventListener('touchstart', unlock);
-            });
+                    audioCtx.decodeAudioData(bytes.buffer.slice(0), (decoded) => {
+                        heartbeatBuffer = decoded;
+                    }, (err) => console.log("decodeAudioData err:", err));
+                    return;
+                } catch(e) {
+                    console.log("base64 conversion error:", e);
+                }
+            }
+            
+            fetch("heartbeat.mp3")
+                .then(r => r.arrayBuffer())
+                .then(buf => audioCtx.decodeAudioData(buf))
+                .then(dec => { heartbeatBuffer = dec; })
+                .catch(err => console.log("fetch audio err:", err));
         }
 
-        function pauseHeartbeatAudio() {
-            if (audioPlayer) {
-                audioPlayer.pause();
-                isAudioPlaying = false;
-                updateAudioBtnUI(false);
+        function playSyntheticBeat() {
+            if (!audioCtx || !masterGain) return;
+            const now = audioCtx.currentTime;
+            
+            // Lub (S1)
+            const osc1 = audioCtx.createOscillator();
+            const gain1 = audioCtx.createGain();
+            const filter1 = audioCtx.createBiquadFilter();
+            
+            osc1.type = "sine";
+            osc1.frequency.setValueAtTime(65, now);
+            osc1.frequency.exponentialRampToValueAtTime(35, now + 0.11);
+            
+            filter1.type = "lowpass";
+            filter1.frequency.setValueAtTime(140, now);
+            
+            gain1.gain.setValueAtTime(0.001, now);
+            gain1.gain.linearRampToValueAtTime(0.65, now + 0.02);
+            gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.11);
+            
+            osc1.connect(filter1);
+            filter1.connect(gain1);
+            gain1.connect(masterGain);
+            
+            osc1.start(now);
+            osc1.stop(now + 0.12);
+            
+            // Dub (S2)
+            const osc2 = audioCtx.createOscillator();
+            const gain2 = audioCtx.createGain();
+            const filter2 = audioCtx.createBiquadFilter();
+            
+            osc2.type = "sine";
+            osc2.frequency.setValueAtTime(90, now + 0.13);
+            osc2.frequency.exponentialRampToValueAtTime(45, now + 0.22);
+            
+            filter2.type = "lowpass";
+            filter2.frequency.setValueAtTime(180, now + 0.13);
+            
+            gain2.gain.setValueAtTime(0.001, now + 0.13);
+            gain2.gain.linearRampToValueAtTime(0.55, now + 0.15);
+            gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.23);
+            
+            osc2.connect(filter2);
+            filter2.connect(gain2);
+            gain2.connect(masterGain);
+            
+            osc2.start(now + 0.13);
+            osc2.stop(now + 0.24);
+        }
+
+        function playSingleBeat() {
+            if (!audioCtx || !isAudioPlaying) return;
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
             }
+            
+            if (heartbeatBuffer && masterGain) {
+                try {
+                    const src = audioCtx.createBufferSource();
+                    src.buffer = heartbeatBuffer;
+                    const rate = Math.max(0.85, Math.min(1.5, currentBpm / 72));
+                    src.playbackRate.value = rate;
+                    src.connect(masterGain);
+                    const duration = 0.65 / rate;
+                    src.start(0, 1.02, duration);
+                    return;
+                } catch (e) {
+                    console.log("Buffer play fallback:", e);
+                }
+            }
+            
+            playSyntheticBeat();
         }
 
         function toggleAudio() {
             initAudio();
             if (isAudioPlaying) {
-                pauseHeartbeatAudio();
+                isAudioPlaying = false;
+                updateAudioBtnUI(false);
             } else {
-                playHeartbeatAudio();
+                isAudioPlaying = true;
+                updateAudioBtnUI(true);
+                playSingleBeat();
             }
         }
 
@@ -746,16 +826,17 @@
         volumeSlider.addEventListener("input", function (e) {
             initAudio();
             const vol = parseInt(e.target.value) / 100.0;
-            audioPlayer.volume = vol;
+            if (masterGain) {
+                masterGain.gain.value = vol;
+            }
             if (vol === 0 && isAudioPlaying) {
-                pauseHeartbeatAudio();
+                isAudioPlaying = false;
+                updateAudioBtnUI(false);
             } else if (vol > 0 && !isAudioPlaying) {
-                playHeartbeatAudio();
+                isAudioPlaying = true;
+                updateAudioBtnUI(true);
             }
         });
-
-        // Intentar arrancar el audio (o registrar el desbloqueo automático en el primer clic)
-        playHeartbeatAudio();
 
         document.getElementById("btnAutoRotate").addEventListener("click", function () {
             autoRotate = !autoRotate;
