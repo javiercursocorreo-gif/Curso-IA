@@ -31,8 +31,27 @@ CANDIDATE_URLS = [
 
 def download_realistic_lungs():
     os.makedirs(SIM_DIR, exist_ok=True)
-    if os.path.exists(GLB_DEST) and os.path.getsize(GLB_DEST) > 500000:
-        print(f"✅ Archivo lungs.glb ya existente ({os.path.getsize(GLB_DEST) / 1024 / 1024:.2f} MB)")
+    if os.path.exists(GLB_DEST) and os.path.getsize(GLB_DEST) > 50000:
+        print(f"✅ Archivo lungs.glb ya existente en SIMULADORES_INTERACTIVOS ({os.path.getsize(GLB_DEST) / 1024 / 1024:.2f} MB)")
+        return True
+
+    # 1. Buscar automáticamente en la carpeta de Descargas del usuario (~/Downloads)
+    import glob
+    downloads_candidates = (
+        glob.glob(os.path.expanduser("~/Downloads/*lung*.glb")) +
+        glob.glob(os.path.expanduser("~/Downloads/*pulmon*.glb")) +
+        glob.glob(os.path.expanduser("~/Downloads/*respirat*.glb")) +
+        glob.glob(os.path.expanduser("~/Downloads/*.glb"))
+    )
+    valid_downloads = [
+        f for f in downloads_candidates 
+        if os.path.isfile(f) and os.path.getsize(f) > 50000 and "heart" not in os.path.basename(f).lower()
+    ]
+    if valid_downloads:
+        latest = max(valid_downloads, key=os.path.getctime)
+        print(f"📥 Encontrado modelo 3D en Descargas: {latest}")
+        shutil.copy2(latest, GLB_DEST)
+        print(f"✅ Copiado permanentemente a: {GLB_DEST} ({os.path.getsize(GLB_DEST) / 1024 / 1024:.2f} MB)")
         return True
 
     print("🌐 Descargando modelo 3D hiperrealista de pulmones desde NIH 3D Medical...")
