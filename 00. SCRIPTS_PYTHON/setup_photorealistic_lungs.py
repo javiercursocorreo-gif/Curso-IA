@@ -36,11 +36,12 @@ def download_realistic_lungs():
         return True
 
     # 1. Buscar automáticamente en la carpeta de Descargas del usuario (~/Downloads)
-    import glob
+    import glob, zipfile
     downloads_candidates = (
         glob.glob(os.path.expanduser("~/Downloads/*lung*.glb")) +
         glob.glob(os.path.expanduser("~/Downloads/*pulmon*.glb")) +
         glob.glob(os.path.expanduser("~/Downloads/*respirat*.glb")) +
+        glob.glob(os.path.expanduser("~/Downloads/*3DPX*.glb")) +
         glob.glob(os.path.expanduser("~/Downloads/*.glb"))
     )
     valid_downloads = [
@@ -53,6 +54,27 @@ def download_realistic_lungs():
         shutil.copy2(latest, GLB_DEST)
         print(f"✅ Copiado permanentemente a: {GLB_DEST} ({os.path.getsize(GLB_DEST) / 1024 / 1024:.2f} MB)")
         return True
+
+    # Buscar si está dentro de un archivo .zip en Descargas
+    zip_candidates = (
+        glob.glob(os.path.expanduser("~/Downloads/*lung*.zip")) +
+        glob.glob(os.path.expanduser("~/Downloads/*pulmon*.zip")) +
+        glob.glob(os.path.expanduser("~/Downloads/*3DPX*.zip")) +
+        glob.glob(os.path.expanduser("~/Downloads/*.zip"))
+    )
+    for zpath in sorted(zip_candidates, key=os.path.getctime, reverse=True):
+        if not os.path.isfile(zpath): continue
+        try:
+            with zipfile.ZipFile(zpath, 'r') as zf:
+                for zinfo in zf.infolist():
+                    if zinfo.filename.lower().endswith('.glb') and "heart" not in zinfo.filename.lower():
+                        print(f"📥 Extrayendo {zinfo.filename} desde {zpath}...")
+                        with zf.open(zinfo) as source, open(GLB_DEST, 'wb') as target:
+                            shutil.copyfileobj(source, target)
+                        print(f"✅ Extraído y copiado permanentemente a: {GLB_DEST} ({os.path.getsize(GLB_DEST) / 1024 / 1024:.2f} MB)")
+                        return True
+        except Exception:
+            pass
 
     print("🌐 Descargando modelo 3D hiperrealista de pulmones desde NIH 3D Medical...")
     headers = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)"}
