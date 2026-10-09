@@ -866,7 +866,7 @@ def process_all_sessions():
                     shutil.copy2(pulm_src, os.path.join(session_path, "SIMULADOR_PULMONES_3D.html"))
                 except Exception:
                     pass
-            for extra in ["lungs_b64.js", "lungs.glb"]:
+            for extra in ["lungs_b64.js", "lungs.glb", "SIMULADOR_PULMONES_3D_V1.html"]:
                 ex_src = os.path.join(BASE_DIR, "SIMULADORES_INTERACTIVOS", extra)
                 if os.path.exists(ex_src):
                     try:

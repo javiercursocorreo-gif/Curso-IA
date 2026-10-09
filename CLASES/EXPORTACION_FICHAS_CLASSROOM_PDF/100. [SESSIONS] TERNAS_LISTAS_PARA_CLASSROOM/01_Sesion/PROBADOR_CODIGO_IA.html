@@ -350,7 +350,7 @@
 &lt;head&gt;
     &lt;meta charset=&quot;UTF-8&quot;&gt;
     &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot;&gt;
-    &lt;title&gt;Laboratorio Anatómico 3D • Árbol Bronquial y Pulmones Hiperrealistas (GLB + Babylon.js)&lt;/title&gt;
+    &lt;title&gt;Laboratorio Anatómico 3D V2 • Pulmones y Árbol Bronquial Hiperrealistas (GLB + Babylon.js)&lt;/title&gt;
     &lt;!-- Babylon.js Motor 3D Oficial CDN --&gt;
     &lt;script src=&quot;https://cdn.babylonjs.com/babylon.js&quot;&gt;&lt;/script&gt;
     &lt;script src=&quot;https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js&quot;&gt;&lt;/script&gt;
@@ -360,11 +360,12 @@
     &lt;style&gt;
         :root {
             --bg-base: #060913;
-            --bg-card: rgba(15, 23, 42, 0.90);
+            --bg-card: rgba(15, 23, 42, 0.92);
             --border: rgba(56, 189, 248, 0.35);
             --primary: #38bdf8;
             --emerald: #34d399;
             --rose: #fb7185;
+            --lung-pink: #f472b6;
             --text-main: #f8fafc;
             --text-sub: #94a3b8;
             --font-sans: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, sans-serif;
@@ -447,7 +448,7 @@
         /* HUD CONTROLES DERECHA */
         .hud-sidebar {
             position: absolute; right: 20px; top: 85px; z-index: 10;
-            width: 300px; display: flex; flex-direction: column; gap: 12px;
+            width: 310px; display: flex; flex-direction: column; gap: 12px;
         }
         .panel-box {
             background: var(--bg-card);
@@ -460,7 +461,30 @@
         .box-title {
             font-size: 0.78rem; text-transform: uppercase; font-weight: 800;
             color: var(--primary); letter-spacing: 0.05em; margin-bottom: 10px;
+            display: flex; justify-content: space-between; align-items: center;
         }
+
+        /* CONTROL VISUAL DE PULMONES (OPACIDAD) */
+        .vis-modes-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 8px;
+        }
+        .btn-vis {
+            padding: 7px 8px; border-radius: 8px; font-size: 0.73rem; font-weight: 700;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            background: rgba(255, 255, 255, 0.05); color: #cbd5e1;
+            cursor: pointer; transition: all 0.2s ease; text-align: center;
+        }
+        .btn-vis:hover { background: rgba(56, 189, 248, 0.2); border-color: var(--primary); color: #fff; }
+        .btn-vis.active { background: rgba(244, 114, 182, 0.25); border-color: var(--lung-pink); color: #fbcfe8; }
+
+        .opacity-slider-wrap {
+            margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .opacity-label {
+            display: flex; justify-content: space-between; font-size: 0.74rem; color: var(--text-sub); margin-bottom: 4px;
+        }
+
+        /* FRECUENCIA RESPIRATORIA */
         .rpm-display {
             display: flex; align-items: baseline; justify-content: space-between;
             margin-bottom: 8px;
@@ -518,15 +542,15 @@
 
     &lt;div id=&quot;loadingOverlay&quot;&gt;
         &lt;div class=&quot;spinner&quot;&gt;&lt;/div&gt;
-        &lt;div style=&quot;font-weight: 600; color: #94a3b8; font-size: 0.9rem;&quot; id=&quot;loadingStatusText&quot;&gt;Cargando modelo anatómico 3D de pulmones...&lt;/div&gt;
+        &lt;div style=&quot;font-weight: 600; color: #94a3b8; font-size: 0.9rem;&quot; id=&quot;loadingStatusText&quot;&gt;Cargando modelo anatómico 3D de pulmones y bronquios (V2)...&lt;/div&gt;
     &lt;/div&gt;
 
     &lt;header&gt;
         &lt;div class=&quot;brand-card&quot;&gt;
             &lt;span class=&quot;brand-icon&quot;&gt;🫁&lt;/span&gt;
             &lt;div&gt;
-                &lt;div class=&quot;brand-title&quot;&gt;Aparato Respiratorio Humano • Fotogrametría 3D&lt;/div&gt;
-                &lt;div class=&quot;brand-sub&quot;&gt;Escaneo Anatómico Médico Real • Tráquea, Árbol Bronquial y Lóbulos&lt;/div&gt;
+                &lt;div class=&quot;brand-title&quot;&gt;Aparato Respiratorio Humano 3D • Edición V2&lt;/div&gt;
+                &lt;div class=&quot;brand-sub&quot;&gt;Tráquea Dinámica, Árbol Bronquial Fractal y Lóbulos Pulmonares Translúcidos&lt;/div&gt;
             &lt;/div&gt;
         &lt;/div&gt;
         &lt;div class=&quot;live-tag&quot;&gt;
@@ -538,8 +562,32 @@
     &lt;canvas id=&quot;renderCanvas&quot;&gt;&lt;/canvas&gt;
 
     &lt;aside class=&quot;hud-sidebar&quot;&gt;
+        &lt;!-- CAPA VISUAL PULMONES (V2) --&gt;
         &lt;div class=&quot;panel-box&quot;&gt;
-            &lt;div class=&quot;box-title&quot;&gt;🫁 Frecuencia Respiratoria&lt;/div&gt;
+            &lt;div class=&quot;box-title&quot;&gt;
+                &lt;span&gt;🫁 Capa de Pulmones&lt;/span&gt;
+                &lt;span style=&quot;font-size:0.7rem; color:var(--lung-pink); font-weight:700;&quot;&gt;V2 DUAL&lt;/span&gt;
+            &lt;/div&gt;
+            &lt;div class=&quot;vis-modes-grid&quot;&gt;
+                &lt;button class=&quot;btn-vis active&quot; data-opacity=&quot;0.45&quot; id=&quot;btnModeRayosX&quot;&gt;🔬 Rayos X (45%)&lt;/button&gt;
+                &lt;button class=&quot;btn-vis&quot; data-opacity=&quot;0.85&quot; id=&quot;btnModeCompleto&quot;&gt;🫁 Tejido (85%)&lt;/button&gt;
+                &lt;button class=&quot;btn-vis&quot; data-opacity=&quot;0.0&quot; id=&quot;btnModeBronquios&quot;&gt;⚡ Solo Bronquios&lt;/button&gt;
+                &lt;button class=&quot;btn-vis&quot; data-opacity=&quot;1.0&quot; id=&quot;btnModeOpaco&quot;&gt;🛡️ 100% Sólido&lt;/button&gt;
+            &lt;/div&gt;
+            &lt;div class=&quot;opacity-slider-wrap&quot;&gt;
+                &lt;div class=&quot;opacity-label&quot;&gt;
+                    &lt;span&gt;Opacidad del Tejido Pulmonar&lt;/span&gt;
+                    &lt;span id=&quot;opacityVal&quot;&gt;45%&lt;/span&gt;
+                &lt;/div&gt;
+                &lt;input type=&quot;range&quot; id=&quot;opacitySlider&quot; min=&quot;0&quot; max=&quot;100&quot; value=&quot;45&quot;&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+
+        &lt;!-- FRECUENCIA RESPIRATORIA --&gt;
+        &lt;div class=&quot;panel-box&quot;&gt;
+            &lt;div class=&quot;box-title&quot;&gt;
+                &lt;span&gt;🌬️ Ventilación Biológica&lt;/span&gt;
+            &lt;/div&gt;
             &lt;div class=&quot;rpm-display&quot;&gt;
                 &lt;div class=&quot;rpm-num&quot; id=&quot;rpmVal&quot;&gt;14&lt;/div&gt;
                 &lt;div class=&quot;rpm-unit&quot;&gt;Respiraciones / min (RPM)&lt;/div&gt;
@@ -554,6 +602,7 @@
             &lt;/div&gt;
         &lt;/div&gt;
 
+        &lt;!-- SONIDO --&gt;
         &lt;div class=&quot;panel-box&quot;&gt;
             &lt;div class=&quot;box-title&quot;&gt;🔊 Sonido Acústico Biológico&lt;/div&gt;
             &lt;button class=&quot;btn-action active&quot; id=&quot;btnAudio&quot;&gt;
@@ -562,6 +611,7 @@
             &lt;/button&gt;
         &lt;/div&gt;
 
+        &lt;!-- CÁMARA Y PERSPECTIVA --&gt;
         &lt;div class=&quot;panel-box&quot;&gt;
             &lt;div class=&quot;box-title&quot;&gt;🎥 Perspectiva Anatómica 360°&lt;/div&gt;
             &lt;div class=&quot;btn-views-grid&quot;&gt;
@@ -583,14 +633,108 @@
         const canvas = document.getElementById(&quot;renderCanvas&quot;);
         const engine = new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true });
         const loadingOverlay = document.getElementById(&quot;loadingOverlay&quot;);
-        const loadingStatusText = document.getElementById(&quot;loadingStatusText&quot;);
 
         let lungsRoot = null;
+        let leftLungLobe = null;
+        let rightLungLobe = null;
+        let lungMaterial = null;
         let lungAnimGroup = null;
+
         let fixedBaseScale = 1.0;
+        let baseCenter = new BABYLON.Vector3(0, 0, 0);
         let isModelLoaded = false;
         let currentRpm = 14;
         let autoRotate = true;
+        let currentOpacity = 0.45;
+
+        // GENERADOR ANATÓMICO DE LÓBULOS PULMONARES PBR (V2)
+        function createAnatomicalLungLobes(scene, rootNode) {
+            lungMaterial = new BABYLON.PBRMaterial(&quot;lungPBRMaterial&quot;, scene);
+            lungMaterial.albedoColor = new BABYLON.Color3(0.92, 0.44, 0.48); // Tono rosado orgánico alveolar
+            lungMaterial.emissiveColor = new BABYLON.Color3(0.12, 0.04, 0.05);
+            lungMaterial.roughness = 0.28; // Brillo húmedo de pleura
+            lungMaterial.metallic = 0.04;
+            lungMaterial.alpha = currentOpacity;
+            lungMaterial.backFaceCulling = false;
+            lungMaterial.transparencyMode = BABYLON.PBRMaterial.PBRMATERIAL_ALPHABLEND;
+            lungMaterial.subSurface.isTranslucencyEnabled = true;
+            lungMaterial.subSurface.translucencyIntensity = 0.7;
+
+            // Función para deformar geométricamente una esfera en un lóbulo pulmonar anatómico
+            function buildLobeMesh(name, isLeft) {
+                const sphere = BABYLON.MeshBuilder.CreateSphere(name, {
+                    segments: 36,
+                    diameterX: 7.6,
+                    diameterY: 14.8,
+                    diameterZ: 7.2
+                }, scene);
+
+                const positions = sphere.getVerticesData(BABYLON.VertexBuffer.PositionKind);
+                const numberOfVertices = positions.length / 3;
+
+                for (let i = 0; i &lt; numberOfVertices; i++) {
+                    let x = positions[i * 3];
+                    let y = positions[i * 3 + 1];
+                    let z = positions[i * 3 + 2];
+
+                    const normY = y / 7.4; // -1 (base) a +1 (ápice)
+
+                    // 1. Ápice superior afilado y estrecho
+                    if (normY &gt; 0) {
+                        const taper = 1.0 - (normY * 0.48);
+                        x *= taper;
+                        z *= taper;
+                    } 
+                    // 2. Base diafragmática ensanchada y cóncava
+                    else {
+                        const expandBase = 1.0 + Math.abs(normY) * 0.32;
+                        x *= expandBase;
+                        z *= expandBase;
+                        // Concavidad de la cúpula diafragmática en el fondo
+                        if (normY &lt; -0.65) {
+                            y += Math.sin((x*x + z*z) * 0.08) * 0.9;
+                        }
+                    }
+
+                    // 3. Aplanamiento medial (donde entran los bronquios)
+                    if (isLeft &amp;&amp; x &gt; 0) {
+                        x *= 0.72;
+                        // Escotadura cardíaca en el pulmón izquierdo
+                        if (normY &gt; -0.4 &amp;&amp; normY &lt; 0.3 &amp;&amp; z &gt; -1.0) {
+                            x *= 0.65;
+                            z *= 0.85;
+                        }
+                    } else if (!isLeft &amp;&amp; x &lt; 0) {
+                        x *= 0.76;
+                    }
+
+                    positions[i * 3] = x;
+                    positions[i * 3 + 1] = y;
+                    positions[i * 3 + 2] = z;
+                }
+
+                sphere.updateVerticesData(BABYLON.VertexBuffer.PositionKind, positions);
+                const indices = sphere.getIndices();
+                const normals = [];
+                BABYLON.VertexData.ComputeNormals(positions, indices, normals);
+                sphere.updateVerticesData(BABYLON.VertexBuffer.NormalKind, normals);
+
+                sphere.material = lungMaterial;
+                sphere.parent = rootNode;
+                return sphere;
+            }
+
+            // Crear y posicionar lóbulo derecho e izquierdo envolviendo el árbol bronquial
+            rightLungLobe = buildLobeMesh(&quot;rightLungLobe&quot;, false);
+            rightLungLobe.position = new BABYLON.Vector3(4.8, -1.2, -0.2);
+            rightLungLobe.rotation = new BABYLON.Vector3(0.04, 0.08, -0.05);
+
+            leftLungLobe = buildLobeMesh(&quot;leftLungLobe&quot;, true);
+            leftLungLobe.position = new BABYLON.Vector3(-4.8, -1.2, -0.2);
+            leftLungLobe.rotation = new BABYLON.Vector3(0.04, -0.08, 0.05);
+
+            console.log(&quot;✅ Lóbulos pulmonares V2 generados y acoplados con éxito.&quot;);
+        }
 
         const createScene = function () {
             const scene = new BABYLON.Scene(engine);
@@ -605,22 +749,22 @@
 
             // Iluminación quirúrgica/médica PBR
             const hemiLight = new BABYLON.HemisphericLight(&quot;hemiLight&quot;, new BABYLON.Vector3(0, 1, 0), scene);
-            hemiLight.intensity = 1.1;
-            hemiLight.diffuse = new BABYLON.Color3(1.0, 0.95, 0.92);
+            hemiLight.intensity = 1.15;
+            hemiLight.diffuse = new BABYLON.Color3(1.0, 0.96, 0.94);
             hemiLight.groundColor = new BABYLON.Color3(0.12, 0.16, 0.28);
 
             const keyLight = new BABYLON.DirectionalLight(&quot;keyLight&quot;, new BABYLON.Vector3(-1, -2, -1), scene);
             keyLight.position = new BABYLON.Vector3(5, 8, 5);
-            keyLight.intensity = 1.8;
+            keyLight.intensity = 1.9;
             keyLight.diffuse = new BABYLON.Color3(1.0, 0.98, 0.95);
 
             const fillLight = new BABYLON.PointLight(&quot;fillLight&quot;, new BABYLON.Vector3(-6, -2, -4), scene);
             fillLight.diffuse = new BABYLON.Color3(0.3, 0.6, 0.95);
-            fillLight.intensity = 1.3;
+            fillLight.intensity = 1.4;
 
             const rimLight = new BABYLON.PointLight(&quot;rimLight&quot;, new BABYLON.Vector3(4, 4, 6), scene);
-            rimLight.diffuse = new BABYLON.Color3(1.0, 0.4, 0.5);
-            rimLight.intensity = 1.5;
+            rimLight.diffuse = new BABYLON.Color3(1.0, 0.45, 0.55);
+            rimLight.intensity = 1.6;
 
             const gl = new BABYLON.GlowLayer(&quot;glow&quot;, scene);
             gl.intensity = 0.25;
@@ -643,7 +787,7 @@
 
                 const src = candidateSources[currentSourceIdx];
                 const isB64 = (typeof src === &quot;string&quot; &amp;&amp; src.startsWith(&quot;data:&quot;));
-                console.log(&quot;[Simulador Pulmones 3D] Intentando cargar fuente &quot; + (currentSourceIdx + 1) + &quot;/&quot; + candidateSources.length + &quot;:&quot;, isB64 ? &quot;Data URI Base64 (&quot; + (src.length / 1024 / 1024).toFixed(1) + &quot; MB)&quot; : src);
+                console.log(&quot;[Simulador Pulmones 3D V2] Intentando cargar fuente &quot; + (currentSourceIdx + 1) + &quot;/&quot; + candidateSources.length + &quot;:&quot;, isB64 ? &quot;Data URI Base64 (&quot; + (src.length / 1024 / 1024).toFixed(1) + &quot; MB)&quot; : src);
 
                 BABYLON.SceneLoader.ImportMesh(
                     &quot;&quot;,
@@ -663,12 +807,15 @@
                                 }
                             });
 
-                            // Si el modelo incluye la animación de respiración médica nativa (Blender morph targets)
+                            // Construir lóbulos anatómicos envolventes V2 acoplados al mismo TransformNode
+                            createAnatomicalLungLobes(scene, lungsRoot);
+
+                            // Si el modelo incluye la animación médica de respiración (Blender morph targets)
                             if (animationGroups &amp;&amp; animationGroups.length &gt; 0) {
                                 lungAnimGroup = animationGroups[0];
                                 lungAnimGroup.play(true);
                                 lungAnimGroup.speedRatio = currentRpm / 14.0;
-                                console.log(&quot;[Simulador Pulmones 3D] Animación médica nativa activada:&quot;, lungAnimGroup.name);
+                                console.log(&quot;[Simulador Pulmones 3D V2] Animación médica nativa activada:&quot;, lungAnimGroup.name);
                             }
 
                             // Normalización de escala y centrado volumétrico exacto
@@ -680,16 +827,18 @@
                             if (maxDim &gt; 0 &amp;&amp; isFinite(maxDim)) {
                                 fixedBaseScale = 2.8 / maxDim;
                                 lungsRoot.scaling = new BABYLON.Vector3(fixedBaseScale, fixedBaseScale, fixedBaseScale);
-                                lungsRoot.position = center.scale(-fixedBaseScale);
+                                baseCenter = center.scale(-fixedBaseScale);
+                                lungsRoot.position = baseCenter.clone();
                             } else {
                                 fixedBaseScale = 0.25;
                                 lungsRoot.scaling = new BABYLON.Vector3(fixedBaseScale, fixedBaseScale, fixedBaseScale);
+                                baseCenter = new BABYLON.Vector3(0, 0, 0);
                             }
 
                             camera.radius = 5.2;
                             camera.target = new BABYLON.Vector3(0, 0, 0);
                             isModelLoaded = true;
-                            console.log(&quot;✅ [Simulador Pulmones 3D] Cargado exitosamente desde:&quot;, isB64 ? &quot;Base64 Embebido&quot; : src);
+                            console.log(&quot;✅ [Simulador Pulmones 3D V2] Cargado exitosamente desde:&quot;, isB64 ? &quot;Base64 Embebido&quot; : src);
                         } catch (initErr) {
                             console.error(&quot;Error inicializando modelo en escena:&quot;, initErr);
                             currentSourceIdx++;
@@ -762,10 +911,10 @@
 
         window.addEventListener(&quot;pointerdown&quot;, () =&gt; {
             if (!audioCtx) initAudio();
-            else if (audioCtx.state === suspended) audioCtx.resume();
+            else if (audioCtx.state === &#x27;suspended&#x27;) audioCtx.resume();
         }, { once: true });
 
-        // BUCLE DE RENDER: VENTILACIÓN BIOLÓGICA ASIMÉTRICA REAL
+        // BUCLE DE RENDER: BIOMECÁNICA RESPIRATORIA DINÁMICA VERTICAL Y EXPANSIVA (V2)
         let breathTime = 0;
         engine.runRenderLoop(function () {
             const dt = engine.getDeltaTime() / 1000.0;
@@ -773,33 +922,40 @@
             breathTime = (breathTime + dt) % cycleDuration;
             const cyclePhase = breathTime / cycleDuration; // 0.0 a 1.0
 
-            // Inhalación activa 45%, exhalación elástica pasiva 55%
+            // Inhalación activa 45% (diafragma desciende y expande), exhalación elástica pasiva 55% (asciende)
             let expansion = 0;
             let isInhaling = true;
             if (cyclePhase &lt; 0.45) {
                 const p = cyclePhase / 0.45;
-                expansion = 0.5 - 0.5 * Math.cos(p * Math.PI); // 0 a 1
+                expansion = 0.5 - 0.5 * Math.cos(p * Math.PI); // 0.0 a 1.0 suave
                 isInhaling = true;
             } else {
                 const p = (cyclePhase - 0.45) / 0.55;
-                expansion = 0.5 + 0.5 * Math.cos(p * Math.PI); // 1 a 0
+                expansion = 0.5 + 0.5 * Math.cos(p * Math.PI); // 1.0 a 0.0 suave
                 isInhaling = false;
             }
 
             const statusEl = document.getElementById(&quot;cycleStatus&quot;);
             if (statusEl) {
-                statusEl.textContent = isInhaling ? &quot;INHALACIÓN ACTIVA&quot; : &quot;EXHALACIÓN ELÁSTICA&quot;;
+                statusEl.textContent = isInhaling ? &quot;INHALACIÓN (DIAFRAGMA BAJA)&quot; : &quot;EXHALACIÓN (RETRACCIÓN ELÁSTICA)&quot;;
                 statusEl.style.color = isInhaling ? &quot;#38bdf8&quot; : &quot;#34d399&quot;;
             }
 
-            // Aplicar expansión volumétrica biológica (si no hay animación esqueletal/morph activa)
+            // APLICACIÓN DINÁMICA DE LA RESPIRACIÓN EN LA TRÁQUEA Y LÓBULOS (V2)
             if (lungsRoot &amp;&amp; isModelLoaded) {
-                if (!lungAnimGroup) {
-                    const scaleFactor = 1.0 + (expansion * 0.09); // 9% expansión volumétrica natural
-                    lungsRoot.scaling.x = fixedBaseScale * scaleFactor;
-                    lungsRoot.scaling.y = fixedBaseScale * (1.0 + expansion * 0.07);
-                    lungsRoot.scaling.z = fixedBaseScale * scaleFactor;
-                }
+                // 1. Desplazamiento vertical diafragmático pronunciado (Arriba / Abajo)
+                // Durante la inhalación el árbol traqueobronquial desciende; al exhalar asciende
+                const verticalShift = -expansion * 0.28; 
+                lungsRoot.position.y = baseCenter.y + verticalShift;
+
+                // 2. Expansión elástica tridimensional (alvéolos y lóbulos se ensanchan)
+                const scaleX = fixedBaseScale * (1.0 + expansion * 0.16); // 16% apertura lateral
+                const scaleY = fixedBaseScale * (1.0 + expansion * 0.10); // 10% elongación vertical
+                const scaleZ = fixedBaseScale * (1.0 + expansion * 0.16); // 16% expansión anteroposterior
+
+                lungsRoot.scaling.x = scaleX;
+                lungsRoot.scaling.y = scaleY;
+                lungsRoot.scaling.z = scaleZ;
 
                 if (autoRotate) {
                     lungsRoot.rotation.y += 0.003;
@@ -819,7 +975,43 @@
 
         window.addEventListener(&quot;resize&quot;, () =&gt; engine.resize());
 
-        // CONTROLES DE LA INTERFAZ
+        // CONTROLES DE LA INTERFAZ (V2)
+        // 1. Selector de Opacidad de Pulmones
+        const opacitySlider = document.getElementById(&quot;opacitySlider&quot;);
+        const opacityVal = document.getElementById(&quot;opacityVal&quot;);
+        const visBtns = document.querySelectorAll(&quot;.btn-vis&quot;);
+
+        function setLungOpacity(alphaVal) {
+            currentOpacity = Math.max(0, Math.min(1, alphaVal));
+            if (lungMaterial) {
+                lungMaterial.alpha = currentOpacity;
+            }
+            if (leftLungLobe &amp;&amp; rightLungLobe) {
+                const isVisible = currentOpacity &gt; 0.02;
+                leftLungLobe.setEnabled(isVisible);
+                rightLungLobe.setEnabled(isVisible);
+            }
+            opacitySlider.value = Math.round(currentOpacity * 100);
+            opacityVal.textContent = Math.round(currentOpacity * 100) + &quot;%&quot;;
+
+            visBtns.forEach(btn =&gt; {
+                const bAlpha = parseFloat(btn.getAttribute(&quot;data-opacity&quot;));
+                btn.classList.toggle(&quot;active&quot;, Math.abs(bAlpha - currentOpacity) &lt; 0.08);
+            });
+        }
+
+        opacitySlider.addEventListener(&quot;input&quot;, (e) =&gt; {
+            setLungOpacity(parseInt(e.target.value) / 100.0);
+        });
+
+        visBtns.forEach(btn =&gt; {
+            btn.addEventListener(&quot;click&quot;, () =&gt; {
+                const a = parseFloat(btn.getAttribute(&quot;data-opacity&quot;));
+                setLungOpacity(a);
+            });
+        });
+
+        // 2. Frecuencia Respiratoria
         const rpmSlider = document.getElementById(&quot;rpmSlider&quot;);
         const rpmVal = document.getElementById(&quot;rpmVal&quot;);
         const presetBtns = document.querySelectorAll(&quot;.btn-preset&quot;);
@@ -847,6 +1039,7 @@
             });
         });
 
+        // 3. Audio
         const btnAudio = document.getElementById(&quot;btnAudio&quot;);
         btnAudio.addEventListener(&quot;click&quot;, () =&gt; {
             if (!audioCtx) initAudio();
@@ -856,6 +1049,7 @@
             if (!audioEnabled &amp;&amp; gainNode) gainNode.gain.value = 0;
         });
 
+        // 4. Vistas y Rotación
         document.getElementById(&quot;btnFront&quot;).addEventListener(&quot;click&quot;, () =&gt; {
             camera.alpha = -Math.PI / 2;
             camera.beta = Math.PI / 2.2;
