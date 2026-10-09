@@ -27,7 +27,7 @@ def build_cod_001_taller_3d_pdf(output_path=PDF_PATH):
     doc = SimpleDocTemplate(
         output_path,
         pagesize=letter,
-        rightMargin=42, leftMargin=42, topMargin=34, bottomMargin=32
+        rightMargin=40, leftMargin=40, topMargin=28, bottomMargin=26
     )
     styles = getSampleStyleSheet()
     
@@ -91,15 +91,16 @@ def build_cod_001_taller_3d_pdf(output_path=PDF_PATH):
         [Paragraph("<b>✅ Tarea 3 • Abre el Taller Oficial de Pruebas (Pestaña 2):</b><br/>"
                    "En el mapa del curso, pulsa el botón <b>«🚀 Abrir Taller Interactivo de Pruebas ↗»</b>. ¡Todo funciona en la memoria del navegador!", style_task)],
         [Paragraph("<b>✅ Tarea 4 • Pega con Ctrl+V y pulsa «Ejecutar Creación»:</b><br/>"
-                   "En el Taller, pega el código pulsando <b>Ctrl+V</b> (o Cmd+V en Mac) en el cuadro de texto y haz clic en <b>«▶️ Ejecutar Creación»</b>. ¡Tu corazón 3D empezará a latir con suavidad y podrás rotarlo en 360° con el ratón!<br/>"
-                   "<i>(Nota: Para ver el corazón con sonido real de fonendoscopio y control deslizante de 40 a 160 BPM, pulsa el botón «🫀 Probar Corazón 3D + Audio»).</i>", style_task)],
+                   "En el Taller, pega el código pulsando <b>Ctrl+V</b> (o Cmd+V en Mac) en el cuadro de texto y haz clic en <b>«▶️ Ejecutar Creación»</b>. ¡Tu corazón 3D empezará a latir con suavidad y podrás rotarlo en 360° con el ratón!", style_task)],
+        [Paragraph("<b>✅ Tarea 5 • Prueba el simulador médico con audio real:</b><br/>"
+                   "Para ver el corazón con sonido real de fonendoscopio y control deslizante de 40 a 160 BPM, pulsa el botón <b>«🫀 Probar Corazón 3D + Audio»</b>.", style_task)],
     ]
     t_table = Table(task_rows, colWidths=[letter[0] - 84])
     t_table.setStyle(TableStyle([
         ('BACKGROUND', (0,0), (-1,-1), colors.HexColor('#F0F9FF')),
         ('BOX', (0,0), (-1,-1), 1, colors.HexColor('#0284C7')),
-        ('TOPPADDING', (0,0), (-1,-1), 2.5),
-        ('BOTTOMPADDING', (0,0), (-1,-1), 2.5),
+        ('TOPPADDING', (0,0), (-1,-1), 2),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 2),
         ('LEFTPADDING', (0,0), (-1,-1), 8),
         ('RIGHTPADDING', (0,0), (-1,-1), 8),
     ]))
