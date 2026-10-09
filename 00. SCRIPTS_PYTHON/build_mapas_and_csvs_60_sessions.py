@@ -322,7 +322,7 @@ def generate_columns_html(session_num, session_folder, files):
                             <span class="fase-zero-card-icon">📋</span>
                             <div>
                                 <div class="fase-zero-card-title">0. FASE 0 • GUÍA Y TABLA DE CUADERNOS</div>
-                                <div class="fase-zero-card-sub">PDF de referencia • Tabla completa de las 15 etiquetas y nombres para Gemini</div>
+                                <div class="fase-zero-card-sub">PDF de referencia • Tabla completa de las 16 etiquetas y nombres para Gemini</div>
                             </div>
                         </div>
                         <span class="fase-zero-card-btn">Abrir Guía PDF ↗</span>

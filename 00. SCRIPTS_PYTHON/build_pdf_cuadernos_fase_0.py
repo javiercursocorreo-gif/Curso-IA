@@ -21,6 +21,7 @@ ETIQUETAS = [
     ("[ARTE]", "ARTE", "Obras maestras de la pinacoteca universal y análisis artístico."),
     ("[FRAC]", "FRACTALES", "Geometría en la naturaleza, biomimética y vídeos en alta definición."),
     ("[INT]", "INTERIOR", "Cortes transversales: arquitectura, monumentos y maquinaria por dentro."),
+    ("[COD]", "CÓDIGO", "Programación con IA, creación de simuladores 3D y código HTML interactivo."),
     ("[FUT]", "FUTURO", "Ciencia ficción, hábitats espaciales y robótica avanzada del mañana."),
     ("[NAT]", "NATURALEZA", "Biomecánica animal, aves del mundo y maravillas del reino natural."),
     ("[NIV]", "NIVELES", "Escalafones del conocimiento y clasificaciones universales (101)."),
@@ -41,10 +42,10 @@ def build_pdf_reportlab():
     doc = SimpleDocTemplate(
         PDF_PATH,
         pagesize=A4,
-        leftMargin=32,
-        rightMargin=32,
-        topMargin=26,
-        bottomMargin=22
+        leftMargin=30,
+        rightMargin=30,
+        topMargin=20,
+        bottomMargin=18
     )
 
     styles = getSampleStyleSheet()
@@ -182,9 +183,9 @@ def build_pdf_reportlab():
         ('RIGHTPADDING', (0,0), (-1,-1), 10),
     ]))
     story.append(callout_table)
-    story.append(Spacer(1, 6))
+    story.append(Spacer(1, 4))
 
-    # 3. Tabla Principal de 15 Etiquetas y Cuadernos
+    # 3. Tabla Principal de 16 Etiquetas y Cuadernos
     table_data = [
         [
             Paragraph("Etiqueta en Clase", style_tbl_head),
@@ -205,8 +206,8 @@ def build_pdf_reportlab():
         ('BACKGROUND', (0,0), (-1,0), colors.HexColor('#0284C7')),
         ('ALIGN', (0,0), (1,-1), 'CENTER'),
         ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),
-        ('TOPPADDING', (0,0), (-1,-1), 3),
-        ('BOTTOMPADDING', (0,0), (-1,-1), 3),
+        ('TOPPADDING', (0,0), (-1,-1), 2.2),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 2.2),
         ('LEFTPADDING', (0,0), (-1,-1), 5),
         ('RIGHTPADDING', (0,0), (-1,-1), 5),
         ('GRID', (0,0), (-1,-1), 0.5, colors.HexColor('#CBD5E1')),
@@ -218,7 +219,7 @@ def build_pdf_reportlab():
 
     t_main.setStyle(TableStyle(t_style))
     story.append(t_main)
-    story.append(Spacer(1, 6))
+    story.append(Spacer(1, 4))
 
     # 4. Caja Inferior de Beneficio y Portafolio
     tip_html = (
@@ -226,19 +227,20 @@ def build_pdf_reportlab():
         "• A lo largo de las 60 sesiones realizarás decenas de prácticas fascinantes con inteligencia artificial.<br/>"
         "• Cuando quieras recuperar una receta o redacción formal, irás directo a tu cuaderno <b>TEXTO</b>.<br/>"
         "• Si quieres admirar tus ilustraciones y cuadros generados, abrirás <b>ESTILO</b> y los tendrás todos juntos.<br/>"
+        "• Si programas o creas simuladores interactivos con IA, los tendrás agrupados en <b>CÓDIGO</b>.<br/>"
         "• <b>¡Nunca más volverás a perder una práctica valiosa entre cientos de conversaciones dispersas!</b>"
     )
     t_tip = Table([[Paragraph(tip_html, style_tip_body)]], colWidths=[531])
     t_tip.setStyle(TableStyle([
         ('BACKGROUND', (0,0), (-1,-1), colors.HexColor('#FFFBEB')),
         ('BOX', (0,0), (-1,-1), 1, colors.HexColor('#F59E0B')),
-        ('TOPPADDING', (0,0), (-1,-1), 5),
-        ('BOTTOMPADDING', (0,0), (-1,-1), 5),
+        ('TOPPADDING', (0,0), (-1,-1), 4),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 4),
         ('LEFTPADDING', (0,0), (-1,-1), 10),
         ('RIGHTPADDING', (0,0), (-1,-1), 10),
     ]))
     story.append(t_tip)
-    story.append(Spacer(1, 5))
+    story.append(Spacer(1, 4))
 
     # 5. Pie de página
     story.append(Paragraph("Curso de Inteligencia Artificial • Fase 0: Guía Metodológica de Cuadernos • Hoja Oficial de Referencia", style_footer))
