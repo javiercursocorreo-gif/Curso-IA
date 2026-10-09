@@ -93,7 +93,7 @@ def build_cod_001_taller_3d_pdf(output_path=PDF_PATH):
         [Paragraph("<b>✅ Tarea 4 • Pega con Ctrl+V y pulsa «Ejecutar Creación»:</b><br/>"
                    "En el Taller, pega el código pulsando <b>Ctrl+V</b> (o Cmd+V en Mac) en el cuadro de texto y haz clic en <b>«▶️ Ejecutar Creación»</b>. ¡Tus pulmones 3D empezarán a ventilar suavemente y podrás rotarlos en 360° con el ratón!", style_task)],
         [Paragraph("<b>✅ Tarea 5 • Prueba el simulador médico con audio real:</b><br/>"
-                   "Para ver el modelo anatómico completo con sonido respiratorio y control de 8 a 30 RPM, pulsa el botón <b>«🫁 Probar Pulmones 3D + Respiración»</b>.", style_task)],
+                   "Para ver el modelo anatómico completo con sonido respiratorio y control de 8 a 28 RPM, pulsa el botón <b>«🫁 Pulmones 3D (Sesión 01)»</b>.", style_task)],
     ]
     t_table = Table(task_rows, colWidths=[letter[0] - 84])
     t_table.setStyle(TableStyle([
@@ -111,14 +111,16 @@ def build_cod_001_taller_3d_pdf(output_path=PDF_PATH):
     story.append(Paragraph("🧠 <b>Prompt Maestro para Copiar y Pegar en Gemini:</b>", style_section_h))
     prompt_text = (
         "<b>Copia exactamente este texto en Gemini:</b><br/><br/>"
-        "<i>\"Genera el código de programación (HTML y JavaScript con Babylon.js) que voy a copiar y pegar en el Taller de Pruebas de mi curso para crear un simulador 3D del aparato respiratorio humano.<br/><br/>"
+        "<i>\"Genera el código de programación (HTML y JavaScript con Babylon.js) que voy a copiar y pegar en el Taller de Pruebas de mi curso para crear un simulador 3D hiperrealista del aparato respiratorio humano.<br/><br/>"
         "Requisitos del código:<br/>"
         "1. Entrega el programa en un único bloque de código para que yo pulse directamente «Copiar código» y lo pegue con Ctrl+V en mi simulador.<br/>"
-        "2. Modela en 3D la tráquea central con sus anillos cartilaginosos y la bifurcación en bronquios principales izquierdo y derecho.<br/>"
-        "3. Crea un árbol bronquial con ramificación fractal geométrica continua y alvéolos terminales, demostrando la biomimética del cuerpo humano.<br/>"
-        "4. Incluye los pulmones translúcidos con animación biológica de ciclo respiratorio (inhalación y exhalación expansiva suave y rítmica).<br/>"
-        "5. Centra el modelo con cámara orbital 360° para rotarlo libremente con el ratón e iluminación sobre fondo azul noche (#070b14).<br/>"
-        "6. Escribe exclusivamente el bloque de código para que al copiarlo a mi simulador genere los pulmones interactivos.\"</i>"
+        "2. Incluye en la cabecera los scripts del motor Babylon.js y el modelo anatómico fotogramétrico:<br/>"
+        "&lt;script src=&quot;https://cdn.babylonjs.com/babylon.js&quot;&gt;&lt;/script&gt;<br/>"
+        "&lt;script src=&quot;https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js&quot;&gt;&lt;/script&gt;<br/>"
+        "&lt;script src=&quot;https://javiercursocorreo-gif.github.io/Curso-IA/SIMULADORES_INTERACTIVOS/lungs_b64.js&quot;&gt;&lt;/script&gt;<br/>"
+        "3. Carga el modelo 3D anatómico real con SceneLoader.ImportMesh('', '', window.LUNGS_GLB_B64, ...) y céntralo con cámara orbital 360° e iluminación de estudio sobre fondo azul noche (#060913).<br/>"
+        "4. En el bucle de animación, programa el ciclo respiratorio continuo con expansión volumétrica biológica suave (inhalación activa y retroceso elástico).<br/>"
+        "5. Escribe exclusivamente el bloque de código para que al copiarlo a mi simulador genere los pulmones 3D hiperrealistas.\"</i>"
     )
     p_table = Table([[Paragraph(prompt_text, style_prompt)]], colWidths=[letter[0] - 84])
     p_table.setStyle(TableStyle([

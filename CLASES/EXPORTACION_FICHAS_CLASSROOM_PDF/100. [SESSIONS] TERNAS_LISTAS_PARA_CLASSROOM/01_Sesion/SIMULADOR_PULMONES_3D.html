@@ -3,14 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simulador 3D del Árbol Bronquial y Pulmones • Geometría Fractal Humana</title>
+    <title>Laboratorio Anatómico 3D • Árbol Bronquial y Pulmones Hiperrealistas (GLB + Babylon.js)</title>
     <!-- Babylon.js Motor 3D Oficial CDN -->
     <script src="https://cdn.babylonjs.com/babylon.js"></script>
     <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+    <!-- Base64 y fallback CDN -->
+    <script src="lungs_b64.js"></script>
+    <script src="https://javiercursocorreo-gif.github.io/Curso-IA/SIMULADORES_INTERACTIVOS/lungs_b64.js"></script>
     <style>
         :root {
             --bg-base: #060913;
-            --bg-card: rgba(15, 23, 42, 0.92);
+            --bg-card: rgba(15, 23, 42, 0.90);
             --border: rgba(56, 189, 248, 0.35);
             --primary: #38bdf8;
             --emerald: #34d399;
@@ -20,7 +23,7 @@
             --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
 
         body {
             font-family: var(--font-sans);
@@ -31,579 +34,404 @@
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            user-select: none;
         }
 
-        /* HEADER DE CONTROL */
+        /* OVERLAY DE CARGA */
+        #loadingOverlay {
+            position: absolute; inset: 0; z-index: 100;
+            background: #060913;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center; gap: 16px;
+            transition: opacity 0.5s ease;
+        }
+        .spinner {
+            width: 50px; height: 50px;
+            border: 4px solid rgba(56, 189, 248, 0.2);
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        /* HEADER */
         header {
-            background: linear-gradient(180deg, rgba(15, 23, 42, 0.95) 0%, rgba(10, 15, 26, 0.85) 100%);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-            padding: 12px 24px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 16px;
-            z-index: 20;
-            backdrop-filter: blur(12px);
+            position: absolute; top: 16px; left: 20px; right: 20px; z-index: 10;
+            display: flex; justify-content: space-between; align-items: center;
+            pointer-events: none;
         }
-
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 12px;
+        .brand-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(14px);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 12px 20px;
+            display: flex; align-items: center; gap: 14px;
+            pointer-events: auto;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
         }
         .brand-icon {
             font-size: 1.8rem;
             background: rgba(56, 189, 248, 0.15);
-            border: 1px solid var(--border);
-            padding: 4px 10px;
-            border-radius: 12px;
-            box-shadow: 0 0 15px rgba(56, 189, 248, 0.2);
+            padding: 4px 10px; border-radius: 12px;
         }
-        .brand-text h1 {
-            font-size: 1.12rem;
-            font-weight: 800;
-            color: #fff;
-            letter-spacing: -0.01em;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .brand-badge {
-            background: rgba(52, 211, 153, 0.15);
-            color: var(--emerald);
-            border: 1px solid rgba(52, 211, 153, 0.4);
-            font-size: 0.68rem;
-            padding: 2px 8px;
-            border-radius: 9999px;
-            font-weight: 800;
-        }
-        .brand-text p {
-            font-size: 0.78rem;
-            color: var(--text-sub);
-        }
+        .brand-title { font-size: 1.05rem; font-weight: 800; color: #fff; }
+        .brand-sub { font-size: 0.74rem; color: var(--text-sub); }
 
-        /* CONTROLES SUPERIORES */
-        .controls-top {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            flex-wrap: wrap;
+        .live-tag {
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid rgba(16, 185, 129, 0.4);
+            color: #34d399;
+            padding: 6px 14px; border-radius: 9999px;
+            font-size: 0.75rem; font-weight: 700;
+            display: flex; align-items: center; gap: 8px;
+            pointer-events: auto;
         }
-
-        .control-group {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 6px 14px;
-            border-radius: 12px;
+        .pulse-dot {
+            width: 8px; height: 8px; border-radius: 50%;
+            background: #10b981;
+            box-shadow: 0 0 10px #10b981;
+            animation: pulse 1.5s infinite;
         }
-
-        .control-label {
-            font-size: 0.78rem;
-            font-weight: 700;
-            color: var(--text-sub);
-        }
-
-        .slider-rpm {
-            -webkit-appearance: none;
-            width: 130px;
-            height: 6px;
-            background: #1e293b;
-            border-radius: 3px;
-            outline: none;
-            cursor: pointer;
-        }
-        .slider-rpm::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 16px;
-            height: 16px;
-            background: var(--primary);
-            border-radius: 50%;
-            cursor: pointer;
-            box-shadow: 0 0 10px var(--primary);
-        }
-
-        .rpm-display {
-            font-family: ui-monospace, monospace;
-            font-size: 0.92rem;
-            font-weight: 800;
-            color: var(--primary);
-            min-width: 55px;
-        }
-
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 7px;
-            padding: 8px 16px;
-            border-radius: 10px;
-            font-size: 0.82rem;
-            font-weight: 800;
-            cursor: pointer;
-            border: 1px solid transparent;
-            transition: all 0.2s ease;
-        }
-        .btn-toggle {
-            background: rgba(56, 189, 248, 0.15);
-            color: var(--primary);
-            border-color: rgba(56, 189, 248, 0.4);
-        }
-        .btn-toggle:hover {
-            background: rgba(56, 189, 248, 0.25);
-            transform: translateY(-1px);
-        }
-        .btn-audio {
-            background: rgba(52, 211, 153, 0.15);
-            color: var(--emerald);
-            border-color: rgba(52, 211, 153, 0.4);
-        }
-        .btn-audio:hover {
-            background: rgba(52, 211, 153, 0.25);
-        }
+        @keyframes pulse { 0%,100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.3); opacity: 0.5; } }
 
         /* CANVAS 3D */
         #renderCanvas {
-            width: 100%;
-            flex: 1;
-            touch-action: none;
-            outline: none;
+            width: 100vw; height: 100vh;
+            display: block; outline: none;
         }
 
-        /* PANEL INFORMATIVO FLOTANTE */
-        .info-panel {
-            position: absolute;
-            bottom: 24px;
-            left: 24px;
+        /* HUD CONTROLES DERECHA */
+        .hud-sidebar {
+            position: absolute; right: 20px; top: 85px; z-index: 10;
+            width: 280px; display: flex; flex-direction: column; gap: 12px;
+        }
+        .panel-box {
             background: var(--bg-card);
-            border: 1px solid var(--border);
-            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5), inset 0 0 15px rgba(56, 189, 248, 0.08);
-            border-radius: 16px;
-            padding: 16px 20px;
-            max-width: 380px;
-            backdrop-filter: blur(10px);
-            z-index: 10;
-            pointer-events: auto;
-        }
-
-        .info-title {
-            font-size: 0.92rem;
-            font-weight: 800;
-            color: #fff;
-            margin-bottom: 6px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .info-body {
-            font-size: 0.78rem;
-            line-height: 1.45;
-            color: var(--text-sub);
-        }
-        .info-body strong {
-            color: #f1f5f9;
-        }
-
-        /* MONITOR DE FASE RESPIRATORIA */
-        .phase-indicator {
-            position: absolute;
-            top: 76px;
-            right: 24px;
-            background: var(--bg-card);
+            backdrop-filter: blur(14px);
             border: 1px solid var(--border);
             border-radius: 14px;
-            padding: 10px 18px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
+            padding: 14px 18px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+        }
+        .box-title {
+            font-size: 0.78rem; text-transform: uppercase; font-weight: 800;
+            color: var(--primary); letter-spacing: 0.05em; margin-bottom: 10px;
+        }
+        .rpm-display {
+            display: flex; align-items: baseline; justify-content: space-between;
+            margin-bottom: 8px;
+        }
+        .rpm-num { font-size: 1.8rem; font-weight: 900; color: #fff; }
+        .rpm-unit { font-size: 0.78rem; color: var(--text-sub); }
+        input[type="range"] {
+            width: 100%; accent-color: var(--primary); cursor: pointer;
+        }
+
+        /* BOTONES DE AUDIO Y VISTA */
+        .btn-action {
+            width: 100%; padding: 8px 12px; border-radius: 8px;
+            font-size: 0.8rem; font-weight: 700; cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            background: rgba(255, 255, 255, 0.08); color: #fff;
+            display: flex; align-items: center; justify-content: space-between;
+            margin-top: 6px; transition: all 0.2s ease;
+        }
+        .btn-action:hover { background: rgba(56, 189, 248, 0.2); border-color: var(--primary); }
+        .btn-action.active { background: rgba(16, 185, 129, 0.25); border-color: #10b981; color: #34d399; }
+
+        /* HINT INFERIOR */
+        .hint-bar {
+            position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);
+            background: rgba(15, 23, 42, 0.85);
             backdrop-filter: blur(10px);
-            z-index: 10;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 8px 20px; border-radius: 9999px;
+            font-size: 0.78rem; color: var(--text-sub);
+            display: flex; align-items: center; gap: 8px;
+            pointer-events: none;
         }
-        .phase-pulse {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background: var(--primary);
-            box-shadow: 0 0 12px var(--primary);
-            transition: transform 0.2s ease, background 0.3s ease;
-        }
-        .phase-text {
-            font-size: 0.82rem;
-            font-weight: 800;
-            color: #fff;
-            letter-spacing: 0.02em;
-        }
-        .phase-sub {
-            font-size: 0.7rem;
-            color: var(--text-sub);
-        }
+        .hint-bar strong { color: #fff; }
     </style>
 </head>
 <body>
 
-    <!-- CABECERA -->
+    <div id="loadingOverlay">
+        <div class="spinner"></div>
+        <div style="font-weight: 600; color: #94a3b8; font-size: 0.9rem;">Cargando modelo fotogramétrico 3D de pulmones...</div>
+    </div>
+
     <header>
-        <div class="brand">
+        <div class="brand-card">
             <span class="brand-icon">🫁</span>
-            <div class="brand-text">
-                <h1>Árbol Bronquial & Pulmones 3D <span class="brand-badge">Biomimética Fractal</span></h1>
-                <p>Simulador interactivo del aparato respiratorio humano • Sesión 01 [COD-001]</p>
+            <div>
+                <div class="brand-title">Aparato Respiratorio Humano • Fotogrametría 3D</div>
+                <div class="brand-sub">Escaneo Anatómico Médico Real • Tráquea, Árbol Bronquial y Lóbulos</div>
             </div>
         </div>
-
-        <div class="controls-top">
-            <div class="control-group">
-                <span class="control-label">Frecuencia Respiratoria:</span>
-                <input type="range" id="rpmSlider" class="slider-rpm" min="8" max="30" value="14" step="1">
-                <span class="rpm-display" id="rpmDisplay">14 RPM</span>
-            </div>
-
-            <button class="btn btn-toggle" id="btnToggleView">
-                🌀 Ver Solo Árbol Fractal
-            </button>
-
-            <button class="btn btn-audio" id="btnToggleAudio">
-                🔊 Audio Respiratorio: ON
-            </button>
+        <div class="live-tag">
+            <span class="pulse-dot"></span>
+            <span id="cycleStatus">INHALACIÓN ACTIVA</span>
         </div>
     </header>
 
-    <!-- INDICADOR DE FASE -->
-    <div class="phase-indicator">
-        <div class="phase-pulse" id="phasePulse"></div>
-        <div>
-            <div class="phase-text" id="phaseText">INSPIRACIÓN</div>
-            <div class="phase-sub" id="phaseSub">Ingreso de O₂ a los alvéolos</div>
-        </div>
-    </div>
-
-    <!-- CANVAS BABYLON.JS -->
     <canvas id="renderCanvas"></canvas>
 
-    <!-- FICHA INFORMATIVA FRACTAL (ENLACE DIRECTO CON FRAC-058) -->
-    <div class="info-panel">
-        <div class="info-title">
-            <span>🧬 La Geometría Fractal de tus Pulmones</span>
+    <aside class="hud-sidebar">
+        <div class="panel-box">
+            <div class="box-title">🫁 Frecuencia Respiratoria</div>
+            <div class="rpm-display">
+                <div class="rpm-num" id="rpmVal">14</div>
+                <div class="rpm-unit">Respiraciones / min (RPM)</div>
+            </div>
+            <input type="range" id="rpmSlider" min="8" max="28" value="14">
         </div>
-        <div class="info-body">
-            • <strong>23 generaciones de ramificación:</strong> Desde la tráquea hasta los bronquiolos terminales, cada tubo se divide en dos siguiendo una proporción fractal geométrica.<br/>
-            • <strong>300 millones de alvéolos:</strong> Si desplegáramos toda la superficie interna de intercambio gaseoso, cubriría una <strong>pista de tenis entera (70 m²)</strong> comprimida dentro de tu tórax.<br/>
-            • <strong>Control Orbital:</strong> Arrastra con el ratón para rotar 360° o usa la rueda para hacer zoom anatómico.
+
+        <div class="panel-box">
+            <div class="box-title">🔊 Sonido Acústico Biológico</div>
+            <button class="btn-action active" id="btnAudio">
+                <span>Flujo de Ventilación</span>
+                <span id="audioState">ON</span>
+            </button>
         </div>
+
+        <div class="panel-box">
+            <div class="box-title">🎥 Perspectiva Orbital</div>
+            <button class="btn-action" id="btnFront"><span>Vista Frontal (Tráquea)</span> <span>↺</span></button>
+            <button class="btn-action" id="btnBack"><span>Vista Posterior (Bronquios)</span> <span>↻</span></button>
+            <button class="btn-action" id="btnAutoRotate"><span>Giro Automático 360°</span> <span id="rotState">ON</span></button>
+        </div>
+    </aside>
+
+    <div class="hint-bar">
+        <span>🖱️ <strong>Control 360°:</strong> Arrastra con el ratón para rotar el modelo en cualquier ángulo • Rueda para zoom macro</span>
     </div>
 
     <script>
-        // --- INICIALIZACIÓN DE MOTOR BABYLON.JS ---
         const canvas = document.getElementById("renderCanvas");
+        const loadingOverlay = document.getElementById("loadingOverlay");
         const engine = new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true });
 
-        let currentRPM = 14;
-        let showFullLungs = true;
-        let audioActive = true;
-        let lungMeshes = [];
-        let branchMeshes = [];
-        let alveoliMeshes = [];
-        let tracheaMesh = null;
+        let currentRpm = 14;
+        let lungsRoot = null;
+        let autoRotate = true;
+        let fixedBaseScale = 1.0;
+        let isModelLoaded = false;
 
-        const createScene = function() {
+        const createScene = function () {
             const scene = new BABYLON.Scene(engine);
-            scene.clearColor = new BABYLON.Color4(0.03, 0.05, 0.09, 1.0);
+            scene.clearColor = new BABYLON.Color4(0.024, 0.035, 0.075, 1.0);
 
-            // Cámara orbital suave
-            const camera = new BABYLON.ArcRotateCamera("camera", -Math.PI / 2, Math.PI / 2.2, 28, new BABYLON.Vector3(0, 1.5, 0), scene);
+            const camera = new BABYLON.ArcRotateCamera("camera", -Math.PI / 2, Math.PI / 2.2, 5.0, new BABYLON.Vector3(0, 0, 0), scene);
             camera.attachControl(canvas, true);
-            camera.lowerRadiusLimit = 12;
-            camera.upperRadiusLimit = 45;
-            camera.wheelPrecision = 20;
+            camera.wheelPrecision = 45;
+            camera.lowerRadiusLimit = 1.8;
+            camera.upperRadiusLimit = 15;
 
-            // Iluminación anatómica de estudio
+            // ILUMINACIÓN CLÍNICA PROFESIONAL PBR
             const hemiLight = new BABYLON.HemisphericLight("hemiLight", new BABYLON.Vector3(0, 1, 0), scene);
-            hemiLight.intensity = 0.65;
-            hemiLight.diffuse = new BABYLON.Color3(0.85, 0.95, 1.0);
+            hemiLight.intensity = 0.95;
+            hemiLight.groundColor = new BABYLON.Color3(0.1, 0.12, 0.18);
 
-            const dirLight1 = new BABYLON.DirectionalLight("dir1", new BABYLON.Vector3(1, -1, 1), scene);
-            dirLight1.intensity = 0.85;
-            dirLight1.diffuse = new BABYLON.Color3(0.2, 0.7, 1.0);
+            const keyLight = new BABYLON.DirectionalLight("keyLight", new BABYLON.Vector3(-1, -2, -1), scene);
+            keyLight.position = new BABYLON.Vector3(5, 8, 5);
+            keyLight.intensity = 1.8;
+            keyLight.diffuse = new BABYLON.Color3(1.0, 0.98, 0.95);
 
-            const dirLight2 = new BABYLON.DirectionalLight("dir2", new BABYLON.Vector3(-1, -0.5, -1), scene);
-            dirLight2.intensity = 0.65;
-            dirLight2.diffuse = new BABYLON.Color3(0.9, 0.4, 0.6);
+            const fillLight = new BABYLON.PointLight("fillLight", new BABYLON.Vector3(-6, -2, -4), scene);
+            fillLight.diffuse = new BABYLON.Color3(0.3, 0.6, 0.95);
+            fillLight.intensity = 1.3;
 
-            // Material Tráquea y Bronquios (Aspecto biológico nacarado con relieve)
-            const bronchusMat = new BABYLON.StandardMaterial("bronchusMat", scene);
-            bronchusMat.diffuseColor = new BABYLON.Color3(0.2, 0.65, 0.9);
-            bronchusMat.emissiveColor = new BABYLON.Color3(0.05, 0.2, 0.35);
-            bronchusMat.specularColor = new BABYLON.Color3(0.8, 0.9, 1.0);
-            bronchusMat.specularPower = 32;
+            const rimLight = new BABYLON.PointLight("rimLight", new BABYLON.Vector3(4, 4, 6), scene);
+            rimLight.diffuse = new BABYLON.Color3(1.0, 0.4, 0.5);
+            rimLight.intensity = 1.5;
 
-            // Material Pulmones Translúcidos (Tejido alveolar biocompatible)
-            const lungMat = new BABYLON.StandardMaterial("lungMat", scene);
-            lungMat.diffuseColor = new BABYLON.Color3(0.85, 0.35, 0.45);
-            lungMat.emissiveColor = new BABYLON.Color3(0.25, 0.08, 0.12);
-            lungMat.specularColor = new BABYLON.Color3(0.6, 0.7, 0.9);
-            lungMat.alpha = 0.42;
+            const gl = new BABYLON.GlowLayer("glow", scene);
+            gl.intensity = 0.25;
 
-            // Material Alvéolos (Microesferas de intercambio bioluminiscente)
-            const alveoliMat = new BABYLON.StandardMaterial("alveoliMat", scene);
-            alveoliMat.diffuseColor = new BABYLON.Color3(0.3, 0.85, 1.0);
-            alveoliMat.emissiveColor = new BABYLON.Color3(0.15, 0.5, 0.8);
+            // CARGA DEL MODELO FOTOGRAMÉTRICO REAL .GLB (Data URI embebido o local/nube)
+            const modelSource = (window.LUNGS_GLB_B64) 
+                ? window.LUNGS_GLB_B64 
+                : "https://javiercursocorreo-gif.github.io/Curso-IA/SIMULADORES_INTERACTIVOS/lungs.glb";
 
-            // 1. CONSTRUCCIÓN DE LA TRÁQUEA CON ANILLOS CARTILAGINOSOS
-            tracheaMesh = BABYLON.MeshBuilder.CreateCylinder("trachea", {
-                height: 7,
-                diameterTop: 1.4,
-                diameterBottom: 1.5,
-                tessellation: 24
-            }, scene);
-            tracheaMesh.position = new BABYLON.Vector3(0, 6.5, 0);
-            tracheaMesh.material = bronchusMat;
+            BABYLON.SceneLoader.ImportMesh("", "", modelSource, scene, function (meshes) {
+                loadingOverlay.style.opacity = "0";
+                setTimeout(() => loadingOverlay.style.display = "none", 500);
 
-            // Anillos traqueales
-            for (let i = -3; i <= 3; i += 0.8) {
-                const ring = BABYLON.MeshBuilder.CreateTorus("ring_" + i, {
-                    diameter: 1.55,
-                    thickness: 0.18,
-                    tessellation: 20
-                }, scene);
-                ring.position = new BABYLON.Vector3(0, 6.5 + i, 0);
-                ring.parent = tracheaMesh;
-                const ringMat = new BABYLON.StandardMaterial("ringMat", scene);
-                ringMat.diffuseColor = new BABYLON.Color3(0.4, 0.8, 1.0);
-                ring.material = ringMat;
-            }
-
-            // 2. GENERADOR FRACTAL RECURSIVO DEL ÁRBOL BRONQUIAL
-            function createBranch(startPoint, dir, length, diameter, depth, maxDepth) {
-                if (depth > maxDepth) return;
-
-                const endPoint = startPoint.add(dir.scale(length));
-                const branch = BABYLON.MeshBuilder.CreateTube("branch_" + depth, {
-                    path: [startPoint, endPoint],
-                    radius: diameter / 2,
-                    tessellation: 12
-                }, scene);
-                branch.material = bronchusMat;
-                branchMeshes.push(branch);
-
-                // Si llegamos a nivel terminal, colocar racimos alveolares
-                if (depth === maxDepth) {
-                    for (let a = 0; a < 3; a++) {
-                        const alveolus = BABYLON.MeshBuilder.CreateSphere("alveolus", {
-                            diameter: 0.45 + Math.random() * 0.25,
-                            segments: 8
-                        }, scene);
-                        const offset = new BABYLON.Vector3(
-                            (Math.random() - 0.5) * 0.8,
-                            (Math.random() - 0.5) * 0.8,
-                            (Math.random() - 0.5) * 0.8
-                        );
-                        alveolus.position = endPoint.add(offset);
-                        alveolus.material = alveoliMat;
-                        alveoliMeshes.push(alveolus);
+                lungsRoot = new BABYLON.TransformNode("lungsRoot", scene);
+                meshes.forEach(m => {
+                    if (m.parent === null) {
+                        m.parent = lungsRoot;
                     }
-                    return;
+                    if (m.material) {
+                        // Mejorar brillo orgánico de tejido húmedo
+                        m.material.roughness = 0.35;
+                    }
+                });
+
+                // Normalización de escala y centrado volumétrico exacto
+                const hierarchy = lungsRoot.getHierarchyBoundingVectors();
+                const center = hierarchy.max.add(hierarchy.min).scale(0.5);
+                const size = hierarchy.max.subtract(hierarchy.min);
+                const maxDim = Math.max(size.x, size.y, size.z);
+
+                if (maxDim > 0) {
+                    fixedBaseScale = 2.8 / maxDim;
+                    lungsRoot.scaling = new BABYLON.Vector3(fixedBaseScale, fixedBaseScale, fixedBaseScale);
+                    lungsRoot.position = center.scale(-fixedBaseScale);
                 }
 
-                // Bifurcación fractal (Ángulo biológico asimétrico de ~32°)
-                const spreadAngle = 0.52 + Math.random() * 0.1;
-                const rollAngle = (Math.random() - 0.5) * 0.8;
+                camera.radius = 5.2;
+                camera.target = new BABYLON.Vector3(0, 0, 0);
+                isModelLoaded = true;
+            }, null, function (scene, message) {
+                console.error("Error al cargar lungs.glb:", message);
+                loadingOverlay.innerHTML = '<div style="color:#ef4444;font-weight:700;">Error al cargar modelo 3D. Verifica la conexión o el archivo lungs.glb</div>';
+            });
 
-                // Rama izquierda
-                const rotMatrixL = BABYLON.Matrix.RotationYawPitchRoll(rollAngle, spreadAngle, 0);
-                const dirL = BABYLON.Vector3.TransformNormal(dir, rotMatrixL).normalize();
-                createBranch(endPoint, dirL, length * 0.76, diameter * 0.72, depth + 1, maxDepth);
-
-                // Rama derecha
-                const rotMatrixR = BABYLON.Matrix.RotationYawPitchRoll(-rollAngle, -spreadAngle, 0);
-                const dirR = BABYLON.Vector3.TransformNormal(dir, rotMatrixR).normalize();
-                createBranch(endPoint, dirR, length * 0.76, diameter * 0.72, depth + 1, maxDepth);
-            }
-
-            // Carina traqueal (Bifurcación primaria en bronquios derecho e izquierdo)
-            const carinaPos = new BABYLON.Vector3(0, 3, 0);
-            
-            // Bronquio Principal Derecho (Más vertical y grueso)
-            const dirRight = new BABYLON.Vector3(0.75, -0.65, 0.1).normalize();
-            createBranch(carinaPos, dirRight, 3.2, 1.15, 1, 4);
-
-            // Bronquio Principal Izquierdo (Más horizontal por el corazón)
-            const dirLeft = new BABYLON.Vector3(-0.85, -0.55, 0.1).normalize();
-            createBranch(carinaPos, dirLeft, 3.5, 1.05, 1, 4);
-
-            // 3. CONSTRUCCIÓN DE LÓBULOS PULMONARES ANATÓMICOS (TRANSLÚCIDOS)
-            // Pulmón Derecho (3 Lóbulos: Superior, Medio, Inferior)
-            const rightLung = BABYLON.MeshBuilder.CreateSphere("rightLung", {
-                diameterX: 6.8,
-                diameterY: 10.5,
-                diameterZ: 6.0,
-                segments: 24
-            }, scene);
-            rightLung.position = new BABYLON.Vector3(3.6, 0.5, 0);
-            rightLung.rotation.z = -0.15;
-            rightLung.material = lungMat;
-            lungMeshes.push(rightLung);
-
-            // Pulmón Izquierdo (2 Lóbulos: Escotadura cardíaca)
-            const leftLung = BABYLON.MeshBuilder.CreateSphere("leftLung", {
-                diameterX: 6.0,
-                diameterY: 10.0,
-                diameterZ: 5.6,
-                segments: 24
-            }, scene);
-            leftLung.position = new BABYLON.Vector3(-3.6, 0.8, 0);
-            leftLung.rotation.z = 0.15;
-            leftLung.material = lungMat;
-            lungMeshes.push(leftLung);
-
-            return scene;
+            return { scene, camera };
         };
 
-        const scene = createScene();
+        const { scene, camera } = createScene();
 
-        // --- SISTEMA DE AUDIO NATIVO WEB AUDIO API (RESPIRACIÓN REALISTA) ---
+        // MOTOR DE AUDIO BIOLÓGICO PROCEDIMENTAL (Flujo de aire nasal/traqueal)
         let audioCtx = null;
         let noiseNode = null;
         let filterNode = null;
         let gainNode = null;
+        let audioEnabled = true;
 
-        function initRespiratoryAudio() {
+        function initAudio() {
             if (audioCtx) return;
-            try {
-                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                
-                // Generador de ruido blanco/rosa procedural para simular el paso del aire
-                const bufferSize = audioCtx.sampleRate * 2;
-                const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-                const data = buffer.getChannelData(0);
-                for (let i = 0; i < bufferSize; i++) {
-                    data[i] = (Math.random() * 2 - 1) * 0.12;
-                }
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            audioCtx = new AudioContext();
 
-                noiseNode = audioCtx.createBufferSource();
-                noiseNode.buffer = buffer;
-                noiseNode.loop = true;
-
-                // Filtro pasabanda para modelar el sonido aéreo de las vías respiratorias
-                filterNode = audioCtx.createBiquadFilter();
-                filterNode.type = "bandpass";
-                filterNode.frequency.value = 450;
-                filterNode.Q.value = 1.8;
-
-                gainNode = audioCtx.createGain();
-                gainNode.gain.value = 0.0;
-
-                noiseNode.connect(filterNode);
-                filterNode.connect(gainNode);
-                gainNode.connect(audioCtx.destination);
-                noiseNode.start();
-            } catch(e) {
-                console.log("Audio no habilitado:", e);
+            // Generador de ruido rosa/blanco para aire
+            const bufferSize = audioCtx.sampleRate * 2;
+            const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+            const output = noiseBuffer.getChannelData(0);
+            let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
+            for (let i = 0; i < bufferSize; i++) {
+                const white = Math.random() * 2 - 1;
+                b0 = 0.99886 * b0 + white * 0.0555179;
+                b1 = 0.99332 * b1 + white * 0.0750759;
+                b2 = 0.96900 * b2 + white * 0.1538520;
+                b3 = 0.86650 * b3 + white * 0.3104856;
+                b4 = 0.55000 * b4 + white * 0.5329522;
+                b5 = -0.7616 * b5 - white * 0.0168980;
+                output[i] = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362) * 0.04;
+                b6 = white * 0.115926;
             }
+
+            noiseNode = audioCtx.createBufferSource();
+            noiseNode.buffer = noiseBuffer;
+            noiseNode.loop = true;
+
+            filterNode = audioCtx.createBiquadFilter();
+            filterNode.type = "bandpass";
+            filterNode.frequency.value = 450;
+            filterNode.Q.value = 1.2;
+
+            gainNode = audioCtx.createGain();
+            gainNode.gain.value = 0.0;
+
+            noiseNode.connect(filterNode);
+            filterNode.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            noiseNode.start(0);
         }
 
-        // --- BUCLE DE ANIMACIÓN: CICLO RESPIRATORIO ---
-        let breathingTime = 0;
-        const phasePulse = document.getElementById("phasePulse");
-        const phaseText = document.getElementById("phaseText");
-        const phaseSub = document.getElementById("phaseSub");
+        window.addEventListener("pointerdown", () => {
+            if (!audioCtx) initAudio();
+            else if (audioCtx.state === 'suspended') audioCtx.resume();
+        }, { once: true });
 
-        engine.runRenderLoop(function() {
-            if (scene) {
-                scene.render();
+        // BUCLE DE RENDER: VENTILACIÓN BIOLÓGICA ASIMÉTRICA REAL
+        let breathTime = 0;
+        engine.runRenderLoop(function () {
+            const dt = engine.getDeltaTime() / 1000.0;
+            const cycleDuration = 60.0 / currentRpm;
+            breathTime = (breathTime + dt) % cycleDuration;
+            const cyclePhase = breathTime / cycleDuration; // 0.0 a 1.0
 
-                // Frecuencia respiratoria en ciclos por segundo
-                const cycleDuration = 60 / currentRPM; // Segundos por ciclo completo
-                const dt = engine.getDeltaTime() / 1000;
-                breathingTime += dt;
+            // Inhalación activa 45%, exhalación elástica pasiva 55%
+            let expansion = 0;
+            let isInhaling = true;
+            if (cyclePhase < 0.45) {
+                const p = cyclePhase / 0.45;
+                expansion = 0.5 - 0.5 * Math.cos(p * Math.PI); // 0 a 1
+                isInhaling = true;
+            } else {
+                const p = (cyclePhase - 0.45) / 0.55;
+                expansion = 0.5 + 0.5 * Math.cos(p * Math.PI); // 1 a 0
+                isInhaling = false;
+            }
 
-                // Curva de respiración fisiológica (Inspiración activa ~40% del tiempo, Espiración pasiva ~60%)
-                const phase = (breathingTime % cycleDuration) / cycleDuration;
-                let breathScale = 1.0;
-                let isInspiring = true;
+            const statusEl = document.getElementById("cycleStatus");
+            if (statusEl) {
+                statusEl.textContent = isInhaling ? "INHALACIÓN ACTIVA" : "EXHALACIÓN ELÁSTICA";
+                statusEl.style.color = isInhaling ? "#38bdf8" : "#34d399";
+            }
 
-                if (phase < 0.45) {
-                    // Inhalación (Expansión)
-                    const pIn = phase / 0.45;
-                    breathScale = 1.0 + Math.sin(pIn * Math.PI * 0.5) * 0.22;
-                    isInspiring = true;
-                } else {
-                    // Exhalación (Retracción elástica suave)
-                    const pOut = (phase - 0.45) / 0.55;
-                    breathScale = 1.22 - Math.sin(pOut * Math.PI * 0.5) * 0.22;
-                    isInspiring = false;
-                }
+            // Aplicar expansión volumétrica suave a la masa pulmonar
+            if (lungsRoot && isModelLoaded) {
+                const scaleFactor = 1.0 + (expansion * 0.09); // 9% expansión volumétrica natural
+                lungsRoot.scaling.x = fixedBaseScale * scaleFactor;
+                lungsRoot.scaling.y = fixedBaseScale * (1.0 + expansion * 0.07);
+                lungsRoot.scaling.z = fixedBaseScale * scaleFactor;
 
-                // Aplicar expansión 3D suave a los pulmones y alvéolos
-                lungMeshes.forEach(mesh => {
-                    mesh.scaling.x = breathScale;
-                    mesh.scaling.y = 1.0 + (breathScale - 1.0) * 0.7;
-                    mesh.scaling.z = breathScale;
-                });
-
-                alveoliMeshes.forEach(mesh => {
-                    mesh.scaling.setAll(0.85 + (breathScale - 1.0) * 1.5);
-                });
-
-                // Actualizar interfaz de fase
-                if (isInspiring) {
-                    phasePulse.style.background = "#38bdf8";
-                    phasePulse.style.boxShadow = "0 0 14px #38bdf8";
-                    phasePulse.style.transform = "scale(1.35)";
-                    phaseText.innerText = "INSPIRACIÓN";
-                    phaseSub.innerText = "Ventilación de oxígeno a través del árbol fractal";
-                } else {
-                    phasePulse.style.background = "#fb7185";
-                    phasePulse.style.boxShadow = "0 0 14px #fb7185";
-                    phasePulse.style.transform = "scale(0.85)";
-                    phaseText.innerText = "ESPIRACIÓN";
-                    phaseSub.innerText = "Retracción elástica y expulsión de CO₂";
-                }
-
-                // Modular audio de respiración en tiempo real
-                if (audioCtx && gainNode && audioActive) {
-                    const targetFreq = isInspiring ? 550 : 380;
-                    const targetVol = isInspiring ? 0.08 : 0.04;
-                    filterNode.frequency.setTargetAtTime(targetFreq, audioCtx.currentTime, 0.1);
-                    gainNode.gain.setTargetAtTime(targetVol, audioCtx.currentTime, 0.1);
+                if (autoRotate) {
+                    lungsRoot.rotation.y += 0.003;
                 }
             }
+
+            // Modular sonido de respiración
+            if (gainNode && audioCtx && audioEnabled) {
+                const flowVelocity = Math.sin(cyclePhase * Math.PI * 2);
+                const airVol = Math.abs(flowVelocity) * 0.35;
+                gainNode.gain.setTargetAtTime(airVol, audioCtx.currentTime, 0.05);
+                filterNode.frequency.setTargetAtTime(isInhaling ? 520 : 380, audioCtx.currentTime, 0.05);
+            }
+
+            scene.render();
         });
 
         window.addEventListener("resize", () => engine.resize());
 
-        // --- INTERACCIÓN Y EVENTOS DE USUARIO ---
+        // CONTROLES DE LA INTERFAZ
         const rpmSlider = document.getElementById("rpmSlider");
-        const rpmDisplay = document.getElementById("rpmDisplay");
-        rpmSlider.addEventListener("input", function(e) {
-            currentRPM = parseInt(e.target.value);
-            rpmDisplay.innerText = currentRPM + " RPM";
+        const rpmVal = document.getElementById("rpmVal");
+        rpmSlider.addEventListener("input", (e) => {
+            currentRpm = parseInt(e.target.value);
+            rpmVal.textContent = currentRpm;
         });
 
-        // Alternar vista de Pulmones completos vs Árbol Fractal puro
-        const btnToggleView = document.getElementById("btnToggleView");
-        btnToggleView.addEventListener("click", function() {
-            showFullLungs = !showFullLungs;
-            lungMeshes.forEach(m => m.setEnabled(showFullLungs));
-            btnToggleView.innerText = showFullLungs ? "🌀 Ver Solo Árbol Fractal" : "🫁 Ver Pulmones Completos";
+        const btnAudio = document.getElementById("btnAudio");
+        btnAudio.addEventListener("click", () => {
+            if (!audioCtx) initAudio();
+            audioEnabled = !audioEnabled;
+            btnAudio.classList.toggle("active", audioEnabled);
+            document.getElementById("audioState").textContent = audioEnabled ? "ON" : "OFF";
+            if (!audioEnabled && gainNode) gainNode.gain.value = 0;
         });
 
-        // Alternar Audio
-        const btnToggleAudio = document.getElementById("btnToggleAudio");
-        btnToggleAudio.addEventListener("click", function() {
-            if (!audioCtx) initRespiratoryAudio();
-            audioActive = !audioActive;
-            if (!audioActive && gainNode) gainNode.gain.value = 0;
-            btnToggleAudio.innerText = audioActive ? "🔊 Audio Respiratorio: ON" : "🔇 Audio Respiratorio: OFF";
+        document.getElementById("btnFront").addEventListener("click", () => {
+            camera.alpha = -Math.PI / 2;
+            camera.beta = Math.PI / 2.2;
+            if (lungsRoot) lungsRoot.rotation.y = 0;
         });
 
-        // Iniciar audio en el primer clic del usuario (requisito navegadores modernos)
-        window.addEventListener("click", () => {
-            if (!audioCtx) initRespiratoryAudio();
-            if (audioCtx && audioCtx.state === "suspended") audioCtx.resume();
-        }, { once: true });
+        document.getElementById("btnBack").addEventListener("click", () => {
+            camera.alpha = Math.PI / 2;
+            camera.beta = Math.PI / 2.2;
+            if (lungsRoot) lungsRoot.rotation.y = Math.PI;
+        });
+
+        const btnAutoRotate = document.getElementById("btnAutoRotate");
+        btnAutoRotate.addEventListener("click", () => {
+            autoRotate = !autoRotate;
+            btnAutoRotate.classList.toggle("active", autoRotate);
+            document.getElementById("rotState").textContent = autoRotate ? "ON" : "OFF";
+        });
     </script>
 </body>
 </html>
-

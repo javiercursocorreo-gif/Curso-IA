@@ -866,6 +866,13 @@ def process_all_sessions():
                     shutil.copy2(pulm_src, os.path.join(session_path, "SIMULADOR_PULMONES_3D.html"))
                 except Exception:
                     pass
+            for extra in ["lungs_b64.js", "lungs.glb"]:
+                ex_src = os.path.join(BASE_DIR, "SIMULADORES_INTERACTIVOS", extra)
+                if os.path.exists(ex_src):
+                    try:
+                        shutil.copy2(ex_src, os.path.join(session_path, extra))
+                    except Exception:
+                        pass
         elif session_num == 2:
             cor_src = os.path.join(BASE_DIR, "SIMULADORES_INTERACTIVOS", "SIMULADOR_CORAZON_3D.html")
             if os.path.exists(cor_src):
@@ -873,6 +880,13 @@ def process_all_sessions():
                     shutil.copy2(cor_src, os.path.join(session_path, "SIMULADOR_CORAZON_3D.html"))
                 except Exception:
                     pass
+            for extra in ["heart_b64.js", "heart.glb", "heartbeat_audio_b64.js", "heartbeat.mp3"]:
+                ex_src = os.path.join(BASE_DIR, "SIMULADORES_INTERACTIVOS", extra)
+                if os.path.exists(ex_src):
+                    try:
+                        shutil.copy2(ex_src, os.path.join(session_path, extra))
+                    except Exception:
+                        pass
 
         files = os.listdir(session_path)
         html_content = generate_columns_html(session_num, session_path, files)

@@ -1,4 +1,76 @@
-<!DOCTYPE html>
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+setup_photorealistic_lungs.py
+Descarga e integra el modelo 3D anatómico real de Pulmones (formato GLB fotogramétrico / médico)
+del NIH 3D Medical Repository / Visible Human Project para lograr calidad fotográfica idéntica a heart.glb.
+"""
+
+import os
+import sys
+import base64
+import urllib.request
+import shutil
+
+ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+SIM_DIR = os.path.join(ROOT_DIR, "SIMULADORES_INTERACTIVOS")
+S01_DIR = os.path.join(ROOT_DIR, "CLASES", "EXPORTACION_FICHAS_CLASSROOM_PDF", "100. [SESSIONS] TERNAS_LISTAS_PARA_CLASSROOM", "01_Sesion")
+
+GLB_DEST = os.path.join(SIM_DIR, "lungs.glb")
+B64_DEST = os.path.join(SIM_DIR, "lungs_b64.js")
+
+# URLs oficiales de modelos médicos abiertos en GLB (NIH 3D Print Exchange / Visible Human)
+CANDIDATE_URLS = [
+    # Modelo 1: 3DPX-021148 - Lungs & Bronchi (while breathing)
+    "https://nih3d-v2-data-cln-media-prod.s3.amazonaws.com/2119467/lungs_bronchi-nih3d.glb",
+    # Modelo 2: 3DPX-013408 - Visible Human Male Respiratory System (NLM)
+    "https://nih3d-v2-data-cln-media-prod.s3.amazonaws.com/1040029/vhm_respiratory_viewer_0_0-nih3d.glb",
+    # Modelo 3: 3DPX-021008 - HRA Male Lung Reference Organ
+    "https://nih3d-v2-data-cln-media-prod.s3.amazonaws.com/2111105/3d-vh-f-lung-nih3d.glb"
+]
+
+def download_realistic_lungs():
+    os.makedirs(SIM_DIR, exist_ok=True)
+    if os.path.exists(GLB_DEST) and os.path.getsize(GLB_DEST) > 500000:
+        print(f"✅ Archivo lungs.glb ya existente ({os.path.getsize(GLB_DEST) / 1024 / 1024:.2f} MB)")
+        return True
+
+    print("🌐 Descargando modelo 3D hiperrealista de pulmones desde NIH 3D Medical...")
+    headers = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)"}
+
+    for url in CANDIDATE_URLS:
+        try:
+            print(f"   Intentando: {url} ...")
+            req = urllib.request.Request(url, headers=headers)
+            with urllib.request.urlopen(req, timeout=30) as response, open(GLB_DEST, 'wb') as out_file:
+                shutil.copyfileobj(response, out_file)
+            size_mb = os.path.getsize(GLB_DEST) / 1024 / 1024
+            if size_mb > 0.2:
+                print(f"✅ Descarga completada con éxito: {size_mb:.2f} MB")
+                return True
+        except Exception as e:
+            print(f"   ⚠️ Error en URL ({e}), probando alternativa...")
+
+    return False
+
+def generate_base64_js():
+    if not os.path.exists(GLB_DEST):
+        print("❌ No se encontró lungs.glb para generar base64")
+        return False
+    
+    print("📦 Empaquetando lungs.glb en base64 para carga instantánea offline...")
+    with open(GLB_DEST, "rb") as f:
+        data = f.read()
+    b64_str = base64.b64encode(data).decode('utf-8')
+    js_content = f'window.LUNGS_GLB_B64 = "data:model/gltf-binary;base64,{b64_str}";\n'
+    with open(B64_DEST, "w", encoding="utf-8") as f:
+        f.write(js_content)
+    print(f"✅ Creado lungs_b64.js ({os.path.getsize(B64_DEST) / 1024 / 1024:.2f} MB)")
+    return True
+
+def build_photorealistic_lungs_html():
+    print("🎨 Construyendo SIMULADOR_PULMONES_3D.html fotorealista con Babylon.js...")
+    html_code = """<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -435,3 +507,51 @@
     </script>
 </body>
 </html>
+"""
+    dest_path = os.path.join(SIM_DIR, "SIMULADOR_PULMONES_3D.html")
+    with open(dest_path, "w", encoding="utf-8") as f:
+        f.write(html_code)
+    print(f"✅ Guardado {dest_path}")
+
+    # Actualizar PROBADOR_CODIGO_IA.html
+    p_path = os.path.join(ROOT_DIR, "PROBADOR_CODIGO_IA.html")
+    if os.path.exists(p_path):
+        try:
+            with open(p_path, "r", encoding="utf-8") as pf:
+                p_code = pf.read()
+            import html, re
+            escaped = html.escape(html_code)
+            p_code = re.sub(
+                r'<textarea id="examplePulmonesTemplate"[^>]*>[\s\S]*?</textarea>',
+                f'<textarea id="examplePulmonesTemplate" style="display:none;">{escaped}</textarea>',
+                p_code
+            )
+            if "lungs_b64.js" not in p_code:
+                p_code = p_code.replace("</head>", '    <script src="SIMULADORES_INTERACTIVOS/lungs_b64.js"></script>\n    <script src="https://javiercursocorreo-gif.github.io/Curso-IA/SIMULADORES_INTERACTIVOS/lungs_b64.js"></script>\n</head>')
+            with open(p_path, "w", encoding="utf-8") as pf:
+                pf.write(p_code)
+            print("✅ PROBADOR_CODIGO_IA.html actualizado con plantilla GLB")
+        except Exception as e:
+            print(f"⚠️ Error actualizando probador: {e}")
+
+    # Copiar a 01_Sesion
+    if os.path.exists(S01_DIR):
+        shutil.copy2(dest_path, os.path.join(S01_DIR, "SIMULADOR_PULMONES_3D.html"))
+        if os.path.exists(B64_DEST):
+            shutil.copy2(B64_DEST, os.path.join(S01_DIR, "lungs_b64.js"))
+        if os.path.exists(GLB_DEST):
+            shutil.copy2(GLB_DEST, os.path.join(S01_DIR, "lungs.glb"))
+        if os.path.exists(p_path):
+            shutil.copy2(p_path, os.path.join(S01_DIR, "PROBADOR_CODIGO_IA.html"))
+        print(f"✅ Sincronizado en {S01_DIR}")
+
+def main():
+    print("🚀 === INICIANDO INTEGRACIÓN DE PULMONES 3D FOTOREALISTAS ===")
+    ok = download_realistic_lungs()
+    if ok:
+        generate_base64_js()
+    build_photorealistic_lungs_html()
+    print("🎉 === PROCESO COMPLETADO ===")
+
+if __name__ == "__main__":
+    main()
