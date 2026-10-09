@@ -35,6 +35,7 @@ STEP_CONFIG = {
     "FRAC":  {"color": "#f472b6", "cat": "Paso 6 • Geometría Fractal & HD",  "icon": "🌀", "col": 2, "order": 5},
     "3D":    {"color": "#e11d48", "cat": "Paso 6B • Simuladores 3D & Ciencia", "icon": "🫀", "col": 2, "order": 5.5},
     "SIM":   {"color": "#e11d48", "cat": "Paso 6B • Simuladores 3D & Ciencia", "icon": "🫀", "col": 2, "order": 5.5},
+    "COD":   {"color": "#06b6d4", "cat": "Paso 6C • Taller de Código con Gemini", "icon": "🧪", "col": 2, "order": 5.6},
     "INT":   {"color": "#fb7185", "cat": "Paso 7 • Mundo por Dentro",       "icon": "🏛️", "col": 2, "order": 6},
     "FUT":   {"color": "#fb923c", "cat": "Paso 8 • Sci-Fi & Futuro",        "icon": "🚀", "col": 2, "order": 7},
     "NAT":   {"color": "#facc15", "cat": "Paso 9 • Naturaleza Fascinante",  "icon": "🌿", "col": 2, "order": 8},
@@ -76,6 +77,8 @@ COLUMNS_CONFIG = [
 
 def clean_title_from_filename(filename):
     name, _ = os.path.splitext(filename)
+    if 'COD-001' in filename.upper() or 'TALLER' in filename.upper():
+        return 'Taller Práctico • Construye tu Propio Simulador 3D con Gemini'
     if 'SIMULADOR_CORAZON' in filename.upper() or 'LATIDO_CARDIACO' in filename.upper():
         return 'Simulador 3D del Latido Cardíaco Humano'
     if 'FRAC-000_B' in filename:
@@ -106,6 +109,8 @@ def clean_title_from_filename(filename):
 
 def parse_step_code(filename):
     f_up = filename.upper()
+    if 'COD-001' in f_up or 'TALLER' in f_up:
+        return 'COD'
     if 'SIMULADOR' in f_up or 'CORAZON' in f_up:
         return '3D'
     for code in STEP_CONFIG.keys():
@@ -143,7 +148,7 @@ def generate_columns_html(session_num, session_folder, files):
     
     def session_file_sort_key(filename):
         if session_num == 1:
-            # En Sesión 01: 1º Teoría (#05), 2º Ficha PDF Fractal (#06 introductoria), 3º Vídeo MP4 (#07), 4º Reto Visual (#08), 5º Simulador 3D (#09)
+            # En Sesión 01: 1º Teoría (#05), 2º Ficha PDF Fractal (#06 introductoria), 3º Vídeo MP4 (#07), 4º Reto Visual (#08), 5º Simulador 3D (#09), 6º Taller Código (#10)
             if 'FRAC-000_A_Teoria' in filename:
                 return (2, 5, 1, filename.lower())
             if 'FRAC-058' in filename and filename.lower().endswith('.pdf'):
@@ -154,6 +159,8 @@ def generate_columns_html(session_num, session_folder, files):
                 return (2, 5, 4, filename.lower())
             if 'SIMULADOR' in filename.upper() or 'CORAZON' in filename.upper():
                 return (2, 5, 5, filename.lower())
+            if 'COD-001' in filename.upper() or 'TALLER' in filename.upper():
+                return (2, 5, 6, filename.lower())
         return file_sort_key(filename)
 
     # Filtrar archivos reales de contenido (ignorando duplicados de sincronización de iCloud ' 2.pdf', etc.)
@@ -182,6 +189,9 @@ def generate_columns_html(session_num, session_folder, files):
         elif ext == 'pdf':
             tag_class = 'tag-pdf'
             tag_text = 'PDF'
+            if 'COD-' in f.upper():
+                tag_class = 'tag-cod'
+                tag_text = 'TALLER'
         elif ext == 'html':
             tag_class = 'tag-html'
             tag_text = '3D'
@@ -234,7 +244,23 @@ def generate_columns_html(session_num, session_folder, files):
         cards_html = ""
         for it in col_items:
             rel_href = urllib.parse.quote(it["filename"])
-            cards_html += f"""
+            if it.get("code") == "COD":
+                cards_html += f"""
+                    <div class="file-card file-card-special">
+                        <a href="{rel_href}" target="_blank" class="file-left" style="text-decoration:none; color:inherit; flex:1;">
+                            <span class="file-num">{it["step_num"]}</span>
+                            <span class="file-tag {it["tag_class"]}">{it["tag_text"]}</span>
+                            <div class="file-details">
+                                <span class="file-title">{it["title"]}</span>
+                                <span class="file-desc">{it["cat"]} • Lista de Tareas</span>
+                            </div>
+                        </a>
+                        <a href="PROBADOR_CODIGO_IA.html" target="_blank" class="btn-launch-interactive" title="Abrir Taller Oficial de Pruebas">
+                            🚀 Abrir Taller ↗
+                        </a>
+                    </div>"""
+            else:
+                cards_html += f"""
                     <a href="{rel_href}" target="_blank" class="file-card">
                         <div class="file-left">
                             <span class="file-num">{it["step_num"]}</span>
@@ -659,6 +685,34 @@ def generate_columns_html(session_num, session_folder, files):
         .tag-mp4 {{ background: rgba(168, 85, 247, 0.25); color: #e9d5ff; border: 1px solid rgba(168, 85, 247, 0.45); }}
         .tag-png {{ background: rgba(56, 189, 248, 0.2); color: #7dd3fc; border: 1px solid rgba(56, 189, 248, 0.4); }}
         .tag-txt {{ background: rgba(148, 163, 184, 0.2); color: #cbd5e1; border: 1px solid rgba(148, 163, 184, 0.4); }}
+        .tag-cod {{ background: rgba(6, 182, 212, 0.25); color: #67e8f9; border: 1px solid rgba(6, 182, 212, 0.45); }}
+
+        .file-card-special {{
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-right: 12px;
+        }}
+        .btn-launch-interactive {{
+            background: linear-gradient(135deg, #0284c7 0%, #06b6d4 100%);
+            color: #ffffff !important;
+            font-weight: 800;
+            font-size: 0.76rem;
+            padding: 6px 12px;
+            border-radius: 8px;
+            text-decoration: none;
+            white-space: nowrap;
+            margin-left: 10px;
+            box-shadow: 0 0 12px rgba(6, 182, 212, 0.35);
+            transition: all 0.2s ease;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            flex-shrink: 0;
+        }}
+        .btn-launch-interactive:hover {{
+            transform: translateY(-2px);
+            box-shadow: 0 0 18px rgba(6, 182, 212, 0.6);
+            color: #ffffff !important;
+        }}
 
         .file-details {{
             display: flex;

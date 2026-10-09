@@ -879,6 +879,20 @@ def main():
                         shutil.copy2(audio_js_src, os.path.join(t_path, "heartbeat_audio_b64.js"))
                     if os.path.exists(audio_mp3_src):
                         shutil.copy2(audio_mp3_src, os.path.join(t_path, "heartbeat.mp3"))
+
+                    # Generar ficha PDF del Taller COD-001 (Paso a Paso con lista de tareas)
+                    cod_dst_pdf = os.path.join(t_path, "4. COD-001_Taller_Crea_tu_Propio_Simulador_3D_con_Gemini.pdf")
+                    try:
+                        sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+                        from build_pdf_cod_001 import build_cod_001_taller_3d_pdf
+                        build_cod_001_taller_3d_pdf(cod_dst_pdf)
+                    except Exception as e:
+                        print(f"   ⚠️ Error generando PDF COD-001: {e}")
+
+                    # Copiar probador oficial de código interactivo a la sesión
+                    probador_src = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "PROBADOR_CODIGO_IA.html")
+                    if os.path.exists(probador_src):
+                        shutil.copy2(probador_src, os.path.join(t_path, "PROBADOR_CODIGO_IA.html"))
                         
                 # INJECTION: Custom Mandelbrot Introduction for Terna 02
                 if "FRAC-001" in id_clean and col_idx == 4:

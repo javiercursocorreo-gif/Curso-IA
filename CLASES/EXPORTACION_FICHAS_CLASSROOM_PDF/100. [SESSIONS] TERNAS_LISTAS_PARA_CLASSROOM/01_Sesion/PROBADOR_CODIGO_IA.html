@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Taller de Pruebas de Código IA • Curso de Inteligencia Artificial</title>
+    <!-- Pre-cargar datos del corazón 3D y audio real de fonendoscopio en memoria -->
+    <script src="SIMULADORES_INTERACTIVOS/heart_b64.js"></script>
+    <script src="https://javiercursocorreo-gif.github.io/Curso-IA/SIMULADORES_INTERACTIVOS/heart_b64.js"></script>
+    <script src="SIMULADORES_INTERACTIVOS/heartbeat_audio_b64.js"></script>
+    <script src="https://javiercursocorreo-gif.github.io/Curso-IA/SIMULADORES_INTERACTIVOS/heartbeat_audio_b64.js"></script>
+    <style>
+        :root {
+            --bg-base: #070b14;
+            --bg-surface: #0f172a;
+            --bg-card: rgba(15, 23, 42, 0.95);
+            --border-glow: rgba(56, 189, 248, 0.35);
+            --border-subtle: rgba(255, 255, 255, 0.1);
+            --text-main: #f8fafc;
+            --text-sub: #94a3b8;
+            --primary: #38bdf8;
+            --primary-hover: #7dd3fc;
+            --accent-emerald: #10b981;
+            --accent-rose: #f43f5e;
+            --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: var(--font-sans);
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            user-select: none;
+        }
+
+        /* HEADER SUPERIOR */
+        header {
+            background: linear-gradient(180deg, rgba(15, 23, 42, 0.98) 0%, rgba(10, 14, 23, 0.95) 100%);
+            border-bottom: 1px solid var(--border-subtle);
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            flex-shrink: 0;
+            z-index: 20;
+        }
+
+        .header-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .header-logo {
+            font-size: 1.6rem;
+            background: rgba(56, 189, 248, 0.15);
+            border: 1px solid var(--border-glow);
+            padding: 4px 10px;
+            border-radius: 12px;
+        }
+        .header-titles h1 {
+            font-size: 1.1rem;
+            font-weight: 800;
+            letter-spacing: -0.01em;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .header-badge {
+            font-size: 0.7rem;
+            background: rgba(56, 189, 248, 0.2);
+            color: var(--primary);
+            padding: 2px 8px;
+            border-radius: 9999px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .header-titles p {
+            font-size: 0.78rem;
+            color: var(--text-sub);
+        }
+
+        /* BARRA DE ACCIONES */
+        .actions-bar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+            border: 1px solid transparent;
+            transition: all 0.2s ease;
+            outline: none;
+        }
+        .btn-primary {
+            background: var(--primary);
+            color: #040812;
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.3);
+        }
+        .btn-primary:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--text-main);
+            border-color: var(--border-subtle);
+        }
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.14);
+        }
+        .btn-emerald {
+            background: rgba(16, 185, 129, 0.18);
+            color: #34d399;
+            border-color: rgba(16, 185, 129, 0.4);
+        }
+        .btn-emerald:hover {
+            background: rgba(16, 185, 129, 0.28);
+        }
+        .btn-danger {
+            background: rgba(244, 63, 94, 0.12);
+            color: #fb7185;
+            border-color: rgba(244, 63, 94, 0.3);
+        }
+        .btn-danger:hover {
+            background: rgba(244, 63, 94, 0.22);
+        }
+
+        /* CONTENEDOR PRINCIPAL DIVIDIDO */
+        main {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* PANEL IZQUIERDO: EDITOR */
+        .editor-pane {
+            width: 45%;
+            min-width: 320px;
+            display: flex;
+            flex-direction: column;
+            background: #090d16;
+            border-right: 1px solid var(--border-subtle);
+            transition: width 0.3s ease;
+        }
+        .editor-header {
+            padding: 8px 16px;
+            background: rgba(15, 23, 42, 0.6);
+            border-bottom: 1px solid var(--border-subtle);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.78rem;
+            color: var(--text-sub);
+        }
+        .editor-header span {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        textarea#codeEditor {
+            flex: 1;
+            width: 100%;
+            background: transparent;
+            color: #e2e8f0;
+            font-family: var(--font-mono);
+            font-size: 0.88rem;
+            line-height: 1.5;
+            padding: 16px;
+            border: none;
+            resize: none;
+            outline: none;
+            tab-size: 4;
+            white-space: pre;
+            word-wrap: normal;
+            overflow-x: auto;
+        }
+        textarea#codeEditor::placeholder {
+            color: #475569;
+            font-style: italic;
+        }
+
+        /* PANEL DERECHO: VISOR INTERACTIVO */
+        .preview-pane {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #030509;
+            position: relative;
+        }
+        .preview-header {
+            padding: 8px 16px;
+            background: rgba(15, 23, 42, 0.6);
+            border-bottom: 1px solid var(--border-subtle);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.78rem;
+            color: var(--text-sub);
+        }
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--accent-emerald);
+            display: inline-block;
+            box-shadow: 0 0 8px var(--accent-emerald);
+        }
+        iframe#previewFrame {
+            flex: 1;
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: #070b14;
+        }
+
+        /* PANTALLA COMPLETA DEL VISOR */
+        body.full-preview .editor-pane {
+            display: none;
+        }
+        body.full-preview .preview-pane {
+            width: 100%;
+        }
+
+        /* PANTALLA VACÍA INICIAL */
+        .empty-placeholder {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            max-width: 420px;
+            color: var(--text-sub);
+            pointer-events: none;
+        }
+        .empty-icon {
+            font-size: 3rem;
+            margin-bottom: 14px;
+            opacity: 0.6;
+        }
+        .empty-title {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 8px;
+        }
+        .empty-desc {
+            font-size: 0.85rem;
+            line-height: 1.5;
+        }
+
+        /* PIE INFORMATIVO */
+        footer {
+            padding: 6px 20px;
+            background: rgba(10, 14, 23, 0.95);
+            border-top: 1px solid var(--border-subtle);
+            font-size: 0.72rem;
+            color: var(--text-sub);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ENCABEZADO -->
+    <header>
+        <div class="header-brand">
+            <span class="header-logo">🧪</span>
+            <div class="header-titles">
+                <h1>Taller de Pruebas de Código IA <span class="header-badge">Oficial</span></h1>
+                <p>Pega aquí cualquier código HTML que te dé Gemini y pruébalo al instante sin tocar el disco duro</p>
+            </div>
+        </div>
+
+        <div class="actions-bar">
+            <button class="btn btn-secondary" id="btnPaste" title="Pegar código copiado del portapapeles">
+                📋 Pegar de Gemini
+            </button>
+            <button class="btn btn-emerald" id="btnLoadExample" title="Cargar código de ejemplo del Corazón 3D con Fonendoscopio">
+                🫀 Probar Corazón 3D + Audio
+            </button>
+            <button class="btn btn-primary" id="btnRun">
+                ▶️ Ejecutar Creación
+            </button>
+            <button class="btn btn-secondary" id="btnToggleLayout" title="Cambiar a pantalla completa">
+                🔍 Pantalla Completa
+            </button>
+            <button class="btn btn-danger" id="btnClear" title="Borrar código">
+                🗑️ Limpiar
+            </button>
+        </div>
+    </header>
+
+    <!-- ÁREA DE TRABAJO -->
+    <main>
+        <!-- PANEL IZQUIERDO: CÓDIGO -->
+        <div class="editor-pane" id="editorPane">
+            <div class="editor-header">
+                <span>📝 Código generado por Gemini (HTML / JS / 3D)</span>
+                <span id="charCount">0 caracteres</span>
+            </div>
+            <textarea id="codeEditor" spellcheck="false" placeholder="1. Pide a Gemini un programa o simulador 3D en HTML.
+2. Copia la respuesta de Gemini.
+3. Haz clic en el botón superior '📋 Pegar de Gemini' o pulsa Ctrl+V aquí.
+4. Pulsa '▶️ Ejecutar Creación' para verlo funcionar."></textarea>
+        </div>
+
+        <!-- PANEL DERECHO: RESULTADO EN VIVO -->
+        <div class="preview-pane">
+            <div class="preview-header">
+                <span><span class="status-dot"></span> Previsualización en Vivo</span>
+                <span>Memoria Segura del Navegador (Sin archivos locales)</span>
+            </div>
+            
+            <iframe id="previewFrame"></iframe>
+
+            <div class="empty-placeholder" id="emptyNotice">
+                <div class="empty-icon">✨</div>
+                <div class="empty-title">El visor está listo</div>
+                <div class="empty-desc">
+                    Pega el código de Gemini a la izquierda y pulsa <strong>«Ejecutar Creación»</strong> o prueba el botón <strong>«🫀 Probar Corazón 3D + Audio»</strong> para ver una demostración.
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- PIE DE PÁGINA -->
+    <footer>
+        <span>🎓 <strong>Curso de Inteligencia Artificial</strong> • Espacio Seguro de Pruebas Web</span>
+        <span>Conectado a la Nube de Recursos de GitHub Pages • Cero permisos en disco requeridos</span>
+    </footer>
+
+    <!-- PLANTILLA DE DEMOSTRACIÓN 100% LIMPIA CON FONENDOSCOPIO REAL INTEGRADO -->
+    <textarea id="exampleTemplate" style="display:none;">&lt;!DOCTYPE html&gt;
+&lt;html lang="es"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+    &lt;title&gt;Corazón Anatómico 3D • Gemini AI&lt;/title&gt;
+    &lt;!-- Babylon.js Motor 3D Oficial --&gt;
+    &lt;script src="https://cdn.babylonjs.com/babylon.js"&gt;&lt;/script&gt;
+    &lt;script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"&gt;&lt;/script&gt;
+    
+    &lt;!-- Carga del modelo 3D y audio acústico real --&gt;
+    &lt;script src="SIMULADORES_INTERACTIVOS/heart_b64.js"&gt;&lt;/script&gt;
+    &lt;script src="https://javiercursocorreo-gif.github.io/Curso-IA/SIMULADORES_INTERACTIVOS/heart_b64.js"&gt;&lt;/script&gt;
+    &lt;script src="SIMULADORES_INTERACTIVOS/heartbeat_audio_b64.js"&gt;&lt;/script&gt;
+    &lt;script src="https://javiercursocorreo-gif.github.io/Curso-IA/SIMULADORES_INTERACTIVOS/heartbeat_audio_b64.js"&gt;&lt;/script&gt;
+
+    &lt;style&gt;
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { background:#070b14; color:#fff; overflow:hidden; font-family:system-ui, sans-serif; }
+        #canvas3D { width:100vw; height:100vh; display:block; }
+        #hud {
+            position:absolute; top:20px; left:20px;
+            background:rgba(15,23,42,0.92); border:1px solid rgba(56,189,248,0.4);
+            backdrop-filter:blur(10px); padding:16px 20px; border-radius:14px;
+            box-shadow:0 10px 25px rgba(0,0,0,0.5); z-index:10; max-width:290px;
+        }
+        h2 { font-size:1.05rem; color:#38bdf8; margin-bottom:4px; display:flex; align-items:center; gap:8px; }
+        #statusTxt { font-size:0.75rem; color:#94a3b8; margin-bottom:12px; }
+        .control { display:flex; justify-content:space-between; align-items:center; font-size:0.85rem; margin-bottom:8px; }
+        input[type="range"] { width:100%; accent-color:#f43f5e; cursor:pointer; }
+        .btn-audio {
+            width:100%; margin-top:8px; padding:8px 12px;
+            background:#ef4444; color:#fff; font-weight:700; font-size:0.82rem;
+            border:none; border-radius:8px; cursor:pointer;
+            display:flex; align-items:center; justify-content:center; gap:6px;
+            transition:all 0.2s ease;
+        }
+        .btn-audio:hover { transform:translateY(-1px); }
+        .btn-audio.active { background:#10b981; }
+    &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;canvas id="canvas3D"&gt;&lt;/canvas&gt;
+    
+    &lt;div id="hud"&gt;
+        &lt;h2&gt;❤️ Corazón Humano 3D&lt;/h2&gt;
+        &lt;div id="statusTxt"&gt;⏳ Conectando y cargando modelo...&lt;/div&gt;
+        
+        &lt;div class="control"&gt;
+            &lt;span&gt;Frecuencia Cardíaca:&lt;/span&gt;
+            &lt;strong id="bpmTxt" style="color:#f43f5e;"&gt;72 BPM&lt;/strong&gt;
+        &lt;/div&gt;
+        &lt;input type="range" id="bpmRng" min="40" max="180" value="72"&gt;
+
+        &lt;button class="btn-audio" id="btnAudio"&gt;
+            🔊 Activar Fonendoscopio Real
+        &lt;/button&gt;
+    &lt;/div&gt;
+
+    &lt;script&gt;
+        const canvas = document.getElementById("canvas3D");
+        const statusTxt = document.getElementById("statusTxt");
+        const btnAudio = document.getElementById("btnAudio");
+        const engine = new BABYLON.Engine(canvas, true);
+        const scene = new BABYLON.Scene(engine);
+        scene.clearColor = new BABYLON.Color4(0.04, 0.05, 0.08, 1);
+
+        // Cámara orbital 360°
+        const camera = new BABYLON.ArcRotateCamera("cam", -Math.PI/2, Math.PI/2.2, 5.8, new BABYLON.Vector3(0, 0, 0), scene);
+        camera.attachControl(canvas, true);
+        camera.wheelPrecision = 35;
+        camera.minZ = 0.05;
+
+        // Iluminación médica de estudio (3 puntos)
+        const hemi = new BABYLON.HemisphericLight("hemi", new BABYLON.Vector3(0, 1, 0), scene);
+        hemi.intensity = 0.9;
+        
+        const dir = new BABYLON.DirectionalLight("dir", new BABYLON.Vector3(1, -2, -1), scene);
+        dir.position = new BABYLON.Vector3(-3, 6, 3);
+        dir.intensity = 1.4;
+
+        const rim = new BABYLON.PointLight("rim", new BABYLON.Vector3(4, 3, 5), scene);
+        rim.diffuse = new BABYLON.Color3(1.0, 0.3, 0.3);
+        rim.intensity = 1.2;
+
+        let heartMeshRoot = null;
+        let currentBpm = 72;
+        let fixedBaseScale = 1.0;
+        let beatPhase = 0;
+        let lastTime = performance.now();
+
+        // MOTOR DE AUDIO (FONENDOSCOPIO REAL .MP3)
+        let audioPlayer = null;
+        let isAudioPlaying = false;
+        const BASE_BPM = 50.0;
+
+        function initAudio() {
+            if (audioPlayer) return;
+            const aSrc = (window.HEARTBEAT_AUDIO_B64) 
+                || (parent && parent.window && parent.window.HEARTBEAT_AUDIO_B64) 
+                || "https://javiercursocorreo-gif.github.io/Curso-IA/SIMULADORES_INTERACTIVOS/heartbeat.mp3";
+            audioPlayer = new Audio(aSrc);
+            audioPlayer.loop = true;
+            audioPlayer.volume = 0.85;
+            updateAudioRate();
+        }
+
+        function updateAudioRate() {
+            if (audioPlayer) {
+                // Sincroniza la velocidad del sonido con los BPM seleccionados
+                const rate = Math.max(0.5, Math.min(3.0, currentBpm / BASE_BPM));
+                audioPlayer.playbackRate = rate;
+            }
+        }
+
+        btnAudio.addEventListener("click", () => {
+            initAudio();
+            if (!isAudioPlaying) {
+                audioPlayer.play().then(() => {
+                    isAudioPlaying = true;
+                    btnAudio.classList.add("active");
+                    btnAudio.innerHTML = "🔊 Sonido Activo (Silenciar)";
+                }).catch(err => console.log("Audio play:", err));
+            } else {
+                audioPlayer.pause();
+                isAudioPlaying = false;
+                btnAudio.classList.remove("active");
+                btnAudio.innerHTML = "🔈 Activar Fonendoscopio Real";
+            }
+        });
+
+        // OBTENER MODELO 3D (Memoria local, ventana padre o nube remota)
+        const b64 = (window.HEART_GLB_B64) || (parent && parent.window && parent.window.HEART_GLB_B64);
+        const modelSource = b64 ? b64 : "https://javiercursocorreo-gif.github.io/Curso-IA/SIMULADORES_INTERACTIVOS/heart.glb";
+
+        BABYLON.SceneLoader.ImportMesh("", "", modelSource, scene, function(meshes) {
+            statusTxt.textContent = "✅ Órgano 3D Activo • Sístole";
+            statusTxt.style.color = "#34d399";
+
+            heartMeshRoot = new BABYLON.TransformNode("heartRoot", scene);
+            meshes.forEach(m => {
+                if (m.parent === null) {
+                    m.parent = heartMeshRoot;
+                }
+            });
+
+            // Auto-encuadre y cálculo milimétrico del órgano
+            const hierarchy = heartMeshRoot.getHierarchyBoundingVectors();
+            const center = hierarchy.max.add(hierarchy.min).scale(0.5);
+            const size = hierarchy.max.subtract(hierarchy.min);
+            const maxDim = Math.max(size.x, size.y, size.z);
+
+            if (maxDim > 0) {
+                fixedBaseScale = 2.6 / maxDim;
+                heartMeshRoot.scaling = new BABYLON.Vector3(fixedBaseScale, fixedBaseScale, fixedBaseScale);
+                heartMeshRoot.position = center.scale(-fixedBaseScale);
+            }
+
+            camera.radius = 5.8;
+            camera.target = new BABYLON.Vector3(0, 0, 0);
+        }, function(evt) {
+            if (evt.lengthComputable) {
+                const pct = Math.round((evt.loaded * 100) / evt.total);
+                statusTxt.textContent = "Descargando: " + pct + "%...";
+            } else {
+                statusTxt.textContent = "Cargando geometría 3D...";
+            }
+        }, function(scene, msg) {
+            statusTxt.textContent = "⚠️ Error: " + msg;
+            statusTxt.style.color = "#f43f5e";
+        });
+
+        // ANIMACIÓN BIOMECÁNICA ULTRA-SUAVE (SIN VIBRACIÓN A NINGÚN RITMO BPM)
+        scene.onBeforeRenderObservable.add(() => {
+            const now = performance.now();
+            const dt = Math.min((now - lastTime) / 1000.0, 0.1);
+            lastTime = now;
+
+            if (heartMeshRoot) {
+                const cycleDuration = 60.0 / currentBpm;
+                // Integración diferencial de fase: garantiza continuidad matemática absoluta
+                beatPhase = (beatPhase + dt / cycleDuration) % 1.0;
+
+                // Curva de latido con ventana cosenoidal continua (C1 suave, cero sacudidas)
+                let sScale = 1.0;
+                let isSystole = false;
+                if (beatPhase >= 0.20 && beatPhase < 0.45) {
+                    const t = (beatPhase - 0.20) / 0.25;
+                    sScale = 1.0 + (0.5 - 0.5 * Math.cos(t * Math.PI * 2.0)) * 0.08;
+                    isSystole = true;
+                }
+
+                // Escalado fisiológico respetando la escala base original del órgano
+                heartMeshRoot.scaling.x = fixedBaseScale * sScale;
+                heartMeshRoot.scaling.y = fixedBaseScale * (1.0 + (sScale - 1.0) * 1.3);
+                heartMeshRoot.scaling.z = fixedBaseScale * sScale;
+
+                // Giro orbital continuo suave
+                heartMeshRoot.rotation.y += 0.003;
+
+                if (isSystole) {
+                    statusTxt.textContent = "⚡ Sístole Activa • " + currentBpm + " BPM";
+                    statusTxt.style.color = "#f43f5e";
+                } else {
+                    statusTxt.textContent = "✅ Diástole (Reposo) • " + currentBpm + " BPM";
+                    statusTxt.style.color = "#34d399";
+                }
+            }
+        });
+
+        engine.runRenderLoop(() => scene.render());
+        window.addEventListener("resize", () => engine.resize());
+
+        document.getElementById("bpmRng").addEventListener("input", (e) => {
+            currentBpm = parseInt(e.target.value);
+            document.getElementById("bpmTxt").textContent = currentBpm + " BPM";
+            updateAudioRate();
+        });
+    &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</textarea>
+
+    <script>
+        const editor = document.getElementById("codeEditor");
+        const frame = document.getElementById("previewFrame");
+        const emptyNotice = document.getElementById("emptyNotice");
+        const charCount = document.getElementById("charCount");
+        const btnRun = document.getElementById("btnRun");
+        const btnPaste = document.getElementById("btnPaste");
+        const btnClear = document.getElementById("btnClear");
+        const btnLoadExample = document.getElementById("btnLoadExample");
+        const btnToggleLayout = document.getElementById("btnToggleLayout");
+
+        // Contador de caracteres
+        editor.addEventListener("input", () => {
+            charCount.textContent = editor.value.length + " caracteres";
+        });
+
+        // Ejecutar código dentro del iframe de forma robusta
+        function runCode() {
+            const code = editor.value.trim();
+            if (!code) {
+                frame.srcdoc = "";
+                emptyNotice.style.display = "block";
+                return;
+            }
+
+            emptyNotice.style.display = "none";
+            // Inyectar HTML en el iframe
+            frame.srcdoc = code;
+        }
+
+        btnRun.addEventListener("click", runCode);
+
+        // Pegar desde el portapapeles
+        btnPaste.addEventListener("click", async () => {
+            try {
+                if (navigator.clipboard && navigator.clipboard.readText) {
+                    const text = await navigator.clipboard.readText();
+                    if (text) {
+                        editor.value = text;
+                        charCount.textContent = text.length + " caracteres";
+                        runCode();
+                        return;
+                    }
+                }
+            } catch (err) {
+                // Fallback si el navegador pide permiso denegado
+            }
+            editor.focus();
+            alert("Pulsa Ctrl+V (o Cmd+V en Mac) dentro del cuadro de texto para pegar el código copiado de Gemini.");
+        });
+
+        // Limpiar editor
+        btnClear.addEventListener("click", () => {
+            if (confirm("¿Quieres borrar el código actual?")) {
+                editor.value = "";
+                charCount.textContent = "0 caracteres";
+                frame.srcdoc = "";
+                emptyNotice.style.display = "block";
+            }
+        });
+
+        // Alternar pantalla completa
+        btnToggleLayout.addEventListener("click", () => {
+            document.body.classList.toggle("full-preview");
+            const isFull = document.body.classList.contains("full-preview");
+            btnToggleLayout.textContent = isFull ? "⬅️ Ver Código" : "🔍 Pantalla Completa";
+        });
+
+        // Cargar ejemplo del Corazón 3D con Fonendoscopio
+        btnLoadExample.addEventListener("click", () => {
+            const template = document.getElementById("exampleTemplate");
+            editor.value = template.value;
+            charCount.textContent = template.value.length + " caracteres";
+            runCode();
+        });
+    </script>
+</body>
+</html>
