@@ -118,7 +118,8 @@ def build_cod_001_taller_3d_pdf(output_path=PDF_PATH):
         "<b>https://javiercursocorreo-gif.github.io/Curso-IA/SIMULADORES_INTERACTIVOS/heart.glb</b><br/>"
         "3. Centra el modelo con cámara orbital 360° para rotarlo libremente con el ratón e iluminación sobre fondo azul noche (#070b14).<br/>"
         "4. Aplica una animación de latido cardíaco natural suave y constante (ritmo biológico en reposo), haciendo que el corazón palpite de forma fluida y continua sin sacudidas.<br/>"
-        "5. Escribe exclusivamente el bloque de código para que al copiarlo a mi simulador genere el corazón interactivo.\"</i>"
+        "5. IMPORTANTE: NO incluyas deslizadores (sliders), barras de ritmo ni botones de sonido en pantalla. Muestra exclusivamente el corazón 3D latiendo.<br/>"
+        "6. Escribe exclusivamente el bloque de código para que al copiarlo a mi simulador genere el corazón interactivo.\"</i>"
     )
     p_table = Table([[Paragraph(prompt_text, style_prompt)]], colWidths=[letter[0] - 84])
     p_table.setStyle(TableStyle([

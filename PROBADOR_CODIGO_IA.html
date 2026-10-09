@@ -584,9 +584,9 @@
             charCount.textContent = editor.value.length + " caracteres";
         });
 
-        // Ejecutar código dentro del iframe de forma robusta
-        function runCode() {
-            const code = editor.value.trim();
+        // Ejecutar código dentro del iframe (ocultando controles ruidosos si es la creación del alumno)
+        function runCode(hideControls = true) {
+            let code = editor.value.trim();
             if (!code) {
                 frame.srcdoc = "";
                 emptyNotice.style.display = "block";
@@ -594,11 +594,39 @@
             }
 
             emptyNotice.style.display = "none";
+
+            // Si es la creación del alumno, ocultar slider de frecuencia y botón de audio
+            if (hideControls) {
+                const cleanStyles = `
+                <style id="cleanCreationStyle">
+                    input[type="range"],
+                    .control,
+                    #bpmTxt,
+                    #bpmRng,
+                    .btn-audio,
+                    #btnAudio,
+                    button {
+                        display: none !important;
+                    }
+                    #hud {
+                        padding: 10px 16px !important;
+                        max-width: 250px !important;
+                    }
+                </style>`;
+                if (code.includes("</head>")) {
+                    code = code.replace("</head>", cleanStyles + "\n</head>");
+                } else if (code.includes("<body")) {
+                    code = code.replace("<body", cleanStyles + "\n<body");
+                } else {
+                    code = cleanStyles + code;
+                }
+            }
+
             // Inyectar HTML en el iframe
             frame.srcdoc = code;
         }
 
-        btnRun.addEventListener("click", runCode);
+        btnRun.addEventListener("click", () => runCode(true));
 
         // Limpiar editor
         btnClear.addEventListener("click", () => {
@@ -617,12 +645,12 @@
             btnToggleLayout.textContent = isFull ? "⬅️ Ver Código" : "🔍 Pantalla Completa";
         });
 
-        // Cargar ejemplo del Corazón 3D con Fonendoscopio
+        // Cargar ejemplo del Corazón 3D con Fonendoscopio (con todos los controles activos)
         btnLoadExample.addEventListener("click", () => {
             const template = document.getElementById("exampleTemplate");
             editor.value = template.value;
             charCount.textContent = template.value.length + " caracteres";
-            runCode();
+            runCode(false);
         });
     </script>
 </body>
