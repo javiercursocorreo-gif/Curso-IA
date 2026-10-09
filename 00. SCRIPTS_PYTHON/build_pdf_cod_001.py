@@ -76,23 +76,23 @@ def build_cod_001_taller_3d_pdf(output_path=PDF_PATH):
 
     story.append(Paragraph("💡 <b>Misión Didáctica • De Espectador a Creador con IA:</b>", style_section_h))
     story.append(Paragraph(
-        "En el ítem anterior (#09) has explorado el corazón humano latiendo en 3D con sonido real de fonendoscopio. "
-        "¿Te gustaría ser tú quien construya y programe ese mismo simulador desde cero con Inteligencia Artificial? "
-        "<b>No necesitas saber programar ni escribir código:</b> solo tienes que pedirle a Gemini lo que quieres mediante un prompt claro y probar tu creación en el <b>Taller de Pruebas del Curso</b> en tu navegador.",
+        "En el ítem anterior (#09) has observado el corazón humano latiendo en 3D con sonido real de fonendoscopio. "
+        "Ahora vas a ser tú quien ordene a la Inteligencia Artificial generar el código necesario para construir ese mismo corazón. "
+        "<b>No necesitas saber programar:</b> pedirás el código a Gemini con el prompt maestro, lo copiarás en tu <b>Taller de Pruebas</b> y comprobarás cómo cobra vida en tu pantalla.",
         style_body
     ))
 
     # Lista de Tareas (Checklist Guiado)
     story.append(Paragraph("📋 <b>Lista de Tareas del Alumno (Paso a Paso en 2 Pestañas):</b>", style_section_h))
     task_rows = [
-        [Paragraph("<b>✅ Tarea 1 • Pídele el programa a Gemini (Pestaña 1):</b><br/>"
-                   "Abre Gemini (<i>gemini.google.com</i>). Copia el <b>Prompt Maestro</b> del recuadro inferior, pégalo en el chat y pulsa Enviar. Observa cómo la IA redacta en segundos todo el código HTML y 3D en Babylon.js.", style_task)],
+        [Paragraph("<b>✅ Tarea 1 • Pídele el código a Gemini (Pestaña 1):</b><br/>"
+                   "Abre Gemini (<i>gemini.google.com</i>). Copia el <b>Prompt Maestro</b> del recuadro inferior, pégalo en el chat y pulsa Enviar. Gemini redactará en segundos el bloque de código para tu simulador.", style_task)],
         [Paragraph("<b>✅ Tarea 2 • Copia el código generado por la IA:</b><br/>"
-                   "En la respuesta de Gemini, ve a la esquina superior derecha del bloque de código y haz clic en el icono <b>«Copiar código»</b>.", style_task)],
+                   "En la respuesta de Gemini, haz clic en el icono o botón <b>«Copiar código»</b> situado en la esquina superior del bloque.", style_task)],
         [Paragraph("<b>✅ Tarea 3 • Abre el Taller Oficial de Pruebas (Pestaña 2):</b><br/>"
-                   "Abre en tu navegador la pestaña del Taller de Pruebas: pulsa el botón <b>«🚀 Abrir Taller ↗»</b> del cuadro de mando (o abre <i>PROBADOR_CODIGO_IA.html</i>). ¡Cero archivos en el disco duro, todo funciona en la memoria!", style_task)],
-        [Paragraph("<b>✅ Tarea 4 • Pega y Ejecuta tu Creación:</b><br/>"
-                   "En el Taller, pulsa el botón <b>«📋 Pegar de Gemini»</b> (o Ctrl+V) y a continuación pulsa el botón azul <b>«▶️ Ejecutar Creación»</b>. ¡Tu propio corazón 3D empezará a latir en pantalla al instante! Puedes girarlo en 360° con el ratón.", style_task)],
+                   "En el mapa del curso, pulsa el botón <b>«🚀 Abrir Taller Interactivo de Pruebas ↗»</b> (o abre <i>PROBADOR_CODIGO_IA.html</i>). ¡Todo funciona en la memoria del navegador!", style_task)],
+        [Paragraph("<b>✅ Tarea 4 • Pega el código y pulsa «Ejecutar Creación»:</b><br/>"
+                   "En el Taller, pulsa el botón <b>«📋 Pegar de Gemini»</b> (o Ctrl+V) y haz clic en <b>«▶️ Ejecutar Creación»</b>. ¡El simulador generará tu corazón 3D latiendo con sonido y podrás rotarlo en 360°!", style_task)],
     ]
     t_table = Table(task_rows, colWidths=[letter[0] - 84])
     t_table.setStyle(TableStyle([
@@ -110,17 +110,16 @@ def build_cod_001_taller_3d_pdf(output_path=PDF_PATH):
     story.append(Paragraph("🧠 <b>Prompt Maestro para Copiar y Pegar en Gemini:</b>", style_section_h))
     prompt_text = (
         "<b>Copia exactamente este texto en Gemini:</b><br/><br/>"
-        "<i>\"Actúa como desarrollador web 3D especializado en educación interactiva.<br/>"
-        "Crea un visor web en un único archivo HTML utilizando Babylon.js (vía CDN).<br/>"
-        "Carga el modelo 3D anatómico del corazón desde la nube oficial de nuestro curso en esta URL:<br/>"
-        "<b>https://javiercursocorreo-gif.github.io/Curso-IA/SIMULADORES_INTERACTIVOS/heart.glb</b><br/><br/>"
-        "Requisitos obligatorios:<br/>"
-        "1. Carga el modelo con BABYLON.SceneLoader.ImportMesh, céntralo y añade cámara orbital 360°.<br/>"
-        "2. Fondo azul noche (#070b14) con iluminación médica de estudio.<br/>"
-        "3. Panel flotante con deslizador de 40 a 160 BPM que haga latir el corazón rítmicamente.<br/>"
-        "4. Incluye un botón para activar el sonido de fonendoscopio real usando este audio:<br/>"
+        "<i>\"Genera el código de programación (HTML y JavaScript con Babylon.js) que voy a copiar y pegar en el Taller de Pruebas de mi curso para que genere un corazón humano 3D latiendo.<br/><br/>"
+        "Requisitos del código:<br/>"
+        "1. Entrega el programa en un único bloque de código para que yo pulse directamente «Copiar código» y lo pegue en mi simulador.<br/>"
+        "2. El código debe cargar la geometría 3D del corazón de nuestro curso desde esta dirección web:<br/>"
+        "<b>https://javiercursocorreo-gif.github.io/Curso-IA/SIMULADORES_INTERACTIVOS/heart.glb</b><br/>"
+        "3. Centra el modelo con cámara orbital 360° para rotarlo con el ratón y fondo azul noche (#070b14).<br/>"
+        "4. Incluye un control de ritmo de 40 a 160 BPM que haga latir el corazón rítmicamente.<br/>"
+        "5. Conecta el sonido de fonendoscopio real sincronizado desde:<br/>"
         "<b>https://javiercursocorreo-gif.github.io/Curso-IA/SIMULADORES_INTERACTIVOS/heartbeat.mp3</b><br/>"
-        "5. Entrega todo el código completo en un único bloque HTML listo para probar.\"</i>"
+        "6. Escribe exclusivamente el código para que al copiarlo a mi simulador genere el corazón interactivo.\"</i>"
     )
     p_table = Table([[Paragraph(prompt_text, style_prompt)]], colWidths=[letter[0] - 84])
     p_table.setStyle(TableStyle([
@@ -137,10 +136,10 @@ def build_cod_001_taller_3d_pdf(output_path=PDF_PATH):
     # Desafío Extra
     story.append(Paragraph("🌟 <b>El Reto Extra (Para Alumnos Curiosos):</b>", style_section_h))
     story.append(Paragraph(
-        "👉 <b>¡Pídele a Gemini que personalice tu simulador!</b> En la misma conversación dile: "
-        "<i>«Ahora cambia las luces para que tenga un brillo verde futurista»</i> o "
+        "👉 <b>¡Pídele a Gemini que modifique tu código!</b> En la misma conversación dile: "
+        "<i>«Modifica el código para que las luces tengan un brillo verde futurista»</i> o "
         "<i>«Añade un contador en pantalla que cuente cuántas veces ha latido el corazón»</i>. "
-        "Vuelve a copiar el código, pégalo en tu Taller y ¡mira cómo la IA adapta el programa a tus órdenes!",
+        "Vuelve a copiar el código, pégalo en tu Taller y ¡mira cómo cambia tu corazón en directo!",
         style_body
     ))
 

@@ -148,18 +148,21 @@ def generate_columns_html(session_num, session_folder, files):
     
     def session_file_sort_key(filename):
         if session_num == 1:
+            f_up = filename.upper()
             # En Sesión 01: 1º Teoría (#05), 2º Ficha PDF Fractal (#06 introductoria), 3º Vídeo MP4 (#07), 4º Reto Visual (#08), 5º Simulador 3D (#09), 6º Taller Código (#10)
-            if 'FRAC-000_A_Teoria' in filename:
+            if 'FRAC-000_A_TEORIA' in f_up:
                 return (2, 5, 1, filename.lower())
-            if 'FRAC-058' in filename and filename.lower().endswith('.pdf'):
+            if 'FRAC-058' in f_up and filename.lower().endswith('.pdf'):
                 return (2, 5, 2, filename.lower())
-            if 'FRAC-058' in filename and filename.lower().endswith('.mp4'):
+            if 'FRAC-058' in f_up and filename.lower().endswith('.mp4'):
                 return (2, 5, 3, filename.lower())
-            if 'FRAC-000_B_Reto' in filename:
+            if 'FRAC-000_B_RETO' in f_up:
                 return (2, 5, 4, filename.lower())
-            if 'SIMULADOR' in filename.upper() or 'CORAZON' in filename.upper():
+            # #09 [3D]: El Simulador 3D oficial va PRIMERO (antes del taller de código)
+            if filename.lower().endswith('.html') or 'SIMULADOR_CORAZON' in f_up:
                 return (2, 5, 5, filename.lower())
-            if 'COD-001' in filename.upper() or 'TALLER' in filename.upper():
+            # #10 [COD]: El Taller Práctico de Código va SEGUNDO
+            if 'COD-001' in f_up or 'TALLER' in f_up or 'COD-' in f_up:
                 return (2, 5, 6, filename.lower())
         return file_sort_key(filename)
 
@@ -247,16 +250,19 @@ def generate_columns_html(session_num, session_folder, files):
             if it.get("code") == "COD":
                 cards_html += f"""
                     <div class="file-card file-card-special">
-                        <a href="{rel_href}" target="_blank" class="file-left" style="text-decoration:none; color:inherit; flex:1;">
-                            <span class="file-num">{it["step_num"]}</span>
-                            <span class="file-tag {it["tag_class"]}">{it["tag_text"]}</span>
-                            <div class="file-details">
-                                <span class="file-title">{it["title"]}</span>
-                                <span class="file-desc">{it["cat"]} • Lista de Tareas</span>
+                        <a href="{rel_href}" target="_blank" class="file-card-special-top" title="Abrir Ficha Guía de Tareas (PDF)">
+                            <div class="file-left">
+                                <span class="file-num">{it["step_num"]}</span>
+                                <span class="file-tag {it["tag_class"]}">{it["tag_text"]}</span>
+                                <div class="file-details">
+                                    <span class="file-title">{it["title"]}</span>
+                                    <span class="file-desc">{it["cat"]} • Ficha de Tareas</span>
+                                </div>
                             </div>
+                            <span class="file-arrow">↗</span>
                         </a>
                         <a href="PROBADOR_CODIGO_IA.html" target="_blank" class="btn-launch-interactive" title="Abrir Taller Oficial de Pruebas">
-                            🚀 Abrir Taller ↗
+                            🚀 Abrir Taller Interactivo de Pruebas ↗
                         </a>
                     </div>"""
             else:
@@ -661,6 +667,7 @@ def generate_columns_html(session_num, session_folder, files):
             align-items: center;
             gap: 11px;
             min-width: 0;
+            flex: 1;
         }}
         .file-num {{
             font-family: ui-monospace, monospace;
@@ -689,28 +696,59 @@ def generate_columns_html(session_num, session_folder, files):
 
         .file-card-special {{
             display: flex;
+            flex-direction: column;
+            gap: 10px;
+            background: rgba(6, 182, 212, 0.06);
+            border: 1px solid rgba(6, 182, 212, 0.35);
+            border-radius: 12px;
+            padding: 12px 14px;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }}
+        .file-card-special:hover {{
+            background: rgba(6, 182, 212, 0.12);
+            border-color: #06b6d4;
+            transform: translateX(4px);
+            box-shadow: 0 4px 18px rgba(6, 182, 212, 0.25);
+        }}
+        .file-card-special-top {{
+            display: flex;
             align-items: center;
             justify-content: space-between;
-            padding-right: 12px;
+            text-decoration: none;
+            color: var(--text-main);
+            width: 100%;
+        }}
+        .file-card-special-top .file-left {{
+            flex: 1;
+            min-width: 0;
+        }}
+        .file-card-special-top:hover .file-arrow {{
+            color: #fff;
+            transform: translate(2px, -2px);
         }}
         .btn-launch-interactive {{
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
             background: linear-gradient(135deg, #0284c7 0%, #06b6d4 100%);
             color: #ffffff !important;
             font-weight: 800;
-            font-size: 0.76rem;
-            padding: 6px 12px;
+            font-size: 0.8rem;
+            padding: 9px 14px;
             border-radius: 8px;
             text-decoration: none;
-            white-space: nowrap;
-            margin-left: 10px;
+            text-align: center;
             box-shadow: 0 0 12px rgba(6, 182, 212, 0.35);
             transition: all 0.2s ease;
             border: 1px solid rgba(255, 255, 255, 0.2);
-            flex-shrink: 0;
+            width: 100%;
+            box-sizing: border-box;
         }}
         .btn-launch-interactive:hover {{
-            transform: translateY(-2px);
+            transform: translateY(-1px);
             box-shadow: 0 0 18px rgba(6, 182, 212, 0.6);
+            background: linear-gradient(135deg, #0369a1 0%, #0891b2 100%);
             color: #ffffff !important;
         }}
 
@@ -718,6 +756,7 @@ def generate_columns_html(session_num, session_folder, files):
             display: flex;
             flex-direction: column;
             min-width: 0;
+            flex: 1;
         }}
         .file-title {{
             font-size: 0.88rem;
