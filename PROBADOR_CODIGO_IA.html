@@ -350,7 +350,7 @@
 &lt;head&gt;
     &lt;meta charset=&quot;UTF-8&quot;&gt;
     &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot;&gt;
-    &lt;title&gt;Laboratorio Anatómico 3D • Árbol Bronquial y Pulmones (GLB + Babylon.js)&lt;/title&gt;
+    &lt;title&gt;Laboratorio Anatómico 3D • Árbol Traqueobronquial Humano (NIH 3D + Babylon.js)&lt;/title&gt;
     &lt;!-- Babylon.js Motor 3D Oficial CDN --&gt;
     &lt;script src=&quot;https://cdn.babylonjs.com/babylon.js&quot;&gt;&lt;/script&gt;
     &lt;script src=&quot;https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js&quot;&gt;&lt;/script&gt;
@@ -521,7 +521,7 @@
 
     &lt;div id=&quot;loadingOverlay&quot;&gt;
         &lt;div class=&quot;spinner&quot;&gt;&lt;/div&gt;
-        &lt;div style=&quot;font-weight: 600; color: #94a3b8; font-size: 0.9rem;&quot; id=&quot;loadingStatusText&quot;&gt;Cargando modelo anatómico fotogramétrico de pulmones...&lt;/div&gt;
+        &lt;div style=&quot;font-weight: 600; color: #94a3b8; font-size: 0.9rem;&quot; id=&quot;loadingStatusText&quot;&gt;Cargando modelo anatómico fotogramétrico del árbol traqueobronquial...&lt;/div&gt;
     &lt;/div&gt;
 
     &lt;header&gt;
@@ -529,12 +529,12 @@
             &lt;span class=&quot;brand-icon&quot;&gt;🫁&lt;/span&gt;
             &lt;div&gt;
                 &lt;div class=&quot;brand-title&quot;&gt;Aparato Respiratorio Humano • Tráquea y Bronquios 3D&lt;/div&gt;
-                &lt;div class=&quot;brand-sub&quot;&gt;Biomimética y Fractales • Escaneo Fotogramétrico Médico Real (NIH 3D)&lt;/div&gt;
+                &lt;div class=&quot;brand-sub&quot;&gt;Biomimética y Fractales • Modelo Médico Fotogramétrico (NIH 3D)&lt;/div&gt;
             &lt;/div&gt;
         &lt;/div&gt;
         &lt;div class=&quot;live-tag&quot;&gt;
             &lt;span class=&quot;pulse-dot&quot;&gt;&lt;/span&gt;
-            &lt;span id=&quot;cycleStatus&quot;&gt;INHALACIÓN ACTIVA&lt;/span&gt;
+            &lt;span id=&quot;cycleStatus&quot;&gt;CICLO RESPIRATORIO&lt;/span&gt;
         &lt;/div&gt;
     &lt;/header&gt;
 
@@ -544,7 +544,7 @@
         &lt;!-- FRECUENCIA RESPIRATORIA --&gt;
         &lt;div class=&quot;panel-box&quot;&gt;
             &lt;div class=&quot;box-title&quot;&gt;
-                &lt;span&gt;🌬️ Biomecánica Respiratoria&lt;/span&gt;
+                &lt;span&gt;🌬️ Ritmo de Respiración&lt;/span&gt;
             &lt;/div&gt;
             &lt;div class=&quot;rpm-display&quot;&gt;
                 &lt;div class=&quot;rpm-num&quot; id=&quot;rpmVal&quot;&gt;14&lt;/div&gt;
@@ -605,7 +605,7 @@
             const scene = new BABYLON.Scene(engine);
             scene.clearColor = new BABYLON.Color4(0.024, 0.035, 0.075, 1.0);
 
-            // Cámara orbital cinemática
+            // Cámara orbital cinemática perfectamente calibrada y centrada
             const camera = new BABYLON.ArcRotateCamera(&quot;Camera&quot;, -Math.PI / 2, Math.PI / 2.3, 5.2, BABYLON.Vector3.Zero(), scene);
             camera.attachControl(canvas, true);
             camera.wheelPrecision = 40;
@@ -614,13 +614,13 @@
 
             // Iluminación quirúrgica/médica PBR
             const hemiLight = new BABYLON.HemisphericLight(&quot;hemiLight&quot;, new BABYLON.Vector3(0, 1, 0), scene);
-            hemiLight.intensity = 1.2;
+            hemiLight.intensity = 1.25;
             hemiLight.diffuse = new BABYLON.Color3(1.0, 0.96, 0.94);
             hemiLight.groundColor = new BABYLON.Color3(0.12, 0.16, 0.28);
 
             const keyLight = new BABYLON.DirectionalLight(&quot;keyLight&quot;, new BABYLON.Vector3(-1, -2, -1), scene);
             keyLight.position = new BABYLON.Vector3(5, 8, 5);
-            keyLight.intensity = 1.9;
+            keyLight.intensity = 2.0;
             keyLight.diffuse = new BABYLON.Color3(1.0, 0.98, 0.95);
 
             const fillLight = new BABYLON.PointLight(&quot;fillLight&quot;, new BABYLON.Vector3(-6, -2, -4), scene);
@@ -632,7 +632,7 @@
             rimLight.intensity = 1.6;
 
             const gl = new BABYLON.GlowLayer(&quot;glow&quot;, scene);
-            gl.intensity = 0.25;
+            gl.intensity = 0.22;
 
             // CASCADE ROBUSTO DE FUENTES (GLB LOCAL -&gt; BASE64 OFFLINE -&gt; CDN GITHUB)
             const candidateSources = [
@@ -672,12 +672,10 @@
                                 }
                             });
 
-                            // Si el modelo incluye la animación de respiración médica nativa (Blender morph targets)
+                            // Desactivar animaciones baked de morphing que provocan vaivén o zoom indeseado
                             if (animationGroups &amp;&amp; animationGroups.length &gt; 0) {
                                 lungAnimGroup = animationGroups[0];
-                                lungAnimGroup.play(true);
-                                lungAnimGroup.speedRatio = currentRpm / 14.0;
-                                console.log(&quot;[Simulador Pulmones 3D] Animación médica activada:&quot;, lungAnimGroup.name);
+                                lungAnimGroup.stop(); // Detenida por defecto para que el modelo sea 100% estable
                             }
 
                             // Normalización de escala y centrado volumétrico exacto
@@ -695,12 +693,13 @@
                                 fixedBaseScale = 0.25;
                                 lungsRoot.scaling = new BABYLON.Vector3(fixedBaseScale, fixedBaseScale, fixedBaseScale);
                                 baseCenter = new BABYLON.Vector3(0, 0, 0);
+                                lungsRoot.position = baseCenter.clone();
                             }
 
                             camera.radius = 5.2;
                             camera.target = new BABYLON.Vector3(0, 0, 0);
                             isModelLoaded = true;
-                            console.log(&quot;✅ [Simulador Pulmones 3D] Cargado exitosamente desde:&quot;, isB64 ? &quot;Base64 Embebido&quot; : src);
+                            console.log(&quot;✅ [Simulador Pulmones 3D] Modelo estable y centrado cargado con éxito.&quot;);
                         } catch (initErr) {
                             console.error(&quot;Error inicializando modelo:&quot;, initErr);
                             currentSourceIdx++;
@@ -776,7 +775,7 @@
             else if (audioCtx.state === &#x27;suspended&#x27;) audioCtx.resume();
         }, { once: true });
 
-        // BUCLE DE RENDER: BIOMECÁNICA RESPIRATORIA DINÁMICA VERTICAL Y EXPANSIVA
+        // BUCLE DE RENDER: MODELO 100% ESTABLE (SIN VAIVÉN NI ZOOM EN BLOQUE)
         let breathTime = 0;
         engine.runRenderLoop(function () {
             const dt = engine.getDeltaTime() / 1000.0;
@@ -784,28 +783,24 @@
             breathTime = (breathTime + dt) % cycleDuration;
             const cyclePhase = breathTime / cycleDuration; // 0.0 a 1.0
 
-            // Inhalación activa 45% (diafragma baja y estira tráquea), exhalación elástica pasiva 55%
-            let expansion = 0;
-            let isInhaling = true;
-            if (cyclePhase &lt; 0.45) {
-                const p = cyclePhase / 0.45;
-                expansion = 0.5 - 0.5 * Math.cos(p * Math.PI); // 0.0 a 1.0 suave
-                isInhaling = true;
-            } else {
-                const p = (cyclePhase - 0.45) / 0.55;
-                expansion = 0.5 + 0.5 * Math.cos(p * Math.PI); // 1.0 a 0.0 suave
-                isInhaling = false;
-            }
+            const isInhaling = (cyclePhase &lt; 0.45);
 
             const statusEl = document.getElementById(&quot;cycleStatus&quot;);
             if (statusEl) {
-                statusEl.textContent = isInhaling ? &quot;INHALACIÓN (TRÁQUEA DESCIENDE)&quot; : &quot;EXHALACIÓN (RETRACCIÓN ELÁSTICA)&quot;;
+                statusEl.textContent = isInhaling ? &quot;INHALACIÓN (FLUJO DE AIRE)&quot; : &quot;EXHALACIÓN (SALIDA DE AIRE)&quot;;
                 statusEl.style.color = isInhaling ? &quot;#38bdf8&quot; : &quot;#34d399&quot;;
             }
 
-            // BIOMECÁNICA: La animación interna del modelo GLB (morph targets de Blender)
-            // deforma orgánicamente las ramas bronquiales sin desplazar rígidamente todo el objeto.
+            // MANTENER POSICIÓN Y ESCALA COMPLETAMENTE FIRMES Y ANCLADAS
             if (lungsRoot &amp;&amp; isModelLoaded) {
+                lungsRoot.position.x = baseCenter.x;
+                lungsRoot.position.y = baseCenter.y;
+                lungsRoot.position.z = baseCenter.z;
+
+                lungsRoot.scaling.x = fixedBaseScale;
+                lungsRoot.scaling.y = fixedBaseScale;
+                lungsRoot.scaling.z = fixedBaseScale;
+
                 if (autoRotate) {
                     lungsRoot.rotation.y += 0.003;
                 }
@@ -834,9 +829,6 @@
             currentRpm = val;
             rpmSlider.value = val;
             rpmVal.textContent = val;
-            if (lungAnimGroup) {
-                lungAnimGroup.speedRatio = currentRpm / 14.0;
-            }
             presetBtns.forEach(b =&gt; {
                 b.classList.toggle(&quot;active&quot;, parseInt(b.getAttribute(&quot;data-rpm&quot;)) === val);
             });
