@@ -577,14 +577,17 @@ def build_photorealistic_lungs_html():
 
     # Copiar a 01_Sesion
     if os.path.exists(S01_DIR):
-        shutil.copy2(dest_path, os.path.join(S01_DIR, "SIMULADOR_PULMONES_3D.html"))
-        if os.path.exists(B64_DEST):
-            shutil.copy2(B64_DEST, os.path.join(S01_DIR, "lungs_b64.js"))
-        if os.path.exists(GLB_DEST):
-            shutil.copy2(GLB_DEST, os.path.join(S01_DIR, "lungs.glb"))
-        if os.path.exists(p_path):
-            shutil.copy2(p_path, os.path.join(S01_DIR, "PROBADOR_CODIGO_IA.html"))
-        print(f"✅ Sincronizado en {S01_DIR}")
+        try:
+            shutil.copy2(dest_path, os.path.join(S01_DIR, "SIMULADOR_PULMONES_3D.html"))
+            if os.path.exists(B64_DEST):
+                shutil.copy2(B64_DEST, os.path.join(S01_DIR, "lungs_b64.js"))
+            if os.path.exists(GLB_DEST):
+                shutil.copy2(GLB_DEST, os.path.join(S01_DIR, "lungs.glb"))
+            if os.path.exists(p_path):
+                shutil.copy2(p_path, os.path.join(S01_DIR, "PROBADOR_CODIGO_IA.html"))
+            print(f"✅ Sincronizado en {S01_DIR}")
+        except Exception as e:
+            print(f"⚠️ Nota de permisos al copiar a 01_Sesion (se copiará fuera del sandbox): {e}")
 
 def main():
     print("🚀 === INICIANDO INTEGRACIÓN DE PULMONES 3D FOTOREALISTAS ===")
