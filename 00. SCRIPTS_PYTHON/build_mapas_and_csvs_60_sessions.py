@@ -26,42 +26,44 @@ GITHUB_BASE_URL = "https://javiercursocorreo-gif.github.io/Curso-IA/"
 
 # Configuración de pasos, colores y columnas
 STEP_CONFIG = {
-    "COMICS":{"color": "#ec4899", "cat": "Paso 1 • Proyecto Cómic & Novela Gráfica", "icon": "📖", "col": 1, "order": 0},
-    "CUENT": {"color": "#ec4899", "cat": "Paso 1 • Proyecto Cómic & Novela Gráfica", "icon": "📖", "col": 1, "order": 0},
-    "TXT":   {"color": "#38bdf8", "cat": "Paso 2 • Prompts y Texto",        "icon": "✍️", "col": 1, "order": 1},
-    "EST":   {"color": "#818cf8", "cat": "Paso 3 • Estilo de Imagen IA",    "icon": "🎨", "col": 1, "order": 2},
-    "PRAC":  {"color": "#c084fc", "cat": "Paso 4 • Taller Práctico Gemini",  "icon": "⚡", "col": 1, "order": 3},
-    "ARTE":  {"color": "#a3e635", "cat": "Paso 5 • Historia del Arte",      "icon": "🖼️", "col": 2, "order": 4},
-    "FRAC":  {"color": "#f472b6", "cat": "Paso 6 • Geometría Fractal & HD",  "icon": "🌀", "col": 2, "order": 5},
-    "3D":    {"color": "#e11d48", "cat": "Paso 6B • Simuladores 3D & Ciencia", "icon": "🫀", "col": 2, "order": 5.5},
-    "SIM":   {"color": "#e11d48", "cat": "Paso 6B • Simuladores 3D & Ciencia", "icon": "🫀", "col": 2, "order": 5.5},
-    "COD":   {"color": "#06b6d4", "cat": "Paso 6C • Taller de Código con Gemini", "icon": "🧪", "col": 2, "order": 5.6},
-    "INT":   {"color": "#fb7185", "cat": "Paso 7 • Mundo por Dentro",       "icon": "🏛️", "col": 2, "order": 6},
-    "FUT":   {"color": "#fb923c", "cat": "Paso 8 • Sci-Fi & Futuro",        "icon": "🚀", "col": 2, "order": 7},
-    "NAT":   {"color": "#facc15", "cat": "Paso 9 • Naturaleza Fascinante",  "icon": "🌿", "col": 2, "order": 8},
-    "AVES":  {"color": "#facc15", "cat": "Paso 9 • Naturaleza Fascinante",  "icon": "🦅", "col": 2, "order": 8},
-    "NIV":   {"color": "#4ade80", "cat": "Paso 10 • Escalafones y Niveles", "icon": "📊", "col": 3, "order": 9},
-    "TRUC":  {"color": "#2dd4bf", "cat": "Paso 11 • Trucos Cotidianos",     "icon": "💡", "col": 3, "order": 10},
-    "PAT":   {"color": "#10b981", "cat": "Paso 12 • Cultura Patrimonial & Derechos", "icon": "🏛️", "col": 3, "order": 11},
-    "MOVIL": {"color": "#60a5fa", "cat": "Paso 13 • Salvavidas del Móvil",  "icon": "📱", "col": 3, "order": 12},
-    "MEM":   {"color": "#a78bfa", "cat": "Paso 14 • Cápsula de Memoria",   "icon": "🕰️", "col": 3, "order": 13},
-    "MEC":   {"color": "#f59e0b", "cat": "Paso 14 • Mecánica & Vídeo",     "icon": "⚙️", "col": 3, "order": 13}
+    "COMICS":{"color": "#ec4899", "cat": "Proyecto Cómic & Novela Gráfica", "icon": "📖", "col": 1, "order": 0},
+    "CUENT": {"color": "#ec4899", "cat": "Proyecto Cómic & Novela Gráfica", "icon": "📖", "col": 1, "order": 0},
+    "EST":   {"color": "#818cf8", "cat": "Estilo de Imagen IA",             "icon": "🎨", "col": 1, "order": 1},
+    "ARTE":  {"color": "#a3e635", "cat": "Historia del Arte",               "icon": "🖼️", "col": 1, "order": 2},
+    "PRAC":  {"color": "#c084fc", "cat": "Taller Práctico Gemini",          "icon": "⚡", "col": 1, "order": 3},
+
+    "FRAC":  {"color": "#f472b6", "cat": "Geometría Fractal & HD",          "icon": "🌀", "col": 2, "order": 4},
+    "COD":   {"color": "#06b6d4", "cat": "Taller de Código con Gemini",     "icon": "🧪", "col": 2, "order": 5},
+    "3D":    {"color": "#e11d48", "cat": "Simuladores 3D & Ciencia",        "icon": "🫀", "col": 2, "order": 5.5},
+    "SIM":   {"color": "#e11d48", "cat": "Simuladores 3D & Ciencia",        "icon": "🫀", "col": 2, "order": 5.5},
+    "INT":   {"color": "#fb7185", "cat": "Mundo por Dentro",                "icon": "🏛️", "col": 2, "order": 6},
+    "MEC":   {"color": "#f59e0b", "cat": "Mecánica & Vídeo 3D",             "icon": "⚙️", "col": 2, "order": 7},
+    "FUT":   {"color": "#fb923c", "cat": "Sci-Fi & Futuro",                 "icon": "🚀", "col": 2, "order": 8},
+    "NAT":   {"color": "#facc15", "cat": "Naturaleza Fascinante",          "icon": "🌿", "col": 2, "order": 9},
+    "AVES":  {"color": "#facc15", "cat": "Naturaleza Fascinante",          "icon": "🦅", "col": 2, "order": 9},
+
+    "TXT":   {"color": "#38bdf8", "cat": "Prompts y Asistencia de Texto",  "icon": "✍️", "col": 3, "order": 10},
+    "NIV":   {"color": "#4ade80", "cat": "Escalafones y Niveles",          "icon": "📊", "col": 3, "order": 11},
+    "TRUC":  {"color": "#2dd4bf", "cat": "Trucos Cotidianos",              "icon": "💡", "col": 3, "order": 12},
+    "PAT":   {"color": "#10b981", "cat": "Cultura Patrimonial & Derechos", "icon": "🏛️", "col": 3, "order": 13},
+    "MOVIL": {"color": "#60a5fa", "cat": "Salvavidas del Móvil",           "icon": "📱", "col": 3, "order": 14},
+    "MEM":   {"color": "#a78bfa", "cat": "Cápsula de Memoria",            "icon": "🕰️", "col": 3, "order": 15}
 }
 
 COLUMNS_CONFIG = [
     {
         "col_id": 1,
         "badge": "FASE 1",
-        "title": "Lanzamiento del Cómic & Taller Creativo",
-        "desc": "Lanzamiento temprano del cómic en Gemini Notebook (procesando en 2º plano), prompts y estilos de imagen",
+        "title": "Taller Creativo, Arte & Expresión Visual",
+        "desc": "Obras maestras de la pinacoteca, estilos de imagen artística y talleres prácticos en Gemini",
         "color": "#ec4899",
-        "icon": "📖"
+        "icon": "🎨"
     },
     {
         "col_id": 2,
         "badge": "FASE 2",
-        "title": "Pinacoteca, Ciencia & Futuro",
-        "desc": "Historia del arte, fractales y biomimética, cortes transversales, sci-fi y biodiversidad",
+        "title": "Ciencia, Naturaleza, Ingeniería & Futuro",
+        "desc": "Fractales y biomimética, cortes transversales, mecánica 3D, simuladores interactivos y biodiversidad",
         "color": "#fb7185",
         "icon": "🔬"
     },
@@ -69,7 +71,7 @@ COLUMNS_CONFIG = [
         "col_id": 3,
         "badge": "FASE 3",
         "title": "Vida Práctica, Patrimonio & Memoria",
-        "desc": "Escalafones, trucos cotidianos, cultura patrimonial 101, móvil, recuerdos de infancia y proyección final",
+        "desc": "Asistencia personal y compras, trucos cotidianos, cultura patrimonial 101, móvil y recuerdos",
         "color": "#34d399",
         "icon": "💡"
     }
@@ -149,17 +151,16 @@ def generate_columns_html(session_num, session_folder, files):
     def session_file_sort_key(filename):
         if session_num == 1:
             f_up = filename.upper()
-            # En Sesión 01: 1º Teoría (#05), 2º Ficha PDF Fractal (#06 introductoria), 3º Vídeo MP4 (#07), 4º Reto Visual (#08), 5º Taller Código (#09)
             if 'FRAC-000_A_TEORIA' in f_up:
-                return (2, 5, 1, filename.lower())
+                return (2, 4, 1, filename.lower())
             if 'FRAC-058' in f_up and filename.lower().endswith('.pdf'):
-                return (2, 5, 2, filename.lower())
+                return (2, 4, 2, filename.lower())
             if 'FRAC-058' in f_up and filename.lower().endswith('.mp4'):
-                return (2, 5, 3, filename.lower())
+                return (2, 4, 3, filename.lower())
             if 'FRAC-000_B_RETO' in f_up:
-                return (2, 5, 4, filename.lower())
+                return (2, 4, 4, filename.lower())
             if 'COD-001' in f_up or 'TALLER' in f_up or 'COD-' in f_up:
-                return (2, 5, 5, filename.lower())
+                return (2, 5, 1, filename.lower())
         return file_sort_key(filename)
 
     # Filtrar archivos reales de contenido (ignorando duplicados de sincronización de iCloud ' 2.pdf', etc.)
@@ -220,18 +221,8 @@ def generate_columns_html(session_num, session_folder, files):
         code_tag = f"[{it['code']}]" if it.get("code") else ""
         it["step_num"] = f"#{i:02d} {code_tag}".strip()
 
-    # Configuración de columnas (ajustar título y descripción en sesiones 1 y 2)
-    current_columns_config = []
-    for col_info in COLUMNS_CONFIG:
-        col_copy = dict(col_info)
-        if session_num in (1, 2) and col_copy["col_id"] == 1:
-            col_copy["title"] = "Taller Creativo & Visual"
-            col_copy["desc"] = "Prompts de texto, estilos de imagen y práctica guiada con Gemini"
-            col_copy["icon"] = "🎨"
-        if session_num in (1, 2) and col_copy["col_id"] == 3:
-            col_copy["title"] = "Vida Práctica, Patrimonio & Memoria"
-            col_copy["desc"] = "Escalafones, cultura patrimonial 101, cámara del móvil y recuerdos de infancia"
-        current_columns_config.append(col_copy)
+    # Configuración de columnas
+    current_columns_config = [dict(col_info) for col_info in COLUMNS_CONFIG]
 
     # Agrupar en las 3 columnas
     columns_html = ""

@@ -13,23 +13,41 @@ import sys
 OUTPUT_DIR = "/Users/externo/Library/Mobile Documents/com~apple~CloudDocs/PERSONAL/CLASES DE TECNOLOGÍA/CURSO-IA/CLASES/EXPORTACION_FICHAS_CLASSROOM_PDF/100. [SESSIONS] TERNAS_LISTAS_PARA_CLASSROOM/01_Sesion"
 PDF_PATH = os.path.join(OUTPUT_DIR, "0. FASE_0_GUIA_CUADERNOS_GEMINI.pdf")
 
-ETIQUETAS = [
-    ("[COMICS]", "CÓMICS", "Novelas gráficas, narrativa secuencial e historietas con IA."),
-    ("[TXT]", "TEXTO", "Cartas formales, consultas, comparativas de compra y recetas de salud."),
-    ("[EST]", "ESTILO", "Fotografía fotorrealista, acuarela, grabado, cine negro y texturas 3D."),
-    ("[PRAC]", "PRÁCTICA", "Retos paso a paso y desafíos interactivos en clase con Gemini."),
-    ("[ARTE]", "ARTE", "Obras maestras de la pinacoteca universal y análisis artístico."),
-    ("[FRAC]", "FRACTALES", "Geometría en la naturaleza, biomimética y vídeos en alta definición."),
-    ("[INT]", "INTERIOR", "Cortes transversales: arquitectura, monumentos y maquinaria por dentro."),
-    ("[COD]", "CÓDIGO", "Programación con IA, creación de simuladores 3D y código HTML interactivo."),
-    ("[FUT]", "FUTURO", "Ciencia ficción, hábitats espaciales y robótica avanzada del mañana."),
-    ("[NAT]", "NATURALEZA", "Biomecánica animal, aves del mundo y maravillas del reino natural."),
-    ("[NIV]", "NIVELES", "Escalafones del conocimiento y clasificaciones universales (101)."),
-    ("[TRUC]", "TRUCOS", "Remedios prácticos del hogar, bricolaje rápido y limpieza ecológica."),
-    ("[PAT]", "PATRIMONIO", "Testamentos, herencias, derechos bancarios y vivienda clara 101."),
-    ("[MOVIL]", "MÓVIL", "Símbolos de pantalla, salvavidas de configuración y cámara útil."),
-    ("[MEM]", "MEMORIA", "Cápsula de recuerdos: lugares de infancia y objetos de época."),
-    ("[MEC]", "MECÁNICA", "Engranajes, motores clásicos e inventos tecnológicos históricos.")
+FASES_ETIQUETAS = [
+    (
+        "FASE 1 • TALLER CREATIVO, ARTE & EXPRESIÓN VISUAL",
+        "#DB2777",
+        [
+            ("[EST]", "ESTILO", "Fotografía fotorrealista, acuarela, grabado, cine negro y texturas 3D."),
+            ("[ARTE]", "ARTE", "Obras maestras de la pinacoteca universal y análisis artístico."),
+            ("[PRAC]", "PRÁCTICA", "Retos paso a paso y desafíos interactivos en clase con Gemini."),
+            ("[COMICS]", "CÓMICS", "Novelas gráficas, narrativa secuencial e historietas con IA.")
+        ]
+    ),
+    (
+        "FASE 2 • CIENCIA, NATURALEZA, INGENIERÍA & FUTURO",
+        "#0284C7",
+        [
+            ("[FRAC]", "FRACTALES", "Geometría en la naturaleza, biomimética y vídeos en alta definición."),
+            ("[COD]", "CÓDIGO", "Programación con IA, creación de simuladores 3D y código HTML interactivo."),
+            ("[INT]", "INTERIOR", "Cortes transversales: arquitectura, monumentos y maquinaria por dentro."),
+            ("[MEC]", "MECÁNICA", "Engranajes, motores clásicos e inventos tecnológicos históricos."),
+            ("[FUT]", "FUTURO", "Ciencia ficción, hábitats espaciales y robótica avanzada del mañana."),
+            ("[NAT]", "NATURALEZA", "Biomecánica animal, aves del mundo y maravillas del reino natural.")
+        ]
+    ),
+    (
+        "FASE 3 • VIDA PRÁCTICA, PATRIMONIO & MEMORIA",
+        "#059669",
+        [
+            ("[TXT]", "TEXTO", "Cartas formales, consultas, comparativas de compra y recetas de salud."),
+            ("[NIV]", "NIVELES", "Escalafones del conocimiento y clasificaciones universales (101)."),
+            ("[TRUC]", "TRUCOS", "Remedios prácticos del hogar, bricolaje rápido y limpieza ecológica."),
+            ("[PAT]", "PATRIMONIO", "Testamentos, herencias, derechos bancarios y vivienda clara 101."),
+            ("[MOVIL]", "MÓVIL", "Símbolos de pantalla, salvavidas de configuración y cámara útil."),
+            ("[MEM]", "MEMORIA", "Cápsula de recuerdos: lugares de infancia y objetos de época.")
+        ]
+    )
 ]
 
 def build_pdf_reportlab():
@@ -44,8 +62,8 @@ def build_pdf_reportlab():
         pagesize=A4,
         leftMargin=30,
         rightMargin=30,
-        topMargin=20,
-        bottomMargin=18
+        topMargin=18,
+        bottomMargin=16
     )
 
     styles = getSampleStyleSheet()
@@ -55,8 +73,8 @@ def build_pdf_reportlab():
         'HeaderTitle',
         parent=styles['Normal'],
         fontName='Helvetica-Bold',
-        fontSize=12.5,
-        leading=15,
+        fontSize=12,
+        leading=14.5,
         textColor=colors.white,
         alignment=1
     )
@@ -64,42 +82,43 @@ def build_pdf_reportlab():
         'HeaderSub',
         parent=styles['Normal'],
         fontName='Helvetica-Oblique',
-        fontSize=8.5,
-        leading=11,
+        fontSize=8.2,
+        leading=10.5,
         textColor=colors.HexColor('#7DD3FC'),
         alignment=1
-    )
-    style_callout_title = ParagraphStyle(
-        'CalloutTitle',
-        parent=styles['Normal'],
-        fontName='Helvetica-Bold',
-        fontSize=8.5,
-        leading=11,
-        textColor=colors.HexColor('#0369A1')
     )
     style_callout_body = ParagraphStyle(
         'CalloutBody',
         parent=styles['Normal'],
         fontName='Helvetica',
-        fontSize=7.8,
-        leading=10.5,
+        fontSize=7.6,
+        leading=10,
         textColor=colors.HexColor('#334155')
     )
     style_tbl_head = ParagraphStyle(
         'TblHead',
         parent=styles['Normal'],
         fontName='Helvetica-Bold',
-        fontSize=8,
-        leading=10,
+        fontSize=7.8,
+        leading=9.5,
         textColor=colors.white,
         alignment=1
+    )
+    style_phase_header = ParagraphStyle(
+        'PhaseHead',
+        parent=styles['Normal'],
+        fontName='Helvetica-Bold',
+        fontSize=7.5,
+        leading=9,
+        textColor=colors.white,
+        alignment=0
     )
     style_tag = ParagraphStyle(
         'TagCol',
         parent=styles['Normal'],
         fontName='Helvetica-Bold',
-        fontSize=7.8,
-        leading=9.5,
+        fontSize=7.5,
+        leading=9,
         textColor=colors.HexColor('#0284C7'),
         alignment=1
     )
@@ -107,8 +126,8 @@ def build_pdf_reportlab():
         'NotebookCol',
         parent=styles['Normal'],
         fontName='Helvetica-Bold',
-        fontSize=8,
-        leading=9.5,
+        fontSize=7.8,
+        leading=9,
         textColor=colors.HexColor('#047857'),
         alignment=1
     )
@@ -116,32 +135,24 @@ def build_pdf_reportlab():
         'DescCol',
         parent=styles['Normal'],
         fontName='Helvetica',
-        fontSize=7.5,
-        leading=9.5,
+        fontSize=7.2,
+        leading=9,
         textColor=colors.HexColor('#1E293B')
-    )
-    style_tip_title = ParagraphStyle(
-        'TipTitle',
-        parent=styles['Normal'],
-        fontName='Helvetica-Bold',
-        fontSize=8,
-        leading=10.5,
-        textColor=colors.HexColor('#B45309')
     )
     style_tip_body = ParagraphStyle(
         'TipBody',
         parent=styles['Normal'],
         fontName='Helvetica',
-        fontSize=7.3,
-        leading=9.5,
+        fontSize=7.2,
+        leading=9.2,
         textColor=colors.HexColor('#78350F')
     )
     style_footer = ParagraphStyle(
         'FooterStyle',
         parent=styles['Normal'],
         fontName='Helvetica-Oblique',
-        fontSize=7,
-        leading=9,
+        fontSize=6.8,
+        leading=8.5,
         textColor=colors.HexColor('#64748B'),
         alignment=1
     )
@@ -156,15 +167,15 @@ def build_pdf_reportlab():
     t_header = Table(header_content, colWidths=[531])
     t_header.setStyle(TableStyle([
         ('BACKGROUND', (0,0), (-1,-1), colors.HexColor('#0F172A')),
-        ('TOPPADDING', (0,0), (-1,-1), 7),
-        ('BOTTOMPADDING', (0,0), (-1,-1), 7),
+        ('TOPPADDING', (0,0), (-1,-1), 6),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 6),
         ('LEFTPADDING', (0,0), (-1,-1), 10),
         ('RIGHTPADDING', (0,0), (-1,-1), 10),
         ('ALIGN', (0,0), (-1,-1), 'CENTER'),
         ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),
     ]))
     story.append(t_header)
-    story.append(Spacer(1, 6))
+    story.append(Spacer(1, 5))
 
     # 2. Caja Explicativa de Regla de Oro
     callout_html = (
@@ -177,15 +188,15 @@ def build_pdf_reportlab():
     callout_table.setStyle(TableStyle([
         ('BACKGROUND', (0,0), (-1,-1), colors.HexColor('#F0F9FF')),
         ('BOX', (0,0), (-1,-1), 1, colors.HexColor('#0284C7')),
-        ('TOPPADDING', (0,0), (-1,-1), 6),
-        ('BOTTOMPADDING', (0,0), (-1,-1), 6),
+        ('TOPPADDING', (0,0), (-1,-1), 5),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 5),
         ('LEFTPADDING', (0,0), (-1,-1), 10),
         ('RIGHTPADDING', (0,0), (-1,-1), 10),
     ]))
     story.append(callout_table)
     story.append(Spacer(1, 4))
 
-    # 3. Tabla Principal de 16 Etiquetas y Cuadernos
+    # 3. Tabla Principal de 16 Etiquetas agrupadas por Fases
     table_data = [
         [
             Paragraph("Etiqueta en Clase", style_tbl_head),
@@ -194,29 +205,42 @@ def build_pdf_reportlab():
         ]
     ]
 
-    for tag, nombre, desc in ETIQUETAS:
-        table_data.append([
-            Paragraph(tag, style_tag),
-            Paragraph(nombre, style_notebook),
-            Paragraph(desc, style_desc)
-        ])
-
-    t_main = Table(table_data, colWidths=[85, 120, 326])
     t_style = [
-        ('BACKGROUND', (0,0), (-1,0), colors.HexColor('#0284C7')),
+        ('BACKGROUND', (0,0), (-1,0), colors.HexColor('#0F172A')),
         ('ALIGN', (0,0), (1,-1), 'CENTER'),
         ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),
-        ('TOPPADDING', (0,0), (-1,-1), 2.2),
-        ('BOTTOMPADDING', (0,0), (-1,-1), 2.2),
+        ('TOPPADDING', (0,0), (-1,-1), 1.8),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 1.8),
         ('LEFTPADDING', (0,0), (-1,-1), 5),
         ('RIGHTPADDING', (0,0), (-1,-1), 5),
         ('GRID', (0,0), (-1,-1), 0.5, colors.HexColor('#CBD5E1')),
     ]
-    # Colores alternos en filas
-    for i in range(1, len(table_data)):
-        bg = colors.HexColor('#F8FAFC') if i % 2 == 1 else colors.white
-        t_style.append(('BACKGROUND', (0, i), (-1, i), bg))
 
+    row_idx = 1
+    for fase_title, fase_color, items in FASES_ETIQUETAS:
+        # Fila de Fase
+        table_data.append([
+            Paragraph(f"<b>{fase_title}</b>", style_phase_header),
+            "",
+            ""
+        ])
+        t_style.append(('SPAN', (0, row_idx), (-1, row_idx)))
+        t_style.append(('BACKGROUND', (0, row_idx), (-1, row_idx), colors.HexColor(fase_color)))
+        t_style.append(('TOPPADDING', (0, row_idx), (-1, row_idx), 2.5))
+        t_style.append(('BOTTOMPADDING', (0, row_idx), (-1, row_idx), 2.5))
+        row_idx += 1
+
+        for tag, nombre, desc in items:
+            table_data.append([
+                Paragraph(tag, style_tag),
+                Paragraph(nombre, style_notebook),
+                Paragraph(desc, style_desc)
+            ])
+            bg = colors.HexColor('#F8FAFC') if row_idx % 2 == 1 else colors.white
+            t_style.append(('BACKGROUND', (0, row_idx), (-1, row_idx), bg))
+            row_idx += 1
+
+    t_main = Table(table_data, colWidths=[85, 120, 326])
     t_main.setStyle(TableStyle(t_style))
     story.append(t_main)
     story.append(Spacer(1, 4))
