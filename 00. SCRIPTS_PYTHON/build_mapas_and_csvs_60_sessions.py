@@ -18,6 +18,7 @@ import re
 import csv
 import urllib.parse
 import unicodedata
+import shutil
 
 BASE_DIR = "/Users/externo/Library/Mobile Documents/com~apple~CloudDocs/PERSONAL/CLASES DE TECNOLOGÍA/CURSO-IA"
 SESSIONS_DIR = os.path.join(BASE_DIR, "CLASES", "EXPORTACION_FICHAS_CLASSROOM_PDF", "100. [SESSIONS] TERNAS_LISTAS_PARA_CLASSROOM")
@@ -77,10 +78,14 @@ COLUMNS_CONFIG = [
     }
 ]
 
-def clean_title_from_filename(filename):
+def clean_title_from_filename(filename, session_num=1):
     name, _ = os.path.splitext(filename)
-    if 'COD-001' in filename.upper() or 'TALLER' in filename.upper() or 'COD-' in filename.upper():
+    if 'COD-001' in filename.upper() or ('COD-' in filename.upper() and session_num == 1):
+        return 'Construye tu Simulador del Árbol Bronquial y Pulmones 3D'
+    if 'COD-002' in filename.upper() or ('COD-' in filename.upper() and session_num == 2):
         return 'Construye tu Simulador del Latido Cardíaco Humano en 3D'
+    if 'SIMULADOR_PULMON' in filename.upper():
+        return 'Simulador 3D del Árbol Bronquial y Pulmones'
     if 'SIMULADOR_CORAZON' in filename.upper() or 'LATIDO_CARDIACO' in filename.upper():
         return 'Simulador 3D del Latido Cardíaco Humano'
     if 'FRAC-000_B' in filename:
@@ -94,13 +99,13 @@ def clean_title_from_filename(filename):
             rest = m_step.group(2).replace('_', ' ').strip()
             rest = re.sub(r'\s+', ' ', rest)
             if step_num == '0':
-                return 'Paso 0 • Proyecto Cómic Ilustrado (Introducción)'
+                return 'Proyecto Cómic Ilustrado (Introducción)'
             elif step_num == '1':
-                return f'Paso 1 • Historia del Cómic: {rest}'
+                return f'Historia del Cómic: {rest}'
             elif step_num == '2':
-                return f'Paso 2 • Guión del Cómic: {rest}'
+                return f'Guión del Cómic: {rest}'
             elif step_num == '3':
-                return f'Paso 3 • Ilustrador Visual: {rest}'
+                return f'Ilustrador Visual: {rest}'
     name = re.sub(r'^\d+\.\s*', '', name)
     name = re.sub(r'^[A-Z0-9\-_]+\s*-\s*\d+\s*', '', name)
     name = re.sub(r'^[A-Z0-9\-_]+_\d+\s*', '', name)
@@ -111,7 +116,7 @@ def clean_title_from_filename(filename):
 
 def parse_step_code(filename):
     f_up = filename.upper()
-    if 'COD-001' in f_up or 'TALLER' in f_up:
+    if 'COD-' in f_up or 'COD' in f_up or 'TALLER' in f_up:
         return 'COD'
     if 'SIMULADOR' in f_up or 'CORAZON' in f_up:
         return '3D'
@@ -180,7 +185,7 @@ def generate_columns_html(session_num, session_folder, files):
     for f in valid_files:
         code = parse_step_code(f)
         cfg = STEP_CONFIG.get(code, {"color": "#38bdf8", "cat": "Práctica con IA", "icon": "📌", "col": 1})
-        title = clean_title_from_filename(f)
+        title = clean_title_from_filename(f, session_num)
         
         ext = os.path.splitext(f)[1].lower().replace('.', '')
         if ext == 'mp4':
@@ -235,6 +240,17 @@ def generate_columns_html(session_num, session_folder, files):
         for it in col_items:
             rel_href = urllib.parse.quote(it["filename"])
             if it.get("code") == "COD":
+                sim_btn = ""
+                if session_num == 1:
+                    sim_btn = """
+                        <a href="SIMULADOR_PULMONES_3D.html" target="_blank" class="btn-launch-interactive" style="margin-top:6px; background:linear-gradient(135deg, #0284c7, #0369a1); border-color:#38bdf8;" title="Abrir Simulador 3D del Árbol Bronquial y Pulmones">
+                            🫁 Ver Simulador Pulmones 3D ↗
+                        </a>"""
+                elif session_num == 2:
+                    sim_btn = """
+                        <a href="SIMULADOR_CORAZON_3D.html" target="_blank" class="btn-launch-interactive" style="margin-top:6px; background:linear-gradient(135deg, #be123c, #9f1239); border-color:#fb7185;" title="Abrir Simulador 3D del Latido Cardíaco Humano">
+                            🫀 Ver Simulador Corazón 3D ↗
+                        </a>"""
                 cards_html += f"""
                     <div class="file-card file-card-special">
                         <a href="{rel_href}" target="_blank" class="file-card-special-top" title="Abrir Ficha Guía de Tareas (PDF)">
@@ -250,7 +266,7 @@ def generate_columns_html(session_num, session_folder, files):
                         </a>
                         <a href="PROBADOR_CODIGO_IA.html" target="_blank" class="btn-launch-interactive" title="Abrir Taller Oficial de Pruebas">
                             🚀 Abrir Taller Interactivo de Pruebas ↗
-                        </a>
+                        </a>{sim_btn}
                     </div>"""
             else:
                 cards_html += f"""
@@ -835,6 +851,29 @@ def process_all_sessions():
         session_folder_name = matching[0]
         session_path = os.path.join(SESSIONS_DIR, session_folder_name)
             
+        # Sincronizar probador interactivo y simuladores 3D oficiales
+        p_src = os.path.join(BASE_DIR, "PROBADOR_CODIGO_IA.html")
+        if os.path.exists(p_src):
+            try:
+                shutil.copy2(p_src, os.path.join(session_path, "PROBADOR_CODIGO_IA.html"))
+            except Exception:
+                pass
+        
+        if session_num == 1:
+            pulm_src = os.path.join(BASE_DIR, "SIMULADORES_INTERACTIVOS", "SIMULADOR_PULMONES_3D.html")
+            if os.path.exists(pulm_src):
+                try:
+                    shutil.copy2(pulm_src, os.path.join(session_path, "SIMULADOR_PULMONES_3D.html"))
+                except Exception:
+                    pass
+        elif session_num == 2:
+            cor_src = os.path.join(BASE_DIR, "SIMULADORES_INTERACTIVOS", "SIMULADOR_CORAZON_3D.html")
+            if os.path.exists(cor_src):
+                try:
+                    shutil.copy2(cor_src, os.path.join(session_path, "SIMULADOR_CORAZON_3D.html"))
+                except Exception:
+                    pass
+
         files = os.listdir(session_path)
         html_content = generate_columns_html(session_num, session_path, files)
         

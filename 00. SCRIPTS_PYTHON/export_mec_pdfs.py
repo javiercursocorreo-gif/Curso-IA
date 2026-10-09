@@ -18,6 +18,8 @@ from reportlab.lib.pagesizes import letter
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, HRFlowable
 
+import sys
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from build_mec_60_master import get_mecanica_items
 
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

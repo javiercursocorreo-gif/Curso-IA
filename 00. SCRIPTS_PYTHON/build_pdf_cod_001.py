@@ -72,12 +72,12 @@ def build_cod_001_taller_3d_pdf(output_path=PDF_PATH):
     story.append(Paragraph("BLOQUE IV: CIENCIA INTERACTIVA & TALLER DE CÓDIGO CON GEMINI [COD]", style_block))
     story.append(HRFlowable(width="100%", thickness=1.5, color=colors.HexColor('#0284C7'), spaceAfter=5))
 
-    story.append(Paragraph("<b>[COD-001] Construye tu Simulador del Latido Cardíaco Humano en 3D</b>", style_title))
+    story.append(Paragraph("<b>[COD-001] Construye tu Simulador del Árbol Bronquial y Pulmones en 3D</b>", style_title))
 
     story.append(Paragraph("💡 <b>Misión Didáctica • De Espectador a Creador con IA:</b>", style_section_h))
     story.append(Paragraph(
-        "En esta práctica vas a ordenar a la Inteligencia Artificial generar el código necesario para construir tu propio simulador del corazón humano en 3D con rotación orbital 360° y animación de latido.<br/>"
-        "<b>No necesitas saber programar:</b> pedirás el código a Gemini con el prompt maestro, lo copiarás en tu <b>Taller de Pruebas</b> y comprobarás cómo cobra vida en tu pantalla.",
+        "En esta práctica vas a ordenar a la Inteligencia Artificial generar el código necesario para construir tu propio simulador 3D del aparato respiratorio humano con su árbol bronquial fractal y animación biológica de respiración.<br/>"
+        "<b>No necesitas saber programar:</b> pedirás el código a Gemini con el prompt maestro, lo copiarás en tu <b>Taller de Pruebas</b> y comprobarás cómo tus pulmones cobran vida en tu pantalla.",
         style_body
     ))
 
@@ -85,15 +85,15 @@ def build_cod_001_taller_3d_pdf(output_path=PDF_PATH):
     story.append(Paragraph("📋 <b>Lista de Tareas del Alumno (Paso a Paso en 2 Pestañas):</b>", style_section_h))
     task_rows = [
         [Paragraph("<b>✅ Tarea 1 • Pídele el código a Gemini (Pestaña 1):</b><br/>"
-                   "Abre Gemini (<i>gemini.google.com</i>). Copia el <b>Prompt Maestro</b> del recuadro inferior, pégalo en el chat y pulsa Enviar. Gemini redactará en segundos el bloque de código para tu simulador.", style_task)],
+                   "Abre Gemini (<i>gemini.google.com</i>). Copia el <b>Prompt Maestro</b> del recuadro inferior, pégalo en el chat y pulsa Enviar. Gemini redactará en segundos el bloque de código para tu simulador respiratorio.", style_task)],
         [Paragraph("<b>✅ Tarea 2 • Copia el código generado por la IA:</b><br/>"
                    "En la respuesta de Gemini, haz clic en el icono o botón <b>«Copiar código»</b> situado en la esquina superior del bloque.", style_task)],
         [Paragraph("<b>✅ Tarea 3 • Abre el Taller Oficial de Pruebas (Pestaña 2):</b><br/>"
                    "En el mapa del curso, pulsa el botón <b>«🚀 Abrir Taller Interactivo de Pruebas ↗»</b>. ¡Todo funciona en la memoria del navegador!", style_task)],
         [Paragraph("<b>✅ Tarea 4 • Pega con Ctrl+V y pulsa «Ejecutar Creación»:</b><br/>"
-                   "En el Taller, pega el código pulsando <b>Ctrl+V</b> (o Cmd+V en Mac) en el cuadro de texto y haz clic en <b>«▶️ Ejecutar Creación»</b>. ¡Tu corazón 3D empezará a latir con suavidad y podrás rotarlo en 360° con el ratón!", style_task)],
+                   "En el Taller, pega el código pulsando <b>Ctrl+V</b> (o Cmd+V en Mac) en el cuadro de texto y haz clic en <b>«▶️ Ejecutar Creación»</b>. ¡Tus pulmones 3D empezarán a ventilar suavemente y podrás rotarlos en 360° con el ratón!", style_task)],
         [Paragraph("<b>✅ Tarea 5 • Prueba el simulador médico con audio real:</b><br/>"
-                   "Para ver el corazón con sonido real de fonendoscopio y control deslizante de 40 a 160 BPM, pulsa el botón <b>«🫀 Probar Corazón 3D + Audio»</b>.", style_task)],
+                   "Para ver el modelo anatómico completo con sonido respiratorio y control de 8 a 30 RPM, pulsa el botón <b>«🫁 Probar Pulmones 3D + Respiración»</b>.", style_task)],
     ]
     t_table = Table(task_rows, colWidths=[letter[0] - 84])
     t_table.setStyle(TableStyle([
@@ -111,15 +111,14 @@ def build_cod_001_taller_3d_pdf(output_path=PDF_PATH):
     story.append(Paragraph("🧠 <b>Prompt Maestro para Copiar y Pegar en Gemini:</b>", style_section_h))
     prompt_text = (
         "<b>Copia exactamente este texto en Gemini:</b><br/><br/>"
-        "<i>\"Genera el código de programación (HTML y JavaScript con Babylon.js) que voy a copiar y pegar en el Taller de Pruebas de mi curso para que genere un corazón humano 3D latiendo.<br/><br/>"
+        "<i>\"Genera el código de programación (HTML y JavaScript con Babylon.js) que voy a copiar y pegar en el Taller de Pruebas de mi curso para crear un simulador 3D del aparato respiratorio humano.<br/><br/>"
         "Requisitos del código:<br/>"
         "1. Entrega el programa en un único bloque de código para que yo pulse directamente «Copiar código» y lo pegue con Ctrl+V en mi simulador.<br/>"
-        "2. Carga la geometría 3D anatómica del corazón de nuestro curso desde esta dirección web:<br/>"
-        "<b>https://javiercursocorreo-gif.github.io/Curso-IA/SIMULADORES_INTERACTIVOS/heart.glb</b><br/>"
-        "3. Centra el modelo con cámara orbital 360° para rotarlo libremente con el ratón e iluminación sobre fondo azul noche (#070b14).<br/>"
-        "4. Aplica una animación de latido cardíaco natural suave y constante (ritmo biológico en reposo), haciendo que el corazón palpite de forma fluida y continua sin sacudidas.<br/>"
-        "5. IMPORTANTE: NO incluyas deslizadores (sliders), barras de ritmo ni botones de sonido en pantalla. Muestra exclusivamente el corazón 3D latiendo.<br/>"
-        "6. Escribe exclusivamente el bloque de código para que al copiarlo a mi simulador genere el corazón interactivo.\"</i>"
+        "2. Modela en 3D la tráquea central con sus anillos cartilaginosos y la bifurcación en bronquios principales izquierdo y derecho.<br/>"
+        "3. Crea un árbol bronquial con ramificación fractal geométrica continua y alvéolos terminales, demostrando la biomimética del cuerpo humano.<br/>"
+        "4. Incluye los pulmones translúcidos con animación biológica de ciclo respiratorio (inhalación y exhalación expansiva suave y rítmica).<br/>"
+        "5. Centra el modelo con cámara orbital 360° para rotarlo libremente con el ratón e iluminación sobre fondo azul noche (#070b14).<br/>"
+        "6. Escribe exclusivamente el bloque de código para que al copiarlo a mi simulador genere los pulmones interactivos.\"</i>"
     )
     p_table = Table([[Paragraph(prompt_text, style_prompt)]], colWidths=[letter[0] - 84])
     p_table.setStyle(TableStyle([
@@ -137,9 +136,9 @@ def build_cod_001_taller_3d_pdf(output_path=PDF_PATH):
     story.append(Paragraph("🌟 <b>El Reto Extra (Para Alumnos Curiosos):</b>", style_section_h))
     story.append(Paragraph(
         "👉 <b>¡Pídele a Gemini que modifique tu código!</b> En la misma conversación dile: "
-        "<i>«Modifica el código para que las luces tengan un brillo verde futurista»</i> o "
-        "<i>«Añade un contador en pantalla que cuente cuántas veces ha latido el corazón»</i>. "
-        "Vuelve a copiar el código, pégalo en tu Taller y ¡mira cómo cambia tu corazón en directo!",
+        "<i>«Modifica el código para que los alvéolos brillen en azul turquesa al inhalar y en rosa al exhalar»</i> o "
+        "<i>«Haz que el árbol bronquial tenga 2 ramas fractales adicionales más densas»</i>. "
+        "Vuelve a copiar el código, pégalo en tu Taller y ¡mira cómo cambia tu aparato respiratorio en directo!",
         style_body
     ))
 
