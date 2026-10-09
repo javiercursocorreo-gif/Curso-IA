@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 setup_photorealistic_lungs.py
-Descarga e integra el modelo 3D anatómico real de Pulmones (formato GLB fotogramétrico / médico)
+Integra el modelo 3D anatómico real de Pulmones (formato GLB fotogramétrico / médico)
 del NIH 3D Medical Repository / Visible Human Project para lograr calidad fotográfica idéntica a heart.glb.
 """
 
@@ -19,24 +19,13 @@ S01_DIR = os.path.join(ROOT_DIR, "CLASES", "EXPORTACION_FICHAS_CLASSROOM_PDF", "
 GLB_DEST = os.path.join(SIM_DIR, "lungs.glb")
 B64_DEST = os.path.join(SIM_DIR, "lungs_b64.js")
 
-# URLs oficiales de modelos médicos abiertos en GLB (NIH 3D Print Exchange / Visible Human)
-CANDIDATE_URLS = [
-    # Modelo 1: 3DPX-021148 - Lungs & Bronchi (while breathing)
-    "https://nih3d-v2-data-cln-media-prod.s3.amazonaws.com/2119467/lungs_bronchi-nih3d.glb",
-    # Modelo 2: 3DPX-013408 - Visible Human Male Respiratory System (NLM)
-    "https://nih3d-v2-data-cln-media-prod.s3.amazonaws.com/1040029/vhm_respiratory_viewer_0_0-nih3d.glb",
-    # Modelo 3: 3DPX-021008 - HRA Male Lung Reference Organ
-    "https://nih3d-v2-data-cln-media-prod.s3.amazonaws.com/2111105/3d-vh-f-lung-nih3d.glb"
-]
-
-def download_realistic_lungs():
+def check_realistic_lungs():
     os.makedirs(SIM_DIR, exist_ok=True)
     if os.path.exists(GLB_DEST) and os.path.getsize(GLB_DEST) > 50000:
-        print(f"✅ Archivo lungs.glb ya existente en SIMULADORES_INTERACTIVOS ({os.path.getsize(GLB_DEST) / 1024 / 1024:.2f} MB)")
+        print(f"✅ Archivo lungs.glb verificado en SIMULADORES_INTERACTIVOS ({os.path.getsize(GLB_DEST) / 1024 / 1024:.2f} MB)")
         return True
 
-    # 1. Buscar automáticamente en la carpeta de Descargas del usuario (~/Downloads)
-    import glob, zipfile
+    import glob
     downloads_candidates = (
         glob.glob(os.path.expanduser("~/Downloads/*lung*.glb")) +
         glob.glob(os.path.expanduser("~/Downloads/*pulmon*.glb")) +
@@ -55,43 +44,6 @@ def download_realistic_lungs():
         print(f"✅ Copiado permanentemente a: {GLB_DEST} ({os.path.getsize(GLB_DEST) / 1024 / 1024:.2f} MB)")
         return True
 
-    # Buscar si está dentro de un archivo .zip en Descargas
-    zip_candidates = (
-        glob.glob(os.path.expanduser("~/Downloads/*lung*.zip")) +
-        glob.glob(os.path.expanduser("~/Downloads/*pulmon*.zip")) +
-        glob.glob(os.path.expanduser("~/Downloads/*3DPX*.zip")) +
-        glob.glob(os.path.expanduser("~/Downloads/*.zip"))
-    )
-    for zpath in sorted(zip_candidates, key=os.path.getctime, reverse=True):
-        if not os.path.isfile(zpath): continue
-        try:
-            with zipfile.ZipFile(zpath, 'r') as zf:
-                for zinfo in zf.infolist():
-                    if zinfo.filename.lower().endswith('.glb') and "heart" not in zinfo.filename.lower():
-                        print(f"📥 Extrayendo {zinfo.filename} desde {zpath}...")
-                        with zf.open(zinfo) as source, open(GLB_DEST, 'wb') as target:
-                            shutil.copyfileobj(source, target)
-                        print(f"✅ Extraído y copiado permanentemente a: {GLB_DEST} ({os.path.getsize(GLB_DEST) / 1024 / 1024:.2f} MB)")
-                        return True
-        except Exception:
-            pass
-
-    print("🌐 Descargando modelo 3D hiperrealista de pulmones desde NIH 3D Medical...")
-    headers = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)"}
-
-    for url in CANDIDATE_URLS:
-        try:
-            print(f"   Intentando: {url} ...")
-            req = urllib.request.Request(url, headers=headers)
-            with urllib.request.urlopen(req, timeout=30) as response, open(GLB_DEST, 'wb') as out_file:
-                shutil.copyfileobj(response, out_file)
-            size_mb = os.path.getsize(GLB_DEST) / 1024 / 1024
-            if size_mb > 0.2:
-                print(f"✅ Descarga completada con éxito: {size_mb:.2f} MB")
-                return True
-        except Exception as e:
-            print(f"   ⚠️ Error en URL ({e}), probando alternativa...")
-
     return False
 
 def generate_base64_js():
@@ -99,7 +51,7 @@ def generate_base64_js():
         print("❌ No se encontró lungs.glb para generar base64")
         return False
     
-    print("📦 Empaquetando lungs.glb en base64 para carga instantánea offline...")
+    print("📦 Empaquetando lungs.glb en base64 para respaldo offline...")
     with open(GLB_DEST, "rb") as f:
         data = f.read()
     b64_str = base64.b64encode(data).decode('utf-8')
@@ -120,7 +72,7 @@ def build_photorealistic_lungs_html():
     <!-- Babylon.js Motor 3D Oficial CDN -->
     <script src="https://cdn.babylonjs.com/babylon.js"></script>
     <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
-    <!-- Base64 y fallback CDN -->
+    <!-- Respaldo Base64 para entornos locales / offline -->
     <script src="lungs_b64.js"></script>
     <script src="https://javiercursocorreo-gif.github.io/Curso-IA/SIMULADORES_INTERACTIVOS/lungs_b64.js"></script>
     <style>
@@ -176,28 +128,25 @@ def build_photorealistic_lungs_html():
             background: var(--bg-card);
             backdrop-filter: blur(14px);
             border: 1px solid var(--border);
-            border-radius: 16px;
+            border-radius: 14px;
             padding: 12px 20px;
             display: flex; align-items: center; gap: 14px;
-            pointer-events: auto;
             box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            pointer-events: auto;
         }
-        .brand-icon {
-            font-size: 1.8rem;
-            background: rgba(56, 189, 248, 0.15);
-            padding: 4px 10px; border-radius: 12px;
-        }
-        .brand-title { font-size: 1.05rem; font-weight: 800; color: #fff; }
-        .brand-sub { font-size: 0.74rem; color: var(--text-sub); }
+        .brand-icon { font-size: 2.2rem; }
+        .brand-title { font-size: 1.15rem; font-weight: 800; color: #fff; letter-spacing: -0.01em; }
+        .brand-sub { font-size: 0.78rem; color: var(--text-sub); margin-top: 2px; }
 
         .live-tag {
-            background: rgba(16, 185, 129, 0.15);
-            border: 1px solid rgba(16, 185, 129, 0.4);
-            color: #34d399;
-            padding: 6px 14px; border-radius: 9999px;
-            font-size: 0.75rem; font-weight: 700;
+            background: rgba(56, 189, 248, 0.15);
+            border: 1px solid rgba(56, 189, 248, 0.4);
+            color: var(--primary);
+            padding: 8px 16px; border-radius: 9999px;
+            font-size: 0.8rem; font-weight: 800;
             display: flex; align-items: center; gap: 8px;
             pointer-events: auto;
+            box-shadow: 0 4px 15px rgba(56, 189, 248, 0.2);
         }
         .pulse-dot {
             width: 8px; height: 8px; border-radius: 50%;
@@ -216,7 +165,7 @@ def build_photorealistic_lungs_html():
         /* HUD CONTROLES DERECHA */
         .hud-sidebar {
             position: absolute; right: 20px; top: 85px; z-index: 10;
-            width: 280px; display: flex; flex-direction: column; gap: 12px;
+            width: 300px; display: flex; flex-direction: column; gap: 12px;
         }
         .panel-box {
             background: var(--bg-card);
@@ -234,13 +183,26 @@ def build_photorealistic_lungs_html():
             display: flex; align-items: baseline; justify-content: space-between;
             margin-bottom: 8px;
         }
-        .rpm-num { font-size: 1.8rem; font-weight: 900; color: #fff; }
-        .rpm-unit { font-size: 0.78rem; color: var(--text-sub); }
+        .rpm-num { font-size: 2.2rem; font-weight: 900; color: #fff; line-height: 1; }
+        .rpm-unit { font-size: 0.76rem; color: var(--text-sub); }
         input[type="range"] {
             width: 100%; accent-color: var(--primary); cursor: pointer;
         }
 
-        /* BOTONES DE AUDIO Y VISTA */
+        /* PRESETS RÁPIDOS */
+        .preset-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 10px;
+        }
+        .btn-preset {
+            padding: 7px 10px; border-radius: 8px; font-size: 0.75rem; font-weight: 700;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            background: rgba(255, 255, 255, 0.05); color: #cbd5e1;
+            cursor: pointer; transition: all 0.2s ease; text-align: center;
+        }
+        .btn-preset:hover { background: rgba(56, 189, 248, 0.2); border-color: var(--primary); color: #fff; }
+        .btn-preset.active { background: rgba(56, 189, 248, 0.3); border-color: var(--primary); color: #fff; }
+
+        /* BOTONES DE ACCIÓN */
         .btn-action {
             width: 100%; padding: 8px 12px; border-radius: 8px;
             font-size: 0.8rem; font-weight: 700; cursor: pointer;
@@ -251,6 +213,10 @@ def build_photorealistic_lungs_html():
         }
         .btn-action:hover { background: rgba(56, 189, 248, 0.2); border-color: var(--primary); }
         .btn-action.active { background: rgba(16, 185, 129, 0.25); border-color: #10b981; color: #34d399; }
+
+        .btn-views-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 6px;
+        }
 
         /* HINT INFERIOR */
         .hint-bar {
@@ -270,7 +236,7 @@ def build_photorealistic_lungs_html():
 
     <div id="loadingOverlay">
         <div class="spinner"></div>
-        <div style="font-weight: 600; color: #94a3b8; font-size: 0.9rem;">Cargando modelo fotogramétrico 3D de pulmones...</div>
+        <div style="font-weight: 600; color: #94a3b8; font-size: 0.9rem;" id="loadingStatusText">Cargando modelo anatómico 3D de pulmones...</div>
     </div>
 
     <header>
@@ -296,54 +262,70 @@ def build_photorealistic_lungs_html():
                 <div class="rpm-num" id="rpmVal">14</div>
                 <div class="rpm-unit">Respiraciones / min (RPM)</div>
             </div>
-            <input type="range" id="rpmSlider" min="8" max="28" value="14">
+            <input type="range" id="rpmSlider" min="6" max="36" value="14">
+            
+            <div class="preset-grid">
+                <button class="btn-preset active" data-rpm="14">🛋️ Reposo (14)</button>
+                <button class="btn-preset" data-rpm="22">🚶 Paseo (22)</button>
+                <button class="btn-preset" data-rpm="32">🏃 Carrera (32)</button>
+                <button class="btn-preset" data-rpm="8">🧘 Zen (8)</button>
+            </div>
         </div>
 
         <div class="panel-box">
             <div class="box-title">🔊 Sonido Acústico Biológico</div>
             <button class="btn-action active" id="btnAudio">
-                <span>Flujo de Ventilación</span>
+                <span>🌬️ Flujo de Aire (In/Ex)</span>
                 <span id="audioState">ON</span>
             </button>
         </div>
 
         <div class="panel-box">
-            <div class="box-title">🎥 Perspectiva Orbital</div>
-            <button class="btn-action" id="btnFront"><span>Vista Frontal (Tráquea)</span> <span>↺</span></button>
-            <button class="btn-action" id="btnBack"><span>Vista Posterior (Bronquios)</span> <span>↻</span></button>
-            <button class="btn-action" id="btnAutoRotate"><span>Giro Automático 360°</span> <span id="rotState">ON</span></button>
+            <div class="box-title">🎥 Perspectiva Anatómica 360°</div>
+            <div class="btn-views-grid">
+                <button class="btn-action" id="btnFront" style="margin-top:0;">👁️ Anterior</button>
+                <button class="btn-action" id="btnBack" style="margin-top:0;">🔙 Posterior</button>
+            </div>
+            <button class="btn-action active" id="btnAutoRotate" style="margin-top:8px;">
+                <span>🔄 Auto-Rotación Suave</span>
+                <span id="rotState">ON</span>
+            </button>
         </div>
     </aside>
 
     <div class="hint-bar">
-        <span>🖱️ <strong>Control 360°:</strong> Arrastra con el ratón para rotar el modelo en cualquier ángulo • Rueda para zoom macro</span>
+        <span>🖱️ <strong>Arrastra</strong> para rotar 360° • <strong>Rueda</strong> para zoom • <strong>Clic derecho</strong> para desplazar</span>
     </div>
 
     <script>
         const canvas = document.getElementById("renderCanvas");
-        const loadingOverlay = document.getElementById("loadingOverlay");
         const engine = new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true });
+        const loadingOverlay = document.getElementById("loadingOverlay");
+        const loadingStatusText = document.getElementById("loadingStatusText");
 
-        let currentRpm = 14;
         let lungsRoot = null;
-        let autoRotate = true;
+        let lungAnimGroup = null;
         let fixedBaseScale = 1.0;
         let isModelLoaded = false;
+        let currentRpm = 14;
+        let autoRotate = true;
 
         const createScene = function () {
             const scene = new BABYLON.Scene(engine);
             scene.clearColor = new BABYLON.Color4(0.024, 0.035, 0.075, 1.0);
 
-            const camera = new BABYLON.ArcRotateCamera("camera", -Math.PI / 2, Math.PI / 2.2, 5.0, new BABYLON.Vector3(0, 0, 0), scene);
+            // Cámara orbital cinemática
+            const camera = new BABYLON.ArcRotateCamera("Camera", -Math.PI / 2, Math.PI / 2.3, 5.2, BABYLON.Vector3.Zero(), scene);
             camera.attachControl(canvas, true);
-            camera.wheelPrecision = 45;
-            camera.lowerRadiusLimit = 1.8;
-            camera.upperRadiusLimit = 15;
+            camera.wheelPrecision = 40;
+            camera.lowerRadiusLimit = 2.0;
+            camera.upperRadiusLimit = 15.0;
 
-            // ILUMINACIÓN CLÍNICA PROFESIONAL PBR
+            // Iluminación quirúrgica/médica PBR
             const hemiLight = new BABYLON.HemisphericLight("hemiLight", new BABYLON.Vector3(0, 1, 0), scene);
-            hemiLight.intensity = 0.95;
-            hemiLight.groundColor = new BABYLON.Color3(0.1, 0.12, 0.18);
+            hemiLight.intensity = 1.1;
+            hemiLight.diffuse = new BABYLON.Color3(1.0, 0.95, 0.92);
+            hemiLight.groundColor = new BABYLON.Color3(0.12, 0.16, 0.28);
 
             const keyLight = new BABYLON.DirectionalLight("keyLight", new BABYLON.Vector3(-1, -2, -1), scene);
             keyLight.position = new BABYLON.Vector3(5, 8, 5);
@@ -361,45 +343,88 @@ def build_photorealistic_lungs_html():
             const gl = new BABYLON.GlowLayer("glow", scene);
             gl.intensity = 0.25;
 
-            // CARGA DEL MODELO FOTOGRAMÉTRICO REAL .GLB (Data URI embebido o local/nube)
-            const modelSource = (window.LUNGS_GLB_B64) 
-                ? window.LUNGS_GLB_B64 
-                : "https://javiercursocorreo-gif.github.io/Curso-IA/SIMULADORES_INTERACTIVOS/lungs.glb";
+            // CASCADE ROBUSTO DE FUENTES (GLB LOCAL -> BASE64 OFFLINE -> CDN GITHUB)
+            const candidateSources = [
+                "lungs.glb",
+                (window.LUNGS_GLB_B64 && window.LUNGS_GLB_B64.length > 1000) ? window.LUNGS_GLB_B64 : null,
+                "https://javiercursocorreo-gif.github.io/Curso-IA/CLASES/EXPORTACION_FICHAS_CLASSROOM_PDF/100.%20[SESSIONS]%20TERNAS_LISTAS_PARA_CLASSROOM/01_Sesion/lungs.glb",
+                "https://javiercursocorreo-gif.github.io/Curso-IA/SIMULADORES_INTERACTIVOS/lungs.glb"
+            ].filter(Boolean);
 
-            BABYLON.SceneLoader.ImportMesh("", "", modelSource, scene, function (meshes) {
-                loadingOverlay.style.opacity = "0";
-                setTimeout(() => loadingOverlay.style.display = "none", 500);
+            let currentSourceIdx = 0;
 
-                lungsRoot = new BABYLON.TransformNode("lungsRoot", scene);
-                meshes.forEach(m => {
-                    if (m.parent === null) {
-                        m.parent = lungsRoot;
-                    }
-                    if (m.material) {
-                        // Mejorar brillo orgánico de tejido húmedo
-                        m.material.roughness = 0.35;
-                    }
-                });
-
-                // Normalización de escala y centrado volumétrico exacto
-                const hierarchy = lungsRoot.getHierarchyBoundingVectors();
-                const center = hierarchy.max.add(hierarchy.min).scale(0.5);
-                const size = hierarchy.max.subtract(hierarchy.min);
-                const maxDim = Math.max(size.x, size.y, size.z);
-
-                if (maxDim > 0) {
-                    fixedBaseScale = 2.8 / maxDim;
-                    lungsRoot.scaling = new BABYLON.Vector3(fixedBaseScale, fixedBaseScale, fixedBaseScale);
-                    lungsRoot.position = center.scale(-fixedBaseScale);
+            function tryLoadNextSource() {
+                if (currentSourceIdx >= candidateSources.length) {
+                    loadingOverlay.innerHTML = '<div style="color:#ef4444;font-weight:700;padding:24px;text-align:center;max-width:420px;line-height:1.5;">⚠️ Error al cargar el modelo 3D de pulmones.<br><small style="color:#94a3b8;font-weight:400;display:block;margin-top:8px;">Verifica la conexión a Internet o el archivo lungs.glb.<br>El simulador funciona de forma óptima desde Classroom o mediante servidor web.</small></div>';
+                    return;
                 }
 
-                camera.radius = 5.2;
-                camera.target = new BABYLON.Vector3(0, 0, 0);
-                isModelLoaded = true;
-            }, null, function (scene, message) {
-                console.error("Error al cargar lungs.glb:", message);
-                loadingOverlay.innerHTML = '<div style="color:#ef4444;font-weight:700;">Error al cargar modelo 3D. Verifica la conexión o el archivo lungs.glb</div>';
-            });
+                const src = candidateSources[currentSourceIdx];
+                const isB64 = (typeof src === "string" && src.startsWith("data:"));
+                console.log("[Simulador Pulmones 3D] Intentando cargar fuente " + (currentSourceIdx + 1) + "/" + candidateSources.length + ":", isB64 ? "Data URI Base64 (" + (src.length / 1024 / 1024).toFixed(1) + " MB)" : src);
+
+                BABYLON.SceneLoader.ImportMesh(
+                    "",
+                    "",
+                    src,
+                    scene,
+                    function (meshes, particleSystems, skeletons, animationGroups) {
+                        try {
+                            loadingOverlay.style.opacity = "0";
+                            setTimeout(() => loadingOverlay.style.display = "none", 500);
+
+                            lungsRoot = new BABYLON.TransformNode("lungsRoot", scene);
+
+                            meshes.forEach(m => {
+                                if (m.parent === null) {
+                                    m.parent = lungsRoot;
+                                }
+                            });
+
+                            // Si el modelo incluye la animación de respiración médica nativa (Blender morph targets)
+                            if (animationGroups && animationGroups.length > 0) {
+                                lungAnimGroup = animationGroups[0];
+                                lungAnimGroup.play(true);
+                                lungAnimGroup.speedRatio = currentRpm / 14.0;
+                                console.log("[Simulador Pulmones 3D] Animación médica nativa activada:", lungAnimGroup.name);
+                            }
+
+                            // Normalización de escala y centrado volumétrico exacto
+                            const hierarchy = lungsRoot.getHierarchyBoundingVectors();
+                            const center = hierarchy.max.add(hierarchy.min).scale(0.5);
+                            const size = hierarchy.max.subtract(hierarchy.min);
+                            const maxDim = Math.max(size.x, size.y, size.z);
+
+                            if (maxDim > 0 && isFinite(maxDim)) {
+                                fixedBaseScale = 2.8 / maxDim;
+                                lungsRoot.scaling = new BABYLON.Vector3(fixedBaseScale, fixedBaseScale, fixedBaseScale);
+                                lungsRoot.position = center.scale(-fixedBaseScale);
+                            } else {
+                                fixedBaseScale = 0.25;
+                                lungsRoot.scaling = new BABYLON.Vector3(fixedBaseScale, fixedBaseScale, fixedBaseScale);
+                            }
+
+                            camera.radius = 5.2;
+                            camera.target = new BABYLON.Vector3(0, 0, 0);
+                            isModelLoaded = true;
+                            console.log("✅ [Simulador Pulmones 3D] Cargado exitosamente desde:", isB64 ? "Base64 Embebido" : src);
+                        } catch (initErr) {
+                            console.error("Error inicializando modelo en escena:", initErr);
+                            currentSourceIdx++;
+                            tryLoadNextSource();
+                        }
+                    },
+                    null,
+                    function (scene, message, exception) {
+                        console.warn("⚠️ Falló fuente:", src, message, exception);
+                        currentSourceIdx++;
+                        tryLoadNextSource();
+                    },
+                    ".glb" // <-- PARÁMETRO VITAL: pluginExtension forzado
+                );
+            }
+
+            tryLoadNextSource();
 
             return { scene, camera };
         };
@@ -455,7 +480,7 @@ def build_photorealistic_lungs_html():
 
         window.addEventListener("pointerdown", () => {
             if (!audioCtx) initAudio();
-            else if (audioCtx.state === 'suspended') audioCtx.resume();
+            else if (audioCtx.state === suspended) audioCtx.resume();
         }, { once: true });
 
         // BUCLE DE RENDER: VENTILACIÓN BIOLÓGICA ASIMÉTRICA REAL
@@ -485,12 +510,14 @@ def build_photorealistic_lungs_html():
                 statusEl.style.color = isInhaling ? "#38bdf8" : "#34d399";
             }
 
-            // Aplicar expansión volumétrica suave a la masa pulmonar
+            // Aplicar expansión volumétrica biológica (si no hay animación esqueletal/morph activa)
             if (lungsRoot && isModelLoaded) {
-                const scaleFactor = 1.0 + (expansion * 0.09); // 9% expansión volumétrica natural
-                lungsRoot.scaling.x = fixedBaseScale * scaleFactor;
-                lungsRoot.scaling.y = fixedBaseScale * (1.0 + expansion * 0.07);
-                lungsRoot.scaling.z = fixedBaseScale * scaleFactor;
+                if (!lungAnimGroup) {
+                    const scaleFactor = 1.0 + (expansion * 0.09); // 9% expansión volumétrica natural
+                    lungsRoot.scaling.x = fixedBaseScale * scaleFactor;
+                    lungsRoot.scaling.y = fixedBaseScale * (1.0 + expansion * 0.07);
+                    lungsRoot.scaling.z = fixedBaseScale * scaleFactor;
+                }
 
                 if (autoRotate) {
                     lungsRoot.rotation.y += 0.003;
@@ -513,9 +540,29 @@ def build_photorealistic_lungs_html():
         // CONTROLES DE LA INTERFAZ
         const rpmSlider = document.getElementById("rpmSlider");
         const rpmVal = document.getElementById("rpmVal");
+        const presetBtns = document.querySelectorAll(".btn-preset");
+
+        function updateRpm(val) {
+            currentRpm = val;
+            rpmSlider.value = val;
+            rpmVal.textContent = val;
+            if (lungAnimGroup) {
+                lungAnimGroup.speedRatio = currentRpm / 14.0;
+            }
+            presetBtns.forEach(b => {
+                b.classList.toggle("active", parseInt(b.getAttribute("data-rpm")) === val);
+            });
+        }
+
         rpmSlider.addEventListener("input", (e) => {
-            currentRpm = parseInt(e.target.value);
-            rpmVal.textContent = currentRpm;
+            updateRpm(parseInt(e.target.value));
+        });
+
+        presetBtns.forEach(btn => {
+            btn.addEventListener("click", () => {
+                const r = parseInt(btn.getAttribute("data-rpm"));
+                updateRpm(r);
+            });
         });
 
         const btnAudio = document.getElementById("btnAudio");
@@ -587,11 +634,11 @@ def build_photorealistic_lungs_html():
                 shutil.copy2(p_path, os.path.join(S01_DIR, "PROBADOR_CODIGO_IA.html"))
             print(f"✅ Sincronizado en {S01_DIR}")
         except Exception as e:
-            print(f"⚠️ Nota de permisos al copiar a 01_Sesion (se copiará fuera del sandbox): {e}")
+            print(f"⚠️ Nota al copiar a 01_Sesion: {e}")
 
 def main():
     print("🚀 === INICIANDO INTEGRACIÓN DE PULMONES 3D FOTOREALISTAS ===")
-    ok = download_realistic_lungs()
+    ok = check_realistic_lungs()
     if ok:
         generate_base64_js()
     build_photorealistic_lungs_html()
