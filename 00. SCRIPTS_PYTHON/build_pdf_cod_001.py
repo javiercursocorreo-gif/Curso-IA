@@ -72,12 +72,11 @@ def build_cod_001_taller_3d_pdf(output_path=PDF_PATH):
     story.append(Paragraph("BLOQUE IV: CIENCIA INTERACTIVA & TALLER DE CÓDIGO CON GEMINI [COD]", style_block))
     story.append(HRFlowable(width="100%", thickness=1.5, color=colors.HexColor('#0284C7'), spaceAfter=5))
 
-    story.append(Paragraph("<b>[COD-001] Taller Práctico: ¡Construye tu Propio Simulador 3D con Gemini!</b>", style_title))
+    story.append(Paragraph("<b>[COD-001] Construye tu Simulador del Latido Cardíaco Humano en 3D</b>", style_title))
 
     story.append(Paragraph("💡 <b>Misión Didáctica • De Espectador a Creador con IA:</b>", style_section_h))
     story.append(Paragraph(
-        "En el ítem anterior (#09) has observado el corazón humano latiendo en 3D con sonido real de fonendoscopio. "
-        "Ahora vas a ser tú quien ordene a la Inteligencia Artificial generar el código necesario para construir ese mismo corazón. "
+        "En esta práctica vas a ordenar a la Inteligencia Artificial generar el código necesario para construir tu propio simulador del corazón humano en 3D con rotación orbital 360° y animación de latido.<br/>"
         "<b>No necesitas saber programar:</b> pedirás el código a Gemini con el prompt maestro, lo copiarás en tu <b>Taller de Pruebas</b> y comprobarás cómo cobra vida en tu pantalla.",
         style_body
     ))

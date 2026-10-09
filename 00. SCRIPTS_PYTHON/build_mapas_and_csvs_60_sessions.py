@@ -77,8 +77,8 @@ COLUMNS_CONFIG = [
 
 def clean_title_from_filename(filename):
     name, _ = os.path.splitext(filename)
-    if 'COD-001' in filename.upper() or 'TALLER' in filename.upper():
-        return 'Taller Práctico • Construye tu Propio Simulador 3D con Gemini'
+    if 'COD-001' in filename.upper() or 'TALLER' in filename.upper() or 'COD-' in filename.upper():
+        return 'Construye tu Simulador del Latido Cardíaco Humano en 3D'
     if 'SIMULADOR_CORAZON' in filename.upper() or 'LATIDO_CARDIACO' in filename.upper():
         return 'Simulador 3D del Latido Cardíaco Humano'
     if 'FRAC-000_B' in filename:
@@ -149,7 +149,7 @@ def generate_columns_html(session_num, session_folder, files):
     def session_file_sort_key(filename):
         if session_num == 1:
             f_up = filename.upper()
-            # En Sesión 01: 1º Teoría (#05), 2º Ficha PDF Fractal (#06 introductoria), 3º Vídeo MP4 (#07), 4º Reto Visual (#08), 5º Simulador 3D (#09), 6º Taller Código (#10)
+            # En Sesión 01: 1º Teoría (#05), 2º Ficha PDF Fractal (#06 introductoria), 3º Vídeo MP4 (#07), 4º Reto Visual (#08), 5º Taller Código (#09)
             if 'FRAC-000_A_TEORIA' in f_up:
                 return (2, 5, 1, filename.lower())
             if 'FRAC-058' in f_up and filename.lower().endswith('.pdf'):
@@ -158,19 +158,15 @@ def generate_columns_html(session_num, session_folder, files):
                 return (2, 5, 3, filename.lower())
             if 'FRAC-000_B_RETO' in f_up:
                 return (2, 5, 4, filename.lower())
-            # #09 [3D]: El Simulador 3D oficial va PRIMERO (antes del taller de código)
-            if filename.lower().endswith('.html') or 'SIMULADOR_CORAZON' in f_up:
-                return (2, 5, 5, filename.lower())
-            # #10 [COD]: El Taller Práctico de Código va SEGUNDO
             if 'COD-001' in f_up or 'TALLER' in f_up or 'COD-' in f_up:
-                return (2, 5, 6, filename.lower())
+                return (2, 5, 5, filename.lower())
         return file_sort_key(filename)
 
     # Filtrar archivos reales de contenido (ignorando duplicados de sincronización de iCloud ' 2.pdf', etc.)
     valid_files = [
         f for f in sorted(files, key=session_file_sort_key)
         if not f.startswith('.') and not f.startswith('MAPA_') and not f.startswith('~$')
-        and (not f.endswith('.html') or 'SIMULADOR' in f.upper())
+        and not f.endswith('.html')
         and not f.endswith('.js') and not f.endswith('.mp3')
         and not re.search(r'\s[2-9]\.(pdf|mp4|html)$', f, re.IGNORECASE)
         and not f.startswith('0. FASE_0')
