@@ -89,7 +89,7 @@ def build_cod_001_taller_3d_pdf(output_path=PDF_PATH):
         [Paragraph("<b>✅ Tarea 2 • Copia el código generado por la IA:</b><br/>"
                    "En la respuesta de Gemini, haz clic en el icono o botón <b>«Copiar código»</b> situado en la esquina superior del bloque.", style_task)],
         [Paragraph("<b>✅ Tarea 3 • Abre el Taller Oficial de Pruebas (Pestaña 2):</b><br/>"
-                   "En el mapa del curso, pulsa el botón <b>«🚀 Abrir Taller Interactivo de Pruebas ↗»</b> (o abre <i>PROBADOR_CODIGO_IA.html</i>). ¡Todo funciona en la memoria del navegador!", style_task)],
+                   "En el mapa del curso, pulsa el botón <b>«🚀 Abrir Taller Interactivo de Pruebas ↗»</b>. ¡Todo funciona en la memoria del navegador!", style_task)],
         [Paragraph("<b>✅ Tarea 4 • Pega con Ctrl+V y pulsa «Ejecutar Creación»:</b><br/>"
                    "En el Taller, pega el código pulsando <b>Ctrl+V</b> (o Cmd+V en Mac) en el cuadro de texto y haz clic en <b>«▶️ Ejecutar Creación»</b>. ¡Tu corazón 3D empezará a latir con suavidad y podrás rotarlo en 360° con el ratón!<br/>"
                    "<i>(Nota: Para ver el corazón con sonido real de fonendoscopio y control deslizante de 40 a 160 BPM, pulsa el botón «🫀 Probar Corazón 3D + Audio»).</i>", style_task)],
