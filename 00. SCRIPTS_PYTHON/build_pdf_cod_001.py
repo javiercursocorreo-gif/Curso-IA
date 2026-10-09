@@ -91,8 +91,9 @@ def build_cod_001_taller_3d_pdf(output_path=PDF_PATH):
                    "En la respuesta de Gemini, haz clic en el icono o botón <b>«Copiar código»</b> situado en la esquina superior del bloque.", style_task)],
         [Paragraph("<b>✅ Tarea 3 • Abre el Taller Oficial de Pruebas (Pestaña 2):</b><br/>"
                    "En el mapa del curso, pulsa el botón <b>«🚀 Abrir Taller Interactivo de Pruebas ↗»</b> (o abre <i>PROBADOR_CODIGO_IA.html</i>). ¡Todo funciona en la memoria del navegador!", style_task)],
-        [Paragraph("<b>✅ Tarea 4 • Pega el código y pulsa «Ejecutar Creación»:</b><br/>"
-                   "En el Taller, pulsa el botón <b>«📋 Pegar de Gemini»</b> (o Ctrl+V) y haz clic en <b>«▶️ Ejecutar Creación»</b>. ¡El simulador generará tu corazón 3D latiendo con sonido y podrás rotarlo en 360°!", style_task)],
+        [Paragraph("<b>✅ Tarea 4 • Pega con Ctrl+V y pulsa «Ejecutar Creación»:</b><br/>"
+                   "En el Taller, pega el código pulsando <b>Ctrl+V</b> (o Cmd+V en Mac) en el cuadro de texto y haz clic en <b>«▶️ Ejecutar Creación»</b>. ¡Tu corazón 3D empezará a latir con suavidad y podrás rotarlo en 360° con el ratón!<br/>"
+                   "<i>(Nota: Para ver el corazón con sonido real de fonendoscopio y control deslizante de 40 a 160 BPM, pulsa el botón «🫀 Probar Corazón 3D + Audio»).</i>", style_task)],
     ]
     t_table = Table(task_rows, colWidths=[letter[0] - 84])
     t_table.setStyle(TableStyle([
@@ -112,14 +113,12 @@ def build_cod_001_taller_3d_pdf(output_path=PDF_PATH):
         "<b>Copia exactamente este texto en Gemini:</b><br/><br/>"
         "<i>\"Genera el código de programación (HTML y JavaScript con Babylon.js) que voy a copiar y pegar en el Taller de Pruebas de mi curso para que genere un corazón humano 3D latiendo.<br/><br/>"
         "Requisitos del código:<br/>"
-        "1. Entrega el programa en un único bloque de código para que yo pulse directamente «Copiar código» y lo pegue en mi simulador.<br/>"
-        "2. El código debe cargar la geometría 3D del corazón de nuestro curso desde esta dirección web:<br/>"
+        "1. Entrega el programa en un único bloque de código para que yo pulse directamente «Copiar código» y lo pegue con Ctrl+V en mi simulador.<br/>"
+        "2. Carga la geometría 3D anatómica del corazón de nuestro curso desde esta dirección web:<br/>"
         "<b>https://javiercursocorreo-gif.github.io/Curso-IA/SIMULADORES_INTERACTIVOS/heart.glb</b><br/>"
-        "3. Centra el modelo con cámara orbital 360° para rotarlo con el ratón y fondo azul noche (#070b14).<br/>"
-        "4. Incluye un control de ritmo de 40 a 160 BPM que haga latir el corazón rítmicamente.<br/>"
-        "5. Conecta el sonido de fonendoscopio real sincronizado desde:<br/>"
-        "<b>https://javiercursocorreo-gif.github.io/Curso-IA/SIMULADORES_INTERACTIVOS/heartbeat.mp3</b><br/>"
-        "6. Escribe exclusivamente el código para que al copiarlo a mi simulador genere el corazón interactivo.\"</i>"
+        "3. Centra el modelo con cámara orbital 360° para rotarlo libremente con el ratón e iluminación sobre fondo azul noche (#070b14).<br/>"
+        "4. Aplica una animación de latido cardíaco natural suave y constante (ritmo biológico en reposo), haciendo que el corazón palpite de forma fluida y continua sin sacudidas.<br/>"
+        "5. Escribe exclusivamente el bloque de código para que al copiarlo a mi simulador genere el corazón interactivo.\"</i>"
     )
     p_table = Table([[Paragraph(prompt_text, style_prompt)]], colWidths=[letter[0] - 84])
     p_table.setStyle(TableStyle([
