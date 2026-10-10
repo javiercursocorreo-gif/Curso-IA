@@ -447,7 +447,7 @@
         /* HUD CONTROLES DERECHA */
         .hud-sidebar {
             position: absolute; right: 20px; top: 85px; z-index: 10;
-            width: 300px; display: flex; flex-direction: column; gap: 12px;
+            width: 310px; display: flex; flex-direction: column; gap: 12px;
         }
         .panel-box {
             background: var(--bg-card);
@@ -489,14 +489,14 @@
 
         /* BOTONES DE ACCIÓN */
         .btn-action {
-            width: 100%; padding: 8px 12px; border-radius: 8px;
+            width: 100%; padding: 9px 12px; border-radius: 8px;
             font-size: 0.8rem; font-weight: 700; cursor: pointer;
             border: 1px solid rgba(255, 255, 255, 0.15);
-            background: rgba(255, 255, 255, 0.08); color: #fff;
+            background: rgba(255, 255, 255, 0.08); color: #cbd5e1;
             display: flex; align-items: center; justify-content: space-between;
             margin-top: 6px; transition: all 0.2s ease;
         }
-        .btn-action:hover { background: rgba(56, 189, 248, 0.2); border-color: var(--primary); }
+        .btn-action:hover { background: rgba(56, 189, 248, 0.2); border-color: var(--primary); color: #fff; }
         .btn-action.active { background: rgba(16, 185, 129, 0.25); border-color: #10b981; color: #34d399; }
 
         .btn-views-grid {
@@ -560,12 +560,12 @@
             &lt;/div&gt;
         &lt;/div&gt;
 
-        &lt;!-- SONIDO --&gt;
+        &lt;!-- SONIDO: BOTÓN DE ACCIÓN DESCRIPTIVO CLARO --&gt;
         &lt;div class=&quot;panel-box&quot;&gt;
             &lt;div class=&quot;box-title&quot;&gt;🔊 Sonido Acústico Biológico&lt;/div&gt;
-            &lt;button class=&quot;btn-action active&quot; id=&quot;btnAudio&quot;&gt;
-                &lt;span&gt;🌬️ Flujo de Aire (In/Ex)&lt;/span&gt;
-                &lt;span id=&quot;audioState&quot; style=&quot;color: #34d399; font-weight: 800;&quot;&gt;ON&lt;/span&gt;
+            &lt;button class=&quot;btn-action&quot; id=&quot;btnAudio&quot; style=&quot;justify-content: center; gap: 8px;&quot;&gt;
+                &lt;span id=&quot;audioIcon&quot;&gt;🔈&lt;/span&gt;
+                &lt;span id=&quot;audioText&quot;&gt;Activar Sonido de Respiración&lt;/span&gt;
             &lt;/button&gt;
         &lt;/div&gt;
 
@@ -728,7 +728,7 @@
         let noiseNode = null;
         let filterNode = null;
         let gainNode = null;
-        let isAudioOn = true;
+        let isAudioPlaying = false; // Comienza silenciado por defecto para respetar el navegador
 
         function initAudio() {
             if (audioCtx) return;
@@ -770,33 +770,32 @@
             noiseNode.start(0);
         }
 
-        function setAudioState(enabled) {
+        function toggleAudio() {
             initAudio();
             if (audioCtx &amp;&amp; audioCtx.state === &#x27;suspended&#x27;) {
                 audioCtx.resume();
             }
-            isAudioOn = enabled;
+
+            isAudioPlaying = !isAudioPlaying;
+
             const btn = document.getElementById(&quot;btnAudio&quot;);
-            const txt = document.getElementById(&quot;audioState&quot;);
-            if (isAudioOn) {
+            const icon = document.getElementById(&quot;audioIcon&quot;);
+            const text = document.getElementById(&quot;audioText&quot;);
+
+            if (isAudioPlaying) {
                 btn.classList.add(&quot;active&quot;);
-                txt.textContent = &quot;ON&quot;;
-                txt.style.color = &quot;#34d399&quot;;
+                if (icon) icon.textContent = &quot;🔊&quot;;
+                if (text) text.textContent = &quot;Sonido Activo (Silenciar)&quot;;
             } else {
                 btn.classList.remove(&quot;active&quot;);
-                txt.textContent = &quot;OFF&quot;;
-                txt.style.color = &quot;#94a3b8&quot;;
+                if (icon) icon.textContent = &quot;🔈&quot;;
+                if (text) text.textContent = &quot;Activar Sonido de Respiración&quot;;
                 if (gainNode &amp;&amp; audioCtx) {
                     gainNode.gain.cancelScheduledValues(audioCtx.currentTime);
                     gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
                 }
             }
         }
-
-        window.addEventListener(&quot;pointerdown&quot;, () =&gt; {
-            initAudio();
-            if (audioCtx &amp;&amp; audioCtx.state === &#x27;suspended&#x27;) audioCtx.resume();
-        }, { once: true });
 
         // BUCLE DE RENDER: MODELO 100% ESTABLE (SIN VAIVÉN NI ZOOM EN BLOQUE)
         let breathTime = 0;
@@ -831,7 +830,7 @@
 
             // Modular sonido de respiración
             if (gainNode &amp;&amp; audioCtx) {
-                if (isAudioOn) {
+                if (isAudioPlaying) {
                     const flowVelocity = Math.sin(cyclePhase * Math.PI * 2);
                     const airVol = Math.abs(flowVelocity) * 0.35;
                     gainNode.gain.setTargetAtTime(airVol, audioCtx.currentTime, 0.05);
@@ -873,11 +872,9 @@
             });
         });
 
-        // 2. Audio
+        // 2. Audio Toggle Descriptivo
         const btnAudio = document.getElementById(&quot;btnAudio&quot;);
-        btnAudio.addEventListener(&quot;click&quot;, () =&gt; {
-            setAudioState(!isAudioOn);
-        });
+        btnAudio.addEventListener(&quot;click&quot;, toggleAudio);
 
         // 3. Vistas y Rotación
         document.getElementById(&quot;btnFront&quot;).addEventListener(&quot;click&quot;, () =&gt; {

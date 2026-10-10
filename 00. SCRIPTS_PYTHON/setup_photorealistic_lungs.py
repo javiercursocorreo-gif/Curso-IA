@@ -6,7 +6,8 @@ Simulador 3D Anatómico del Árbol Traqueobronquial (Modelo Fotogramétrico NIH 
 Enfocado en la exploración fractal y biomimética de la Sesión 01:
 - Modelo 100% estático, firme y centrado (sin vaivén vertical ni zoom de acercamiento/alejamiento).
 - Exploración anatómica 360° libre y fluida con iluminación PBR de alta definición.
-- Audio biológico procedimental de flujo aéreo sincronizado con el ciclo respiratorio.
+- Audio biológico claro e intuitivo con botón de acción descriptivo:
+  "🔈 Activar Sonido de Respiración" <-> "🔊 Sonido Activo (Silenciar)".
 """
 
 import os
@@ -45,7 +46,7 @@ def generate_base64_js():
     return True
 
 def build_simulator_html():
-    print("🎨 Construyendo SIMULADOR_PULMONES_3D.html (Estable, centrado y sin vaivén)...")
+    print("🎨 Construyendo SIMULADOR_PULMONES_3D.html con botón de audio intuitivo...")
 
     html_code = """<!DOCTYPE html>
 <html lang="es">
@@ -149,7 +150,7 @@ def build_simulator_html():
         /* HUD CONTROLES DERECHA */
         .hud-sidebar {
             position: absolute; right: 20px; top: 85px; z-index: 10;
-            width: 300px; display: flex; flex-direction: column; gap: 12px;
+            width: 310px; display: flex; flex-direction: column; gap: 12px;
         }
         .panel-box {
             background: var(--bg-card);
@@ -191,14 +192,14 @@ def build_simulator_html():
 
         /* BOTONES DE ACCIÓN */
         .btn-action {
-            width: 100%; padding: 8px 12px; border-radius: 8px;
+            width: 100%; padding: 9px 12px; border-radius: 8px;
             font-size: 0.8rem; font-weight: 700; cursor: pointer;
             border: 1px solid rgba(255, 255, 255, 0.15);
-            background: rgba(255, 255, 255, 0.08); color: #fff;
+            background: rgba(255, 255, 255, 0.08); color: #cbd5e1;
             display: flex; align-items: center; justify-content: space-between;
             margin-top: 6px; transition: all 0.2s ease;
         }
-        .btn-action:hover { background: rgba(56, 189, 248, 0.2); border-color: var(--primary); }
+        .btn-action:hover { background: rgba(56, 189, 248, 0.2); border-color: var(--primary); color: #fff; }
         .btn-action.active { background: rgba(16, 185, 129, 0.25); border-color: #10b981; color: #34d399; }
 
         .btn-views-grid {
@@ -262,12 +263,12 @@ def build_simulator_html():
             </div>
         </div>
 
-        <!-- SONIDO -->
+        <!-- SONIDO: BOTÓN DE ACCIÓN DESCRIPTIVO CLARO -->
         <div class="panel-box">
             <div class="box-title">🔊 Sonido Acústico Biológico</div>
-            <button class="btn-action active" id="btnAudio">
-                <span>🌬️ Flujo de Aire (In/Ex)</span>
-                <span id="audioState" style="color: #34d399; font-weight: 800;">ON</span>
+            <button class="btn-action" id="btnAudio" style="justify-content: center; gap: 8px;">
+                <span id="audioIcon">🔈</span>
+                <span id="audioText">Activar Sonido de Respiración</span>
             </button>
         </div>
 
@@ -430,7 +431,7 @@ def build_simulator_html():
         let noiseNode = null;
         let filterNode = null;
         let gainNode = null;
-        let isAudioOn = true;
+        let isAudioPlaying = false; // Comienza silenciado por defecto para respetar el navegador
 
         function initAudio() {
             if (audioCtx) return;
@@ -472,33 +473,32 @@ def build_simulator_html():
             noiseNode.start(0);
         }
 
-        function setAudioState(enabled) {
+        function toggleAudio() {
             initAudio();
             if (audioCtx && audioCtx.state === 'suspended') {
                 audioCtx.resume();
             }
-            isAudioOn = enabled;
+
+            isAudioPlaying = !isAudioPlaying;
+
             const btn = document.getElementById("btnAudio");
-            const txt = document.getElementById("audioState");
-            if (isAudioOn) {
+            const icon = document.getElementById("audioIcon");
+            const text = document.getElementById("audioText");
+
+            if (isAudioPlaying) {
                 btn.classList.add("active");
-                txt.textContent = "ON";
-                txt.style.color = "#34d399";
+                if (icon) icon.textContent = "🔊";
+                if (text) text.textContent = "Sonido Activo (Silenciar)";
             } else {
                 btn.classList.remove("active");
-                txt.textContent = "OFF";
-                txt.style.color = "#94a3b8";
+                if (icon) icon.textContent = "🔈";
+                if (text) text.textContent = "Activar Sonido de Respiración";
                 if (gainNode && audioCtx) {
                     gainNode.gain.cancelScheduledValues(audioCtx.currentTime);
                     gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
                 }
             }
         }
-
-        window.addEventListener("pointerdown", () => {
-            initAudio();
-            if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
-        }, { once: true });
 
         // BUCLE DE RENDER: MODELO 100% ESTABLE (SIN VAIVÉN NI ZOOM EN BLOQUE)
         let breathTime = 0;
@@ -533,7 +533,7 @@ def build_simulator_html():
 
             // Modular sonido de respiración
             if (gainNode && audioCtx) {
-                if (isAudioOn) {
+                if (isAudioPlaying) {
                     const flowVelocity = Math.sin(cyclePhase * Math.PI * 2);
                     const airVol = Math.abs(flowVelocity) * 0.35;
                     gainNode.gain.setTargetAtTime(airVol, audioCtx.currentTime, 0.05);
@@ -575,11 +575,9 @@ def build_simulator_html():
             });
         });
 
-        // 2. Audio
+        // 2. Audio Toggle Descriptivo
         const btnAudio = document.getElementById("btnAudio");
-        btnAudio.addEventListener("click", () => {
-            setAudioState(!isAudioOn);
-        });
+        btnAudio.addEventListener("click", toggleAudio);
 
         // 3. Vistas y Rotación
         document.getElementById("btnFront").addEventListener("click", () => {
@@ -626,7 +624,7 @@ def build_simulator_html():
                 p_code = p_code.replace("</head>", '    <script src="SIMULADORES_INTERACTIVOS/lungs_b64.js"></script>\n    <script src="https://javiercursocorreo-gif.github.io/Curso-IA/SIMULADORES_INTERACTIVOS/lungs_b64.js"></script>\n</head>')
             with open(p_path, "w", encoding="utf-8") as pf:
                 pf.write(p_code)
-            print("✅ PROBADOR_CODIGO_IA.html actualizado con plantilla estable")
+            print("✅ PROBADOR_CODIGO_IA.html actualizado con plantilla con audio intuitivo")
         except Exception as e:
             print(f"⚠️ Error actualizando probador: {e}")
 
@@ -645,7 +643,7 @@ def build_simulator_html():
             print(f"⚠️ Nota al copiar a 01_Sesion: {e}")
 
 def main():
-    print("🚀 === GENERANDO SIMULADOR PULMONES 3D 100% ESTABLE ===")
+    print("🚀 === GENERANDO SIMULADOR PULMONES 3D CON AUDIO 100% INTUITIVO ===")
     ok = check_realistic_lungs()
     if ok:
         generate_base64_js()
