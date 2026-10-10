@@ -304,14 +304,14 @@
             <label style="color:#8b949e; font-weight:600;">Modo:</label>
             <select class="select-input" id="select-mode" onchange="changeMode()">
                 <option value="free">🎹 Modo Libre (Tocar y ver)</option>
-                <option value="wait" selected>🎯 Modo Práctica (Espera / "Wait for Note")</option>
-                <option value="intervals">🎲 Ejercicio Intervalos (3ªs y 5ªs)</option>
+                <option value="wait">🎯 Modo Práctica (Espera / "Wait for Note")</option>
+                <option value="intervals" selected>🎲 Ejercicio Intervalos (3ªs y 5ªs)</option>
             </select>
         </div>
 
         <div class="mode-group" id="song-controls-group">
             <label style="color:#8b949e; font-weight:600;">Partitura:</label>
-            <select class="select-input" id="select-song" onchange="loadSelectedSong()">
+            <select class="select-input" id="select-song" style="display:none;" onchange="loadSelectedSong()">
                 <option value="">-- Elige una canción --</option>
                 <option value="alegria">Himno de la Alegría (Beethoven)</option>
                 <option value="estrellita">Estrellita dónde estás (Mozart)</option>
@@ -323,17 +323,17 @@
             <button class="btn btn-primary" onclick="triggerFileInput()">📂 Cargar .MID</button>
             <input type="file" id="midi-file-input" accept=".mid,.midi" style="display:none" onchange="handleMidiFileUpload(event)">
             
-            <button class="btn btn-purple" id="btn-new-exercise" style="display:none;" onclick="generateIntervalExercise()">🎲 Nuevo Ejercicio</button>
+            <button class="btn btn-purple" id="btn-new-exercise" onclick="generateIntervalExercise()">🎲 Nuevo Ejercicio</button>
         </div>
 
-        <div class="practice-indicator" id="practice-status-badge">
-            Nota: <span id="current-note-target" style="color:#fff;">--</span> (<span id="practice-step-count">0/0</span>)
+        <div class="practice-indicator" id="practice-status-badge" style="display:inline-block;">
+            Nota: <span id="current-note-target" style="color:#fff;">--</span> (<span id="practice-step-count">0/60</span>)
         </div>
     </div>
 
     <div class="staff-board" id="staff-board-dropzone" ondragover="event.preventDefault()" ondrop="handleDropMidi(event)">
         <!-- SVG QUE DIBUJA 3 PENTAGRAMAS COMPLETOS (SISTEMAS) -->
-        <svg id="staffSvg" viewBox="0 0 1800 680" preserveAspectRatio="none">
+        <svg id="staffSvg" viewBox="0 0 1800 695" preserveAspectRatio="none" style="overflow: visible;">
             <!-- SISTEMA 1 (Y base primera línea = 130) -->
             <line x1="20" y1="50" x2="1780" y2="50" stroke="#222" stroke-width="2.2" />
             <line x1="20" y1="70" x2="1780" y2="70" stroke="#222" stroke-width="2.2" />
@@ -384,16 +384,16 @@
         <div class="check-options">
             <span style="color:#8b949e; font-weight:600;">Nombre de Notas:</span>
             <label class="label-radio">
-                <input type="radio" name="note-label-mode" value="none" onchange="setNoteLabelMode('none')">
-                <span>Oculto</span>
+                <input type="radio" name="note-label-mode" value="none" checked onchange="setNoteLabelMode('none')">
+                <span style="color:#58a6ff; font-weight:bold;">❌ Oculto (por defecto)</span>
             </label>
             <label class="label-radio">
                 <input type="radio" name="note-label-mode" value="below" onchange="setNoteLabelMode('below')">
                 <span>Debajo del pentagrama</span>
             </label>
             <label class="label-radio">
-                <input type="radio" name="note-label-mode" value="on_note" checked onchange="setNoteLabelMode('on_note')">
-                <span style="color:#58a6ff; font-weight:bold;">🎯 Sobre la figura</span>
+                <input type="radio" name="note-label-mode" value="on_note" onchange="setNoteLabelMode('on_note')">
+                <span>🎯 Sobre la figura</span>
             </label>
             
             <label class="label-radio" style="margin-left: 10px;">
@@ -407,8 +407,8 @@
         // CONFIGURACIÓN Y ESTADOS GLOBALES
         let soundEnabled = true;
         let audioCtx = null;
-        let noteLabelMode = 'on_note'; // 'none', 'below', 'on_note'
-        let currentMode = 'wait'; // 'free', 'wait', 'intervals'
+        let noteLabelMode = 'none'; // Por defecto OCULTO
+        let currentMode = 'intervals'; // Por defecto EJERCICIO DE INTERVALOS
         let isMicActive = false;
         let micStream = null;
         let micAnalyser = null;
@@ -446,7 +446,7 @@
             return (octDiff * 7) + DIATONIC_STEPS[noteInOct] - 2;
         }
 
-        // MOTOR DE AUDIO (Web Audio API)
+        // MOTOR DE AUDIO PROFESIONAL: PIANO DE COLA ACÚSTICO (MODELADO FÍSICO Y ARMÓNICOS)
         function initAudio() {
             if (!audioCtx) {
                 audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -456,34 +456,146 @@
             }
         }
 
+        // Cache de buffers de audio muestreado real si hay conexión
+        const pianoSampleBuffers = {};
+        let soundfontReady = false;
+
+        // Intentar cargar muestras de piano de cola en segundo plano
+        async function loadGrandPianoSample(midi) {
+            if (!soundEnabled || pianoSampleBuffers[midi] !== undefined) return;
+            try {
+                const noteNameMap = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"];
+                const oct = Math.floor(midi / 12) - 1;
+                const nName = noteNameMap[midi % 12] + oct;
+                const url = `https://gleitz.github.io/midi-js-soundfonts/FluidR3_GM/acoustic_grand_piano-mp3/${nName}.mp3`;
+                const resp = await fetch(url);
+                if (resp.ok) {
+                    const arrayBuf = await resp.arrayBuffer();
+                    initAudio();
+                    const audioBuf = await audioCtx.decodeAudioData(arrayBuf);
+                    pianoSampleBuffers[midi] = audioBuf;
+                }
+            } catch (e) {
+                pianoSampleBuffers[midi] = null; // Fallback al sintetizador acústico
+            }
+        }
+
         function playSound(midi, isError = false) {
             if (!soundEnabled) return;
             initAudio();
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
+            const now = audioCtx.currentTime;
 
             if (isError) {
-                // Tono disonante corto de error
-                osc.type = "sawtooth";
-                osc.frequency.setValueAtTime(140, audioCtx.currentTime);
-                gain.gain.setValueAtTime(0.18, audioCtx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.25);
-                osc.connect(gain);
-                gain.connect(audioCtx.destination);
-                osc.start();
-                osc.stop(audioCtx.currentTime + 0.25);
+                // Tono corto disonante de aviso de error
+                const oscErr = audioCtx.createOscillator();
+                const gainErr = audioCtx.createGain();
+                oscErr.type = "sawtooth";
+                oscErr.frequency.setValueAtTime(130, now);
+                gainErr.gain.setValueAtTime(0.18, now);
+                gainErr.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
+                oscErr.connect(gainErr);
+                gainErr.connect(audioCtx.destination);
+                oscErr.start(now);
+                oscErr.stop(now + 0.22);
                 return;
             }
 
+            // SI LA MUESTRA DE AUDIO REAL DE PIANO DE COLA ESTÁ DISPONIBLE EN CACHÉ, REPRODUCIRLA
+            if (pianoSampleBuffers[midi]) {
+                const src = audioCtx.createBufferSource();
+                const gain = audioCtx.createGain();
+                src.buffer = pianoSampleBuffers[midi];
+                gain.gain.setValueAtTime(0.85, now);
+                src.connect(gain);
+                gain.connect(audioCtx.destination);
+                src.start(now);
+                return;
+            } else {
+                // Descargar muestra en segundo plano para las siguientes veces
+                loadGrandPianoSample(midi);
+            }
+
+            // SINTETIZADOR DE MODELADO FÍSICO DE PIANO ACÚSTICO (RICO, CÁLIDO Y REALISTA)
+            // Simula las cuerdas acopladas, armónicos pares/impares y el golpe percusivo del macillo
             const freq = 440 * Math.pow(2, (midi - 69) / 12);
-            osc.type = "triangle";
-            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-            gain.gain.setValueAtTime(0.28, audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.65);
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-            osc.start();
-            osc.stop(audioCtx.currentTime + 0.65);
+            const duration = Math.min(2.8, Math.max(1.2, 3.2 - (midi - 48) * 0.05)); // Las notas agudas decaen más rápido
+
+            // Filtro paso bajo dinámico (emula el brillo inicial del golpe que se atenúa hacia la madera)
+            const filter = audioCtx.createBiquadFilter();
+            filter.type = "lowpass";
+            filter.frequency.setValueAtTime(Math.min(10000, freq * 7), now);
+            filter.frequency.exponentialRampToValueAtTime(Math.max(300, freq * 1.5), now + duration);
+
+            const masterGain = audioCtx.createGain();
+            masterGain.gain.setValueAtTime(0.55, now);
+            masterGain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+
+            filter.connect(masterGain);
+            masterGain.connect(audioCtx.destination);
+
+            // 1. ARMÓNICO FUNDAMENTAL + DETUNE CORO (Cuerda doble con ligera desafinación acústica de ±2.5 cents)
+            const osc1 = audioCtx.createOscillator();
+            const osc2 = audioCtx.createOscillator();
+            const gain1 = audioCtx.createGain();
+
+            osc1.type = "sine";
+            osc1.frequency.setValueAtTime(freq, now);
+            osc1.detune.setValueAtTime(-2.5, now); // Cuerda A
+
+            osc2.type = "triangle";
+            osc2.frequency.setValueAtTime(freq, now);
+            osc2.detune.setValueAtTime(2.5, now);  // Cuerda B
+
+            gain1.gain.setValueAtTime(0.65, now);
+            gain1.gain.exponentialRampToValueAtTime(0.01, now + duration * 0.9);
+
+            osc1.connect(gain1);
+            osc2.connect(gain1);
+            gain1.connect(filter);
+
+            osc1.start(now);
+            osc2.start(now);
+            osc1.stop(now + duration);
+            osc2.stop(now + duration);
+
+            // 2. SEGUNDO ARMÓNICO (Octava superior 2*f0, da riqueza y brillo natural a la cuerda)
+            const oscHarm2 = audioCtx.createOscillator();
+            const gainHarm2 = audioCtx.createGain();
+            oscHarm2.type = "sine";
+            oscHarm2.frequency.setValueAtTime(freq * 2, now);
+            gainHarm2.gain.setValueAtTime(0.28, now);
+            gainHarm2.gain.exponentialRampToValueAtTime(0.001, now + duration * 0.55);
+
+            oscHarm2.connect(gainHarm2);
+            gainHarm2.connect(filter);
+            oscHarm2.start(now);
+            oscHarm2.stop(now + duration * 0.55);
+
+            // 3. TERCER ARMÓNICO (3*f0, resonancia de la cuerda)
+            const oscHarm3 = audioCtx.createOscillator();
+            const gainHarm3 = audioCtx.createGain();
+            oscHarm3.type = "sine";
+            oscHarm3.frequency.setValueAtTime(freq * 3, now);
+            gainHarm3.gain.setValueAtTime(0.12, now);
+            gainHarm3.gain.exponentialRampToValueAtTime(0.001, now + duration * 0.35);
+
+            oscHarm3.connect(gainHarm3);
+            gainHarm3.connect(filter);
+            oscHarm3.start(now);
+            oscHarm3.stop(now + duration * 0.35);
+
+            // 4. ATAQUE DEL MACILLO (Transitorio percusivo de 18 ms)
+            const strikeOsc = audioCtx.createOscillator();
+            const strikeGain = audioCtx.createGain();
+            strikeOsc.type = "triangle";
+            strikeOsc.frequency.setValueAtTime(freq * 0.5, now);
+            strikeGain.gain.setValueAtTime(0.25, now);
+            strikeGain.gain.exponentialRampToValueAtTime(0.001, now + 0.025);
+
+            strikeOsc.connect(strikeGain);
+            strikeGain.connect(masterGain);
+            strikeOsc.start(now);
+            strikeOsc.stop(now + 0.025);
         }
 
         function toggleSound() {
@@ -551,28 +663,47 @@
 
         // GENERADOR PROCEDURAL DE EJERCICIOS CON INTERVALOS DE 3ªS Y 5ªS
         function generateIntervalExercise() {
-            // Rango Clave de Sol: Do4 (60) a Sol5 (79)
-            // Intervalos permitidos: 0 (unísono), 1 o 2 semitonos (2da), 3 o 4 (3ra), 7 (5ta)
-            const allowedIntervals = [-7, -4, -3, -2, -1, 0, 1, 2, 3, 4, 7];
-            const diatonicScale = [60, 62, 64, 65, 67, 69, 71, 72, 74, 76, 77, 79]; // Do4 a Sol5
+            // Escala diatónica en Clave de Sol:
+            // 0: Do4 (60), 1: Re4 (62), 2: Mi4 (64), 3: Fa4 (65), 4: Sol4 (67),
+            // 5: La4 (69), 6: Si4 (71), 7: Do5 (72), 8: Re5 (74), 9: Mi5 (76),
+            // 10: Fa5 (77), 11: Sol5 (79), 12: La5 (81 -> 1ª LÍNEA COMPLEMENTARIA SUPERIOR)
+            const diatonicScale = [60, 62, 64, 65, 67, 69, 71, 72, 74, 76, 77, 79, 81];
+            const LA5_IDX = 12; // Índice de La5 (81)
             
+            const TOTAL_EXERCISE_NOTES = 60; // 30 notas en pentagrama 1 + 30 notas en pentagrama 2
             const exerciseNotes = [];
-            let currentIdx = Math.floor(diatonicScale.length / 2); // empieza en Sol4 (67)
-            exerciseNotes.push(diatonicScale[currentIdx]);
 
-            for (let i = 1; i < 20; i++) {
-                // Saltos en peldaños diatónicos: 0 (unísono), ±1 (2da), ±2 (3ra), ±4 (5ta)
-                const diatonicJumps = [-4, -2, -1, 0, 1, 2, 4];
-                const jump = diatonicJumps[Math.floor(Math.random() * diatonicJumps.length)];
-                let nextIdx = currentIdx + jump;
-                if (nextIdx < 0) nextIdx = 0;
-                if (nextIdx >= diatonicScale.length) nextIdx = diatonicScale.length - 1;
-                
-                exerciseNotes.push(diatonicScale[nextIdx]);
-                currentIdx = nextIdx;
+            // Generar por frases musicales de 6 a 8 notas que ascienden por 3ªs y 5ªs hacia La5
+            while (exerciseNotes.length < TOTAL_EXERCISE_NOTES) {
+                // Punto de partida de la frase (Do4, Mi4 o Sol4)
+                let currentIdx = Math.floor(Math.random() * 4); // 0 a 3 (Do4 a Fa4)
+                exerciseNotes.push(diatonicScale[currentIdx]);
+
+                // Subir hacia La5 mediante saltos de 3ª (+2) y 5ª (+4)
+                while (currentIdx < LA5_IDX && exerciseNotes.length < TOTAL_EXERCISE_NOTES) {
+                    const jump = (Math.random() > 0.45 && currentIdx <= 8) ? 4 : 2; // 5ª o 3ª hacia arriba
+                    currentIdx = Math.min(LA5_IDX, currentIdx + jump);
+                    exerciseNotes.push(diatonicScale[currentIdx]);
+                    
+                    // Si llegamos a La5, podemos repetirla o dar una segunda hacia Sol5 y volver a La5
+                    if (currentIdx === LA5_IDX && exerciseNotes.length < TOTAL_EXERCISE_NOTES) {
+                        if (Math.random() > 0.4) {
+                            exerciseNotes.push(diatonicScale[LA5_IDX]); // Repetir La5 en la línea complementaria
+                        }
+                        break;
+                    }
+                }
+
+                // Descenso melódico por 3ªs / 5ªs hacia el centro
+                while (currentIdx > 4 && exerciseNotes.length < TOTAL_EXERCISE_NOTES) {
+                    const drop = (Math.random() > 0.5) ? -2 : -4; // 3ª o 5ª hacia abajo
+                    currentIdx = Math.max(0, currentIdx + drop);
+                    exerciseNotes.push(diatonicScale[currentIdx]);
+                }
             }
 
-            practiceSequence = exerciseNotes;
+            // Asegurar longitud exacta de 60 notas (30 en pentagrama 1, 30 en pentagrama 2)
+            practiceSequence = exerciseNotes.slice(0, TOTAL_EXERCISE_NOTES);
             currentStepIndex = 0;
             hasErrorOnCurrentStep = false;
             document.getElementById("welcome-hint").style.display = "none";
@@ -716,19 +847,19 @@
                 const noteName = NOTE_NAMES[midi % 12];
                 const shortName = SHORT_NOTE_NAMES[midi % 12];
 
-                // Líneas adicionales inferiores
+                // Líneas adicionales inferiores (Do4, etc.)
                 if (step <= -2) {
                     for (let s = -2; s >= step; s -= 2) {
                         const ly = baseLineY - (s * 10);
-                        svg += `<line x1="${posX - 18}" y1="${ly}" x2="${posX + 18}" y2="${ly}" stroke="#222" stroke-width="2.2" />`;
+                        svg += `<line x1="${posX - 21}" y1="${ly}" x2="${posX + 21}" y2="${ly}" stroke="#111" stroke-width="2.5" />`;
                     }
                 }
 
-                // Líneas adicionales superiores
+                // Líneas adicionales superiores (La5, etc.)
                 if (step >= 10) {
                     for (let s = 10; s <= step; s += 2) {
                         const ly = baseLineY - (s * 10);
-                        svg += `<line x1="${posX - 18}" y1="${ly}" x2="${posX + 18}" y2="${ly}" stroke="#222" stroke-width="2.2" />`;
+                        svg += `<line x1="${posX - 21}" y1="${ly}" x2="${posX + 21}" y2="${ly}" stroke="#111" stroke-width="2.5" />`;
                     }
                 }
 
@@ -794,113 +925,204 @@
             layer.innerHTML = svg;
         }
 
-        // DETECCIÓN POR VOZ (MICRÓFONO CON PITCH DETECTION)
-        let lastDetectedNoteTime = 0;
-        let candidateNote = null;
+        // DETECCIÓN POR VOZ (MICRÓFONO CON WEB SPEECH RECOGNITION NATIVO Y FLUIDO)
+        let speechRecognizer = null;
+        let lastSpokenTime = 0;
 
-        async function toggleVoiceDetection() {
+        // Mapeo directo y rápido de notas musicales
+        const FAST_NOTE_MAP = [
+            { pitch: 1, keys: ["do sostenido", "dos sostenido", "c#"] },
+            { pitch: 3, keys: ["re sostenido", "d#"] },
+            { pitch: 6, keys: ["fa sostenido", "f#"] },
+            { pitch: 8, keys: ["sol sostenido", "g#"] },
+            { pitch: 10, keys: ["la sostenido", "a#"] },
+            { pitch: 0, keys: ["do", "dó", "dos", "don", "du", "dou", "to"] },
+            { pitch: 2, keys: ["re", "ré", "red", "rey", "res", "rem", "tres", "de", "te"] },
+            { pitch: 4, keys: ["mi", "mí", "mis", "mil", "me", "mid", "min", "ni"] },
+            { pitch: 5, keys: ["fa", "fas", "fan", "far", "fab", "ha", "pa", "va"] },
+            { pitch: 7, keys: ["sol", "sól", "son", "so", "gol", "soul", "sor", "sal", "col", "bol", "zo"] },
+            { pitch: 9, keys: ["la", "lá", "las", "lan", "da", "na", "bla"] },
+            { pitch: 11, keys: ["si", "sí", "sin", "se", "see", "sea", "fi", "ti", "ci", "fin"] }
+        ];
+
+        function parseFastSpokenNote(str, targetPitch) {
+            if (!str) return null;
+            const s = (" " + str.toLowerCase().replace(/[^a-záéíóúñ0-9#\s]/g, " ") + " ");
+
+            // 1. Si la nota esperada coincide directamente en cualquier parte del texto oído:
+            if (targetPitch !== null && targetPitch !== undefined) {
+                const targetObj = FAST_NOTE_MAP.find(item => item.pitch === targetPitch);
+                if (targetObj) {
+                    for (const k of targetObj.keys) {
+                        // Buscar la palabra o fragmento
+                        if (s.includes(" " + k + " ") || s.includes(k)) {
+                            return targetPitch;
+                        }
+                    }
+                }
+            }
+
+            // 2. Si no coincide con la nota esperada, buscar qué otra nota dijo
+            for (const item of FAST_NOTE_MAP) {
+                for (const k of item.keys) {
+                    if (s.includes(" " + k + " ") || s.includes(k)) {
+                        return item.pitch;
+                    }
+                }
+            }
+            return null;
+        }
+
+        function toggleVoiceDetection() {
             const btn = document.getElementById("btn-mic");
             if (isMicActive) {
-                // Apagar
                 isMicActive = false;
-                if (micStream) micStream.getTracks().forEach(t => t.stop());
-                if (micInterval) clearInterval(micInterval);
+                if (speechRecognizer) {
+                    try { speechRecognizer.stop(); } catch(e){}
+                    speechRecognizer = null;
+                }
                 btn.textContent = "🎤 Voz (Mic): OFF";
                 btn.classList.remove("btn-active-mic");
                 btn.classList.add("btn-secondary");
             } else {
-                // Activar
                 initAudio();
-                try {
-                    micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                    const source = audioCtx.createMediaStreamSource(micStream);
-                    micAnalyser = audioCtx.createAnalyser();
-                    micAnalyser.fftSize = 2048;
-                    source.connect(micAnalyser);
-
-                    isMicActive = true;
-                    btn.textContent = "🎙️ Voz: ESCUCHANDO...";
-                    btn.classList.remove("btn-secondary");
-                    btn.classList.add("btn-active-mic");
-
-                    startPitchDetectionLoop();
-                } catch (err) {
-                    alert("No se pudo acceder al micrófono. Asegúrate de dar permisos en el navegador.");
+                const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+                if (!SpeechRec) {
+                    alert("Tu navegador no soporta Speech Recognition nativo. Usa Google Chrome o Safari para el reconocimiento de voz.");
+                    return;
                 }
+
+                isMicActive = true;
+                btn.textContent = "🎙️ Escuchando... Di una nota";
+                btn.classList.remove("btn-secondary");
+                btn.classList.add("btn-active-mic");
+
+                initSpeechRecognition();
             }
         }
 
-        function startPitchDetectionLoop() {
-            const buffer = new Float32Array(micAnalyser.fftSize);
+        function initSpeechRecognition() {
+            const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRec || !isMicActive) return;
 
-            function analyze() {
+            try {
+                if (speechRecognizer) speechRecognizer.abort();
+            } catch(e){}
+
+            speechRecognizer = new SpeechRec();
+            speechRecognizer.lang = 'es-ES';
+            speechRecognizer.continuous = true;
+            speechRecognizer.interimResults = true; // Fundamental para reaccionar al milisegundo sin esperar pausas
+            speechRecognizer.maxAlternatives = 10;
+
+            speechRecognizer.onstart = () => {
+                if (isMicActive) {
+                    const btn = document.getElementById("btn-mic");
+                    btn.textContent = "🎙️ Escuchando... Di una nota";
+                }
+            };
+
+            speechRecognizer.onresult = (event) => {
                 if (!isMicActive) return;
-                micAnalyser.getFloatTimeDomainData(buffer);
-                const pitch = autoCorrelate(buffer, audioCtx.sampleRate);
+                const btn = document.getElementById("btn-mic");
 
-                if (pitch !== -1 && pitch > 80 && pitch < 900) {
-                    // Convertir Hz a MIDI
-                    const midiNote = Math.round(69 + 12 * Math.log2(pitch / 440));
-                    
-                    if (midiNote >= 48 && midiNote <= 84) {
-                        const now = Date.now();
-                        if (candidateNote === midiNote) {
-                            if (now - lastDetectedNoteTime > 180) { // Estable por 180 ms
-                                triggerNoteOn(midiNote);
-                                setTimeout(() => triggerNoteOff(midiNote), 250);
-                                candidateNote = null;
+                let targetPitchClass = null;
+                if (currentMode !== "free" && practiceSequence.length > 0 && currentStepIndex < practiceSequence.length) {
+                    targetPitchClass = practiceSequence[currentStepIndex] % 12;
+                }
+
+                // Evaluar todos los fragmentos devueltos en el evento actual
+                for (let i = event.resultIndex; i < event.results.length; ++i) {
+                    const res = event.results[i];
+                    if (!res) continue;
+
+                    // Examinar todas las hipótesis devueltas
+                    for (let a = 0; a < res.length; a++) {
+                        const transcript = res[a].transcript;
+                        const detectedPitch = parseFastSpokenNote(transcript, targetPitchClass);
+
+                        if (detectedPitch !== null) {
+                            const now = Date.now();
+                            if (now - lastSpokenTime > 180) { // Antirrebote ultra-reactivo de 180ms
+                                lastSpokenTime = now;
+                                const noteNameHeard = NOTE_NAMES[detectedPitch];
+
+                                if (currentMode !== "free" && practiceSequence.length > 0 && currentStepIndex < practiceSequence.length) {
+                                    const targetMidi = practiceSequence[currentStepIndex];
+                                    const expectedPitchClass = targetMidi % 12;
+
+                                    if (detectedPitch === expectedPitchClass) {
+                                        // ¡ACIERTO INSTANTÁNEO EN TIEMPO REAL!
+                                        btn.textContent = `🎙️ ¡"${noteNameHeard}"! ✅ ¡Correcto!`;
+                                        hasErrorOnCurrentStep = false;
+                                        playSound(targetMidi);
+                                        currentStepIndex++;
+                                        updatePracticeStatusUI();
+                                        renderNotesLayer();
+
+                                        if (currentStepIndex >= practiceSequence.length) {
+                                            setTimeout(() => {
+                                                alert("🎉 ¡Excelente trabajo! Has completado toda la partitura con éxito.");
+                                            }, 300);
+                                        }
+                                        return;
+                                    } else if (res.isFinal) {
+                                        const expectedName = NOTE_NAMES[expectedPitchClass];
+                                        btn.textContent = `🎙️ "${noteNameHeard}" ❌ (Es ${expectedName})`;
+                                        hasErrorOnCurrentStep = true;
+                                        playSound(60 + detectedPitch, true);
+                                        renderNotesLayer();
+                                        return;
+                                    }
+                                } else {
+                                    // Modo Libre
+                                    btn.textContent = `🎙️ "${noteNameHeard}"`;
+                                    playSound(60 + detectedPitch);
+                                    noteSequence.push(60 + detectedPitch);
+                                    if (noteSequence.length > TOTAL_MAX_NOTES) noteSequence.shift();
+                                    renderNotesLayer();
+                                    return;
+                                }
                             }
-                        } else {
-                            candidateNote = midiNote;
-                            lastDetectedNoteTime = now;
                         }
                     }
+
+                    // Mostrar fragmento en vivo
+                    if (res[0] && res[0].transcript) {
+                        btn.textContent = `🎙️ Oído: "${res[0].transcript.trim()}"`;
+                    }
                 }
-                requestAnimationFrame(analyze);
-            }
-            requestAnimationFrame(analyze);
-        }
+            };
 
-        // ALGORITMO DE AUTOCORRELACIÓN PARA PITCH DETECTION
-        function autoCorrelate(buf, sampleRate) {
-            let size = buf.length;
-            let rms = 0;
-            for (let i = 0; i < size; i++) {
-                const val = buf[i];
-                rms += val * val;
-            }
-            rms = Math.sqrt(rms / size);
-            if (rms < 0.015) return -1; // Muy silencioso
-
-            let r1 = 0, r2 = size - 1, thres = 0.2;
-            for (let i = 0; i < size / 2; i++) {
-                if (Math.abs(buf[i]) < thres) { r1 = i; break; }
-            }
-            for (let i = 1; i < size / 2; i++) {
-                if (Math.abs(buf[size - i]) < thres) { r2 = size - i; break; }
-            }
-
-            buf = buf.slice(r1, r2);
-            size = buf.length;
-
-            const c = new Array(size).fill(0);
-            for (let i = 0; i < size; i++) {
-                for (let j = 0; j < size - i; j++) {
-                    c[i] = c[i] + buf[j] * buf[j + i];
+            speechRecognizer.onerror = (e) => {
+                if (!isMicActive) return;
+                const btn = document.getElementById("btn-mic");
+                if (e.error === 'not-allowed') {
+                    btn.textContent = "❌ Micrófono bloqueado (Permite acceso)";
+                    isMicActive = false;
+                    btn.classList.remove("btn-active-mic");
+                    btn.classList.add("btn-secondary");
+                } else if (e.error !== 'no-speech') {
+                    console.log("Speech recognition notice:", e.error);
                 }
-            }
+            };
 
-            let d = 0;
-            while (c[d] > c[d + 1]) d++;
-            let maxval = -1, maxpos = -1;
-            for (let i = d; i < size; i++) {
-                if (c[i] > maxval) {
-                    maxval = c[i];
-                    maxpos = i;
+            speechRecognizer.onend = () => {
+                // Auto-mantener la escucha viva de forma transparente
+                if (isMicActive) {
+                    try {
+                        speechRecognizer.start();
+                    } catch(e){
+                        setTimeout(() => {
+                            if (isMicActive) initSpeechRecognition();
+                        }, 200);
+                    }
                 }
-            }
-            let T0 = maxpos;
-            return sampleRate / T0;
+            };
+
+            try {
+                speechRecognizer.start();
+            } catch(e){}
         }
 
         // IMPORTADOR DE ARCHIVOS MIDI (.MID) DRAG & DROP Y FILE INPUT
@@ -1141,10 +1363,14 @@
 
         // INICIALIZACIÓN
         setupMIDI();
-        window.addEventListener("click", () => initAudio(), { once: true });
+        window.addEventListener("click", () => {
+            initAudio();
+            // Precargar muestras de piano de cola acústico para las notas de Clave de Sol (Do4 a La5)
+            [60, 62, 64, 65, 67, 69, 71, 72, 74, 76, 77, 79, 81].forEach(m => loadGrandPianoSample(m));
+        }, { once: true });
         
-        // Cargar canción por defecto (Himno de la Alegría) en modo práctica al inicio
-        loadSongByKey("alegria");
+        // Iniciar por defecto en Modo Ejercicio Intervalos (60 notas en los 2 primeros pentagramas con nombres ocultos)
+        changeMode();
     </script>
 </body>
 </html>
