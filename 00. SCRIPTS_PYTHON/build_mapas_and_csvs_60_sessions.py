@@ -845,21 +845,25 @@ def generate_custom_probador(session_num, template_content):
     # Extraer el botón correspondiente a la sesión
     btn_html = ""
     empty_prompt = ""
+    ph_text = "1. Pega aquí el código generado por Gemini con Ctrl+V (o Cmd+V en Mac).\\n2. Pulsa '▶️ Ejecutar Creación' para verlo funcionar."
     if session_num == 1:
         btn_html = """            <button class="btn btn-emerald" id="btnLoadPulmones" title="Cargar simulador: Árbol Bronquial y Pulmones 3D con Respiración Fractal">
                 🫁 Pulmones 3D
             </button>"""
         empty_prompt = "prueba el botón <strong>«🫁 Pulmones 3D»</strong>"
+        ph_text = "1. Pide a Gemini que programe el simulador 3D del aparato respiratorio.\\n2. Haz clic en «Copiar código» en la respuesta de Gemini.\\n3. Pulsa Ctrl+V (o Cmd+V en Mac) aquí para pegar el código.\\n4. Pulsa '▶️ Ejecutar Creación' para verlo funcionar."
     elif session_num == 2:
         btn_html = """            <button class="btn btn-emerald" id="btnLoadCorazon" style="background: rgba(225, 29, 72, 0.2); color: #fb7185; border-color: rgba(225, 29, 72, 0.4);" title="Cargar simulador: Corazón 3D con Fonendoscopio">
                 🫀 Corazón 3D
             </button>"""
         empty_prompt = "prueba el botón <strong>«🫀 Corazón 3D»</strong>"
+        ph_text = "1. Pide a Gemini que programe el corazón 3D latiendo en HTML.\\n2. Haz clic en «Copiar código» en la respuesta de Gemini.\\n3. Pulsa Ctrl+V (o Cmd+V en Mac) aquí para pegar el código.\\n4. Pulsa '▶️ Ejecutar Creación' para verlo funcionar."
     elif session_num == 3:
         btn_html = """            <button class="btn btn-emerald" id="btnLoadPompeya" style="background: rgba(245, 158, 11, 0.2); color: #fbbf24; border-color: rgba(245, 158, 11, 0.4);" title="Cargar simulador: Arqueología Digital HD Pompeya (Ruinas vs. Reconstrucción)">
                 🏛️ Pompeya HD
             </button>"""
         empty_prompt = "prueba el botón <strong>«🏛️ Pompeya HD»</strong>"
+        ph_text = "1. Pide a Gemini que programe el visor de las Ruinas de Pompeya en HTML.\\n2. Haz clic en «Copiar código» en la respuesta de Gemini.\\n3. Pulsa Ctrl+V (o Cmd+V en Mac) aquí para pegar el código.\\n4. Pulsa '▶️ Ejecutar Creación' para contemplar las ruinas de piedra romana."
 
     # Reemplazar grupo de botones acumulados en el encabezado
     buttons_pattern = re.compile(r'<button class="btn btn-emerald" id="btnLoadPulmones".*?id="btnLoadPompeya".*?</button>', re.DOTALL)
@@ -869,6 +873,10 @@ def generate_custom_probador(session_num, template_content):
     notice_pattern = re.compile(r'prueba los botones <strong>«🫁 Pulmones 3D».*?demostración interactiva\.', re.DOTALL)
     if empty_prompt:
         custom_content = notice_pattern.sub(f"{empty_prompt} para ver la demostración interactiva.", custom_content)
+
+    # Reemplazar placeholder del editor
+    ph_pattern = re.compile(r'placeholder="1\. Pide a Gemini.*?para verlo funcionar\."', re.DOTALL)
+    custom_content = ph_pattern.sub(f'placeholder="{ph_text}"', custom_content)
 
     return custom_content
 
