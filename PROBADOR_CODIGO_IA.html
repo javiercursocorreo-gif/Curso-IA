@@ -1861,13 +1861,48 @@ window.POMPEII_RECON_B64 = &quot;data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAYABg
 
         function updateSlider(xPos) {
             const rect = comparator.getBoundingClientRect();
+            if (!rect || rect.width <= 0) return;
             let percent = ((xPos - rect.left) / rect.width) * 100;
             percent = Math.max(0, Math.min(100, percent));
             setSliderPos(percent);
         }
 
-        comparator.addEventListener(&quot;mousedown&quot;, (e) =&gt; {
+        // Arrastre ultra-robusto con Pointer Events & Pointer Capture
+        comparator.addEventListener(&quot;pointerdown&quot;, (e) =&gt; {
+            if (e.button &amp;&amp; e.button !== 0) return;
             isDragging = true;
+            e.preventDefault();
+            if (sweepAnimId) toggleAutoSweep();
+            try {
+                comparator.setPointerCapture(e.pointerId);
+            } catch (err) {}
+            updateSlider(e.clientX);
+        });
+
+        comparator.addEventListener(&quot;pointermove&quot;, (e) =&gt; {
+            if (isDragging) {
+                e.preventDefault();
+                updateSlider(e.clientX);
+            }
+            if (loupeActive) updateLoupe(e);
+        });
+
+        function stopDragging(e) {
+            if (isDragging) {
+                isDragging = false;
+                try {
+                    comparator.releasePointerCapture(e.pointerId);
+                } catch (err) {}
+            }
+        }
+        comparator.addEventListener(&quot;pointerup&quot;, stopDragging);
+        comparator.addEventListener(&quot;pointercancel&quot;, stopDragging);
+
+        // Fallbacks adicionales de mouse y touch
+        comparator.addEventListener(&quot;mousedown&quot;, (e) =&gt; {
+            if (e.button &amp;&amp; e.button !== 0) return;
+            isDragging = true;
+            e.preventDefault();
             if (sweepAnimId) toggleAutoSweep();
             updateSlider(e.clientX);
         });
@@ -1881,17 +1916,21 @@ window.POMPEII_RECON_B64 = &quot;data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAYABg
             isDragging = false;
         });
 
-        // Touch tablets / móviles
         comparator.addEventListener(&quot;touchstart&quot;, (e) =&gt; {
-            isDragging = true;
-            if (sweepAnimId) toggleAutoSweep();
-            updateSlider(e.touches[0].clientX);
-        });
+            if (e.touches &amp;&amp; e.touches.length &gt; 0) {
+                isDragging = true;
+                e.preventDefault();
+                if (sweepAnimId) toggleAutoSweep();
+                updateSlider(e.touches[0].clientX);
+            }
+        }, { passive: false });
 
         window.addEventListener(&quot;touchmove&quot;, (e) =&gt; {
-            if (!isDragging) return;
-            updateSlider(e.touches[0].clientX);
-        });
+            if (isDragging &amp;&amp; e.touches &amp;&amp; e.touches.length &gt; 0) {
+                e.preventDefault();
+                updateSlider(e.touches[0].clientX);
+            }
+        }, { passive: false });
 
         window.addEventListener(&quot;touchend&quot;, () =&gt; {
             isDragging = false;
@@ -1956,6 +1995,13 @@ window.POMPEII_RECON_B64 = &quot;data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAYABg
                         padding: 10px 16px !important;
                         max-width: 250px !important;
                     }
+                    img, canvas, .viewer-container, #viewer, #comparator, .comparator-wrap, #divider, .divider, #dividerLine, .slider-divider, .handle, .slider-handle-button {
+                        -webkit-user-drag: none !important;
+                        user-drag: none !important;
+                        -webkit-user-select: none !important;
+                        user-select: none !important;
+                        touch-action: none !important;
+                    }
                 </style>`;
                 if (code.includes("</head>")) {
                     code = code.replace("</head>", cleanStyles + "\n</head>");
@@ -1968,6 +2014,15 @@ window.POMPEII_RECON_B64 = &quot;data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAYABg
 
             // Inyectar script de compatibilidad absoluta para fotos arqueológicas HD y comparadores
             const compatScript = `
+            <style id="universalSliderStyle">
+                img, canvas, .viewer-container, #viewer, #comparator, .comparator-wrap, #divider, .divider, #dividerLine, .slider-divider, .handle, .slider-handle-button {
+                    -webkit-user-drag: none !important;
+                    user-drag: none !important;
+                    -webkit-user-select: none !important;
+                    user-select: none !important;
+                    touch-action: none !important;
+                }
+            </style>
             <script>
                 (function() {
                     if (window.parent) {
@@ -2018,6 +2073,121 @@ window.POMPEII_RECON_B64 = &quot;data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAYABg
                     setTimeout(syncAllPompeiiImages, 150);
                     setTimeout(syncAllPompeiiImages, 500);
                     setTimeout(syncAllPompeiiImages, 1200);
+
+                    // Motor universal de deslizamiento interactivo para cualquier código de Gemini o plantilla
+                    function initUniversalSlider() {
+                        const container = document.getElementById("comparator") || document.getElementById("viewer") || document.querySelector(".comparator-wrap") || document.querySelector(".viewer-container") || document.querySelector(".comparator") || document.querySelector(".stage-card");
+                        if (!container || container.__sliderBound) return;
+                        container.__sliderBound = true;
+
+                        const divider = document.getElementById("dividerLine") || document.getElementById("divider") || document.querySelector(".slider-divider") || document.querySelector(".divider");
+                        const reconWrap = document.getElementById("layerReconWrap") || document.getElementById("reconWrapper") || document.querySelector(".recon-wrapper") || document.querySelector(".layer-recon-wrap");
+                        const rangeInput = document.querySelector("input[type='range']");
+
+                        let isDragging = false;
+
+                        function applySliderPos(percent, clientX) {
+                            percent = Math.max(0, Math.min(100, percent));
+                            
+                            // 1. Invocar funciones existentes si están definidas
+                            if (typeof window.setSliderPos === "function") {
+                                try { window.setSliderPos(percent); } catch(e) {}
+                            }
+                            if (typeof window.setDividerPosition === "function") {
+                                try { window.setDividerPosition(percent); } catch(e) {}
+                            }
+                            if (typeof window.updateSlider === "function" && clientX !== undefined) {
+                                try { window.updateSlider(clientX); } catch(e) {}
+                            }
+
+                            // 2. Mover elementos visuales directamente para garantizar arrastre
+                            if (divider) {
+                                divider.style.left = percent + "%";
+                            }
+                            if (reconWrap) {
+                                reconWrap.style.clipPath = "polygon(0 0, " + percent + "% 0, " + percent + "% 100%, 0 100%)";
+                                reconWrap.style.webkitClipPath = "polygon(0 0, " + percent + "% 0, " + percent + "% 100%, 0 100%)";
+                                if (reconWrap.style.width && !reconWrap.style.clipPath) {
+                                    reconWrap.style.width = percent + "%";
+                                }
+                            }
+                            if (rangeInput) {
+                                rangeInput.value = percent;
+                            }
+                        }
+
+                        function moveFromEvent(clientX) {
+                            const rect = container.getBoundingClientRect();
+                            if (!rect || rect.width <= 0) return;
+                            const offset = clientX - rect.left;
+                            const percent = (offset / rect.width) * 100;
+                            applySliderPos(percent, clientX);
+                        }
+
+                        // A) Pointer Events con captura de puntero
+                        container.addEventListener("pointerdown", (e) => {
+                            if (e.button && e.button !== 0) return;
+                            isDragging = true;
+                            e.preventDefault();
+                            try { container.setPointerCapture(e.pointerId); } catch(err) {}
+                            moveFromEvent(e.clientX);
+                        });
+
+                        container.addEventListener("pointermove", (e) => {
+                            if (!isDragging) return;
+                            e.preventDefault();
+                            moveFromEvent(e.clientX);
+                        });
+
+                        function endDrag(e) {
+                            if (isDragging) {
+                                isDragging = false;
+                                try { container.releasePointerCapture(e.pointerId); } catch(err) {}
+                            }
+                        }
+                        container.addEventListener("pointerup", endDrag);
+                        container.addEventListener("pointercancel", endDrag);
+
+                        // B) Fallbacks Mouse
+                        container.addEventListener("mousedown", (e) => {
+                            if (e.button && e.button !== 0) return;
+                            isDragging = true;
+                            e.preventDefault();
+                            moveFromEvent(e.clientX);
+                        });
+
+                        window.addEventListener("mousemove", (e) => {
+                            if (!isDragging) return;
+                            e.preventDefault();
+                            moveFromEvent(e.clientX);
+                        });
+
+                        window.addEventListener("mouseup", () => { isDragging = false; });
+
+                        // C) Touch
+                        container.addEventListener("touchstart", (e) => {
+                            if (e.touches && e.touches.length > 0) {
+                                isDragging = true;
+                                e.preventDefault();
+                                moveFromEvent(e.touches[0].clientX);
+                            }
+                        }, { passive: false });
+
+                        container.addEventListener("touchmove", (e) => {
+                            if (isDragging && e.touches && e.touches.length > 0) {
+                                e.preventDefault();
+                                moveFromEvent(e.touches[0].clientX);
+                            }
+                        }, { passive: false });
+
+                        container.addEventListener("touchend", () => { isDragging = false; });
+                    }
+
+                    window.addEventListener('DOMContentLoaded', initUniversalSlider);
+                    window.addEventListener('load', initUniversalSlider);
+                    setTimeout(initUniversalSlider, 80);
+                    setTimeout(initUniversalSlider, 300);
+                    setTimeout(initUniversalSlider, 1000);
                 })();
             <\/script>`;
 

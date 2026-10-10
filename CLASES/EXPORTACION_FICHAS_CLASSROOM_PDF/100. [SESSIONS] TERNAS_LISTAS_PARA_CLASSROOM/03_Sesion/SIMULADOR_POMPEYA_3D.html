@@ -189,6 +189,10 @@ window.POMPEII_RECON_B64 = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAYABgAAD/4
             overflow: hidden;
             cursor: ew-resize;
             background: #000;
+            touch-action: none;
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-user-drag: none;
         }
 
         /* CAPAS DE IMÁGENES FOTOGRÁFICAS */
@@ -611,13 +615,48 @@ window.POMPEII_RECON_B64 = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAYABgAAD/4
 
         function updateSlider(xPos) {
             const rect = comparator.getBoundingClientRect();
+            if (!rect || rect.width <= 0) return;
             let percent = ((xPos - rect.left) / rect.width) * 100;
             percent = Math.max(0, Math.min(100, percent));
             setSliderPos(percent);
         }
 
-        comparator.addEventListener("mousedown", (e) => {
+        // Arrastre ultra-robusto con Pointer Events & Pointer Capture
+        comparator.addEventListener("pointerdown", (e) => {
+            if (e.button && e.button !== 0) return;
             isDragging = true;
+            e.preventDefault();
+            if (sweepAnimId) toggleAutoSweep();
+            try {
+                comparator.setPointerCapture(e.pointerId);
+            } catch (err) {}
+            updateSlider(e.clientX);
+        });
+
+        comparator.addEventListener("pointermove", (e) => {
+            if (isDragging) {
+                e.preventDefault();
+                updateSlider(e.clientX);
+            }
+            if (loupeActive) updateLoupe(e);
+        });
+
+        function stopDragging(e) {
+            if (isDragging) {
+                isDragging = false;
+                try {
+                    comparator.releasePointerCapture(e.pointerId);
+                } catch (err) {}
+            }
+        }
+        comparator.addEventListener("pointerup", stopDragging);
+        comparator.addEventListener("pointercancel", stopDragging);
+
+        // Fallbacks adicionales de mouse y touch
+        comparator.addEventListener("mousedown", (e) => {
+            if (e.button && e.button !== 0) return;
+            isDragging = true;
+            e.preventDefault();
             if (sweepAnimId) toggleAutoSweep();
             updateSlider(e.clientX);
         });
@@ -631,17 +670,21 @@ window.POMPEII_RECON_B64 = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAYABgAAD/4
             isDragging = false;
         });
 
-        // Touch tablets / móviles
         comparator.addEventListener("touchstart", (e) => {
-            isDragging = true;
-            if (sweepAnimId) toggleAutoSweep();
-            updateSlider(e.touches[0].clientX);
-        });
+            if (e.touches && e.touches.length > 0) {
+                isDragging = true;
+                e.preventDefault();
+                if (sweepAnimId) toggleAutoSweep();
+                updateSlider(e.touches[0].clientX);
+            }
+        }, { passive: false });
 
         window.addEventListener("touchmove", (e) => {
-            if (!isDragging) return;
-            updateSlider(e.touches[0].clientX);
-        });
+            if (isDragging && e.touches && e.touches.length > 0) {
+                e.preventDefault();
+                updateSlider(e.touches[0].clientX);
+            }
+        }, { passive: false });
 
         window.addEventListener("touchend", () => {
             isDragging = false;
