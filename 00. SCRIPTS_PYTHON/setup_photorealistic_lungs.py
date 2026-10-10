@@ -267,7 +267,7 @@ def build_simulator_html():
             <div class="box-title">🔊 Sonido Acústico Biológico</div>
             <button class="btn-action active" id="btnAudio">
                 <span>🌬️ Flujo de Aire (In/Ex)</span>
-                <span id="audioState">ON</span>
+                <span id="audioState" style="color: #34d399; font-weight: 800;">ON</span>
             </button>
         </div>
 
@@ -430,7 +430,7 @@ def build_simulator_html():
         let noiseNode = null;
         let filterNode = null;
         let gainNode = null;
-        let audioEnabled = true;
+        let isAudioOn = true;
 
         function initAudio() {
             if (audioCtx) return;
@@ -472,9 +472,32 @@ def build_simulator_html():
             noiseNode.start(0);
         }
 
+        function setAudioState(enabled) {
+            initAudio();
+            if (audioCtx && audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            isAudioOn = enabled;
+            const btn = document.getElementById("btnAudio");
+            const txt = document.getElementById("audioState");
+            if (isAudioOn) {
+                btn.classList.add("active");
+                txt.textContent = "ON";
+                txt.style.color = "#34d399";
+            } else {
+                btn.classList.remove("active");
+                txt.textContent = "OFF";
+                txt.style.color = "#94a3b8";
+                if (gainNode && audioCtx) {
+                    gainNode.gain.cancelScheduledValues(audioCtx.currentTime);
+                    gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
+                }
+            }
+        }
+
         window.addEventListener("pointerdown", () => {
-            if (!audioCtx) initAudio();
-            else if (audioCtx.state === 'suspended') audioCtx.resume();
+            initAudio();
+            if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
         }, { once: true });
 
         // BUCLE DE RENDER: MODELO 100% ESTABLE (SIN VAIVÉN NI ZOOM EN BLOQUE)
@@ -509,11 +532,16 @@ def build_simulator_html():
             }
 
             // Modular sonido de respiración
-            if (gainNode && audioCtx && audioEnabled) {
-                const flowVelocity = Math.sin(cyclePhase * Math.PI * 2);
-                const airVol = Math.abs(flowVelocity) * 0.35;
-                gainNode.gain.setTargetAtTime(airVol, audioCtx.currentTime, 0.05);
-                filterNode.frequency.setTargetAtTime(isInhaling ? 520 : 380, audioCtx.currentTime, 0.05);
+            if (gainNode && audioCtx) {
+                if (isAudioOn) {
+                    const flowVelocity = Math.sin(cyclePhase * Math.PI * 2);
+                    const airVol = Math.abs(flowVelocity) * 0.35;
+                    gainNode.gain.setTargetAtTime(airVol, audioCtx.currentTime, 0.05);
+                    filterNode.frequency.setTargetAtTime(isInhaling ? 520 : 380, audioCtx.currentTime, 0.05);
+                } else {
+                    gainNode.gain.cancelScheduledValues(audioCtx.currentTime);
+                    gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
+                }
             }
 
             scene.render();
@@ -550,11 +578,7 @@ def build_simulator_html():
         // 2. Audio
         const btnAudio = document.getElementById("btnAudio");
         btnAudio.addEventListener("click", () => {
-            if (!audioCtx) initAudio();
-            audioEnabled = !audioEnabled;
-            btnAudio.classList.toggle("active", audioEnabled);
-            document.getElementById("audioState").textContent = audioEnabled ? "ON" : "OFF";
-            if (!audioEnabled && gainNode) gainNode.gain.value = 0;
+            setAudioState(!isAudioOn);
         });
 
         // 3. Vistas y Rotación
