@@ -846,20 +846,20 @@ def generate_custom_probador(session_num, template_content):
     btn_html = ""
     empty_prompt = ""
     if session_num == 1:
-        btn_html = """            <button class="btn btn-emerald" id="btnLoadPulmones" title="Cargar simulador de la Sesión 01: Árbol Bronquial y Pulmones 3D con Respiración Fractal">
-                🫁 Pulmones 3D (Sesión 01)
+        btn_html = """            <button class="btn btn-emerald" id="btnLoadPulmones" title="Cargar simulador: Árbol Bronquial y Pulmones 3D con Respiración Fractal">
+                🫁 Pulmones 3D
             </button>"""
-        empty_prompt = "prueba el botón <strong>«🫁 Pulmones 3D (Sesión 01)»</strong>"
+        empty_prompt = "prueba el botón <strong>«🫁 Pulmones 3D»</strong>"
     elif session_num == 2:
-        btn_html = """            <button class="btn btn-emerald" id="btnLoadCorazon" style="background: rgba(225, 29, 72, 0.2); color: #fb7185; border-color: rgba(225, 29, 72, 0.4);" title="Cargar simulador de la Sesión 02: Corazón 3D con Fonendoscopio">
-                🫀 Corazón 3D (Sesión 02)
+        btn_html = """            <button class="btn btn-emerald" id="btnLoadCorazon" style="background: rgba(225, 29, 72, 0.2); color: #fb7185; border-color: rgba(225, 29, 72, 0.4);" title="Cargar simulador: Corazón 3D con Fonendoscopio">
+                🫀 Corazón 3D
             </button>"""
-        empty_prompt = "prueba el botón <strong>«🫀 Corazón 3D (Sesión 02)»</strong>"
+        empty_prompt = "prueba el botón <strong>«🫀 Corazón 3D»</strong>"
     elif session_num == 3:
-        btn_html = """            <button class="btn btn-emerald" id="btnLoadPompeya" style="background: rgba(245, 158, 11, 0.2); color: #fbbf24; border-color: rgba(245, 158, 11, 0.4);" title="Cargar simulador de la Sesión 03: Arqueología Digital HD Pompeya (Ruinas vs. Reconstrucción)">
-                🏛️ Pompeya HD (Sesión 03)
+        btn_html = """            <button class="btn btn-emerald" id="btnLoadPompeya" style="background: rgba(245, 158, 11, 0.2); color: #fbbf24; border-color: rgba(245, 158, 11, 0.4);" title="Cargar simulador: Arqueología Digital HD Pompeya (Ruinas vs. Reconstrucción)">
+                🏛️ Pompeya HD
             </button>"""
-        empty_prompt = "prueba el botón <strong>«🏛️ Pompeya HD (Sesión 03)»</strong>"
+        empty_prompt = "prueba el botón <strong>«🏛️ Pompeya HD»</strong>"
 
     # Reemplazar grupo de botones acumulados en el encabezado
     buttons_pattern = re.compile(r'<button class="btn btn-emerald" id="btnLoadPulmones".*?id="btnLoadPompeya".*?</button>', re.DOTALL)

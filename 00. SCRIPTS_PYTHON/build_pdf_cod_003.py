@@ -72,13 +72,13 @@ def build_cod_003_taller_3d_pdf(output_path=PDF_PATH):
     story.append(Paragraph("BLOQUE IV: CIENCIA INTERACTIVA & TALLER DE CÓDIGO CON GEMINI [COD]", style_block))
     story.append(HRFlowable(width="100%", thickness=1.5, color=colors.HexColor('#D97706'), spaceAfter=5))
 
-    story.append(Paragraph("<b>[COD-003] Construye tu Simulador de Viaje en el Tiempo a Pompeya</b>", style_title))
+    story.append(Paragraph("<b>[COD-003] Construye tu Simulador Arqueológico de Pompeya</b>", style_title))
 
     story.append(Paragraph("💡 <b>Misión Didáctica • Arqueología Digital con Inteligencia Artificial:</b>", style_section_h))
     story.append(Paragraph(
         "Tras explorar el corazón y los pulmones en las sesiones anteriores, cambiamos de temática hacia los grandes hitos de la civilización: <b>la arqueología digital</b>.<br/>"
-        "En este taller ordenarás a Gemini crear un <b>visor interactivo de viaje en el tiempo</b> para deslizar un cursor entre las ruinas actuales de Pompeya y su reconstrucción romana en el año 79 d.C.<br/>"
-        "<b>No necesitas conocimientos de programación:</b> le pedirás el código a Gemini con el prompt maestro, lo probarás en tu <b>Taller de Pruebas</b> y contemplarás el templo romano ante tus ojos.",
+        "En este taller ordenarás a Gemini crear un <b>visor interactivo de las ruinas reales de Pompeya</b> para contemplar en alta definición el Templo de Apolo tal como se conserva hoy en día.<br/>"
+        "<b>No necesitas conocimientos de programación:</b> le pedirás el código a Gemini con el prompt maestro, lo probarás pulsando <b>«▶️ Ejecutar Creación»</b> y verás las ruinas de piedra romana. ¡Y la gran sorpresa didáctica llegará al pulsar el botón <b>«🏛️ Pompeya HD»</b>, donde se revelará la reconstrucción del año 79 d.C. con la barra deslizante de viaje en el tiempo!",
         style_body
     ))
 
@@ -86,15 +86,15 @@ def build_cod_003_taller_3d_pdf(output_path=PDF_PATH):
     story.append(Paragraph("📋 <b>Lista de Tareas del Alumno (Paso a Paso en 2 Pestañas):</b>", style_section_h))
     task_rows = [
         [Paragraph("<b>✅ Tarea 1 • Pídele el código a Gemini (Pestaña 1):</b><br/>"
-                   "Abre Gemini (<i>gemini.google.com</i>). Copia el <b>Prompt Maestro</b> del recuadro inferior, pégalo en el chat y pulsa Enviar. Gemini redactará en segundos el código del visor arqueológico interactivo.", style_task)],
+                   "Abre Gemini (<i>gemini.google.com</i>). Copia el <b>Prompt Maestro</b> del recuadro inferior, pégalo en el chat y pulsa Enviar. Gemini redactará en segundos el código del visor arqueológico de las ruinas.", style_task)],
         [Paragraph("<b>✅ Tarea 2 • Copia el código generado por la IA:</b><br/>"
                    "En la respuesta de Gemini, haz clic en el icono o botón <b>«Copiar código»</b> situado en la esquina superior derecha del bloque.", style_task)],
         [Paragraph("<b>✅ Tarea 3 • Abre el Taller Oficial de Pruebas (Pestaña 2):</b><br/>"
                    "En el mapa del curso de la Sesión 03, pulsa el botón <b>«🚀 Abrir Taller Interactivo de Pruebas ↗»</b>. ¡Se ejecuta al instante en el navegador!", style_task)],
         [Paragraph("<b>✅ Tarea 4 • Pega con Ctrl+V y pulsa «Ejecutar Creación»:</b><br/>"
-                   "Pega el código pulsando <b>Ctrl+V</b> (o Cmd+V en Mac) en el recuadro izquierdo y pulsa <b>«▶️ Ejecutar Creación»</b>. ¡Arrastra el control deslizante central para viajar 2.000 años atrás en el tiempo!", style_task)],
-        [Paragraph("<b>✅ Tarea 5 • Comprueba el simulador arqueológico completo:</b><br/>"
-                   "Para ver el modelo oficial con fotos reales en alta resolución del archivo CyArk y filtros de piedra antigua, pulsa el botón <b>«🏛️ Ver Tesoro Arqueológico 3D ↗»</b> en el mapa de la clase.", style_task)],
+                   "Pega el código pulsando <b>Ctrl+V</b> (o Cmd+V en Mac) en el recuadro izquierdo y pulsa <b>«▶️ Ejecutar Creación»</b>. ¡Tu visor de las ruinas reales de Pompeya cobrará vida inmediatamente en pantalla!", style_task)],
+        [Paragraph("<b>✅ Tarea 5 • Descubre la sorpresa con el botón «🏛️ Pompeya HD»:</b><br/>"
+                   "Pulsa el botón oficial <b>«🏛️ Pompeya HD»</b> en el taller: ¡descubrirás la reconstrucción del templo en el año 79 d.C. con la barra deslizante para comparar el antes y el después!", style_task)],
     ]
     t_table = Table(task_rows, colWidths=[letter[0] - 84])
     t_table.setStyle(TableStyle([
@@ -112,14 +112,14 @@ def build_cod_003_taller_3d_pdf(output_path=PDF_PATH):
     story.append(Paragraph("🧠 <b>Prompt Maestro para Copiar y Pegar en Gemini:</b>", style_section_h))
     prompt_text = (
         "<b>Copia exactamente este texto en Gemini:</b><br/><br/>"
-        "<i>\"Genera el código de programación (HTML, CSS y JavaScript) que voy a copiar y pegar en el Taller de Pruebas de mi curso para crear un visor interactivo de Pompeya (Antes y Después).<br/><br/>"
+        "<i>\"Genera el código de programación (HTML, CSS y JavaScript) que voy a copiar y pegar en el Taller de Pruebas de mi curso para crear un visor interactivo de las Ruinas de Pompeya (Templo de Apolo).<br/><br/>"
         "Requisitos del código:<br/>"
         "1. Entrega el programa en un único bloque de código para que yo pulse directamente «Copiar código» y lo pegue con Ctrl+V en mi simulador.<br/>"
         "2. Incluye en la cabecera el script con las fotografías reales del archivo arqueológico:<br/>"
         "&lt;script src=&quot;https://javiercursocorreo-gif.github.io/Curso-IA/SIMULADORES_INTERACTIVOS/pompeii_photos_b64.js&quot;&gt;&lt;/script&gt;<br/>"
-        "3. Crea un contenedor visual con dos capas fotográficas superpuestas que utilicen window.POMPEII_RUINS_B64 (ruinas actuales) y window.POMPEII_RECON_B64 (templo reconstruido).<br/>"
-        "4. Programa una barra divisoria deslizante interactiva con ratón o slider que permita al usuario comparar visualmente las columnas en ruinas con su aspecto monumental romano original.<br/>"
-        "5. Aplica un diseño moderno oscuro con tipografía clara y un indicador que muestre 'Año 79 d.C. vs. Año 2026'.<br/>"
+        "3. Crea un visor arqueológico elegante que muestre la fotografía real en alta resolución de las ruinas actuales utilizando window.POMPEII_RUINS_B64.<br/>"
+        "4. No incluyas barras deslizantes (slider): muestra únicamente las ruinas de piedra con un marco arqueológico refinado, título histórico y una tarjeta informativa con datos del Templo de Apolo.<br/>"
+        "5. Aplica un diseño moderno oscuro con tipografía clara y botones interactivos para explorar detalles o alternar modos de nitidez.<br/>"
         "6. Escribe exclusivamente el bloque de código para que al copiarlo a mi simulador funcione inmediatamente.\"</i>"
     )
     p_table = Table([[Paragraph(prompt_text, style_prompt)]], colWidths=[letter[0] - 84])
