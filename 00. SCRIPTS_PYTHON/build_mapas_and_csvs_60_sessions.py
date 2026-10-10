@@ -269,7 +269,7 @@ def generate_columns_html(session_num, session_folder, files):
                             </div>
                             <span class="file-arrow">↗</span>
                         </a>
-                        <a href="PROBADOR_CODIGO_IA.html" target="_blank" class="btn-launch-interactive" title="Abrir Taller Oficial de Pruebas">
+                        <a href="PROBADOR_CODIGO_IA.html?sesion={session_num}" target="_blank" class="btn-launch-interactive" title="Abrir Taller Oficial de Pruebas">
                             🚀 Abrir Taller Interactivo de Pruebas ↗
                         </a>{sim_btn}
                     </div>"""

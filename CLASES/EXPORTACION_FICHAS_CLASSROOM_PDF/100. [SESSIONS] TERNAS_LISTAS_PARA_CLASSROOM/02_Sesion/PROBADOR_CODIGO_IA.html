@@ -15,7 +15,9 @@
     <script src="SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/heartbeat_audio_b64.js"></script>
     <script src="https://javiercursocorreo-gif.github.io/Curso-IA/SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/heartbeat_audio_b64.js"></script>
     <script src="pompeii_photos_b64.js"></script>
+    <script src="SIMULADORES_INTERACTIVOS/pompeii_photos_b64.js"></script>
     <script src="SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/pompeii_photos_b64.js"></script>
+    <script src="https://javiercursocorreo-gif.github.io/Curso-IA/SIMULADORES_INTERACTIVOS/pompeii_photos_b64.js"></script>
     <script src="https://javiercursocorreo-gif.github.io/Curso-IA/SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/pompeii_photos_b64.js"></script>
     <style>
         :root {
@@ -1908,6 +1910,20 @@ window.POMPEII_RECON_B64 = &quot;data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAYABg
             charCount.textContent = editor.value.length + " caracteres";
         });
 
+        // Asegurar que las imágenes HD de Pompeya estén disponibles en memoria global
+        function ensurePompeiiAssetsInMemory() {
+            if (!window.POMPEII_RUINS_B64 || !window.POMPEII_RECON_B64) {
+                const pTemp = document.getElementById("examplePompeyaTemplate");
+                if (pTemp && pTemp.value) {
+                    const mRuins = pTemp.value.match(/window\.POMPEII_RUINS_B64\s*=\s*["']([^"']+)["']/);
+                    const mRecon = pTemp.value.match(/window\.POMPEII_RECON_B64\s*=\s*["']([^"']+)["']/);
+                    if (mRuins && mRuins[1]) window.POMPEII_RUINS_B64 = mRuins[1];
+                    if (mRecon && mRecon[1]) window.POMPEII_RECON_B64 = mRecon[1];
+                }
+            }
+        }
+        ensurePompeiiAssetsInMemory();
+
         // Ejecutar código dentro del iframe (ocultando controles ruidosos si es la creación del alumno)
         function runCode(hideControls = true) {
             let code = editor.value.trim();
@@ -1918,6 +1934,7 @@ window.POMPEII_RECON_B64 = &quot;data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAYABg
             }
 
             emptyNotice.style.display = "none";
+            ensurePompeiiAssetsInMemory();
 
             // Si es la creación del alumno, ocultar controles ruidosos específicos del corazón
             if (hideControls) {
@@ -1943,9 +1960,86 @@ window.POMPEII_RECON_B64 = &quot;data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAYABg
                 }
             }
 
+            // Inyectar script de compatibilidad absoluta para fotos arqueológicas HD y comparadores
+            const compatScript = `
+            <script>
+                (function() {
+                    if (window.parent) {
+                        if (window.parent.POMPEII_RUINS_B64 && !window.POMPEII_RUINS_B64) {
+                            window.POMPEII_RUINS_B64 = window.parent.POMPEII_RUINS_B64;
+                        }
+                        if (window.parent.POMPEII_RECON_B64 && !window.POMPEII_RECON_B64) {
+                            window.POMPEII_RECON_B64 = window.parent.POMPEII_RECON_B64;
+                        }
+                    }
+
+                    function syncAllPompeiiImages() {
+                        const rB64 = window.POMPEII_RUINS_B64 || (window.parent && window.parent.POMPEII_RUINS_B64);
+                        const cB64 = window.POMPEII_RECON_B64 || (window.parent && window.parent.POMPEII_RECON_B64);
+                        if (!rB64 && !cB64) return;
+
+                        const ruinsSelectors = ['#imgRuins', '.img-ruins', '#photoRuins', '#ruinsImg', 'img[alt*="ruina" i]', 'img[alt*="actual" i]', 'img[src*="ruin"]'];
+                        const reconSelectors = ['#imgRecon', '.img-recon', '#photoRecon', '#reconImg', 'img[alt*="recon" i]', 'img[alt*="79" i]', 'img[src*="recon"]'];
+
+                        ruinsSelectors.forEach(sel => {
+                            document.querySelectorAll(sel).forEach(img => {
+                                if (rB64 && (!img.src || img.src.length < 100 || img.src.includes('pompeii_ruins_hd.jpg'))) {
+                                    img.src = rB64;
+                                }
+                            });
+                        });
+
+                        reconSelectors.forEach(sel => {
+                            document.querySelectorAll(sel).forEach(img => {
+                                if (cB64 && (!img.src || img.src.length < 100 || img.src.includes('pompeii_reconstructed_hd.jpg'))) {
+                                    img.src = cB64;
+                                }
+                            });
+                        });
+
+                        // Respaldo para cualquier <img> par del comparador
+                        const allImgs = document.querySelectorAll('img');
+                        if (allImgs.length >= 2) {
+                            if (rB64 && (!allImgs[0].src || allImgs[0].src.length < 100)) allImgs[0].src = rB64;
+                            if (cB64 && (!allImgs[1].src || allImgs[1].src.length < 100)) allImgs[1].src = cB64;
+                        }
+                    }
+
+                    window.loadArchivePhotos = syncAllPompeiiImages;
+                    window.addEventListener('DOMContentLoaded', syncAllPompeiiImages);
+                    window.addEventListener('load', syncAllPompeiiImages);
+                    setTimeout(syncAllPompeiiImages, 30);
+                    setTimeout(syncAllPompeiiImages, 150);
+                    setTimeout(syncAllPompeiiImages, 500);
+                    setTimeout(syncAllPompeiiImages, 1200);
+                })();
+            <\/script>`;
+
+            if (code.includes("</head>")) {
+                code = code.replace("</head>", compatScript + "\n</head>");
+            } else if (code.includes("<body")) {
+                code = code.replace("<body", compatScript + "\n<body");
+            } else {
+                code = compatScript + code;
+            }
+
             // Inyectar HTML en el iframe
             frame.srcdoc = code;
         }
+
+        // Evento directo de carga del iframe para sincronizar imágenes
+        frame.addEventListener("load", () => {
+            try {
+                const cw = frame.contentWindow;
+                if (cw) {
+                    if (window.POMPEII_RUINS_B64) cw.POMPEII_RUINS_B64 = window.POMPEII_RUINS_B64;
+                    if (window.POMPEII_RECON_B64) cw.POMPEII_RECON_B64 = window.POMPEII_RECON_B64;
+                    if (typeof cw.loadArchivePhotos === "function") {
+                        cw.loadArchivePhotos();
+                    }
+                }
+            } catch (e) {}
+        });
 
         btnRun.addEventListener("click", () => runCode(true));
 
@@ -1997,6 +2091,25 @@ window.POMPEII_RECON_B64 = &quot;data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAYABg
                 runCode(false);
             });
         }
+
+        // Filtrado dinámico de botones por sesión (?sesion=3)
+        (function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const sesionParam = urlParams.get('sesion') || urlParams.get('session');
+            if (sesionParam === '3') {
+                if (btnLoadPulmones) btnLoadPulmones.style.display = 'none';
+                if (btnLoadCorazon) btnLoadCorazon.style.display = 'none';
+                if (btnLoadPompeya) btnLoadPompeya.style.display = 'inline-flex';
+            } else if (sesionParam === '2') {
+                if (btnLoadPulmones) btnLoadPulmones.style.display = 'none';
+                if (btnLoadPompeya) btnLoadPompeya.style.display = 'none';
+                if (btnLoadCorazon) btnLoadCorazon.style.display = 'inline-flex';
+            } else if (sesionParam === '1') {
+                if (btnLoadCorazon) btnLoadCorazon.style.display = 'none';
+                if (btnLoadPompeya) btnLoadPompeya.style.display = 'none';
+                if (btnLoadPulmones) btnLoadPulmones.style.display = 'inline-flex';
+            }
+        })();
     </script>
 </body>
 </html>
