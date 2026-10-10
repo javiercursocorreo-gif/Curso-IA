@@ -256,6 +256,11 @@ def generate_columns_html(session_num, session_folder, files):
                         <a href="SIMULADOR_POMPEYA_3D.html" target="_blank" class="btn-launch-interactive" style="margin-top:6px; background:linear-gradient(135deg, #d97706, #b45309); border-color:#fbbf24;" title="Abrir Simulador Arqueológico HD de Pompeya (Ruinas vs. Reconstrucción)">
                             🏛️ Ver Tesoro Arqueológico 3D ↗
                         </a>"""
+                elif session_num == 4:
+                    sim_btn = """
+                        <a href="SIMULADOR_OJO_HUMANO_3D.html" target="_blank" class="btn-launch-interactive" style="margin-top:6px; background:linear-gradient(135deg, #0284c7, #0369a1); border-color:#38bdf8;" title="Abrir Simulador 3D del Globo Ocular Humano y Cristalino">
+                            👁️ Ver Simulador Ojo Humano 3D ↗
+                        </a>"""
                 cards_html += f"""
                     <div class="file-card file-card-special">
                         <a href="{rel_href}" target="_blank" class="file-card-special-top" title="Abrir Ficha Guía de Tareas (PDF)">
@@ -864,9 +869,15 @@ def generate_custom_probador(session_num, template_content):
             </button>"""
         empty_prompt = "prueba el botón <strong>«🏛️ Pompeya HD»</strong>"
         ph_text = "1. Pide a Gemini que programe el visor de las Ruinas de Pompeya en HTML.\\n2. Haz clic en «Copiar código» en la respuesta de Gemini.\\n3. Pulsa Ctrl+V (o Cmd+V en Mac) aquí para pegar el código.\\n4. Pulsa '▶️ Ejecutar Creación' para contemplar las ruinas de piedra romana."
+    elif session_num == 4:
+        btn_html = """            <button class="btn btn-emerald" id="btnLoadOjo" style="background: rgba(56, 189, 248, 0.2); color: #38bdf8; border-color: rgba(56, 189, 248, 0.4);" title="Cargar simulador: Óptica y Anatomía Humana 3D (Globo Ocular y Cristalino)">
+                👁️ Ojo Humano 3D
+            </button>"""
+        empty_prompt = "prueba el botón <strong>«👁️ Ojo Humano 3D»</strong>"
+        ph_text = "1. Pide a Gemini que programe el simulador del Globo Ocular Humano en 3D.\\n2. Haz clic en «Copiar código» en la respuesta de Gemini.\\n3. Pulsa Ctrl+V (o Cmd+V en Mac) aquí para pegar el código.\\n4. Pulsa '▶️ Ejecutar Creación' para explorar la anatomía y el reflejo de la pupila."
 
     # Reemplazar grupo de botones acumulados en el encabezado
-    buttons_pattern = re.compile(r'<button class="btn btn-emerald" id="btnLoadPulmones".*?id="btnLoadPompeya".*?</button>', re.DOTALL)
+    buttons_pattern = re.compile(r'<button class="btn btn-emerald" id="btnLoadPulmones".*?id="btnLoadOjo".*?</button>', re.DOTALL)
     custom_content = buttons_pattern.sub(btn_html, template_content)
 
     # Reemplazar texto en empty notice
@@ -953,6 +964,13 @@ def process_all_sessions():
                         shutil.copy2(ex_src, os.path.join(session_path, extra))
                     except Exception:
                         pass
+        elif session_num == 4:
+            ojo_src = os.path.join(BASE_DIR, "SIMULADORES_INTERACTIVOS", "01_SIMULADORES", "04_SIMULADOR_OJO_HUMANO_3D.html")
+            if os.path.exists(ojo_src):
+                try:
+                    shutil.copy2(ojo_src, os.path.join(session_path, "SIMULADOR_OJO_HUMANO_3D.html"))
+                except Exception:
+                    pass
 
         files = os.listdir(session_path)
         html_content = generate_columns_html(session_num, session_path, files)

@@ -348,7 +348,812 @@
                 </div>
             </div>
         </div>
-    </main>
+    <textarea id="exampleOjoTemplate" style="display:none;">&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;es&quot;&gt;
+&lt;head&gt;
+    &lt;meta charset=&quot;UTF-8&quot;&gt;
+    &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot;&gt;
+    &lt;title&gt;Óptica y Anatomía 3D • Globo Ocular y Cristalino&lt;/title&gt;
+    &lt;!-- Three.js + OrbitControls para renderizado 3D PBR autónomo y fluido --&gt;
+    &lt;script src=&quot;https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js&quot;&gt;&lt;/script&gt;
+    &lt;script src=&quot;https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js&quot;&gt;&lt;/script&gt;
+    &lt;style&gt;
+        :root {
+            --bg: #070b14;
+            --panel: #0f172a;
+            --border: #1e293b;
+            --accent: #38bdf8;
+            --accent-glow: rgba(56, 189, 248, 0.3);
+            --gold: #fbbf24;
+            --emerald: #34d399;
+            --rose: #fb7185;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* HEADER */
+        header {
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .header-icon {
+            font-size: 2.2rem;
+            filter: drop-shadow(0 0 10px var(--accent-glow));
+        }
+
+        h1 {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: #ffffff;
+            letter-spacing: -0.02em;
+        }
+
+        .header-sub {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .header-badges {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            border-radius: 9999px;
+            font-size: 0.78rem;
+            font-weight: 700;
+        }
+
+        .badge-cyan {
+            background: rgba(56, 189, 248, 0.15);
+            border: 1px solid rgba(56, 189, 248, 0.4);
+            color: #7dd3fc;
+        }
+
+        .badge-emerald {
+            background: rgba(52, 211, 153, 0.15);
+            border: 1px solid rgba(52, 211, 153, 0.4);
+            color: #6ee7b7;
+        }
+
+        /* MAIN CONTAINER */
+        main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            max-width: 1100px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 16px 20px;
+            gap: 14px;
+        }
+
+        /* TOOLBAR */
+        .toolbar {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 10px 18px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .toolbar-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .toolbar-title {
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-right: 4px;
+        }
+
+        .btn-tool {
+            background: #1e293b;
+            border: 1px solid #334155;
+            color: #e2e8f0;
+            padding: 7px 14px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-tool:hover {
+            background: #334155;
+            color: #ffffff;
+            border-color: #64748b;
+        }
+
+        .btn-tool.active {
+            background: rgba(56, 189, 248, 0.2);
+            border-color: var(--accent);
+            color: #38bdf8;
+            box-shadow: 0 0 12px var(--accent-glow);
+        }
+
+        /* STAGE 3D CARD */
+        .stage-card {
+            background: #000000;
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: 0 20px 45px rgba(0, 0, 0, 0.85);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .viewport-wrap {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16 / 10;
+            max-height: 600px;
+            margin: 0 auto;
+            overflow: hidden;
+            background: radial-gradient(circle at center, #111a2e 0%, #030712 100%);
+            cursor: grab;
+        }
+
+        .viewport-wrap:active {
+            cursor: grabbing;
+        }
+
+        #threeCanvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        /* HUD OVERLAYS */
+        .hud-pill {
+            position: absolute;
+            top: 16px;
+            padding: 8px 16px;
+            border-radius: 9999px;
+            font-size: 0.82rem;
+            font-weight: 800;
+            letter-spacing: 0.03em;
+            backdrop-filter: blur(10px);
+            z-index: 10;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.6);
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .hud-left {
+            left: 18px;
+            background: rgba(15, 23, 42, 0.85);
+            color: #38bdf8;
+            border: 1px solid rgba(56, 189, 248, 0.4);
+        }
+
+        .hud-right {
+            right: 18px;
+            background: rgba(15, 23, 42, 0.85);
+            color: #34d399;
+            border: 1px solid rgba(52, 211, 153, 0.4);
+        }
+
+        /* CONTROLS BAR */
+        .controls-bar {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            padding: 14px 20px;
+            background: #0f172a;
+            border-top: 1px solid var(--border);
+        }
+
+        .slider-row {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            width: 100%;
+        }
+
+        .slider-label {
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            white-space: nowrap;
+            min-width: 140px;
+        }
+
+        .slider-light {
+            flex: 1;
+            accent-color: #38bdf8;
+            cursor: pointer;
+            height: 8px;
+        }
+
+        .slider-val {
+            font-size: 0.85rem;
+            font-weight: 800;
+            color: #38bdf8;
+            min-width: 50px;
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .presets-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+            border-top: 1px dashed rgba(255,255,255,0.08);
+            padding-top: 10px;
+        }
+
+        .btn-preset {
+            background: #1e293b;
+            border: 1px solid #334155;
+            color: #cbd5e1;
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-preset:hover {
+            background: #334155;
+            color: #ffffff;
+            border-color: #64748b;
+        }
+
+        /* PEDAGOGIC BANNER */
+        .pedagogic-banner {
+            background: rgba(15, 23, 42, 0.95);
+            border: 1px solid rgba(56, 189, 248, 0.35);
+            border-radius: 14px;
+            padding: 14px 20px;
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+        }
+
+        .banner-icon { font-size: 1.8rem; flex-shrink: 0; line-height: 1; }
+        .banner-text { font-size: 0.84rem; color: #cbd5e1; line-height: 1.5; }
+        .banner-text strong { color: #ffffff; }
+        .banner-title { font-size: 0.92rem; font-weight: 800; color: #38bdf8; margin-bottom: 4px; }
+    &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+
+    &lt;header&gt;
+        &lt;div class=&quot;header-left&quot;&gt;
+            &lt;span class=&quot;header-icon&quot;&gt;👁️&lt;/span&gt;
+            &lt;div&gt;
+                &lt;h1&gt;Óptica y Anatomía Humana 3D • Globo Ocular y Cristalino&lt;/h1&gt;
+                &lt;div class=&quot;header-sub&quot;&gt;Simulador Fotorrealista PBR con Reflejo Fotomotor Dinámico y Seguimiento de Mirada&lt;/div&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;header-badges&quot;&gt;
+            &lt;div class=&quot;badge badge-cyan&quot;&gt;
+                &lt;span&gt;⚡ WebGL PBR Nativo&lt;/span&gt;
+            &lt;/div&gt;
+            &lt;div class=&quot;badge badge-emerald&quot;&gt;
+                &lt;span&gt;💡 Reflejo Pupilar 1:1&lt;/span&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/header&gt;
+
+    &lt;main&gt;
+        &lt;!-- TOOLBAR --&gt;
+        &lt;div class=&quot;toolbar&quot;&gt;
+            &lt;div class=&quot;toolbar-group&quot;&gt;
+                &lt;span class=&quot;toolbar-title&quot;&gt;Color del Iris:&lt;/span&gt;
+                &lt;button class=&quot;btn-tool active&quot; id=&quot;btnColorBlue&quot; onclick=&quot;setIrisColor(&#x27;blue&#x27;)&quot;&gt;🔵 Azul Zafiro&lt;/button&gt;
+                &lt;button class=&quot;btn-tool&quot; id=&quot;btnColorBrown&quot; onclick=&quot;setIrisColor(&#x27;brown&#x27;)&quot;&gt;🟤 Marrón Ámbar&lt;/button&gt;
+                &lt;button class=&quot;btn-tool&quot; id=&quot;btnColorGreen&quot; onclick=&quot;setIrisColor(&#x27;green&#x27;)&quot;&gt;🟢 Verde Esmeralda&lt;/button&gt;
+                &lt;button class=&quot;btn-tool&quot; id=&quot;btnColorHazel&quot; onclick=&quot;setIrisColor(&#x27;hazel&#x27;)&quot;&gt;🟣 Avellana Miel&lt;/button&gt;
+            &lt;/div&gt;
+            &lt;div class=&quot;toolbar-group&quot;&gt;
+                &lt;button class=&quot;btn-tool active&quot; id=&quot;btnTracking&quot; onclick=&quot;toggleTracking()&quot;&gt;👁️ Seguimiento Ocular (ON)&lt;/button&gt;
+                &lt;button class=&quot;btn-tool&quot; id=&quot;btnFlashlight&quot; onclick=&quot;toggleFlashlight()&quot;&gt;🔦 Linterna Oftálmica (ON)&lt;/button&gt;
+                &lt;button class=&quot;btn-tool&quot; id=&quot;btnXRay&quot; onclick=&quot;toggleXRay()&quot;&gt;🔬 Corte Sagital / Cristalino&lt;/button&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+
+        &lt;!-- STAGE 3D CARD --&gt;
+        &lt;div class=&quot;stage-card&quot;&gt;
+            &lt;div class=&quot;viewport-wrap&quot; id=&quot;viewportWrap&quot;&gt;
+                &lt;canvas id=&quot;threeCanvas&quot;&gt;&lt;/canvas&gt;
+
+                &lt;!-- HUD PILLS --&gt;
+                &lt;div class=&quot;hud-pill hud-left&quot; id=&quot;hudPupil&quot;&gt;
+                    &lt;span&gt;💡 Pupila: 3.5 mm (Normorreactiva)&lt;/span&gt;
+                &lt;/div&gt;
+                &lt;div class=&quot;hud-pill hud-right&quot; id=&quot;hudMode&quot;&gt;
+                    &lt;span&gt;🔦 Linterna Médica Activa&lt;/span&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+
+            &lt;!-- CONTROLES --&gt;
+            &lt;div class=&quot;controls-bar&quot;&gt;
+                &lt;div class=&quot;slider-row&quot;&gt;
+                    &lt;span class=&quot;slider-label&quot;&gt;💡 Intensidad de Luz:&lt;/span&gt;
+                    &lt;input type=&quot;range&quot; class=&quot;slider-light&quot; id=&quot;lightRange&quot; min=&quot;0&quot; max=&quot;100&quot; value=&quot;50&quot; oninput=&quot;onLightChange(this.value)&quot;&gt;
+                    &lt;span class=&quot;slider-val&quot; id=&quot;lightVal&quot;&gt;50%&lt;/span&gt;
+                &lt;/div&gt;
+
+                &lt;div class=&quot;presets-row&quot;&gt;
+                    &lt;div style=&quot;font-size: 0.8rem; color: #94a3b8; font-weight: 600;&quot;&gt;
+                        ↔ Arrastra con el ratón para rotar el ojo en 3D, o usa los accesos directos de luz:
+                    &lt;/div&gt;
+                    &lt;div style=&quot;display: flex; gap: 8px;&quot;&gt;
+                        &lt;button class=&quot;btn-preset&quot; onclick=&quot;setLightPreset(0)&quot;&gt;🌑 Penumbra (Midriasis 7.5 mm)&lt;/button&gt;
+                        &lt;button class=&quot;btn-preset&quot; onclick=&quot;setLightPreset(50)&quot;&gt;⚖️ Luz Media (Normal 3.5 mm)&lt;/button&gt;
+                        &lt;button class=&quot;btn-preset&quot; onclick=&quot;setLightPreset(100)&quot;&gt;☀️ Haz Intenso (Miosis 1.8 mm)&lt;/button&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+
+        &lt;!-- CAJA PEDAGÓGICA --&gt;
+        &lt;div class=&quot;pedagogic-banner&quot;&gt;
+            &lt;span class=&quot;banner-icon&quot;&gt;🔬&lt;/span&gt;
+            &lt;div class=&quot;banner-text&quot;&gt;
+                &lt;div class=&quot;banner-title&quot;&gt;¿Qué estás observando en este simulador óptico 3D?&lt;/div&gt;
+                El &lt;strong&gt;globo ocular humano&lt;/strong&gt; funciona exactamente como la lente de una cámara fotográfica de alta precisión. La &lt;strong&gt;córnea transparente&lt;/strong&gt; y el &lt;strong&gt;cristalino&lt;/strong&gt; enfocan la luz sobre la retina. El &lt;strong&gt;iris&lt;/strong&gt; actúa como diafragma muscular: cuando la luz aumenta (o activas la linterna), el músculo esfínter contrae la &lt;strong&gt;pupila&lt;/strong&gt; (&lt;em&gt;miosis&lt;/em&gt;) para proteger la retina. En la oscuridad, el músculo dilatador abre la pupila (&lt;em&gt;midriasis&lt;/em&gt;) para captar hasta el último haz de luz. Mueve el cursor para ver el &lt;strong&gt;seguimiento ocular fisiológico&lt;/strong&gt;.
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/main&gt;
+
+    &lt;script&gt;
+        // -------------------------------------------------------------
+        // MOTOR 3D PROCEDURAL THREE.JS AUTÓNOMO (CERO DEPENDENCIAS EXTERNAS)
+        // -------------------------------------------------------------
+        const canvas = document.getElementById(&quot;threeCanvas&quot;);
+        const wrap = document.getElementById(&quot;viewportWrap&quot;);
+
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x060913);
+
+        const camera = new THREE.PerspectiveCamera(40, wrap.clientWidth / wrap.clientHeight, 0.1, 100);
+        camera.position.set(0, 0, 5.2);
+
+        const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: false, powerPreference: &quot;high-performance&quot; });
+        renderer.setSize(wrap.clientWidth, wrap.clientHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        renderer.toneMappingExposure = 1.15;
+        renderer.shadowMap.enabled = true;
+
+        const controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+        controls.minDistance = 3.2;
+        controls.maxDistance = 8.0;
+        controls.enablePan = false;
+
+        // -------------------------------------------------------------
+        // ILUMINACIÓN REALISTA CLÍNICA Y AMBIENTE
+        // -------------------------------------------------------------
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
+        scene.add(ambientLight);
+
+        const mainDirLight = new THREE.DirectionalLight(0xffffff, 1.4);
+        mainDirLight.position.set(4, 5, 6);
+        scene.add(mainDirLight);
+
+        const fillLight = new THREE.DirectionalLight(0x38bdf8, 0.45);
+        fillLight.position.set(-5, -2, -3);
+        scene.add(fillLight);
+
+        // Linterna médica apuntada frontalmente
+        const flashlight = new THREE.SpotLight(0xfff5e6, 3.5, 12, Math.PI / 6, 0.4, 1.0);
+        flashlight.position.set(0, 0, 4.5);
+        scene.add(flashlight);
+        scene.add(flashlight.target);
+
+        // -------------------------------------------------------------
+        // GENERACIÓN PROCEDURAL DE TEXTURAS EN ALTA RESOLUCIÓN (4K Canvas)
+        // -------------------------------------------------------------
+        let currentPupilRatio = 0.38; // Relación radio pupila / iris (0.18 a 0.75)
+        let targetPupilRatio = 0.38;
+        let currentIrisColorName = &#x27;blue&#x27;;
+
+        const colorPalettes = {
+            blue:   { base: &#x27;#1d4ed8&#x27;, mid: &#x27;#38bdf8&#x27;, ring: &#x27;#0c2340&#x27;, collarette: &#x27;#fbbf24&#x27; },
+            brown:  { base: &#x27;#451a03&#x27;, mid: &#x27;#b45309&#x27;, ring: &#x27;#1f0d01&#x27;, collarette: &#x27;#d97706&#x27; },
+            green:  { base: &#x27;#14532d&#x27;, mid: &#x27;#22c55e&#x27;, ring: &#x27;#052e16&#x27;, collarette: &#x27;#ca8a04&#x27; },
+            hazel:  { base: &#x27;#581c87&#x27;, mid: &#x27;#a855f7&#x27;, ring: &#x27;#2e1065&#x27;, collarette: &#x27;#f59e0b&#x27; }
+        };
+
+        const irisCanvas = document.createElement(&#x27;canvas&#x27;);
+        irisCanvas.width = 1024;
+        irisCanvas.height = 1024;
+        const irisCtx = irisCanvas.getContext(&#x27;2d&#x27;);
+        const irisTexture = new THREE.CanvasTexture(irisCanvas);
+        irisTexture.wrapS = THREE.RepeatWrapping;
+        irisTexture.wrapT = THREE.ClampToEdgeWrapping;
+
+        function renderIrisTexture() {
+            const w = irisCanvas.width;
+            const h = irisCanvas.height;
+            const cx = w / 2;
+            const cy = h / 2;
+            const pal = colorPalettes[currentIrisColorName];
+
+            irisCtx.clearRect(0, 0, w, h);
+
+            // Fondo de esclerótica nacarada con venas sutiles periféricas
+            irisCtx.fillStyle = &#x27;#f8fafc&#x27;;
+            irisCtx.fillRect(0, 0, w, h);
+
+            // Disco del Iris
+            const maxIrisRadius = w * 0.42;
+            const pupilRadius = maxIrisRadius * currentPupilRatio;
+
+            // Gradiente anular principal del iris
+            const grad = irisCtx.createRadialGradient(cx, cy, pupilRadius, cx, cy, maxIrisRadius);
+            grad.addColorStop(0.0, &#x27;#000000&#x27;);
+            grad.addColorStop(0.08, pal.ring);
+            grad.addColorStop(0.35, pal.collarette);
+            grad.addColorStop(0.65, pal.mid);
+            grad.addColorStop(0.92, pal.base);
+            grad.addColorStop(1.0, &#x27;#020617&#x27;);
+
+            irisCtx.beginPath();
+            irisCtx.arc(cx, cy, maxIrisRadius, 0, Math.PI * 2);
+            irisCtx.fillStyle = grad;
+            irisCtx.fill();
+
+            // Estrías radiales finas (Fibras musculares del estroma)
+            irisCtx.save();
+            irisCtx.translate(cx, cy);
+            const numFib = 360;
+            for (let i = 0; i &lt; numFib; i++) {
+                const angle = (i / numFib) * Math.PI * 2;
+                const r1 = pupilRadius + (Math.sin(i * 13) * 6);
+                const r2 = maxIrisRadius - (Math.cos(i * 7) * 8);
+                const alpha = 0.12 + 0.15 * Math.sin(i * 29);
+
+                irisCtx.strokeStyle = (i % 2 === 0) ? pal.mid : &#x27;#ffffff&#x27;;
+                irisCtx.globalAlpha = alpha;
+                irisCtx.lineWidth = 1.2;
+
+                irisCtx.beginPath();
+                irisCtx.moveTo(Math.cos(angle) * r1, Math.sin(angle) * r1);
+                irisCtx.lineTo(Math.cos(angle) * r2, Math.sin(angle) * r2);
+                irisCtx.stroke();
+            }
+            irisCtx.restore();
+
+            // Pupila central ultra-negra absoluta con borde orgánico suave
+            irisCtx.beginPath();
+            irisCtx.arc(cx, cy, pupilRadius, 0, Math.PI * 2);
+            irisCtx.fillStyle = &#x27;#000000&#x27;;
+            irisCtx.fill();
+
+            // Anillo de transición limbar (borde exterior del iris fundido con esclerótica)
+            const limbGrad = irisCtx.createRadialGradient(cx, cy, maxIrisRadius * 0.95, cx, cy, maxIrisRadius * 1.05);
+            limbGrad.addColorStop(0, &#x27;rgba(15, 23, 42, 0.9)&#x27;);
+            limbGrad.addColorStop(0.5, &#x27;rgba(15, 23, 42, 0.4)&#x27;);
+            limbGrad.addColorStop(1, &#x27;rgba(248, 250, 252, 0)&#x27;);
+
+            irisCtx.beginPath();
+            irisCtx.arc(cx, cy, maxIrisRadius * 1.05, 0, Math.PI * 2);
+            irisCtx.fillStyle = limbGrad;
+            irisCtx.fill();
+
+            // Micro-venillas de la esclerótica en la periferia
+            irisCtx.save();
+            irisCtx.translate(cx, cy);
+            irisCtx.lineWidth = 0.9;
+            for (let v = 0; v &lt; 36; v++) {
+                const a = (v / 36) * Math.PI * 2;
+                irisCtx.strokeStyle = &#x27;rgba(225, 29, 72, 0.22)&#x27;;
+                irisCtx.beginPath();
+                irisCtx.moveTo(Math.cos(a) * (maxIrisRadius * 1.08), Math.sin(a) * (maxIrisRadius * 1.08));
+                const midA = a + (Math.sin(v) * 0.15);
+                irisCtx.quadraticCurveTo(
+                    Math.cos(midA) * (maxIrisRadius * 1.4), Math.sin(midA) * (maxIrisRadius * 1.4),
+                    Math.cos(a + 0.2) * (w * 0.49), Math.sin(a + 0.2) * (h * 0.49)
+                );
+                irisCtx.stroke();
+            }
+            irisCtx.restore();
+
+            irisTexture.needsUpdate = true;
+        }
+
+        renderIrisTexture();
+
+        // -------------------------------------------------------------
+        // CONSTRUCCIÓN ANATÓMICA DEL GLOBO OCULAR 3D
+        // -------------------------------------------------------------
+        const eyeGroup = new THREE.Group();
+        scene.add(eyeGroup);
+
+        // 1. Esclerótica (Globo principal)
+        const scleraGeo = new THREE.SphereGeometry(1.6, 64, 64);
+        const scleraMat = new THREE.MeshStandardMaterial({
+            map: irisTexture,
+            roughness: 0.18,
+            metalness: 0.05,
+            bumpMap: irisTexture,
+            bumpScale: 0.008
+        });
+        const scleraMesh = new THREE.Mesh(scleraGeo, scleraMat);
+        // Orientar el frente de la textura hacia el eje Z (hacia la cámara)
+        scleraMesh.rotation.y = -Math.PI / 2;
+        eyeGroup.add(scleraMesh);
+
+        // 2. Córnea transparente convexa hiperrealista (MeshPhysicalMaterial)
+        const corneaGeo = new THREE.SphereGeometry(0.85, 48, 48, 0, Math.PI * 2, 0, Math.PI / 2.3);
+        const corneaMat = new THREE.MeshPhysicalMaterial({
+            color: 0xffffff,
+            roughness: 0.02,
+            transmission: 0.96,
+            thickness: 0.35,
+            ior: 1.376, // Índice de refracción real de la córnea
+            specularIntensity: 1.2,
+            clearcoat: 1.0,
+            clearcoatRoughness: 0.02,
+            transparent: true,
+            opacity: 0.98
+        });
+        const corneaMesh = new THREE.Mesh(corneaGeo, corneaMat);
+        corneaMesh.position.set(0, 0, 1.15);
+        eyeGroup.add(corneaMesh);
+
+        // 3. Cristalino interno biconvexo (visible en modo corte sagital)
+        const lensGeo = new THREE.SphereGeometry(0.55, 32, 32);
+        lensGeo.scale(1.0, 1.0, 0.45);
+        const lensMat = new THREE.MeshPhysicalMaterial({
+            color: 0x93c5fd,
+            roughness: 0.05,
+            transmission: 0.92,
+            transparent: true,
+            opacity: 0.75,
+            thickness: 0.5
+        });
+        const lensMesh = new THREE.Mesh(lensGeo, lensMat);
+        lensMesh.position.set(0, 0, 0.85);
+        lensMesh.visible = false;
+        eyeGroup.add(lensMesh);
+
+        // 4. Nervio óptico posterior
+        const nerveGeo = new THREE.CylinderGeometry(0.28, 0.35, 1.2, 24);
+        const nerveMat = new THREE.MeshStandardMaterial({
+            color: 0xd97706,
+            roughness: 0.7,
+            metalness: 0.05
+        });
+        const nerveMesh = new THREE.Mesh(nerveGeo, nerveMat);
+        nerveMesh.rotation.x = Math.PI / 2;
+        nerveMesh.position.set(0, 0, -1.9);
+        eyeGroup.add(nerveMesh);
+
+        // -------------------------------------------------------------
+        // CONTROL DE ILUMINACIÓN Y REFLEJO FOTOMOTOR
+        // -------------------------------------------------------------
+        let trackingActive = true;
+        let flashlightActive = true;
+        let xRayActive = false;
+
+        const lightRange = document.getElementById(&quot;lightRange&quot;);
+        const lightVal = document.getElementById(&quot;lightVal&quot;);
+        const hudPupil = document.getElementById(&quot;hudPupil&quot;);
+        const hudMode = document.getElementById(&quot;hudMode&quot;);
+
+        function updatePupilReaction(lightPercent) {
+            // Fisiología pupilar: de 1.8 mm (miosis máxima a 100%) a 7.5 mm (midriasis a 0%)
+            const norm = lightPercent / 100;
+            // A más luz, menor ratio de pupila (contracción)
+            targetPupilRatio = 0.65 - norm * 0.45; // 0.20 a 0.65
+
+            const mmDiameter = (7.5 - norm * 5.7).toFixed(1);
+            let stateStr = &quot;Normorreactiva&quot;;
+            if (norm &gt; 0.7) stateStr = &quot;Miosis Reactiva&quot;;
+            else if (norm &lt; 0.25) stateStr = &quot;Midriasis Reactiva&quot;;
+
+            hudPupil.innerHTML = `&lt;span&gt;💡 Pupila: ${mmDiameter} mm (${stateStr})&lt;/span&gt;`;
+            lightVal.textContent = lightPercent + &quot;%&quot;;
+            lightRange.value = lightPercent;
+
+            // Ajustar intensidad física del haz de luz
+            flashlight.intensity = (lightPercent / 100) * 4.5;
+        }
+
+        function onLightChange(val) {
+            updatePupilReaction(parseFloat(val));
+        }
+
+        function setLightPreset(val) {
+            updatePupilReaction(val);
+        }
+
+        // -------------------------------------------------------------
+        // SEGUIMIENTO OCULAR DINÁMICO (EYE TRACKING CON LERP)
+        // -------------------------------------------------------------
+        const targetRotation = { x: 0, y: 0 };
+        const mouseNorm = { x: 0, y: 0 };
+
+        window.addEventListener(&quot;pointermove&quot;, (e) =&gt; {
+            const rect = wrap.getBoundingClientRect();
+            // Normalizar de -1 a +1 con centro en la pantalla
+            mouseNorm.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+            mouseNorm.y = -(((e.clientY - rect.top) / rect.height) * 2 - 1);
+
+            if (trackingActive) {
+                // Rango angular fisiológico: ±32° horizontal, ±22° vertical
+                targetRotation.y = Math.max(-0.55, Math.min(0.55, mouseNorm.x * 0.55));
+                targetRotation.x = Math.max(-0.38, Math.min(0.38, -mouseNorm.y * 0.38));
+            }
+
+            // Mover la linterna suavemente siguiendo el cursor
+            if (flashlightActive) {
+                flashlight.position.x = mouseNorm.x * 2.2;
+                flashlight.position.y = mouseNorm.y * 1.8;
+            }
+        });
+
+        function toggleTracking() {
+            trackingActive = !trackingActive;
+            const btn = document.getElementById(&quot;btnTracking&quot;);
+            if (trackingActive) {
+                btn.classList.add(&quot;active&quot;);
+                btn.textContent = &quot;👁️ Seguimiento Ocular (ON)&quot;;
+            } else {
+                btn.classList.remove(&quot;active&quot;);
+                btn.textContent = &quot;⏸ Seguimiento Ocular (PAUSA)&quot;;
+                targetRotation.x = 0;
+                targetRotation.y = 0;
+            }
+        }
+
+        function toggleFlashlight() {
+            flashlightActive = !flashlightActive;
+            const btn = document.getElementById(&quot;btnFlashlight&quot;);
+            if (flashlightActive) {
+                btn.classList.add(&quot;active&quot;);
+                btn.textContent = &quot;🔦 Linterna Oftálmica (ON)&quot;;
+                flashlight.visible = true;
+                hudMode.textContent = &quot;🔦 Linterna Médica Activa&quot;;
+                updatePupilReaction(parseFloat(lightRange.value));
+            } else {
+                btn.classList.remove(&quot;active&quot;);
+                btn.textContent = &quot;🌑 Linterna Oftálmica (OFF)&quot;;
+                flashlight.visible = false;
+                hudMode.textContent = &quot;🌑 Luz Ambiente Tenue&quot;;
+                updatePupilReaction(15);
+            }
+        }
+
+        function toggleXRay() {
+            xRayActive = !xRayActive;
+            const btn = document.getElementById(&quot;btnXRay&quot;);
+            if (xRayActive) {
+                btn.classList.add(&quot;active&quot;);
+                btn.textContent = &quot;🔬 Vista Anatómica Interna (ON)&quot;;
+                lensMesh.visible = true;
+                scleraMat.transparent = true;
+                scleraMat.opacity = 0.45;
+                corneaMat.opacity = 0.25;
+            } else {
+                btn.classList.remove(&quot;active&quot;);
+                btn.textContent = &quot;🔬 Corte Sagital / Cristalino&quot;;
+                lensMesh.visible = false;
+                scleraMat.transparent = false;
+                scleraMat.opacity = 1.0;
+                corneaMat.opacity = 0.98;
+            }
+        }
+
+        function setIrisColor(colorName) {
+            currentIrisColorName = colorName;
+            [&quot;btnColorBlue&quot;, &quot;btnColorBrown&quot;, &quot;btnColorGreen&quot;, &quot;btnColorHazel&quot;].forEach(id =&gt; {
+                document.getElementById(id).classList.remove(&quot;active&quot;);
+            });
+            if (colorName === &#x27;blue&#x27;) document.getElementById(&quot;btnColorBlue&quot;).classList.add(&quot;active&quot;);
+            if (colorName === &#x27;brown&#x27;) document.getElementById(&quot;btnColorBrown&quot;).classList.add(&quot;active&quot;);
+            if (colorName === &#x27;green&#x27;) document.getElementById(&quot;btnColorGreen&quot;).classList.add(&quot;active&quot;);
+            if (colorName === &#x27;hazel&#x27;) document.getElementById(&quot;btnColorHazel&quot;).classList.add(&quot;active&quot;);
+
+            renderIrisTexture();
+        }
+
+        // -------------------------------------------------------------
+        // BUCLE PRINCIPAL DE ANIMACIÓN A 60/120 FPS
+        // -------------------------------------------------------------
+        let lastTime = performance.now();
+
+        function animate(now) {
+            requestAnimationFrame(animate);
+
+            // Interpolación elástica suave del diámetro pupilar (reflejo pupilar fisiológico)
+            const pupilDiff = targetPupilRatio - currentPupilRatio;
+            if (Math.abs(pupilDiff) &gt; 0.002) {
+                currentPupilRatio += pupilDiff * 0.14; // Velocidad reactiva elástica
+                renderIrisTexture();
+            }
+
+            // Interpolación de rotación del ojo (Eye Tracking fisiológico)
+            if (trackingActive) {
+                eyeGroup.rotation.y += (targetRotation.y - eyeGroup.rotation.y) * 0.08;
+                eyeGroup.rotation.x += (targetRotation.x - eyeGroup.rotation.x) * 0.08;
+            }
+
+            controls.update();
+            renderer.render(scene, camera);
+        }
+
+        requestAnimationFrame(animate);
+
+        // Responsive resize
+        window.addEventListener(&quot;resize&quot;, () =&gt; {
+            const w = wrap.clientWidth;
+            const h = wrap.clientHeight;
+            camera.aspect = w / h;
+            camera.updateProjectionMatrix();
+            renderer.setSize(w, h);
+        });
+    &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</textarea>
+
+</main>
 
     
     <!-- PLANTILLA DE PULMONES 3D (SESIÓN 01) -->
@@ -2208,21 +3013,40 @@ window.POMPEII_RECON_B64 = &quot;data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAYABg
             });
         }
 
-        // Filtrado dinámico de botones por sesión (?sesion=3)
+        // Cargar simulador Ojo Humano 3D
+        const btnLoadOjo = document.getElementById("btnLoadOjo");
+        if (btnLoadOjo) {
+            btnLoadOjo.addEventListener("click", () => {
+                const template = document.getElementById("exampleOjoTemplate");
+                editor.value = template.value;
+                charCount.textContent = template.value.length + " caracteres";
+                runCode(false);
+            });
+        }
+
+        // Filtrado dinámico de botones por sesión (?sesion=4)
         (function() {
             const urlParams = new URLSearchParams(window.location.search);
             const sesionParam = urlParams.get('sesion') || urlParams.get('session');
-            if (sesionParam === '3') {
+            if (sesionParam === '4') {
+                if (btnLoadPulmones) btnLoadPulmones.style.display = 'none';
+                if (btnLoadCorazon) btnLoadCorazon.style.display = 'none';
+                if (btnLoadPompeya) btnLoadPompeya.style.display = 'none';
+                if (btnLoadOjo) btnLoadOjo.style.display = 'inline-flex';
+            } else if (sesionParam === '3') {
                 if (btnLoadPulmones) btnLoadPulmones.style.display = 'none';
                 if (btnLoadCorazon) btnLoadCorazon.style.display = 'none';
                 if (btnLoadPompeya) btnLoadPompeya.style.display = 'inline-flex';
+                if (btnLoadOjo) btnLoadOjo.style.display = 'none';
             } else if (sesionParam === '2') {
                 if (btnLoadPulmones) btnLoadPulmones.style.display = 'none';
                 if (btnLoadPompeya) btnLoadPompeya.style.display = 'none';
                 if (btnLoadCorazon) btnLoadCorazon.style.display = 'inline-flex';
+                if (btnLoadOjo) btnLoadOjo.style.display = 'none';
             } else if (sesionParam === '1') {
                 if (btnLoadCorazon) btnLoadCorazon.style.display = 'none';
                 if (btnLoadPompeya) btnLoadPompeya.style.display = 'none';
+                if (btnLoadOjo) btnLoadOjo.style.display = 'none';
                 if (btnLoadPulmones) btnLoadPulmones.style.display = 'inline-flex';
             }
         })();
