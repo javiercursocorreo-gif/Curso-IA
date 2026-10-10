@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arqueología Digital HD • Pompeya: Templo de Apolo (Ruinas vs. Reconstrucción)</title>
+    <!-- Fotos Reales Embebidas en Alta Definición 1440x1024 (CyArk Archive) -->
+    <script src="../03_ASSETS_3D_Y_DATOS/pompeii_photos_b64.js"></script>
+    <style>
+        :root {
+            --bg: #07090e;
+            --panel: rgba(15, 23, 42, 0.95);
+            --border: rgba(51, 65, 85, 0.8);
+            --gold: #f59e0b;
+            --gold-light: #fef3c7;
+            --cyan: #38bdf8;
+            --cyan-light: #e0f2fe;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: #f8fafc;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* HEADER */
+        header {
+            background: linear-gradient(180deg, rgba(15, 23, 42, 0.98) 0%, rgba(15, 23, 42, 0.85) 100%);
+            border-bottom: 1px solid var(--border);
+            padding: 12px 28px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            backdrop-filter: blur(12px);
+            z-index: 20;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .header-icon {
+            font-size: 2.2rem;
+        }
+
+        h1 {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: #ffffff;
+            letter-spacing: -0.02em;
+        }
+
+        .header-sub {
+            font-size: 0.82rem;
+            color: #94a3b8;
+            margin-top: 2px;
+        }
+
+        .header-badges {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            border-radius: 9999px;
+            font-size: 0.78rem;
+            font-weight: 700;
+        }
+
+        .badge-gold {
+            background: rgba(245, 158, 11, 0.15);
+            border: 1px solid rgba(245, 158, 11, 0.4);
+            color: var(--gold-light);
+        }
+
+        .badge-hd {
+            background: rgba(56, 189, 248, 0.15);
+            border: 1px solid rgba(56, 189, 248, 0.4);
+            color: var(--cyan-light);
+        }
+
+        /* MAIN CONTAINER */
+        main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            max-width: 1100px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 16px 20px;
+            gap: 14px;
+        }
+
+        /* TOOLBAR SUPERIOR DE NITIDEZ Y LUPA */
+        .toolbar {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 10px 18px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .toolbar-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .toolbar-title {
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .btn-tool {
+            background: #1e293b;
+            border: 1px solid #334155;
+            color: #e2e8f0;
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-tool:hover {
+            background: #334155;
+            color: #ffffff;
+            border-color: #64748b;
+        }
+
+        .btn-tool.active {
+            background: rgba(245, 158, 11, 0.2);
+            border-color: var(--gold);
+            color: #fbbf24;
+            box-shadow: 0 0 12px rgba(245, 158, 11, 0.3);
+        }
+
+        /* COMPARATOR VIEWER STAGE */
+        .stage-card {
+            background: #000000;
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: 0 20px 45px rgba(0, 0, 0, 0.8);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        /* Proporción exacta 1440 / 1024 para evitar interpolación y deformación */
+        .comparator-wrap {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 1440 / 1024;
+            max-height: 680px;
+            margin: 0 auto;
+            overflow: hidden;
+            cursor: ew-resize;
+            background: #000;
+        }
+
+        /* CAPAS DE IMÁGENES FOTOGRÁFICAS */
+        .layer-photo {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: fill;
+            display: block;
+            pointer-events: none;
+            image-rendering: -webkit-optimize-contrast;
+            image-rendering: crisp-edges;
+            transition: filter 0.25s ease;
+        }
+
+        /* Modos de filtro de nitidez aplicados a las capas */
+        .sharp-ultra {
+            filter: contrast(1.15) saturate(1.05) brightness(1.02);
+        }
+
+        .sharp-stone {
+            filter: contrast(1.28) saturate(0.95) brightness(1.04);
+        }
+
+        .sharp-natural {
+            filter: contrast(1.0) saturate(1.0) brightness(1.0);
+        }
+
+        /* Capa superior (Reconstrucción) recortada dinámicamente */
+        #layerReconWrap {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            clip-path: polygon(0 0, 50% 0, 50% 100%, 0 100%);
+            overflow: hidden;
+        }
+
+        /* SLIDER DIVIDER LINE */
+        .slider-divider {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            width: 3px;
+            background: #ffffff;
+            box-shadow: 0 0 14px rgba(255, 255, 255, 0.9), 0 0 28px rgba(245, 158, 11, 0.7);
+            transform: translateX(-50%);
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        .slider-handle-button {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 48px;
+            height: 48px;
+            background: #ffffff;
+            border: 3px solid var(--gold);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.15rem;
+            color: #0f172a;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.7);
+            cursor: ew-resize;
+            pointer-events: auto;
+            transition: transform 0.1s ease, box-shadow 0.1s ease;
+        }
+
+        .slider-handle-button:hover {
+            transform: translate(-50%, -50%) scale(1.1);
+            box-shadow: 0 0 25px rgba(245, 158, 11, 0.9);
+        }
+
+        /* ERA LABELS FLOATING */
+        .era-pill {
+            position: absolute;
+            top: 16px;
+            padding: 8px 16px;
+            border-radius: 9999px;
+            font-size: 0.8rem;
+            font-weight: 800;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
+            backdrop-filter: blur(10px);
+            z-index: 5;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.6);
+            pointer-events: none;
+        }
+
+        .era-left {
+            left: 18px;
+            background: rgba(245, 158, 11, 0.9);
+            color: #451a03;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+
+        .era-right {
+            right: 18px;
+            background: rgba(15, 23, 42, 0.9);
+            color: #e2e8f0;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* LUPA ARQUEOLÓGICA FLOTANTE */
+        #loupeCanvas {
+            position: absolute;
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            border: 3px solid var(--gold);
+            box-shadow: 0 0 30px rgba(0,0,0,0.9), inset 0 0 15px rgba(245, 158, 11, 0.4);
+            pointer-events: none;
+            display: none;
+            z-index: 30;
+            transform: translate(-50%, -50%);
+            background: #000;
+        }
+
+        /* CONTROLES INFERIORES */
+        .controls-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 20px;
+            background: #0f172a;
+            border-top: 1px solid var(--border);
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .btn-era {
+            background: #1e293b;
+            border: 1px solid #334155;
+            color: #e2e8f0;
+            padding: 7px 15px;
+            border-radius: 9px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-era:hover {
+            background: #334155;
+            color: #ffffff;
+            border-color: #64748b;
+        }
+
+        .pedagogic-banner {
+            background: linear-gradient(90deg, rgba(245, 158, 11, 0.08) 0%, rgba(56, 189, 248, 0.08) 100%);
+            border: 1px solid rgba(245, 158, 11, 0.25);
+            border-radius: 14px;
+            padding: 12px 18px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .banner-icon { font-size: 1.6rem; flex-shrink: 0; }
+        .banner-text { font-size: 0.82rem; color: #cbd5e1; line-height: 1.45; }
+        .banner-text strong { color: #ffffff; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-left">
+            <span class="header-icon">🏛️</span>
+            <div>
+                <h1>Arqueología Fotográfica Real • Pompeya: El Templo de Apolo</h1>
+                <div class="header-sub">Fotografía Real de las Ruinas vs. Reconstrucción Histórica Co-Registrada en HD (CyArk Archive)</div>
+            </div>
+        </div>
+        <div class="header-badges">
+            <div class="badge badge-hd">
+                <span>⚡ 1440×1024 HD Nativo</span>
+            </div>
+            <div class="badge badge-gold">
+                <span>📷 Co-Registro Espacial 1:1</span>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- TOOLBAR DE NITIDEZ Y LUPA -->
+        <div class="toolbar">
+            <div class="toolbar-group">
+                <span class="toolbar-title">Calibración de Nitidez:</span>
+                <button class="btn-tool active" id="btnSharpUltra" onclick="setSharpMode('ultra')">✨ Nitidez HD Máxima</button>
+                <button class="btn-tool" id="btnSharpStone" onclick="setSharpMode('stone')">🧱 Textura de Piedra</button>
+                <button class="btn-tool" id="btnSharpNatural" onclick="setSharpMode('natural')">📷 Original Suave</button>
+            </div>
+            <div class="toolbar-group">
+                <button class="btn-tool" id="btnLoupe" onclick="toggleLoupe()">🔍 Lupa de Detalle (2.5×)</button>
+                <button class="btn-tool" onclick="toggleAutoSweep()" id="btnSweep">▶ Barrido Automático</button>
+            </div>
+        </div>
+
+        <!-- STAGE COMPARATOR -->
+        <div class="stage-card">
+            <div class="comparator-wrap" id="comparator">
+                
+                <!-- CAPA INFERIOR: FOTO REAL DE LAS RUINAS HOY -->
+                <img id="imgRuins" class="layer-photo sharp-ultra" alt="Ruinas reales de Pompeya hoy">
+
+                <!-- CAPA SUPERIOR: RECONSTRUCCIÓN FOTOGRÁFICA ORIGINAL (AÑO 79 D.C.) -->
+                <div id="layerReconWrap">
+                    <img id="imgRecon" class="layer-photo sharp-ultra" alt="Reconstrucción del Templo de Pompeya en el año 79 d.C.">
+                </div>
+
+                <!-- SLIDER DIVIDER LINE -->
+                <div class="slider-divider" id="dividerLine">
+                    <div class="slider-handle-button" id="handleBtn">↔</div>
+                </div>
+
+                <!-- LUPA CANVAS OVERLAY -->
+                <canvas id="loupeCanvas" width="220" height="220"></canvas>
+
+                <!-- LABELS -->
+                <div class="era-pill era-left">🏛️ Reconstrucción 79 d.C.</div>
+                <div class="era-pill era-right">📷 Ruinas Actuales (Piedra Real)</div>
+            </div>
+
+            <!-- CONTROLES -->
+            <div class="controls-bar">
+                <div style="font-size: 0.8rem; color: #94a3b8; font-weight: 600;">
+                    ↔ Arrastra el divisor o usa los accesos directos para contrastar las columnas y arquitrabes:
+                </div>
+                <div style="display: flex; gap: 8px;">
+                    <button class="btn-era" onclick="setSliderPos(0)">📷 Ver Ruinas Actuales</button>
+                    <button class="btn-era" onclick="setSliderPos(50)">⚖️ Mitad y Mitad</button>
+                    <button class="btn-era" onclick="setSliderPos(100)">🏛️ Ver Año 79 d.C.</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- PEDAGOGIC BANNER -->
+        <div class="pedagogic-banner">
+            <span class="banner-icon">💡</span>
+            <div class="banner-text">
+                <strong>¿Por qué se ve ahora nítido y preciso?</strong> La imagen se procesa en proporción nativa exacta (1440×1024 px) con renderizado optimizado de bordes subpíxel (<em>-webkit-optimize-contrast</em>). Esto evita el estiramiento digital y revela las estrías en los fustes de las columnas, las roturas del terremoto del 62 d.C. y la policromía del frontón romano.
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Cargar las fotos reales embebidas HD
+        const imgRuins = document.getElementById("imgRuins");
+        const imgRecon = document.getElementById("imgRecon");
+
+        imgRuins.src = window.POMPEII_RUINS_B64 || "../03_ASSETS_3D_Y_DATOS/pompeii_ruins_hd.jpg";
+        imgRecon.src = window.POMPEII_RECON_B64 || "../03_ASSETS_3D_Y_DATOS/pompeii_reconstructed_hd.jpg";
+
+        const comparator = document.getElementById("comparator");
+        const layerReconWrap = document.getElementById("layerReconWrap");
+        const dividerLine = document.getElementById("dividerLine");
+        const loupeCanvas = document.getElementById("loupeCanvas");
+        const loupeCtx = loupeCanvas.getContext("2d");
+
+        let isDragging = false;
+        let currentSliderPercent = 50;
+        let loupeActive = false;
+        let sweepInterval = null;
+        let sweepDirection = 0.5;
+
+        // Modos de nitidez
+        function setSharpMode(mode) {
+            imgRuins.className = "layer-photo";
+            imgRecon.className = "layer-photo";
+
+            document.getElementById("btnSharpUltra").classList.remove("active");
+            document.getElementById("btnSharpStone").classList.remove("active");
+            document.getElementById("btnSharpNatural").classList.remove("active");
+
+            if (mode === 'ultra') {
+                imgRuins.classList.add("sharp-ultra");
+                imgRecon.classList.add("sharp-ultra");
+                document.getElementById("btnSharpUltra").classList.add("active");
+            } else if (mode === 'stone') {
+                imgRuins.classList.add("sharp-stone");
+                imgRecon.classList.add("sharp-stone");
+                document.getElementById("btnSharpStone").classList.add("active");
+            } else {
+                imgRuins.classList.add("sharp-natural");
+                imgRecon.classList.add("sharp-natural");
+                document.getElementById("btnSharpNatural").classList.add("active");
+            }
+        }
+
+        // Lupa de Detalle
+        function toggleLoupe() {
+            loupeActive = !loupeActive;
+            const btn = document.getElementById("btnLoupe");
+            if (loupeActive) {
+                btn.classList.add("active");
+                loupeCanvas.style.display = "block";
+            } else {
+                btn.classList.remove("active");
+                loupeCanvas.style.display = "none";
+            }
+        }
+
+        function updateLoupe(e) {
+            if (!loupeActive) return;
+            const rect = comparator.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+
+            if (mouseX < 0 || mouseX > rect.width || mouseY < 0 || mouseY > rect.height) {
+                loupeCanvas.style.display = "none";
+                return;
+            } else {
+                loupeCanvas.style.display = "block";
+            }
+
+            loupeCanvas.style.left = `${mouseX}px`;
+            loupeCanvas.style.top = `${mouseY}px`;
+
+            // Decidir qué imagen ampliar según la posición del slider
+            const sliderX = (currentSliderPercent / 100) * rect.width;
+            const sourceImg = (mouseX < sliderX) ? imgRecon : imgRuins;
+
+            if (!sourceImg.naturalWidth) return;
+
+            // Coordenadas relativas en la imagen de alta resolución
+            const scaleX = sourceImg.naturalWidth / rect.width;
+            const scaleY = sourceImg.naturalHeight / rect.height;
+
+            const zoomFactor = 2.5;
+            const sWidth = loupeCanvas.width / zoomFactor;
+            const sHeight = loupeCanvas.height / zoomFactor;
+            const sx = Math.max(0, Math.min(sourceImg.naturalWidth - sWidth, (mouseX * scaleX) - sWidth / 2));
+            const sy = Math.max(0, Math.min(sourceImg.naturalHeight - sHeight, (mouseY * scaleY) - sHeight / 2));
+
+            loupeCtx.clearRect(0, 0, loupeCanvas.width, loupeCanvas.height);
+            loupeCtx.save();
+            loupeCtx.beginPath();
+            loupeCtx.arc(loupeCanvas.width / 2, loupeCanvas.height / 2, loupeCanvas.width / 2, 0, Math.PI * 2);
+            loupeCtx.clip();
+            loupeCtx.imageSmoothingQuality = "high";
+            loupeCtx.drawImage(sourceImg, sx, sy, sWidth, sHeight, 0, 0, loupeCanvas.width, loupeCanvas.height);
+
+            // Cruz reticular sutil arqueológica
+            loupeCtx.strokeStyle = "rgba(245, 158, 11, 0.45)";
+            loupeCtx.lineWidth = 1;
+            loupeCtx.beginPath();
+            loupeCtx.moveTo(loupeCanvas.width / 2 - 15, loupeCanvas.height / 2);
+            loupeCtx.lineTo(loupeCanvas.width / 2 + 15, loupeCanvas.height / 2);
+            loupeCtx.moveTo(loupeCanvas.width / 2, loupeCanvas.height / 2 - 15);
+            loupeCtx.lineTo(loupeCanvas.width / 2, loupeCanvas.height / 2 + 15);
+            loupeCtx.stroke();
+            loupeCtx.restore();
+        }
+
+        // Barrido automático de demostración
+        function toggleAutoSweep() {
+            const btn = document.getElementById("btnSweep");
+            if (sweepInterval) {
+                clearInterval(sweepInterval);
+                sweepInterval = null;
+                btn.classList.remove("active");
+                btn.textContent = "▶ Barrido Automático";
+            } else {
+                btn.classList.add("active");
+                btn.textContent = "⏸ Pausar Barrido";
+                sweepInterval = setInterval(() => {
+                    currentSliderPercent += sweepDirection;
+                    if (currentSliderPercent >= 98) sweepDirection = -0.6;
+                    if (currentSliderPercent <= 2) sweepDirection = 0.6;
+                    setSliderPos(currentSliderPercent);
+                }, 20);
+            }
+        }
+
+        function updateSlider(xPos) {
+            const rect = comparator.getBoundingClientRect();
+            let percent = ((xPos - rect.left) / rect.width) * 100;
+            percent = Math.max(0, Math.min(100, percent));
+            setSliderPos(percent);
+        }
+
+        function setSliderPos(percent) {
+            currentSliderPercent = percent;
+            layerReconWrap.style.clipPath = `polygon(0 0, ${percent}% 0, ${percent}% 100%, 0 100%)`;
+            dividerLine.style.left = `${percent}%`;
+        }
+
+        comparator.addEventListener("mousedown", (e) => {
+            isDragging = true;
+            if (sweepInterval) toggleAutoSweep();
+            updateSlider(e.clientX);
+        });
+
+        window.addEventListener("mousemove", (e) => {
+            if (isDragging) updateSlider(e.clientX);
+            if (loupeActive) updateLoupe(e);
+        });
+
+        window.addEventListener("mouseup", () => {
+            isDragging = false;
+        });
+
+        // Touch tablets / móviles
+        comparator.addEventListener("touchstart", (e) => {
+            isDragging = true;
+            if (sweepInterval) toggleAutoSweep();
+            updateSlider(e.touches[0].clientX);
+        });
+
+        window.addEventListener("touchmove", (e) => {
+            if (!isDragging) return;
+            updateSlider(e.touches[0].clientX);
+        });
+
+        window.addEventListener("touchend", () => {
+            isDragging = false;
+        });
+    </script>
+</body>
+</html>

@@ -3,17 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Laboratorio Anatómico 3D • Árbol Bronquial y Pulmones Hiperrealistas (GLB + Babylon.js)</title>
+    <title>Laboratorio Anatómico 3D • Árbol Traqueobronquial Humano (NIH 3D + Babylon.js)</title>
     <!-- Babylon.js Motor 3D Oficial CDN -->
     <script src="https://cdn.babylonjs.com/babylon.js"></script>
     <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
     <!-- Respaldo Base64 para entornos locales / offline -->
-    <script src="lungs_b64.js"></script>
+    <script src="../03_ASSETS_3D_Y_DATOS/lungs_b64.js"></script>
     <script src="https://javiercursocorreo-gif.github.io/Curso-IA/SIMULADORES_INTERACTIVOS/lungs_b64.js"></script>
     <style>
         :root {
             --bg-base: #060913;
-            --bg-card: rgba(15, 23, 42, 0.90);
+            --bg-card: rgba(15, 23, 42, 0.92);
             --border: rgba(56, 189, 248, 0.35);
             --primary: #38bdf8;
             --emerald: #34d399;
@@ -100,7 +100,7 @@
         /* HUD CONTROLES DERECHA */
         .hud-sidebar {
             position: absolute; right: 20px; top: 85px; z-index: 10;
-            width: 300px; display: flex; flex-direction: column; gap: 12px;
+            width: 310px; display: flex; flex-direction: column; gap: 12px;
         }
         .panel-box {
             background: var(--bg-card);
@@ -113,7 +113,10 @@
         .box-title {
             font-size: 0.78rem; text-transform: uppercase; font-weight: 800;
             color: var(--primary); letter-spacing: 0.05em; margin-bottom: 10px;
+            display: flex; justify-content: space-between; align-items: center;
         }
+
+        /* FRECUENCIA RESPIRATORIA */
         .rpm-display {
             display: flex; align-items: baseline; justify-content: space-between;
             margin-bottom: 8px;
@@ -139,14 +142,14 @@
 
         /* BOTONES DE ACCIÓN */
         .btn-action {
-            width: 100%; padding: 8px 12px; border-radius: 8px;
+            width: 100%; padding: 9px 12px; border-radius: 8px;
             font-size: 0.8rem; font-weight: 700; cursor: pointer;
             border: 1px solid rgba(255, 255, 255, 0.15);
-            background: rgba(255, 255, 255, 0.08); color: #fff;
+            background: rgba(255, 255, 255, 0.08); color: #cbd5e1;
             display: flex; align-items: center; justify-content: space-between;
             margin-top: 6px; transition: all 0.2s ease;
         }
-        .btn-action:hover { background: rgba(56, 189, 248, 0.2); border-color: var(--primary); }
+        .btn-action:hover { background: rgba(56, 189, 248, 0.2); border-color: var(--primary); color: #fff; }
         .btn-action.active { background: rgba(16, 185, 129, 0.25); border-color: #10b981; color: #34d399; }
 
         .btn-views-grid {
@@ -171,28 +174,31 @@
 
     <div id="loadingOverlay">
         <div class="spinner"></div>
-        <div style="font-weight: 600; color: #94a3b8; font-size: 0.9rem;" id="loadingStatusText">Cargando modelo anatómico 3D de pulmones...</div>
+        <div style="font-weight: 600; color: #94a3b8; font-size: 0.9rem;" id="loadingStatusText">Cargando modelo anatómico fotogramétrico del árbol traqueobronquial...</div>
     </div>
 
     <header>
         <div class="brand-card">
             <span class="brand-icon">🫁</span>
             <div>
-                <div class="brand-title">Aparato Respiratorio Humano • Fotogrametría 3D</div>
-                <div class="brand-sub">Escaneo Anatómico Médico Real • Tráquea, Árbol Bronquial y Lóbulos</div>
+                <div class="brand-title">Aparato Respiratorio Humano • Tráquea y Bronquios 3D</div>
+                <div class="brand-sub">Biomimética y Fractales • Modelo Médico Fotogramétrico (NIH 3D)</div>
             </div>
         </div>
         <div class="live-tag">
             <span class="pulse-dot"></span>
-            <span id="cycleStatus">INHALACIÓN ACTIVA</span>
+            <span id="cycleStatus">CICLO RESPIRATORIO</span>
         </div>
     </header>
 
     <canvas id="renderCanvas"></canvas>
 
     <aside class="hud-sidebar">
+        <!-- FRECUENCIA RESPIRATORIA -->
         <div class="panel-box">
-            <div class="box-title">🫁 Frecuencia Respiratoria</div>
+            <div class="box-title">
+                <span>🌬️ Ritmo de Respiración</span>
+            </div>
             <div class="rpm-display">
                 <div class="rpm-num" id="rpmVal">14</div>
                 <div class="rpm-unit">Respiraciones / min (RPM)</div>
@@ -207,14 +213,16 @@
             </div>
         </div>
 
+        <!-- SONIDO: BOTÓN DE ACCIÓN DESCRIPTIVO CLARO -->
         <div class="panel-box">
             <div class="box-title">🔊 Sonido Acústico Biológico</div>
-            <button class="btn-action active" id="btnAudio">
-                <span>🌬️ Flujo de Aire (In/Ex)</span>
-                <span id="audioState">ON</span>
+            <button class="btn-action" id="btnAudio" style="justify-content: center; gap: 8px;">
+                <span id="audioIcon">🔈</span>
+                <span id="audioText">Activar Sonido de Respiración</span>
             </button>
         </div>
 
+        <!-- CÁMARA Y PERSPECTIVA -->
         <div class="panel-box">
             <div class="box-title">🎥 Perspectiva Anatómica 360°</div>
             <div class="btn-views-grid">
@@ -236,11 +244,12 @@
         const canvas = document.getElementById("renderCanvas");
         const engine = new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true });
         const loadingOverlay = document.getElementById("loadingOverlay");
-        const loadingStatusText = document.getElementById("loadingStatusText");
 
         let lungsRoot = null;
         let lungAnimGroup = null;
+
         let fixedBaseScale = 1.0;
+        let baseCenter = new BABYLON.Vector3(0, 0, 0);
         let isModelLoaded = false;
         let currentRpm = 14;
         let autoRotate = true;
@@ -249,7 +258,7 @@
             const scene = new BABYLON.Scene(engine);
             scene.clearColor = new BABYLON.Color4(0.024, 0.035, 0.075, 1.0);
 
-            // Cámara orbital cinemática
+            // Cámara orbital cinemática perfectamente calibrada y centrada
             const camera = new BABYLON.ArcRotateCamera("Camera", -Math.PI / 2, Math.PI / 2.3, 5.2, BABYLON.Vector3.Zero(), scene);
             camera.attachControl(canvas, true);
             camera.wheelPrecision = 40;
@@ -258,29 +267,29 @@
 
             // Iluminación quirúrgica/médica PBR
             const hemiLight = new BABYLON.HemisphericLight("hemiLight", new BABYLON.Vector3(0, 1, 0), scene);
-            hemiLight.intensity = 1.1;
-            hemiLight.diffuse = new BABYLON.Color3(1.0, 0.95, 0.92);
+            hemiLight.intensity = 1.25;
+            hemiLight.diffuse = new BABYLON.Color3(1.0, 0.96, 0.94);
             hemiLight.groundColor = new BABYLON.Color3(0.12, 0.16, 0.28);
 
             const keyLight = new BABYLON.DirectionalLight("keyLight", new BABYLON.Vector3(-1, -2, -1), scene);
             keyLight.position = new BABYLON.Vector3(5, 8, 5);
-            keyLight.intensity = 1.8;
+            keyLight.intensity = 2.0;
             keyLight.diffuse = new BABYLON.Color3(1.0, 0.98, 0.95);
 
             const fillLight = new BABYLON.PointLight("fillLight", new BABYLON.Vector3(-6, -2, -4), scene);
             fillLight.diffuse = new BABYLON.Color3(0.3, 0.6, 0.95);
-            fillLight.intensity = 1.3;
+            fillLight.intensity = 1.4;
 
             const rimLight = new BABYLON.PointLight("rimLight", new BABYLON.Vector3(4, 4, 6), scene);
-            rimLight.diffuse = new BABYLON.Color3(1.0, 0.4, 0.5);
-            rimLight.intensity = 1.5;
+            rimLight.diffuse = new BABYLON.Color3(1.0, 0.45, 0.55);
+            rimLight.intensity = 1.6;
 
             const gl = new BABYLON.GlowLayer("glow", scene);
-            gl.intensity = 0.25;
+            gl.intensity = 0.22;
 
             // CASCADE ROBUSTO DE FUENTES (GLB LOCAL -> BASE64 OFFLINE -> CDN GITHUB)
             const candidateSources = [
-                "lungs.glb",
+                "../03_ASSETS_3D_Y_DATOS/lungs.glb",
                 (window.LUNGS_GLB_B64 && window.LUNGS_GLB_B64.length > 1000) ? window.LUNGS_GLB_B64 : null,
                 "https://javiercursocorreo-gif.github.io/Curso-IA/CLASES/EXPORTACION_FICHAS_CLASSROOM_PDF/100.%20[SESSIONS]%20TERNAS_LISTAS_PARA_CLASSROOM/01_Sesion/lungs.glb",
                 "https://javiercursocorreo-gif.github.io/Curso-IA/SIMULADORES_INTERACTIVOS/lungs.glb"
@@ -290,13 +299,13 @@
 
             function tryLoadNextSource() {
                 if (currentSourceIdx >= candidateSources.length) {
-                    loadingOverlay.innerHTML = '<div style="color:#ef4444;font-weight:700;padding:24px;text-align:center;max-width:420px;line-height:1.5;">⚠️ Error al cargar el modelo 3D de pulmones.<br><small style="color:#94a3b8;font-weight:400;display:block;margin-top:8px;">Verifica la conexión a Internet o el archivo lungs.glb.<br>El simulador funciona de forma óptima desde Classroom o mediante servidor web.</small></div>';
+                    loadingOverlay.innerHTML = '<div style="color:#ef4444;font-weight:700;padding:24px;text-align:center;max-width:420px;line-height:1.5;">⚠️ Error al cargar el modelo 3D.<br><small style="color:#94a3b8;font-weight:400;display:block;margin-top:8px;">Verifica la conexión a Internet o el archivo lungs.glb.</small></div>';
                     return;
                 }
 
                 const src = candidateSources[currentSourceIdx];
                 const isB64 = (typeof src === "string" && src.startsWith("data:"));
-                console.log("[Simulador Pulmones 3D] Intentando cargar fuente " + (currentSourceIdx + 1) + "/" + candidateSources.length + ":", isB64 ? "Data URI Base64 (" + (src.length / 1024 / 1024).toFixed(1) + " MB)" : src);
+                console.log("[Simulador Pulmones 3D] Cargando fuente " + (currentSourceIdx + 1) + "/" + candidateSources.length + ":", isB64 ? "Data URI Base64 (" + (src.length / 1024 / 1024).toFixed(1) + " MB)" : src);
 
                 BABYLON.SceneLoader.ImportMesh(
                     "",
@@ -316,12 +325,10 @@
                                 }
                             });
 
-                            // Si el modelo incluye la animación de respiración médica nativa (Blender morph targets)
+                            // Desactivar animaciones baked de morphing que provocan vaivén o zoom indeseado
                             if (animationGroups && animationGroups.length > 0) {
                                 lungAnimGroup = animationGroups[0];
-                                lungAnimGroup.play(true);
-                                lungAnimGroup.speedRatio = currentRpm / 14.0;
-                                console.log("[Simulador Pulmones 3D] Animación médica nativa activada:", lungAnimGroup.name);
+                                lungAnimGroup.stop(); // Detenida por defecto para que el modelo sea 100% estable
                             }
 
                             // Normalización de escala y centrado volumétrico exacto
@@ -333,18 +340,21 @@
                             if (maxDim > 0 && isFinite(maxDim)) {
                                 fixedBaseScale = 2.8 / maxDim;
                                 lungsRoot.scaling = new BABYLON.Vector3(fixedBaseScale, fixedBaseScale, fixedBaseScale);
-                                lungsRoot.position = center.scale(-fixedBaseScale);
+                                baseCenter = center.scale(-fixedBaseScale);
+                                lungsRoot.position = baseCenter.clone();
                             } else {
                                 fixedBaseScale = 0.25;
                                 lungsRoot.scaling = new BABYLON.Vector3(fixedBaseScale, fixedBaseScale, fixedBaseScale);
+                                baseCenter = new BABYLON.Vector3(0, 0, 0);
+                                lungsRoot.position = baseCenter.clone();
                             }
 
                             camera.radius = 5.2;
                             camera.target = new BABYLON.Vector3(0, 0, 0);
                             isModelLoaded = true;
-                            console.log("✅ [Simulador Pulmones 3D] Cargado exitosamente desde:", isB64 ? "Base64 Embebido" : src);
+                            console.log("✅ [Simulador Pulmones 3D] Modelo estable y centrado cargado con éxito.");
                         } catch (initErr) {
-                            console.error("Error inicializando modelo en escena:", initErr);
+                            console.error("Error inicializando modelo:", initErr);
                             currentSourceIdx++;
                             tryLoadNextSource();
                         }
@@ -355,7 +365,7 @@
                         currentSourceIdx++;
                         tryLoadNextSource();
                     },
-                    ".glb" // <-- PARÁMETRO VITAL: pluginExtension forzado
+                    ".glb"
                 );
             }
 
@@ -371,7 +381,7 @@
         let noiseNode = null;
         let filterNode = null;
         let gainNode = null;
-        let audioEnabled = true;
+        let isAudioPlaying = false; // Comienza silenciado por defecto para respetar el navegador
 
         function initAudio() {
             if (audioCtx) return;
@@ -413,12 +423,34 @@
             noiseNode.start(0);
         }
 
-        window.addEventListener("pointerdown", () => {
-            if (!audioCtx) initAudio();
-            else if (audioCtx.state === suspended) audioCtx.resume();
-        }, { once: true });
+        function toggleAudio() {
+            initAudio();
+            if (audioCtx && audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
 
-        // BUCLE DE RENDER: VENTILACIÓN BIOLÓGICA ASIMÉTRICA REAL
+            isAudioPlaying = !isAudioPlaying;
+
+            const btn = document.getElementById("btnAudio");
+            const icon = document.getElementById("audioIcon");
+            const text = document.getElementById("audioText");
+
+            if (isAudioPlaying) {
+                btn.classList.add("active");
+                if (icon) icon.textContent = "🔊";
+                if (text) text.textContent = "Sonido Activo (Silenciar)";
+            } else {
+                btn.classList.remove("active");
+                if (icon) icon.textContent = "🔈";
+                if (text) text.textContent = "Activar Sonido de Respiración";
+                if (gainNode && audioCtx) {
+                    gainNode.gain.cancelScheduledValues(audioCtx.currentTime);
+                    gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
+                }
+            }
+        }
+
+        // BUCLE DE RENDER: MODELO 100% ESTABLE (SIN VAIVÉN NI ZOOM EN BLOQUE)
         let breathTime = 0;
         engine.runRenderLoop(function () {
             const dt = engine.getDeltaTime() / 1000.0;
@@ -426,33 +458,23 @@
             breathTime = (breathTime + dt) % cycleDuration;
             const cyclePhase = breathTime / cycleDuration; // 0.0 a 1.0
 
-            // Inhalación activa 45%, exhalación elástica pasiva 55%
-            let expansion = 0;
-            let isInhaling = true;
-            if (cyclePhase < 0.45) {
-                const p = cyclePhase / 0.45;
-                expansion = 0.5 - 0.5 * Math.cos(p * Math.PI); // 0 a 1
-                isInhaling = true;
-            } else {
-                const p = (cyclePhase - 0.45) / 0.55;
-                expansion = 0.5 + 0.5 * Math.cos(p * Math.PI); // 1 a 0
-                isInhaling = false;
-            }
+            const isInhaling = (cyclePhase < 0.45);
 
             const statusEl = document.getElementById("cycleStatus");
             if (statusEl) {
-                statusEl.textContent = isInhaling ? "INHALACIÓN ACTIVA" : "EXHALACIÓN ELÁSTICA";
+                statusEl.textContent = isInhaling ? "INHALACIÓN (FLUJO DE AIRE)" : "EXHALACIÓN (SALIDA DE AIRE)";
                 statusEl.style.color = isInhaling ? "#38bdf8" : "#34d399";
             }
 
-            // Aplicar expansión volumétrica biológica (si no hay animación esqueletal/morph activa)
+            // MANTENER POSICIÓN Y ESCALA COMPLETAMENTE FIRMES Y ANCLADAS
             if (lungsRoot && isModelLoaded) {
-                if (!lungAnimGroup) {
-                    const scaleFactor = 1.0 + (expansion * 0.09); // 9% expansión volumétrica natural
-                    lungsRoot.scaling.x = fixedBaseScale * scaleFactor;
-                    lungsRoot.scaling.y = fixedBaseScale * (1.0 + expansion * 0.07);
-                    lungsRoot.scaling.z = fixedBaseScale * scaleFactor;
-                }
+                lungsRoot.position.x = baseCenter.x;
+                lungsRoot.position.y = baseCenter.y;
+                lungsRoot.position.z = baseCenter.z;
+
+                lungsRoot.scaling.x = fixedBaseScale;
+                lungsRoot.scaling.y = fixedBaseScale;
+                lungsRoot.scaling.z = fixedBaseScale;
 
                 if (autoRotate) {
                     lungsRoot.rotation.y += 0.003;
@@ -460,11 +482,16 @@
             }
 
             // Modular sonido de respiración
-            if (gainNode && audioCtx && audioEnabled) {
-                const flowVelocity = Math.sin(cyclePhase * Math.PI * 2);
-                const airVol = Math.abs(flowVelocity) * 0.35;
-                gainNode.gain.setTargetAtTime(airVol, audioCtx.currentTime, 0.05);
-                filterNode.frequency.setTargetAtTime(isInhaling ? 520 : 380, audioCtx.currentTime, 0.05);
+            if (gainNode && audioCtx) {
+                if (isAudioPlaying) {
+                    const flowVelocity = Math.sin(cyclePhase * Math.PI * 2);
+                    const airVol = Math.abs(flowVelocity) * 0.35;
+                    gainNode.gain.setTargetAtTime(airVol, audioCtx.currentTime, 0.05);
+                    filterNode.frequency.setTargetAtTime(isInhaling ? 520 : 380, audioCtx.currentTime, 0.05);
+                } else {
+                    gainNode.gain.cancelScheduledValues(audioCtx.currentTime);
+                    gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
+                }
             }
 
             scene.render();
@@ -473,6 +500,7 @@
         window.addEventListener("resize", () => engine.resize());
 
         // CONTROLES DE LA INTERFAZ
+        // 1. Frecuencia Respiratoria
         const rpmSlider = document.getElementById("rpmSlider");
         const rpmVal = document.getElementById("rpmVal");
         const presetBtns = document.querySelectorAll(".btn-preset");
@@ -481,9 +509,6 @@
             currentRpm = val;
             rpmSlider.value = val;
             rpmVal.textContent = val;
-            if (lungAnimGroup) {
-                lungAnimGroup.speedRatio = currentRpm / 14.0;
-            }
             presetBtns.forEach(b => {
                 b.classList.toggle("active", parseInt(b.getAttribute("data-rpm")) === val);
             });
@@ -500,15 +525,11 @@
             });
         });
 
+        // 2. Audio Toggle Descriptivo
         const btnAudio = document.getElementById("btnAudio");
-        btnAudio.addEventListener("click", () => {
-            if (!audioCtx) initAudio();
-            audioEnabled = !audioEnabled;
-            btnAudio.classList.toggle("active", audioEnabled);
-            document.getElementById("audioState").textContent = audioEnabled ? "ON" : "OFF";
-            if (!audioEnabled && gainNode) gainNode.gain.value = 0;
-        });
+        btnAudio.addEventListener("click", toggleAudio);
 
+        // 3. Vistas y Rotación
         document.getElementById("btnFront").addEventListener("click", () => {
             camera.alpha = -Math.PI / 2;
             camera.beta = Math.PI / 2.2;

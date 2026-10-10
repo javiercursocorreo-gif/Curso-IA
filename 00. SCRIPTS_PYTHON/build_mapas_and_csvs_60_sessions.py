@@ -251,6 +251,11 @@ def generate_columns_html(session_num, session_folder, files):
                         <a href="SIMULADOR_CORAZON_3D.html" target="_blank" class="btn-launch-interactive" style="margin-top:6px; background:linear-gradient(135deg, #be123c, #9f1239); border-color:#fb7185;" title="Abrir Simulador 3D del Latido Cardíaco Humano">
                             🫀 Ver Simulador Corazón 3D ↗
                         </a>"""
+                elif session_num == 3:
+                    sim_btn = """
+                        <a href="SIMULADOR_POMPEYA_3D.html" target="_blank" class="btn-launch-interactive" style="margin-top:6px; background:linear-gradient(135deg, #d97706, #b45309); border-color:#fbbf24;" title="Abrir Simulador Arqueológico HD de Pompeya (Ruinas vs. Reconstrucción)">
+                            🏛️ Ver Tesoro Arqueológico 3D ↗
+                        </a>"""
                 cards_html += f"""
                     <div class="file-card file-card-special">
                         <a href="{rel_href}" target="_blank" class="file-card-special-top" title="Abrir Ficha Guía de Tareas (PDF)">
@@ -860,28 +865,42 @@ def process_all_sessions():
                 pass
         
         if session_num == 1:
-            pulm_src = os.path.join(BASE_DIR, "SIMULADORES_INTERACTIVOS", "SIMULADOR_PULMONES_3D.html")
+            pulm_src = os.path.join(BASE_DIR, "SIMULADORES_INTERACTIVOS", "01_SIMULADORES", "01_SIMULADOR_PULMONES_3D.html")
             if os.path.exists(pulm_src):
                 try:
                     shutil.copy2(pulm_src, os.path.join(session_path, "SIMULADOR_PULMONES_3D.html"))
                 except Exception:
                     pass
-            for extra in ["lungs_b64.js", "lungs.glb", "SIMULADOR_PULMONES_3D_V1.html"]:
-                ex_src = os.path.join(BASE_DIR, "SIMULADORES_INTERACTIVOS", extra)
+            for extra in ["lungs_b64.js", "lungs.glb"]:
+                ex_src = os.path.join(BASE_DIR, "SIMULADORES_INTERACTIVOS", "03_ASSETS_3D_Y_DATOS", extra)
                 if os.path.exists(ex_src):
                     try:
                         shutil.copy2(ex_src, os.path.join(session_path, extra))
                     except Exception:
                         pass
         elif session_num == 2:
-            cor_src = os.path.join(BASE_DIR, "SIMULADORES_INTERACTIVOS", "SIMULADOR_CORAZON_3D.html")
+            cor_src = os.path.join(BASE_DIR, "SIMULADORES_INTERACTIVOS", "01_SIMULADORES", "02_SIMULADOR_CORAZON_3D.html")
             if os.path.exists(cor_src):
                 try:
                     shutil.copy2(cor_src, os.path.join(session_path, "SIMULADOR_CORAZON_3D.html"))
                 except Exception:
                     pass
             for extra in ["heart_b64.js", "heart.glb", "heartbeat_audio_b64.js", "heartbeat.mp3"]:
-                ex_src = os.path.join(BASE_DIR, "SIMULADORES_INTERACTIVOS", extra)
+                ex_src = os.path.join(BASE_DIR, "SIMULADORES_INTERACTIVOS", "03_ASSETS_3D_Y_DATOS", extra)
+                if os.path.exists(ex_src):
+                    try:
+                        shutil.copy2(ex_src, os.path.join(session_path, extra))
+                    except Exception:
+                        pass
+        elif session_num == 3:
+            pomp_src = os.path.join(BASE_DIR, "SIMULADORES_INTERACTIVOS", "01_SIMULADORES", "03_SIMULADOR_POMPEYA_3D.html")
+            if os.path.exists(pomp_src):
+                try:
+                    shutil.copy2(pomp_src, os.path.join(session_path, "SIMULADOR_POMPEYA_3D.html"))
+                except Exception:
+                    pass
+            for extra in ["pompeii_photos_b64.js"]:
+                ex_src = os.path.join(BASE_DIR, "SIMULADORES_INTERACTIVOS", "03_ASSETS_3D_Y_DATOS", extra)
                 if os.path.exists(ex_src):
                     try:
                         shutil.copy2(ex_src, os.path.join(session_path, extra))

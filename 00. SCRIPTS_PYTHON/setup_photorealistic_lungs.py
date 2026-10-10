@@ -637,7 +637,12 @@ def build_simulator_html():
             if os.path.exists(GLB_DEST):
                 shutil.copy2(GLB_DEST, os.path.join(S01_DIR, "lungs.glb"))
             if os.path.exists(p_path):
-                shutil.copy2(p_path, os.path.join(S01_DIR, "PROBADOR_CODIGO_IA.html"))
+                with open(p_path, "r", encoding="utf-8") as pf:
+                    s01_p_code = pf.read()
+                # Eliminar botón del corazón para dejar solo el de pulmones en Sesión 01
+                s01_p_code = re.sub(r'<button class="btn btn-emerald" id="btnLoadCorazon"[\s\S]*?</button>', '', s01_p_code)
+                with open(os.path.join(S01_DIR, "PROBADOR_CODIGO_IA.html"), "w", encoding="utf-8") as pf:
+                    pf.write(s01_p_code)
             print(f"✅ Sincronizado limpiamente en {S01_DIR}")
         except Exception as e:
             print(f"⚠️ Nota al copiar a 01_Sesion: {e}")

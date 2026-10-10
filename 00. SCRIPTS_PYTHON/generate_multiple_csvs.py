@@ -42,6 +42,8 @@ def get_description_for_file(filename):
         return "Paso 2: Estilos Visuales de Imagen (Aprender a pedir estilos artísticos y fotográficos)."
     elif "PRAC-" in f_upper:
         return "Paso 3: Taller Práctico con Gemini (Transformación y creatividad aplicada)."
+    elif "COD-" in f_upper:
+        return "Ciencia Interactiva y Código con Gemini: Construye tu propio simulador 3D interactivo."
     elif "FRAC-" in f_upper or "FRACTAL" in f_upper:
         if filename.lower().endswith('.mp4'):
             return "Paso 4: Vídeo Fractal del Día en Alta Resolución (Visualización y asombro en aula)."
