@@ -899,7 +899,7 @@ def process_all_sessions():
                     shutil.copy2(pomp_src, os.path.join(session_path, "SIMULADOR_POMPEYA_3D.html"))
                 except Exception:
                     pass
-            for extra in ["pompeii_photos_b64.js"]:
+            for extra in ["pompeii_photos_b64.js", "pompeii_ruins_hd.jpg", "pompeii_reconstructed_hd.jpg"]:
                 ex_src = os.path.join(BASE_DIR, "SIMULADORES_INTERACTIVOS", "03_ASSETS_3D_Y_DATOS", extra)
                 if os.path.exists(ex_src):
                     try:

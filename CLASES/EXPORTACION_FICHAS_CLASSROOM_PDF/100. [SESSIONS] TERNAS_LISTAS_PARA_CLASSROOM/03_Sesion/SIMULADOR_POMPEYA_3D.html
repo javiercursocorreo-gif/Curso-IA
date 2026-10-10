@@ -4,8 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Arqueología Digital HD • Pompeya: Templo de Apolo (Ruinas vs. Reconstrucción)</title>
-    <!-- Fotos Reales Embebidas en Alta Definición 1440x1024 (CyArk Archive) -->
+    <!-- Fotos Reales Embebidas en Alta Definición 1440x1024 (CyArk Archive) con Rutas Redundantes -->
+    <script src="pompeii_photos_b64.js"></script>
     <script src="../03_ASSETS_3D_Y_DATOS/pompeii_photos_b64.js"></script>
+    <script src="../../SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/pompeii_photos_b64.js"></script>
+    <script src="SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/pompeii_photos_b64.js"></script>
+    <script src="https://javiercursocorreo-gif.github.io/Curso-IA/SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/pompeii_photos_b64.js"></script>
     <style>
         :root {
             --bg: #07090e;
@@ -224,7 +228,11 @@
             width: 100%;
             height: 100%;
             clip-path: polygon(0 0, 50% 0, 50% 100%, 0 100%);
+            -webkit-clip-path: polygon(0 0, 50% 0, 50% 100%, 0 100%);
             overflow: hidden;
+            will-change: clip-path;
+            transform: translateZ(0);
+            backface-visibility: hidden;
         }
 
         /* SLIDER DIVIDER LINE */
@@ -236,9 +244,10 @@
             width: 3px;
             background: #ffffff;
             box-shadow: 0 0 14px rgba(255, 255, 255, 0.9), 0 0 28px rgba(245, 158, 11, 0.7);
-            transform: translateX(-50%);
+            transform: translateX(-50%) translateZ(0);
             z-index: 10;
             pointer-events: none;
+            will-change: left;
         }
 
         .slider-handle-button {
@@ -423,9 +432,9 @@
                     ↔ Arrastra el divisor o usa los accesos directos para contrastar las columnas y arquitrabes:
                 </div>
                 <div style="display: flex; gap: 8px;">
-                    <button class="btn-era" onclick="setSliderPos(0)">📷 Ver Ruinas Actuales</button>
-                    <button class="btn-era" onclick="setSliderPos(50)">⚖️ Mitad y Mitad</button>
-                    <button class="btn-era" onclick="setSliderPos(100)">🏛️ Ver Año 79 d.C.</button>
+                    <button class="btn-era" onclick="setSliderPosManual(0)">📷 Ver Ruinas Actuales</button>
+                    <button class="btn-era" onclick="setSliderPosManual(50)">⚖️ Mitad y Mitad</button>
+                    <button class="btn-era" onclick="setSliderPosManual(100)">🏛️ Ver Año 79 d.C.</button>
                 </div>
             </div>
         </div>
@@ -440,12 +449,55 @@
     </main>
 
     <script>
-        // Cargar las fotos reales embebidas HD
+        // Cargar las fotos reales embebidas HD con tolerancia total a rutas locales o remotas
         const imgRuins = document.getElementById("imgRuins");
         const imgRecon = document.getElementById("imgRecon");
 
-        imgRuins.src = window.POMPEII_RUINS_B64 || "../03_ASSETS_3D_Y_DATOS/pompeii_ruins_hd.jpg";
-        imgRecon.src = window.POMPEII_RECON_B64 || "../03_ASSETS_3D_Y_DATOS/pompeii_reconstructed_hd.jpg";
+        function setupImageSources() {
+            const ruinsCandidates = [
+                window.POMPEII_RUINS_B64,
+                "pompeii_ruins_hd.jpg",
+                "../03_ASSETS_3D_Y_DATOS/pompeii_ruins_hd.jpg",
+                "../../SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/pompeii_ruins_hd.jpg",
+                "SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/pompeii_ruins_hd.jpg",
+                "https://javiercursocorreo-gif.github.io/Curso-IA/SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/pompeii_ruins_hd.jpg"
+            ].filter(Boolean);
+
+            const reconCandidates = [
+                window.POMPEII_RECON_B64,
+                "pompeii_reconstructed_hd.jpg",
+                "../03_ASSETS_3D_Y_DATOS/pompeii_reconstructed_hd.jpg",
+                "../../SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/pompeii_reconstructed_hd.jpg",
+                "SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/pompeii_reconstructed_hd.jpg",
+                "https://javiercursocorreo-gif.github.io/Curso-IA/SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/pompeii_reconstructed_hd.jpg"
+            ].filter(Boolean);
+
+            function applyFallback(imgEl, list, idx) {
+                if (idx >= list.length) {
+                    console.error("No se pudo cargar la imagen:", imgEl.id);
+                    return;
+                }
+                imgEl.onerror = () => {
+                    console.warn("Fallo cargando", list[idx], "probando siguiente opción...");
+                    applyFallback(imgEl, list, idx + 1);
+                };
+                imgEl.src = list[idx];
+            }
+
+            applyFallback(imgRuins, ruinsCandidates, 0);
+            applyFallback(imgRecon, reconCandidates, 0);
+        }
+
+        if (window.POMPEII_RUINS_B64 && window.POMPEII_RECON_B64) {
+            setupImageSources();
+        } else {
+            setupImageSources();
+            window.addEventListener("load", () => {
+                if (!imgRuins.naturalWidth || !imgRecon.naturalWidth) {
+                    setupImageSources();
+                }
+            });
+        }
 
         const comparator = document.getElementById("comparator");
         const layerReconWrap = document.getElementById("layerReconWrap");
@@ -456,8 +508,8 @@
         let isDragging = false;
         let currentSliderPercent = 50;
         let loupeActive = false;
-        let sweepInterval = null;
-        let sweepDirection = 0.5;
+        let sweepAnimId = null;
+        let sweepStartTime = null;
 
         // Modos de nitidez
         function setSharpMode(mode) {
@@ -548,23 +600,54 @@
             loupeCtx.restore();
         }
 
-        // Barrido automático de demostración
+        // Posicionamiento preciso del slider con aceleración GPU
+        function setSliderPos(percent) {
+            currentSliderPercent = percent;
+            const pStr = percent.toFixed(2);
+            layerReconWrap.style.clipPath = `polygon(0 0, ${pStr}% 0, ${pStr}% 100%, 0 100%)`;
+            layerReconWrap.style.webkitClipPath = `polygon(0 0, ${pStr}% 0, ${pStr}% 100%, 0 100%)`;
+            dividerLine.style.left = `${pStr}%`;
+        }
+
+        function setSliderPosManual(percent) {
+            if (sweepAnimId) toggleAutoSweep();
+            setSliderPos(percent);
+        }
+
+        // Barrido automático ultra-suave mediante requestAnimationFrame (60/120 FPS sin saltos)
+        function animateSweep(now) {
+            if (!sweepStartTime) {
+                sweepStartTime = now;
+            }
+            const elapsed = (now - sweepStartTime) / 1000;
+            const period = 7.0; // 7 segundos para ciclo completo con cadencia cinematográfica
+            const phase = (elapsed / period) * 2 * Math.PI;
+
+            // Interpolación cosenoidal continua (frenada y arranque suaves en los extremos de 3% a 97%)
+            const percent = 50 + 47 * Math.sin(phase);
+            setSliderPos(percent);
+
+            sweepAnimId = requestAnimationFrame(animateSweep);
+        }
+
         function toggleAutoSweep() {
             const btn = document.getElementById("btnSweep");
-            if (sweepInterval) {
-                clearInterval(sweepInterval);
-                sweepInterval = null;
+            if (sweepAnimId) {
+                cancelAnimationFrame(sweepAnimId);
+                sweepAnimId = null;
                 btn.classList.remove("active");
                 btn.textContent = "▶ Barrido Automático";
             } else {
                 btn.classList.add("active");
                 btn.textContent = "⏸ Pausar Barrido";
-                sweepInterval = setInterval(() => {
-                    currentSliderPercent += sweepDirection;
-                    if (currentSliderPercent >= 98) sweepDirection = -0.6;
-                    if (currentSliderPercent <= 2) sweepDirection = 0.6;
-                    setSliderPos(currentSliderPercent);
-                }, 20);
+
+                // Calcular fase inicial para enlazar sin saltos desde la posición actual del divisor
+                const norm = Math.max(-1, Math.min(1, (currentSliderPercent - 50) / 47));
+                const angle = Math.asin(norm);
+                const period = 7.0;
+                sweepStartTime = performance.now() - (angle / (2 * Math.PI)) * (period * 1000);
+
+                sweepAnimId = requestAnimationFrame(animateSweep);
             }
         }
 
@@ -575,15 +658,9 @@
             setSliderPos(percent);
         }
 
-        function setSliderPos(percent) {
-            currentSliderPercent = percent;
-            layerReconWrap.style.clipPath = `polygon(0 0, ${percent}% 0, ${percent}% 100%, 0 100%)`;
-            dividerLine.style.left = `${percent}%`;
-        }
-
         comparator.addEventListener("mousedown", (e) => {
             isDragging = true;
-            if (sweepInterval) toggleAutoSweep();
+            if (sweepAnimId) toggleAutoSweep();
             updateSlider(e.clientX);
         });
 
@@ -599,7 +676,7 @@
         // Touch tablets / móviles
         comparator.addEventListener("touchstart", (e) => {
             isDragging = true;
-            if (sweepInterval) toggleAutoSweep();
+            if (sweepAnimId) toggleAutoSweep();
             updateSlider(e.touches[0].clientX);
         });
 
