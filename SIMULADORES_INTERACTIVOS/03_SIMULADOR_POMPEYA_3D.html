@@ -431,6 +431,11 @@ window.POMPEII_RECON_B64 = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAYABgAAD/4
 
             <!-- CONTROLES -->
             <div class="controls-bar">
+                <div style="display: flex; align-items: center; gap: 12px; width: 100%;">
+                    <span style="font-size: 0.8rem; color: #94a3b8; font-weight: 700;">📷 Ruinas 2026</span>
+                    <input type="range" id="sliderInput" min="0" max="100" value="50" step="0.1" style="flex: 1; accent-color: #f59e0b; cursor: ew-resize; height: 8px;">
+                    <span style="font-size: 0.8rem; color: #fbbf24; font-weight: 700;">🏛️ Año 79 d.C.</span>
+                </div>
                 <div style="font-size: 0.8rem; color: #94a3b8; font-weight: 600;">
                     ↔ Arrastra el divisor o usa los accesos directos para contrastar las columnas y arquitrabes:
                 </div>
@@ -563,12 +568,28 @@ window.POMPEII_RECON_B64 = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAYABgAAD/4
         }
 
         // Posicionamiento preciso del slider con aceleración GPU
+        let rafPending = false;
+        let targetPercent = 50;
+
+        function applySlider() {
+            const pStr = targetPercent.toFixed(2);
+            layerReconWrap.style.clipPath = "polygon(0 0, " + pStr + "% 0, " + pStr + "% 100%, 0 100%)";
+            layerReconWrap.style.webkitClipPath = "polygon(0 0, " + pStr + "% 0, " + pStr + "% 100%, 0 100%)";
+            dividerLine.style.left = pStr + "%";
+            const sInput = document.getElementById("sliderInput");
+            if (sInput && document.activeElement !== sInput) {
+                sInput.value = pStr;
+            }
+            rafPending = false;
+        }
+
         function setSliderPos(percent) {
-            currentSliderPercent = percent;
-            const pStr = percent.toFixed(2);
-            layerReconWrap.style.clipPath = `polygon(0 0, ${pStr}% 0, ${pStr}% 100%, 0 100%)`;
-            layerReconWrap.style.webkitClipPath = `polygon(0 0, ${pStr}% 0, ${pStr}% 100%, 0 100%)`;
-            dividerLine.style.left = `${pStr}%`;
+            targetPercent = Math.max(0, Math.min(100, percent));
+            currentSliderPercent = targetPercent;
+            if (!rafPending) {
+                rafPending = true;
+                requestAnimationFrame(applySlider);
+            }
         }
 
         function setSliderPosManual(percent) {
@@ -576,19 +597,13 @@ window.POMPEII_RECON_B64 = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAYABgAAD/4
             setSliderPos(percent);
         }
 
-        // Barrido automático ultra-suave mediante requestAnimationFrame (60/120 FPS sin saltos)
         function animateSweep(now) {
-            if (!sweepStartTime) {
-                sweepStartTime = now;
-            }
+            if (!sweepStartTime) sweepStartTime = now;
             const elapsed = (now - sweepStartTime) / 1000;
-            const period = 7.0; // 7 segundos para ciclo completo con cadencia cinematográfica
+            const period = 7.0;
             const phase = (elapsed / period) * 2 * Math.PI;
-
-            // Interpolación cosenoidal continua (frenada y arranque suaves en los extremos de 3% a 97%)
             const percent = 50 + 47 * Math.sin(phase);
             setSliderPos(percent);
-
             sweepAnimId = requestAnimationFrame(animateSweep);
         }
 
@@ -602,34 +617,27 @@ window.POMPEII_RECON_B64 = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAYABgAAD/4
             } else {
                 btn.classList.add("active");
                 btn.textContent = "⏸ Pausar Barrido";
-
-                // Calcular fase inicial para enlazar sin saltos desde la posición actual del divisor
                 const norm = Math.max(-1, Math.min(1, (currentSliderPercent - 50) / 47));
                 const angle = Math.asin(norm);
                 const period = 7.0;
                 sweepStartTime = performance.now() - (angle / (2 * Math.PI)) * (period * 1000);
-
                 sweepAnimId = requestAnimationFrame(animateSweep);
             }
         }
 
-        function updateSlider(xPos) {
+        function updateSlider(clientX) {
             const rect = comparator.getBoundingClientRect();
             if (!rect || rect.width <= 0) return;
-            let percent = ((xPos - rect.left) / rect.width) * 100;
-            percent = Math.max(0, Math.min(100, percent));
+            const percent = ((clientX - rect.left) / rect.width) * 100;
             setSliderPos(percent);
         }
 
-        // Arrastre ultra-robusto con Pointer Events & Pointer Capture
         comparator.addEventListener("pointerdown", (e) => {
             if (e.button && e.button !== 0) return;
             isDragging = true;
             e.preventDefault();
             if (sweepAnimId) toggleAutoSweep();
-            try {
-                comparator.setPointerCapture(e.pointerId);
-            } catch (err) {}
+            try { comparator.setPointerCapture(e.pointerId); } catch(err) {}
             updateSlider(e.clientX);
         });
 
@@ -644,51 +652,19 @@ window.POMPEII_RECON_B64 = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAYABgAAD/4
         function stopDragging(e) {
             if (isDragging) {
                 isDragging = false;
-                try {
-                    comparator.releasePointerCapture(e.pointerId);
-                } catch (err) {}
+                try { comparator.releasePointerCapture(e.pointerId); } catch(err) {}
             }
         }
         comparator.addEventListener("pointerup", stopDragging);
         comparator.addEventListener("pointercancel", stopDragging);
 
-        // Fallbacks adicionales de mouse y touch
-        comparator.addEventListener("mousedown", (e) => {
-            if (e.button && e.button !== 0) return;
-            isDragging = true;
-            e.preventDefault();
-            if (sweepAnimId) toggleAutoSweep();
-            updateSlider(e.clientX);
-        });
-
-        window.addEventListener("mousemove", (e) => {
-            if (isDragging) updateSlider(e.clientX);
-            if (loupeActive) updateLoupe(e);
-        });
-
-        window.addEventListener("mouseup", () => {
-            isDragging = false;
-        });
-
-        comparator.addEventListener("touchstart", (e) => {
-            if (e.touches && e.touches.length > 0) {
-                isDragging = true;
-                e.preventDefault();
+        const sliderInput = document.getElementById("sliderInput");
+        if (sliderInput) {
+            sliderInput.addEventListener("input", (e) => {
                 if (sweepAnimId) toggleAutoSweep();
-                updateSlider(e.touches[0].clientX);
-            }
-        }, { passive: false });
-
-        window.addEventListener("touchmove", (e) => {
-            if (isDragging && e.touches && e.touches.length > 0) {
-                e.preventDefault();
-                updateSlider(e.touches[0].clientX);
-            }
-        }, { passive: false });
-
-        window.addEventListener("touchend", () => {
-            isDragging = false;
-        });
+                setSliderPos(parseFloat(e.target.value));
+            });
+        }
     </script>
 </body>
 </html>
