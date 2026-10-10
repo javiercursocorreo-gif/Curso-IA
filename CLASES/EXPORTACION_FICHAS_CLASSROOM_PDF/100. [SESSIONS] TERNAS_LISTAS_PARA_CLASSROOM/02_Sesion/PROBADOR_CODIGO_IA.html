@@ -2068,120 +2068,155 @@ window.POMPEII_RECON_B64 = &quot;data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAYABg
                     setTimeout(syncAllPompeiiImages, 500);
                     setTimeout(syncAllPompeiiImages, 1200);
 
-                    // Motor universal de deslizamiento interactivo para cualquier código de Gemini o plantilla
+                    // Motor universal de deslizamiento interactivo compatible con todos los estilos de Gemini y plantillas
                     function initUniversalSlider() {
-                        const container = document.getElementById("comparator") || document.getElementById("viewer") || document.querySelector(".comparator-wrap") || document.querySelector(".viewer-container") || document.querySelector(".comparator") || document.querySelector(".stage-card");
-                        if (!container || container.__sliderBound) return;
-                        container.__sliderBound = true;
+                        if (window.__universalSliderInitialized) return;
+                        window.__universalSliderInitialized = true;
 
-                        const divider = document.getElementById("dividerLine") || document.getElementById("divider") || document.querySelector(".slider-divider") || document.querySelector(".divider");
-                        const reconWrap = document.getElementById("layerReconWrap") || document.getElementById("reconWrapper") || document.querySelector(".recon-wrapper") || document.querySelector(".layer-recon-wrap");
-                        const rangeInput = document.querySelector("input[type='range']");
+                        let currentPos = 50;
+                        let isDraggingViewer = false;
+                        let activeViewerEl = null;
 
-                        let isDragging = false;
+                        // Actualizar división visual completa (compatible con clip-path Y width:X% overflow:hidden)
+                        function updateVisualSplit(pos) {
+                            pos = Math.max(0, Math.min(100, pos));
+                            currentPos = pos;
+                            const pStr = pos.toFixed(2);
 
-                        function applySliderPos(percent, clientX) {
-                            percent = Math.max(0, Math.min(100, percent));
-                            
-                            // 1. Invocar funciones existentes si están definidas
-                            if (typeof window.setSliderPos === "function") {
-                                try { window.setSliderPos(percent); } catch(e) {}
-                            }
-                            if (typeof window.setDividerPosition === "function") {
-                                try { window.setDividerPosition(percent); } catch(e) {}
-                            }
-                            if (typeof window.updateSlider === "function" && clientX !== undefined) {
-                                try { window.updateSlider(clientX); } catch(e) {}
-                            }
+                            // 1. Mover divisores y tiradores (<>, ↔)
+                            const dividers = document.querySelectorAll('#dividerLine, #divider, .slider-divider, .divider, [class*="divider"], [id*="divider"]');
+                            dividers.forEach(d => {
+                                if (d.tagName !== 'INPUT') {
+                                    d.style.left = pStr + '%';
+                                }
+                            });
 
-                            // 2. Mover elementos visuales directamente para garantizar arrastre
-                            if (divider) {
-                                divider.style.left = percent + "%";
+                            const handles = document.querySelectorAll('#handleBtn, .handle, .slider-handle, .divider-handle, [class*="handle"]');
+                            handles.forEach(h => {
+                                if (h.parentElement && !h.parentElement.classList.contains('divider') && !h.parentElement.id.includes('divider')) {
+                                    h.style.left = pStr + '%';
+                                }
+                            });
+
+                            // 2. Sincronizar input range inferior si existe
+                            const ranges = document.querySelectorAll('input[type="range"]');
+                            ranges.forEach(r => {
+                                if (Math.abs(parseFloat(r.value) - pos) > 0.5) {
+                                    r.value = pos;
+                                }
+                            });
+
+                            // 3. Recortar la capa de reconstrucción (compatible con todas las técnicas de IA)
+                            const reconLayers = document.querySelectorAll('#layerReconWrap, #reconWrapper, #reconContainer, #imageOverlay, .recon-wrapper, .image-overlay, .after-wrapper, .img-overlay, .img-recon-wrap, #imgRecon, .img-recon, #photoRecon, [class*="recon"], [id*="recon"]');
+                            reconLayers.forEach(el => {
+                                if (el.tagName === 'BUTTON' || el.tagName === 'INPUT' || el.classList.contains('era-pill') || el.classList.contains('label')) return;
+
+                                // Técnica A: clip-path poligonal
+                                el.style.clipPath = `polygon(0 0, ${pStr}% 0, ${pStr}% 100%, 0 100%)`;
+                                el.style.webkitClipPath = `polygon(0 0, ${pStr}% 0, ${pStr}% 100%, 0 100%)`;
+
+                                // Técnica B: wrapper contenedor con width y overflow hidden
+                                if (el.tagName === 'DIV') {
+                                    el.style.width = pStr + '%';
+                                    el.style.overflow = 'hidden';
+                                    const innerImg = el.querySelector('img');
+                                    if (innerImg) {
+                                        const viewer = el.closest('#comparator, #viewer, .comparator-wrap, .viewer-container, .stage-card') || el.parentElement;
+                                        if (viewer && viewer.offsetWidth > 0) {
+                                            innerImg.style.width = viewer.offsetWidth + 'px';
+                                            innerImg.style.minWidth = viewer.offsetWidth + 'px';
+                                            innerImg.style.maxWidth = 'none';
+                                        }
+                                    }
+                                }
+                            });
+
+                            // 4. Invocar funciones nativas si el código de Gemini las definió
+                            if (typeof window.setDividerPosition === 'function') {
+                                try { window.setDividerPosition(pos); } catch(e) {}
                             }
-                            if (reconWrap) {
-                                reconWrap.style.clipPath = "polygon(0 0, " + percent + "% 0, " + percent + "% 100%, 0 100%)";
-                                reconWrap.style.webkitClipPath = "polygon(0 0, " + percent + "% 0, " + percent + "% 100%, 0 100%)";
-                                if (reconWrap.style.width && !reconWrap.style.clipPath) {
-                                    reconWrap.style.width = percent + "%";
+                            if (typeof window.setSliderPos === 'function') {
+                                try { window.setSliderPos(pos); } catch(e) {}
+                            }
+                        }
+                        window.updateVisualSplit = updateVisualSplit;
+
+                        // Escuchar slider inferior (<input type="range">) sin bloquear su comportamiento nativo
+                        document.addEventListener('input', (e) => {
+                            if (e.target && e.target.type === 'range') {
+                                const val = parseFloat(e.target.value);
+                                if (!isNaN(val)) {
+                                    updateVisualSplit(val);
                                 }
                             }
-                            if (rangeInput) {
-                                rangeInput.value = percent;
+                        }, true);
+
+                        document.addEventListener('change', (e) => {
+                            if (e.target && e.target.type === 'range') {
+                                const val = parseFloat(e.target.value);
+                                if (!isNaN(val)) {
+                                    updateVisualSplit(val);
+                                }
                             }
+                        }, true);
+
+                        // Arrastre directo con ratón / dedo sobre la imagen o la barra divisoria
+                        function getClientX(e) {
+                            if (e.touches && e.touches.length > 0) return e.touches[0].clientX;
+                            if (e.changedTouches && e.changedTouches.length > 0) return e.changedTouches[0].clientX;
+                            return e.clientX;
                         }
 
-                        function moveFromEvent(clientX) {
-                            const rect = container.getBoundingClientRect();
+                        function handleDrag(e) {
+                            if (!isDraggingViewer || !activeViewerEl) return;
+                            const clientX = getClientX(e);
+                            const rect = activeViewerEl.getBoundingClientRect();
                             if (!rect || rect.width <= 0) return;
-                            const offset = clientX - rect.left;
-                            const percent = (offset / rect.width) * 100;
-                            applySliderPos(percent, clientX);
+                            let percent = ((clientX - rect.left) / rect.width) * 100;
+                            updateVisualSplit(percent);
+                            e.preventDefault();
                         }
 
-                        // A) Pointer Events con captura de puntero
-                        container.addEventListener("pointerdown", (e) => {
-                            if (e.button && e.button !== 0) return;
-                            isDragging = true;
-                            e.preventDefault();
-                            try { container.setPointerCapture(e.pointerId); } catch(err) {}
-                            moveFromEvent(e.clientX);
-                        });
+                        function startDrag(e) {
+                            // Dejar que inputs de rango y botones manejen sus propios clics
+                            if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'BUTTON')) return;
+                            const viewer = e.target.closest('#comparator, #viewer, .comparator-wrap, .viewer-container, .stage-card');
+                            if (!viewer) return;
 
-                        container.addEventListener("pointermove", (e) => {
-                            if (!isDragging) return;
+                            isDraggingViewer = true;
+                            activeViewerEl = viewer;
                             e.preventDefault();
-                            moveFromEvent(e.clientX);
-                        });
-
-                        function endDrag(e) {
-                            if (isDragging) {
-                                isDragging = false;
-                                try { container.releasePointerCapture(e.pointerId); } catch(err) {}
-                            }
+                            handleDrag(e);
                         }
-                        container.addEventListener("pointerup", endDrag);
-                        container.addEventListener("pointercancel", endDrag);
 
-                        // B) Fallbacks Mouse
-                        container.addEventListener("mousedown", (e) => {
-                            if (e.button && e.button !== 0) return;
-                            isDragging = true;
-                            e.preventDefault();
-                            moveFromEvent(e.clientX);
+                        function stopDrag() {
+                            isDraggingViewer = false;
+                            activeViewerEl = null;
+                        }
+
+                        window.addEventListener('mousedown', startDrag, true);
+                        window.addEventListener('mousemove', handleDrag, true);
+                        window.addEventListener('mouseup', stopDrag, true);
+
+                        window.addEventListener('touchstart', startDrag, { passive: false, capture: true });
+                        window.addEventListener('touchmove', handleDrag, { passive: false, capture: true });
+                        window.addEventListener('touchend', stopDrag, true);
+                        window.addEventListener('touchcancel', stopDrag, true);
+
+                        // Ajuste responsivo en redimensionamiento
+                        window.addEventListener('resize', () => {
+                            updateVisualSplit(currentPos);
                         });
 
-                        window.addEventListener("mousemove", (e) => {
-                            if (!isDragging) return;
-                            e.preventDefault();
-                            moveFromEvent(e.clientX);
-                        });
-
-                        window.addEventListener("mouseup", () => { isDragging = false; });
-
-                        // C) Touch
-                        container.addEventListener("touchstart", (e) => {
-                            if (e.touches && e.touches.length > 0) {
-                                isDragging = true;
-                                e.preventDefault();
-                                moveFromEvent(e.touches[0].clientX);
-                            }
-                        }, { passive: false });
-
-                        container.addEventListener("touchmove", (e) => {
-                            if (isDragging && e.touches && e.touches.length > 0) {
-                                e.preventDefault();
-                                moveFromEvent(e.touches[0].clientX);
-                            }
-                        }, { passive: false });
-
-                        container.addEventListener("touchend", () => { isDragging = false; });
+                        // Inicializar al 50%
+                        updateVisualSplit(50);
                     }
 
                     window.addEventListener('DOMContentLoaded', initUniversalSlider);
                     window.addEventListener('load', initUniversalSlider);
-                    setTimeout(initUniversalSlider, 80);
-                    setTimeout(initUniversalSlider, 300);
-                    setTimeout(initUniversalSlider, 1000);
+                    setTimeout(initUniversalSlider, 40);
+                    setTimeout(initUniversalSlider, 200);
+                    setTimeout(initUniversalSlider, 800);
                 })();
             <\/script>`;
 
