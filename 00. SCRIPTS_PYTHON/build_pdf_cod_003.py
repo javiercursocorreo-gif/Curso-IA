@@ -116,7 +116,7 @@ def build_cod_003_taller_3d_pdf(output_path=PDF_PATH):
         "Requisitos del código:<br/>"
         "1. Entrega el programa en un único bloque de código para que yo pulse directamente «Copiar código» y lo pegue con Ctrl+V en mi simulador.<br/>"
         "2. Incluye en la cabecera el script con las fotografías reales del archivo arqueológico:<br/>"
-        "&lt;script src=&quot;https://javiercursocorreo-gif.github.io/Curso-IA/SIMULADORES_INTERACTIVOS/pompeii_photos_b64.js&quot;&gt;&lt;/script&gt;<br/>"
+        "&lt;script src=&quot;https://javiercursocorreo-gif.github.io/Curso-IA/SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/pompeii_photos_b64.js&quot;&gt;&lt;/script&gt;<br/>"
         "3. Crea un visor arqueológico elegante que muestre la fotografía real en alta resolución de las ruinas actuales utilizando window.POMPEII_RUINS_B64.<br/>"
         "4. No incluyas barras deslizantes (slider): muestra únicamente las ruinas de piedra con un marco arqueológico refinado, título histórico y una tarjeta informativa con datos del Templo de Apolo.<br/>"
         "5. Aplica un diseño moderno oscuro con tipografía clara y botones interactivos para explorar detalles o alternar modos de nitidez.<br/>"
