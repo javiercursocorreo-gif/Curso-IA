@@ -841,10 +841,48 @@ def generate_columns_html(session_num, session_folder, files):
 """
     return html
 
+def generate_custom_probador(session_num, template_content):
+    # Extraer el botón correspondiente a la sesión
+    btn_html = ""
+    empty_prompt = ""
+    if session_num == 1:
+        btn_html = """            <button class="btn btn-emerald" id="btnLoadPulmones" title="Cargar simulador de la Sesión 01: Árbol Bronquial y Pulmones 3D con Respiración Fractal">
+                🫁 Pulmones 3D (Sesión 01)
+            </button>"""
+        empty_prompt = "prueba el botón <strong>«🫁 Pulmones 3D (Sesión 01)»</strong>"
+    elif session_num == 2:
+        btn_html = """            <button class="btn btn-emerald" id="btnLoadCorazon" style="background: rgba(225, 29, 72, 0.2); color: #fb7185; border-color: rgba(225, 29, 72, 0.4);" title="Cargar simulador de la Sesión 02: Corazón 3D con Fonendoscopio">
+                🫀 Corazón 3D (Sesión 02)
+            </button>"""
+        empty_prompt = "prueba el botón <strong>«🫀 Corazón 3D (Sesión 02)»</strong>"
+    elif session_num == 3:
+        btn_html = """            <button class="btn btn-emerald" id="btnLoadPompeya" style="background: rgba(245, 158, 11, 0.2); color: #fbbf24; border-color: rgba(245, 158, 11, 0.4);" title="Cargar simulador de la Sesión 03: Arqueología Digital HD Pompeya (Ruinas vs. Reconstrucción)">
+                🏛️ Pompeya HD (Sesión 03)
+            </button>"""
+        empty_prompt = "prueba el botón <strong>«🏛️ Pompeya HD (Sesión 03)»</strong>"
+
+    # Reemplazar grupo de botones acumulados en el encabezado
+    buttons_pattern = re.compile(r'<button class="btn btn-emerald" id="btnLoadPulmones".*?id="btnLoadPompeya".*?</button>', re.DOTALL)
+    custom_content = buttons_pattern.sub(btn_html, template_content)
+
+    # Reemplazar texto en empty notice
+    notice_pattern = re.compile(r'prueba los botones <strong>«🫁 Pulmones 3D».*?demostración interactiva\.', re.DOTALL)
+    if empty_prompt:
+        custom_content = notice_pattern.sub(f"{empty_prompt} para ver la demostración interactiva.", custom_content)
+
+    return custom_content
+
 def process_all_sessions():
     sessions_data = [] # List of tuples: (session_num, tema, title, desc, url)
     
     all_folders = os.listdir(SESSIONS_DIR)
+
+    # Leer la plantilla maestra del probador
+    p_src = os.path.join(BASE_DIR, "PROBADOR_CODIGO_IA.html")
+    master_probador_content = ""
+    if os.path.exists(p_src):
+        with open(p_src, 'r', encoding='utf-8') as f:
+            master_probador_content = f.read()
     
     for session_num in range(1, 61):
         prefix = f"{session_num:02d}_"
@@ -856,13 +894,14 @@ def process_all_sessions():
         session_folder_name = matching[0]
         session_path = os.path.join(SESSIONS_DIR, session_folder_name)
             
-        # Sincronizar probador interactivo y simuladores 3D oficiales
-        p_src = os.path.join(BASE_DIR, "PROBADOR_CODIGO_IA.html")
-        if os.path.exists(p_src):
+        # Sincronizar probador interactivo personalizado para la sesión (solo botón de esta sesión)
+        if master_probador_content:
             try:
-                shutil.copy2(p_src, os.path.join(session_path, "PROBADOR_CODIGO_IA.html"))
-            except Exception:
-                pass
+                custom_p = generate_custom_probador(session_num, master_probador_content)
+                with open(os.path.join(session_path, "PROBADOR_CODIGO_IA.html"), 'w', encoding='utf-8') as pf:
+                    pf.write(custom_p)
+            except Exception as e:
+                print(f"Error generando probador para sesión {session_num}: {e}")
         
         if session_num == 1:
             pulm_src = os.path.join(BASE_DIR, "SIMULADORES_INTERACTIVOS", "01_SIMULADORES", "01_SIMULADOR_PULMONES_3D.html")
