@@ -2247,15 +2247,20 @@
         // PARSER MIDI MULTI-PISTA CON SEPARACIÓN DE MANOS, FILTRADO SOPRANO Y CÁLCULO DE COMPASES
         function extractNotesFromMidiData(bytes) {
             let i = 0;
-            if (bytes.length < 14) return null;
-            if (String.fromCharCode(...bytes.slice(0, 4)) !== "MThd") return null;
+            if (!bytes || bytes.length < 14) return null;
+            let headerTag = "";
+            for (let c = 0; c < 4; c++) headerTag += String.fromCharCode(bytes[c]);
+            if (headerTag !== "MThd") return null;
 
             const format = (bytes[8] << 8) | bytes[9];
             const trackCount = (bytes[10] << 8) | bytes[11];
             const timeDivision = (bytes[12] << 8) | bytes[13];
             const ticksPerQuarter = (timeDivision > 0 && !(timeDivision & 0x8000)) ? timeDivision : 480;
             window.lastMidiTicksPerQuarter = ticksPerQuarter;
-            i += 14;
+
+            // Longitud del encabezado MThd
+            const headerLength = ((bytes[4] * 16777216) + (bytes[5] << 16) + (bytes[6] << 8) + bytes[7]) >>> 0;
+            i = 8 + (headerLength > 0 ? headerLength : 6);
 
             // Valores por defecto de compás y tempo
             let ticksPerMeasure = ticksPerQuarter * 4; // 4/4 por defecto
@@ -2264,14 +2269,15 @@
 
             const rawTracks = [];
 
-            while (i < bytes.length) {
-                if (i + 8 > bytes.length) break;
-                const chunkType = String.fromCharCode(...bytes.slice(i, i + 4));
-                const chunkLength = (bytes[i+4] << 24) | (bytes[i+5] << 16) | (bytes[i+6] << 8) | bytes[i+7];
+            while (i + 8 <= bytes.length) {
+                let chunkType = "";
+                for (let c = 0; c < 4; c++) chunkType += String.fromCharCode(bytes[i + c]);
+                const chunkLength = ((bytes[i+4] * 16777216) + (bytes[i+5] << 16) + (bytes[i+6] << 8) + bytes[i+7]) >>> 0;
                 i += 8;
+                const nextChunkPos = Math.min(bytes.length, i + chunkLength);
 
                 if (chunkType === "MTrk") {
-                    const trackEnd = i + chunkLength;
+                    const trackEnd = nextChunkPos;
                     let runningStatus = 0;
                     let currentTick = 0;
                     let trackName = `Pista ${rawTracks.length + 1}`;
@@ -2281,19 +2287,30 @@
                     while (i < trackEnd) {
                         // Delta time (variable length)
                         let delta = 0;
+                        let dShift = 0;
                         while (i < trackEnd) {
                             const b = bytes[i++];
                             delta = (delta << 7) | (b & 0x7F);
-                            if (!(b & 0x80)) break;
+                            dShift++;
+                            if (!(b & 0x80) || dShift >= 4) break;
                         }
                         currentTick += delta;
                         if (i >= trackEnd) break;
 
                         let status = bytes[i];
                         if (status & 0x80) {
-                            runningStatus = status;
                             i++;
+                            if (status < 0xF0) {
+                                runningStatus = status;
+                            } else {
+                                runningStatus = 0; // Meta y SysEx cancelan el running status
+                            }
                         } else {
+                            if (!runningStatus) {
+                                // Byte desconocido o corrupto sin running status: avanzar para evitar bucle
+                                i++;
+                                continue;
+                            }
                             status = runningStatus;
                         }
 
@@ -2302,37 +2319,42 @@
 
                         if (status === 0xFF) {
                             // Meta evento
+                            if (i >= trackEnd) break;
                             const metaType = bytes[i++];
                             let metaLen = 0;
+                            let mShift = 0;
                             while (i < trackEnd) {
                                 const b = bytes[i++];
                                 metaLen = (metaLen << 7) | (b & 0x7F);
-                                if (!(b & 0x80)) break;
+                                mShift++;
+                                if (!(b & 0x80) || mShift >= 4) break;
                             }
-                            const metaEnd = i + metaLen;
+                            const metaEnd = Math.min(trackEnd, i + metaLen);
 
-                            if (metaType === 0x03 && metaLen > 0) {
+                            if (metaType === 0x2F) {
+                                // Fin de Pista (End of Track)
+                                i = trackEnd;
+                                break;
+                            } else if (metaType === 0x03 && metaLen > 0) {
                                 // Nombre de pista
                                 try {
-                                    let nameBytes = bytes.slice(i, metaEnd);
                                     let str = "";
-                                    for (let k = 0; k < nameBytes.length; k++) {
-                                        if (nameBytes[k] >= 32 && nameBytes[k] <= 126) {
-                                            str += String.fromCharCode(nameBytes[k]);
-                                        }
+                                    for (let k = i; k < metaEnd; k++) {
+                                        const c = bytes[k];
+                                        if (c >= 32 && c <= 126) str += String.fromCharCode(c);
                                     }
                                     if (str.trim().length > 0) trackName = str.trim();
                                 } catch(e){}
-                            } else if (metaType === 0x51 && metaLen === 3) {
+                            } else if (metaType === 0x51 && metaLen === 3 && i + 2 < metaEnd) {
                                 // Tempo (microsegundos por negra)
                                 const tempoUsec = (bytes[i] << 16) | (bytes[i+1] << 8) | bytes[i+2];
                                 if (tempoUsec > 0) {
                                     const bpm = Math.round(60000000 / tempoUsec);
-                                    if (bpm >= 30 && bpm <= 300) {
+                                    if (bpm >= 20 && bpm <= 360) {
                                         window.currentMidiBpm = bpm;
                                     }
                                 }
-                            } else if (metaType === 0x58 && metaLen >= 2) {
+                            } else if (metaType === 0x58 && metaLen >= 2 && i + 1 < metaEnd) {
                                 // Time Signature (Compás)
                                 const num = bytes[i];
                                 const denom = Math.pow(2, bytes[i+1]);
@@ -2345,14 +2367,17 @@
                         } else if (status === 0xF0 || status === 0xF7) {
                             // SysEx
                             let sysLen = 0;
+                            let sShift = 0;
                             while (i < trackEnd) {
                                 const b = bytes[i++];
                                 sysLen = (sysLen << 7) | (b & 0x7F);
-                                if (!(b & 0x80)) break;
+                                sShift++;
+                                if (!(b & 0x80) || sShift >= 4) break;
                             }
-                            i += sysLen;
+                            i = Math.min(trackEnd, i + sysLen);
                         } else if (eventType === 0x9) {
                             // Note ON
+                            if (i + 1 >= trackEnd) break;
                             const note = bytes[i++];
                             const vel = bytes[i++];
                             const keyId = `${channel}-${note}`;
@@ -2382,6 +2407,7 @@
                             }
                         } else if (eventType === 0x8) {
                             // Note OFF
+                            if (i + 1 >= trackEnd) break;
                             const note = bytes[i++];
                             const vel = bytes[i++];
                             const keyId = `${channel}-${note}`;
@@ -2397,9 +2423,12 @@
                                 activeNotesMap.delete(keyId);
                             }
                         } else if (eventType === 0xA || eventType === 0xB || eventType === 0xE) {
-                            i += 2;
+                            i = Math.min(trackEnd, i + 2);
                         } else if (eventType === 0xC || eventType === 0xD) {
-                            i += 1;
+                            i = Math.min(trackEnd, i + 1);
+                        } else {
+                            // Byte desconocido: avanzar para evitar bucle infinito
+                            i++;
                         }
                     }
 
@@ -2410,8 +2439,9 @@
                             rawNotes: trackNotes
                         });
                     }
+                    i = trackEnd; // Garantizar que i avanza exactamente al siguiente chunk
                 } else {
-                    i += chunkLength;
+                    i = nextChunkPos;
                 }
             }
 
