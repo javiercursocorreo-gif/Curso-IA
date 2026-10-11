@@ -305,6 +305,28 @@
         .black-key.active { background: #1f6feb !important; }
         .black-key.error { background: #da3633 !important; }
 
+        /* NOTAS CLICABLES EN EL PENTAGRAMA (SONIDO AL HINCHAR / CLICAR) */
+        .note-clickable {
+            cursor: pointer;
+            transition: transform 0.1s ease, filter 0.1s ease;
+        }
+        .note-clickable:hover {
+            filter: drop-shadow(0 0 5px #388bfd) brightness(1.2);
+            transform-origin: center;
+        }
+        .note-clickable:active {
+            transform: scale(1.18);
+        }
+        @keyframes notePulseWave {
+            0% { transform: scale(1); filter: drop-shadow(0 0 2px #58a6ff); }
+            50% { transform: scale(1.22); filter: drop-shadow(0 0 8px #58a6ff); }
+            100% { transform: scale(1); filter: drop-shadow(0 0 0px transparent); }
+        }
+        .note-clicked-pulse {
+            animation: notePulseWave 0.28s ease-out;
+            transform-origin: center;
+        }
+
         /* FEEDBACK ROJO ERROR ANIMATION */
         @keyframes shakeNote {
             0% { transform: translate(1px, 1px) rotate(0deg); }
@@ -497,7 +519,7 @@
             </div>
             <div class="mixer-footer" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
                 <label style="display:flex; align-items:center; gap:6px; cursor:pointer; font-size:0.82rem; color:#e6edf3; font-weight:600;">
-                    <input type="checkbox" id="chk-multitrack-score" checked onchange="toggleMultiTrackInScore(this.checked)">
+                    <input type="checkbox" id="chk-multitrack-score" onchange="toggleMultiTrackInScore(this.checked)">
                     <span>🎨 Mostrar pistas activas en el pentagrama</span>
                 </label>
                 <div style="display:flex; align-items:center; gap:10px;">
@@ -590,7 +612,7 @@
             </div>
             
             <label class="label-radio options-cluster" style="cursor:pointer;" title="Muestra notas de acompañamiento de las otras pistas en el pentagrama con colores distintivos">
-                <input type="checkbox" id="toggle-multitrack-score" checked onchange="toggleMultiTrackInScore(this.checked)">
+                <input type="checkbox" id="toggle-multitrack-score" onchange="toggleMultiTrackInScore(this.checked)">
                 <span style="color:#bc8cff; font-weight:600;">🎨 Pistas Pentagrama</span>
             </label>
 
@@ -1362,6 +1384,21 @@
             highlightVirtualKey(midi, false);
         }
 
+        // REPRODUCCIÓN AL HINCHAR / TOCAR / CLICAR EN LAS FIGURAS DEL PENTAGRAMA
+        function playNoteFromScore(midi, elem) {
+            initAudio();
+            playSound(midi);
+            highlightVirtualKey(midi, true);
+            setTimeout(() => highlightVirtualKey(midi, false), 320);
+
+            if (elem) {
+                elem.classList.remove("note-clicked-pulse");
+                void elem.offsetWidth; // Forzar reflow para reiniciar la animación
+                elem.classList.add("note-clicked-pulse");
+                setTimeout(() => elem.classList.remove("note-clicked-pulse"), 350);
+            }
+        }
+
         function deleteLastNote() {
             if (currentMode === "free") {
                 if (noteSequence.length > 0) {
@@ -1458,7 +1495,7 @@
             { color: "#e3b341", stroke: "#9e6a03", name: "Dorado" }
         ];
 
-        let showMultiTrackInScore = true;
+        let showMultiTrackInScore = false;
 
         function toggleMultiTrackInScore(enabled) {
             showMultiTrackInScore = !!enabled;
@@ -1553,19 +1590,23 @@
 
         function renderNotesLayer() {
             const layer = document.getElementById("notes-layer");
-            let svg = "";
+            const svgParts = [];
 
             const activeList = (currentMode === "free") ? noteSequence : practiceSequence;
             renderStavesLayer(activeList.length);
 
             // DIBUJAR PISTAS DE ACOMPAÑAMIENTO CON COLORES DISTINTIVOS (POLIFONÍA MULTI-PISTA)
             if (showMultiTrackInScore && currentMidiTracks && currentMidiTracks.length > 0 && enabledAudioTrackIndices && enabledAudioTrackIndices.size > 1 && activeList.length > 0) {
+                const firstMelodyTick = (typeof activeList[0] === 'object' && typeof activeList[0].startTick === 'number') ? activeList[0].startTick : 0;
+                const lastMelodyTick = (typeof activeList[activeList.length - 1] === 'object' && typeof activeList[activeList.length - 1].startTick === 'number') ? activeList[activeList.length - 1].startTick : Infinity;
+
                 enabledAudioTrackIndices.forEach(tIdx => {
                     if (tIdx === currentMidiTrackIndex) return; // La pista principal se dibuja encima como protagonista
                     const trk = currentMidiTracks[tIdx];
                     if (!trk) return;
                     const pal = TRACK_PALETTE[tIdx % TRACK_PALETTE.length];
-                    const notesToDraw = trk.rawNotes || trk.notes || [];
+                    const sourceNotes = trk.notes || trk.rawNotes || [];
+                    const notesToDraw = sourceNotes.filter(n => n.startTick >= firstMelodyTick && n.startTick <= lastMelodyTick).slice(0, 250);
                     const seenKeySet = new Set();
 
                     notesToDraw.forEach(n => {
@@ -1587,31 +1628,31 @@
                         if (step <= -2) {
                             for (let s = -2; s >= step; s -= 2) {
                                 const ly = baseLineY - (s * 10);
-                                svg += `<line x1="${posX - 16}" y1="${ly}" x2="${posX + 16}" y2="${ly}" stroke="${pal.stroke}" stroke-width="1.8" opacity="0.65" />`;
+                                svgParts.push(`<line x1="${posX - 16}" y1="${ly}" x2="${posX + 16}" y2="${ly}" stroke="${pal.stroke}" stroke-width="1.8" opacity="0.65" />`);
                             }
                         }
                         // Líneas adicionales superiores (La5, etc.)
                         if (step >= 10) {
                             for (let s = 10; s <= step; s -= 2) {
                                 const ly = baseLineY - (s * 10);
-                                svg += `<line x1="${posX - 16}" y1="${ly}" x2="${posX + 16}" y2="${ly}" stroke="${pal.stroke}" stroke-width="1.8" opacity="0.65" />`;
+                                svgParts.push(`<line x1="${posX - 16}" y1="${ly}" x2="${posX + 16}" y2="${ly}" stroke="${pal.stroke}" stroke-width="1.8" opacity="0.65" />`);
                             }
                         }
 
                         // Sostenido (#)
                         if (isSharp) {
-                            svg += `<text x="${posX - 12}" y="${noteY + 5}" font-size="16" font-weight="bold" fill="${pal.color}" text-anchor="end" opacity="0.9">♯</text>`;
+                            svgParts.push(`<text x="${posX - 12}" y="${noteY + 5}" font-size="16" font-weight="bold" fill="${pal.color}" text-anchor="end" opacity="0.9">♯</text>`);
                         }
 
-                        // Cabeza de la figura de acompañamiento (estilizada, compacta y legible)
-                        svg += `<ellipse cx="${posX}" cy="${noteY}" rx="9.5" ry="6.8" fill="${pal.color}" stroke="${pal.stroke}" stroke-width="1.8" opacity="0.82" transform="rotate(-20 ${posX} ${noteY})"><title>${trk.name}: ${NOTE_NAMES[midi%12]}</title></ellipse>`;
+                        // Cabeza de la figura de acompañamiento (estilizada, compacta y clicable para oír su nota)
+                        svgParts.push(`<ellipse class="note-clickable" cx="${posX}" cy="${noteY}" rx="9.5" ry="6.8" fill="${pal.color}" stroke="${pal.stroke}" stroke-width="1.8" opacity="0.82" transform="rotate(-20 ${posX} ${noteY})" onclick="playNoteFromScore(${midi}, this)" style="cursor:pointer;"><title>${trk.name}: ${NOTE_NAMES[midi%12]} (${midi}) - Clic para escuchar sonido</title></ellipse>`);
 
                         // Plica suave
                         const stemUp = (step < 4);
                         const stemX = stemUp ? (posX + 8) : (posX - 8);
                         const stemStartY = stemUp ? (noteY - 2) : (noteY + 2);
                         const stemEndY = stemUp ? (noteY - 34) : (noteY + 34);
-                        svg += `<line x1="${stemX}" y1="${stemStartY}" x2="${stemX}" y2="${stemEndY}" stroke="${pal.stroke}" stroke-width="1.6" opacity="0.6" />`;
+                        svgParts.push(`<line x1="${stemX}" y1="${stemStartY}" x2="${stemX}" y2="${stemEndY}" stroke="${pal.stroke}" stroke-width="1.6" opacity="0.6" />`);
                     });
                 });
             }
@@ -1652,7 +1693,7 @@
                         const barX = posX - (NOTE_STEP_X / 2);
                         const topY = baseLineY - 80;
                         const botY = baseLineY;
-                        svg += `<line x1="${barX}" y1="${topY}" x2="${barX}" y2="${botY}" stroke="#222" stroke-width="2.2" />`;
+                        svgParts.push(`<line x1="${barX}" y1="${topY}" x2="${barX}" y2="${botY}" stroke="#222" stroke-width="2.2" />`);
                     }
                 }
 
@@ -1660,21 +1701,21 @@
                 if (step <= -2) {
                     for (let s = -2; s >= step; s -= 2) {
                         const ly = baseLineY - (s * 10);
-                        svg += `<line x1="${posX - 21}" y1="${ly}" x2="${posX + 21}" y2="${ly}" stroke="#111" stroke-width="2.5" />`;
+                        svgParts.push(`<line x1="${posX - 21}" y1="${ly}" x2="${posX + 21}" y2="${ly}" stroke="#111" stroke-width="2.5" />`);
                     }
                 }
 
                 // Líneas adicionales superiores (La5, etc.)
                 if (step >= 10) {
-                    for (let s = 10; s <= step; s += 2) {
+                    for (let s = 10; s <= step; s -= 2) {
                         const ly = baseLineY - (s * 10);
-                        svg += `<line x1="${posX - 21}" y1="${ly}" x2="${posX + 21}" y2="${ly}" stroke="#111" stroke-width="2.5" />`;
+                        svgParts.push(`<line x1="${posX - 21}" y1="${ly}" x2="${posX + 21}" y2="${ly}" stroke="#111" stroke-width="2.5" />`);
                     }
                 }
 
                 // Sostenido (#)
                 if (isSharp) {
-                    svg += `<text x="${posX - 16}" y="${noteY + 7}" font-size="22" font-weight="bold" fill="#e63946" text-anchor="end">♯</text>`;
+                    svgParts.push(`<text x="${posX - 16}" y="${noteY + 7}" font-size="22" font-weight="bold" fill="#e63946" text-anchor="end">♯</text>`);
                 }
 
                 // COLORES Y ESTADO DE LA NOTA
@@ -1707,7 +1748,7 @@
                 }
 
                 // Dibujar Aura interactiva
-                if (auraSvg) svg += auraSvg;
+                if (auraSvg) svgParts.push(auraSvg);
 
                 // DIFERENCIACIÓN DE FIGURA SEGÚN EL MODO:
                 // En modo 'rhythm': 'whole' (redonda, hueca sin plica), 'half' (blanca, hueca con plica), 'quarter' (negra), 'eighth' (corchea con corchete)
@@ -1719,8 +1760,14 @@
                 const headStroke = isHollow ? noteColor : "#111";
                 const strokeWidth = isHollow ? "3" : "1.8";
 
+                // GRUPO DE LA FIGURA COMPLETA (CLICABLE / TÁCTIL: Pinchar en cualquier parte para oír su sonido)
+                svgParts.push(`<g class="note-clickable" onclick="playNoteFromScore(${midi}, this)" style="cursor:pointer;" title="Nota: ${noteName} (${midi}) - Clic para escuchar sonido">`);
+
+                // Zona táctil de captura ampliada invisible para iPad y ratón (44px de diámetro)
+                svgParts.push(`<circle cx="${posX}" cy="${noteY}" r="22" fill="transparent" />`);
+
                 // Cabeza de la figura
-                svg += `<ellipse cx="${posX}" cy="${noteY}" rx="12.5" ry="9" fill="${headFill}" stroke="${headStroke}" stroke-width="${strokeWidth}" transform="rotate(-20 ${posX} ${noteY})" />`;
+                svgParts.push(`<ellipse cx="${posX}" cy="${noteY}" rx="12.5" ry="9" fill="${headFill}" stroke="${headStroke}" stroke-width="${strokeWidth}" transform="rotate(-20 ${posX} ${noteY})" />`);
 
                 // Plica (Stem)
                 if (hasStem) {
@@ -1729,14 +1776,14 @@
                     const stemStartY = stemUp ? (noteY - 2) : (noteY + 2);
                     const stemEndY = stemUp ? (noteY - 48) : (noteY + 48);
 
-                    svg += `<line x1="${stemX}" y1="${stemStartY}" x2="${stemX}" y2="${stemEndY}" stroke="${noteColor}" stroke-width="2.2" />`;
+                    svgParts.push(`<line x1="${stemX}" y1="${stemStartY}" x2="${stemX}" y2="${stemEndY}" stroke="${noteColor}" stroke-width="2.2" />`);
 
                     // Si es CORCHEA, añadir corchete (flag)
                     if (isEighth) {
                         if (stemUp) {
-                            svg += `<path d="M ${stemX} ${stemEndY} C ${stemX + 10} ${stemEndY + 12}, ${stemX + 16} ${stemEndY + 22}, ${stemX + 6} ${stemEndY + 34}" fill="none" stroke="${noteColor}" stroke-width="2.5" stroke-linecap="round" />`;
+                            svgParts.push(`<path d="M ${stemX} ${stemEndY} C ${stemX + 10} ${stemEndY + 12}, ${stemX + 16} ${stemEndY + 22}, ${stemX + 6} ${stemEndY + 34}" fill="none" stroke="${noteColor}" stroke-width="2.5" stroke-linecap="round" />`);
                         } else {
-                            svg += `<path d="M ${stemX} ${stemEndY} C ${stemX + 10} ${stemEndY - 12}, ${stemX + 16} ${stemEndY - 22}, ${stemX + 6} ${stemEndY - 34}" fill="none" stroke="${noteColor}" stroke-width="2.5" stroke-linecap="round" />`;
+                            svgParts.push(`<path d="M ${stemX} ${stemEndY} C ${stemX + 10} ${stemEndY - 12}, ${stemX + 16} ${stemEndY - 22}, ${stemX + 6} ${stemEndY - 34}" fill="none" stroke="${noteColor}" stroke-width="2.5" stroke-linecap="round" />`);
                         }
                     }
                 }
@@ -1744,14 +1791,16 @@
                 // ROTULACIÓN SEGÚN EL MODO ELEGIDO
                 if (noteLabelMode === "below") {
                     const textY = baseLineY + 36;
-                    svg += `<text x="${posX}" y="${textY}" text-anchor="middle" font-size="13" font-weight="700" fill="#333" font-family="sans-serif">${noteName}</text>`;
+                    svgParts.push(`<text x="${posX}" y="${textY}" text-anchor="middle" font-size="13" font-weight="700" fill="#333" font-family="sans-serif">${noteName}</text>`);
                 } else if (noteLabelMode === "on_note") {
                     const labelColor = isHollow ? noteColor : "#ffffff";
-                    svg += `<text x="${posX}" y="${noteY + 4.2}" text-anchor="middle" font-size="9" font-weight="900" fill="${labelColor}" font-family="sans-serif" style="pointer-events:none;">${shortName}</text>`;
+                    svgParts.push(`<text x="${posX}" y="${noteY + 4.2}" text-anchor="middle" font-size="9" font-weight="900" fill="${labelColor}" font-family="sans-serif" style="pointer-events:none;">${shortName}</text>`);
                 }
+
+                svgParts.push(`</g>`);
             });
 
-            layer.innerHTML = svg;
+            layer.innerHTML = svgParts.join("");
             updateScoreScroll();
         }
 
@@ -2178,68 +2227,76 @@
         function parseMidiFile(file) {
             const reader = new FileReader();
             reader.onload = function(evt) {
-                try {
-                    const data = new Uint8Array(evt.target.result);
-                    const parsedResult = extractNotesFromMidiData(data);
+                    let parsedResult = null;
+                    try {
+                        const data = new Uint8Array(evt.target.result);
+                        parsedResult = extractNotesFromMidiData(data);
+                    } catch (parseErr) {
+                        console.error("Error al decodificar binario MIDI:", parseErr);
+                        alert("Error al decodificar la estructura del archivo MIDI: " + (parseErr.message || "formato no reconocido."));
+                        return;
+                    }
+
                     if (parsedResult && parsedResult.tracks && parsedResult.tracks.length > 0) {
-                        currentMidiTracks = parsedResult.tracks;
-                        const bestIdx = parsedResult.bestTrackIndex;
-                        currentMidiTrackIndex = bestIdx;
-                        const bestTrack = currentMidiTracks[bestIdx];
+                        try {
+                            currentMidiTracks = parsedResult.tracks;
+                            const bestIdx = parsedResult.bestTrackIndex;
+                            currentMidiTrackIndex = bestIdx;
+                            const bestTrack = currentMidiTracks[bestIdx];
 
-                        // Por defecto, TODAS las pistas habilitadas para sonar en el audio
-                        enabledAudioTrackIndices = new Set(currentMidiTracks.map((_, i) => i));
+                            // Por defecto, TODAS las pistas habilitadas para sonar en el audio
+                            enabledAudioTrackIndices = new Set(currentMidiTracks.map((_, i) => i));
 
-                        // Mostrar botón del Mezclador
-                        const mixerBtn = document.getElementById("btn-toggle-mixer");
-                        if (mixerBtn) mixerBtn.style.display = "inline-block";
+                            // Mostrar botón del Mezclador
+                            const mixerBtn = document.getElementById("btn-toggle-mixer");
+                            if (mixerBtn) mixerBtn.style.display = "inline-block";
 
-                        // Poblar selector desplegable de pistas para partitura
-                        const trackSelect = document.getElementById("select-midi-track");
-                        if (trackSelect) {
-                            trackSelect.innerHTML = "";
-                            currentMidiTracks.forEach((t, idx) => {
-                                const opt = document.createElement("option");
-                                opt.value = idx;
-                                const isBest = (idx === bestIdx);
-                                opt.textContent = `${isBest ? '⭐ ' : ''}${t.name} (${t.notes.length} notas, med: ${NOTE_NAMES[t.avgPitch % 12]}${Math.floor(t.avgPitch/12)-1})`;
-                                trackSelect.appendChild(opt);
-                            });
-                            trackSelect.value = bestIdx;
-                            trackSelect.style.display = "inline-block";
+                            // Poblar selector desplegable de pistas para partitura
+                            const trackSelect = document.getElementById("select-midi-track");
+                            if (trackSelect) {
+                                trackSelect.innerHTML = "";
+                                currentMidiTracks.forEach((t, idx) => {
+                                    const opt = document.createElement("option");
+                                    opt.value = idx;
+                                    const isBest = (idx === bestIdx);
+                                    opt.textContent = `${isBest ? '⭐ ' : ''}${t.name} (${t.notes.length} notas, med: ${NOTE_NAMES[t.avgPitch % 12]}${Math.floor(t.avgPitch/12)-1})`;
+                                    trackSelect.appendChild(opt);
+                                });
+                                trackSelect.value = bestIdx;
+                                trackSelect.style.display = "inline-block";
+                            }
+
+                            // Configurar mezclador y timeline
+                            buildPlaybackTimeline();
+                            renderMixerTable();
+
+                            // Activar automáticamente modo de figuras y compases
+                            notationViewMode = 'rhythm';
+                            const rhythmRadio = document.querySelector('input[name="notation-view-mode"][value="rhythm"]');
+                            if (rhythmRadio) rhythmRadio.checked = true;
+
+                            // Cargar notas en Modo Aprender Canción MIDI
+                            stopPlayback(false);
+                            practiceSequence = bestTrack.notes.slice(0, TOTAL_MAX_NOTES);
+                            currentStepIndex = 0;
+                            hasErrorOnCurrentStep = false;
+                            document.getElementById("select-mode").value = "learn_midi";
+                            currentMode = "learn_midi";
+                            document.getElementById("welcome-hint").style.display = "none";
+                            updatePracticeStatusUI();
+                            renderNotesLayer();
+                            updateScoreScroll();
+
+                            const tempoMsg = window.currentMidiBpm ? ` | Tempo: ${window.currentMidiBpm} BPM` : "";
+                            const tracksCount = currentMidiTracks.length;
+                            alert(`🎶 Partitura MIDI cargada con éxito:\n\n• Pista para aprender en pantalla: "${bestTrack.name}" (${bestTrack.notes.length} notas)${tempoMsg}\n• Modo "Aprender (Me sigue a mí)": Toca cada nota en tu teclado Akai a tu ritmo para avanzar.\n• Mezclador: Están activadas las ${tracksCount} pistas para sonar con ▶ Escuchar (puedes personalizarlas con el botón 🎛️ Pistas Audio).`);
+                        } catch (renderErr) {
+                            console.error("Error al inicializar la partitura MIDI:", renderErr);
+                            alert("El archivo MIDI se procesó correctamente, pero ocurrió un aviso al dibujar los pentagramas: " + (renderErr.message || ""));
                         }
-
-                        // Configurar mezclador y timeline
-                        buildPlaybackTimeline();
-                        renderMixerTable();
-
-                        // Activar automáticamente modo de figuras y compases
-                        notationViewMode = 'rhythm';
-                        const rhythmRadio = document.querySelector('input[name="notation-view-mode"][value="rhythm"]');
-                        if (rhythmRadio) rhythmRadio.checked = true;
-
-                        // Cargar notas en Modo Aprender Canción MIDI
-                        stopPlayback(false);
-                        practiceSequence = bestTrack.notes.slice(0, TOTAL_MAX_NOTES);
-                        currentStepIndex = 0;
-                        hasErrorOnCurrentStep = false;
-                        document.getElementById("select-mode").value = "learn_midi";
-                        currentMode = "learn_midi";
-                        document.getElementById("welcome-hint").style.display = "none";
-                        updatePracticeStatusUI();
-                        renderNotesLayer();
-                        updateScoreScroll();
-
-                        const tempoMsg = window.currentMidiBpm ? ` | Tempo: ${window.currentMidiBpm} BPM` : "";
-                        const tracksCount = currentMidiTracks.length;
-                        alert(`🎶 Partitura MIDI cargada con éxito:\n\n• Pista para aprender en pantalla: "${bestTrack.name}" (${bestTrack.notes.length} notas)${tempoMsg}\n• Modo "Aprender (Me sigue a mí)": Toca cada nota en tu teclado Akai a tu ritmo para avanzar.\n• Mezclador: Están activadas las ${tracksCount} pistas para sonar con ▶ Escuchar (puedes personalizarlas con el botón 🎛️ Pistas Audio).`);
                     } else {
                         alert("No se detectaron notas musicales en el archivo MIDI seleccionado.");
                     }
-                } catch (err) {
-                    console.error("Error al decodificar MIDI:", err);
-                    alert("Error al decodificar el archivo MIDI: " + (err.message || "formato no reconocido."));
-                }
             };
             reader.readAsArrayBuffer(file);
         }
