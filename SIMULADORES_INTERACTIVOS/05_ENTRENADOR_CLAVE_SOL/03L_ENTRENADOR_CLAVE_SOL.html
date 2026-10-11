@@ -413,7 +413,7 @@
             <h1>🎼 Entrenador Clave de Sol <span>(3 Pentagramas)</span></h1>
         </div>
         <div class="controls-bar">
-            <div class="status-badge">
+            <div class="status-badge" id="status-badge-container" onclick="setupMIDI(true)" title="Haz clic para volver a escanear teclados MIDI USB" style="cursor:pointer;">
                 <span class="dot" id="status-dot"></span>
                 <span id="status-text">Listo</span>
             </div>
@@ -495,9 +495,44 @@
                     </tbody>
                 </table>
             </div>
-            <div class="mixer-footer">
-                <span id="mixer-summary-text" style="color:#8b949e; font-size:0.82rem;">Todas las pistas seleccionadas para sonar.</span>
-                <button class="btn btn-success btn-sm" onclick="toggleTrackMixerModal()">Listo ✓</button>
+            <div class="mixer-footer" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+                <label style="display:flex; align-items:center; gap:6px; cursor:pointer; font-size:0.82rem; color:#e6edf3; font-weight:600;">
+                    <input type="checkbox" id="chk-multitrack-score" checked onchange="toggleMultiTrackInScore(this.checked)">
+                    <span>🎨 Mostrar pistas activas en el pentagrama</span>
+                </label>
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <span id="mixer-summary-text" style="color:#8b949e; font-size:0.82rem;">Todas las pistas seleccionadas para sonar.</span>
+                    <button class="btn btn-success btn-sm" onclick="toggleTrackMixerModal()">Listo ✓</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DE AYUDA / INSTRUCCIONES DE NAVEGADOR -->
+    <div id="browser-info-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.75); z-index:9999; justify-content:center; align-items:center; backdrop-filter:blur(3px);">
+        <div style="background:#161b22; border:1px solid #30363d; border-radius:10px; width:92%; max-width:540px; box-shadow:0 12px 36px rgba(0,0,0,0.6); overflow:hidden;">
+            <div style="padding:14px 18px; background:#0d1117; border-bottom:1px solid #30363d; display:flex; justify-content:space-between; align-items:center;">
+                <h3 style="margin:0; font-size:1.05rem; color:#58a6ff; display:flex; align-items:center; gap:8px;">
+                    🎹 Conexión Teclado USB MIDI
+                </h3>
+                <button class="btn btn-secondary" onclick="closeBrowserModal()" style="padding:2px 8px; font-size:0.85rem;">✕</button>
+            </div>
+            <div style="padding:18px; font-size:0.9rem; line-height:1.6; color:#c9d1d9;">
+                <p style="margin-top:0;">
+                    <b style="color:#f85149;">¿Por qué Safari no detecta tu teclado Akai / Korg?</b><br>
+                    Apple <b>Safari en macOS no soporta la API Web MIDI</b> para dispositivos USB físicos por decisión de Apple.
+                </p>
+                <div style="background:#0d1117; border:1px solid #238636; border-radius:6px; padding:12px; margin:14px 0;">
+                    <b style="color:#3fb950;">✅ Solución recomendada (100% Plug & Play):</b><br>
+                    Abre este archivo en <b>Google Chrome</b> o <b>Microsoft Edge</b>. Ambos reconocen instantáneamente tu <b>Akai LPK25</b> o teclado Korg sin instalar ningún driver ni configurar nada.
+                </div>
+                <p style="margin-bottom:6px;">
+                    <b>⌨️ También puedes usar el teclado de tu Mac ahora mismo:</b><br>
+                    Usa las teclas <code style="background:#21262d; padding:2px 6px; border-radius:4px; color:#58a6ff;">A</code> (Do4), <code style="background:#21262d; padding:2px 6px; border-radius:4px; color:#58a6ff;">S</code> (Re4), <code style="background:#21262d; padding:2px 6px; border-radius:4px; color:#58a6ff;">D</code> (Mi4), <code style="background:#21262d; padding:2px 6px; border-radius:4px; color:#58a6ff;">F</code> (Fa4), <code style="background:#21262d; padding:2px 6px; border-radius:4px; color:#58a6ff;">G</code> (Sol4), <code style="background:#21262d; padding:2px 6px; border-radius:4px; color:#58a6ff;">H</code> (La4), <code style="background:#21262d; padding:2px 6px; border-radius:4px; color:#58a6ff;">J</code> (Si4), <code style="background:#21262d; padding:2px 6px; border-radius:4px; color:#58a6ff;">K</code> (Do5).
+                </p>
+            </div>
+            <div style="padding:12px 18px; background:#0d1117; border-top:1px solid #30363d; display:flex; justify-content:flex-end; gap:10px;">
+                <button class="btn btn-primary" onclick="closeBrowserModal()">Entendido</button>
             </div>
         </div>
     </div>
@@ -554,6 +589,11 @@
                 </label>
             </div>
             
+            <label class="label-radio options-cluster" style="cursor:pointer;" title="Muestra notas de acompañamiento de las otras pistas en el pentagrama con colores distintivos">
+                <input type="checkbox" id="toggle-multitrack-score" checked onchange="toggleMultiTrackInScore(this.checked)">
+                <span style="color:#bc8cff; font-weight:600;">🎨 Pistas Pentagrama</span>
+            </label>
+
             <label class="label-radio options-cluster" style="cursor:pointer;">
                 <input type="checkbox" id="toggle-vkey" onchange="toggleVirtualKeyboard()">
                 <span style="color:#e6edf3; font-weight:600;">🎹 Teclado</span>
@@ -1354,13 +1394,154 @@
             renderNotesLayer();
         }
 
-        // CAPTURA DIRECTA DE BACKSPACE
+        // MAPEO DE TECLADO DE ORDENADOR (Mac / PC: Teclas A, W, S, E, D, F, T, G, Y, H, U, J, K...)
+        const COMPUTER_KEY_MAP = {
+            "KeyA": 60, // Do4
+            "KeyW": 61, // Do#4
+            "KeyS": 62, // Re4
+            "KeyE": 63, // Re#4
+            "KeyD": 64, // Mi4
+            "KeyF": 65, // Fa4
+            "KeyT": 66, // Fa#4
+            "KeyG": 67, // Sol4
+            "KeyY": 68, // Sol#4
+            "KeyH": 69, // La4
+            "KeyU": 70, // La#4
+            "KeyJ": 71, // Si4
+            "KeyK": 72, // Do5
+            "KeyO": 73, // Do#5
+            "KeyL": 74, // Re5
+            "KeyP": 75, // Re#5
+            "Semicolon": 76, // Mi5
+            "Quote": 77      // Fa5
+        };
+        const computerKeysPressed = new Set();
+
         window.addEventListener("keydown", (e) => {
             if (e.key === "Backspace" || e.code === "Backspace") {
-                e.preventDefault();
-                deleteLastNote();
+                if (document.activeElement.tagName !== "INPUT") {
+                    e.preventDefault();
+                    deleteLastNote();
+                    return;
+                }
+            }
+
+            if (document.activeElement.tagName === "INPUT" || document.activeElement.tagName === "SELECT" || document.activeElement.tagName === "TEXTAREA") {
+                return;
+            }
+
+            if (COMPUTER_KEY_MAP[e.code] !== undefined && !e.repeat) {
+                const midi = COMPUTER_KEY_MAP[e.code];
+                computerKeysPressed.add(e.code);
+                triggerNoteOn(midi);
             }
         }, true);
+
+        window.addEventListener("keyup", (e) => {
+            if (computerKeysPressed.has(e.code)) {
+                computerKeysPressed.delete(e.code);
+                const midi = COMPUTER_KEY_MAP[e.code];
+                if (midi !== undefined) {
+                    triggerNoteOff(midi);
+                }
+            }
+        }, true);
+
+        // PALETA PROFESIONAL DE COLORES PARA PISTAS MULTI-PISTA EN EL PENTAGRAMA
+        const TRACK_PALETTE = [
+            { color: "#388bfd", stroke: "#1f6feb", name: "Azul" },
+            { color: "#bc8cff", stroke: "#8957e5", name: "Púrpura" },
+            { color: "#f0883e", stroke: "#bd561d", name: "Ámbar" },
+            { color: "#3fb950", stroke: "#238636", name: "Verde" },
+            { color: "#f778ba", stroke: "#bf3989", name: "Magenta" },
+            { color: "#2dd4bf", stroke: "#0f766e", name: "Turquesa" },
+            { color: "#e3b341", stroke: "#9e6a03", name: "Dorado" }
+        ];
+
+        let showMultiTrackInScore = true;
+
+        function toggleMultiTrackInScore(enabled) {
+            showMultiTrackInScore = !!enabled;
+            const chk1 = document.getElementById("toggle-multitrack-score");
+            const chk2 = document.getElementById("chk-multitrack-score");
+            if (chk1) chk1.checked = showMultiTrackInScore;
+            if (chk2) chk2.checked = showMultiTrackInScore;
+            renderNotesLayer();
+        }
+
+        // CÁLCULO DE POSICIÓN HORIZONTAL Y PENTAGRAMA PARA NOTAS DE ACOMPAÑAMIENTO SEGÚN EL TIEMPO (TICK)
+        function getPositionForTick(tick, activeList) {
+            if (!activeList || activeList.length === 0) return null;
+            if (typeof activeList[0] !== "object" || typeof activeList[0].startTick !== "number") return null;
+
+            const firstTick = activeList[0].startTick;
+            const lastIdx = activeList.length - 1;
+            const lastTick = activeList[lastIdx].startTick;
+
+            if (tick <= firstTick) {
+                return {
+                    staffIndex: 0,
+                    posX: START_X,
+                    baseLineY: getStaffBaseY(0)
+                };
+            }
+            if (tick >= lastTick) {
+                const staffIndex = Math.floor(lastIdx / NOTES_PER_STAFF);
+                const posInStaff = lastIdx % NOTES_PER_STAFF;
+                return {
+                    staffIndex: staffIndex,
+                    posX: START_X + (posInStaff * NOTE_STEP_X),
+                    baseLineY: getStaffBaseY(staffIndex)
+                };
+            }
+
+            // Búsqueda binaria
+            let low = 0;
+            let high = lastIdx;
+            while (low <= high) {
+                const mid = (low + high) >> 1;
+                if (activeList[mid].startTick <= tick) {
+                    low = mid + 1;
+                } else {
+                    high = mid - 1;
+                }
+            }
+            const k = Math.max(0, high);
+            const kNext = Math.min(lastIdx, k + 1);
+            const t0 = activeList[k].startTick || 0;
+            const t1 = activeList[kNext].startTick || (t0 + 480);
+            const frac = (t1 > t0) ? Math.min(1, Math.max(0, (tick - t0) / (t1 - t0))) : 0;
+
+            const staff0 = Math.floor(k / NOTES_PER_STAFF);
+            const pos0 = k % NOTES_PER_STAFF;
+            const posX0 = START_X + (pos0 * NOTE_STEP_X);
+
+            const staff1 = Math.floor(kNext / NOTES_PER_STAFF);
+            const pos1 = kNext % NOTES_PER_STAFF;
+            const posX1 = START_X + (pos1 * NOTE_STEP_X);
+
+            if (staff0 === staff1) {
+                return {
+                    staffIndex: staff0,
+                    posX: posX0 + (frac * (posX1 - posX0)),
+                    baseLineY: getStaffBaseY(staff0)
+                };
+            } else {
+                if (frac < 0.5) {
+                    return {
+                        staffIndex: staff0,
+                        posX: posX0 + (frac * NOTE_STEP_X),
+                        baseLineY: getStaffBaseY(staff0)
+                    };
+                } else {
+                    return {
+                        staffIndex: staff1,
+                        posX: posX1 - ((1 - frac) * NOTE_STEP_X),
+                        baseLineY: getStaffBaseY(staff1)
+                    };
+                }
+            }
+        }
 
         // RENDERIZADO VECTORIAL SVG DE NOTAS (MODO DIDÁCTICO O MODO RÍTMICO CON COMPASES)
         let notationViewMode = 'simple'; // 'simple' (Lectura Pura) o 'rhythm' (Figuras y Compases)
@@ -1376,6 +1557,64 @@
 
             const activeList = (currentMode === "free") ? noteSequence : practiceSequence;
             renderStavesLayer(activeList.length);
+
+            // DIBUJAR PISTAS DE ACOMPAÑAMIENTO CON COLORES DISTINTIVOS (POLIFONÍA MULTI-PISTA)
+            if (showMultiTrackInScore && currentMidiTracks && currentMidiTracks.length > 0 && enabledAudioTrackIndices && enabledAudioTrackIndices.size > 1 && activeList.length > 0) {
+                enabledAudioTrackIndices.forEach(tIdx => {
+                    if (tIdx === currentMidiTrackIndex) return; // La pista principal se dibuja encima como protagonista
+                    const trk = currentMidiTracks[tIdx];
+                    if (!trk) return;
+                    const pal = TRACK_PALETTE[tIdx % TRACK_PALETTE.length];
+                    const notesToDraw = trk.rawNotes || trk.notes || [];
+                    const seenKeySet = new Set();
+
+                    notesToDraw.forEach(n => {
+                        const posInfo = getPositionForTick(n.startTick, activeList);
+                        if (!posInfo) return;
+
+                        const midi = n.midi;
+                        const key = `${Math.round(posInfo.posX)}_${midi}`;
+                        if (seenKeySet.has(key)) return;
+                        seenKeySet.add(key);
+
+                        const posX = Math.round(posInfo.posX * 10) / 10;
+                        const baseLineY = posInfo.baseLineY;
+                        const step = getDiatonicStep(midi);
+                        const noteY = baseLineY - (step * 10);
+                        const isSharp = [1, 3, 6, 8, 10].includes(midi % 12);
+
+                        // Líneas adicionales inferiores (Do4, La3, etc.)
+                        if (step <= -2) {
+                            for (let s = -2; s >= step; s -= 2) {
+                                const ly = baseLineY - (s * 10);
+                                svg += `<line x1="${posX - 16}" y1="${ly}" x2="${posX + 16}" y2="${ly}" stroke="${pal.stroke}" stroke-width="1.8" opacity="0.65" />`;
+                            }
+                        }
+                        // Líneas adicionales superiores (La5, etc.)
+                        if (step >= 10) {
+                            for (let s = 10; s <= step; s -= 2) {
+                                const ly = baseLineY - (s * 10);
+                                svg += `<line x1="${posX - 16}" y1="${ly}" x2="${posX + 16}" y2="${ly}" stroke="${pal.stroke}" stroke-width="1.8" opacity="0.65" />`;
+                            }
+                        }
+
+                        // Sostenido (#)
+                        if (isSharp) {
+                            svg += `<text x="${posX - 12}" y="${noteY + 5}" font-size="16" font-weight="bold" fill="${pal.color}" text-anchor="end" opacity="0.9">♯</text>`;
+                        }
+
+                        // Cabeza de la figura de acompañamiento (estilizada, compacta y legible)
+                        svg += `<ellipse cx="${posX}" cy="${noteY}" rx="9.5" ry="6.8" fill="${pal.color}" stroke="${pal.stroke}" stroke-width="1.8" opacity="0.82" transform="rotate(-20 ${posX} ${noteY})"><title>${trk.name}: ${NOTE_NAMES[midi%12]}</title></ellipse>`;
+
+                        // Plica suave
+                        const stemUp = (step < 4);
+                        const stemX = stemUp ? (posX + 8) : (posX - 8);
+                        const stemStartY = stemUp ? (noteY - 2) : (noteY + 2);
+                        const stemEndY = stemUp ? (noteY - 34) : (noteY + 34);
+                        svg += `<line x1="${stemX}" y1="${stemStartY}" x2="${stemX}" y2="${stemEndY}" stroke="${pal.stroke}" stroke-width="1.6" opacity="0.6" />`;
+                    });
+                });
+            }
 
             // En modo rítmico, podemos calcular compases (ej. 4/4: compás cada 4 tiempos o cada 4 notas en ejercicios)
             let currentBarCount = 0;
@@ -1764,15 +2003,17 @@
                 const isAudioEnabled = enabledAudioTrackIndices.has(idx);
                 const avgName = NOTE_NAMES[t.avgPitch % 12] + (Math.floor(t.avgPitch / 12) - 1);
                 const noteCount = t.notes ? t.notes.length : (t.rawNotes ? t.rawNotes.length : 0);
+                const pal = TRACK_PALETTE[idx % TRACK_PALETTE.length];
 
                 tr.innerHTML = `
                     <td style="text-align:center;">
                         <input type="radio" name="mixer-display-track" value="${idx}" ${isDisplay ? "checked" : ""} onchange="switchMidiTrack(${idx}); renderMixerTable();" title="Ver esta pista en la partitura">
                     </td>
                     <td style="text-align:center;">
-                        <input type="checkbox" id="mixer-chk-${idx}" ${isAudioEnabled ? "checked" : ""} onchange="toggleTrackAudio(${idx}, this.checked)" title="Habilitar sonido de esta pista">
+                        <input type="checkbox" id="mixer-chk-${idx}" ${isAudioEnabled ? "checked" : ""} onchange="toggleTrackAudio(${idx}, this.checked)" title="Habilitar sonido y visualización de esta pista">
                     </td>
                     <td>
+                        <span style="display:inline-block; width:12px; height:12px; border-radius:50%; background:${pal.color}; border:1.5px solid ${pal.stroke}; margin-right:6px; vertical-align:middle;" title="Color en el pentagrama"></span>
                         <span style="font-weight:600; color:${isDisplay ? '#58a6ff' : '#c9d1d9'};">${isDisplay ? '⭐ ' : ''}${t.name}</span>
                     </td>
                     <td style="text-align:right; font-variant-numeric:tabular-nums;">
@@ -1796,6 +2037,7 @@
             }
             buildPlaybackTimeline();
             updateMixerBadgeAndSummary();
+            renderNotesLayer();
         }
 
         function setMixerAllTracks(allActive = true) {
@@ -1806,6 +2048,7 @@
             }
             buildPlaybackTimeline();
             renderMixerTable();
+            renderNotesLayer();
         }
 
         function setMixerOnlyScoreTrack() {
@@ -1813,6 +2056,7 @@
             enabledAudioTrackIndices.add(currentMidiTrackIndex);
             buildPlaybackTimeline();
             renderMixerTable();
+            renderNotesLayer();
         }
 
         function updateMixerBadgeAndSummary() {
@@ -2353,14 +2597,38 @@
         // INTEGRACIÓN WEB MIDI API (Akai LPK25, Korg EK-50 y teclados USB/Bluetooth)
         let midiAccessInstance = null;
 
-        async function setupMIDI() {
+        function showBrowserModal() {
+            const modal = document.getElementById("browser-info-modal");
+            if (modal) modal.style.display = "flex";
+        }
+
+        function closeBrowserModal() {
+            const modal = document.getElementById("browser-info-modal");
+            if (modal) modal.style.display = "none";
+        }
+
+        async function setupMIDI(isUserClick = false) {
             const dot = document.getElementById("status-dot");
             const text = document.getElementById("status-text");
+            if (!dot || !text) return;
+
+            const isMac = /Macintosh|Mac OS X/.test(navigator.userAgent);
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 
             if (!navigator.requestMIDIAccess) {
-                dot.style.background = "#58a6ff";
-                dot.classList.remove("connected");
-                text.textContent = "📱 iPad (Táctil / Mic listo)";
+                if (isMac && !isIOS) {
+                    dot.style.background = "#f85149";
+                    dot.classList.remove("connected");
+                    text.innerHTML = '⚠️ Safari sin USB MIDI &bull; <span style="color:#58a6ff; text-decoration:underline; font-weight:bold; cursor:pointer;" onclick="showBrowserModal()">Abrir en Chrome</span>';
+                } else if (isIOS) {
+                    dot.style.background = "#58a6ff";
+                    dot.classList.remove("connected");
+                    text.textContent = "📱 iPad (Táctil / Mic listo)";
+                } else {
+                    dot.style.background = "#d29922";
+                    dot.classList.remove("connected");
+                    text.innerHTML = '🟡 Navegador sin Web MIDI &bull; <span style="color:#58a6ff; text-decoration:underline; cursor:pointer;" onclick="showBrowserModal()">Ver ayuda</span>';
+                }
                 return;
             }
 
@@ -2373,11 +2641,11 @@
                         dot.style.background = "#3fb950";
                         dot.classList.add("connected");
                         const names = inputs.map(i => i.name || "Teclado MIDI").join(", ");
-                        text.textContent = `🟢 Conectado: ${names}`;
+                        text.innerHTML = `🟢 Conectado: <b>${names}</b>`;
                     } else {
                         dot.style.background = "#d29922";
                         dot.classList.remove("connected");
-                        text.textContent = "🟡 Conecta el Akai / Korg por USB";
+                        text.innerHTML = '🟡 Conecta el Akai / Korg por USB <span style="font-size:0.75rem; text-decoration:underline; cursor:pointer;" onclick="setupMIDI(true)">🔄 Re-escanear</span>';
                     }
 
                     inputs.forEach(input => {
@@ -2404,7 +2672,7 @@
             } catch (err) {
                 dot.style.background = "#d29922";
                 dot.classList.remove("connected");
-                text.textContent = "🟡 Conecta el Akai / Korg por USB";
+                text.innerHTML = '🟡 Conecta el Akai / Korg por USB <span style="font-size:0.75rem; text-decoration:underline; cursor:pointer;" onclick="setupMIDI(true)">🔄 Re-escanear</span>';
             }
         }
 
