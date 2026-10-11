@@ -216,6 +216,7 @@ def generate_columns_html(session_num, session_folder, files):
         and not (session_num in (1, 2) and 'CUENT' in f)
         and not ('FRAC-058' in f and ' 2. ' in f)
         and not (session_num == 1 and 'FRAC-058' in f.upper() and f.lower().endswith('.pdf'))
+        and not (session_num == 2 and 'FRAC-055' in f.upper() and f.lower().endswith('.mp4'))
     ]
     
     # Clasificar archivos por columna (1, 2 o 3)
@@ -277,7 +278,29 @@ def generate_columns_html(session_num, session_folder, files):
         cards_html = ""
         for it in col_items:
             rel_href = urllib.parse.quote(it["filename"])
-            if it.get("code") == "COD":
+            if session_num == 2 and 'FRAC-055' in it["filename"].upper():
+                mp4_href = "4.%20FRAC-055%20LA%20GALER%C3%8DA%20DE%20LOS%20MONSTRUOS%20%F0%9F%91%B9%F0%9F%96%BC%EF%B8%8F.mp4"
+                cards_html += f"""
+                    <div class="file-card file-card-special">
+                        <a href="{rel_href}" target="_blank" class="file-card-special-top" title="Abrir Ficha Histórica (PDF)">
+                            <div class="file-left">
+                                <span class="file-num">{it["step_num"]}</span>
+                                <span class="file-tag tag-pdf">PACK</span>
+                                <div class="file-details">
+                                    <span class="file-title">La Galería de los Monstruos Matemáticos 👹🖼️</span>
+                                    <span class="file-desc">Los científicos que inventaron los fractales a ciegas • Vídeo + Ficha</span>
+                                </div>
+                            </div>
+                            <span class="file-arrow">↗</span>
+                        </a>
+                        <a href="{mp4_href}" target="_blank" class="btn-launch-interactive" style="background:linear-gradient(135deg, #0284c7, #0369a1); border-color:#38bdf8;" title="Reproducir Vídeo La Galería de los Monstruos (MP4)">
+                            🎬 Ver Vídeo: La Galería de los Monstruos (MP4) ↗
+                        </a>
+                        <a href="{rel_href}" target="_blank" class="btn-launch-interactive" style="margin-top:6px; background:linear-gradient(135deg, #7e22ce, #6b21a8); border-color:#c084fc;" title="Abrir Ficha Histórica de los 10 Científicos (PDF)">
+                            📄 Abrir Ficha Histórica de los 10 Científicos (PDF) ↗
+                        </a>
+                    </div>"""
+            elif it.get("code") == "COD":
                 sim_btn = ""
                 if session_num == 1:
                     sim_btn = """
