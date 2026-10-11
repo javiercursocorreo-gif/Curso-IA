@@ -2,8 +2,13 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3L - Entrenador Visual Clave de Sol (Sesión 3L)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>🎼 Entrenador Clave de Sol</title>
+    <!-- Configuración iOS / iPad como App Nativa a pantalla completa -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Clave de Sol">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23161b22'/><text x='50' y='72' font-size='60' text-anchor='middle' fill='%2358a6ff'>𝄞</text></svg>">
     <style>
         * {
             box-sizing: border-box;
@@ -313,7 +318,6 @@
             <label style="color:#8b949e; font-weight:600;">Partitura:</label>
             <select class="select-input" id="select-song" style="display:none;" onchange="loadSelectedSong()">
                 <option value="">-- Elige una canción --</option>
-                <option value="hymn_fallen">Hymn to the Fallen (John Williams)</option>
                 <option value="alegria">Himno de la Alegría (Beethoven)</option>
                 <option value="estrellita">Estrellita dónde estás (Mozart)</option>
                 <option value="campana">Campana sobre Campana</option>
@@ -323,7 +327,6 @@
 
             <button class="btn btn-primary" onclick="triggerFileInput()">📂 Cargar .MID</button>
             <input type="file" id="midi-file-input" accept=".mid,.midi" style="display:none" onchange="handleMidiFileUpload(event)">
-            <button class="btn btn-secondary" onclick="downloadTestMidiFile()" title="Descargar archivo .MID de prueba al ordenador para probar la carga">💾 Descargar .MID de prueba</button>
             
             <button class="btn btn-purple" id="btn-new-exercise" onclick="generateIntervalExercise()">🎲 Nuevo Ejercicio</button>
         </div>
@@ -384,23 +387,33 @@
             ⌨️ Borrar nota: <span class="key-hint">Backspace / ⌫</span>
         </div>
         <div class="check-options">
-            <span style="color:#8b949e; font-weight:600;">Nombre de Notas:</span>
+            <span style="color:#8b949e; font-weight:600;">Notación:</span>
+            <label class="label-radio">
+                <input type="radio" name="notation-view-mode" value="simple" checked onchange="setNotationViewMode('simple')">
+                <span style="color:#58a6ff; font-weight:bold;">🎯 Lectura Pura (Notas iguales)</span>
+            </label>
+            <label class="label-radio">
+                <input type="radio" name="notation-view-mode" value="rhythm" onchange="setNotationViewMode('rhythm')">
+                <span>🎼 Con Ritmo y Compases (Blancas, Negras, Corcheas)</span>
+            </label>
+
+            <span style="color:#8b949e; font-weight:600; margin-left: 10px;">Nombre Notas:</span>
             <label class="label-radio">
                 <input type="radio" name="note-label-mode" value="none" checked onchange="setNoteLabelMode('none')">
-                <span style="color:#58a6ff; font-weight:bold;">❌ Oculto (por defecto)</span>
+                <span style="color:#58a6ff; font-weight:bold;">❌ Oculto</span>
             </label>
             <label class="label-radio">
                 <input type="radio" name="note-label-mode" value="below" onchange="setNoteLabelMode('below')">
-                <span>Debajo del pentagrama</span>
+                <span>Debajo</span>
             </label>
             <label class="label-radio">
                 <input type="radio" name="note-label-mode" value="on_note" onchange="setNoteLabelMode('on_note')">
-                <span>🎯 Sobre la figura</span>
+                <span>Sobre figura</span>
             </label>
             
             <label class="label-radio" style="margin-left: 10px;">
                 <input type="checkbox" id="toggle-vkey" onchange="toggleVirtualKeyboard()">
-                <span>🎹 Teclado en pantalla (opcional)</span>
+                <span>🎹 Teclado (opcional)</span>
             </label>
         </div>
     </footer>
@@ -726,7 +739,8 @@
 
             badge.style.display = "inline-block";
             if (practiceSequence.length > 0 && currentStepIndex < practiceSequence.length) {
-                const targetMidi = practiceSequence[currentStepIndex];
+                const rawTarget = practiceSequence[currentStepIndex];
+                const targetMidi = (typeof rawTarget === 'object') ? rawTarget.midi : rawTarget;
                 noteTargetEl.textContent = NOTE_NAMES[targetMidi % 12];
                 countEl.textContent = `${currentStepIndex + 1}/${practiceSequence.length}`;
             } else if (practiceSequence.length > 0 && currentStepIndex >= practiceSequence.length) {
@@ -759,7 +773,8 @@
                 if (practiceSequence.length === 0) return;
 
                 if (currentStepIndex < practiceSequence.length) {
-                    const targetMidi = practiceSequence[currentStepIndex];
+                    const rawTarget = practiceSequence[currentStepIndex];
+                    const targetMidi = (typeof rawTarget === 'object') ? rawTarget.midi : rawTarget;
                     
                     // Comprobación exacta de nota (o misma nota en cualquier octava si se prefiere, aquí afinación exacta)
                     if (midi === targetMidi || (midi % 12 === targetMidi % 12)) {
@@ -830,14 +845,28 @@
             }
         }, true);
 
-        // RENDERIZADO VECTORIAL SVG DE NOTAS
+        // RENDERIZADO VECTORIAL SVG DE NOTAS (MODO DIDÁCTICO O MODO RÍTMICO CON COMPASES)
+        let notationViewMode = 'simple'; // 'simple' (Lectura Pura) o 'rhythm' (Figuras y Compases)
+
+        function setNotationViewMode(mode) {
+            notationViewMode = mode;
+            renderNotesLayer();
+        }
+
         function renderNotesLayer() {
             const layer = document.getElementById("notes-layer");
             let svg = "";
 
             const activeList = (currentMode === "free") ? noteSequence : practiceSequence;
 
-            activeList.forEach((midi, index) => {
+            // En modo rítmico, podemos calcular compases (ej. 4/4: compás cada 4 tiempos o cada 4 notas en ejercicios)
+            let currentBarCount = 0;
+
+            activeList.forEach((item, index) => {
+                // Compatibilidad: item puede ser un número MIDI (ej. 60) o un objeto {midi: 60, duration: 480, durationType: 'quarter'}
+                const midi = (typeof item === 'object') ? item.midi : item;
+                const durType = (typeof item === 'object' && item.durationType) ? item.durationType : 'quarter';
+
                 const staffIndex = Math.floor(index / NOTES_PER_STAFF);
                 const posInStaff = index % NOTES_PER_STAFF;
                 if (staffIndex >= 3) return; // Máximo 3 pentagramas
@@ -849,6 +878,14 @@
                 const isSharp = [1, 3, 6, 8, 10].includes(midi % 12);
                 const noteName = NOTE_NAMES[midi % 12];
                 const shortName = SHORT_NOTE_NAMES[midi % 12];
+
+                // DIBUJAR LÍNEAS DE COMPÁS (En Modo Rítmico cada 4 notas o tiempos)
+                if (notationViewMode === 'rhythm' && posInStaff > 0 && posInStaff % 4 === 0) {
+                    const barX = posX - (NOTE_STEP_X / 2);
+                    const topY = baseLineY - 80;
+                    const botY = baseLineY;
+                    svg += `<line x1="${barX}" y1="${topY}" x2="${barX}" y2="${botY}" stroke="#222" stroke-width="2.2" />`;
+                }
 
                 // Líneas adicionales inferiores (Do4, etc.)
                 if (step <= -2) {
@@ -872,55 +909,75 @@
                 }
 
                 // COLORES Y ESTADO DE LA NOTA
-                let noteFill = "#111111";
+                let noteColor = "#111111";
                 let auraSvg = "";
 
                 if (currentMode === "free") {
                     const isLast = (index === noteSequence.length - 1);
-                    noteFill = isLast ? (isSharp ? "#e63946" : "#0969da") : "#111111";
+                    noteColor = isLast ? (isSharp ? "#e63946" : "#0969da") : "#111111";
                 } else {
                     // Modo Práctica / Wait / Intervals
                     if (index < currentStepIndex) {
                         // Ya tocada con acierto (Verde esmeralda elegante)
-                        noteFill = "#2ea043";
+                        noteColor = "#2ea043";
                     } else if (index === currentStepIndex) {
                         // Nota actual a tocar
                         if (hasErrorOnCurrentStep) {
                             // ¡ERROR! ROJO ALERTA
-                            noteFill = "#da3633";
+                            noteColor = "#da3633";
                             auraSvg = `<circle cx="${posX}" cy="${noteY}" r="22" fill="none" stroke="#da3633" stroke-width="3.5" opacity="0.8" class="note-error-shake" />`;
                         } else {
                             // Esperando con aura azul
-                            noteFill = "#1f6feb";
+                            noteColor = "#1f6feb";
                             auraSvg = `<circle cx="${posX}" cy="${noteY}" r="20" fill="none" stroke="#1f6feb" stroke-width="2.5" opacity="0.6"><animate attributeName="r" values="18;23;18" dur="1.4s" repeatCount="indefinite"/></circle>`;
                         }
                     } else {
                         // Pendiente futura
-                        noteFill = "#555555";
+                        noteColor = "#555555";
                     }
                 }
 
-                // Dibujar Aura
+                // Dibujar Aura interactiva
                 if (auraSvg) svg += auraSvg;
 
-                // Cabeza de la figura
-                svg += `<ellipse cx="${posX}" cy="${noteY}" rx="12.5" ry="9" fill="${noteFill}" stroke="#111" stroke-width="1.8" transform="rotate(-20 ${posX} ${noteY})" />`;
+                // DIFERENCIACIÓN DE FIGURA SEGÚN EL MODO:
+                // En modo 'rhythm': 'whole' (redonda, hueca sin plica), 'half' (blanca, hueca con plica), 'quarter' (negra), 'eighth' (corchea con corchete)
+                const isHollow = (notationViewMode === 'rhythm' && (durType === 'half' || durType === 'whole'));
+                const hasStem = !(notationViewMode === 'rhythm' && durType === 'whole');
+                const isEighth = (notationViewMode === 'rhythm' && durType === 'eighth');
 
-                // Plica
-                if (step < 4) {
-                    svg += `<line x1="${posX + 10}" y1="${noteY - 2}" x2="${posX + 10}" y2="${noteY - 48}" stroke="#111" stroke-width="2.2" />`;
-                } else {
-                    svg += `<line x1="${posX - 10}" y1="${noteY + 2}" x2="${posX - 10}" y2="${noteY + 48}" stroke="#111" stroke-width="2.2" />`;
+                const headFill = isHollow ? "#ffffff" : noteColor;
+                const headStroke = isHollow ? noteColor : "#111";
+                const strokeWidth = isHollow ? "3" : "1.8";
+
+                // Cabeza de la figura
+                svg += `<ellipse cx="${posX}" cy="${noteY}" rx="12.5" ry="9" fill="${headFill}" stroke="${headStroke}" stroke-width="${strokeWidth}" transform="rotate(-20 ${posX} ${noteY})" />`;
+
+                // Plica (Stem)
+                if (hasStem) {
+                    const stemUp = (step < 4);
+                    const stemX = stemUp ? (posX + 10) : (posX - 10);
+                    const stemStartY = stemUp ? (noteY - 2) : (noteY + 2);
+                    const stemEndY = stemUp ? (noteY - 48) : (noteY + 48);
+
+                    svg += `<line x1="${stemX}" y1="${stemStartY}" x2="${stemX}" y2="${stemEndY}" stroke="${noteColor}" stroke-width="2.2" />`;
+
+                    // Si es CORCHEA, añadir corchete (flag)
+                    if (isEighth) {
+                        if (stemUp) {
+                            svg += `<path d="M ${stemX} ${stemEndY} C ${stemX + 10} ${stemEndY + 12}, ${stemX + 16} ${stemEndY + 22}, ${stemX + 6} ${stemEndY + 34}" fill="none" stroke="${noteColor}" stroke-width="2.5" stroke-linecap="round" />`;
+                        } else {
+                            svg += `<path d="M ${stemX} ${stemEndY} C ${stemX + 10} ${stemEndY - 12}, ${stemX + 16} ${stemEndY - 22}, ${stemX + 6} ${stemEndY - 34}" fill="none" stroke="${noteColor}" stroke-width="2.5" stroke-linecap="round" />`;
+                        }
+                    }
                 }
 
                 // ROTULACIÓN SEGÚN EL MODO ELEGIDO
                 if (noteLabelMode === "below") {
-                    // Texto debajo de la 1ª línea
                     const textY = baseLineY + 36;
                     svg += `<text x="${posX}" y="${textY}" text-anchor="middle" font-size="13" font-weight="700" fill="#333" font-family="sans-serif">${noteName}</text>`;
                 } else if (noteLabelMode === "on_note") {
-                    // TEXTO SOBRE LA PROPIA FIGURA (DENTRO DEL ÓVALO)
-                    const labelColor = (noteFill === "#ffffff") ? "#111" : "#ffffff";
+                    const labelColor = isHollow ? noteColor : "#ffffff";
                     svg += `<text x="${posX}" y="${noteY + 4.2}" text-anchor="middle" font-size="9" font-weight="900" fill="${labelColor}" font-family="sans-serif" style="pointer-events:none;">${shortName}</text>`;
                 }
             });
@@ -1031,7 +1088,9 @@
 
                 let targetPitchClass = null;
                 if (currentMode !== "free" && practiceSequence.length > 0 && currentStepIndex < practiceSequence.length) {
-                    targetPitchClass = practiceSequence[currentStepIndex] % 12;
+                    const rawTarget = practiceSequence[currentStepIndex];
+                    const targetMidi = (typeof rawTarget === 'object') ? rawTarget.midi : rawTarget;
+                    targetPitchClass = targetMidi % 12;
                 }
 
                 // Evaluar todos los fragmentos devueltos en el evento actual
@@ -1051,7 +1110,8 @@
                                 const noteNameHeard = NOTE_NAMES[detectedPitch];
 
                                 if (currentMode !== "free" && practiceSequence.length > 0 && currentStepIndex < practiceSequence.length) {
-                                    const targetMidi = practiceSequence[currentStepIndex];
+                                    const rawTarget = practiceSequence[currentStepIndex];
+                                    const targetMidi = (typeof rawTarget === 'object') ? rawTarget.midi : rawTarget;
                                     const expectedPitchClass = targetMidi % 12;
 
                                     if (detectedPitch === expectedPitchClass) {
@@ -1172,57 +1232,18 @@
             reader.readAsArrayBuffer(file);
         }
 
-        // GENERADOR Y DESCARGADOR AUTOMÁTICO DE ARCHIVO .MID (CLIENT-SIDE)
-        function downloadTestMidiFile() {
-            const melody = PRELOADED_SONGS.hymn_fallen;
-            // Construir cabecera estándar MIDI Formato 0
-            const header = [
-                0x4D, 0x54, 0x68, 0x64, // 'MThd'
-                0x00, 0x00, 0x00, 0x06, // Longitud cabecera: 6 bytes
-                0x00, 0x00,             // Formato 0 (Single track)
-                0x00, 0x01,             // 1 pista
-                0x01, 0xE0              // 480 ticks por negra (division)
-            ];
-
-            const trackEvents = [];
-            melody.forEach(note => {
-                // Delta time 0, Note On (0x90), Note, Velocity 80
-                trackEvents.push(0x00, 0x90, note, 80);
-                // Delta time 480 (0x83, 0x60 en variable length), Note Off (0x80), Note, Velocity 0
-                trackEvents.push(0x83, 0x60, 0x80, note, 0);
-            });
-            // Fin de pista (Meta Event End of Track): Delta 0, 0xFF, 0x2F, 0x00
-            trackEvents.push(0x00, 0xFF, 0x2F, 0x00);
-
-            // Cabecera de pista MTrk
-            const trackLen = trackEvents.length;
-            const trackHeader = [
-                0x4D, 0x54, 0x72, 0x6B, // 'MTrk'
-                (trackLen >> 24) & 0xFF,
-                (trackLen >> 16) & 0xFF,
-                (trackLen >> 8) & 0xFF,
-                trackLen & 0xFF
-            ];
-
-            const fullMidi = new Uint8Array([...header, ...trackHeader, ...trackEvents]);
-            const blob = new Blob([fullMidi], { type: "audio/midi" });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement("a");
-            a.href = url;
-            a.download = "Hymn_to_the_Fallen_John_Williams.mid";
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-        }
-
-        // PARSER MIDI INTEGRADO EN JS PURO (Extrae eventos Note-On)
+        // PARSER MIDI INTEGRADO EN JS PURO (Extrae eventos Note-On y calcula duraciones)
         function extractNotesFromMidiData(bytes) {
-            const notes = [];
+            const rawNotes = [];
             let i = 0;
             // Buscar cabecera MThd
-            if (String.fromCharCode(...bytes.slice(0, 4)) !== "MThd") return notes;
+            if (String.fromCharCode(...bytes.slice(0, 4)) !== "MThd") return [];
+            const timeDivision = (bytes[12] << 8) | bytes[13];
+            const ticksPerQuarter = (timeDivision > 0 && !(timeDivision & 0x8000)) ? timeDivision : 480;
             i += 14; // Saltar cabecera
+
+            // Estructura para registrar notas activas por canal y tono para medir duración
+            const activeNotesMap = new Map();
 
             while (i < bytes.length) {
                 if (i + 8 > bytes.length) break;
@@ -1233,6 +1254,7 @@
                 if (chunkType === "MTrk") {
                     const trackEnd = i + chunkLength;
                     let runningStatus = 0;
+                    let currentTick = 0;
 
                     while (i < trackEnd) {
                         // Delta time (variable length)
@@ -1242,6 +1264,7 @@
                             delta = (delta << 7) | (b & 0x7F);
                             if (!(b & 0x80)) break;
                         }
+                        currentTick += delta;
 
                         if (i >= trackEnd) break;
                         let status = bytes[i];
@@ -1278,10 +1301,49 @@
                             // Note ON
                             const note = bytes[i++];
                             const vel = bytes[i++];
-                            if (vel > 0 && channel !== 9) { // Excluir canal 10 de percusión
-                                notes.push(note);
+                            const keyId = `${channel}-${note}`;
+
+                            if (vel > 0 && channel !== 9) { // Note On real (excluir percusión)
+                                const noteObj = {
+                                    midi: note,
+                                    startTick: currentTick,
+                                    durationTicks: ticksPerQuarter,
+                                    durationType: 'quarter'
+                                };
+                                rawNotes.push(noteObj);
+                                activeNotesMap.set(keyId, noteObj);
+                            } else if (vel === 0) {
+                                // Note Off expresado como Note On vel=0
+                                if (activeNotesMap.has(keyId)) {
+                                    const noteObj = activeNotesMap.get(keyId);
+                                    const dur = Math.max(ticksPerQuarter / 2, currentTick - noteObj.startTick);
+                                    noteObj.durationTicks = dur;
+                                    // Clasificar figura según duración en relación al pulso de negra
+                                    const ratio = dur / ticksPerQuarter;
+                                    if (ratio >= 3.2) noteObj.durationType = 'whole';       // Redonda (4 tiempos)
+                                    else if (ratio >= 1.6) noteObj.durationType = 'half';    // Blanca (2 tiempos)
+                                    else if (ratio >= 0.75) noteObj.durationType = 'quarter'; // Negra (1 tiempo)
+                                    else noteObj.durationType = 'eighth';                     // Corchea (1/2 tiempo)
+                                    activeNotesMap.delete(keyId);
+                                }
                             }
-                        } else if (eventType === 0x8 || eventType === 0xA || eventType === 0xB || eventType === 0xE) {
+                        } else if (eventType === 0x8) {
+                            // Note OFF
+                            const note = bytes[i++];
+                            const vel = bytes[i++];
+                            const keyId = `${channel}-${note}`;
+                            if (activeNotesMap.has(keyId)) {
+                                const noteObj = activeNotesMap.get(keyId);
+                                const dur = Math.max(ticksPerQuarter / 2, currentTick - noteObj.startTick);
+                                noteObj.durationTicks = dur;
+                                const ratio = dur / ticksPerQuarter;
+                                if (ratio >= 3.2) noteObj.durationType = 'whole';
+                                else if (ratio >= 1.6) noteObj.durationType = 'half';
+                                else if (ratio >= 0.75) noteObj.durationType = 'quarter';
+                                else noteObj.durationType = 'eighth';
+                                activeNotesMap.delete(keyId);
+                            }
+                        } else if (eventType === 0xA || eventType === 0xB || eventType === 0xE) {
                             i += 2;
                         } else if (eventType === 0xC || eventType === 0xD) {
                             i += 1;
@@ -1291,7 +1353,7 @@
                     i += chunkLength;
                 }
             }
-            return notes;
+            return rawNotes;
         }
 
         // TECLADO EN PANTALLA (OPCIONAL)

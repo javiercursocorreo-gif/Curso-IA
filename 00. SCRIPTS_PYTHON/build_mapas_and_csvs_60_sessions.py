@@ -199,6 +199,7 @@ def generate_columns_html(session_num, session_folder, files):
         and not f.startswith('0. FASE_0')
         and not (session_num in (1, 2) and 'CUENT' in f)
         and not ('FRAC-058' in f and ' 2. ' in f)
+        and not (session_num == 1 and 'FRAC-058' in f.upper() and f.lower().endswith('.pdf'))
     ]
     
     # Clasificar archivos por columna (1, 2 o 3)
