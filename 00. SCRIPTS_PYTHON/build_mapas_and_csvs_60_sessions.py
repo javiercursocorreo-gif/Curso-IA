@@ -293,11 +293,11 @@ def generate_columns_html(session_num, session_folder, files):
                             </div>
                             <span class="file-arrow">↗</span>
                         </a>
-                        <a href="{mp4_href}" target="_blank" class="btn-launch-interactive" style="background:linear-gradient(135deg, #0284c7, #0369a1); border-color:#38bdf8;" title="Reproducir Vídeo La Galería de los Monstruos (MP4)">
-                            🎬 Ver Vídeo: La Galería de los Monstruos (MP4) ↗
-                        </a>
-                        <a href="{rel_href}" target="_blank" class="btn-launch-interactive" style="margin-top:6px; background:linear-gradient(135deg, #7e22ce, #6b21a8); border-color:#c084fc;" title="Abrir Ficha Histórica de los 10 Científicos (PDF)">
+                        <a href="{rel_href}" target="_blank" class="btn-launch-interactive" style="background:linear-gradient(135deg, #7e22ce, #6b21a8); border-color:#c084fc;" title="Abrir Ficha Histórica de los 10 Científicos (PDF)">
                             📄 Abrir Ficha Histórica de los 10 Científicos (PDF) ↗
+                        </a>
+                        <a href="{mp4_href}" target="_blank" class="btn-launch-interactive" style="margin-top:6px; background:linear-gradient(135deg, #0284c7, #0369a1); border-color:#38bdf8;" title="Reproducir Vídeo La Galería de los Monstruos (MP4)">
+                            🎬 Ver Vídeo: La Galería de los Monstruos (MP4) ↗
                         </a>
                     </div>"""
             elif it.get("code") == "COD":
