@@ -112,6 +112,12 @@
         .btn-primary { background: #1f6feb; }
         .btn-danger { background: #da3633; }
         .btn-purple { background: #8957e5; }
+        .btn-success { background: #238636; }
+        .btn-success:hover { background: #2ea043; }
+        .btn-playback-active {
+            background: #da3633 !important;
+            box-shadow: 0 0 10px rgba(218, 54, 51, 0.8) !important;
+        }
         .btn-active-mic { background: #e3b341; color: #111; font-weight: 700; box-shadow: 0 0 10px #e3b341; }
 
         /* BARRA SECUNDARIA DE MODO Y PARTITURA */
@@ -357,6 +363,7 @@
             <input type="file" id="midi-file-input" accept=".mid,.midi" style="display:none" onchange="handleMidiFileUpload(event)">
             
             <button class="btn btn-purple" id="btn-new-exercise" onclick="generateIntervalExercise()">🎲 Nuevo Ejercicio</button>
+            <button class="btn btn-success" id="btn-playback" onclick="togglePlayback()" style="font-weight:700;">▶ Escuchar</button>
         </div>
 
         <div class="practice-indicator" id="practice-status-badge" style="display:inline-block;">
@@ -472,6 +479,8 @@
         let practiceSequence = []; // Secuencia de notas del ejercicio o canción
         let currentStepIndex = 0; // Índice de la nota actual a tocar en modo práctica
         let hasErrorOnCurrentStep = false; // Flag para feedback en ROJO
+        let isPlaying = false; // Flag de reproducción automática activa
+        let playbackTimeoutId = null; // Temporizador del secuenciador de audio
 
         const NOTES_PER_STAFF = 30;
         const TOTAL_MAX_NOTES = 90;
@@ -659,12 +668,144 @@
             btn.classList.toggle("btn-secondary", !soundEnabled);
         }
 
+        // CONTROL DE REPRODUCCIÓN INTERACTIVA (PLAY / PAUSE / STOP)
+        function togglePlayback() {
+            if (isPlaying) {
+                stopPlayback(true);
+            } else {
+                startPlayback();
+            }
+        }
+
+        function startPlayback() {
+            const seq = (currentMode === "free") ? noteSequence : practiceSequence;
+            if (!seq || seq.length === 0) {
+                alert("No hay notas para reproducir. Carga un archivo MIDI o selecciona un ejercicio.");
+                return;
+            }
+
+            if (!soundEnabled) {
+                toggleSound();
+            }
+            initAudio();
+
+            isPlaying = true;
+            currentStepIndex = 0;
+            hasErrorOnCurrentStep = false;
+            updatePracticeStatusUI();
+            renderNotesLayer();
+
+            const btn = document.getElementById("btn-playback");
+            if (btn) {
+                btn.innerHTML = "⏹ Detener";
+                btn.classList.add("btn-playback-active");
+                btn.classList.remove("btn-success");
+            }
+
+            playPlaybackStep();
+        }
+
+        function stopPlayback(resetToStart = true) {
+            isPlaying = false;
+            if (playbackTimeoutId) {
+                clearTimeout(playbackTimeoutId);
+                playbackTimeoutId = null;
+            }
+
+            const btn = document.getElementById("btn-playback");
+            if (btn) {
+                btn.innerHTML = "▶ Escuchar";
+                btn.classList.remove("btn-playback-active");
+                btn.classList.add("btn-success");
+            }
+
+            // Desmarcar teclas activas del piano virtual
+            document.querySelectorAll(".white-key.active, .black-key.active").forEach(el => el.classList.remove("active"));
+
+            if (resetToStart) {
+                currentStepIndex = 0;
+                hasErrorOnCurrentStep = false;
+                updatePracticeStatusUI();
+                renderNotesLayer();
+            }
+        }
+
+        function playPlaybackStep() {
+            if (!isPlaying) return;
+
+            const seq = (currentMode === "free") ? noteSequence : practiceSequence;
+            if (currentStepIndex >= seq.length) {
+                // Secuencia completada
+                setTimeout(() => {
+                    stopPlayback(true);
+                }, 600);
+                return;
+            }
+
+            const item = seq[currentStepIndex];
+            const midi = (typeof item === 'object') ? item.midi : item;
+
+            // 1. Tocar el tono en el motor de audio de piano
+            playSound(midi);
+
+            // 2. Iluminar la tecla en el teclado en pantalla (si está desplegado)
+            highlightVirtualKey(midi, true);
+            setTimeout(() => {
+                highlightVirtualKey(midi, false);
+            }, 280);
+
+            // 3. Actualizar la partitura y la información de la nota
+            updatePracticeStatusUI();
+            renderNotesLayer();
+
+            // 4. Calcular el tempo y duración hasta la siguiente nota
+            let delayMs = 460; // Tempo estándar de ejercicio (~130 BPM)
+
+            if (typeof item === 'object') {
+                if (item.durationType === 'whole') delayMs = 1500;
+                else if (item.durationType === 'half') delayMs = 850;
+                else if (item.durationType === 'quarter') delayMs = 460;
+                else if (item.durationType === 'eighth') delayMs = 240;
+
+                // Sincronización precisa por delta ticks si provienen de archivo MIDI
+                if (currentStepIndex + 1 < seq.length) {
+                    const nextItem = seq[currentStepIndex + 1];
+                    if (typeof nextItem === 'object' && typeof nextItem.startTick === 'number' && typeof item.startTick === 'number') {
+                        const deltaTicks = nextItem.startTick - item.startTick;
+                        if (deltaTicks > 0) {
+                            const tpq = (window.lastMidiTicksPerQuarter && window.lastMidiTicksPerQuarter > 0) ? window.lastMidiTicksPerQuarter : 480;
+                            const calculatedMs = Math.round((deltaTicks / tpq) * 480);
+                            delayMs = Math.max(160, Math.min(2200, calculatedMs));
+                        } else if (deltaTicks === 0) {
+                            delayMs = 60; // Acorde o notas simultáneas
+                        }
+                    }
+                }
+            }
+
+            // 5. Programar siguiente nota
+            playbackTimeoutId = setTimeout(() => {
+                if (!isPlaying) return;
+                currentStepIndex++;
+                if (currentStepIndex >= seq.length) {
+                    updatePracticeStatusUI();
+                    renderNotesLayer();
+                    setTimeout(() => {
+                        stopPlayback(true);
+                    }, 650);
+                } else {
+                    playPlaybackStep();
+                }
+            }, delayMs);
+        }
+
         function setNoteLabelMode(mode) {
             noteLabelMode = mode;
             renderNotesLayer();
         }
 
         function changeMode() {
+            stopPlayback(false);
             currentMode = document.getElementById("select-mode").value;
             const songGroup = document.getElementById("song-controls-group");
             const newExBtn = document.getElementById("btn-new-exercise");
@@ -705,6 +846,7 @@
         }
 
         function loadSongByKey(key) {
+            stopPlayback(false);
             if (PRELOADED_SONGS[key]) {
                 practiceSequence = [...PRELOADED_SONGS[key]];
                 currentStepIndex = 0;
@@ -717,6 +859,7 @@
 
         // GENERADOR PROCEDURAL DE EJERCICIOS CON INTERVALOS DE 3ªS Y 5ªS
         function generateIntervalExercise() {
+            stopPlayback(false);
             // Escala diatónica en Clave de Sol:
             // 0: Do4 (60), 1: Re4 (62), 2: Mi4 (64), 3: Fa4 (65), 4: Sol4 (67),
             // 5: La4 (69), 6: Si4 (71), 7: Do5 (72), 8: Re5 (74), 9: Mi5 (76),
@@ -797,6 +940,12 @@
 
             highlightVirtualKey(midi, true);
 
+            if (isPlaying) {
+                // Durante la reproducción automática, emitir sonido de acompañamiento sin alterar el cursor
+                playSound(midi);
+                return;
+            }
+
             if (currentMode === "free") {
                 // Modo Libre
                 playSound(midi);
@@ -864,6 +1013,7 @@
         }
 
         function clearNotes() {
+            stopPlayback(false);
             if (currentMode === "free") {
                 noteSequence.length = 0;
                 document.getElementById("welcome-hint").style.display = "block";
@@ -1251,6 +1401,7 @@
                     const data = new Uint8Array(evt.target.result);
                     const parsedNotes = extractNotesFromMidiData(data);
                     if (parsedNotes.length > 0) {
+                        stopPlayback(false);
                         practiceSequence = parsedNotes.slice(0, TOTAL_MAX_NOTES);
                         currentStepIndex = 0;
                         hasErrorOnCurrentStep = false;
@@ -1259,7 +1410,7 @@
                         document.getElementById("welcome-hint").style.display = "none";
                         updatePracticeStatusUI();
                         renderNotesLayer();
-                        alert(`🎶 Partitura MIDI cargada con éxito: ${practiceSequence.length} notas listas para practicar.`);
+                        alert(`🎶 Partitura MIDI cargada con éxito: ${practiceSequence.length} notas listas para reproducir o practicar.`);
                     } else {
                         alert("No se detectaron notas en el archivo MIDI seleccionado.");
                     }
@@ -1278,6 +1429,7 @@
             if (String.fromCharCode(...bytes.slice(0, 4)) !== "MThd") return [];
             const timeDivision = (bytes[12] << 8) | bytes[13];
             const ticksPerQuarter = (timeDivision > 0 && !(timeDivision & 0x8000)) ? timeDivision : 480;
+            window.lastMidiTicksPerQuarter = ticksPerQuarter;
             i += 14; // Saltar cabecera
 
             // Estructura para registrar notas activas por canal y tono para medir duración
@@ -1391,6 +1543,7 @@
                     i += chunkLength;
                 }
             }
+            rawNotes.sort((a, b) => a.startTick - b.startTick);
             return rawNotes;
         }
 
