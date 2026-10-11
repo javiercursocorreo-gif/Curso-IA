@@ -199,7 +199,7 @@ def build_pdf():
             Paragraph("Globo Ocular Humano & Cristalino", tc_model),
             Paragraph("Córnea de cristal reflectante, iris 4K, pupila interactiva con reflejo fotomotor (miosis/midriasis por slider) y seguimiento ocular.", tc_exp),
             Paragraph("👁️ Ver Simulador Ojo Humano 3D ↗", tc_btn),
-            Paragraph("🚀 <b>Activo en S04</b>", tc_status)
+            Paragraph("📅 Plan S04", tc_status)
         ],
         [
             Paragraph("<b>05</b><br/><font color='#64748B'>[COD-005]</font>", tc_sesion),
