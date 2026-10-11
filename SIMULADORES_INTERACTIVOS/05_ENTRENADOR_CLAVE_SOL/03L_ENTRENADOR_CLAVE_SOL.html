@@ -84,7 +84,7 @@
             width: 10px;
             height: 10px;
             border-radius: 50%;
-            background: #f85149;
+            background: #3fb950;
             transition: all 0.3s;
         }
 
@@ -323,13 +323,12 @@
 
     <header>
         <div class="header-title-box">
-            <span class="tag-3l">SESIÓN 3L</span>
             <h1>🎼 Entrenador Clave de Sol <span>(3 Pentagramas)</span></h1>
         </div>
         <div class="controls-bar">
             <div class="status-badge">
                 <span class="dot" id="status-dot"></span>
-                <span id="status-text">Conectando MIDI...</span>
+                <span id="status-text">Listo</span>
             </div>
             <button class="btn btn-secondary" id="btn-mic" onclick="toggleVoiceDetection()">🎤 Voz (Mic): OFF</button>
             <button class="btn btn-secondary" id="btn-sound" onclick="toggleSound()">🔊 Sonido: ON</button>
@@ -364,6 +363,8 @@
             
             <button class="btn btn-purple" id="btn-new-exercise" onclick="generateIntervalExercise()">🎲 Nuevo Ejercicio</button>
             <button class="btn btn-success" id="btn-playback" onclick="togglePlayback()" style="font-weight:700;">▶ Escuchar</button>
+            <button class="btn btn-secondary" id="btn-transpose-up" onclick="transposeOctave(12)" title="Subir toda la partitura una octava más alta (+12 semitonos)">▲ +8va</button>
+            <button class="btn btn-secondary" id="btn-transpose-down" onclick="transposeOctave(-12)" title="Bajar toda la partitura una octava (-12 semitonos)">▼ -8va</button>
         </div>
 
         <div class="practice-indicator" id="practice-status-badge" style="display:inline-block;">
@@ -408,7 +409,7 @@
 
             <g id="welcome-hint">
                 <text x="900" y="95" text-anchor="middle" font-size="20" fill="#888" font-style="italic">
-                    [Sesión 3L] Toca tu Akai / Korg o canta por micrófono: la partitura te espera en cada nota ➔
+                    Toca tu teclado, pantalla táctil o canta por micrófono: la partitura te espera en cada nota ➔
                 </text>
             </g>
         </svg>
@@ -797,6 +798,54 @@
                     playPlaybackStep();
                 }
             }, delayMs);
+        }
+
+        // TRANSPOSICIÓN DE OCTAVA DE TODA LA PARTITURA (▲ +8va / ▼ -8va)
+        function transposeOctave(semitones = 12) {
+            const seq = (currentMode === "free") ? noteSequence : practiceSequence;
+            if (!seq || seq.length === 0) {
+                alert("No hay notas en la partitura para trasponer. Carga un archivo MIDI o genera un ejercicio primero.");
+                return;
+            }
+
+            // Comprobar límites para asegurar que se mantienen dentro de un registro musical válido (21 = La0 a 108 = Do8)
+            let canTranspose = true;
+            for (const item of seq) {
+                const midi = (typeof item === 'object') ? item.midi : item;
+                const newMidi = midi + semitones;
+                if (newMidi < 21 || newMidi > 108) {
+                    canTranspose = false;
+                    break;
+                }
+            }
+
+            if (!canTranspose) {
+                alert(semitones > 0 ? "No se puede subir más: las notas excederían el registro agudo." : "No se puede bajar más: las notas quedarían demasiado graves.");
+                return;
+            }
+
+            // Detener reproducción en curso si está activa para re-sincronizar
+            if (isPlaying) {
+                stopPlayback(false);
+            }
+
+            // Aplicar la transposición de +12 o -12 semitonos a todas las notas de la partitura
+            if (currentMode === "free") {
+                for (let i = 0; i < noteSequence.length; i++) {
+                    noteSequence[i] += semitones;
+                }
+            } else {
+                for (let i = 0; i < practiceSequence.length; i++) {
+                    if (typeof practiceSequence[i] === 'object') {
+                        practiceSequence[i].midi += semitones;
+                    } else {
+                        practiceSequence[i] += semitones;
+                    }
+                }
+            }
+
+            renderNotesLayer();
+            updatePracticeStatusUI();
         }
 
         function setNoteLabelMode(mode) {
@@ -1648,7 +1697,10 @@
             const text = document.getElementById("status-text");
 
             if (!navigator.requestMIDIAccess) {
-                text.textContent = "Web MIDI no soportado en este navegador";
+                // En iPad Safari o navegadores sin Web MIDI nativo, confirmar que el modo táctil y mic están 100% operativos
+                dot.style.background = "#3fb950";
+                dot.classList.add("connected");
+                text.textContent = "Teclado táctil y Mic listos";
                 return;
             }
 
@@ -1658,11 +1710,13 @@
                 function bindInputs() {
                     const inputs = Array.from(midiAccessInstance.inputs.values());
                     if (inputs.length > 0) {
+                        dot.style.background = "#3fb950";
                         dot.classList.add("connected");
-                        text.textContent = `Conectado: ${inputs.map(i => i.name).join(", ")}`;
+                        text.textContent = `MIDI: ${inputs.map(i => i.name).join(", ")}`;
                     } else {
-                        dot.classList.remove("connected");
-                        text.textContent = "Conecta el Korg EK-50 / Akai por USB";
+                        dot.style.background = "#3fb950";
+                        dot.classList.add("connected");
+                        text.textContent = "Teclado táctil y Mic listos";
                     }
 
                     inputs.forEach(input => {
@@ -1682,8 +1736,9 @@
                 bindInputs();
                 midiAccessInstance.onstatechange = bindInputs;
             } catch (err) {
-                dot.classList.remove("connected");
-                text.textContent = "Acceso MIDI no disponible";
+                dot.style.background = "#3fb950";
+                dot.classList.add("connected");
+                text.textContent = "Teclado táctil y Mic listos";
             }
         }
 
