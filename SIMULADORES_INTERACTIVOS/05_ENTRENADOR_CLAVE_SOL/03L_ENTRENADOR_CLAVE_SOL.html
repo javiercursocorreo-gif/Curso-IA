@@ -2818,18 +2818,42 @@
             }, { passive: true });
         }
 
-        // INICIALIZACIÓN
-        setupMIDI();
-        setupScoreWheelScroll();
-        window.addEventListener("click", () => {
-            initAudio();
-            if (!midiAccessInstance && navigator.requestMIDIAccess) setupMIDI();
-            // Precargar muestras de piano de cola acústico para las notas de Clave de Sol (Do4 a La5)
-            [60, 62, 64, 65, 67, 69, 71, 72, 74, 76, 77, 79, 81].forEach(m => loadGrandPianoSample(m));
-        }, { once: true });
-        
-        // Iniciar por defecto en Modo Ejercicio Intervalos (60 notas en los 2 primeros pentagramas con nombres ocultos)
-        changeMode();
+        // INICIALIZACIÓN ROBUSTA Y A PRUEBA DE FALLOS
+        function initApp() {
+            try {
+                // 1. Renderizar la partitura y los controles inmediatamente
+                changeMode();
+            } catch (err) {
+                console.error("Error al inicializar modo:", err);
+                try { renderStavesLayer(60); } catch(e){}
+            }
+
+            try {
+                setupScoreWheelScroll();
+            } catch (err) {
+                console.error("Error en setupScoreWheelScroll:", err);
+            }
+
+            try {
+                setupMIDI().catch(err => console.warn("MIDI init notice:", err));
+            } catch (err) {
+                console.warn("MIDI access notice:", err);
+            }
+
+            window.addEventListener("click", () => {
+                try {
+                    initAudio();
+                    if (!midiAccessInstance && navigator.requestMIDIAccess) setupMIDI().catch(() => {});
+                    [60, 62, 64, 65, 67, 69, 71, 72, 74, 76, 77, 79, 81].forEach(m => loadGrandPianoSample(m));
+                } catch(e){}
+            }, { once: true });
+        }
+
+        if (document.readyState === "loading") {
+            document.addEventListener("DOMContentLoaded", initApp);
+        } else {
+            initApp();
+        }
     </script>
 </body>
 </html>
