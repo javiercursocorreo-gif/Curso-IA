@@ -187,6 +187,22 @@ def generate_columns_html(session_num, session_folder, files):
                 return (2, 4, 4, filename.lower())
             if 'COD-001' in f_up or 'TALLER' in f_up or 'COD-' in f_up:
                 return (2, 5, 1, filename.lower())
+        if session_num == 2:
+            f_up = filename.upper()
+            if 'FRAC-001' in f_up and '0_A_TEORIA' in f_up:
+                return (2, 4, 1, filename.lower())
+            if 'FRAC-001' in f_up and '0_B_RETO' in f_up:
+                return (2, 4, 2, filename.lower())
+            if 'FRAC-001' in f_up and filename.lower().endswith('.mp4'):
+                return (2, 4, 3, filename.lower())
+            if 'FRAC-001' in f_up and filename.lower().endswith('.pdf'):
+                return (2, 4, 4, filename.lower())
+            if 'FRAC-055' in f_up and filename.lower().endswith('.mp4'):
+                return (2, 4, 5, filename.lower())
+            if 'FRAC-055' in f_up and filename.lower().endswith('.pdf'):
+                return (2, 4, 6, filename.lower())
+            if 'COD-002' in f_up or 'TALLER' in f_up or 'COD-' in f_up:
+                return (2, 5, 1, filename.lower())
         return file_sort_key(filename)
 
     # Filtrar archivos reales de contenido (ignorando duplicados de sincronización de iCloud ' 2.pdf', etc.)
