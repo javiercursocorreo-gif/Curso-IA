@@ -313,6 +313,7 @@
             <label style="color:#8b949e; font-weight:600;">Partitura:</label>
             <select class="select-input" id="select-song" style="display:none;" onchange="loadSelectedSong()">
                 <option value="">-- Elige una canción --</option>
+                <option value="hymn_fallen">Hymn to the Fallen (John Williams)</option>
                 <option value="alegria">Himno de la Alegría (Beethoven)</option>
                 <option value="estrellita">Estrellita dónde estás (Mozart)</option>
                 <option value="campana">Campana sobre Campana</option>
@@ -322,6 +323,7 @@
 
             <button class="btn btn-primary" onclick="triggerFileInput()">📂 Cargar .MID</button>
             <input type="file" id="midi-file-input" accept=".mid,.midi" style="display:none" onchange="handleMidiFileUpload(event)">
+            <button class="btn btn-secondary" onclick="downloadTestMidiFile()" title="Descargar archivo .MID de prueba al ordenador para probar la carga">💾 Descargar .MID de prueba</button>
             
             <button class="btn btn-purple" id="btn-new-exercise" onclick="generateIntervalExercise()">🎲 Nuevo Ejercicio</button>
         </div>
@@ -432,6 +434,7 @@
 
         // CANCIONES PRECARGADAS DIDÁCTICAS (Números MIDI)
         const PRELOADED_SONGS = {
+            hymn_fallen: [67, 71, 74, 72, 71, 69, 67, 66, 67, 69, 71, 67, 69, 71, 74, 76, 74, 71, 69, 67, 69, 71, 69, 67, 67, 71, 74, 72, 71, 69, 67, 66, 67, 69, 71, 67, 69, 71, 74, 76, 74, 72, 71, 69, 67, 66, 67, 67],
             alegria: [64, 64, 65, 67, 67, 65, 64, 62, 60, 60, 62, 64, 64, 62, 62, 64, 64, 65, 67, 67, 65, 64, 62, 60, 60, 62, 64, 62, 60, 60],
             estrellita: [60, 60, 67, 67, 69, 69, 67, 65, 65, 64, 64, 62, 62, 60, 67, 67, 65, 65, 64, 64, 62, 67, 67, 65, 65, 64, 64, 62],
             campana: [67, 67, 67, 67, 69, 67, 65, 64, 62, 64, 65, 67, 65, 64, 62, 60, 67, 67, 67, 67, 69, 67, 65, 64, 62, 64, 65, 67, 65, 64],
@@ -1167,6 +1170,50 @@
                 }
             };
             reader.readAsArrayBuffer(file);
+        }
+
+        // GENERADOR Y DESCARGADOR AUTOMÁTICO DE ARCHIVO .MID (CLIENT-SIDE)
+        function downloadTestMidiFile() {
+            const melody = PRELOADED_SONGS.hymn_fallen;
+            // Construir cabecera estándar MIDI Formato 0
+            const header = [
+                0x4D, 0x54, 0x68, 0x64, // 'MThd'
+                0x00, 0x00, 0x00, 0x06, // Longitud cabecera: 6 bytes
+                0x00, 0x00,             // Formato 0 (Single track)
+                0x00, 0x01,             // 1 pista
+                0x01, 0xE0              // 480 ticks por negra (division)
+            ];
+
+            const trackEvents = [];
+            melody.forEach(note => {
+                // Delta time 0, Note On (0x90), Note, Velocity 80
+                trackEvents.push(0x00, 0x90, note, 80);
+                // Delta time 480 (0x83, 0x60 en variable length), Note Off (0x80), Note, Velocity 0
+                trackEvents.push(0x83, 0x60, 0x80, note, 0);
+            });
+            // Fin de pista (Meta Event End of Track): Delta 0, 0xFF, 0x2F, 0x00
+            trackEvents.push(0x00, 0xFF, 0x2F, 0x00);
+
+            // Cabecera de pista MTrk
+            const trackLen = trackEvents.length;
+            const trackHeader = [
+                0x4D, 0x54, 0x72, 0x6B, // 'MTrk'
+                (trackLen >> 24) & 0xFF,
+                (trackLen >> 16) & 0xFF,
+                (trackLen >> 8) & 0xFF,
+                trackLen & 0xFF
+            ];
+
+            const fullMidi = new Uint8Array([...header, ...trackHeader, ...trackEvents]);
+            const blob = new Blob([fullMidi], { type: "audio/midi" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "Hymn_to_the_Fallen_John_Williams.mid";
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
         }
 
         // PARSER MIDI INTEGRADO EN JS PURO (Extrae eventos Note-On)

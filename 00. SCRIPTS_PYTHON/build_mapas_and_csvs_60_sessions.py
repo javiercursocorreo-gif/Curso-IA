@@ -80,14 +80,35 @@ COLUMNS_CONFIG = [
 
 def clean_title_from_filename(filename, session_num=1):
     name, _ = os.path.splitext(filename)
-    if 'COD-001' in filename.upper() or ('COD-' in filename.upper() and session_num == 1):
-        return 'Construye tu Simulador del Árbol Bronquial y Pulmones 3D'
-    if 'COD-002' in filename.upper() or ('COD-' in filename.upper() and session_num == 2):
-        return 'Construye tu Simulador del Latido Cardíaco Humano en 3D'
-    if 'SIMULADOR_PULMON' in filename.upper():
+    f_up = filename.upper()
+    if 'COD-001' in f_up or ('COD-' in f_up and session_num == 1):
+        return 'Taller: Crea tu propio simulador de los pulmones'
+    if 'COD-002' in f_up or ('COD-' in f_up and session_num == 2):
+        return 'Taller: Crea tu propio simulador del corazón humano'
+    if 'COD-003' in f_up or ('COD-' in f_up and session_num == 3):
+        return 'Taller: Crea tu propio simulador de las ruinas de Pompeya'
+    if 'COD-004' in f_up or ('COD-' in f_up and session_num == 4):
+        return 'Taller: Crea tu propio simulador del ojo humano'
+    if 'COD-005' in f_up or ('COD-' in f_up and session_num == 5):
+        return 'Taller: Crea tu propio simulador del módulo lunar Apolo 11'
+    if 'COD-006' in f_up or ('COD-' in f_up and session_num == 6):
+        return 'Taller: Crea tu propio simulador del cerebro humano'
+    if 'COD-007' in f_up or ('COD-' in f_up and session_num == 7):
+        return 'Taller: Crea tu propio simulador del motor de 4 tiempos'
+    if 'COD-008' in f_up or ('COD-' in f_up and session_num == 8):
+        return 'Taller: Crea tu propio simulador del cráneo de Tiranosaurio Rex'
+    if 'COD-009' in f_up or ('COD-' in f_up and session_num == 9):
+        return 'Taller: Crea tu propio simulador del molar humano'
+    if 'COD-010' in f_up or ('COD-' in f_up and session_num == 10):
+        return 'Taller: Crea tu propio simulador del violín Stradivarius'
+    if 'SIMULADOR_PULMON' in f_up:
         return 'Simulador 3D del Árbol Bronquial y Pulmones'
-    if 'SIMULADOR_CORAZON' in filename.upper() or 'LATIDO_CARDIACO' in filename.upper():
+    if 'SIMULADOR_CORAZON' in f_up or 'LATIDO_CARDIACO' in f_up:
         return 'Simulador 3D del Latido Cardíaco Humano'
+    if 'SIMULADOR_POMPEYA' in f_up:
+        return 'Simulador Arqueológico HD de Pompeya'
+    if 'SIMULADOR_OJO' in f_up:
+        return 'Simulador 3D del Ojo Humano y Cristalino'
     if 'FRAC-000_B' in filename:
         return 'Reto Visual • Infografía de un Fractal en la Naturaleza'
     if 'FRAC-000_A' in filename:
@@ -255,6 +276,11 @@ def generate_columns_html(session_num, session_folder, files):
                     sim_btn = """
                         <a href="SIMULADOR_POMPEYA_3D.html" target="_blank" class="btn-launch-interactive" style="margin-top:6px; background:linear-gradient(135deg, #d97706, #b45309); border-color:#fbbf24;" title="Abrir Simulador Arqueológico HD de Pompeya (Ruinas vs. Reconstrucción)">
                             🏛️ Ver Tesoro Arqueológico 3D ↗
+                        </a>"""
+                elif session_num == 4:
+                    sim_btn = """
+                        <a href="SIMULADOR_OJO_HUMANO_3D.html" target="_blank" class="btn-launch-interactive" style="margin-top:6px; background:linear-gradient(135deg, #0284c7, #0369a1); border-color:#38bdf8;" title="Abrir Simulador 3D del Ojo Humano y Cristalino">
+                            👁️ Ver Simulador Ojo Humano 3D ↗
                         </a>"""
                 cards_html += f"""
                     <div class="file-card file-card-special">
@@ -864,9 +890,15 @@ def generate_custom_probador(session_num, template_content):
             </button>"""
         empty_prompt = "prueba el botón <strong>«🏛️ Pompeya HD»</strong>"
         ph_text = "1. Pide a Gemini que programe el visor de las Ruinas de Pompeya en HTML.\\n2. Haz clic en «Copiar código» en la respuesta de Gemini.\\n3. Pulsa Ctrl+V (o Cmd+V en Mac) aquí para pegar el código.\\n4. Pulsa '▶️ Ejecutar Creación' para contemplar las ruinas de piedra romana."
+    elif session_num == 4:
+        btn_html = """            <button class="btn btn-emerald" id="btnLoadOjo" style="background: rgba(56, 189, 248, 0.2); color: #38bdf8; border-color: rgba(56, 189, 248, 0.4);" title="Cargar simulador: Óptica y Anatomía Humana 3D (Globo Ocular y Cristalino)">
+                👁️ Ojo Humano 3D
+            </button>"""
+        empty_prompt = "prueba el botón <strong>«👁️ Ojo Humano 3D»</strong>"
+        ph_text = "1. Pide a Gemini que programe el simulador 3D del ojo humano.\\n2. Haz clic en «Copiar código» en la respuesta de Gemini.\\n3. Pulsa Ctrl+V (o Cmd+V en Mac) aquí para pegar el código.\\n4. Pulsa '▶️ Ejecutar Creación' para verlo funcionar."
 
     # Reemplazar grupo de botones acumulados en el encabezado
-    buttons_pattern = re.compile(r'<button class="btn btn-emerald" id="btnLoadPulmones".*?id="btnLoadPompeya".*?</button>', re.DOTALL)
+    buttons_pattern = re.compile(r'<button class="btn btn-emerald" id="btnLoadPulmones".*?id="btnLoadOjo".*?</button>', re.DOTALL)
     custom_content = buttons_pattern.sub(btn_html, template_content)
 
     # Reemplazar texto en empty notice
@@ -947,6 +979,21 @@ def process_all_sessions():
                 except Exception:
                     pass
             for extra in ["pompeii_photos_b64.js", "pompeii_ruins_hd.jpg", "pompeii_reconstructed_hd.jpg"]:
+                ex_src = os.path.join(BASE_DIR, "SIMULADORES_INTERACTIVOS", "03_ASSETS_3D_Y_DATOS", extra)
+                if os.path.exists(ex_src):
+                    try:
+                        shutil.copy2(ex_src, os.path.join(session_path, extra))
+                    except Exception:
+                        pass
+        elif session_num == 4:
+            ojo_src = os.path.join(BASE_DIR, "SIMULADORES_INTERACTIVOS", "01_SIMULADORES", "04_SIMULADOR_OJO_HUMANO_3D_V2.html")
+            if os.path.exists(ojo_src):
+                try:
+                    shutil.copy2(ojo_src, os.path.join(session_path, "SIMULADOR_OJO_HUMANO_3D.html"))
+                    shutil.copy2(ojo_src, os.path.join(session_path, "04_SIMULADOR_OJO_HUMANO_3D_V2.html"))
+                except Exception:
+                    pass
+            for extra in ["eye_b64.js", "eye.glb"]:
                 ex_src = os.path.join(BASE_DIR, "SIMULADORES_INTERACTIVOS", "03_ASSETS_3D_Y_DATOS", extra)
                 if os.path.exists(ex_src):
                     try:
