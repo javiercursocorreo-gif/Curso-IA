@@ -86,24 +86,6 @@ def build_cod_004_taller_3d_pdf(output_path=PDF_PATH):
         style_body
     ))
 
-    # Apartado Técnico: Origen de las Texturas Hiperrealistas y Montaje del Objeto 3D
-    story.append(Paragraph("🔬 <b>¿De dónde proceden las texturas hiperrealistas y cómo se ha montado el objeto 3D?</b>", style_section_h))
-    tech_text = (
-        "• <b>Origen de la referencia anatómica y textura hiperrealista del iris:</b> Basado en las proporciones del <b>Visible Human Project del NIH 3D (National Institutes of Health, EE. UU., <i>eye.glb</i>)</b> y en fotografías clínicas de lámpara de hendidura oftalmológica. A diferencia de una foto estática pegada (que se deformaría al contraer la pupila), la textura hiperrealista del iris se sintetiza dinámicamente en un <b>lienzo biomédico de alta resolución (<i>Canvas 2D de 1024×1024 px</i>)</b> con pigmentación humana real de melanina/lipocromo (castaño, azul grisáceo, verde oliva y avellana), <b>64 criptas estromales de Fuchs</b>, <b>720 fibras trabeculares curvas de colágeno</b> y capilares episclerales.<br/>"
-        "• <b>Cómo se ha montado el objeto en la Demo y en el Taller:</b> En el motor <b>Three.js (WebGL PBR)</b> se ensamblan 4 piezas concéntricas: <b>(1)</b> la esfera esclero-iridiana con corrección matemática de proyección equirectangular 2:1 (para que el iris sea 100% redondo y sin aberración ovalada) y relieve <i>bumpMap</i>; <b>(2)</b> el domo corneal transparente orientado en <i>+Z</i> con un único foco de linterna oftálmica; <b>(3)</b> la lente biconvexa interna del <b>cristalino</b> (visible al activar el botón de Corte Sagital) y <b>(4)</b> el nervio óptico posterior."
-    )
-    tech_table = Table([[Paragraph(tech_text, style_task)]], colWidths=[letter[0] - 72])
-    tech_table.setStyle(TableStyle([
-        ('BACKGROUND', (0,0), (-1,-1), colors.HexColor('#ECFDF5')),
-        ('BOX', (0,0), (-1,-1), 1, colors.HexColor('#059669')),
-        ('TOPPADDING', (0,0), (-1,-1), 3),
-        ('BOTTOMPADDING', (0,0), (-1,-1), 3),
-        ('LEFTPADDING', (0,0), (-1,-1), 7),
-        ('RIGHTPADDING', (0,0), (-1,-1), 7),
-    ]))
-    story.append(tech_table)
-    story.append(Spacer(1, 3))
-
     # Lista de Tareas (Checklist Guiado)
     story.append(Paragraph("📋 <b>Lista de Tareas del Alumno (Paso a Paso en 2 Pestañas):</b>", style_section_h))
     task_rows = [
@@ -140,7 +122,7 @@ def build_cod_004_taller_3d_pdf(output_path=PDF_PATH):
         "2. Carga Three.js y OrbitControls desde CDN oficial (cdnjs) en la cabecera.<br/>"
         "3. Modela el globo ocular en 3D con materiales realistas: esclerótica blanca con microvasos, córnea transparente e iris circular con textura estromal y pupila central.<br/>"
         "4. Añade un control deslizante (slider) de 'Intensidad de Luz' para simular el reflejo fotomotor pupilar: al subir la luz la pupila se contrae (miosis), y al bajarla se dilata (midriasis).<br/>"
-        "5. Incluye un botón para alternar 'Corte Sagital / Ver Cristalino' que vuelva translúcida la esclerótica y muestre en el interior la lente biconvexa del cristalino.<br/>"
+        "5. Incluye un botón para alternar 'Corte Sagital / Ver Cristalino' que abra una ventana sagital en la esclerótica y muestre en el interior la lente biconvexa del cristalino y el enfoque en la retina.<br/>"
         "6. Permite rotar el ojo en 3D libremente con el ratón mediante OrbitControls y aplica un diseño moderno oscuro con tarjeta explicativa.<br/>"
         "7. Escribe exclusivamente el bloque de código sin explicaciones previas ni posteriores para que funcione de inmediato al pegarlo.\"</i>"
     )
@@ -165,6 +147,23 @@ def build_cod_004_taller_3d_pdf(output_path=PDF_PATH):
         "Copia el código actualizado, pégalo en el Taller y observa el resultado en tiempo real.",
         style_body
     ))
+
+    # Apartado Técnico AL FINAL: Origen de las Texturas Hiperrealistas y Montaje del Objeto 3D
+    story.append(Paragraph("🔬 <b>¿De dónde proceden las texturas hiperrealistas y cómo se ha montado el objeto 3D?</b>", style_section_h))
+    tech_text = (
+        "• <b>Origen de la referencia anatómica y textura hiperrealista del iris:</b> Basado en las proporciones del <b>Visible Human Project del NIH 3D (National Institutes of Health, EE. UU., <i>eye.glb</i>)</b> y en fotografías clínicas de lámpara de hendidura oftalmológica. A diferencia de una foto estática pegada (que se deformaría al contraer la pupila), la textura hiperrealista del iris se sintetiza dinámicamente en un <b>lienzo biomédico de alta resolución (<i>Canvas 2D de 1024×1024 px</i>)</b> con pigmentación humana real de melanina/lipocromo (castaño, azul grisáceo, verde oliva y avellana), <b>64 criptas estromales de Fuchs</b>, <b>720 fibras trabeculares curvas de colágeno</b> y capilares episclerales.<br/>"
+        "• <b>Cómo se ha montado el objeto en la Demo y en el Taller:</b> En el motor <b>Three.js (WebGL PBR)</b> se ensamblan 5 piezas anatómicas con etiquetas 3D flotantes: <b>(1) Esclerótica</b> (pared blanca protectora externa con corrección equirectangular 2:1 para un iris 100% redondo); <b>(2) Córnea</b> (cúpula transparente anterior en <i>+Z</i>); <b>(3) Cristalino biconvexo interno</b> suspendido por fibras zonulares ciliares y haz de luz refractado (visible mediante plano de corte sagital real <i>clippingPlanes</i>); <b>(4) Retina/Fóvea</b> vascular interna y <b>(5) Nervio óptico</b> orgánico curvado (<i>CatmullRomCurve3</i>)."
+    )
+    tech_table = Table([[Paragraph(tech_text, style_task)]], colWidths=[letter[0] - 72])
+    tech_table.setStyle(TableStyle([
+        ('BACKGROUND', (0,0), (-1,-1), colors.HexColor('#ECFDF5')),
+        ('BOX', (0,0), (-1,-1), 1, colors.HexColor('#059669')),
+        ('TOPPADDING', (0,0), (-1,-1), 3),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 3),
+        ('LEFTPADDING', (0,0), (-1,-1), 7),
+        ('RIGHTPADDING', (0,0), (-1,-1), 7),
+    ]))
+    story.append(tech_table)
 
     doc.build(story)
     if dest_path != LOCAL_BACKUP:

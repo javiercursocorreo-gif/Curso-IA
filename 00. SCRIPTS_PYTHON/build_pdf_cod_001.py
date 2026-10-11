@@ -86,24 +86,6 @@ def build_cod_001_taller_3d_pdf(output_path=PDF_PATH):
         style_body
     ))
 
-    # Apartado Técnico: Origen de las Imágenes/Modelos Hiperrealistas y Montaje del Objeto 3D
-    story.append(Paragraph("🔬 <b>¿De dónde proceden los modelos hiperrealistas y cómo se ha montado el objeto 3D?</b>", style_section_h))
-    tech_text = (
-        "• <b>Origen del modelo anatómico hiperrealista (<i>lungs.glb / lungs_b64.js</i>):</b> Procede del repositorio biomédico oficial <b>NIH 3D Print Exchange (National Institutes of Health, EE. UU.)</b> y <b>BodyParts3D / Anatomography</b> (Instituto DBCLS de Ciencias de la Vida, Japón, bajo licencia abierta <i>Creative Commons</i>), reconstruido mediante <b>tomografía computarizada (TC) médica real</b> de la tráquea, bronquios y lóbulos pulmonares.<br/>"
-        "• <b>Cómo se ha montado el objeto en la Demo y en el Taller:</b> El archivo tridimensional <i>.glb</i> (formato <i>glTF 2.0</i> con texturas PBR de tejido mucoso húmedo y anillos cartilaginosos) se ha empaquetado en Base64 dentro de <i>lungs_b64.js</i> para evitar bloqueos de seguridad del navegador (CORS). En el motor <b>Babylon.js</b>, se carga la malla 3D con <i>SceneLoader.ImportMesh</i> y se aplica en cada fotograma una onda sinusoidal fisiológica asimétrica (inspiración activa y retroceso elástico) conectada al deslizador de frecuencia respiratoria (8 a 28 RPM)."
-    )
-    tech_table = Table([[Paragraph(tech_text, style_task)]], colWidths=[letter[0] - 72])
-    tech_table.setStyle(TableStyle([
-        ('BACKGROUND', (0,0), (-1,-1), colors.HexColor('#ECFDF5')),
-        ('BOX', (0,0), (-1,-1), 1, colors.HexColor('#059669')),
-        ('TOPPADDING', (0,0), (-1,-1), 3),
-        ('BOTTOMPADDING', (0,0), (-1,-1), 3),
-        ('LEFTPADDING', (0,0), (-1,-1), 7),
-        ('RIGHTPADDING', (0,0), (-1,-1), 7),
-    ]))
-    story.append(tech_table)
-    story.append(Spacer(1, 3))
-
     # Lista de Tareas (Checklist Guiado)
     story.append(Paragraph("📋 <b>Lista de Tareas del Alumno (Paso a Paso en 2 Pestañas):</b>", style_section_h))
     task_rows = [
@@ -166,6 +148,24 @@ def build_cod_001_taller_3d_pdf(output_path=PDF_PATH):
         "Vuelve a copiar el código, pégalo en tu Taller y ¡mira cómo cambia en directo!",
         style_body
     ))
+    story.append(Spacer(1, 2))
+
+    # Apartado Técnico al final del todo: Origen de las Imágenes/Modelos Hiperrealistas y Montaje del Objeto 3D
+    story.append(Paragraph("🔬 <b>¿De dónde proceden los modelos hiperrealistas y cómo se ha montado el objeto 3D?</b>", style_section_h))
+    tech_text = (
+        "• <b>Origen del modelo anatómico hiperrealista (<i>lungs.glb / lungs_b64.js</i>):</b> Procede del repositorio biomédico oficial <b>NIH 3D Print Exchange (National Institutes of Health, EE. UU.)</b> y <b>BodyParts3D / Anatomography</b> (Instituto DBCLS de Ciencias de la Vida, Japón, bajo licencia abierta <i>Creative Commons</i>), reconstruido mediante <b>tomografía computarizada (TC) médica real</b> de la tráquea, bronquios y lóbulos pulmonares.<br/>"
+        "• <b>Cómo se ha montado el objeto en la Demo y en el Taller:</b> El archivo tridimensional <i>.glb</i> (formato <i>glTF 2.0</i> con texturas PBR de tejido mucoso húmedo y anillos cartilaginosos) se ha empaquetado en Base64 dentro de <i>lungs_b64.js</i> para evitar bloqueos de seguridad del navegador (CORS). En el motor <b>Babylon.js</b>, se carga la malla 3D con <i>SceneLoader.ImportMesh</i> y se aplica en cada fotograma una onda sinusoidal fisiológica asimétrica (inspiración activa y retroceso elástico) conectada al deslizador de frecuencia respiratoria (8 a 28 RPM)."
+    )
+    tech_table = Table([[Paragraph(tech_text, style_task)]], colWidths=[letter[0] - 72])
+    tech_table.setStyle(TableStyle([
+        ('BACKGROUND', (0,0), (-1,-1), colors.HexColor('#ECFDF5')),
+        ('BOX', (0,0), (-1,-1), 1, colors.HexColor('#059669')),
+        ('TOPPADDING', (0,0), (-1,-1), 3),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 3),
+        ('LEFTPADDING', (0,0), (-1,-1), 7),
+        ('RIGHTPADDING', (0,0), (-1,-1), 7),
+    ]))
+    story.append(tech_table)
 
     doc.build(story)
     if dest_path != LOCAL_BACKUP:

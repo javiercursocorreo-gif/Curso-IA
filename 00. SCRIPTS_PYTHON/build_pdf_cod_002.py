@@ -86,24 +86,6 @@ def build_cod_002_taller_3d_pdf(output_path=PDF_PATH):
         style_body
     ))
 
-    # Apartado Técnico: Origen de las Imágenes/Modelos Hiperrealistas y Montaje del Objeto 3D
-    story.append(Paragraph("🔬 <b>¿De dónde proceden los modelos hiperrealistas y cómo se ha montado el objeto 3D?</b>", style_section_h))
-    tech_text = (
-        "• <b>Origen del modelo anatómico y del sonido real (<i>heart.glb / heartbeat.mp3</i>):</b> El modelo 3D procede del archivo clínico <b>NIH 3D / Sketchfab Medical Anatomy (licencia CC-BY)</b>, obtenido por <b>resonancia magnética y fotogrametría PBR 4K</b> del miocardio, ventrículos, arco aórtico y arterias coronarias humanas. El audio (<i>heartbeat.mp3</i>) es una grabación clínica real de auscultación con fonendoscopio (tonos cardíacos <i>S1 «lub»</i> y <i>S2 «dub»</i>).<br/>"
-        "• <b>Cómo se ha montado el objeto en la Demo y en el Taller:</b> El modelo <i>.glb</i> y el audio <i>.mp3</i> se han codificado en Base64 (<i>heart_b64.js</i> y <i>heartbeat_audio_b64.js</i>) para que carguen al instante en local y en la nube. En <b>Babylon.js</b>, la malla 3D se deforma en cada fotograma mediante la <b>ecuación fisiológica de Wiggers</b> (contracción sistólica rápida y relajación diastólica suave), sincronizando el latido visual con el disparo del sonido del fonendoscopio según los BPM (40 a 160 BPM)."
-    )
-    tech_table = Table([[Paragraph(tech_text, style_task)]], colWidths=[letter[0] - 72])
-    tech_table.setStyle(TableStyle([
-        ('BACKGROUND', (0,0), (-1,-1), colors.HexColor('#ECFDF5')),
-        ('BOX', (0,0), (-1,-1), 1, colors.HexColor('#059669')),
-        ('TOPPADDING', (0,0), (-1,-1), 3),
-        ('BOTTOMPADDING', (0,0), (-1,-1), 3),
-        ('LEFTPADDING', (0,0), (-1,-1), 7),
-        ('RIGHTPADDING', (0,0), (-1,-1), 7),
-    ]))
-    story.append(tech_table)
-    story.append(Spacer(1, 3))
-
     # Lista de Tareas (Checklist Guiado)
     story.append(Paragraph("📋 <b>Lista de Tareas del Alumno (Paso a Paso en 2 Pestañas):</b>", style_section_h))
     task_rows = [
@@ -166,6 +148,24 @@ def build_cod_002_taller_3d_pdf(output_path=PDF_PATH):
         "Vuelve a copiar el código, pégalo en tu Taller y ¡mira cómo cambia tu corazón en directo!",
         style_body
     ))
+    story.append(Spacer(1, 2))
+
+    # Apartado Técnico al final del todo: Origen de las Imágenes/Modelos Hiperrealistas y Montaje del Objeto 3D
+    story.append(Paragraph("🔬 <b>¿De dónde proceden los modelos hiperrealistas y cómo se ha montado el objeto 3D?</b>", style_section_h))
+    tech_text = (
+        "• <b>Origen del modelo anatómico y del sonido real (<i>heart.glb / heartbeat.mp3</i>):</b> El modelo 3D procede del archivo clínico <b>NIH 3D / Sketchfab Medical Anatomy (licencia CC-BY)</b>, obtenido por <b>resonancia magnética y fotogrametría PBR 4K</b> del miocardio, ventrículos, arco aórtico y arterias coronarias humanas. El audio (<i>heartbeat.mp3</i>) es una grabación clínica real de auscultación con fonendoscopio (tonos cardíacos <i>S1 «lub»</i> y <i>S2 «dub»</i>).<br/>"
+        "• <b>Cómo se ha montado el objeto en la Demo y en el Taller:</b> El modelo <i>.glb</i> y el audio <i>.mp3</i> se han codificado en Base64 (<i>heart_b64.js</i> y <i>heartbeat_audio_b64.js</i>) para que carguen al instante en local y en la nube. En <b>Babylon.js</b>, la malla 3D se deforma en cada fotograma mediante la <b>ecuación fisiológica de Wiggers</b> (contracción sistólica rápida y relajación diastólica suave), sincronizando el latido visual con el disparo del sonido del fonendoscopio según los BPM (40 a 160 BPM)."
+    )
+    tech_table = Table([[Paragraph(tech_text, style_task)]], colWidths=[letter[0] - 72])
+    tech_table.setStyle(TableStyle([
+        ('BACKGROUND', (0,0), (-1,-1), colors.HexColor('#ECFDF5')),
+        ('BOX', (0,0), (-1,-1), 1, colors.HexColor('#059669')),
+        ('TOPPADDING', (0,0), (-1,-1), 3),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 3),
+        ('LEFTPADDING', (0,0), (-1,-1), 7),
+        ('RIGHTPADDING', (0,0), (-1,-1), 7),
+    ]))
+    story.append(tech_table)
 
     doc.build(story)
     if dest_path != LOCAL_BACKUP:

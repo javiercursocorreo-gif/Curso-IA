@@ -86,24 +86,6 @@ def build_cod_003_taller_3d_pdf(output_path=PDF_PATH):
         style_body
     ))
 
-    # Apartado Técnico: Origen de las Imágenes Hiperrealistas y Montaje del Objeto
-    story.append(Paragraph("🔬 <b>¿De dónde proceden las imágenes hiperrealistas y cómo se ha montado el visor?</b>", style_section_h))
-    tech_text = (
-        "• <b>Origen de las fotografías hiperrealistas (<i>pompeii_ruins_hd.jpg y pompeii_reconstructed_hd.jpg</i>):</b> La imagen de las ruinas actuales procede del archivo patrimonial de <b>Wikimedia Commons / Parque Arqueológico de Pompeya (Italia)</b>, mostrando el <b>Templo de Apolo</b> real con su columnata corintia, el altar y el monte Vesubio al fondo. La imagen hiperrealista del año 79 d.C. se ha creado mediante <b>restauración arqueológica por IA generativa y composición digital alineada píxel a píxel</b> (manteniendo exactamente la perspectiva de cada columna, estatua de bronce, entablamento policromado y pavimento del foro).<br/>"
-        "• <b>Cómo se ha montado el objeto en el Taller y en la Demo:</b> Ambas fotografías en alta resolución se han codificado en Base64 dentro de <i>pompeii_photos_b64.js</i>. En el <b>Taller</b>, el código de Gemini carga <i>window.POMPEII_RUINS_B64</i> en un visor arqueológico documental. En la <b>Demo («🏛️ Pompeya HD»)</b>, las dos capas fotográficas se superponen con registro geométrico exacto y una máscara dinámica (<i>clip-path</i>) gobernada por un deslizador para barrer en tiempo real entre las ruinas actuales y el esplendor imperial romano."
-    )
-    tech_table = Table([[Paragraph(tech_text, style_task)]], colWidths=[letter[0] - 72])
-    tech_table.setStyle(TableStyle([
-        ('BACKGROUND', (0,0), (-1,-1), colors.HexColor('#ECFDF5')),
-        ('BOX', (0,0), (-1,-1), 1, colors.HexColor('#059669')),
-        ('TOPPADDING', (0,0), (-1,-1), 3),
-        ('BOTTOMPADDING', (0,0), (-1,-1), 3),
-        ('LEFTPADDING', (0,0), (-1,-1), 7),
-        ('RIGHTPADDING', (0,0), (-1,-1), 7),
-    ]))
-    story.append(tech_table)
-    story.append(Spacer(1, 3))
-
     # Lista de Tareas (Checklist Guiado)
     story.append(Paragraph("📋 <b>Lista de Tareas del Alumno (Paso a Paso en 2 Pestañas):</b>", style_section_h))
     task_rows = [
@@ -165,6 +147,23 @@ def build_cod_003_taller_3d_pdf(output_path=PDF_PATH):
         "Copia el nuevo código, pégalo en el Taller y comprueba las novedades al instante.",
         style_body
     ))
+
+    # Apartado Técnico AL FINAL: Origen de las Imágenes Hiperrealistas y Montaje del Objeto
+    story.append(Paragraph("🔬 <b>¿De dónde proceden las imágenes hiperrealistas y cómo se ha montado el visor?</b>", style_section_h))
+    tech_text = (
+        "• <b>Origen de las fotografías hiperrealistas (<i>pompeii_ruins_hd.jpg y pompeii_reconstructed_hd.jpg</i>):</b> La imagen de las ruinas actuales procede del archivo patrimonial de <b>Wikimedia Commons / Parque Arqueológico de Pompeya (Italia)</b>, mostrando el <b>Templo de Apolo</b> real con su columnata corintia, el altar y el monte Vesubio al fondo. La imagen hiperrealista del año 79 d.C. se ha creado mediante <b>restauración arqueológica por IA generativa y composición digital alineada píxel a píxel</b> (manteniendo exactamente la perspectiva de cada columna, estatua de bronce, entablamento policromado y pavimento del foro).<br/>"
+        "• <b>Cómo se ha montado el objeto en el Taller y en la Demo:</b> Ambas fotografías en alta resolución se han codificado en Base64 dentro de <i>pompeii_photos_b64.js</i>. En el <b>Taller</b>, el código de Gemini carga <i>window.POMPEII_RUINS_B64</i> en un visor arqueológico documental. En la <b>Demo («🏛️ Pompeya HD»)</b>, las dos capas fotográficas se superponen con registro geométrico exacto y una máscara dinámica (<i>clip-path</i>) gobernada por un deslizador para barrer en tiempo real entre las ruinas actuales y el esplendor imperial romano."
+    )
+    tech_table = Table([[Paragraph(tech_text, style_task)]], colWidths=[letter[0] - 72])
+    tech_table.setStyle(TableStyle([
+        ('BACKGROUND', (0,0), (-1,-1), colors.HexColor('#ECFDF5')),
+        ('BOX', (0,0), (-1,-1), 1, colors.HexColor('#059669')),
+        ('TOPPADDING', (0,0), (-1,-1), 3),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 3),
+        ('LEFTPADDING', (0,0), (-1,-1), 7),
+        ('RIGHTPADDING', (0,0), (-1,-1), 7),
+    ]))
+    story.append(tech_table)
 
     doc.build(story)
     if dest_path != LOCAL_BACKUP:
