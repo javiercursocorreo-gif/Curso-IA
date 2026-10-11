@@ -351,7 +351,6 @@
             <label style="color:#8b949e; font-weight:600;">Partitura:</label>
             <select class="select-input" id="select-song" style="display:none;" onchange="loadSelectedSong()">
                 <option value="">-- Elige una canción --</option>
-                <option value="hymn_fallen">🎖️ Hymn to the Fallen (John Williams)</option>
                 <option value="alegria">Himno de la Alegría (Beethoven)</option>
                 <option value="estrellita">Estrellita dónde estás (Mozart)</option>
                 <option value="campana">Campana sobre Campana</option>
@@ -361,6 +360,7 @@
 
             <button class="btn btn-primary" onclick="triggerFileInput()">📂 Cargar .MID</button>
             <input type="file" id="midi-file-input" accept=".mid,.midi" style="display:none" onchange="handleMidiFileUpload(event)">
+            <select class="select-input" id="select-midi-track" style="display:none;" onchange="switchMidiTrack(this.value)" title="Elegir pista/mano de la canción MIDI"></select>
             
             <button class="btn btn-purple" id="btn-new-exercise" onclick="generateIntervalExercise()">🎲 Nuevo Ejercicio</button>
             <button class="btn btn-success" id="btn-playback" onclick="togglePlayback()" style="font-weight:700;">▶ Escuchar</button>
@@ -494,27 +494,8 @@
         const SHORT_NOTE_NAMES = ["DO", "DO#", "RE", "RE#", "MI", "FA", "FA#", "SOL", "SOL#", "LA", "LA#", "SI"];
         const DIATONIC_STEPS = [0, 0, 1, 1, 2, 3, 3, 4, 4, 5, 5, 6];
 
-        // CANCIONES PRECARGADAS DIDÁCTICAS (Con figuras rítmicas para modo ritmico y audio)
+        // CANCIONES PRECARGADAS DIDÁCTICAS (Números MIDI)
         const PRELOADED_SONGS = {
-            hymn_fallen: [
-                { midi: 67, durationType: 'quarter' }, { midi: 71, durationType: 'quarter' }, { midi: 74, durationType: 'half' },
-                { midi: 72, durationType: 'quarter' }, { midi: 71, durationType: 'quarter' }, { midi: 69, durationType: 'half' },
-                { midi: 67, durationType: 'quarter' }, { midi: 66, durationType: 'quarter' }, { midi: 67, durationType: 'half' },
-                { midi: 69, durationType: 'quarter' }, { midi: 71, durationType: 'half' }, { midi: 67, durationType: 'half' },
-                { midi: 69, durationType: 'quarter' }, { midi: 71, durationType: 'quarter' }, { midi: 74, durationType: 'half' },
-                { midi: 76, durationType: 'half' }, { midi: 74, durationType: 'whole' },
-                { midi: 74, durationType: 'quarter' }, { midi: 71, durationType: 'quarter' }, { midi: 69, durationType: 'half' },
-                { midi: 67, durationType: 'quarter' }, { midi: 69, durationType: 'quarter' }, { midi: 71, durationType: 'half' },
-                { midi: 69, durationType: 'half' }, { midi: 67, durationType: 'whole' },
-                { midi: 67, durationType: 'quarter' }, { midi: 71, durationType: 'quarter' }, { midi: 74, durationType: 'half' },
-                { midi: 72, durationType: 'quarter' }, { midi: 71, durationType: 'quarter' }, { midi: 69, durationType: 'half' },
-                { midi: 67, durationType: 'quarter' }, { midi: 66, durationType: 'quarter' }, { midi: 67, durationType: 'half' },
-                { midi: 69, durationType: 'quarter' }, { midi: 71, durationType: 'half' }, { midi: 67, durationType: 'half' },
-                { midi: 69, durationType: 'quarter' }, { midi: 71, durationType: 'quarter' }, { midi: 74, durationType: 'half' },
-                { midi: 76, durationType: 'half' }, { midi: 74, durationType: 'half' }, { midi: 72, durationType: 'quarter' },
-                { midi: 71, durationType: 'quarter' }, { midi: 69, durationType: 'half' }, { midi: 67, durationType: 'quarter' },
-                { midi: 66, durationType: 'quarter' }, { midi: 67, durationType: 'whole' }
-            ],
             alegria: [64, 64, 65, 67, 67, 65, 64, 62, 60, 60, 62, 64, 64, 62, 62, 64, 64, 65, 67, 67, 65, 64, 62, 60, 60, 62, 64, 62, 60, 60],
             estrellita: [60, 60, 67, 67, 69, 69, 67, 65, 65, 64, 64, 62, 62, 60, 67, 67, 65, 65, 64, 64, 62, 67, 67, 65, 65, 64, 64, 62],
             campana: [67, 67, 67, 67, 69, 67, 65, 64, 62, 64, 65, 67, 65, 64, 62, 60, 67, 67, 67, 67, 69, 67, 65, 64, 62, 64, 65, 67, 65, 64],
@@ -779,25 +760,27 @@
             renderNotesLayer();
 
             // 4. Calcular el tempo y duración hasta la siguiente nota
-            let delayMs = 460; // Tempo estándar de ejercicio (~130 BPM)
+            const bpm = (window.currentMidiBpm && window.currentMidiBpm >= 30) ? window.currentMidiBpm : 105;
+            const msPerBeat = 60000 / bpm;
+            let delayMs = Math.round(msPerBeat); // Tempo de negra
 
             if (typeof item === 'object') {
-                if (item.durationType === 'whole') delayMs = 1500;
-                else if (item.durationType === 'half') delayMs = 850;
-                else if (item.durationType === 'quarter') delayMs = 460;
-                else if (item.durationType === 'eighth') delayMs = 240;
+                if (item.durationType === 'whole') delayMs = Math.round(msPerBeat * 4);
+                else if (item.durationType === 'half') delayMs = Math.round(msPerBeat * 2);
+                else if (item.durationType === 'quarter') delayMs = Math.round(msPerBeat);
+                else if (item.durationType === 'eighth') delayMs = Math.round(msPerBeat * 0.5);
 
-                // Sincronización precisa por delta ticks si provienen de archivo MIDI
+                // Sincronización precisa por delta ticks del archivo MIDI a su BPM real
                 if (currentStepIndex + 1 < seq.length) {
                     const nextItem = seq[currentStepIndex + 1];
                     if (typeof nextItem === 'object' && typeof nextItem.startTick === 'number' && typeof item.startTick === 'number') {
                         const deltaTicks = nextItem.startTick - item.startTick;
                         if (deltaTicks > 0) {
                             const tpq = (window.lastMidiTicksPerQuarter && window.lastMidiTicksPerQuarter > 0) ? window.lastMidiTicksPerQuarter : 480;
-                            const calculatedMs = Math.round((deltaTicks / tpq) * 480);
-                            delayMs = Math.max(160, Math.min(2200, calculatedMs));
+                            const calculatedMs = Math.round((deltaTicks / tpq) * msPerBeat);
+                            delayMs = Math.max(140, Math.min(4000, calculatedMs));
                         } else if (deltaTicks === 0) {
-                            delayMs = 60; // Acorde o notas simultáneas
+                            delayMs = 60; // Separación mínima si hubiera notas simultáneas
                         }
                     }
                 }
@@ -1001,15 +984,15 @@
             }
         }
 
-        // GESTIÓN DE NOTAS PULSADAS / INTERACCIÓN
+        // GESTIÓN DE NOTAS PULSADAS / INTERACCIÓN (AKAI, KORG, TECLADO VIRTUAL Y MIC)
         function triggerNoteOn(midi) {
-            if (activeKeysMap.has(midi)) return;
+            initAudio();
             activeKeysMap.add(midi);
 
             highlightVirtualKey(midi, true);
 
             if (isPlaying) {
-                // Durante la reproducción automática, emitir sonido de acompañamiento sin alterar el cursor
+                // Si la reproducción automática está activa, permitir tocar de acompañamiento
                 playSound(midi);
                 return;
             }
@@ -1135,12 +1118,26 @@
                 const noteName = NOTE_NAMES[midi % 12];
                 const shortName = SHORT_NOTE_NAMES[midi % 12];
 
-                // DIBUJAR LÍNEAS DE COMPÁS (En Modo Rítmico cada 4 notas o tiempos)
-                if (notationViewMode === 'rhythm' && posInStaff > 0 && posInStaff % 4 === 0) {
-                    const barX = posX - (NOTE_STEP_X / 2);
-                    const topY = baseLineY - 80;
-                    const botY = baseLineY;
-                    svg += `<line x1="${barX}" y1="${topY}" x2="${barX}" y2="${botY}" stroke="#222" stroke-width="2.2" />`;
+                // DIBUJAR LÍNEAS DE COMPÁS (En Modo Rítmico según compases reales del MIDI o métrica 4/4)
+                if (notationViewMode === 'rhythm') {
+                    let isNewBar = false;
+                    if (typeof item === 'object' && typeof item.measureIndex === 'number') {
+                        const prevItem = index > 0 ? activeList[index - 1] : null;
+                        if (prevItem && typeof prevItem === 'object' && typeof prevItem.measureIndex === 'number') {
+                            if (item.measureIndex !== prevItem.measureIndex && posInStaff > 0) {
+                                isNewBar = true;
+                            }
+                        }
+                    } else if (posInStaff > 0 && posInStaff % 4 === 0) {
+                        isNewBar = true;
+                    }
+
+                    if (isNewBar) {
+                        const barX = posX - (NOTE_STEP_X / 2);
+                        const topY = baseLineY - 80;
+                        const botY = baseLineY;
+                        svg += `<line x1="${barX}" y1="${topY}" x2="${barX}" y2="${botY}" stroke="#222" stroke-width="2.2" />`;
+                    }
                 }
 
                 // Líneas adicionales inferiores (Do4, etc.)
@@ -1462,15 +1459,60 @@
             }
         }
 
+        let currentMidiTracks = [];
+        let currentMidiTrackIndex = 0;
+
+        function switchMidiTrack(trackIndex) {
+            trackIndex = parseInt(trackIndex, 10);
+            if (!currentMidiTracks || !currentMidiTracks[trackIndex]) return;
+            currentMidiTrackIndex = trackIndex;
+            const chosen = currentMidiTracks[trackIndex];
+            stopPlayback(false);
+            practiceSequence = chosen.notes.slice(0, TOTAL_MAX_NOTES);
+            currentStepIndex = 0;
+            hasErrorOnCurrentStep = false;
+            document.getElementById("select-mode").value = "wait";
+            currentMode = "wait";
+            document.getElementById("welcome-hint").style.display = "none";
+            updatePracticeStatusUI();
+            renderNotesLayer();
+        }
+
         function parseMidiFile(file) {
             const reader = new FileReader();
             reader.onload = function(evt) {
                 try {
                     const data = new Uint8Array(evt.target.result);
-                    const parsedNotes = extractNotesFromMidiData(data);
-                    if (parsedNotes.length > 0) {
+                    const parsedResult = extractNotesFromMidiData(data);
+                    if (parsedResult && parsedResult.tracks && parsedResult.tracks.length > 0) {
+                        currentMidiTracks = parsedResult.tracks;
+                        const bestIdx = parsedResult.bestTrackIndex;
+                        currentMidiTrackIndex = bestIdx;
+                        const bestTrack = currentMidiTracks[bestIdx];
+
+                        // Poblar selector de pistas si hay más de 1 pista melódica
+                        const trackSelect = document.getElementById("select-midi-track");
+                        if (trackSelect) {
+                            trackSelect.innerHTML = "";
+                            currentMidiTracks.forEach((t, idx) => {
+                                const opt = document.createElement("option");
+                                opt.value = idx;
+                                const isBest = (idx === bestIdx);
+                                opt.textContent = `${isBest ? '⭐ ' : ''}${t.name} (${t.notes.length} notas, med: ${NOTE_NAMES[t.avgPitch % 12]}${Math.floor(t.avgPitch/12)-1})`;
+                                trackSelect.appendChild(opt);
+                            });
+                            trackSelect.value = bestIdx;
+                            trackSelect.style.display = (currentMidiTracks.length > 1) ? "inline-block" : "none";
+                        }
+
+                        // Activar automáticamente el modo de notación con figuras y compases
+                        notationViewMode = 'rhythm';
+                        const rhythmRadio = document.querySelector('input[name="notation-view-mode"][value="rhythm"]');
+                        if (rhythmRadio) rhythmRadio.checked = true;
+
+                        // Cargar notas de la pista seleccionada
                         stopPlayback(false);
-                        practiceSequence = parsedNotes.slice(0, TOTAL_MAX_NOTES);
+                        practiceSequence = bestTrack.notes.slice(0, TOTAL_MAX_NOTES);
                         currentStepIndex = 0;
                         hasErrorOnCurrentStep = false;
                         document.getElementById("select-mode").value = "wait";
@@ -1478,30 +1520,40 @@
                         document.getElementById("welcome-hint").style.display = "none";
                         updatePracticeStatusUI();
                         renderNotesLayer();
-                        alert(`🎶 Partitura MIDI cargada con éxito: ${practiceSequence.length} notas listas para reproducir o practicar.`);
+
+                        const tempoMsg = window.currentMidiBpm ? ` | Tempo: ${window.currentMidiBpm} BPM` : "";
+                        const multiMsg = currentMidiTracks.length > 1 ? `\n• Se detectaron ${currentMidiTracks.length} pistas (puedes cambiar de pista con el desplegable).` : "";
+                        alert(`🎶 Partitura MIDI cargada con éxito:\n\n• Pista melódica: "${bestTrack.name}" (${bestTrack.notes.length} notas)${tempoMsg}\n• Modo rítmico activado con compases y figuras musicales.${multiMsg}`);
                     } else {
-                        alert("No se detectaron notas en el archivo MIDI seleccionado.");
+                        alert("No se detectaron notas musicales en el archivo MIDI seleccionado.");
                     }
                 } catch (err) {
-                    alert("Error al decodificar el archivo MIDI.");
+                    console.error("Error al decodificar MIDI:", err);
+                    alert("Error al decodificar el archivo MIDI: " + (err.message || "formato no reconocido."));
                 }
             };
             reader.readAsArrayBuffer(file);
         }
 
-        // PARSER MIDI INTEGRADO EN JS PURO (Extrae eventos Note-On y calcula duraciones)
+        // PARSER MIDI MULTI-PISTA CON SEPARACIÓN DE MANOS, FILTRADO SOPRANO Y CÁLCULO DE COMPASES
         function extractNotesFromMidiData(bytes) {
-            const rawNotes = [];
             let i = 0;
-            // Buscar cabecera MThd
-            if (String.fromCharCode(...bytes.slice(0, 4)) !== "MThd") return [];
+            if (bytes.length < 14) return null;
+            if (String.fromCharCode(...bytes.slice(0, 4)) !== "MThd") return null;
+
+            const format = (bytes[8] << 8) | bytes[9];
+            const trackCount = (bytes[10] << 8) | bytes[11];
             const timeDivision = (bytes[12] << 8) | bytes[13];
             const ticksPerQuarter = (timeDivision > 0 && !(timeDivision & 0x8000)) ? timeDivision : 480;
             window.lastMidiTicksPerQuarter = ticksPerQuarter;
-            i += 14; // Saltar cabecera
+            i += 14;
 
-            // Estructura para registrar notas activas por canal y tono para medir duración
-            const activeNotesMap = new Map();
+            // Valores por defecto de compás y tempo
+            let ticksPerMeasure = ticksPerQuarter * 4; // 4/4 por defecto
+            window.currentMidiTicksPerMeasure = ticksPerMeasure;
+            window.currentMidiBpm = 105; // Tempo por defecto si no hay meta-evento
+
+            const rawTracks = [];
 
             while (i < bytes.length) {
                 if (i + 8 > bytes.length) break;
@@ -1513,6 +1565,9 @@
                     const trackEnd = i + chunkLength;
                     let runningStatus = 0;
                     let currentTick = 0;
+                    let trackName = `Pista ${rawTracks.length + 1}`;
+                    const trackNotes = [];
+                    const activeNotesMap = new Map();
 
                     while (i < trackEnd) {
                         // Delta time (variable length)
@@ -1523,8 +1578,8 @@
                             if (!(b & 0x80)) break;
                         }
                         currentTick += delta;
-
                         if (i >= trackEnd) break;
+
                         let status = bytes[i];
                         if (status & 0x80) {
                             runningStatus = status;
@@ -1539,49 +1594,80 @@
                         if (status === 0xFF) {
                             // Meta evento
                             const metaType = bytes[i++];
-                            let len = 0;
+                            let metaLen = 0;
                             while (i < trackEnd) {
                                 const b = bytes[i++];
-                                len = (len << 7) | (b & 0x7F);
+                                metaLen = (metaLen << 7) | (b & 0x7F);
                                 if (!(b & 0x80)) break;
                             }
-                            i += len;
+                            const metaEnd = i + metaLen;
+
+                            if (metaType === 0x03 && metaLen > 0) {
+                                // Nombre de pista
+                                try {
+                                    let nameBytes = bytes.slice(i, metaEnd);
+                                    let str = "";
+                                    for (let k = 0; k < nameBytes.length; k++) {
+                                        if (nameBytes[k] >= 32 && nameBytes[k] <= 126) {
+                                            str += String.fromCharCode(nameBytes[k]);
+                                        }
+                                    }
+                                    if (str.trim().length > 0) trackName = str.trim();
+                                } catch(e){}
+                            } else if (metaType === 0x51 && metaLen === 3) {
+                                // Tempo (microsegundos por negra)
+                                const tempoUsec = (bytes[i] << 16) | (bytes[i+1] << 8) | bytes[i+2];
+                                if (tempoUsec > 0) {
+                                    const bpm = Math.round(60000000 / tempoUsec);
+                                    if (bpm >= 30 && bpm <= 300) {
+                                        window.currentMidiBpm = bpm;
+                                    }
+                                }
+                            } else if (metaType === 0x58 && metaLen >= 2) {
+                                // Time Signature (Compás)
+                                const num = bytes[i];
+                                const denom = Math.pow(2, bytes[i+1]);
+                                if (num > 0 && denom > 0) {
+                                    ticksPerMeasure = Math.round(num * (ticksPerQuarter * (4 / denom)));
+                                    window.currentMidiTicksPerMeasure = ticksPerMeasure;
+                                }
+                            }
+                            i = metaEnd;
                         } else if (status === 0xF0 || status === 0xF7) {
-                            // Sysex
-                            let len = 0;
+                            // SysEx
+                            let sysLen = 0;
                             while (i < trackEnd) {
                                 const b = bytes[i++];
-                                len = (len << 7) | (b & 0x7F);
+                                sysLen = (sysLen << 7) | (b & 0x7F);
                                 if (!(b & 0x80)) break;
                             }
-                            i += len;
+                            i += sysLen;
                         } else if (eventType === 0x9) {
                             // Note ON
                             const note = bytes[i++];
                             const vel = bytes[i++];
                             const keyId = `${channel}-${note}`;
 
-                            if (vel > 0 && channel !== 9) { // Note On real (excluir percusión)
+                            if (vel > 0 && channel !== 9) { // Excluir canal de percusión/batería (canal 10 / index 9)
                                 const noteObj = {
                                     midi: note,
+                                    channel: channel,
                                     startTick: currentTick,
                                     durationTicks: ticksPerQuarter,
                                     durationType: 'quarter'
                                 };
-                                rawNotes.push(noteObj);
+                                trackNotes.push(noteObj);
                                 activeNotesMap.set(keyId, noteObj);
                             } else if (vel === 0) {
-                                // Note Off expresado como Note On vel=0
                                 if (activeNotesMap.has(keyId)) {
                                     const noteObj = activeNotesMap.get(keyId);
-                                    const dur = Math.max(ticksPerQuarter / 2, currentTick - noteObj.startTick);
+                                    const dur = Math.max(ticksPerQuarter / 4, currentTick - noteObj.startTick);
                                     noteObj.durationTicks = dur;
-                                    // Clasificar figura según duración en relación al pulso de negra
                                     const ratio = dur / ticksPerQuarter;
-                                    if (ratio >= 3.2) noteObj.durationType = 'whole';       // Redonda (4 tiempos)
-                                    else if (ratio >= 1.6) noteObj.durationType = 'half';    // Blanca (2 tiempos)
-                                    else if (ratio >= 0.75) noteObj.durationType = 'quarter'; // Negra (1 tiempo)
-                                    else noteObj.durationType = 'eighth';                     // Corchea (1/2 tiempo)
+                                    if (ratio >= 3.2) noteObj.durationType = 'whole';
+                                    else if (ratio >= 1.6) noteObj.durationType = 'half';
+                                    else if (ratio >= 0.75) noteObj.durationType = 'quarter';
+                                    else noteObj.durationType = 'eighth';
                                     activeNotesMap.delete(keyId);
                                 }
                             }
@@ -1592,7 +1678,7 @@
                             const keyId = `${channel}-${note}`;
                             if (activeNotesMap.has(keyId)) {
                                 const noteObj = activeNotesMap.get(keyId);
-                                const dur = Math.max(ticksPerQuarter / 2, currentTick - noteObj.startTick);
+                                const dur = Math.max(ticksPerQuarter / 4, currentTick - noteObj.startTick);
                                 noteObj.durationTicks = dur;
                                 const ratio = dur / ticksPerQuarter;
                                 if (ratio >= 3.2) noteObj.durationType = 'whole';
@@ -1607,12 +1693,101 @@
                             i += 1;
                         }
                     }
+
+                    if (trackNotes.length > 0) {
+                        trackNotes.sort((a, b) => a.startTick - b.startTick);
+                        rawTracks.push({
+                            name: trackName,
+                            rawNotes: trackNotes
+                        });
+                    }
                 } else {
                     i += chunkLength;
                 }
             }
-            rawNotes.sort((a, b) => a.startTick - b.startTick);
-            return rawNotes;
+
+            if (rawTracks.length === 0) return null;
+
+            // Procesar cada pista: Filtrar acordes simultáneos (extractor de melodía soprano) y asignar compases
+            const processedTracks = [];
+
+            rawTracks.forEach((t) => {
+                const notes = t.rawNotes;
+                if (notes.length === 0) return;
+
+                // FILTRO DE NOTA SUPERIOR (SOPRANO): Extrae la línea melódica más aguda de cada acorde
+                const CLUSTER_WINDOW = Math.max(25, Math.round(ticksPerQuarter / 16)); // Tolerancia de simultaneidad
+                const filteredNotes = [];
+                let currentCluster = [notes[0]];
+
+                for (let k = 1; k < notes.length; k++) {
+                    const n = notes[k];
+                    if (n.startTick - currentCluster[0].startTick <= CLUSTER_WINDOW) {
+                        currentCluster.push(n);
+                    } else {
+                        // Elegir la nota más aguda del grupo (la melodía cantante)
+                        currentCluster.sort((a, b) => b.midi - a.midi);
+                        filteredNotes.push(currentCluster[0]);
+                        currentCluster = [n];
+                    }
+                }
+                if (currentCluster.length > 0) {
+                    currentCluster.sort((a, b) => b.midi - a.midi);
+                    filteredNotes.push(currentCluster[0]);
+                }
+
+                // Asignar índice de compás exacto a cada nota
+                const tpm = window.currentMidiTicksPerMeasure || (ticksPerQuarter * 4);
+                filteredNotes.forEach(n => {
+                    n.measureIndex = Math.floor(n.startTick / tpm);
+                });
+
+                const avgPitch = Math.round(filteredNotes.reduce((sum, n) => sum + n.midi, 0) / filteredNotes.length);
+
+                processedTracks.push({
+                    name: t.name,
+                    notes: filteredNotes,
+                    avgPitch: avgPitch
+                });
+            });
+
+            if (processedTracks.length === 0) return null;
+
+            // AUTO-DETECCIÓN INTELIGENTE DE LA MEJOR PISTA MELÓDICA (Clave de Sol)
+            let bestIndex = 0;
+            let highestScore = -9999;
+
+            processedTracks.forEach((track, idx) => {
+                let score = 0;
+                const nameLow = track.name.toLowerCase();
+
+                // Bonificación por palabras clave de melodía o mano derecha
+                if (/vocal|voice|melod|lead|sing|canto|tema|voz|solist/i.test(nameLow)) score += 80;
+                if (/right|rh|mano derecha|derecha|treble|flute|violin|oboe|sax/i.test(nameLow)) score += 60;
+                if (/piano|keyboard|teclado/i.test(nameLow)) score += 20;
+
+                // Penalización severa por pistas de acompañamiento bajo o percusión
+                if (/bass|bajo|lh|left|mano izquierda|izquierda|pedal|kick/i.test(nameLow)) score -= 80;
+                if (/drum|perc|bateria|hit|cymbal/i.test(nameLow)) score -= 120;
+
+                // Rango de afinación ideal para Clave de Sol (Do4 = 60 a La5 = 81)
+                if (track.avgPitch >= 60 && track.avgPitch <= 82) score += 60;
+                else if (track.avgPitch >= 53 && track.avgPitch < 60) score += 30;
+                else if (track.avgPitch < 50) score -= 70; // Rango de bajo / Clave de Fa
+
+                // Longitud adecuada para una pieza cantable
+                if (track.notes.length >= 25 && track.notes.length <= 400) score += 25;
+
+                if (score > highestScore) {
+                    highestScore = score;
+                    bestIndex = idx;
+                }
+            });
+
+            return {
+                tracks: processedTracks,
+                bestTrackIndex: bestIndex
+            };
         }
 
         // TECLADO EN PANTALLA (OPCIONAL CON COLAPSO INTELIGENTE DEL 3ER PENTAGRAMA)
@@ -1708,7 +1883,7 @@
             }
         }
 
-        // INTEGRACIÓN WEB MIDI API (Korg EK-50, Akai LPK25 y compatibles)
+        // INTEGRACIÓN WEB MIDI API (Akai LPK25, Korg EK-50 y teclados USB/Bluetooth)
         let midiAccessInstance = null;
 
         async function setupMIDI() {
@@ -1716,10 +1891,9 @@
             const text = document.getElementById("status-text");
 
             if (!navigator.requestMIDIAccess) {
-                // En iPad Safari o navegadores sin Web MIDI nativo, confirmar que el modo táctil y mic están 100% operativos
-                dot.style.background = "#3fb950";
-                dot.classList.add("connected");
-                text.textContent = "Teclado táctil y Mic listos";
+                dot.style.background = "#58a6ff";
+                dot.classList.remove("connected");
+                text.textContent = "📱 iPad (Táctil / Mic listo)";
                 return;
             }
 
@@ -1731,16 +1905,20 @@
                     if (inputs.length > 0) {
                         dot.style.background = "#3fb950";
                         dot.classList.add("connected");
-                        text.textContent = `MIDI: ${inputs.map(i => i.name).join(", ")}`;
+                        const names = inputs.map(i => i.name || "Teclado MIDI").join(", ");
+                        text.textContent = `🟢 Conectado: ${names}`;
                     } else {
-                        dot.style.background = "#3fb950";
-                        dot.classList.add("connected");
-                        text.textContent = "Teclado táctil y Mic listos";
+                        dot.style.background = "#d29922";
+                        dot.classList.remove("connected");
+                        text.textContent = "🟡 Conecta el Akai / Korg por USB";
                     }
 
                     inputs.forEach(input => {
-                        input.onmidimessage = (e) => {
-                            const [status, note, vel] = e.data;
+                        const onMidi = (e) => {
+                            if (!e || !e.data || e.data.length < 2) return;
+                            const status = e.data[0];
+                            const note = e.data[1];
+                            const vel = (e.data.length > 2) ? e.data[2] : 64;
                             const cmd = status >> 4;
                             if (cmd === 9) {
                                 if (vel > 0) triggerNoteOn(note);
@@ -1749,15 +1927,17 @@
                                 triggerNoteOff(note);
                             }
                         };
+                        input.onmidimessage = onMidi;
+                        try { input.addEventListener("midimessage", onMidi); } catch(err){}
                     });
                 }
 
                 bindInputs();
                 midiAccessInstance.onstatechange = bindInputs;
             } catch (err) {
-                dot.style.background = "#3fb950";
-                dot.classList.add("connected");
-                text.textContent = "Teclado táctil y Mic listos";
+                dot.style.background = "#d29922";
+                dot.classList.remove("connected");
+                text.textContent = "🟡 Conecta el Akai / Korg por USB";
             }
         }
 
@@ -1765,6 +1945,7 @@
         setupMIDI();
         window.addEventListener("click", () => {
             initAudio();
+            if (!midiAccessInstance && navigator.requestMIDIAccess) setupMIDI();
             // Precargar muestras de piano de cola acústico para las notas de Clave de Sol (Do4 a La5)
             [60, 62, 64, 65, 67, 69, 71, 72, 74, 76, 77, 79, 81].forEach(m => loadGrandPianoSample(m));
         }, { once: true });
