@@ -317,6 +317,93 @@
         .note-error-shake {
             animation: shakeNote 0.3s ease-in-out;
         }
+
+        /* MODAL Y PANEL DEL MEZCLADOR MULTI-PISTA */
+        .mixer-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.72);
+            backdrop-filter: blur(5px);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+
+        .mixer-card {
+            background: #161b22;
+            border: 2px solid #388bfd;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 680px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.85);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            animation: fadeIn 0.22s ease-out;
+        }
+
+        .mixer-header {
+            padding: 14px 18px;
+            background: #0d1117;
+            border-bottom: 1px solid #30363d;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .mixer-table-container {
+            max-height: 380px;
+            overflow-y: auto;
+            padding: 4px 12px;
+        }
+
+        .mixer-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.88rem;
+            color: #c9d1d9;
+        }
+
+        .mixer-table th {
+            padding: 10px 8px;
+            background: #161b22;
+            color: #8b949e;
+            font-weight: 700;
+            border-bottom: 2px solid #30363d;
+            position: sticky;
+            top: 0;
+            z-index: 2;
+        }
+
+        .mixer-table td {
+            padding: 10px 8px;
+            border-bottom: 1px solid #21262d;
+            vertical-align: middle;
+        }
+
+        .mixer-table tr:hover {
+            background: rgba(88, 166, 255, 0.09);
+        }
+
+        .mixer-footer {
+            padding: 12px 18px;
+            background: #0d1117;
+            border-top: 1px solid #30363d;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .btn-sm {
+            padding: 5px 10px;
+            font-size: 0.78rem;
+        }
     </style>
 </head>
 <body>
@@ -341,16 +428,17 @@
         <div class="mode-group">
             <label style="color:#8b949e; font-weight:600;">Modo:</label>
             <select class="select-input" id="select-mode" onchange="changeMode()">
-                <option value="free">🎹 Modo Libre (Tocar y ver)</option>
-                <option value="wait">🎯 Modo Práctica (Espera / "Wait for Note")</option>
+                <option value="learn_midi">🎓 Aprender Canción MIDI (Me sigue a mí / Espera)</option>
                 <option value="intervals" selected>🎲 Ejercicio Intervalos (3ªs y 5ªs)</option>
+                <option value="songs">🎼 Canciones Predefinidas (Himno, etc.)</option>
+                <option value="free">🎹 Modo Libre (Tocar y ver)</option>
             </select>
         </div>
 
         <div class="mode-group" id="song-controls-group">
             <label style="color:#8b949e; font-weight:600;">Partitura:</label>
             <select class="select-input" id="select-song" style="display:none;" onchange="loadSelectedSong()">
-                <option value="">-- Elige una canción --</option>
+                <option value="">-- Elige una canción didáctica --</option>
                 <option value="alegria">Himno de la Alegría (Beethoven)</option>
                 <option value="estrellita">Estrellita dónde estás (Mozart)</option>
                 <option value="campana">Campana sobre Campana</option>
@@ -360,9 +448,11 @@
 
             <button class="btn btn-primary" onclick="triggerFileInput()">📂 Cargar .MID</button>
             <input type="file" id="midi-file-input" accept=".mid,.midi" style="display:none" onchange="handleMidiFileUpload(event)">
-            <select class="select-input" id="select-midi-track" style="display:none;" onchange="switchMidiTrack(this.value)" title="Elegir pista/mano de la canción MIDI"></select>
-            
+            <select class="select-input" id="select-midi-track" style="display:none;" onchange="switchMidiTrack(this.value)" title="Elegir pista que ves en la partitura para aprender"></select>
+            <button class="btn btn-secondary" id="btn-toggle-mixer" style="display:none;" onclick="toggleTrackMixerModal()" title="Elegir qué pistas escuchar (o seleccionar todas)">🎛️ Pistas Audio (<span id="mixer-badge-text">Todas</span>)</button>
+
             <button class="btn btn-purple" id="btn-new-exercise" onclick="generateIntervalExercise()">🎲 Nuevo Ejercicio</button>
+            <button class="btn btn-secondary" id="btn-restart-step" onclick="restartCurrentSequence()" title="Volver a la primera nota para aprender desde el principio">⏮ Inicio</button>
             <button class="btn btn-success" id="btn-playback" onclick="togglePlayback()" style="font-weight:700;">▶ Escuchar</button>
             <button class="btn btn-secondary" id="btn-transpose-up" onclick="transposeOctave(12)" title="Subir toda la partitura una octava más alta (+12 semitonos)">▲ +8va</button>
             <button class="btn btn-secondary" id="btn-transpose-down" onclick="transposeOctave(-12)" title="Bajar toda la partitura una octava (-12 semitonos)">▼ -8va</button>
@@ -373,45 +463,60 @@
         </div>
     </div>
 
+    <!-- MODAL MEZCLADOR MULTI-PISTA MIDI -->
+    <div id="midi-mixer-modal" class="mixer-modal" style="display:none;">
+        <div class="mixer-card">
+            <div class="mixer-header">
+                <div>
+                    <div style="font-weight:800; font-size:1.05rem; color:#58a6ff;">🎛️ Mezclador de Pistas de Audio MIDI</div>
+                    <div style="font-size:0.8rem; color:#8b949e; margin-top:2px;">
+                        Marca las pistas que deseas oír o activa todas para escuchar la canción completa.
+                    </div>
+                </div>
+                <div style="display:flex; gap:6px; align-items:center;">
+                    <button class="btn btn-primary btn-sm" onclick="setMixerAllTracks(true)">✅ Oír Todas</button>
+                    <button class="btn btn-secondary btn-sm" onclick="setMixerOnlyScoreTrack()">🎵 Solo Partitura</button>
+                    <button class="btn btn-danger btn-sm" onclick="toggleTrackMixerModal()">✕</button>
+                </div>
+            </div>
+            <div class="mixer-table-container">
+                <table class="mixer-table">
+                    <thead>
+                        <tr>
+                            <th style="width:70px; text-align:center;">👁️ Ver</th>
+                            <th style="width:70px; text-align:center;">🔊 Oír</th>
+                            <th>Pista</th>
+                            <th style="text-align:right;">Notas</th>
+                            <th style="text-align:right;">Tono medio</th>
+                        </tr>
+                    </thead>
+                    <tbody id="mixer-table-body">
+                        <!-- Rellenado dinámicamente -->
+                    </tbody>
+                </table>
+            </div>
+            <div class="mixer-footer">
+                <span id="mixer-summary-text" style="color:#8b949e; font-size:0.82rem;">Todas las pistas seleccionadas para sonar.</span>
+                <button class="btn btn-success btn-sm" onclick="toggleTrackMixerModal()">Listo ✓</button>
+            </div>
+        </div>
+    </div>
+
     <div class="staff-board" id="staff-board-dropzone" ondragover="event.preventDefault()" ondrop="handleDropMidi(event)">
-        <!-- SVG QUE DIBUJA 3 PENTAGRAMAS COMPLETOS (SISTEMAS) -->
-        <svg id="staffSvg" viewBox="0 0 1800 695" preserveAspectRatio="none" style="overflow: visible;">
-            <!-- SISTEMA 1 (Y base primera línea = 130) -->
-            <line x1="20" y1="50" x2="1780" y2="50" stroke="#222" stroke-width="2.2" />
-            <line x1="20" y1="70" x2="1780" y2="70" stroke="#222" stroke-width="2.2" />
-            <line x1="20" y1="90" x2="1780" y2="90" stroke="#222" stroke-width="2.2" />
-            <line x1="20" y1="110" x2="1780" y2="110" stroke="#222" stroke-width="2.2" />
-            <line x1="20" y1="130" x2="1780" y2="130" stroke="#222" stroke-width="2.2" />
-            <line x1="1780" y1="50" x2="1780" y2="130" stroke="#222" stroke-width="3" />
-            <text x="40" y="122" font-size="105" font-family="serif" fill="#111">𝄞</text>
+        <!-- SVG QUE DIBUJA PENTAGRAMAS Y NOTAS CON DESPLAZAMIENTO SUAVE -->
+        <svg id="staffSvg" viewBox="0 0 1800 695" preserveAspectRatio="none" style="overflow: hidden;">
+            <g id="viewport-group" style="transition: transform 0.42s cubic-bezier(0.25, 1, 0.5, 1); will-change: transform;">
+                <!-- Capa donde se dibujan dinámicamente los pentagramas -->
+                <g id="staves-layer"></g>
 
-            <!-- SISTEMA 2 (Y base primera línea = 350) -->
-            <line x1="20" y1="270" x2="1780" y2="270" stroke="#222" stroke-width="2.2" />
-            <line x1="20" y1="290" x2="1780" y2="290" stroke="#222" stroke-width="2.2" />
-            <line x1="20" y1="310" x2="1780" y2="310" stroke="#222" stroke-width="2.2" />
-            <line x1="20" y1="330" x2="1780" y2="330" stroke="#222" stroke-width="2.2" />
-            <line x1="20" y1="350" x2="1780" y2="350" stroke="#222" stroke-width="2.2" />
-            <line x1="1780" y1="270" x2="1780" y2="350" stroke="#222" stroke-width="3" />
-            <text x="40" y="342" font-size="105" font-family="serif" fill="#111">𝄞</text>
+                <!-- Capa donde se dibujan las notas -->
+                <g id="notes-layer"></g>
 
-            <!-- SISTEMA 3 (Y base primera línea = 570, ocultable cuando el teclado virtual está activo) -->
-            <g id="system-3-group">
-                <line x1="20" y1="490" x2="1780" y2="490" stroke="#222" stroke-width="2.2" />
-                <line x1="20" y1="510" x2="1780" y2="510" stroke="#222" stroke-width="2.2" />
-                <line x1="20" y1="530" x2="1780" y2="530" stroke="#222" stroke-width="2.2" />
-                <line x1="20" y1="550" x2="1780" y2="550" stroke="#222" stroke-width="2.2" />
-                <line x1="20" y1="570" x2="1780" y2="570" stroke="#222" stroke-width="2.2" />
-                <line x1="1780" y1="490" x2="1780" y2="570" stroke="#222" stroke-width="3" />
-                <text x="40" y="562" font-size="105" font-family="serif" fill="#111">𝄞</text>
-            </g>
-
-            <!-- Capa donde se dibujan las notas -->
-            <g id="notes-layer"></g>
-
-            <g id="welcome-hint">
-                <text x="900" y="95" text-anchor="middle" font-size="20" fill="#888" font-style="italic">
-                    Toca tu teclado, pantalla táctil o canta por micrófono: la partitura te espera en cada nota ➔
-                </text>
+                <g id="welcome-hint">
+                    <text x="900" y="95" text-anchor="middle" font-size="20" fill="#888" font-style="italic">
+                        Toca tu teclado, pantalla táctil o canta por micrófono: la partitura te espera en cada nota ➔
+                    </text>
+                </g>
             </g>
         </svg>
     </div>
@@ -485,10 +590,70 @@
         let playbackTimeoutId = null; // Temporizador del secuenciador de audio
 
         const NOTES_PER_STAFF = 30;
-        const TOTAL_MAX_NOTES = 90;
+        const TOTAL_MAX_NOTES = 3000;
         const START_X = 140;
         const NOTE_STEP_X = 54;
-        const STAFF_LINE1_Y = [130, 350, 570];
+        function getStaffBaseY(staffIndex) { return 130 + (staffIndex * 220); }
+
+        // GENERACIÓN VECTORIAL DE PENTAGRAMAS DINÁMICOS Y MULTI-SISTEMA
+        function renderStavesLayer(totalNotes = 60) {
+            const layer = document.getElementById("staves-layer");
+            if (!layer) return;
+
+            const neededSystems = Math.ceil(Math.max(totalNotes, 60) / NOTES_PER_STAFF);
+            const totalSystems = Math.max(3, neededSystems + 1);
+            let svg = "";
+
+            for (let s = 0; s < totalSystems; s++) {
+                const baseY = getStaffBaseY(s);
+                const topY = baseY - 80;
+
+                // 5 líneas del pentagrama
+                for (let l = 0; l < 5; l++) {
+                    const lineY = topY + (l * 20);
+                    svg += `<line x1="20" y1="${lineY}" x2="1780" y2="${lineY}" stroke="#222" stroke-width="2.2" />`;
+                }
+
+                // Barra final de compás del pentagrama a la derecha
+                svg += `<line x1="1780" y1="${topY}" x2="1780" y2="${baseY}" stroke="#222" stroke-width="3" />`;
+
+                // Clave de Sol al inicio de cada pentagrama
+                svg += `<text x="40" y="${baseY - 8}" font-size="105" font-family="serif" fill="#111">𝄞</text>`;
+
+                // Indicador numérico de compás o sistema a la izquierda
+                if (s > 0) {
+                    svg += `<text x="22" y="${topY - 8}" font-size="13" font-weight="700" fill="#888" font-family="sans-serif">${(s * 8) + 1}</text>`;
+                }
+            }
+
+            layer.innerHTML = svg;
+        }
+
+        // DESPLAZAMIENTO SUAVE VERTICAL DE LA PARTITURA (AUTO-SCROLL PARA CANCIONES LARGAS)
+        function updateScoreScroll() {
+            const viewportGroup = document.getElementById("viewport-group");
+            if (!viewportGroup) return;
+
+            const seq = (currentMode === "free") ? noteSequence : practiceSequence;
+            if (!seq || seq.length === 0) {
+                viewportGroup.style.transform = "translateY(0px)";
+                return;
+            }
+
+            const activeStaff = Math.floor(currentStepIndex / NOTES_PER_STAFF);
+            const isKeyboardOpen = document.getElementById("toggle-vkey") && document.getElementById("toggle-vkey").checked;
+
+            // Mantener el pentagrama de la nota activa visible y centrado en el visor
+            let scrollStaff = 0;
+            if (isKeyboardOpen) {
+                scrollStaff = Math.max(0, activeStaff - 1);
+            } else {
+                scrollStaff = (activeStaff >= 2) ? (activeStaff - 1) : 0;
+            }
+
+            const targetY = scrollStaff * 220;
+            viewportGroup.style.transform = `translateY(-${targetY}px)`;
+        }
 
         const NOTE_NAMES = ["Do", "Do#", "Re", "Re#", "Mi", "Fa", "Fa#", "Sol", "Sol#", "La", "La#", "Si"];
         const SHORT_NOTE_NAMES = ["DO", "DO#", "RE", "RE#", "MI", "FA", "FA#", "SOL", "SOL#", "LA", "LA#", "SI"];
@@ -669,6 +834,15 @@
             btn.classList.toggle("btn-secondary", !soundEnabled);
         }
 
+        function restartCurrentSequence() {
+            stopPlayback(false);
+            currentStepIndex = 0;
+            hasErrorOnCurrentStep = false;
+            updatePracticeStatusUI();
+            renderNotesLayer();
+            updateScoreScroll();
+        }
+
         // CONTROL DE REPRODUCCIÓN INTERACTIVA (PLAY / PAUSE / STOP)
         function togglePlayback() {
             if (isPlaying) {
@@ -695,6 +869,7 @@
             hasErrorOnCurrentStep = false;
             updatePracticeStatusUI();
             renderNotesLayer();
+            updateScoreScroll();
 
             const btn = document.getElementById("btn-playback");
             if (btn) {
@@ -703,7 +878,14 @@
                 btn.classList.remove("btn-success");
             }
 
-            playPlaybackStep();
+            // Si hay pistas MIDI cargadas, reproducir con el secuenciador multi-pista
+            if (currentMidiTracks && currentMidiTracks.length > 0) {
+                buildPlaybackTimeline();
+                playbackTimelineIndex = 0;
+                playMultiTrackStep();
+            } else {
+                playPlaybackStep();
+            }
         }
 
         function stopPlayback(resetToStart = true) {
@@ -712,6 +894,7 @@
                 clearTimeout(playbackTimeoutId);
                 playbackTimeoutId = null;
             }
+            playbackTimelineIndex = 0;
 
             const btn = document.getElementById("btn-playback");
             if (btn) {
@@ -728,15 +911,65 @@
                 hasErrorOnCurrentStep = false;
                 updatePracticeStatusUI();
                 renderNotesLayer();
+                updateScoreScroll();
             }
         }
 
+        // REPRODUCCIÓN MULTI-PISTA COMPLETA (OÍR TODAS LAS PISTAS SELECCIONADAS EN ARMONÍA)
+        function playMultiTrackStep() {
+            if (!isPlaying) return;
+            if (!currentPlaybackTimeline || playbackTimelineIndex >= currentPlaybackTimeline.length) {
+                setTimeout(() => {
+                    stopPlayback(true);
+                }, 600);
+                return;
+            }
+
+            const step = currentPlaybackTimeline[playbackTimelineIndex];
+
+            // 1. Tocar todas las notas de este instante (acordes / acompañamientos)
+            if (step.notes && step.notes.length > 0) {
+                step.notes.forEach(m => playSound(m));
+            }
+
+            // 2. Si hay notas de la pista de partitura en este instante, iluminar y avanzar
+            if (step.displayNotes && step.displayNotes.length > 0) {
+                step.displayNotes.forEach(m => {
+                    highlightVirtualKey(m, true);
+                    setTimeout(() => highlightVirtualKey(m, false), 260);
+                });
+
+                // Avanzar currentStepIndex en practiceSequence según el tick actual
+                if (practiceSequence && practiceSequence.length > 0) {
+                    while (currentStepIndex < practiceSequence.length && practiceSequence[currentStepIndex].startTick < step.tick) {
+                        currentStepIndex++;
+                    }
+                    updatePracticeStatusUI();
+                    renderNotesLayer();
+                    updateScoreScroll();
+                }
+            }
+
+            // 3. Programar siguiente instante del timeline
+            playbackTimeoutId = setTimeout(() => {
+                if (!isPlaying) return;
+                playbackTimelineIndex++;
+                if (playbackTimelineIndex >= currentPlaybackTimeline.length) {
+                    updatePracticeStatusUI();
+                    renderNotesLayer();
+                    setTimeout(() => stopPlayback(true), 600);
+                } else {
+                    playMultiTrackStep();
+                }
+            }, step.delayMs);
+        }
+
+        // REPRODUCCIÓN SIMPLE PARA EJERCICIOS Y CANCIONES MONODICAS
         function playPlaybackStep() {
             if (!isPlaying) return;
 
             const seq = (currentMode === "free") ? noteSequence : practiceSequence;
             if (currentStepIndex >= seq.length) {
-                // Secuencia completada
                 setTimeout(() => {
                     stopPlayback(true);
                 }, 600);
@@ -746,23 +979,20 @@
             const item = seq[currentStepIndex];
             const midi = (typeof item === 'object') ? item.midi : item;
 
-            // 1. Tocar el tono en el motor de audio de piano
             playSound(midi);
 
-            // 2. Iluminar la tecla en el teclado en pantalla (si está desplegado)
             highlightVirtualKey(midi, true);
             setTimeout(() => {
                 highlightVirtualKey(midi, false);
             }, 280);
 
-            // 3. Actualizar la partitura y la información de la nota
             updatePracticeStatusUI();
             renderNotesLayer();
+            updateScoreScroll();
 
-            // 4. Calcular el tempo y duración hasta la siguiente nota
             const bpm = (window.currentMidiBpm && window.currentMidiBpm >= 30) ? window.currentMidiBpm : 105;
             const msPerBeat = 60000 / bpm;
-            let delayMs = Math.round(msPerBeat); // Tempo de negra
+            let delayMs = Math.round(msPerBeat);
 
             if (typeof item === 'object') {
                 if (item.durationType === 'whole') delayMs = Math.round(msPerBeat * 4);
@@ -770,7 +1000,6 @@
                 else if (item.durationType === 'quarter') delayMs = Math.round(msPerBeat);
                 else if (item.durationType === 'eighth') delayMs = Math.round(msPerBeat * 0.5);
 
-                // Sincronización precisa por delta ticks del archivo MIDI a su BPM real
                 if (currentStepIndex + 1 < seq.length) {
                     const nextItem = seq[currentStepIndex + 1];
                     if (typeof nextItem === 'object' && typeof nextItem.startTick === 'number' && typeof item.startTick === 'number') {
@@ -780,13 +1009,12 @@
                             const calculatedMs = Math.round((deltaTicks / tpq) * msPerBeat);
                             delayMs = Math.max(140, Math.min(4000, calculatedMs));
                         } else if (deltaTicks === 0) {
-                            delayMs = 60; // Separación mínima si hubiera notas simultáneas
+                            delayMs = 60;
                         }
                     }
                 }
             }
 
-            // 5. Programar siguiente nota
             playbackTimeoutId = setTimeout(() => {
                 if (!isPlaying) return;
                 currentStepIndex++;
@@ -800,6 +1028,24 @@
                     playPlaybackStep();
                 }
             }, delayMs);
+        }
+
+        // ACOMPAÑAMIENTO EN VIVO MIENTRAS APRENDES (TOCAS LA MELODÍA Y SUENA LA ARMONÍA CON TIEMPO LIBRE)
+        function playAccompanimentAtTick(tick) {
+            if (!currentMidiTracks || enabledAudioTrackIndices.size <= 1) return;
+            const CLUSTER_WINDOW = 40; // ticks de tolerancia
+
+            enabledAudioTrackIndices.forEach(tIdx => {
+                if (tIdx === currentMidiTrackIndex) return; // No duplicar la melodía que el alumno toca
+                const trk = currentMidiTracks[tIdx];
+                if (!trk) return;
+                const notes = trk.rawNotes || trk.notes || [];
+                notes.forEach(n => {
+                    if (Math.abs(n.startTick - tick) <= CLUSTER_WINDOW) {
+                        playSound(n.midi);
+                    }
+                });
+            });
         }
 
         // TRANSPOSICIÓN DE OCTAVA DE TODA LA PARTITURA (▲ +8va / ▼ -8va)
@@ -862,30 +1108,51 @@
             const newExBtn = document.getElementById("btn-new-exercise");
             const songSelect = document.getElementById("select-song");
             const badge = document.getElementById("practice-status-badge");
+            const trackSelect = document.getElementById("select-midi-track");
+            const mixerBtn = document.getElementById("btn-toggle-mixer");
+            const restartBtn = document.getElementById("btn-restart-step");
 
             if (currentMode === "free") {
                 songGroup.style.display = "none";
                 badge.style.display = "none";
                 document.getElementById("welcome-hint").style.display = noteSequence.length === 0 ? "block" : "none";
-            } else if (currentMode === "wait") {
+            } else if (currentMode === "learn_midi") {
+                songGroup.style.display = "flex";
+                newExBtn.style.display = "none";
+                songSelect.style.display = "none";
+                if (currentMidiTracks && currentMidiTracks.length > 0) {
+                    trackSelect.style.display = "inline-block";
+                    mixerBtn.style.display = "inline-block";
+                }
+                if (restartBtn) restartBtn.style.display = "inline-block";
+                badge.style.display = "inline-block";
+                document.getElementById("welcome-hint").style.display = "none";
+            } else if (currentMode === "intervals") {
+                songGroup.style.display = "flex";
+                newExBtn.style.display = "inline-block";
+                songSelect.style.display = "none";
+                if (trackSelect) trackSelect.style.display = "none";
+                if (mixerBtn) mixerBtn.style.display = "none";
+                if (restartBtn) restartBtn.style.display = "inline-block";
+                badge.style.display = "inline-block";
+                document.getElementById("welcome-hint").style.display = "none";
+                generateIntervalExercise();
+            } else if (currentMode === "songs") {
                 songGroup.style.display = "flex";
                 newExBtn.style.display = "none";
                 songSelect.style.display = "inline-block";
+                if (trackSelect) trackSelect.style.display = "none";
+                if (mixerBtn) mixerBtn.style.display = "none";
+                if (restartBtn) restartBtn.style.display = "inline-block";
                 badge.style.display = "inline-block";
                 document.getElementById("welcome-hint").style.display = "none";
                 if (practiceSequence.length === 0) {
                     loadSongByKey("alegria");
                 }
-            } else if (currentMode === "intervals") {
-                songGroup.style.display = "flex";
-                newExBtn.style.display = "inline-block";
-                songSelect.style.display = "none";
-                badge.style.display = "inline-block";
-                document.getElementById("welcome-hint").style.display = "none";
-                generateIntervalExercise();
             }
             renderNotesLayer();
             updatePracticeStatusUI();
+            updateScoreScroll();
         }
 
         // CARGA DE CANCIONES
@@ -974,7 +1241,11 @@
                 const rawTarget = practiceSequence[currentStepIndex];
                 const targetMidi = (typeof rawTarget === 'object') ? rawTarget.midi : rawTarget;
                 noteTargetEl.textContent = NOTE_NAMES[targetMidi % 12];
-                countEl.textContent = `${currentStepIndex + 1}/${practiceSequence.length}`;
+                if (typeof rawTarget === 'object' && typeof rawTarget.measureIndex === 'number') {
+                    countEl.textContent = `Compás ${rawTarget.measureIndex + 1} | ${currentStepIndex + 1}/${practiceSequence.length}`;
+                } else {
+                    countEl.textContent = `${currentStepIndex + 1}/${practiceSequence.length}`;
+                }
             } else if (practiceSequence.length > 0 && currentStepIndex >= practiceSequence.length) {
                 noteTargetEl.textContent = "🎉 ¡Completado!";
                 countEl.textContent = `${practiceSequence.length}/${practiceSequence.length}`;
@@ -1014,18 +1285,25 @@
                     const rawTarget = practiceSequence[currentStepIndex];
                     const targetMidi = (typeof rawTarget === 'object') ? rawTarget.midi : rawTarget;
                     
-                    // Comprobación exacta de nota (o misma nota en cualquier octava si se prefiere, aquí afinación exacta)
+                    // Comprobación exacta de nota (o misma nota en cualquier octava)
                     if (midi === targetMidi || (midi % 12 === targetMidi % 12)) {
                         // ¡CORRECTO!
                         hasErrorOnCurrentStep = false;
                         playSound(midi);
+
+                        // Si estamos en Modo Aprender Canción MIDI y hay pistas de acompañamiento activadas:
+                        if (currentMode === "learn_midi" && typeof rawTarget === 'object' && rawTarget.startTick !== undefined) {
+                            playAccompanimentAtTick(rawTarget.startTick);
+                        }
+
                         currentStepIndex++;
                         updatePracticeStatusUI();
                         renderNotesLayer();
+                        updateScoreScroll();
 
                         if (currentStepIndex >= practiceSequence.length) {
                             setTimeout(() => {
-                                alert("🎉 ¡Excelente trabajo! Has completado toda la partitura con éxito.");
+                                alert("🎉 ¡Excelente trabajo! Has completado y aprendido toda la partitura con éxito.");
                             }, 300);
                         }
                     } else {
@@ -1097,6 +1375,7 @@
             let svg = "";
 
             const activeList = (currentMode === "free") ? noteSequence : practiceSequence;
+            renderStavesLayer(activeList.length);
 
             // En modo rítmico, podemos calcular compases (ej. 4/4: compás cada 4 tiempos o cada 4 notas en ejercicios)
             let currentBarCount = 0;
@@ -1108,10 +1387,8 @@
 
                 const staffIndex = Math.floor(index / NOTES_PER_STAFF);
                 const posInStaff = index % NOTES_PER_STAFF;
-                if (staffIndex >= 3) return; // Máximo 3 pentagramas
-
                 const posX = START_X + (posInStaff * NOTE_STEP_X);
-                const baseLineY = STAFF_LINE1_Y[staffIndex];
+                const baseLineY = getStaffBaseY(staffIndex);
                 const step = getDiatonicStep(midi);
                 const noteY = baseLineY - (step * 10);
                 const isSharp = [1, 3, 6, 8, 10].includes(midi % 12);
@@ -1236,6 +1513,7 @@
             });
 
             layer.innerHTML = svg;
+            updateScoreScroll();
         }
 
         // DETECCIÓN POR VOZ (MICRÓFONO CON WEB SPEECH RECOGNITION NATIVO Y FLUIDO)
@@ -1461,6 +1739,175 @@
 
         let currentMidiTracks = [];
         let currentMidiTrackIndex = 0;
+        let enabledAudioTrackIndices = new Set();
+        let currentPlaybackTimeline = [];
+        let playbackTimelineIndex = 0;
+
+        function toggleTrackMixerModal() {
+            const modal = document.getElementById("midi-mixer-modal");
+            if (!modal) return;
+            const isHidden = (modal.style.display === "none" || !modal.style.display);
+            modal.style.display = isHidden ? "flex" : "none";
+            if (isHidden) {
+                renderMixerTable();
+            }
+        }
+
+        function renderMixerTable() {
+            const tbody = document.getElementById("mixer-table-body");
+            if (!tbody || !currentMidiTracks) return;
+            tbody.innerHTML = "";
+
+            currentMidiTracks.forEach((t, idx) => {
+                const tr = document.createElement("tr");
+                const isDisplay = (idx === currentMidiTrackIndex);
+                const isAudioEnabled = enabledAudioTrackIndices.has(idx);
+                const avgName = NOTE_NAMES[t.avgPitch % 12] + (Math.floor(t.avgPitch / 12) - 1);
+                const noteCount = t.notes ? t.notes.length : (t.rawNotes ? t.rawNotes.length : 0);
+
+                tr.innerHTML = `
+                    <td style="text-align:center;">
+                        <input type="radio" name="mixer-display-track" value="${idx}" ${isDisplay ? "checked" : ""} onchange="switchMidiTrack(${idx}); renderMixerTable();" title="Ver esta pista en la partitura">
+                    </td>
+                    <td style="text-align:center;">
+                        <input type="checkbox" id="mixer-chk-${idx}" ${isAudioEnabled ? "checked" : ""} onchange="toggleTrackAudio(${idx}, this.checked)" title="Habilitar sonido de esta pista">
+                    </td>
+                    <td>
+                        <span style="font-weight:600; color:${isDisplay ? '#58a6ff' : '#c9d1d9'};">${isDisplay ? '⭐ ' : ''}${t.name}</span>
+                    </td>
+                    <td style="text-align:right; font-variant-numeric:tabular-nums;">
+                        ${noteCount} notas
+                    </td>
+                    <td style="text-align:right; color:#8b949e;">
+                        ${avgName} (${t.avgPitch})
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            updateMixerBadgeAndSummary();
+        }
+
+        function toggleTrackAudio(trackIdx, isEnabled) {
+            if (isEnabled) {
+                enabledAudioTrackIndices.add(trackIdx);
+            } else {
+                enabledAudioTrackIndices.delete(trackIdx);
+            }
+            buildPlaybackTimeline();
+            updateMixerBadgeAndSummary();
+        }
+
+        function setMixerAllTracks(allActive = true) {
+            if (!currentMidiTracks) return;
+            enabledAudioTrackIndices.clear();
+            if (allActive) {
+                currentMidiTracks.forEach((_, i) => enabledAudioTrackIndices.add(i));
+            }
+            buildPlaybackTimeline();
+            renderMixerTable();
+        }
+
+        function setMixerOnlyScoreTrack() {
+            enabledAudioTrackIndices.clear();
+            enabledAudioTrackIndices.add(currentMidiTrackIndex);
+            buildPlaybackTimeline();
+            renderMixerTable();
+        }
+
+        function updateMixerBadgeAndSummary() {
+            const badge = document.getElementById("mixer-badge-text");
+            const summary = document.getElementById("mixer-summary-text");
+            if (!currentMidiTracks || currentMidiTracks.length === 0) return;
+
+            const count = enabledAudioTrackIndices.size;
+            const total = currentMidiTracks.length;
+
+            if (badge) {
+                badge.textContent = (count === total) ? "Todas" : (count === 1 ? "1 pista" : `${count}/${total}`);
+            }
+            if (summary) {
+                summary.textContent = (count === total)
+                    ? "Todas las pistas seleccionadas para sonar juntas."
+                    : (count === 1 ? `Solo 1 pista sonando (${currentMidiTracks[currentMidiTrackIndex]?.name || ''}).` : `${count} de ${total} pistas activadas para sonar.`);
+            }
+        }
+
+        // CONSTRUCCIÓN DEL TIMELINE CRONOLÓGICO MULTI-PISTA
+        function buildPlaybackTimeline() {
+            if (!currentMidiTracks || currentMidiTracks.length === 0) {
+                currentPlaybackTimeline = [];
+                return;
+            }
+
+            if (enabledAudioTrackIndices.size === 0) {
+                enabledAudioTrackIndices.add(currentMidiTrackIndex);
+            }
+
+            const tpq = (window.lastMidiTicksPerQuarter && window.lastMidiTicksPerQuarter > 0) ? window.lastMidiTicksPerQuarter : 480;
+            const bpm = (window.currentMidiBpm && window.currentMidiBpm >= 30) ? window.currentMidiBpm : 105;
+            const msPerTick = (60000 / bpm) / tpq;
+
+            const allEvents = [];
+
+            enabledAudioTrackIndices.forEach(tIdx => {
+                const trk = currentMidiTracks[tIdx];
+                if (!trk) return;
+                const notesToUse = trk.rawNotes || trk.notes || [];
+                const isDisplayTrack = (tIdx === currentMidiTrackIndex);
+
+                notesToUse.forEach(n => {
+                    allEvents.push({
+                        tick: n.startTick,
+                        midi: n.midi,
+                        durationTicks: n.durationTicks,
+                        trackIndex: tIdx,
+                        isDisplayTrack: isDisplayTrack
+                    });
+                });
+            });
+
+            if (allEvents.length === 0) {
+                currentPlaybackTimeline = [];
+                return;
+            }
+
+            allEvents.sort((a, b) => a.tick - b.tick);
+
+            const steps = [];
+            let currentStep = {
+                tick: allEvents[0].tick,
+                notes: [allEvents[0].midi],
+                displayNotes: allEvents[0].isDisplayTrack ? [allEvents[0].midi] : []
+            };
+
+            for (let k = 1; k < allEvents.length; k++) {
+                const ev = allEvents[k];
+                if (ev.tick - currentStep.tick <= 15) {
+                    currentStep.notes.push(ev.midi);
+                    if (ev.isDisplayTrack) currentStep.displayNotes.push(ev.midi);
+                } else {
+                    steps.push(currentStep);
+                    currentStep = {
+                        tick: ev.tick,
+                        notes: [ev.midi],
+                        displayNotes: ev.isDisplayTrack ? [ev.midi] : []
+                    };
+                }
+            }
+            steps.push(currentStep);
+
+            for (let s = 0; s < steps.length; s++) {
+                if (s + 1 < steps.length) {
+                    const deltaTicks = steps[s + 1].tick - steps[s].tick;
+                    steps[s].delayMs = Math.max(35, Math.round(deltaTicks * msPerTick));
+                } else {
+                    steps[s].delayMs = 600;
+                }
+            }
+
+            currentPlaybackTimeline = steps;
+        }
 
         function switchMidiTrack(trackIndex) {
             trackIndex = parseInt(trackIndex, 10);
@@ -1471,11 +1918,17 @@
             practiceSequence = chosen.notes.slice(0, TOTAL_MAX_NOTES);
             currentStepIndex = 0;
             hasErrorOnCurrentStep = false;
-            document.getElementById("select-mode").value = "wait";
-            currentMode = "wait";
+            document.getElementById("select-mode").value = "learn_midi";
+            currentMode = "learn_midi";
             document.getElementById("welcome-hint").style.display = "none";
+            const trackSelect = document.getElementById("select-midi-track");
+            if (trackSelect) trackSelect.value = trackIndex;
+
+            buildPlaybackTimeline();
+            updateMixerBadgeAndSummary();
             updatePracticeStatusUI();
             renderNotesLayer();
+            updateScoreScroll();
         }
 
         function parseMidiFile(file) {
@@ -1490,7 +1943,14 @@
                         currentMidiTrackIndex = bestIdx;
                         const bestTrack = currentMidiTracks[bestIdx];
 
-                        // Poblar selector de pistas si hay más de 1 pista melódica
+                        // Por defecto, TODAS las pistas habilitadas para sonar en el audio
+                        enabledAudioTrackIndices = new Set(currentMidiTracks.map((_, i) => i));
+
+                        // Mostrar botón del Mezclador
+                        const mixerBtn = document.getElementById("btn-toggle-mixer");
+                        if (mixerBtn) mixerBtn.style.display = "inline-block";
+
+                        // Poblar selector desplegable de pistas para partitura
                         const trackSelect = document.getElementById("select-midi-track");
                         if (trackSelect) {
                             trackSelect.innerHTML = "";
@@ -1502,28 +1962,33 @@
                                 trackSelect.appendChild(opt);
                             });
                             trackSelect.value = bestIdx;
-                            trackSelect.style.display = (currentMidiTracks.length > 1) ? "inline-block" : "none";
+                            trackSelect.style.display = "inline-block";
                         }
 
-                        // Activar automáticamente el modo de notación con figuras y compases
+                        // Configurar mezclador y timeline
+                        buildPlaybackTimeline();
+                        renderMixerTable();
+
+                        // Activar automáticamente modo de figuras y compases
                         notationViewMode = 'rhythm';
                         const rhythmRadio = document.querySelector('input[name="notation-view-mode"][value="rhythm"]');
                         if (rhythmRadio) rhythmRadio.checked = true;
 
-                        // Cargar notas de la pista seleccionada
+                        // Cargar notas en Modo Aprender Canción MIDI
                         stopPlayback(false);
                         practiceSequence = bestTrack.notes.slice(0, TOTAL_MAX_NOTES);
                         currentStepIndex = 0;
                         hasErrorOnCurrentStep = false;
-                        document.getElementById("select-mode").value = "wait";
-                        currentMode = "wait";
+                        document.getElementById("select-mode").value = "learn_midi";
+                        currentMode = "learn_midi";
                         document.getElementById("welcome-hint").style.display = "none";
                         updatePracticeStatusUI();
                         renderNotesLayer();
+                        updateScoreScroll();
 
                         const tempoMsg = window.currentMidiBpm ? ` | Tempo: ${window.currentMidiBpm} BPM` : "";
-                        const multiMsg = currentMidiTracks.length > 1 ? `\n• Se detectaron ${currentMidiTracks.length} pistas (puedes cambiar de pista con el desplegable).` : "";
-                        alert(`🎶 Partitura MIDI cargada con éxito:\n\n• Pista melódica: "${bestTrack.name}" (${bestTrack.notes.length} notas)${tempoMsg}\n• Modo rítmico activado con compases y figuras musicales.${multiMsg}`);
+                        const tracksCount = currentMidiTracks.length;
+                        alert(`🎶 Partitura MIDI cargada con éxito:\n\n• Pista para aprender en pantalla: "${bestTrack.name}" (${bestTrack.notes.length} notas)${tempoMsg}\n• Modo "Aprender (Me sigue a mí)": Toca cada nota en tu teclado Akai a tu ritmo para avanzar.\n• Mezclador: Están activadas las ${tracksCount} pistas para sonar con ▶ Escuchar (puedes personalizarlas con el botón 🎛️ Pistas Audio).`);
                     } else {
                         alert("No se detectaron notas musicales en el archivo MIDI seleccionado.");
                     }
@@ -1747,6 +2212,7 @@
                 processedTracks.push({
                     name: t.name,
                     notes: filteredNotes,
+                    rawNotes: t.rawNotes,
                     avgPitch: avgPitch
                 });
             });
@@ -1809,6 +2275,7 @@
             if (isChecked && document.getElementById("piano-keys-layer").children.length === 0) {
                 renderVirtualKeyboard();
             }
+            updateScoreScroll();
         }
 
         function closeVirtualKeyboard() {
@@ -1941,8 +2408,40 @@
             }
         }
 
+        // DESPLAZAMIENTO MANUAL CON RUEDA DE RATÓN / TRACKPAD
+        function setupScoreWheelScroll() {
+            const board = document.getElementById("staff-board-dropzone");
+            if (!board) return;
+            let manualScrollTimer = null;
+
+            board.addEventListener("wheel", (e) => {
+                if (isPlaying) return; // Durante reproducción automática, mantener seguimiento estricto
+                const viewportGroup = document.getElementById("viewport-group");
+                if (!viewportGroup) return;
+
+                const seq = (currentMode === "free") ? noteSequence : practiceSequence;
+                const totalNotes = Math.max(seq.length, 60);
+                const totalSystems = Math.max(3, Math.ceil(totalNotes / NOTES_PER_STAFF));
+                const maxScrollY = Math.max(0, (totalSystems - 2) * 220);
+
+                let currentY = 0;
+                const match = viewportGroup.style.transform.match(/translateY\((-?\d+(?:\.\d+)?)px\)/);
+                if (match) currentY = Math.abs(parseFloat(match[1]));
+
+                const delta = e.deltaY > 0 ? 110 : -110;
+                const newY = Math.max(0, Math.min(maxScrollY, currentY + delta));
+                viewportGroup.style.transform = `translateY(-${newY}px)`;
+
+                clearTimeout(manualScrollTimer);
+                manualScrollTimer = setTimeout(() => {
+                    updateScoreScroll(); // Reanudar automáticamente posición de nota activa tras pausa
+                }, 3000);
+            }, { passive: true });
+        }
+
         // INICIALIZACIÓN
         setupMIDI();
+        setupScoreWheelScroll();
         window.addEventListener("click", () => {
             initAudio();
             if (!midiAccessInstance && navigator.requestMIDIAccess) setupMIDI();
