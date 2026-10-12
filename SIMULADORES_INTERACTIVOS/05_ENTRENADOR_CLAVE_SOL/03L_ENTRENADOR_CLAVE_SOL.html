@@ -152,6 +152,23 @@
             cursor: pointer;
         }
 
+        .bpm-control-wrap {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: #0d1117;
+            padding: 2px 6px;
+            border-radius: 6px;
+            border: 1px solid #30363d;
+        }
+
+        .bpm-control-wrap label {
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: #58a6ff;
+            user-select: none;
+        }
+
         .practice-indicator {
             background: #0d1117;
             padding: 3px 10px;
@@ -459,11 +476,11 @@
                 <option value="escala_do">Escala Do Mayor (Do4 a Do5)</option>
             </select>
 
-            <select class="select-input" id="select-preset-midi" style="display:none;" onchange="loadPresetMidi(this.value)" title="Elegir canción MIDI precargada en GitHub">
-                <option value="">-- Elige canción MIDI demo (GitHub) --</option>
-                <option value="ARCHIVOS_MIDI/Hallelujah.mid">🎵 Hallelujah (Leonard Cohen)</option>
-                <option value="ARCHIVOS_MIDI/Pirates of the Caribbean - He's a Pirate (3).mid">🏴‍☠️ Piratas del Caribe</option>
-                <option value="ARCHIVOS_MIDI/To-All-The-Girls-I've-Loved-Before-2.mid">🌹 To All The Girls I've Loved Before</option>
+            <select class="select-input" id="select-preset-midi" style="display:none;" onchange="loadPresetMidi(this.value)" title="Elegir canción MIDI para aprender">
+                <option value="">-- Elige canción MIDI demo --</option>
+                <option value="hallelujah">🎵 Hallelujah (Leonard Cohen)</option>
+                <option value="piratas">🏴‍☠️ Piratas del Caribe (He's a Pirate)</option>
+                <option value="to_all_the_girls">🌹 To All The Girls I've Loved Before</option>
             </select>
 
             <button class="btn btn-primary" id="btn-load-midi" onclick="triggerFileInput()" title="Subir cualquier archivo .mid de tu Mac o iPad">📂 Cargar .MID</button>
@@ -474,6 +491,20 @@
             <button class="btn btn-purple" id="btn-new-exercise" onclick="generateIntervalExercise()">🎲 Nuevo Ejercicio</button>
             <button class="btn btn-secondary" id="btn-restart-step" onclick="restartCurrentSequence()" title="Volver a la primera nota para aprender desde el principio">⏮ Inicio</button>
             <button class="btn btn-success" id="btn-playback" onclick="togglePlayback()" style="font-weight:700;">▶ Escuchar</button>
+            <div class="bpm-control-wrap" id="bpm-controls" title="Velocidad de reproducción (Pulsos por minuto)">
+                <label for="select-bpm">⏱️</label>
+                <select class="select-input" id="select-bpm" onchange="changePlaybackBpm(this.value)" style="padding: 2px 5px; font-weight:bold; color:#58a6ff;">
+                    <option value="40">40 BPM (Muy lento)</option>
+                    <option value="60">60 BPM (Lento)</option>
+                    <option value="75">75 BPM (Tranquilo)</option>
+                    <option value="90">90 BPM (Moderado)</option>
+                    <option value="105" selected>105 BPM (Estándar)</option>
+                    <option value="120">120 BPM (Alegre)</option>
+                    <option value="140">140 BPM (Rápido)</option>
+                    <option value="160">160 BPM (Muy rápido)</option>
+                    <option value="180">180 BPM (Presto)</option>
+                </select>
+            </div>
             <button class="btn btn-secondary" id="btn-transpose-up" onclick="transposeOctave(12)" title="Subir toda la partitura una octava más alta (+12 semitonos)">▲ +8va</button>
             <button class="btn btn-secondary" id="btn-transpose-down" onclick="transposeOctave(-12)" title="Bajar toda la partitura una octava (-12 semitonos)">▼ -8va</button>
         </div>
@@ -779,17 +810,18 @@
             const now = audioCtx.currentTime;
 
             if (isError) {
-                // Tono corto disonante de aviso de error
+                // Tono corto disonante y suave de aviso de error (sin chirridos)
                 const oscErr = audioCtx.createOscillator();
                 const gainErr = audioCtx.createGain();
-                oscErr.type = "sawtooth";
-                oscErr.frequency.setValueAtTime(130, now);
-                gainErr.gain.setValueAtTime(0.18, now);
-                gainErr.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
+                oscErr.type = "sine";
+                oscErr.frequency.setValueAtTime(140, now);
+                gainErr.gain.setValueAtTime(0.0001, now);
+                gainErr.gain.exponentialRampToValueAtTime(0.12, now + 0.005);
+                gainErr.gain.exponentialRampToValueAtTime(0.0001, now + 0.18);
                 oscErr.connect(gainErr);
                 gainErr.connect(audioCtx.destination);
                 oscErr.start(now);
-                oscErr.stop(now + 0.22);
+                oscErr.stop(now + 0.18);
                 return;
             }
 
@@ -808,87 +840,64 @@
                 loadGrandPianoSample(midi);
             }
 
-            // SINTETIZADOR DE MODELADO FÍSICO DE PIANO ACÚSTICO (RICO, CÁLIDO Y REALISTA)
-            // Simula las cuerdas acopladas, armónicos pares/impares y el golpe percusivo del macillo
+            // SINTETIZADOR DE PIANO ACÚSTICO LIMPIO, CÁLIDO Y SIN RUIDOS PERCUSIVOS
             const freq = 440 * Math.pow(2, (midi - 69) / 12);
-            const duration = Math.min(2.8, Math.max(1.2, 3.2 - (midi - 48) * 0.05)); // Las notas agudas decaen más rápido
+            const duration = Math.min(2.5, Math.max(1.1, 3.0 - (midi - 48) * 0.04));
 
-            // Filtro paso bajo dinámico (emula el brillo inicial del golpe que se atenúa hacia la madera)
+            // Filtro paso bajo suave para timbre cálido y natural
             const filter = audioCtx.createBiquadFilter();
             filter.type = "lowpass";
-            filter.frequency.setValueAtTime(Math.min(10000, freq * 7), now);
-            filter.frequency.exponentialRampToValueAtTime(Math.max(300, freq * 1.5), now + duration);
+            filter.frequency.setValueAtTime(Math.min(6500, freq * 4.5), now);
+            filter.frequency.exponentialRampToValueAtTime(Math.max(250, freq * 1.2), now + duration);
 
+            // Control de volumen maestro con ataque suave anti-clic (5 ms) y decaimiento musical
             const masterGain = audioCtx.createGain();
-            masterGain.gain.setValueAtTime(0.55, now);
-            masterGain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+            masterGain.gain.setValueAtTime(0.0001, now);
+            masterGain.gain.exponentialRampToValueAtTime(0.55, now + 0.005);
+            masterGain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
 
             filter.connect(masterGain);
             masterGain.connect(audioCtx.destination);
 
-            // 1. ARMÓNICO FUNDAMENTAL + DETUNE CORO (Cuerda doble con ligera desafinación acústica de ±2.5 cents)
+            // 1. Armónico Fundamental (Cuerpo principal de la nota - onda senoidal limpia)
             const osc1 = audioCtx.createOscillator();
-            const osc2 = audioCtx.createOscillator();
             const gain1 = audioCtx.createGain();
-
             osc1.type = "sine";
             osc1.frequency.setValueAtTime(freq, now);
-            osc1.detune.setValueAtTime(-2.5, now); // Cuerda A
+            gain1.gain.setValueAtTime(0.0001, now);
+            gain1.gain.exponentialRampToValueAtTime(0.70, now + 0.005);
+            gain1.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+            osc1.connect(gain1);
+            gain1.connect(filter);
+            osc1.start(now);
+            osc1.stop(now + duration);
 
+            // 2. Cuerda doblada con ligera calidez acústica (onda triangular suave con mínimo detune)
+            const osc2 = audioCtx.createOscillator();
+            const gain2 = audioCtx.createGain();
             osc2.type = "triangle";
             osc2.frequency.setValueAtTime(freq, now);
-            osc2.detune.setValueAtTime(2.5, now);  // Cuerda B
-
-            gain1.gain.setValueAtTime(0.65, now);
-            gain1.gain.exponentialRampToValueAtTime(0.01, now + duration * 0.9);
-
-            osc1.connect(gain1);
-            osc2.connect(gain1);
-            gain1.connect(filter);
-
-            osc1.start(now);
+            osc2.detune.setValueAtTime(1.5, now);
+            gain2.gain.setValueAtTime(0.0001, now);
+            gain2.gain.exponentialRampToValueAtTime(0.20, now + 0.005);
+            gain2.gain.exponentialRampToValueAtTime(0.0001, now + duration * 0.85);
+            osc2.connect(gain2);
+            gain2.connect(filter);
             osc2.start(now);
-            osc1.stop(now + duration);
             osc2.stop(now + duration);
 
-            // 2. SEGUNDO ARMÓNICO (Octava superior 2*f0, da riqueza y brillo natural a la cuerda)
+            // 3. Segundo armónico sutil (octava superior, aporta brillo cristalino sin dureza)
             const oscHarm2 = audioCtx.createOscillator();
             const gainHarm2 = audioCtx.createGain();
             oscHarm2.type = "sine";
             oscHarm2.frequency.setValueAtTime(freq * 2, now);
-            gainHarm2.gain.setValueAtTime(0.28, now);
-            gainHarm2.gain.exponentialRampToValueAtTime(0.001, now + duration * 0.55);
-
+            gainHarm2.gain.setValueAtTime(0.0001, now);
+            gainHarm2.gain.exponentialRampToValueAtTime(0.12, now + 0.005);
+            gainHarm2.gain.exponentialRampToValueAtTime(0.0001, now + duration * 0.5);
             oscHarm2.connect(gainHarm2);
             gainHarm2.connect(filter);
             oscHarm2.start(now);
-            oscHarm2.stop(now + duration * 0.55);
-
-            // 3. TERCER ARMÓNICO (3*f0, resonancia de la cuerda)
-            const oscHarm3 = audioCtx.createOscillator();
-            const gainHarm3 = audioCtx.createGain();
-            oscHarm3.type = "sine";
-            oscHarm3.frequency.setValueAtTime(freq * 3, now);
-            gainHarm3.gain.setValueAtTime(0.12, now);
-            gainHarm3.gain.exponentialRampToValueAtTime(0.001, now + duration * 0.35);
-
-            oscHarm3.connect(gainHarm3);
-            gainHarm3.connect(filter);
-            oscHarm3.start(now);
-            oscHarm3.stop(now + duration * 0.35);
-
-            // 4. ATAQUE DEL MACILLO (Transitorio percusivo de 18 ms)
-            const strikeOsc = audioCtx.createOscillator();
-            const strikeGain = audioCtx.createGain();
-            strikeOsc.type = "triangle";
-            strikeOsc.frequency.setValueAtTime(freq * 0.5, now);
-            strikeGain.gain.setValueAtTime(0.25, now);
-            strikeGain.gain.exponentialRampToValueAtTime(0.001, now + 0.025);
-
-            strikeOsc.connect(strikeGain);
-            strikeGain.connect(masterGain);
-            strikeOsc.start(now);
-            strikeOsc.stop(now + 0.025);
+            oscHarm2.stop(now + duration * 0.5);
         }
 
         function toggleSound() {
@@ -905,6 +914,69 @@
             updatePracticeStatusUI();
             renderNotesLayer();
             updateScoreScroll();
+        }
+
+        // CONTROL DE BPM / VELOCIDAD DE REPRODUCCIÓN
+        function changePlaybackBpm(newBpm) {
+            newBpm = parseInt(newBpm, 10);
+            if (isNaN(newBpm) || newBpm < 20 || newBpm > 360) return;
+            window.currentMidiBpm = newBpm;
+            updateBpmSelectUI(newBpm);
+
+            // Si está reproduciendo pistas MIDI, reconstruir timeline con el nuevo tempo sin detener la música
+            if (isPlaying) {
+                if (currentMidiTracks && currentMidiTracks.length > 0) {
+                    const currentTick = (currentPlaybackTimeline && currentPlaybackTimeline[playbackTimelineIndex]) 
+                        ? currentPlaybackTimeline[playbackTimelineIndex].tick 
+                        : 0;
+                    buildPlaybackTimeline();
+                    // Buscar el paso más cercano al tick actual para no reiniciar la canción
+                    let nearestIdx = 0;
+                    if (currentPlaybackTimeline && currentPlaybackTimeline.length > 0) {
+                        for (let i = 0; i < currentPlaybackTimeline.length; i++) {
+                            if (currentPlaybackTimeline[i].tick >= currentTick) {
+                                nearestIdx = i;
+                                break;
+                            }
+                        }
+                    }
+                    playbackTimelineIndex = nearestIdx;
+                }
+            } else {
+                if (currentMidiTracks && currentMidiTracks.length > 0) {
+                    buildPlaybackTimeline();
+                }
+            }
+        }
+
+        function updateBpmSelectUI(bpmVal) {
+            const bpmSelect = document.getElementById("select-bpm");
+            if (!bpmSelect) return;
+            bpmVal = parseInt(bpmVal, 10);
+            if (isNaN(bpmVal)) return;
+
+            // Verificar si el valor ya existe en las opciones estándar
+            let found = false;
+            for (let i = 0; i < bpmSelect.options.length; i++) {
+                if (parseInt(bpmSelect.options[i].value, 10) === bpmVal) {
+                    bpmSelect.selectedIndex = i;
+                    found = true;
+                    break;
+                }
+            }
+            // Si es un BPM particular de un archivo MIDI, añadir o seleccionar opción personalizada
+            if (!found) {
+                // Eliminar opción custom anterior si existía
+                const customOpt = document.getElementById("opt-bpm-custom");
+                if (customOpt) customOpt.remove();
+
+                const newOpt = document.createElement("option");
+                newOpt.id = "opt-bpm-custom";
+                newOpt.value = bpmVal;
+                newOpt.textContent = `${bpmVal} BPM (Canción)`;
+                bpmSelect.appendChild(newOpt);
+                bpmSelect.value = bpmVal;
+            }
         }
 
         // CONTROL DE REPRODUCCIÓN INTERACTIVA (PLAY / PAUSE / STOP)
@@ -940,6 +1012,14 @@
                 btn.innerHTML = "⏹ Detener";
                 btn.classList.add("btn-playback-active");
                 btn.classList.remove("btn-success");
+            }
+
+            // Sincronizar BPM actual con el selector de velocidad
+            const bpmSelect = document.getElementById("select-bpm");
+            if (bpmSelect && bpmSelect.value) {
+                window.currentMidiBpm = parseInt(bpmSelect.value, 10);
+            } else if (window.currentMidiBpm) {
+                updateBpmSelectUI(window.currentMidiBpm);
             }
 
             // Si hay pistas MIDI cargadas, reproducir con el secuenciador multi-pista
@@ -1224,10 +1304,10 @@
                 if (restartBtn) restartBtn.style.display = "inline-block";
                 badge.style.display = "inline-block";
                 document.getElementById("welcome-hint").style.display = "none";
-                // Si aún no hay canción MIDI cargada, cargar de inmediato Hallelujah desde GitHub
+                // Si aún no hay canción MIDI cargada, cargar de inmediato Hallelujah
                 if (!currentMidiTracks || currentMidiTracks.length === 0) {
-                    if (midiPresetSelect) midiPresetSelect.value = "ARCHIVOS_MIDI/Hallelujah.mid";
-                    loadPresetMidi("ARCHIVOS_MIDI/Hallelujah.mid");
+                    if (midiPresetSelect) midiPresetSelect.value = "hallelujah";
+                    loadPresetMidi("hallelujah");
                     return;
                 }
             } else if (currentMode === "intervals") {
@@ -1365,10 +1445,19 @@
         }
 
         // GESTIÓN DE NOTAS PULSADAS / INTERACCIÓN (AKAI, KORG, TECLADO VIRTUAL Y MIC)
+        let lastTriggerTimeByMidi = {};
+
         function triggerNoteOn(midi) {
             initAudio();
-            activeKeysMap.add(midi);
 
+            // Antirrebote ultra-efectivo (debounce de 120 ms por nota para evitar eventos duplicados/múltiples)
+            const nowTime = Date.now();
+            if (lastTriggerTimeByMidi[midi] && (nowTime - lastTriggerTimeByMidi[midi] < 120)) {
+                return;
+            }
+            lastTriggerTimeByMidi[midi] = nowTime;
+
+            activeKeysMap.add(midi);
             highlightVirtualKey(midi, true);
 
             if (isPlaying) {
@@ -2301,6 +2390,299 @@
             updateScoreScroll();
         }
 
+        function setupLoadedMidiTracks(tracks, bestIdx = 0, songTitle = "Canción MIDI", isPreset = false) {
+            if (!tracks || tracks.length === 0) {
+                alert("No se detectaron notas en la pista seleccionada.");
+                return;
+            }
+            try {
+                currentMidiTracks = tracks;
+                currentMidiTrackIndex = bestIdx;
+                const bestTrack = currentMidiTracks[bestIdx];
+
+                // Habilitar todas las pistas para la reproducción de audio
+                enabledAudioTrackIndices = new Set(currentMidiTracks.map((_, i) => i));
+
+                // Mostrar botón del Mezclador
+                const mixerBtn = document.getElementById("btn-toggle-mixer");
+                if (mixerBtn) mixerBtn.style.display = "inline-block";
+
+                // Poblar selector desplegable de pistas para partitura
+                const trackSelect = document.getElementById("select-midi-track");
+                if (trackSelect) {
+                    trackSelect.innerHTML = "";
+                    currentMidiTracks.forEach((t, idx) => {
+                        const opt = document.createElement("option");
+                        opt.value = idx;
+                        const isBest = (idx === bestIdx);
+                        opt.textContent = `${isBest ? '⭐ ' : ''}${t.name} (${t.notes.length} notas, med: ${NOTE_NAMES[t.avgPitch % 12]}${Math.floor(t.avgPitch/12)-1})`;
+                        trackSelect.appendChild(opt);
+                    });
+                    trackSelect.value = bestIdx;
+                    trackSelect.style.display = "inline-block";
+                }
+
+                // Configurar mezclador y timeline
+                buildPlaybackTimeline();
+                renderMixerTable();
+
+                // Activar automáticamente modo de figuras y compases
+                notationViewMode = 'rhythm';
+                const rhythmRadio = document.querySelector('input[name="notation-view-mode"][value="rhythm"]');
+                if (rhythmRadio) rhythmRadio.checked = true;
+
+                // Cargar notas en Modo Aprender Canción MIDI
+                stopPlayback(false);
+                practiceSequence = bestTrack.notes.slice(0, TOTAL_MAX_NOTES);
+                currentStepIndex = 0;
+                hasErrorOnCurrentStep = false;
+                document.getElementById("select-mode").value = "learn_midi";
+                currentMode = "learn_midi";
+                document.getElementById("welcome-hint").style.display = "none";
+                updatePracticeStatusUI();
+                renderNotesLayer();
+                updateScoreScroll();
+                if (window.currentMidiBpm) {
+                    updateBpmSelectUI(window.currentMidiBpm);
+                }
+
+                const tempoMsg = window.currentMidiBpm ? ` | Tempo: ${window.currentMidiBpm} BPM` : "";
+                const tracksCount = currentMidiTracks.length;
+                if (!isPreset) {
+                    alert(`🎶 Partitura MIDI cargada con éxito:\n\n• Pista para aprender en pantalla: "${bestTrack.name}" (${bestTrack.notes.length} notas)${tempoMsg}\n• Modo "Aprender (Me sigue a mí)": Toca cada nota en tu teclado Akai a tu ritmo para avanzar.\n• Mezclador: Están activadas las ${tracksCount} pistas para sonar con ▶ Escuchar (puedes personalizarlas con el botón 🎛️ Pistas Audio).`);
+                }
+            } catch (renderErr) {
+                console.error("Error al inicializar la partitura MIDI:", renderErr);
+                alert("Ocurrió un aviso al dibujar los pentagramas: " + (renderErr.message || ""));
+            }
+        }
+
+        function createPresetTrack(name, rawArr, timeSig = 4) {
+            const tpq = 480;
+            const ticksPerMeasure = tpq * timeSig;
+            const notes = [];
+            rawArr.forEach(item => {
+                const dur = item.dur || 'quarter';
+                let durTicks = tpq;
+                if (dur === 'whole') durTicks = tpq * 4;
+                else if (dur === 'half') durTicks = tpq * 2;
+                else if (dur === 'eighth') durTicks = Math.round(tpq * 0.5);
+
+                notes.push({
+                    midi: item.midi,
+                    startTick: item.tick,
+                    durationTicks: durTicks,
+                    durationType: dur,
+                    measureIndex: Math.floor(item.tick / ticksPerMeasure)
+                });
+            });
+            const avgPitch = notes.length > 0 ? Math.round(notes.reduce((s, n) => s + n.midi, 0) / notes.length) : 60;
+            return {
+                name: name,
+                notes: notes,
+                rawNotes: notes,
+                avgPitch: avgPitch
+            };
+        }
+
+        const BUILTIN_MIDI_PRESETS = {
+            hallelujah: {
+                title: "Hallelujah (Leonard Cohen)",
+                bpm: 100,
+                timeDivision: 480,
+                tracks: [
+                    createPresetTrack("⭐ Melodía Vocal (Clave de Sol)", [
+                        { midi: 60, tick: 0, dur: 'quarter' },
+                        { midi: 64, tick: 480, dur: 'quarter' },
+                        { midi: 67, tick: 960, dur: 'quarter' },
+                        { midi: 67, tick: 1440, dur: 'quarter' },
+                        { midi: 67, tick: 1920, dur: 'half' },
+                        { midi: 69, tick: 2880, dur: 'quarter' },
+                        { midi: 69, tick: 3360, dur: 'quarter' },
+                        { midi: 69, tick: 3840, dur: 'half' },
+                        { midi: 60, tick: 4800, dur: 'quarter' },
+                        { midi: 64, tick: 5280, dur: 'quarter' },
+                        { midi: 67, tick: 5760, dur: 'quarter' },
+                        { midi: 67, tick: 6240, dur: 'quarter' },
+                        { midi: 67, tick: 6720, dur: 'half' },
+                        { midi: 69, tick: 7680, dur: 'quarter' },
+                        { midi: 69, tick: 8160, dur: 'quarter' },
+                        { midi: 69, tick: 8640, dur: 'half' },
+                        { midi: 69, tick: 9600, dur: 'quarter' },
+                        { midi: 69, tick: 10080, dur: 'quarter' },
+                        { midi: 69, tick: 10560, dur: 'quarter' },
+                        { midi: 69, tick: 11040, dur: 'quarter' },
+                        { midi: 67, tick: 11520, dur: 'quarter' },
+                        { midi: 67, tick: 12000, dur: 'quarter' },
+                        { midi: 65, tick: 12480, dur: 'half' },
+                        { midi: 67, tick: 13440, dur: 'quarter' },
+                        { midi: 67, tick: 13920, dur: 'half' },
+                        { midi: 64, tick: 14880, dur: 'half' }
+                    ]),
+                    createPresetTrack("🎹 Acompañamiento Piano", [
+                        { midi: 64, tick: 0, dur: 'whole' }, { midi: 67, tick: 0, dur: 'whole' },
+                        { midi: 65, tick: 1920, dur: 'whole' }, { midi: 69, tick: 1920, dur: 'whole' },
+                        { midi: 64, tick: 3840, dur: 'whole' }, { midi: 67, tick: 3840, dur: 'whole' },
+                        { midi: 65, tick: 5760, dur: 'whole' }, { midi: 69, tick: 5760, dur: 'whole' },
+                        { midi: 65, tick: 7680, dur: 'whole' }, { midi: 69, tick: 7680, dur: 'whole' },
+                        { midi: 67, tick: 9600, dur: 'whole' }, { midi: 71, tick: 9600, dur: 'whole' },
+                        { midi: 64, tick: 11520, dur: 'whole' }, { midi: 67, tick: 11520, dur: 'whole' },
+                        { midi: 62, tick: 13440, dur: 'whole' }, { midi: 67, tick: 13440, dur: 'whole' }
+                    ]),
+                    createPresetTrack("🎻 Cello y Bajo", [
+                        { midi: 48, tick: 0, dur: 'whole' },
+                        { midi: 45, tick: 1920, dur: 'whole' },
+                        { midi: 48, tick: 3840, dur: 'whole' },
+                        { midi: 45, tick: 5760, dur: 'whole' },
+                        { midi: 41, tick: 7680, dur: 'whole' },
+                        { midi: 43, tick: 9600, dur: 'whole' },
+                        { midi: 48, tick: 11520, dur: 'whole' },
+                        { midi: 43, tick: 13440, dur: 'whole' }
+                    ])
+                ]
+            },
+            piratas: {
+                title: "Piratas del Caribe (He's a Pirate)",
+                bpm: 140,
+                timeDivision: 480,
+                tracks: [
+                    createPresetTrack("⭐ Tema Piratas (Clave de Sol)", [
+                        { midi: 62, tick: 0, dur: 'eighth' },
+                        { midi: 62, tick: 240, dur: 'eighth' },
+                        { midi: 62, tick: 480, dur: 'quarter' },
+                        { midi: 64, tick: 960, dur: 'quarter' },
+                        { midi: 65, tick: 1440, dur: 'quarter' },
+                        { midi: 65, tick: 1920, dur: 'quarter' },
+                        { midi: 65, tick: 2400, dur: 'quarter' },
+                        { midi: 67, tick: 2880, dur: 'quarter' },
+                        { midi: 64, tick: 3360, dur: 'quarter' },
+                        { midi: 64, tick: 3840, dur: 'quarter' },
+                        { midi: 62, tick: 4320, dur: 'quarter' },
+                        { midi: 60, tick: 4800, dur: 'quarter' },
+                        { midi: 62, tick: 5280, dur: 'half' },
+                        { midi: 62, tick: 6240, dur: 'eighth' },
+                        { midi: 62, tick: 6480, dur: 'eighth' },
+                        { midi: 62, tick: 6720, dur: 'quarter' },
+                        { midi: 64, tick: 7200, dur: 'quarter' },
+                        { midi: 65, tick: 7680, dur: 'quarter' },
+                        { midi: 65, tick: 8160, dur: 'quarter' },
+                        { midi: 65, tick: 8640, dur: 'quarter' },
+                        { midi: 67, tick: 9120, dur: 'quarter' },
+                        { midi: 64, tick: 9600, dur: 'quarter' },
+                        { midi: 64, tick: 10080, dur: 'quarter' },
+                        { midi: 62, tick: 10560, dur: 'quarter' },
+                        { midi: 60, tick: 11040, dur: 'quarter' },
+                        { midi: 62, tick: 11520, dur: 'half' }
+                    ]),
+                    createPresetTrack("🎻 Cuerdas y Armonía", [
+                        { midi: 65, tick: 0, dur: 'half' }, { midi: 69, tick: 0, dur: 'half' },
+                        { midi: 62, tick: 1440, dur: 'half' }, { midi: 65, tick: 1440, dur: 'half' },
+                        { midi: 64, tick: 2880, dur: 'half' }, { midi: 67, tick: 2880, dur: 'half' },
+                        { midi: 65, tick: 4320, dur: 'half' }, { midi: 69, tick: 4320, dur: 'half' },
+                        { midi: 65, tick: 6240, dur: 'half' }, { midi: 69, tick: 6240, dur: 'half' },
+                        { midi: 62, tick: 7680, dur: 'half' }, { midi: 65, tick: 7680, dur: 'half' },
+                        { midi: 64, tick: 9120, dur: 'half' }, { midi: 67, tick: 9120, dur: 'half' },
+                        { midi: 65, tick: 10560, dur: 'half' }, { midi: 69, tick: 10560, dur: 'half' }
+                    ]),
+                    createPresetTrack("🥁 Bajo Épico", [
+                        { midi: 50, tick: 0, dur: 'half' },
+                        { midi: 46, tick: 1440, dur: 'half' },
+                        { midi: 48, tick: 2880, dur: 'half' },
+                        { midi: 50, tick: 4320, dur: 'half' },
+                        { midi: 50, tick: 6240, dur: 'half' },
+                        { midi: 46, tick: 7680, dur: 'half' },
+                        { midi: 48, tick: 9120, dur: 'half' },
+                        { midi: 50, tick: 10560, dur: 'half' }
+                    ])
+                ]
+            },
+            to_all_the_girls: {
+                title: "To All The Girls I've Loved Before",
+                bpm: 96,
+                timeDivision: 480,
+                tracks: [
+                    createPresetTrack("⭐ Melodía Julio I. (Clave de Sol)", [
+                        { midi: 67, tick: 0, dur: 'quarter' },
+                        { midi: 67, tick: 480, dur: 'quarter' },
+                        { midi: 67, tick: 960, dur: 'quarter' },
+                        { midi: 69, tick: 1440, dur: 'quarter' },
+                        { midi: 71, tick: 1920, dur: 'half' },
+                        { midi: 71, tick: 2880, dur: 'quarter' },
+                        { midi: 69, tick: 3360, dur: 'quarter' },
+                        { midi: 67, tick: 3840, dur: 'half' },
+                        { midi: 64, tick: 4800, dur: 'half' },
+                        { midi: 67, tick: 5760, dur: 'quarter' },
+                        { midi: 67, tick: 6240, dur: 'quarter' },
+                        { midi: 69, tick: 6720, dur: 'quarter' },
+                        { midi: 71, tick: 7200, dur: 'half' },
+                        { midi: 71, tick: 8160, dur: 'quarter' },
+                        { midi: 69, tick: 8640, dur: 'quarter' },
+                        { midi: 67, tick: 9120, dur: 'half' },
+                        { midi: 64, tick: 10080, dur: 'half' },
+                        { midi: 67, tick: 11040, dur: 'quarter' },
+                        { midi: 67, tick: 11520, dur: 'quarter' },
+                        { midi: 69, tick: 12000, dur: 'quarter' },
+                        { midi: 71, tick: 12480, dur: 'quarter' },
+                        { midi: 72, tick: 12960, dur: 'quarter' },
+                        { midi: 71, tick: 13440, dur: 'quarter' },
+                        { midi: 69, tick: 13920, dur: 'quarter' },
+                        { midi: 67, tick: 14400, dur: 'quarter' },
+                        { midi: 69, tick: 14880, dur: 'half' },
+                        { midi: 67, tick: 15840, dur: 'whole' }
+                    ]),
+                    createPresetTrack("🎹 Acompañamiento Guitarra / Teclado", [
+                        { midi: 67, tick: 0, dur: 'whole' }, { midi: 71, tick: 0, dur: 'whole' },
+                        { midi: 67, tick: 1920, dur: 'whole' }, { midi: 71, tick: 1920, dur: 'whole' },
+                        { midi: 64, tick: 3840, dur: 'whole' }, { midi: 67, tick: 3840, dur: 'whole' },
+                        { midi: 65, tick: 5760, dur: 'whole' }, { midi: 69, tick: 5760, dur: 'whole' },
+                        { midi: 67, tick: 7680, dur: 'whole' }, { midi: 71, tick: 7680, dur: 'whole' },
+                        { midi: 64, tick: 9600, dur: 'whole' }, { midi: 67, tick: 9600, dur: 'whole' },
+                        { midi: 65, tick: 11520, dur: 'whole' }, { midi: 69, tick: 11520, dur: 'whole' },
+                        { midi: 67, tick: 13440, dur: 'whole' }, { midi: 71, tick: 13440, dur: 'whole' }
+                    ]),
+                    createPresetTrack("🎻 Contrabajo Suave", [
+                        { midi: 43, tick: 0, dur: 'whole' },
+                        { midi: 43, tick: 1920, dur: 'whole' },
+                        { midi: 40, tick: 3840, dur: 'whole' },
+                        { midi: 41, tick: 5760, dur: 'whole' },
+                        { midi: 43, tick: 7680, dur: 'whole' },
+                        { midi: 40, tick: 9600, dur: 'whole' },
+                        { midi: 41, tick: 11520, dur: 'whole' },
+                        { midi: 43, tick: 13440, dur: 'whole' }
+                    ])
+                ]
+            }
+        };
+
+        function loadPresetMidi(presetKey) {
+            if (!presetKey) return;
+            // Si es una de las canciones predefinidas integradas
+            if (BUILTIN_MIDI_PRESETS[presetKey]) {
+                const preset = BUILTIN_MIDI_PRESETS[presetKey];
+                window.currentMidiBpm = preset.bpm || 105;
+                window.lastMidiTicksPerQuarter = preset.timeDivision || 480;
+                window.currentMidiTicksPerMeasure = (preset.timeDivision || 480) * 4;
+                setupLoadedMidiTracks(preset.tracks, 0, preset.title, true);
+                return;
+            }
+
+            // Fallback por si pasa una ruta url externa
+            fetch(presetKey)
+                .then(resp => {
+                    if (!resp.ok) throw new Error("No se pudo obtener el archivo.");
+                    return resp.arrayBuffer();
+                })
+                .then(buf => {
+                    const data = new Uint8Array(buf);
+                    const fileName = presetKey.split("/").pop();
+                    loadMidiFromUint8Array(data, fileName, true);
+                })
+                .catch(err => {
+                    console.error("Error al cargar MIDI:", err);
+                    alert("Aviso al cargar archivo MIDI: " + err.message);
+                });
+        }
+
         function loadMidiFromUint8Array(data, fileName = "Canción MIDI", isPreset = false) {
             let parsedResult = null;
             try {
@@ -2312,81 +2694,9 @@
             }
 
             if (parsedResult && parsedResult.tracks && parsedResult.tracks.length > 0) {
-                try {
-                    currentMidiTracks = parsedResult.tracks;
-                    const bestIdx = parsedResult.bestTrackIndex;
-                    currentMidiTrackIndex = bestIdx;
-                    const bestTrack = currentMidiTracks[bestIdx];
-
-                    // Por defecto, TODAS las pistas habilitadas para sonar en el audio
-                    enabledAudioTrackIndices = new Set(currentMidiTracks.map((_, i) => i));
-
-                    // Mostrar botón del Mezclador
-                    const mixerBtn = document.getElementById("btn-toggle-mixer");
-                    if (mixerBtn) mixerBtn.style.display = "inline-block";
-
-                    // Poblar selector desplegable de pistas para partitura
-                    const trackSelect = document.getElementById("select-midi-track");
-                    if (trackSelect) {
-                        trackSelect.innerHTML = "";
-                        currentMidiTracks.forEach((t, idx) => {
-                            const opt = document.createElement("option");
-                            opt.value = idx;
-                            const isBest = (idx === bestIdx);
-                            opt.textContent = `${isBest ? '⭐ ' : ''}${t.name} (${t.notes.length} notas, med: ${NOTE_NAMES[t.avgPitch % 12]}${Math.floor(t.avgPitch/12)-1})`;
-                            trackSelect.appendChild(opt);
-                        });
-                        trackSelect.value = bestIdx;
-                        trackSelect.style.display = "inline-block";
-                    }
-
-                    // Configurar mezclador y timeline
-                    buildPlaybackTimeline();
-                    renderMixerTable();
-
-                    // Activar automáticamente modo de figuras y compases
-                    notationViewMode = 'rhythm';
-                    const rhythmRadio = document.querySelector('input[name="notation-view-mode"][value="rhythm"]');
-                    if (rhythmRadio) rhythmRadio.checked = true;
-
-                    // Cargar notas en Modo Aprender Canción MIDI
-                    stopPlayback(false);
-                    practiceSequence = bestTrack.notes.slice(0, TOTAL_MAX_NOTES);
-                    currentStepIndex = 0;
-                    hasErrorOnCurrentStep = false;
-                    document.getElementById("select-mode").value = "learn_midi";
-                    currentMode = "learn_midi";
-                    document.getElementById("welcome-hint").style.display = "none";
-                    updatePracticeStatusUI();
-                    renderNotesLayer();
-                    updateScoreScroll();
-
-                    const tempoMsg = window.currentMidiBpm ? ` | Tempo: ${window.currentMidiBpm} BPM` : "";
-                    const tracksCount = currentMidiTracks.length;
-                    if (!isPreset) {
-                        alert(`🎶 Partitura MIDI cargada con éxito:\n\n• Pista para aprender en pantalla: "${bestTrack.name}" (${bestTrack.notes.length} notas)${tempoMsg}\n• Modo "Aprender (Me sigue a mí)": Toca cada nota en tu teclado Akai a tu ritmo para avanzar.\n• Mezclador: Están activadas las ${tracksCount} pistas para sonar con ▶ Escuchar (puedes personalizarlas con el botón 🎛️ Pistas Audio).`);
-                    }
-                } catch (renderErr) {
-                    console.error("Error al inicializar la partitura MIDI:", renderErr);
-                    alert("El archivo MIDI se procesó correctamente, pero ocurrió un aviso al dibujar los pentagramas: " + (renderErr.message || ""));
-                }
+                setupLoadedMidiTracks(parsedResult.tracks, parsedResult.bestTrackIndex, fileName, isPreset);
             } else {
                 alert("No se detectaron notas musicales en el archivo MIDI seleccionado.");
-            }
-        }
-
-        async function loadPresetMidi(path) {
-            if (!path) return;
-            try {
-                const resp = await fetch(path);
-                if (!resp.ok) throw new Error("No se pudo obtener el archivo desde el servidor.");
-                const buf = await resp.arrayBuffer();
-                const data = new Uint8Array(buf);
-                const fileName = path.split("/").pop();
-                loadMidiFromUint8Array(data, fileName, true);
-            } catch (err) {
-                console.error("Error al descargar archivo MIDI demo:", err);
-                alert("No se pudo cargar el archivo MIDI desde GitHub: " + err.message);
             }
         }
 
@@ -2733,7 +3043,10 @@
                     // Soporte táctil inmediato para iPad y ratón para Mac
                     whiteKey.addEventListener("touchstart", (e) => { e.preventDefault(); triggerNoteOn(m); }, { passive: false });
                     whiteKey.addEventListener("touchend", (e) => { e.preventDefault(); triggerNoteOff(m); }, { passive: false });
-                    whiteKey.onmousedown = () => triggerNoteOn(m);
+                    whiteKey.onmousedown = (e) => {
+                        if (e.pointerType === 'touch') return;
+                        triggerNoteOn(m);
+                    };
                     whiteKey.onmouseup = () => triggerNoteOff(m);
                     
                     pianoLayer.appendChild(whiteKey);
@@ -2756,7 +3069,10 @@
                     // Soporte táctil inmediato para iPad y ratón para Mac
                     blackKey.addEventListener("touchstart", (e) => { e.preventDefault(); triggerNoteOn(m); }, { passive: false });
                     blackKey.addEventListener("touchend", (e) => { e.preventDefault(); triggerNoteOff(m); }, { passive: false });
-                    blackKey.onmousedown = () => triggerNoteOn(m);
+                    blackKey.onmousedown = (e) => {
+                        if (e.pointerType === 'touch') return;
+                        triggerNoteOn(m);
+                    };
                     blackKey.onmouseup = () => triggerNoteOff(m);
                     
                     pianoLayer.appendChild(blackKey);
@@ -2843,7 +3159,7 @@
                     }
 
                     inputs.forEach(input => {
-                        const onMidi = (e) => {
+                        input.onmidimessage = (e) => {
                             if (!e || !e.data || e.data.length < 2) return;
                             const status = e.data[0];
                             const note = e.data[1];
@@ -2856,8 +3172,6 @@
                                 triggerNoteOff(note);
                             }
                         };
-                        input.onmidimessage = onMidi;
-                        try { input.addEventListener("midimessage", onMidi); } catch(err){}
                     });
                 }
 

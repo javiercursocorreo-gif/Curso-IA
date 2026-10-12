@@ -90,7 +90,7 @@ def clean_title_from_filename(filename, session_num=1):
     if 'COD-004' in f_up or ('COD-' in f_up and session_num == 4):
         return 'Taller: Crea tu propio simulador del ojo humano'
     if 'COD-005' in f_up or ('COD-' in f_up and session_num == 5):
-        return 'Taller: Crea tu propio simulador del módulo lunar Apolo 11'
+        return 'Taller: Crea tu propio simulador 3D del Sistema Solar'
     if 'COD-006' in f_up or ('COD-' in f_up and session_num == 6):
         return 'Taller: Crea tu propio simulador del cerebro humano'
     if 'COD-007' in f_up or ('COD-' in f_up and session_num == 7):
@@ -109,6 +109,8 @@ def clean_title_from_filename(filename, session_num=1):
         return 'Simulador Arqueológico HD de Pompeya'
     if 'SIMULADOR_OJO' in f_up:
         return 'Simulador 3D del Ojo Humano y Cristalino'
+    if 'SIMULADOR_SISTEMA_SOLAR' in f_up:
+        return 'Simulador 3D del Sistema Solar (NASA)'
     if 'FRAC-000_B' in filename:
         return 'Reto Visual • Infografía de un Fractal en la Naturaleza'
     if 'FRAC-000_A' in filename:
@@ -321,6 +323,11 @@ def generate_columns_html(session_num, session_folder, files):
                     sim_btn = """
                         <a href="SIMULADOR_OJO_HUMANO_3D.html" target="_blank" class="btn-launch-interactive" style="margin-top:6px; background:linear-gradient(135deg, #0284c7, #0369a1); border-color:#38bdf8;" title="Abrir Simulador 3D del Ojo Humano y Cristalino">
                             👁️ Ver Simulador Ojo Humano 3D ↗
+                        </a>"""
+                elif session_num == 5:
+                    sim_btn = """
+                        <a href="SIMULADOR_SISTEMA_SOLAR_3D.html" target="_blank" class="btn-launch-interactive" style="margin-top:6px; background:linear-gradient(135deg, #d97706, #b45309); border-color:#fbbf24;" title="Abrir Simulador 3D del Sistema Solar (Fotogrametría Satelital NASA)">
+                            🪐 Ver Simulador Sistema Solar 3D ↗
                         </a>"""
                 cards_html += f"""
                     <div class="file-card file-card-special">
@@ -936,9 +943,15 @@ def generate_custom_probador(session_num, template_content):
             </button>"""
         empty_prompt = "prueba el botón <strong>«👁️ Ojo Humano 3D»</strong>"
         ph_text = "1. Pide a Gemini que programe el simulador 3D del ojo humano.\\n2. Haz clic en «Copiar código» en la respuesta de Gemini.\\n3. Pulsa Ctrl+V (o Cmd+V en Mac) aquí para pegar el código.\\n4. Pulsa '▶️ Ejecutar Creación' para verlo funcionar."
+    elif session_num == 5:
+        btn_html = """            <button class="btn btn-emerald" id="btnLoadSolar" style="background: rgba(251, 191, 36, 0.2); color: #fbbf24; border-color: rgba(251, 191, 36, 0.45);" title="Cargar simulador: Sistema Solar 3D Interactivo (Fotogrametría Satelital NASA)">
+                🪐 Sistema Solar 3D
+            </button>"""
+        empty_prompt = "prueba el botón <strong>«🪐 Sistema Solar 3D»</strong>"
+        ph_text = "1. Pide a Gemini que programe el simulador 3D del Sistema Solar con texturas de la NASA.\\n2. Haz clic en «Copiar código» en la respuesta de Gemini.\\n3. Pulsa Ctrl+V (o Cmd+V en Mac) aquí para pegar el código.\\n4. Pulsa '▶️ Ejecutar Creación' para verlo funcionar."
 
     # Reemplazar grupo de botones acumulados en el encabezado
-    buttons_pattern = re.compile(r'<button class="btn btn-emerald" id="btnLoadPulmones".*?id="btnLoadOjo".*?</button>', re.DOTALL)
+    buttons_pattern = re.compile(r'<button class="btn btn-emerald" id="btnLoadPulmones".*?id="btnLoad(?:Solar|Ojo)".*?</button>', re.DOTALL)
     custom_content = buttons_pattern.sub(btn_html, template_content)
 
     # Reemplazar texto en empty notice
@@ -1040,6 +1053,14 @@ def process_all_sessions():
                         shutil.copy2(ex_src, os.path.join(session_path, extra))
                     except Exception:
                         pass
+        elif session_num == 5:
+            solar_src = os.path.join(BASE_DIR, "SIMULADORES_INTERACTIVOS", "01_SIMULADORES", "05_SIMULADOR_SISTEMA_SOLAR_3D.html")
+            if os.path.exists(solar_src):
+                try:
+                    shutil.copy2(solar_src, os.path.join(session_path, "SIMULADOR_SISTEMA_SOLAR_3D.html"))
+                    shutil.copy2(solar_src, os.path.join(session_path, "05_SIMULADOR_SISTEMA_SOLAR_3D.html"))
+                except Exception:
+                    pass
 
         files = os.listdir(session_path)
         html_content = generate_columns_html(session_num, session_path, files)

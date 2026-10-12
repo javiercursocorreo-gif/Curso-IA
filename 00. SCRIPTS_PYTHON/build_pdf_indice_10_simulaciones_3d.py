@@ -2,29 +2,269 @@
 # -*- coding: utf-8 -*-
 """
 build_pdf_indice_10_simulaciones_3d.py
-Genera el PDF del Catálogo Maestro de las 10 Grandes Simulaciones Interactivas 3D Intercaladas
-(Anatomía Humana / Historia / Espacio / Mecánica / Paleontología / Acústica).
+Genera el PDF (y versión HTML interactiva) del Catálogo Maestro de las 10 Grandes Simulaciones Interactivas 3D Intercaladas
+(Anatomía Humana / Historia / Espacio - Sistema Solar 3D NASA / Mecánica / Paleontología / Acústica).
+Incluye generador vectorial nativo en Python puro como respaldo automático si reportlab no está activo en el entorno.
 """
 
 import os
 import sys
+import zlib
 
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT_DIR = os.path.join(ROOT_DIR, "SIMULADORES_INTERACTIVOS", "02_INDICES_Y_CATALOGOS")
 PDF_PATH = os.path.join(OUT_DIR, "INDICE_10_SIMULACIONES_INTERACTIVAS_3D.pdf")
+HTML_PATH = os.path.join(OUT_DIR, "INDICE_10_SIMULACIONES_INTERACTIVAS_3D.html")
+
+SIMULACIONES_DATA = [
+    ("01", "[COD-001]", "Salud & Respiración", "Árbol Traqueobronquial & Pulmones",
+     "Estructura traqueal fractal, ventilación alveolar biofísica rítmica y audio respiratorio.",
+     "Ver Simulador Pulmones 3D", "../01_SIMULADORES/01_SIMULADOR_PULMONES_3D.html", "Activo en S01"),
+    ("02", "[COD-002]", "Salud & Cardiología", "Corazón Humano con Fonendoscopio",
+     "Fotogrametría PBR 4K miocardio, ecuación Wiggers (sístole/diástole), slider BPM y fonendoscopio acústico.",
+     "Ver Simulador Corazón 3D", "../01_SIMULADORES/02_SIMULADOR_CORAZON_3D.html", "Activo en S02"),
+    ("03", "[COD-003]", "Historia & Arqueología", "Tesoro de Pompeya (Foro & Ruinas CyArk)",
+     "Arqueología digital HD, comparador de viaje en el tiempo (ruinas vs. reconstrucción imperial), iluminación cinematográfica.",
+     "Ver Tesoro Arqueológico 3D", "../01_SIMULADORES/03_SIMULADOR_POMPEYA_3D.html", "Activo en S03"),
+    ("04", "[COD-004]", "Salud & Óptica", "Globo Ocular Humano & Cristalino",
+     "Córnea de cristal reflectante, iris 4K, pupila interactiva con reflejo fotomotor (miosis/midriasis por slider) y corte sagital.",
+     "Ver Simulador Ojo Humano 3D", "../01_SIMULADORES/04_SIMULADOR_OJO_HUMANO_3D_V2.html", "Activo en S04"),
+    ("05", "[COD-005]", "Espacio & Exploración", "Sistema Solar 3D & Planetario Orbital (NASA)",
+     "Fotogrametría satelital NASA 2K-8K (SDO, MESSENGER, Magellan, MODIS, Cassini, Voyager 2), viaje 3D a los 8 planetas + Sol y Luna, velocidad orbital y comparación.",
+     "Ver Sistema Solar 3D", "../01_SIMULADORES/05_SIMULADOR_SISTEMA_SOLAR_3D.html", "Activo en S05"),
+    ("06", "[COD-006]", "Salud & Neurociencia", "Cerebro Humano & Red Sináptica",
+     "Resonancia magnética médica cortical, vías neuronales, pulsos lumínicos bioeléctricos y selector de lóbulos cerebrales.",
+     "Ver Simulador Cerebro 3D", "#", "Plan S06"),
+    ("07", "[COD-007]", "Mecánica & Automoción", "Motor de 4 Tiempos en Sección Abierta",
+     "Cilindro, pistón, cigüeñal y válvulas sincronizadas; ciclo térmico en corte transversal y control continuo de RPM con audio.",
+     "Ver Motor Mecánico 3D", "#", "Plan S07"),
+    ("08", "[COD-008]", "Paleontología & Evolución", "Cráneo Fósil de Tiranosaurio Rex",
+     "Fotogrametría fósil de museo, porosidad mineralizada 4K, bisagra mandibular interactiva con apertura/cierre de fauces.",
+     "Ver Fósil T-Rex 3D", "#", "Plan S08"),
+    ("09", "[COD-009]", "Salud & Odontología", "Molar Humano en Sección Anatómica",
+     "Esmalte lúcido, dentina, pulpa vascularizada y terminaciones nerviosas; despiece tridimensional por capas clínicas.",
+     "Ver Molar Anatómico 3D", "#", "Plan S09"),
+    ("10", "[COD-010]", "Acústica & Arte Musical", "Violín Stradivarius & Resonancia Acústica",
+     "Madera de arce noble barnizada PBR 4K, simulación de cuerdas en vibración física armónica y ondas de presión acústica.",
+     "Ver Acústica Stradivarius 3D", "#", "Plan S10"),
+]
+
+
+def _pdf_escape(text):
+    b = text.encode("cp1252", errors="replace")
+    out = bytearray()
+    for ch in b:
+        if ch in (40, 41, 92):
+            out.append(92)
+        out.append(ch)
+    return out.decode("latin1")
+
+
+def build_pure_python_pdf():
+    """Genera el PDF vectorial horizontal A4 sin dependencias externas."""
+    os.makedirs(OUT_DIR, exist_ok=True)
+    W, H = 841.89, 595.27  # A4 Landscape
+    ops = []
+
+    def rect(x, y, w, h, fill_rgb=None, stroke_rgb=None, lw=0.6):
+        ops.append(f"{lw:.2f} w")
+        if fill_rgb:
+            ops.append(f"{fill_rgb[0]:.3f} {fill_rgb[1]:.3f} {fill_rgb[2]:.3f} rg")
+        if stroke_rgb:
+            ops.append(f"{stroke_rgb[0]:.3f} {stroke_rgb[1]:.3f} {stroke_rgb[2]:.3f} RG")
+        mode = "B" if (fill_rgb and stroke_rgb) else ("f" if fill_rgb else "S")
+        ops.append(f"{x:.2f} {y:.2f} {w:.2f} {h:.2f} re {mode}")
+
+    def text_xy(x, y, txt, font="F1", size=8.5, rgb=(0.06, 0.09, 0.16)):
+        ops.append("BT")
+        ops.append(f"/{font} {size:.2f} Tf")
+        ops.append(f"{rgb[0]:.3f} {rgb[1]:.3f} {rgb[2]:.3f} rg")
+        ops.append(f"{x:.2f} {y:.2f} Td")
+        ops.append(f"({_pdf_escape(txt)}) Tj")
+        ops.append("ET")
+
+    # Cabecera
+    text_xy(135, 556, "CATÁLOGO MAESTRO: 10 GRANDES SIMULACIONES INTERACTIVAS 3D INTERCALADAS", "F2", 15.0, (0.06, 0.09, 0.16))
+    text_xy(185, 540, "Plan Didáctico Intercalado: Alternancia de Anatomía Biomédica, Historia, Sistema Solar 3D NASA, Mecánica y Paleontología", "F3", 9.2, (0.28, 0.33, 0.41))
+    rect(32, 532, W - 64, 1.5, fill_rgb=(0.01, 0.52, 0.78))
+
+    intro1 = "Metodología de Intercalación Temática: Para evitar la fatiga cognitiva y mantener la fascinación visual permanente en el alumnado senior (60+), el bloque de creación de simuladores con IA [COD]"
+    intro2 = "alterna una sesión de Anatomía y Salud Humana con una sesión de Grandes Hitos de la Ciencia (Pompeya, Sistema Solar 3D con mapas satelitales de la NASA, motor de 4 tiempos o fósiles)."
+    text_xy(32, 518, intro1, "F1", 8.2, (0.12, 0.16, 0.23))
+    text_xy(32, 507, intro2, "F1", 8.2, (0.12, 0.16, 0.23))
+
+    # Tabla
+    col_x = [32, 84, 198, 338, 601, 739, 809]
+    col_w = [col_x[i+1] - col_x[i] for i in range(len(col_x)-1)]
+    headers = ["Sesión", "Universo / Temática", "Modelo Aprobado (PBR / NASA)", "Experiencia Visual e Interactiva", "Botón 2 • Simulador Terminado", "Estado"]
+
+    y_top = 494
+    row_h_header = 22
+    rect(32, y_top - row_h_header, W - 64, row_h_header, fill_rgb=(0.06, 0.09, 0.16), stroke_rgb=(0.80, 0.84, 0.88))
+    for i, h_txt in enumerate(headers):
+        text_xy(col_x[i] + 5, y_top - 14.5, h_txt, "F2", 8.2, (1, 1, 1))
+
+    y_curr = y_top - row_h_header
+    row_h = 41.5
+    for idx, (ses, cod, univ, mod, exp, btn, _, est) in enumerate(SIMULACIONES_DATA):
+        y_curr -= row_h
+        bg = (0.97, 0.98, 0.99) if idx % 2 == 0 else (1.0, 1.0, 1.0)
+        if ses == "05":
+            bg = (0.94, 0.98, 1.0)
+        for c_i in range(6):
+            rect(col_x[c_i], y_curr, col_w[c_i], row_h, fill_rgb=bg, stroke_rgb=(0.80, 0.84, 0.88), lw=0.5)
+
+        text_xy(col_x[0] + 18, y_curr + 24, ses, "F2", 9.0, (0.06, 0.09, 0.16))
+        text_xy(col_x[0] + 6, y_curr + 12, cod, "F1", 7.6, (0.39, 0.45, 0.55))
+
+        text_xy(col_x[1] + 5, y_curr + 18, univ, "F2", 7.8, (0.01, 0.52, 0.78))
+
+        # Wrap model name into 2 lines if needed
+        if len(mod) > 28:
+            parts = mod.split(" ")
+            mid = len(parts) // 2
+            text_xy(col_x[2] + 5, y_curr + 23, " ".join(parts[:mid]), "F2", 8.0, (0.06, 0.09, 0.16))
+            text_xy(col_x[2] + 5, y_curr + 12, " ".join(parts[mid:]), "F2", 8.0, (0.06, 0.09, 0.16))
+        else:
+            text_xy(col_x[2] + 5, y_curr + 18, mod, "F2", 8.0, (0.06, 0.09, 0.16))
+
+        # Wrap experience text into up to 3 lines (~56 chars per line)
+        words = exp.split(" ")
+        lines, cur = [], ""
+        for w in words:
+            if len(cur) + len(w) + 1 <= 58:
+                cur = (cur + " " + w).strip()
+            else:
+                lines.append(cur)
+                cur = w
+        if cur:
+            lines.append(cur)
+        start_y = y_curr + 27 if len(lines) >= 3 else (y_curr + 23 if len(lines) == 2 else y_curr + 18)
+        for l_i, line_str in enumerate(lines[:3]):
+            text_xy(col_x[3] + 5, start_y - l_i * 9.5, line_str, "F1", 7.5, (0.20, 0.25, 0.33))
+
+        text_xy(col_x[4] + 5, y_curr + 18, btn, "F2", 7.6, (0.02, 0.47, 0.34))
+
+        est_color = (0.02, 0.47, 0.34) if "Activo" in est else (0.28, 0.33, 0.41)
+        est_font = "F2" if "Activo" in est else "F3"
+        text_xy(col_x[5] + 6, y_curr + 18, est, est_font, 7.6, est_color)
+
+    text_xy(32, 34, "Estándar Técnico Compartido: Todos los simuladores operan en el navegador sin descargas pesadas ni plugins externos, compatibles con WebGL / Three.js, y garantizan fluidez total en el aula.", "F1", 8.0, (0.12, 0.16, 0.23))
+
+    stream_bytes = "\n".join(ops).encode("latin1")
+    compressed = zlib.compress(stream_bytes)
+
+    objs = []
+    objs.append(b"1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n")
+    objs.append(b"2 0 obj\n<< /Type /Pages /Kids [3 0 R] /Count 1 >>\nendobj\n")
+    objs.append(f"3 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 {W:.2f} {H:.2f}] /Resources << /Font << /F1 4 0 R /F2 5 0 R /F3 6 0 R >> >> /Contents 7 0 R >>\nendobj\n".encode("latin1"))
+    objs.append(b"4 0 obj\n<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>\nendobj\n")
+    objs.append(b"5 0 obj\n<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>\nendobj\n")
+    objs.append(b"6 0 obj\n<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Oblique /Encoding /WinAnsiEncoding >>\nendobj\n")
+    objs.append(f"7 0 obj\n<< /Length {len(compressed)} /Filter /FlateDecode >>\nstream\n".encode("latin1") + compressed + b"\nendstream\nendobj\n")
+
+    pdf = bytearray(b"%PDF-1.4\n%\xe2\xe3\xcf\xd3\n")
+    offsets = [0]
+    for o in objs:
+        offsets.append(len(pdf))
+        pdf.extend(o)
+    xref_pos = len(pdf)
+    pdf.extend(f"xref\n0 {len(objs)+1}\n0000000000 65535 f \n".encode("latin1"))
+    for off in offsets[1:]:
+        pdf.extend(f"{off:010d} 00000 n \n".encode("latin1"))
+    pdf.extend(f"trailer\n<< /Size {len(objs)+1} /Root 1 0 R >>\nstartxref\n{xref_pos}\n%%EOF\n".encode("latin1"))
+
+    with open(PDF_PATH, "wb") as f:
+        f.write(pdf)
+    print(f"✅ PDF del Catálogo Maestro (Vectorial Nativo) actualizado en: {PDF_PATH} ({len(pdf)} bytes)")
+
+
+def build_html_catalog():
+    """Genera también una versión HTML interactiva del Catálogo Maestro de las 10 Simulaciones."""
+    os.makedirs(OUT_DIR, exist_ok=True)
+    rows_html = ""
+    for ses, cod, univ, mod, exp, btn, href, est in SIMULACIONES_DATA:
+        is_active = "Activo" in est
+        badge_cls = "status-active" if is_active else "status-plan"
+        btn_el = f'<a href="{href}" target="_blank" class="sim-link">🚀 {btn} ↗</a>' if href != "#" else f'<span class="sim-pending">⏳ {btn}</span>'
+        rows_html += f"""
+        <tr class="{'row-highlight' if ses == '05' else ''}">
+            <td class="col-ses"><strong>{ses}</strong><span>{cod}</span></td>
+            <td class="col-univ">{univ}</td>
+            <td class="col-mod">{mod}</td>
+            <td class="col-exp">{exp}</td>
+            <td class="col-btn">{btn_el}</td>
+            <td class="col-est"><span class="status-pill {badge_cls}">{'✅ ' + est if is_active else '📅 ' + est}</span></td>
+        </tr>"""
+
+    html = f"""<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catálogo Maestro: 10 Grandes Simulaciones Interactivas 3D</title>
+    <style>
+        body {{ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #070b14; color: #f8fafc; margin: 0; padding: 28px; }}
+        .container {{ max-width: 1280px; margin: 0 auto; background: #0f172a; border: 1px solid #1e293b; border-radius: 18px; padding: 26px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }}
+        h1 {{ font-size: 1.6rem; margin: 0 0 6px; color: #ffffff; text-align: center; }}
+        p.sub {{ text-align: center; color: #94a3b8; font-size: 0.92rem; margin: 0 0 18px; }}
+        table {{ width: 100%; border-collapse: collapse; font-size: 0.88rem; }}
+        th {{ background: #1e293b; color: #38bdf8; text-transform: uppercase; font-size: 0.76rem; letter-spacing: 0.05em; padding: 12px 10px; text-align: left; border-bottom: 2px solid #334155; }}
+        td {{ padding: 12px 10px; border-bottom: 1px solid #1e293b; vertical-align: middle; }}
+        tr:hover {{ background: rgba(30, 41, 59, 0.5); }}
+        tr.row-highlight {{ background: rgba(251, 191, 36, 0.08); }}
+        .col-ses {{ text-align: center; width: 75px; }}
+        .col-ses strong {{ display: block; font-size: 1rem; color: #fff; }}
+        .col-ses span {{ font-size: 0.72rem; color: #64748b; font-family: monospace; }}
+        .col-univ {{ color: #38bdf8; font-weight: 700; width: 150px; }}
+        .col-mod {{ font-weight: 800; color: #f8fafc; width: 220px; }}
+        .col-exp {{ color: #cbd5e1; line-height: 1.4; }}
+        .sim-link {{ display: inline-block; background: rgba(16, 185, 129, 0.16); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4); padding: 6px 11px; border-radius: 8px; text-decoration: none; font-weight: 700; font-size: 0.8rem; }}
+        .sim-link:hover {{ background: rgba(16, 185, 129, 0.28); }}
+        .sim-pending {{ color: #64748b; font-size: 0.8rem; font-weight: 600; }}
+        .status-pill {{ display: inline-block; padding: 4px 9px; border-radius: 999px; font-size: 0.75rem; font-weight: 800; white-space: nowrap; }}
+        .status-active {{ background: rgba(52, 211, 153, 0.15); color: #34d399; border: 1px solid rgba(52, 211, 153, 0.35); }}
+        .status-plan {{ background: rgba(148, 163, 184, 0.12); color: #94a3b8; }}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌌 CATÁLOGO MAESTRO: 10 GRANDES SIMULACIONES INTERACTIVAS 3D INTERCALADAS</h1>
+        <p class="sub">Alternancia de Anatomía Biomédica, Historia, Sistema Solar 3D NASA, Mecánica y Paleontología</p>
+        <table>
+            <thead>
+                <tr>
+                    <th>Sesión</th>
+                    <th>Universo / Temática</th>
+                    <th>Modelo Aprobado (PBR / NASA)</th>
+                    <th>Experiencia Visual e Interactiva</th>
+                    <th>Simulador 3D</th>
+                    <th>Estado</th>
+                </tr>
+            </thead>
+            <tbody>{rows_html}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>"""
+    with open(HTML_PATH, "w", encoding="utf-8") as f:
+        f.write(html)
+    print(f"✅ Catálogo HTML interactivo generado en: {HTML_PATH}")
+
 
 def build_pdf():
+    build_html_catalog()
     try:
         from reportlab.lib.pagesizes import A4, landscape
         from reportlab.lib import colors
         from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
         from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, HRFlowable
     except ImportError:
-        print("❌ Falta reportlab. Instálalo con: pip3 install reportlab")
-        sys.exit(1)
+        build_pure_python_pdf()
+        return
 
     os.makedirs(OUT_DIR, exist_ok=True)
-    # Formato horizontal A4 para albergar con máxima legibilidad la tabla de 10 simulaciones
     doc = SimpleDocTemplate(
         PDF_PATH,
         pagesize=landscape(A4),
@@ -33,227 +273,55 @@ def build_pdf():
     )
 
     styles = getSampleStyleSheet()
-
-    title_style = ParagraphStyle(
-        "TitleStyle",
-        parent=styles["Heading1"],
-        fontSize=17,
-        leading=21,
-        textColor=colors.HexColor("#0f172a"),
-        alignment=1,
-        fontName="Helvetica-Bold"
-    )
-
-    sub_style = ParagraphStyle(
-        "SubStyle",
-        parent=styles["Normal"],
-        fontSize=9.5,
-        leading=13,
-        textColor=colors.HexColor("#475569"),
-        alignment=1,
-        fontName="Helvetica-Oblique"
-    )
-
-    h2_style = ParagraphStyle(
-        "H2Style",
-        parent=styles["Heading2"],
-        fontSize=11,
-        leading=14,
-        textColor=colors.HexColor("#0369a1"),
-        fontName="Helvetica-Bold",
-        spaceBefore=4, spaceAfter=3
-    )
-
-    intro_style = ParagraphStyle(
-        "IntroStyle",
-        parent=styles["Normal"],
-        fontSize=8.5,
-        leading=11.5,
-        textColor=colors.HexColor("#1e293b"),
-        fontName="Helvetica"
-    )
-
-    table_header_style = ParagraphStyle(
-        "THStyle",
-        parent=styles["Normal"],
-        fontSize=8.5,
-        leading=11,
-        textColor=colors.white,
-        fontName="Helvetica-Bold",
-        alignment=1
-    )
-
-    tc_sesion = ParagraphStyle(
-        "TCSesion",
-        parent=styles["Normal"],
-        fontSize=8.2,
-        leading=10.5,
-        textColor=colors.HexColor("#0f172a"),
-        fontName="Helvetica-Bold",
-        alignment=1
-    )
-
-    tc_theme = ParagraphStyle(
-        "TCTheme",
-        parent=styles["Normal"],
-        fontSize=8,
-        leading=10.5,
-        textColor=colors.HexColor("#0284c7"),
-        fontName="Helvetica-Bold"
-    )
-
-    tc_model = ParagraphStyle(
-        "TCModel",
-        parent=styles["Normal"],
-        fontSize=8.2,
-        leading=11,
-        textColor=colors.HexColor("#0f172a"),
-        fontName="Helvetica-Bold"
-    )
-
-    tc_exp = ParagraphStyle(
-        "TCExp",
-        parent=styles["Normal"],
-        fontSize=7.8,
-        leading=10.5,
-        textColor=colors.HexColor("#334155"),
-        fontName="Helvetica"
-    )
-
-    tc_btn = ParagraphStyle(
-        "TCBtn",
-        parent=styles["Normal"],
-        fontSize=7.8,
-        leading=10.5,
-        textColor=colors.HexColor("#047857"),
-        fontName="Helvetica-Bold"
-    )
-
-    tc_status = ParagraphStyle(
-        "TCStatus",
-        parent=styles["Normal"],
-        fontSize=7.5,
-        leading=10,
-        textColor=colors.HexColor("#475569"),
-        fontName="Helvetica-Oblique",
-        alignment=1
-    )
+    title_style = ParagraphStyle("TitleStyle", parent=styles["Heading1"], fontSize=17, leading=21, textColor=colors.HexColor("#0f172a"), alignment=1, fontName="Helvetica-Bold")
+    sub_style = ParagraphStyle("SubStyle", parent=styles["Normal"], fontSize=9.5, leading=13, textColor=colors.HexColor("#475569"), alignment=1, fontName="Helvetica-Oblique")
+    intro_style = ParagraphStyle("IntroStyle", parent=styles["Normal"], fontSize=8.5, leading=11.5, textColor=colors.HexColor("#1e293b"), fontName="Helvetica")
+    table_header_style = ParagraphStyle("THStyle", parent=styles["Normal"], fontSize=8.5, leading=11, textColor=colors.white, fontName="Helvetica-Bold", alignment=1)
+    tc_sesion = ParagraphStyle("TCSesion", parent=styles["Normal"], fontSize=8.2, leading=10.5, textColor=colors.HexColor("#0f172a"), fontName="Helvetica-Bold", alignment=1)
+    tc_theme = ParagraphStyle("TCTheme", parent=styles["Normal"], fontSize=8, leading=10.5, textColor=colors.HexColor("#0284c7"), fontName="Helvetica-Bold")
+    tc_model = ParagraphStyle("TCModel", parent=styles["Normal"], fontSize=8.2, leading=11, textColor=colors.HexColor("#0f172a"), fontName="Helvetica-Bold")
+    tc_exp = ParagraphStyle("TCExp", parent=styles["Normal"], fontSize=7.8, leading=10.5, textColor=colors.HexColor("#334155"), fontName="Helvetica")
+    tc_btn = ParagraphStyle("TCBtn", parent=styles["Normal"], fontSize=7.8, leading=10.5, textColor=colors.HexColor("#047857"), fontName="Helvetica-Bold")
+    tc_status = ParagraphStyle("TCStatus", parent=styles["Normal"], fontSize=7.5, leading=10, textColor=colors.HexColor("#475569"), fontName="Helvetica-Oblique", alignment=1)
 
     elements = []
-
-    # Encabezado
     elements.append(Paragraph("🌌 CATÁLOGO MAESTRO: 10 GRANDES SIMULACIONES INTERACTIVAS 3D INTERCALADAS", title_style))
     elements.append(Spacer(1, 2))
-    elements.append(Paragraph("Plan Didáctico Intercalado: Alternancia de Anatomía Biomédica, Historia, Exploración Espacial, Mecánica y Paleontología", sub_style))
+    elements.append(Paragraph("Plan Didáctico Intercalado: Alternancia de Anatomía Biomédica, Historia, Sistema Solar 3D NASA, Mecánica y Paleontología", sub_style))
     elements.append(Spacer(1, 6))
     elements.append(HRFlowable(width="100%", thickness=1.5, color=colors.HexColor("#0284c7"), spaceAfter=6))
 
-    # Introducción Didáctica
     intro_p = (
         "<b>Metodología de Intercalación Temática:</b> Para evitar la fatiga cognitiva y mantener la fascinación visual permanente en el alumnado senior (60+), "
         "el bloque de creación de simuladores con IA <b>[COD]</b> alterna una sesión de <i>Anatomía y Salud Humana</i> (fotorrealismo biomédico con pulso, respiración o reflejo a la luz) "
-        "con una sesión de <i>Grandes Hitos de la Humanidad</i> (arqueología milenaria, ingeniería espacial de la NASA, biomecánica mecánica o fósiles prehistóricos). "
+        "con una sesión de <i>Grandes Hitos de la Humanidad y el Cosmos</i> (arqueología milenaria, Sistema Solar 3D con mapas satelitales de la NASA, ingeniería mecánica o fósiles prehistóricos). "
         "Cada experiencia incluye arquitectura de <b>Doble Botón</b>: Taller Interactivo de Pruebas de Código generado con Gemini y acceso directo al Simulador Terminado."
     )
     elements.append(Paragraph(intro_p, intro_style))
     elements.append(Spacer(1, 6))
 
-    # Tabla Maestra de las 10 Simulaciones
     headers = [
         Paragraph("Sesión", table_header_style),
         Paragraph("Universo / Temática", table_header_style),
-        Paragraph("Modelo Aprobado (PBR 4K)", table_header_style),
+        Paragraph("Modelo Aprobado (PBR 4K / NASA)", table_header_style),
         Paragraph("Experiencia Visual e Interactiva", table_header_style),
         Paragraph("Botón 2 • Simulador Terminado", table_header_style),
         Paragraph("Estado en Aula", table_header_style)
     ]
 
-    rows = [
-        [
-            Paragraph("<b>01</b><br/><font color='#64748B'>[COD-001]</font>", tc_sesion),
-            Paragraph("🫁 Salud & Respiración", tc_theme),
-            Paragraph("Árbol Traqueobronquial & Pulmones", tc_model),
-            Paragraph("Estructura traqueal fractal, ventilación alveolar biofísica rítmica y audio respiratorio.", tc_exp),
-            Paragraph("🫁 Ver Simulador Pulmones 3D ↗", tc_btn),
-            Paragraph("✅ <b>Activo en S01</b>", tc_status)
-        ],
-        [
-            Paragraph("<b>02</b><br/><font color='#64748B'>[COD-002]</font>", tc_sesion),
-            Paragraph("❤️ Salud & Cardiología", tc_theme),
-            Paragraph("Corazón Humano con Fonendoscopio", tc_model),
-            Paragraph("Fotogrametría PBR 4K miocardio, ecuación Wiggers (sístole/diástole), slider BPM y fonendoscopio acústico.", tc_exp),
-            Paragraph("🫀 Ver Simulador Corazón 3D ↗", tc_btn),
-            Paragraph("✅ <b>Activo en S02</b>", tc_status)
-        ],
-        [
-            Paragraph("<b>03</b><br/><font color='#64748B'>[COD-003]</font>", tc_sesion),
-            Paragraph("🏛️ Historia & Arqueología", tc_theme),
-            Paragraph("Tesoro de Pompeya (Foro & Ruinas CyArk)", tc_model),
-            Paragraph("Arqueología digital HD, comparador de viaje en el tiempo (ruinas vs. reconstrucción imperial), iluminación cinematográfica.", tc_exp),
-            Paragraph("🏛️ Ver Tesoro Arqueológico 3D ↗", tc_btn),
-            Paragraph("🚀 <b>Activo en S03</b>", tc_status)
-        ],
-        [
-            Paragraph("<b>04</b><br/><font color='#64748B'>[COD-004]</font>", tc_sesion),
-            Paragraph("👁️ Salud & Óptica", tc_theme),
-            Paragraph("Globo Ocular Humano & Cristalino", tc_model),
-            Paragraph("Córnea de cristal reflectante, iris 4K, pupila interactiva con reflejo fotomotor (miosis/midriasis por slider) y seguimiento ocular.", tc_exp),
-            Paragraph("👁️ Ver Simulador Ojo Humano 3D ↗", tc_btn),
-            Paragraph("📅 Plan S04", tc_status)
-        ],
-        [
-            Paragraph("<b>05</b><br/><font color='#64748B'>[COD-005]</font>", tc_sesion),
-            Paragraph("🚀 Espacio & Exploración", tc_theme),
-            Paragraph("Módulo Lunar Apolo 11 (NASA)", tc_model),
-            Paragraph("Estructura aeroespacial PBR, láminas de foil térmico dorado 4K, toberas de descenso y control de empuje orbital.", tc_exp),
-            Paragraph("🚀 Ver Módulo Lunar 3D ↗", tc_btn),
-            Paragraph("📅 Plan S05", tc_status)
-        ],
-        [
-            Paragraph("<b>06</b><br/><font color='#64748B'>[COD-006]</font>", tc_sesion),
-            Paragraph("🧠 Salud & Neurociencia", tc_theme),
-            Paragraph("Cerebro Humano & Red Sináptica", tc_model),
-            Paragraph("Resonancia magnética médica cortical, vías neuronales, pulsos lumínicos bioeléctricos y selector de lóbulos cerebrales.", tc_exp),
-            Paragraph("🧠 Ver Simulador Cerebro 3D ↗", tc_btn),
-            Paragraph("📅 Plan S06", tc_status)
-        ],
-        [
-            Paragraph("<b>07</b><br/><font color='#64748B'>[COD-007]</font>", tc_sesion),
-            Paragraph("⚙️ Mecánica & Automoción", tc_theme),
-            Paragraph("Motor de 4 Tiempos en Sección Abierta", tc_model),
-            Paragraph("Cilindro, pistón, cigüeñal y válvulas sincronizadas; ciclo térmico en corte transversal y control continuo de RPM con audio.", tc_exp),
-            Paragraph("⚙️ Ver Motor Mecánico 3D ↗", tc_btn),
-            Paragraph("📅 Plan S07", tc_status)
-        ],
-        [
-            Paragraph("<b>08</b><br/><font color='#64748B'>[COD-008]</font>", tc_sesion),
-            Paragraph("🦖 Paleontología & Evolución", tc_theme),
-            Paragraph("Cráneo Fósil de Tiranosaurio Rex", tc_model),
-            Paragraph("Fotogrametría fósil de museo, porosidad mineralizada 4K, bisagra mandibular interactiva con apertura/cierre de fauces.", tc_exp),
-            Paragraph("🦖 Ver Fósil T-Rex 3D ↗", tc_btn),
-            Paragraph("📅 Plan S08", tc_status)
-        ],
-        [
-            Paragraph("<b>09</b><br/><font color='#64748B'>[COD-009]</font>", tc_sesion),
-            Paragraph("🦷 Salud & Odontología", tc_theme),
-            Paragraph("Molar Humano en Sección Anatómica", tc_model),
-            Paragraph("Esmalte lúcido, dentina, pulpa vascularizada y terminaciones nerviosas; despiece tridimensional por capas clínicas.", tc_exp),
-            Paragraph("🦷 Ver Molar Anatómico 3D ↗", tc_btn),
-            Paragraph("📅 Plan S09", tc_status)
-        ],
-        [
-            Paragraph("<b>10</b><br/><font color='#64748B'>[COD-010]</font>", tc_sesion),
-            Paragraph("🎻 Acústica & Arte Musical", tc_theme),
-            Paragraph("Violín Stradivarius & Resonancia Acústica", tc_model),
-            Paragraph("Madera de arce noble barnizada PBR 4K, simulación de cuerdas en vibración física armónica y ondas de presión acústica.", tc_exp),
-            Paragraph("🎻 Ver Acústica Stradivarius 3D ↗", tc_btn),
-            Paragraph("📅 Plan S10", tc_status)
-        ]
-    ]
+    rows = []
+    for ses, cod, univ, mod, exp, btn, _, est in SIMULACIONES_DATA:
+        status_txt = f"✅ <b>{est}</b>" if "Activo" in est else f"📅 {est}"
+        rows.append([
+            Paragraph(f"<b>{ses}</b><br/><font color='#64748B'>{cod}</font>", tc_sesion),
+            Paragraph(univ, tc_theme),
+            Paragraph(mod, tc_model),
+            Paragraph(exp, tc_exp),
+            Paragraph(f"{btn} ↗", tc_btn),
+            Paragraph(status_txt, tc_status)
+        ])
 
     table_data = [headers] + rows
-
-    # Ancho total útil en A4 Landscape: 841.89 - 64 = 777.89 pt
     col_widths = [54, 98, 142, 275, 138, 70]
     t = Table(table_data, colWidths=col_widths)
     t.setStyle(TableStyle([
@@ -270,17 +338,14 @@ def build_pdf():
 
     elements.append(t)
     elements.append(Spacer(1, 6))
-
-    # Pie explicativo
     footer_text = (
         "<b>Estándar Técnico Compartido:</b> Todos los simuladores operan en el navegador sin descargas pesadas ni plugins externos, "
         "compatibles con WebGL / Babylon.js / Three.js, y garantizan una experiencia pedagógica fluida en equipos estándar."
     )
     elements.append(Paragraph(footer_text, intro_style))
-
     doc.build(elements)
     print(f"✅ PDF del Catálogo Maestro de 10 Simulaciones generado con éxito en: {PDF_PATH} ({os.path.getsize(PDF_PATH)} bytes)")
 
+
 if __name__ == "__main__":
     build_pdf()
-
