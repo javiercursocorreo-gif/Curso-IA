@@ -840,6 +840,14 @@
             color: #ffe4e6;
         }
 
+        .planet-label-pin.jmoon-pin {
+            border-color: rgba(251, 191, 36, 0.65);
+            background: rgba(30, 41, 59, 0.92);
+            color: #fef08a;
+            font-size: 9.5px;
+            padding: 2px 7px;
+        }
+
         .planet-label-pin.active-pin {
             background: rgba(251, 191, 36, 0.28);
             border-color: #fbbf24;
@@ -980,7 +988,7 @@
                 &lt;button class=&quot;btn-tool&quot; data-target=&quot;venus&quot;&gt;🌕 Venus&lt;/button&gt;
                 &lt;button class=&quot;btn-tool&quot; data-target=&quot;earth&quot;&gt;🌍 Tierra + Luna&lt;/button&gt;
                 &lt;button class=&quot;btn-tool&quot; data-target=&quot;mars&quot;&gt;🔴 Marte&lt;/button&gt;
-                &lt;button class=&quot;btn-tool&quot; data-target=&quot;jupiter&quot;&gt;🟠 Júpiter&lt;/button&gt;
+                &lt;button class=&quot;btn-tool&quot; data-target=&quot;jupiter&quot;&gt;🟠 Júpiter + 4 Lunas&lt;/button&gt;
                 &lt;button class=&quot;btn-tool&quot; data-target=&quot;saturn&quot;&gt;🪐 Saturno&lt;/button&gt;
                 &lt;button class=&quot;btn-tool&quot; data-target=&quot;uranus&quot;&gt;🔵 Urano&lt;/button&gt;
                 &lt;button class=&quot;btn-tool&quot; data-target=&quot;neptune&quot;&gt;🌊 Neptuno&lt;/button&gt;
@@ -1203,13 +1211,13 @@
                 temp: &quot;-63 °C media • 2 lunas&quot;
             },
             jupiter: {
-                name: &quot;🟠 Júpiter&quot;,
-                probe: &quot;NASA Cassini &amp; Telescopio Hubble&quot;,
-                desc: &quot;El gigante gaseoso más grande del Sistema Solar (cabrían 1.300 Tierras en su interior). Su mapa de la misión Cassini muestra las bandas de amoníaco y el anticiclón de la Gran Mancha Roja.&quot;,
+                name: &quot;🟠 Júpiter y sus 4 Lunas Galileanas&quot;,
+                probe: &quot;NASA Cassini, Galileo &amp; Sonda Juno&quot;,
+                desc: &quot;El gigante gaseoso más grande del Sistema Solar (cabrían 1.300 Tierras). A su alrededor orbitan aquí sus 4 grandes Lunas Galileanas descubiertas por Galileo en 1610: Ío (el mundo más volcánico), Europa (océano bajo corteza de hielo), Ganímedes (la mayor luna del Sistema Solar) y Calisto.&quot;,
                 diameter: &quot;139.820 km (11 Tierras)&quot;,
                 distance: &quot;778,5 millones km (5,20 UA)&quot;,
-                orbit: &quot;11,86 años terrestres&quot;,
-                temp: &quot;-110 °C • 95 lunas&quot;
+                orbit: &quot;11,86 años • 4 Lunas Galileanas&quot;,
+                temp: &quot;-110 °C • Ío, Europa, Ganímedes, Calisto&quot;
             },
             saturn: {
                 name: &quot;🪐 Saturno y sus Anillos&quot;,
@@ -1406,57 +1414,31 @@
             return geo;
         }
 
-        // Grupo de estelas en espiral / tirabuzón para el Modo Vórtice Galáctico
+        // Grupo de estelas en espiral / tirabuzón para el Modo Vórtice Galáctico (avance real de izquierda a derecha)
         const vortexGroup = new THREE.Group();
         vortexGroup.visible = false;
         scene.add(vortexGroup);
 
-        const TRAIL_POINTS = 260;
-        const VORTEX_Z_STEP = 0.42; // Velocidad de avance aparente del Sol por la galaxia
+        const TRAIL_POINTS = 700;
+        const VORTEX_START_X = -120;
+        const VORTEX_END_X = 120;
+        let vortexSunX = VORTEX_START_X;
 
-        // Estela dorada central del avance rectilíneo del Sol hacia el centro galáctico
-        const sunBeamGeo = new THREE.CylinderGeometry(0.45, 2.2, 240, 20, 1, true);
-        const sunBeamMat = new THREE.MeshBasicMaterial({
-            color: 0xfbbf24,
-            transparent: true,
-            opacity: 0.28,
-            side: THREE.DoubleSide,
-            blending: THREE.AdditiveBlending,
-            depthWrite: false
-        });
-        const sunBeamMesh = new THREE.Mesh(sunBeamGeo, sunBeamMat);
-        sunBeamMesh.rotation.z = Math.PI / 2;
-        sunBeamMesh.position.set(0, -118, 0);
-        vortexGroup.add(sunBeamMesh);
-
-        // Flecha / cono de dirección galáctica en la proa del Sol
-        const sunArrowGeo = new THREE.ConeGeometry(2.2, 6.5, 24);
-        const sunArrowMat = new THREE.MeshBasicMaterial({
-            color: 0xfef08a,
-            transparent: true,
-            opacity: 0.75
-        });
-        const sunArrowMesh = new THREE.Mesh(sunArrowGeo, sunArrowMat);
-        sunArrowMesh.position.set(0, 16, 0);
-        vortexGroup.add(sunArrowMesh);
-
-        // Estrellas fugaces de referencia galáctica pasando alrededor del vórtice solar
-        const galStarsCount = 600;
-        const galStarsGeo = new THREE.BufferGeometry();
-        const galStarsPos = new Float32Array(galStarsCount * 3);
-        for (let i = 0; i &lt; galStarsCount; i++) {
-            const ang = Math.random() * Math.PI * 2;
-            const rad = 25 + Math.random() * 95;
-            galStarsPos[i * 3] = Math.cos(ang) * rad;
-            galStarsPos[i * 3 + 1] = 35 - Math.random() * 260;
-            galStarsPos[i * 3 + 2] = Math.sin(ang) * rad;
-        }
-        galStarsGeo.setAttribute(&quot;position&quot;, new THREE.BufferAttribute(galStarsPos, 3));
-        const galStarsPoints = new THREE.Points(
-            galStarsGeo,
-            new THREE.PointsMaterial({ color: 0xe0f2fe, size: 0.55, transparent: true, opacity: 0.65 })
+        // Línea fina de la trayectoria rectilínea horizontal del Sol de izquierda a derecha
+        const sunPathGeo = new THREE.BufferGeometry();
+        const sunPathPositions = new Float32Array(TRAIL_POINTS * 3);
+        sunPathGeo.setAttribute(&quot;position&quot;, new THREE.BufferAttribute(sunPathPositions, 3));
+        const sunPathLine = new THREE.Line(
+            sunPathGeo,
+            new THREE.LineBasicMaterial({ color: 0xfbbf24, transparent: true, opacity: 0.65 })
         );
-        vortexGroup.add(galStarsPoints);
+        sunPathLine.frustumCulled = false;
+        vortexGroup.add(sunPathLine);
+        let sunTrailCount = 0;
+
+        // Textura base compartida para lunas rocosas/heladas
+        const sharedMoonTex = loadNasaTexture(&quot;2k_moon.jpg&quot;);
+        const jupiterMoonsList = [];
 
         PLANETS_CONFIG.forEach((cfg, idx) =&gt; {
             const orbitCurve = new THREE.EllipseCurve(0, 0, cfg.distance, cfg.distance, 0, Math.PI * 2, false, 0);
@@ -1512,7 +1494,7 @@
 
                 const moonGeo = new THREE.SphereGeometry(0.54, 36, 36);
                 const moonMat = new THREE.MeshStandardMaterial({
-                    map: loadNasaTexture(&quot;2k_moon.jpg&quot;),
+                    map: sharedMoonTex,
                     roughness: 0.9
                 });
                 moonMesh = new THREE.Mesh(moonGeo, moonMat);
@@ -1524,6 +1506,46 @@
                 const mPts = new THREE.EllipseCurve(0, 0, 3.9, 3.9, 0, Math.PI * 2).getPoints(64).map(p =&gt; new THREE.Vector3(p.x, 0, p.y));
                 const mLine = new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints(mPts), new THREE.LineBasicMaterial({ color: 0x94a3b8, transparent: true, opacity: 0.45 }));
                 moonPivot.add(mLine);
+            }
+
+            // Las 4 Grandes Lunas Galileanas de Júpiter: Ío, Europa, Ganímedes y Calisto
+            if (cfg.key === &quot;jupiter&quot;) {
+                const galileanSpecs = [
+                    { id: &quot;jmoon_io&quot;,       label: &quot;🟡 Ío&quot;,        radius: 0.36, dist: 6.3,  speed: 0.028, angle: 0.4, color: 0xfacc15 },
+                    { id: &quot;jmoon_europa&quot;,   label: &quot;⚪ Europa&quot;,    radius: 0.32, dist: 7.7,  speed: 0.018, angle: 2.0, color: 0xe0f2fe },
+                    { id: &quot;jmoon_ganymede&quot;, label: &quot;🟤 Ganímedes&quot;, radius: 0.48, dist: 9.3,  speed: 0.011, angle: 3.7, color: 0xd6d3d1 },
+                    { id: &quot;jmoon_callisto&quot;, label: &quot;⚫ Calisto&quot;,   radius: 0.42, dist: 11.0, speed: 0.007, angle: 5.2, color: 0x94a3b8 }
+                ];
+                galileanSpecs.forEach(gm =&gt; {
+                    const gmPts = new THREE.EllipseCurve(0, 0, gm.dist, gm.dist, 0, Math.PI * 2).getPoints(64).map(p =&gt; new THREE.Vector3(p.x, 0, p.y));
+                    const gmOrbit = new THREE.LineLoop(
+                        new THREE.BufferGeometry().setFromPoints(gmPts),
+                        new THREE.LineBasicMaterial({ color: gm.color, transparent: true, opacity: 0.38 })
+                    );
+                    holder.add(gmOrbit);
+
+                    const gmGeo = new THREE.SphereGeometry(gm.radius, 32, 32);
+                    const gmMat = new THREE.MeshStandardMaterial({
+                        map: sharedMoonTex,
+                        color: gm.color,
+                        roughness: 0.82
+                    });
+                    const gmMesh = new THREE.Mesh(gmGeo, gmMat);
+                    gmMesh.position.set(Math.cos(gm.angle) * gm.dist, 0, Math.sin(gm.angle) * gm.dist);
+                    gmMesh.userData = { key: &quot;jupiter&quot; };
+                    holder.add(gmMesh);
+                    pickableMeshes.push(gmMesh);
+
+                    createLabelPin(gm.id, gm.label, &quot;jmoon-pin&quot;);
+                    jupiterMoonsList.push({
+                        id: gm.id,
+                        mesh: gmMesh,
+                        dist: gm.dist,
+                        speed: gm.speed,
+                        angle: gm.angle,
+                        radius: gm.radius
+                    });
+                });
             }
 
             if (cfg.ringTex) {
@@ -1553,23 +1575,16 @@
                 mesh.add(uRingMesh);
             }
 
-            // Estela helicoidal en tirabuzón (Helical Trail) para este planeta
+            // Estela helicoidal en tirabuzón (Helical Trail) trazada en tiempo real mientras avanza de izquierda a derecha
             const trailGeo = new THREE.BufferGeometry();
             const trailPositions = new Float32Array(TRAIL_POINTS * 3);
-            const trailColors = new THREE.Color(cfg.color);
-            const colorAttr = new Float32Array(TRAIL_POINTS * 3);
-            for (let i = 0; i &lt; TRAIL_POINTS; i++) {
-                const fade = Math.pow(1 - i / (TRAIL_POINTS - 1), 1.3);
-                colorAttr[i * 3] = trailColors.r * fade;
-                colorAttr[i * 3 + 1] = trailColors.g * fade;
-                colorAttr[i * 3 + 2] = trailColors.b * fade;
-            }
             trailGeo.setAttribute(&quot;position&quot;, new THREE.BufferAttribute(trailPositions, 3));
-            trailGeo.setAttribute(&quot;color&quot;, new THREE.BufferAttribute(colorAttr, 3));
+            trailGeo.setDrawRange(0, 0);
             const trailLine = new THREE.Line(
                 trailGeo,
-                new THREE.LineBasicMaterial({ vertexColors: true, transparent: true, opacity: 0.95 })
+                new THREE.LineBasicMaterial({ color: cfg.color, transparent: true, opacity: 0.92 })
             );
+            trailLine.frustumCulled = false;
             vortexGroup.add(trailLine);
 
             createLabelPin(cfg.key, cfg.label);
@@ -1583,23 +1598,64 @@
                 moonMesh,
                 angle: initialAngle,
                 trailGeo,
-                trailPositions
+                trailPositions,
+                trailCount: 0
             };
         });
 
-        // Pre-poblar la geometría helicoidal analítica de cada planeta para que el tirabuzón se vea completo al instante
-        function rebuildHelicalTrails() {
-            const baseStep = 0.0042 * Math.max(orbitSpeedMultiplier, 0.6);
+        // Reiniciar el recorrido del Sol en el extremo izquierdo de la pantalla para trazar un nuevo tirabuzón hacia la derecha
+        function resetVortexJourney() {
+            vortexSunX = VORTEX_START_X;
+            sunTrailCount = 0;
+            sunPathGeo.setDrawRange(0, 0);
+            sunGroup.position.set(vortexSunX, 0, 0);
+            sunPointLight.position.set(vortexSunX, 0, 0);
+
+            Object.keys(planetObjects).forEach(key =&gt; {
+                const p = planetObjects[key];
+                p.trailCount = 0;
+                p.trailGeo.setDrawRange(0, 0);
+                const vr = p.cfg.distance * 0.54;
+                const localY = Math.sin(p.angle) * vr;
+                const localZ = Math.cos(p.angle) * vr;
+                const localX = -Math.sin(p.angle) * vr * 0.24;
+                p.holder.position.set(vortexSunX + localX, localY, localZ);
+            });
+        }
+
+        // Registrar un punto nuevo en la estela de cada planeta y del Sol a medida que avanzan de izquierda a derecha
+        function pushVortexTrailPoint() {
+            if (sunTrailCount &lt; TRAIL_POINTS) {
+                sunPathPositions[sunTrailCount * 3] = sunGroup.position.x;
+                sunPathPositions[sunTrailCount * 3 + 1] = sunGroup.position.y;
+                sunPathPositions[sunTrailCount * 3 + 2] = sunGroup.position.z;
+                sunTrailCount++;
+            } else {
+                sunPathPositions.copyWithin(0, 3);
+                const last = (TRAIL_POINTS - 1) * 3;
+                sunPathPositions[last] = sunGroup.position.x;
+                sunPathPositions[last + 1] = sunGroup.position.y;
+                sunPathPositions[last + 2] = sunGroup.position.z;
+            }
+            sunPathGeo.setDrawRange(0, sunTrailCount);
+            sunPathGeo.attributes.position.needsUpdate = true;
+
             Object.keys(planetObjects).forEach(key =&gt; {
                 const p = planetObjects[key];
                 const arr = p.trailPositions;
-                for (let i = 0; i &lt; TRAIL_POINTS; i++) {
-                    const pastAngle = p.angle - i * baseStep * p.cfg.speed * 2.2;
-                    const yWake = -i * VORTEX_Z_STEP * 1.65;
-                    arr[i * 3] = Math.cos(pastAngle) * p.cfg.distance;
-                    arr[i * 3 + 1] = yWake;
-                    arr[i * 3 + 2] = Math.sin(pastAngle) * p.cfg.distance;
+                if (p.trailCount &lt; TRAIL_POINTS) {
+                    arr[p.trailCount * 3] = p.holder.position.x;
+                    arr[p.trailCount * 3 + 1] = p.holder.position.y;
+                    arr[p.trailCount * 3 + 2] = p.holder.position.z;
+                    p.trailCount++;
+                } else {
+                    arr.copyWithin(0, 3);
+                    const last = (TRAIL_POINTS - 1) * 3;
+                    arr[last] = p.holder.position.x;
+                    arr[last + 1] = p.holder.position.y;
+                    arr[last + 2] = p.holder.position.z;
                 }
+                p.trailGeo.setDrawRange(0, p.trailCount);
                 p.trailGeo.attributes.position.needsUpdate = true;
             });
         }
@@ -1798,6 +1854,9 @@
                 desiredCamOffset.set(0, 8, 24);
             } else if (key === &quot;voyager&quot;) {
                 desiredCamOffset.set(8, 4.5, 11);
+            } else if (key === &quot;jupiter&quot;) {
+                // Encuadrar a Júpiter junto con las órbitas de sus 4 grandes lunas galileanas (Ío, Europa, Ganímedes y Calisto)
+                desiredCamOffset.set(14.5, 8.2, 19.5);
             } else if (planetObjects[key]) {
                 const r = planetObjects[key].cfg.radius;
                 const dist = Math.max(r * 3.8, 6.2);
@@ -1805,7 +1864,7 @@
             }
         }
 
-        // Experiencia 1: Modo Vórtice Galáctico (&quot;Efecto Tirabuzón&quot;)
+        // Experiencia 1: Modo Vórtice Galáctico (&quot;Efecto Tirabuzón&quot; avanzando en tiempo real de izquierda a derecha)
         function toggleVortexMode(forceState) {
             isVortexMode = typeof forceState === &quot;boolean&quot; ? forceState : !isVortexMode;
             if (isVortexMode &amp;&amp; isCompareMode) {
@@ -1820,14 +1879,27 @@
             vortexGroup.visible = isVortexMode;
 
             if (isVortexMode) {
-                rebuildHelicalTrails();
+                orbitLinesGroup.visible = false;
+                heliopauseGroup.visible = false;
+                voyagerHolder.visible = false;
+                if (labelPins.voyager) labelPins.voyager.style.display = &quot;none&quot;;
+
+                resetVortexJourney();
                 updateTelemetryUI(&quot;vortex&quot;);
-                scaleBadge.textContent = &quot;Modo: Vórtice Helicoidal Galáctico (Sol avanzando a 828.000 km/h)&quot;;
-                // Colocar la cámara de perfil oblicuo para ver el tirabuzón en toda su longitud
+                scaleBadge.textContent = &quot;Modo: Vórtice Helicoidal Galáctico (Sol avanzando de izquierda a derecha a 828.000 km/h)&quot;;
+                // Cámara frontal-panorámica ligeramente elevada para ver al Sol cruzar de izquierda a derecha con las hélices 3D
                 cameraTransitionFrames = 0;
-                camera.position.set(125, -45, 95);
-                controls.target.set(0, -42, 0);
+                camera.position.set(0, 22, 168);
+                controls.target.set(0, 0, 0);
             } else {
+                orbitLinesGroup.visible = showOrbits;
+                heliopauseGroup.visible = showHeliopause;
+                voyagerHolder.visible = showHeliopause;
+                sunGroup.position.set(0, 0, 0);
+                sunPointLight.position.set(0, 0, 0);
+                Object.keys(planetObjects).forEach(k =&gt; {
+                    planetObjects[k].holder.position.y = 0;
+                });
                 scaleBadge.textContent = &quot;Modo: Órbitas Keplerianas Activas (1x = 1 año / 60 s)&quot;;
                 focusBody(&quot;overview&quot;);
             }
@@ -1957,7 +2029,7 @@
         const btnToggleOrbits = document.getElementById(&quot;btnToggleOrbits&quot;);
         btnToggleOrbits.addEventListener(&quot;click&quot;, () =&gt; {
             showOrbits = !showOrbits;
-            orbitLinesGroup.visible = showOrbits &amp;&amp; !isCompareMode;
+            orbitLinesGroup.visible = showOrbits &amp;&amp; !isCompareMode &amp;&amp; !isVortexMode;
             btnToggleOrbits.classList.toggle(&quot;active&quot;, showOrbits);
         });
 
@@ -1965,8 +2037,8 @@
         const btnToggleHeliopause = document.getElementById(&quot;btnToggleHeliopause&quot;);
         btnToggleHeliopause.addEventListener(&quot;click&quot;, () =&gt; {
             showHeliopause = !showHeliopause;
-            heliopauseGroup.visible = showHeliopause &amp;&amp; !isCompareMode;
-            voyagerHolder.visible = showHeliopause &amp;&amp; !isCompareMode;
+            heliopauseGroup.visible = showHeliopause &amp;&amp; !isCompareMode &amp;&amp; !isVortexMode;
+            voyagerHolder.visible = showHeliopause &amp;&amp; !isCompareMode &amp;&amp; !isVortexMode;
             btnToggleHeliopause.classList.toggle(&quot;active&quot;, showHeliopause);
             if (!showHeliopause &amp;&amp; labelPins.voyager) {
                 labelPins.voyager.style.display = &quot;none&quot;;
@@ -1993,13 +2065,18 @@
         // ============================================================================
         const BASE_KEPLER_STEP = 0.001745;
         const tempProjVec = new THREE.Vector3();
+        const jmoonWorldVec = new THREE.Vector3();
         const targetWorldPos = new THREE.Vector3();
         const simDaysCounter = document.getElementById(&quot;simDaysCounter&quot;);
 
         function updateLabelPosition(key, worldVec, yOffset) {
             const pin = labelPins[key];
             if (!pin || !showLabels) return;
-            if (key === &quot;voyager&quot; &amp;&amp; (!showHeliopause || isCompareMode)) {
+            if (key === &quot;voyager&quot; &amp;&amp; (!showHeliopause || isCompareMode || isVortexMode)) {
+                pin.style.display = &quot;none&quot;;
+                return;
+            }
+            if (key.startsWith(&quot;jmoon_&quot;) &amp;&amp; (currentTargetKey !== &quot;jupiter&quot; || isCompareMode || isVortexMode)) {
                 pin.style.display = &quot;none&quot;;
                 return;
             }
@@ -2031,17 +2108,16 @@
                 simDaysCounter.textContent = `Día ${Math.floor(simulatedEarthDays)} (${years} años terrestres)`;
             }
 
-            // En Modo Vórtice Galáctico, animar el flujo de estrellas y actualizar las estelas en tirabuzón
+            // En Modo Vórtice Galáctico, el Sol avanza en línea recta horizontal de izquierda a derecha en tiempo real
             if (isVortexMode &amp;&amp; orbitSpeedMultiplier &gt; 0) {
-                const sArr = galStarsGeo.attributes.position.array;
-                for (let i = 0; i &lt; galStarsCount; i++) {
-                    sArr[i * 3 + 1] -= 1.35 * orbitSpeedMultiplier;
-                    if (sArr[i * 3 + 1] &lt; -225) {
-                        sArr[i * 3 + 1] = 35;
-                    }
+                vortexSunX += 0.42 * orbitSpeedMultiplier;
+                if (vortexSunX &gt; VORTEX_END_X) {
+                    // Al llegar al extremo derecho de la pantalla, vuelve a empezar por la izquierda
+                    resetVortexJourney();
+                } else {
+                    sunGroup.position.set(vortexSunX, 0, 0);
+                    sunPointLight.position.set(vortexSunX, 0, 0);
                 }
-                galStarsGeo.attributes.position.needsUpdate = true;
-                rebuildHelicalTrails();
             }
 
             Object.keys(planetObjects).forEach(key =&gt; {
@@ -2058,18 +2134,43 @@
                 if (isCompareMode) {
                     const targetX = p.cfg.compareX;
                     p.holder.position.x += (targetX - p.holder.position.x) * 0.08;
+                    p.holder.position.y += (0 - p.holder.position.y) * 0.08;
                     p.holder.position.z += (0 - p.holder.position.z) * 0.08;
+                } else if (isVortexMode) {
+                    // Giro helicoidal alrededor del Sol mientras el Sol avanza horizontalmente de izquierda a derecha
+                    p.angle += 0.038 * Math.pow(p.cfg.speed, 0.45) * orbitSpeedMultiplier;
+                    const vr = p.cfg.distance * 0.54;
+                    const localY = Math.sin(p.angle) * vr;
+                    const localZ = Math.cos(p.angle) * vr;
+                    const localX = -Math.sin(p.angle) * vr * 0.24;
+                    p.holder.position.set(vortexSunX + localX, localY, localZ);
                 } else {
-                    const vortexBoost = isVortexMode ? 2.4 : 1.0;
-                    p.angle += BASE_KEPLER_STEP * p.cfg.speed * orbitSpeedMultiplier * vortexBoost;
+                    p.angle += BASE_KEPLER_STEP * p.cfg.speed * orbitSpeedMultiplier;
                     const tx = Math.cos(p.angle) * p.cfg.distance;
                     const tz = Math.sin(p.angle) * p.cfg.distance;
                     p.holder.position.x += (tx - p.holder.position.x) * 0.25;
+                    p.holder.position.y += (0 - p.holder.position.y) * 0.25;
                     p.holder.position.z += (tz - p.holder.position.z) * 0.25;
                 }
 
                 updateLabelPosition(key, p.holder.position, p.cfg.radius + 0.9);
             });
+
+            // Animar las 4 grandes Lunas Galileanas (Ío, Europa, Ganímedes y Calisto) alrededor de Júpiter
+            const jupHolder = planetObjects.jupiter ? planetObjects.jupiter.holder : null;
+            jupiterMoonsList.forEach(gm =&gt; {
+                gm.angle += gm.speed * Math.max(orbitSpeedMultiplier, 0.25);
+                gm.mesh.position.set(Math.cos(gm.angle) * gm.dist, 0, Math.sin(gm.angle) * gm.dist);
+                gm.mesh.rotation.y += 0.01;
+                if (jupHolder) {
+                    jmoonWorldVec.copy(jupHolder.position).add(gm.mesh.position);
+                    updateLabelPosition(gm.id, jmoonWorldVec, gm.radius + 0.45);
+                }
+            });
+
+            if (isVortexMode &amp;&amp; orbitSpeedMultiplier &gt; 0) {
+                pushVortexTrailPoint();
+            }
 
             updateLabelPosition(&quot;sun&quot;, sunGroup.position, 8.2);
             updateLabelPosition(&quot;voyager&quot;, voyagerHolder.position, 2.8);

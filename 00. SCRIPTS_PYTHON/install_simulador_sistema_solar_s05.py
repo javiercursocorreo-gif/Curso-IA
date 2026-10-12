@@ -106,8 +106,9 @@ def update_probador():
 
 if __name__ == "__main__":
     update_probador()
-    # Regenerar el Catálogo Maestro de 10 Simulaciones y la Ficha COD-005
+    # Regenerar el Catálogo Maestro de 10 Simulaciones, la Ficha COD-005 y los 60 Mapas de Sesión (limpiando lungs.glb del mapa S01)
     scripts_dir = os.path.dirname(os.path.abspath(__file__))
     subprocess.run([sys.executable, os.path.join(scripts_dir, "build_pdf_indice_10_simulaciones_3d.py")], check=False)
     subprocess.run([sys.executable, os.path.join(scripts_dir, "build_pdf_cod_005.py")], check=False)
+    subprocess.run([sys.executable, os.path.join(scripts_dir, "build_mapas_and_csvs_60_sessions.py")], check=False)
 
