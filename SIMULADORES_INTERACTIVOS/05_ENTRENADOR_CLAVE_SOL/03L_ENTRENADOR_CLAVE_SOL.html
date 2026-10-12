@@ -8,7 +8,8 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Clave de Sol">
-    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23161b22'/><text x='50' y='72' font-size='60' text-anchor='middle' fill='%2358a6ff'>𝄞</text></svg>">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%23161b22'/%3E%3Ctext x='50' y='72' font-size='60' text-anchor='middle' fill='%2358a6ff'%3E𝄞%3C/text%3E%3C/svg%3E">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%23161b22'/%3E%3Ctext x='50' y='72' font-size='60' text-anchor='middle' fill='%2358a6ff'%3E𝄞%3C/text%3E%3C/svg%3E">
     <style>
         * {
             box-sizing: border-box;
@@ -1193,6 +1194,7 @@
                 badge.style.display = "inline-block";
                 document.getElementById("welcome-hint").style.display = "none";
                 generateIntervalExercise();
+                return;
             } else if (currentMode === "songs") {
                 songGroup.style.display = "flex";
                 newExBtn.style.display = "none";
@@ -1204,6 +1206,7 @@
                 document.getElementById("welcome-hint").style.display = "none";
                 if (practiceSequence.length === 0) {
                     loadSongByKey("alegria");
+                    return;
                 }
             }
             renderNotesLayer();
@@ -1635,7 +1638,7 @@
                         }
                         // Líneas adicionales superiores (La5, etc.)
                         if (step >= 10) {
-                            for (let s = 10; s <= step; s -= 2) {
+                            for (let s = 10; s <= step; s += 2) {
                                 const ly = baseLineY - (s * 10);
                                 svgParts.push(`<line x1="${posX - 16}" y1="${ly}" x2="${posX + 16}" y2="${ly}" stroke="${pal.stroke}" stroke-width="1.8" opacity="0.65" />`);
                             }
@@ -1712,7 +1715,7 @@
 
                 // Líneas adicionales superiores (La5, etc.)
                 if (step >= 10) {
-                    for (let s = 10; s <= step; s -= 2) {
+                    for (let s = 10; s <= step; s += 2) {
                         const ly = baseLineY - (s * 10);
                         svgParts.push(`<line x1="${posX - 21}" y1="${ly}" x2="${posX + 21}" y2="${ly}" stroke="#111" stroke-width="2.5" />`);
                     }
@@ -1767,9 +1770,10 @@
 
                 const noteKey = `main_${index}`;
                 const textY = baseLineY + 36;
+                const popoverY = Math.round(noteY - 18);
 
                 // GRUPO DE LA FIGURA COMPLETA (CLICABLE / TÁCTIL: Pinchar en cualquier parte para oír su sonido y ver su nombre)
-                svgParts.push(`<g class="note-clickable" onclick="playNoteFromScore(${midi}, this, '${noteKey}', ${posX}, ${textY}, '${noteName}', '#0969da')" style="cursor:pointer;" title="Nota: ${noteName} (${midi}) - Clic para escuchar y ver su nombre">`);
+                svgParts.push(`<g class="note-clickable" onclick="playNoteFromScore(${midi}, this, '${noteKey}', ${posX}, ${popoverY}, '${noteName}', '#0969da')" style="cursor:pointer;" title="Nota: ${noteName} (${midi}) - Clic para escuchar y ver su nombre">`);
 
                 // Zona táctil de captura ampliada invisible para iPad y ratón (44px de diámetro)
                 svgParts.push(`<circle cx="${posX}" cy="${noteY}" r="22" fill="transparent" />`);
@@ -2812,7 +2816,10 @@
         }
 
         // INICIALIZACIÓN ROBUSTA Y A PRUEBA DE FALLOS (CARGA ULTRA-RÁPIDA SIN BLOQUEOS)
+        let isAppInitialized = false;
         function initApp() {
+            if (isAppInitialized) return;
+            isAppInitialized = true;
             try {
                 // 1. Renderizar la partitura y los controles inmediatamente
                 changeMode();
