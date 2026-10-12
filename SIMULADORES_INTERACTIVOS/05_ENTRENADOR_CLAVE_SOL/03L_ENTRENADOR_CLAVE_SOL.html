@@ -780,28 +780,12 @@
             }
         }
 
-        function playSound(midi, isError = false) {
+        function playSound(midi) {
             if (!soundEnabled) return;
             initAudio();
             const now = audioCtx.currentTime;
 
-            if (isError) {
-                // Aviso sutil, suave y sin zumbidos molestos
-                const oscErr = audioCtx.createOscillator();
-                const gainErr = audioCtx.createGain();
-                oscErr.type = "sine";
-                oscErr.frequency.setValueAtTime(260, now);
-                gainErr.gain.setValueAtTime(0.0001, now);
-                gainErr.gain.exponentialRampToValueAtTime(0.03, now + 0.004);
-                gainErr.gain.exponentialRampToValueAtTime(0.0001, now + 0.08);
-                oscErr.connect(gainErr);
-                gainErr.connect(audioCtx.destination);
-                oscErr.start(now);
-                oscErr.stop(now + 0.08);
-                return;
-            }
-
-            // SINTETIZADOR PURO Y CRISTALINO (SIN RUIDOS, NI DETUNE WOBBLE, NI CLICS)
+            // SINTETIZADOR PURO Y CRISTALINO (SIN RUIDOS, NI BUZZERS, NI CLICS)
             const freq = 440 * Math.pow(2, (midi - 69) / 12);
             const duration = 0.85;
 
@@ -810,10 +794,11 @@
             osc.type = "triangle";
             osc.frequency.setValueAtTime(freq, now);
 
-            // Ataque ultra-suave anti-clic (4 ms) y decaimiento musical limpio
-            gain.gain.setValueAtTime(0.0001, now);
-            gain.gain.exponentialRampToValueAtTime(0.35, now + 0.004);
-            gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+            // Ataque lineal suave de 15 ms (elimina cualquier chasquido/pop/clic de inicio)
+            gain.gain.setValueAtTime(0.00001, now);
+            gain.gain.linearRampToValueAtTime(0.22, now + 0.015);
+            // Decaimiento natural y musical sin saturación ni distorsión
+            gain.gain.setTargetAtTime(0.00001, now + 0.03, 0.22);
 
             osc.connect(gain);
             gain.connect(audioCtx.destination);
@@ -1477,9 +1462,8 @@
                             }, 300);
                         }
                     } else {
-                        // ¡INCORRECTO! (Feedback en ROJO)
+                        // ¡INCORRECTO! (Feedback visual en ROJO sin ningún ruido ni zumbador molesto)
                         hasErrorOnCurrentStep = true;
-                        playSound(midi, true); // Sonido sutil de error
                         flashErrorKey(midi);
                         renderNotesLayer();
                     }
@@ -2091,7 +2075,7 @@
                                         const expectedName = NOTE_NAMES[expectedPitchClass];
                                         btn.textContent = `🎙️ "${noteNameHeard}" ❌ (Es ${expectedName})`;
                                         hasErrorOnCurrentStep = true;
-                                        playSound(60 + detectedPitch, true);
+                                        playSound(60 + detectedPitch);
                                         renderNotesLayer();
                                         return;
                                     }
