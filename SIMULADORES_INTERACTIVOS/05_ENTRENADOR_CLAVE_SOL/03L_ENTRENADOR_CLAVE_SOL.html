@@ -478,9 +478,9 @@
 
             <select class="select-input" id="select-preset-midi" style="display:none;" onchange="loadPresetMidi(this.value)" title="Elegir canción MIDI para aprender">
                 <option value="">-- Elige canción MIDI demo --</option>
-                <option value="hallelujah">🎵 Hallelujah (Leonard Cohen)</option>
-                <option value="piratas">🏴‍☠️ Piratas del Caribe (He's a Pirate)</option>
-                <option value="to_all_the_girls">🌹 To All The Girls I've Loved Before</option>
+                <option value="ARCHIVOS_MIDI/Hallelujah.mid">🎵 Hallelujah (Leonard Cohen)</option>
+                <option value="ARCHIVOS_MIDI/Pirates of the Caribbean - He's a Pirate (3).mid">🏴‍☠️ Piratas del Caribe (He's a Pirate)</option>
+                <option value="ARCHIVOS_MIDI/To-All-The-Girls-I've-Loved-Before-2.mid">🌹 To All The Girls I've Loved Before</option>
             </select>
 
             <button class="btn btn-primary" id="btn-load-midi" onclick="triggerFileInput()" title="Subir cualquier archivo .mid de tu Mac o iPad">📂 Cargar .MID</button>
@@ -780,37 +780,13 @@
             }
         }
 
-        // Cache de buffers de audio muestreado real si hay conexión
-        const pianoSampleBuffers = {};
-        let soundfontReady = false;
-
-        // Intentar cargar muestras de piano de cola en segundo plano
-        async function loadGrandPianoSample(midi) {
-            if (!soundEnabled || pianoSampleBuffers[midi] !== undefined) return;
-            try {
-                const noteNameMap = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"];
-                const oct = Math.floor(midi / 12) - 1;
-                const nName = noteNameMap[midi % 12] + oct;
-                const url = `https://gleitz.github.io/midi-js-soundfonts/FluidR3_GM/acoustic_grand_piano-mp3/${nName}.mp3`;
-                const resp = await fetch(url);
-                if (resp.ok) {
-                    const arrayBuf = await resp.arrayBuffer();
-                    initAudio();
-                    const audioBuf = await audioCtx.decodeAudioData(arrayBuf);
-                    pianoSampleBuffers[midi] = audioBuf;
-                }
-            } catch (e) {
-                pianoSampleBuffers[midi] = null; // Fallback al sintetizador acústico
-            }
-        }
-
         function playSound(midi, isError = false) {
             if (!soundEnabled) return;
             initAudio();
             const now = audioCtx.currentTime;
 
             if (isError) {
-                // Tono corto disonante y suave de aviso de error (sin chirridos)
+                // Tono corto disonante y suave de aviso de error
                 const oscErr = audioCtx.createOscillator();
                 const gainErr = audioCtx.createGain();
                 oscErr.type = "sine";
@@ -825,79 +801,24 @@
                 return;
             }
 
-            // SI LA MUESTRA DE AUDIO REAL DE PIANO DE COLA ESTÁ DISPONIBLE EN CACHÉ, REPRODUCIRLA
-            if (pianoSampleBuffers[midi]) {
-                const src = audioCtx.createBufferSource();
-                const gain = audioCtx.createGain();
-                src.buffer = pianoSampleBuffers[midi];
-                gain.gain.setValueAtTime(0.85, now);
-                src.connect(gain);
-                gain.connect(audioCtx.destination);
-                src.start(now);
-                return;
-            } else {
-                // Descargar muestra en segundo plano para las siguientes veces
-                loadGrandPianoSample(midi);
-            }
-
-            // SINTETIZADOR DE PIANO ACÚSTICO LIMPIO, CÁLIDO Y SIN RUIDOS PERCUSIVOS
+            // SINTETIZADOR PURO Y CRISTALINO (SIN RUIDOS, NI DETUNE WOBBLE, NI CLICS)
             const freq = 440 * Math.pow(2, (midi - 69) / 12);
-            const duration = Math.min(2.5, Math.max(1.1, 3.0 - (midi - 48) * 0.04));
+            const duration = 0.85;
 
-            // Filtro paso bajo suave para timbre cálido y natural
-            const filter = audioCtx.createBiquadFilter();
-            filter.type = "lowpass";
-            filter.frequency.setValueAtTime(Math.min(6500, freq * 4.5), now);
-            filter.frequency.exponentialRampToValueAtTime(Math.max(250, freq * 1.2), now + duration);
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = "triangle";
+            osc.frequency.setValueAtTime(freq, now);
 
-            // Control de volumen maestro con ataque suave anti-clic (5 ms) y decaimiento musical
-            const masterGain = audioCtx.createGain();
-            masterGain.gain.setValueAtTime(0.0001, now);
-            masterGain.gain.exponentialRampToValueAtTime(0.55, now + 0.005);
-            masterGain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+            // Ataque ultra-suave anti-clic (4 ms) y decaimiento musical limpio
+            gain.gain.setValueAtTime(0.0001, now);
+            gain.gain.exponentialRampToValueAtTime(0.35, now + 0.004);
+            gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
 
-            filter.connect(masterGain);
-            masterGain.connect(audioCtx.destination);
-
-            // 1. Armónico Fundamental (Cuerpo principal de la nota - onda senoidal limpia)
-            const osc1 = audioCtx.createOscillator();
-            const gain1 = audioCtx.createGain();
-            osc1.type = "sine";
-            osc1.frequency.setValueAtTime(freq, now);
-            gain1.gain.setValueAtTime(0.0001, now);
-            gain1.gain.exponentialRampToValueAtTime(0.70, now + 0.005);
-            gain1.gain.exponentialRampToValueAtTime(0.0001, now + duration);
-            osc1.connect(gain1);
-            gain1.connect(filter);
-            osc1.start(now);
-            osc1.stop(now + duration);
-
-            // 2. Cuerda doblada con ligera calidez acústica (onda triangular suave con mínimo detune)
-            const osc2 = audioCtx.createOscillator();
-            const gain2 = audioCtx.createGain();
-            osc2.type = "triangle";
-            osc2.frequency.setValueAtTime(freq, now);
-            osc2.detune.setValueAtTime(1.5, now);
-            gain2.gain.setValueAtTime(0.0001, now);
-            gain2.gain.exponentialRampToValueAtTime(0.20, now + 0.005);
-            gain2.gain.exponentialRampToValueAtTime(0.0001, now + duration * 0.85);
-            osc2.connect(gain2);
-            gain2.connect(filter);
-            osc2.start(now);
-            osc2.stop(now + duration);
-
-            // 3. Segundo armónico sutil (octava superior, aporta brillo cristalino sin dureza)
-            const oscHarm2 = audioCtx.createOscillator();
-            const gainHarm2 = audioCtx.createGain();
-            oscHarm2.type = "sine";
-            oscHarm2.frequency.setValueAtTime(freq * 2, now);
-            gainHarm2.gain.setValueAtTime(0.0001, now);
-            gainHarm2.gain.exponentialRampToValueAtTime(0.12, now + 0.005);
-            gainHarm2.gain.exponentialRampToValueAtTime(0.0001, now + duration * 0.5);
-            oscHarm2.connect(gainHarm2);
-            gainHarm2.connect(filter);
-            oscHarm2.start(now);
-            oscHarm2.stop(now + duration * 0.5);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start(now);
+            osc.stop(now + duration);
         }
 
         function toggleSound() {
@@ -1340,10 +1261,11 @@
                 if (restartBtn) restartBtn.style.display = "inline-block";
                 badge.style.display = "inline-block";
                 document.getElementById("welcome-hint").style.display = "none";
-                // Si aún no hay canción MIDI cargada, cargar de inmediato Hallelujah
+                // Si aún no hay canción MIDI cargada, cargar de inmediato Hallelujah real
                 if (!currentMidiTracks || currentMidiTracks.length === 0) {
-                    if (midiPresetSelect) midiPresetSelect.value = "hallelujah";
-                    loadPresetMidi("hallelujah");
+                    const defaultPath = "ARCHIVOS_MIDI/Hallelujah.mid";
+                    if (midiPresetSelect) midiPresetSelect.value = defaultPath;
+                    loadPresetMidi(defaultPath);
                     return;
                 }
             } else if (currentMode === "intervals") {
@@ -1534,11 +1456,6 @@
                         // ¡CORRECTO!
                         hasErrorOnCurrentStep = false;
                         playSound(midi);
-
-                        // Si estamos en Modo Aprender Canción MIDI y hay pistas de acompañamiento activadas:
-                        if (currentMode === "learn_midi" && typeof rawTarget === 'object' && rawTarget.startTick !== undefined) {
-                            playAccompanimentAtTick(rawTarget.startTick);
-                        }
 
                         currentStepIndex++;
                         updatePracticeStatusUI();
@@ -2513,229 +2430,39 @@
             }
         }
 
-        function createPresetTrack(name, rawArr, timeSig = 4) {
-            const tpq = 480;
-            const ticksPerMeasure = tpq * timeSig;
-            const notes = [];
-            rawArr.forEach(item => {
-                const dur = item.dur || 'quarter';
-                let durTicks = tpq;
-                if (dur === 'whole') durTicks = tpq * 4;
-                else if (dur === 'half') durTicks = tpq * 2;
-                else if (dur === 'eighth') durTicks = Math.round(tpq * 0.5);
 
-                notes.push({
-                    midi: item.midi,
-                    startTick: item.tick,
-                    durationTicks: durTicks,
-                    durationType: dur,
-                    measureIndex: Math.floor(item.tick / ticksPerMeasure)
-                });
-            });
-            const avgPitch = notes.length > 0 ? Math.round(notes.reduce((s, n) => s + n.midi, 0) / notes.length) : 60;
-            return {
-                name: name,
-                notes: notes,
-                rawNotes: notes,
-                avgPitch: avgPitch
-            };
-        }
+        function loadPresetMidi(filePath) {
+            if (!filePath) return;
+            stopPlayback(false);
 
-        const BUILTIN_MIDI_PRESETS = {
-            hallelujah: {
-                title: "Hallelujah (Leonard Cohen)",
-                bpm: 100,
-                timeDivision: 480,
-                tracks: [
-                    createPresetTrack("⭐ Melodía Vocal (Clave de Sol)", [
-                        { midi: 60, tick: 0, dur: 'quarter' },
-                        { midi: 64, tick: 480, dur: 'quarter' },
-                        { midi: 67, tick: 960, dur: 'quarter' },
-                        { midi: 67, tick: 1440, dur: 'quarter' },
-                        { midi: 67, tick: 1920, dur: 'half' },
-                        { midi: 69, tick: 2880, dur: 'quarter' },
-                        { midi: 69, tick: 3360, dur: 'quarter' },
-                        { midi: 69, tick: 3840, dur: 'half' },
-                        { midi: 60, tick: 4800, dur: 'quarter' },
-                        { midi: 64, tick: 5280, dur: 'quarter' },
-                        { midi: 67, tick: 5760, dur: 'quarter' },
-                        { midi: 67, tick: 6240, dur: 'quarter' },
-                        { midi: 67, tick: 6720, dur: 'half' },
-                        { midi: 69, tick: 7680, dur: 'quarter' },
-                        { midi: 69, tick: 8160, dur: 'quarter' },
-                        { midi: 69, tick: 8640, dur: 'half' },
-                        { midi: 69, tick: 9600, dur: 'quarter' },
-                        { midi: 69, tick: 10080, dur: 'quarter' },
-                        { midi: 69, tick: 10560, dur: 'quarter' },
-                        { midi: 69, tick: 11040, dur: 'quarter' },
-                        { midi: 67, tick: 11520, dur: 'quarter' },
-                        { midi: 67, tick: 12000, dur: 'quarter' },
-                        { midi: 65, tick: 12480, dur: 'half' },
-                        { midi: 67, tick: 13440, dur: 'quarter' },
-                        { midi: 67, tick: 13920, dur: 'half' },
-                        { midi: 64, tick: 14880, dur: 'half' }
-                    ]),
-                    createPresetTrack("🎹 Acompañamiento Piano", [
-                        { midi: 64, tick: 0, dur: 'whole' }, { midi: 67, tick: 0, dur: 'whole' },
-                        { midi: 65, tick: 1920, dur: 'whole' }, { midi: 69, tick: 1920, dur: 'whole' },
-                        { midi: 64, tick: 3840, dur: 'whole' }, { midi: 67, tick: 3840, dur: 'whole' },
-                        { midi: 65, tick: 5760, dur: 'whole' }, { midi: 69, tick: 5760, dur: 'whole' },
-                        { midi: 65, tick: 7680, dur: 'whole' }, { midi: 69, tick: 7680, dur: 'whole' },
-                        { midi: 67, tick: 9600, dur: 'whole' }, { midi: 71, tick: 9600, dur: 'whole' },
-                        { midi: 64, tick: 11520, dur: 'whole' }, { midi: 67, tick: 11520, dur: 'whole' },
-                        { midi: 62, tick: 13440, dur: 'whole' }, { midi: 67, tick: 13440, dur: 'whole' }
-                    ]),
-                    createPresetTrack("🎻 Cello y Bajo", [
-                        { midi: 48, tick: 0, dur: 'whole' },
-                        { midi: 45, tick: 1920, dur: 'whole' },
-                        { midi: 48, tick: 3840, dur: 'whole' },
-                        { midi: 45, tick: 5760, dur: 'whole' },
-                        { midi: 41, tick: 7680, dur: 'whole' },
-                        { midi: 43, tick: 9600, dur: 'whole' },
-                        { midi: 48, tick: 11520, dur: 'whole' },
-                        { midi: 43, tick: 13440, dur: 'whole' }
-                    ])
-                ]
-            },
-            piratas: {
-                title: "Piratas del Caribe (He's a Pirate)",
-                bpm: 140,
-                timeDivision: 480,
-                tracks: [
-                    createPresetTrack("⭐ Tema Piratas (Clave de Sol)", [
-                        { midi: 62, tick: 0, dur: 'eighth' },
-                        { midi: 62, tick: 240, dur: 'eighth' },
-                        { midi: 62, tick: 480, dur: 'quarter' },
-                        { midi: 64, tick: 960, dur: 'quarter' },
-                        { midi: 65, tick: 1440, dur: 'quarter' },
-                        { midi: 65, tick: 1920, dur: 'quarter' },
-                        { midi: 65, tick: 2400, dur: 'quarter' },
-                        { midi: 67, tick: 2880, dur: 'quarter' },
-                        { midi: 64, tick: 3360, dur: 'quarter' },
-                        { midi: 64, tick: 3840, dur: 'quarter' },
-                        { midi: 62, tick: 4320, dur: 'quarter' },
-                        { midi: 60, tick: 4800, dur: 'quarter' },
-                        { midi: 62, tick: 5280, dur: 'half' },
-                        { midi: 62, tick: 6240, dur: 'eighth' },
-                        { midi: 62, tick: 6480, dur: 'eighth' },
-                        { midi: 62, tick: 6720, dur: 'quarter' },
-                        { midi: 64, tick: 7200, dur: 'quarter' },
-                        { midi: 65, tick: 7680, dur: 'quarter' },
-                        { midi: 65, tick: 8160, dur: 'quarter' },
-                        { midi: 65, tick: 8640, dur: 'quarter' },
-                        { midi: 67, tick: 9120, dur: 'quarter' },
-                        { midi: 64, tick: 9600, dur: 'quarter' },
-                        { midi: 64, tick: 10080, dur: 'quarter' },
-                        { midi: 62, tick: 10560, dur: 'quarter' },
-                        { midi: 60, tick: 11040, dur: 'quarter' },
-                        { midi: 62, tick: 11520, dur: 'half' }
-                    ]),
-                    createPresetTrack("🎻 Cuerdas y Armonía", [
-                        { midi: 65, tick: 0, dur: 'half' }, { midi: 69, tick: 0, dur: 'half' },
-                        { midi: 62, tick: 1440, dur: 'half' }, { midi: 65, tick: 1440, dur: 'half' },
-                        { midi: 64, tick: 2880, dur: 'half' }, { midi: 67, tick: 2880, dur: 'half' },
-                        { midi: 65, tick: 4320, dur: 'half' }, { midi: 69, tick: 4320, dur: 'half' },
-                        { midi: 65, tick: 6240, dur: 'half' }, { midi: 69, tick: 6240, dur: 'half' },
-                        { midi: 62, tick: 7680, dur: 'half' }, { midi: 65, tick: 7680, dur: 'half' },
-                        { midi: 64, tick: 9120, dur: 'half' }, { midi: 67, tick: 9120, dur: 'half' },
-                        { midi: 65, tick: 10560, dur: 'half' }, { midi: 69, tick: 10560, dur: 'half' }
-                    ]),
-                    createPresetTrack("🥁 Bajo Épico", [
-                        { midi: 50, tick: 0, dur: 'half' },
-                        { midi: 46, tick: 1440, dur: 'half' },
-                        { midi: 48, tick: 2880, dur: 'half' },
-                        { midi: 50, tick: 4320, dur: 'half' },
-                        { midi: 50, tick: 6240, dur: 'half' },
-                        { midi: 46, tick: 7680, dur: 'half' },
-                        { midi: 48, tick: 9120, dur: 'half' },
-                        { midi: 50, tick: 10560, dur: 'half' }
-                    ])
-                ]
-            },
-            to_all_the_girls: {
-                title: "To All The Girls I've Loved Before",
-                bpm: 96,
-                timeDivision: 480,
-                tracks: [
-                    createPresetTrack("⭐ Melodía Julio I. (Clave de Sol)", [
-                        { midi: 67, tick: 0, dur: 'quarter' },
-                        { midi: 67, tick: 480, dur: 'quarter' },
-                        { midi: 67, tick: 960, dur: 'quarter' },
-                        { midi: 69, tick: 1440, dur: 'quarter' },
-                        { midi: 71, tick: 1920, dur: 'half' },
-                        { midi: 71, tick: 2880, dur: 'quarter' },
-                        { midi: 69, tick: 3360, dur: 'quarter' },
-                        { midi: 67, tick: 3840, dur: 'half' },
-                        { midi: 64, tick: 4800, dur: 'half' },
-                        { midi: 67, tick: 5760, dur: 'quarter' },
-                        { midi: 67, tick: 6240, dur: 'quarter' },
-                        { midi: 69, tick: 6720, dur: 'quarter' },
-                        { midi: 71, tick: 7200, dur: 'half' },
-                        { midi: 71, tick: 8160, dur: 'quarter' },
-                        { midi: 69, tick: 8640, dur: 'quarter' },
-                        { midi: 67, tick: 9120, dur: 'half' },
-                        { midi: 64, tick: 10080, dur: 'half' },
-                        { midi: 67, tick: 11040, dur: 'quarter' },
-                        { midi: 67, tick: 11520, dur: 'quarter' },
-                        { midi: 69, tick: 12000, dur: 'quarter' },
-                        { midi: 71, tick: 12480, dur: 'quarter' },
-                        { midi: 72, tick: 12960, dur: 'quarter' },
-                        { midi: 71, tick: 13440, dur: 'quarter' },
-                        { midi: 69, tick: 13920, dur: 'quarter' },
-                        { midi: 67, tick: 14400, dur: 'quarter' },
-                        { midi: 69, tick: 14880, dur: 'half' },
-                        { midi: 67, tick: 15840, dur: 'whole' }
-                    ]),
-                    createPresetTrack("🎹 Acompañamiento Guitarra / Teclado", [
-                        { midi: 67, tick: 0, dur: 'whole' }, { midi: 71, tick: 0, dur: 'whole' },
-                        { midi: 67, tick: 1920, dur: 'whole' }, { midi: 71, tick: 1920, dur: 'whole' },
-                        { midi: 64, tick: 3840, dur: 'whole' }, { midi: 67, tick: 3840, dur: 'whole' },
-                        { midi: 65, tick: 5760, dur: 'whole' }, { midi: 69, tick: 5760, dur: 'whole' },
-                        { midi: 67, tick: 7680, dur: 'whole' }, { midi: 71, tick: 7680, dur: 'whole' },
-                        { midi: 64, tick: 9600, dur: 'whole' }, { midi: 67, tick: 9600, dur: 'whole' },
-                        { midi: 65, tick: 11520, dur: 'whole' }, { midi: 69, tick: 11520, dur: 'whole' },
-                        { midi: 67, tick: 13440, dur: 'whole' }, { midi: 71, tick: 13440, dur: 'whole' }
-                    ]),
-                    createPresetTrack("🎻 Contrabajo Suave", [
-                        { midi: 43, tick: 0, dur: 'whole' },
-                        { midi: 43, tick: 1920, dur: 'whole' },
-                        { midi: 40, tick: 3840, dur: 'whole' },
-                        { midi: 41, tick: 5760, dur: 'whole' },
-                        { midi: 43, tick: 7680, dur: 'whole' },
-                        { midi: 40, tick: 9600, dur: 'whole' },
-                        { midi: 41, tick: 11520, dur: 'whole' },
-                        { midi: 43, tick: 13440, dur: 'whole' }
-                    ])
-                ]
-            }
-        };
+            const fileName = filePath.split("/").pop();
+            const githubUrl = `https://raw.githubusercontent.com/javiercursocorreo-gif/Curso-IA/main/SIMULADORES_INTERACTIVOS/05_ENTRENADOR_CLAVE_SOL/${encodeURI(filePath)}`;
 
-        function loadPresetMidi(presetKey) {
-            if (!presetKey) return;
-            // Si es una de las canciones predefinidas integradas
-            if (BUILTIN_MIDI_PRESETS[presetKey]) {
-                const preset = BUILTIN_MIDI_PRESETS[presetKey];
-                window.currentMidiBpm = preset.bpm || 105;
-                window.lastMidiTicksPerQuarter = preset.timeDivision || 480;
-                window.currentMidiTicksPerMeasure = (preset.timeDivision || 480) * 4;
-                setupLoadedMidiTracks(preset.tracks, 0, preset.title, true);
-                return;
-            }
-
-            // Fallback por si pasa una ruta url externa
-            fetch(presetKey)
+            // 1. Intentar fetch relativo local (funciona en servidor web o GitHub Pages)
+            fetch(filePath)
                 .then(resp => {
-                    if (!resp.ok) throw new Error("No se pudo obtener el archivo.");
+                    if (!resp.ok) throw new Error("Fetch local no disponible");
                     return resp.arrayBuffer();
                 })
                 .then(buf => {
                     const data = new Uint8Array(buf);
-                    const fileName = presetKey.split("/").pop();
                     loadMidiFromUint8Array(data, fileName, true);
+                })
+                .catch(() => {
+                    // 2. Si falla en local (restricción CORS de file:/// en navegadores Mac / iPad), descargar el archivo real desde GitHub
+                    return fetch(githubUrl)
+                        .then(resp => {
+                            if (!resp.ok) throw new Error("No se pudo descargar el archivo MIDI.");
+                            return resp.arrayBuffer();
+                        })
+                        .then(buf => {
+                            const data = new Uint8Array(buf);
+                            loadMidiFromUint8Array(data, fileName, true);
+                        });
                 })
                 .catch(err => {
                     console.error("Error al cargar MIDI:", err);
-                    alert("Aviso al cargar archivo MIDI: " + err.message);
+                    alert("Aviso: El navegador bloqueó la lectura de '" + fileName + "'.\n\nPuedes abrirlo al instante con el botón '📂 Cargar .MID' seleccionándolo de tu carpeta ARCHIVOS_MIDI.");
                 });
         }
 
@@ -2764,6 +2491,54 @@
             };
             reader.readAsArrayBuffer(file);
         }
+
+        // NOMBRES GENERAL MIDI DE LOS 128 INSTRUMENTOS ESTÁNDAR
+        const GM_INSTRUMENT_NAMES = [
+            // 0-7 Pianos
+            "🎹 Piano de cola acústico", "🎹 Piano acústico brillante", "🎹 Piano de cola eléctrico", "🎹 Piano Honky-tonk",
+            "🎹 Piano eléctrico 1 (Rhodes)", "🎹 Piano eléctrico 2 (Chorused)", "🎹 Clavecín", "🎹 Clavinet",
+            // 8-15 Percusión cromática
+            "🔔 Celesta", "🔔 Glockenspiel", "🔔 Caja de música", "🔔 Vibráfono", "🔔 Marimba", "🔔 Xilófono", "🔔 Campanas tubulares", "🔔 Santur",
+            // 16-23 Órganos
+            "🎹 Órgano Hammond", "🎹 Órgano percusivo", "🎹 Órgano de rock", "⛪ Órgano de iglesia", "🎹 Órgano armónico", "🪗 Acordeón", "🪗 Armónica", "🪗 Bandoneón de tango",
+            // 24-31 Guitarras
+            "🎸 Guitarra clásica (nylon)", "🎸 Guitarra acústica (acero)", "🎸 Guitarra eléctrica (jazz)", "🎸 Guitarra eléctrica (limpia)",
+            "🎸 Guitarra eléctrica (sordina)", "🎸 Guitarra saturada (overdrive)", "🎸 Guitarra distorsionada", "🎸 Armónicos de guitarra",
+            // 32-39 Bajos
+            "🎻 Contrabajo acústico", "🎸 Bajo eléctrico (dedos)", "🎸 Bajo eléctrico (púa)", "🎸 Bajo fretless",
+            "🎸 Bajo slap 1", "🎸 Bajo slap 2", "🎹 Sintetizador de bajo 1", "🎹 Sintetizador de bajo 2",
+            // 40-47 Cuerdas solistas
+            "🎻 Violín", "🎻 Viola", "🎻 Violonchelo (Cello)", "🎻 Contrabajo orquestal",
+            "🎻 Cuerdas en trémolo", "🎻 Cuerdas pizzicato", "🎶 Arpa orquestal", "🥁 Timbales sinfónicos",
+            // 48-55 Ensambles de cuerdas y coros
+            "🎻 Conjunto de cuerdas 1", "🎻 Conjunto de cuerdas 2", "🎹 Cuerdas sintetizadas 1", "🎹 Cuerdas sintetizadas 2",
+            "🗣️ Coro vocal (Aahs)", "🗣️ Voces líricas (Oohs)", "🗣️ Voz sintetizada", "💥 Golpe orquestal",
+            // 56-63 Metales (Brass)
+            "🎺 Trompeta", "🎺 Trombón", "🎺 Tuba", "🎺 Trompeta con sordina",
+            "📯 Trompa francesa", "🎺 Sección de metales", "🎹 Metales sintetizados 1", "🎹 Metales sintetizados 2",
+            // 64-71 Cañas (Reeds)
+            "🎷 Saxofón soprano", "🎷 Saxofón alto", "🎷 Saxofón tenor", "🎷 Saxofón barítono",
+            "🎶 Oboe", "🎶 Corno inglés", "🎶 Fagot", "🎶 Clarinete",
+            // 72-79 Flautas y vientos
+            "🪈 Flautín (Piccolo)", "🪈 Flauta travesera", "🪈 Flauta dulce", "🪈 Flauta de pan",
+            "🪈 Botella soplada", "🪈 Shakuhachi", "🪈 Silbato", "🪈 Ocarina",
+            // 80-87 Sintetizador Lead
+            "🎹 Sintetizador solista (cuadrada)", "🎹 Sintetizador solista (diente de sierra)", "🎹 Sintetizador Calíope", "🎹 Sintetizador Chiff",
+            "🎹 Sintetizador Charang", "🗣️ Sintetizador vocal", "🎹 Sintetizador quintas", "🎹 Sintetizador bajo+lead",
+            // 88-95 Sintetizador Pad
+            "🎹 Pad New Age", "🎹 Pad cálido", "🎹 Pad polifónico", "🎹 Pad coro espacial",
+            "🎹 Pad cristalino", "🎹 Pad metálico", "🎹 Pad halo", "🎹 Pad barrido",
+            // 96-103 Efectos FX
+            "✨ Lluvia de hielo", "✨ Banda sonora", "✨ Cristal FX", "✨ Atmósfera",
+            "✨ Brillo FX", "✨ Duendecillos", "✨ Eco espacial", "✨ Ciencia ficción",
+            // 104-111 Instrumentos étnicos
+            "🪕 Sitar", "🪕 Banjo", "🪕 Shamisen", "🪕 Koto", "🪕 Kalimba", "🪕 Gaita escocesa", "🎻 Fiddle", "🪕 Shanai",
+            // 112-119 Percusión melódica y tambores
+            "🔔 Campanilla", "🪘 Agogô", "🪘 Tambor de acero", "🪵 Caja china", "🥁 Taiko", "🥁 Tom melódico", "🥁 Sintetizador percusivo", "🥁 Platillo invertido",
+            // 120-127 Efectos de sonido
+            "🎸 Ruido de traste", "🌬️ Respiración", "🌊 Olas de mar", "🐦 Canto de pájaro",
+            "☎️ Timbre de teléfono", "🚁 Helicóptero", "👏 Aplausos", "💥 Disparo"
+        ];
 
         // PARSER MIDI MULTI-PISTA CON SEPARACIÓN DE MANOS, FILTRADO SOPRANO Y CÁLCULO DE COMPASES
         function extractNotesFromMidiData(bytes) {
@@ -2801,7 +2576,11 @@
                     const trackEnd = nextChunkPos;
                     let runningStatus = 0;
                     let currentTick = 0;
-                    let trackName = `Pista ${rawTracks.length + 1}`;
+                    let trackNameFromMeta = "";
+                    let instrumentNameFromMeta = "";
+                    let textFromMeta = "";
+                    let detectedProgram = null;
+                    let detectedChannel = null;
                     const trackNotes = [];
                     const activeNotesMap = new Map();
 
@@ -2856,15 +2635,20 @@
                                 // Fin de Pista (End of Track)
                                 i = trackEnd;
                                 break;
-                            } else if (metaType === 0x03 && metaLen > 0) {
-                                // Nombre de pista
+                            } else if ((metaType === 0x03 || metaType === 0x04 || metaType === 0x01 || metaType === 0x08) && metaLen > 0) {
+                                // Nombre de pista (0x03), Nombre de instrumento (0x04), Texto (0x01), Programa (0x08)
                                 try {
                                     let str = "";
                                     for (let k = i; k < metaEnd; k++) {
                                         const c = bytes[k];
                                         if (c >= 32 && c <= 126) str += String.fromCharCode(c);
                                     }
-                                    if (str.trim().length > 0) trackName = str.trim();
+                                    str = str.trim();
+                                    if (str.length > 0) {
+                                        if (metaType === 0x03) trackNameFromMeta = str;
+                                        else if (metaType === 0x04 || metaType === 0x08) instrumentNameFromMeta = str;
+                                        else if (metaType === 0x01 && !textFromMeta) textFromMeta = str;
+                                    }
                                 } catch(e){}
                             } else if (metaType === 0x51 && metaLen === 3 && i + 2 < metaEnd) {
                                 // Tempo (microsegundos por negra)
@@ -2902,6 +2686,7 @@
                             const note = bytes[i++];
                             const vel = bytes[i++];
                             const keyId = `${channel}-${note}`;
+                            if (detectedChannel === null) detectedChannel = channel;
 
                             if (vel > 0 && channel !== 9) { // Excluir canal de percusión/batería (canal 10 / index 9)
                                 const noteObj = {
@@ -2932,6 +2717,7 @@
                             const note = bytes[i++];
                             const vel = bytes[i++];
                             const keyId = `${channel}-${note}`;
+                            if (detectedChannel === null) detectedChannel = channel;
                             if (activeNotesMap.has(keyId)) {
                                 const noteObj = activeNotesMap.get(keyId);
                                 const dur = Math.max(ticksPerQuarter / 4, currentTick - noteObj.startTick);
@@ -2943,10 +2729,18 @@
                                 else noteObj.durationType = 'eighth';
                                 activeNotesMap.delete(keyId);
                             }
+                        } else if (eventType === 0xC) {
+                            // Program Change (Instrumento GM)
+                            if (i < trackEnd) {
+                                const prog = bytes[i++];
+                                if (detectedProgram === null) detectedProgram = prog;
+                                detectedChannel = channel;
+                            }
+                        } else if (eventType === 0xD) {
+                            // Channel Pressure
+                            if (i < trackEnd) i++;
                         } else if (eventType === 0xA || eventType === 0xB || eventType === 0xE) {
                             i = Math.min(trackEnd, i + 2);
-                        } else if (eventType === 0xC || eventType === 0xD) {
-                            i = Math.min(trackEnd, i + 1);
                         } else {
                             // Byte desconocido: avanzar para evitar bucle infinito
                             i++;
@@ -2955,8 +2749,14 @@
 
                     if (trackNotes.length > 0) {
                         trackNotes.sort((a, b) => a.startTick - b.startTick);
+                        const avgPitch = Math.round(trackNotes.reduce((sum, n) => sum + n.midi, 0) / trackNotes.length);
                         rawTracks.push({
-                            name: trackName,
+                            trackNameFromMeta,
+                            instrumentNameFromMeta,
+                            textFromMeta,
+                            detectedProgram,
+                            detectedChannel,
+                            avgPitch,
                             rawNotes: trackNotes
                         });
                     }
@@ -2967,6 +2767,68 @@
             }
 
             if (rawTracks.length === 0) return null;
+
+            // RESOLUCIÓN INTELIGENTE DE NOMBRES E INSTRUMENTOS GENERAL MIDI
+            const isGenericName = (str) => {
+                if (!str || !str.trim()) return true;
+                const clean = str.trim().toLowerCase();
+                return /^(pista|track|canal|channel|part|stamme|seccion|midi)\s*(\d+)?$/i.test(clean) ||
+                       /^(untitled|midi|audio|secuencia|sin titulo)$/i.test(clean) ||
+                       /^tr\s*\d+$/i.test(clean);
+            };
+
+            rawTracks.forEach((t, tIdx) => {
+                let instLabel = "";
+                if (t.instrumentNameFromMeta && !isGenericName(t.instrumentNameFromMeta)) {
+                    instLabel = t.instrumentNameFromMeta;
+                } else if (t.detectedChannel === 9) {
+                    instLabel = "🥁 Batería / Percusión";
+                } else if (t.detectedProgram !== null && GM_INSTRUMENT_NAMES[t.detectedProgram]) {
+                    instLabel = GM_INSTRUMENT_NAMES[t.detectedProgram];
+                } else if (t.textFromMeta && !isGenericName(t.textFromMeta)) {
+                    instLabel = t.textFromMeta;
+                } else {
+                    // Detección por tesitura acústica
+                    if (t.avgPitch < 52) {
+                        instLabel = "🎻 Contrabajo / Bajo";
+                    } else if (t.avgPitch >= 60) {
+                        instLabel = "🎹 Melodía (Clave de Sol)";
+                    } else {
+                        instLabel = "🎹 Teclado / Armonía";
+                    }
+                }
+
+                const tNum = tIdx + 1;
+                let resolvedName = "";
+                if (isGenericName(t.trackNameFromMeta)) {
+                    resolvedName = `Pista ${tNum}: ${instLabel}`;
+                } else {
+                    const cleanInst = instLabel.replace(/^[^\w\s]+\s*/, "").slice(0, 5).toLowerCase();
+                    if (instLabel && !t.trackNameFromMeta.toLowerCase().includes(cleanInst)) {
+                        resolvedName = `${t.trackNameFromMeta} (${instLabel})`;
+                    } else {
+                        resolvedName = t.trackNameFromMeta;
+                    }
+                }
+                t.name = resolvedName;
+                t.instrumentLabel = instLabel;
+            });
+
+            // Diferenciar pistas con el mismo instrumento (ej. dos pianos o violines divididos por mano/registro)
+            const instGroups = {};
+            rawTracks.forEach(t => {
+                const k = t.instrumentLabel || t.name;
+                instGroups[k] = (instGroups[k] || 0) + 1;
+            });
+
+            rawTracks.forEach(t => {
+                const k = t.instrumentLabel || t.name;
+                if (instGroups[k] > 1 && !t.name.includes("Mano") && !t.name.includes("Agudos") && !t.name.includes("Graves")) {
+                    if (t.avgPitch >= 60) t.name += " (Mano Derecha / Melodía)";
+                    else if (t.avgPitch < 54) t.name += " (Mano Izquierda / Bajos)";
+                    else t.name += " (Armonía)";
+                }
+            });
 
             // Procesar cada pista: Filtrar acordes simultáneos (extractor de melodía soprano) y asignar compases
             const processedTracks = [];
@@ -3311,7 +3173,6 @@
                     if (!midiAccessInstance && navigator.requestMIDIAccess && !isIOS) {
                         setupMIDI().catch(() => {});
                     }
-                    [60, 62, 64, 65, 67, 69, 71, 72, 74, 76, 77, 79, 81].forEach(m => loadGrandPianoSample(m));
                 } catch(e){}
             };
 
