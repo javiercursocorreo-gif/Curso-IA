@@ -459,7 +459,14 @@
                 <option value="escala_do">Escala Do Mayor (Do4 a Do5)</option>
             </select>
 
-            <button class="btn btn-primary" onclick="triggerFileInput()">📂 Cargar .MID</button>
+            <select class="select-input" id="select-preset-midi" style="display:none;" onchange="loadPresetMidi(this.value)" title="Elegir canción MIDI precargada en GitHub">
+                <option value="">-- Elige canción MIDI demo (GitHub) --</option>
+                <option value="ARCHIVOS_MIDI/Hallelujah.mid">🎵 Hallelujah (Leonard Cohen)</option>
+                <option value="ARCHIVOS_MIDI/Pirates of the Caribbean - He's a Pirate (3).mid">🏴‍☠️ Piratas del Caribe</option>
+                <option value="ARCHIVOS_MIDI/To-All-The-Girls-I've-Loved-Before-2.mid">🌹 To All The Girls I've Loved Before</option>
+            </select>
+
+            <button class="btn btn-primary" id="btn-load-midi" onclick="triggerFileInput()" title="Subir cualquier archivo .mid de tu Mac o iPad">📂 Cargar .MID</button>
             <input type="file" id="midi-file-input" accept=".mid,.midi" style="display:none" onchange="handleMidiFileUpload(event)">
             <select class="select-input" id="select-midi-track" style="display:none;" onchange="switchMidiTrack(this.value)" title="Elegir pista que ves en la partitura para aprender"></select>
             <button class="btn btn-secondary" id="btn-toggle-mixer" style="display:none;" onclick="toggleTrackMixerModal()" title="Elegir qué pistas escuchar (o seleccionar todas)">🎛️ Pistas Audio (<span id="mixer-badge-text">Todas</span>)</button>
@@ -1195,14 +1202,21 @@
             const mixerBtn = document.getElementById("btn-toggle-mixer");
             const restartBtn = document.getElementById("btn-restart-step");
 
+            const midiPresetSelect = document.getElementById("select-preset-midi");
+            const loadMidiBtn = document.getElementById("btn-load-midi");
+
             if (currentMode === "free") {
                 songGroup.style.display = "none";
                 badge.style.display = "none";
+                if (midiPresetSelect) midiPresetSelect.style.display = "none";
+                if (loadMidiBtn) loadMidiBtn.style.display = "none";
                 document.getElementById("welcome-hint").style.display = noteSequence.length === 0 ? "block" : "none";
             } else if (currentMode === "learn_midi") {
                 songGroup.style.display = "flex";
                 newExBtn.style.display = "none";
                 songSelect.style.display = "none";
+                if (midiPresetSelect) midiPresetSelect.style.display = "inline-block";
+                if (loadMidiBtn) loadMidiBtn.style.display = "inline-block";
                 if (currentMidiTracks && currentMidiTracks.length > 0) {
                     trackSelect.style.display = "inline-block";
                     mixerBtn.style.display = "inline-block";
@@ -1210,10 +1224,18 @@
                 if (restartBtn) restartBtn.style.display = "inline-block";
                 badge.style.display = "inline-block";
                 document.getElementById("welcome-hint").style.display = "none";
+                // Si aún no hay canción MIDI cargada, cargar de inmediato Hallelujah desde GitHub
+                if (!currentMidiTracks || currentMidiTracks.length === 0) {
+                    if (midiPresetSelect) midiPresetSelect.value = "ARCHIVOS_MIDI/Hallelujah.mid";
+                    loadPresetMidi("ARCHIVOS_MIDI/Hallelujah.mid");
+                    return;
+                }
             } else if (currentMode === "intervals") {
                 songGroup.style.display = "flex";
                 newExBtn.style.display = "inline-block";
                 songSelect.style.display = "none";
+                if (midiPresetSelect) midiPresetSelect.style.display = "none";
+                if (loadMidiBtn) loadMidiBtn.style.display = "none";
                 if (trackSelect) trackSelect.style.display = "none";
                 if (mixerBtn) mixerBtn.style.display = "none";
                 if (restartBtn) restartBtn.style.display = "inline-block";
@@ -1225,6 +1247,8 @@
                 songGroup.style.display = "flex";
                 newExBtn.style.display = "none";
                 songSelect.style.display = "inline-block";
+                if (midiPresetSelect) midiPresetSelect.style.display = "none";
+                if (loadMidiBtn) loadMidiBtn.style.display = "none";
                 if (trackSelect) trackSelect.style.display = "none";
                 if (mixerBtn) mixerBtn.style.display = "none";
                 if (restartBtn) restartBtn.style.display = "inline-block";
@@ -2277,79 +2301,100 @@
             updateScoreScroll();
         }
 
+        function loadMidiFromUint8Array(data, fileName = "Canción MIDI", isPreset = false) {
+            let parsedResult = null;
+            try {
+                parsedResult = extractNotesFromMidiData(data);
+            } catch (parseErr) {
+                console.error("Error al decodificar binario MIDI:", parseErr);
+                alert("Error al decodificar la estructura del archivo MIDI: " + (parseErr.message || "formato no reconocido."));
+                return;
+            }
+
+            if (parsedResult && parsedResult.tracks && parsedResult.tracks.length > 0) {
+                try {
+                    currentMidiTracks = parsedResult.tracks;
+                    const bestIdx = parsedResult.bestTrackIndex;
+                    currentMidiTrackIndex = bestIdx;
+                    const bestTrack = currentMidiTracks[bestIdx];
+
+                    // Por defecto, TODAS las pistas habilitadas para sonar en el audio
+                    enabledAudioTrackIndices = new Set(currentMidiTracks.map((_, i) => i));
+
+                    // Mostrar botón del Mezclador
+                    const mixerBtn = document.getElementById("btn-toggle-mixer");
+                    if (mixerBtn) mixerBtn.style.display = "inline-block";
+
+                    // Poblar selector desplegable de pistas para partitura
+                    const trackSelect = document.getElementById("select-midi-track");
+                    if (trackSelect) {
+                        trackSelect.innerHTML = "";
+                        currentMidiTracks.forEach((t, idx) => {
+                            const opt = document.createElement("option");
+                            opt.value = idx;
+                            const isBest = (idx === bestIdx);
+                            opt.textContent = `${isBest ? '⭐ ' : ''}${t.name} (${t.notes.length} notas, med: ${NOTE_NAMES[t.avgPitch % 12]}${Math.floor(t.avgPitch/12)-1})`;
+                            trackSelect.appendChild(opt);
+                        });
+                        trackSelect.value = bestIdx;
+                        trackSelect.style.display = "inline-block";
+                    }
+
+                    // Configurar mezclador y timeline
+                    buildPlaybackTimeline();
+                    renderMixerTable();
+
+                    // Activar automáticamente modo de figuras y compases
+                    notationViewMode = 'rhythm';
+                    const rhythmRadio = document.querySelector('input[name="notation-view-mode"][value="rhythm"]');
+                    if (rhythmRadio) rhythmRadio.checked = true;
+
+                    // Cargar notas en Modo Aprender Canción MIDI
+                    stopPlayback(false);
+                    practiceSequence = bestTrack.notes.slice(0, TOTAL_MAX_NOTES);
+                    currentStepIndex = 0;
+                    hasErrorOnCurrentStep = false;
+                    document.getElementById("select-mode").value = "learn_midi";
+                    currentMode = "learn_midi";
+                    document.getElementById("welcome-hint").style.display = "none";
+                    updatePracticeStatusUI();
+                    renderNotesLayer();
+                    updateScoreScroll();
+
+                    const tempoMsg = window.currentMidiBpm ? ` | Tempo: ${window.currentMidiBpm} BPM` : "";
+                    const tracksCount = currentMidiTracks.length;
+                    if (!isPreset) {
+                        alert(`🎶 Partitura MIDI cargada con éxito:\n\n• Pista para aprender en pantalla: "${bestTrack.name}" (${bestTrack.notes.length} notas)${tempoMsg}\n• Modo "Aprender (Me sigue a mí)": Toca cada nota en tu teclado Akai a tu ritmo para avanzar.\n• Mezclador: Están activadas las ${tracksCount} pistas para sonar con ▶ Escuchar (puedes personalizarlas con el botón 🎛️ Pistas Audio).`);
+                    }
+                } catch (renderErr) {
+                    console.error("Error al inicializar la partitura MIDI:", renderErr);
+                    alert("El archivo MIDI se procesó correctamente, pero ocurrió un aviso al dibujar los pentagramas: " + (renderErr.message || ""));
+                }
+            } else {
+                alert("No se detectaron notas musicales en el archivo MIDI seleccionado.");
+            }
+        }
+
+        async function loadPresetMidi(path) {
+            if (!path) return;
+            try {
+                const resp = await fetch(path);
+                if (!resp.ok) throw new Error("No se pudo obtener el archivo desde el servidor.");
+                const buf = await resp.arrayBuffer();
+                const data = new Uint8Array(buf);
+                const fileName = path.split("/").pop();
+                loadMidiFromUint8Array(data, fileName, true);
+            } catch (err) {
+                console.error("Error al descargar archivo MIDI demo:", err);
+                alert("No se pudo cargar el archivo MIDI desde GitHub: " + err.message);
+            }
+        }
+
         function parseMidiFile(file) {
             const reader = new FileReader();
             reader.onload = function(evt) {
-                    let parsedResult = null;
-                    try {
-                        const data = new Uint8Array(evt.target.result);
-                        parsedResult = extractNotesFromMidiData(data);
-                    } catch (parseErr) {
-                        console.error("Error al decodificar binario MIDI:", parseErr);
-                        alert("Error al decodificar la estructura del archivo MIDI: " + (parseErr.message || "formato no reconocido."));
-                        return;
-                    }
-
-                    if (parsedResult && parsedResult.tracks && parsedResult.tracks.length > 0) {
-                        try {
-                            currentMidiTracks = parsedResult.tracks;
-                            const bestIdx = parsedResult.bestTrackIndex;
-                            currentMidiTrackIndex = bestIdx;
-                            const bestTrack = currentMidiTracks[bestIdx];
-
-                            // Por defecto, TODAS las pistas habilitadas para sonar en el audio
-                            enabledAudioTrackIndices = new Set(currentMidiTracks.map((_, i) => i));
-
-                            // Mostrar botón del Mezclador
-                            const mixerBtn = document.getElementById("btn-toggle-mixer");
-                            if (mixerBtn) mixerBtn.style.display = "inline-block";
-
-                            // Poblar selector desplegable de pistas para partitura
-                            const trackSelect = document.getElementById("select-midi-track");
-                            if (trackSelect) {
-                                trackSelect.innerHTML = "";
-                                currentMidiTracks.forEach((t, idx) => {
-                                    const opt = document.createElement("option");
-                                    opt.value = idx;
-                                    const isBest = (idx === bestIdx);
-                                    opt.textContent = `${isBest ? '⭐ ' : ''}${t.name} (${t.notes.length} notas, med: ${NOTE_NAMES[t.avgPitch % 12]}${Math.floor(t.avgPitch/12)-1})`;
-                                    trackSelect.appendChild(opt);
-                                });
-                                trackSelect.value = bestIdx;
-                                trackSelect.style.display = "inline-block";
-                            }
-
-                            // Configurar mezclador y timeline
-                            buildPlaybackTimeline();
-                            renderMixerTable();
-
-                            // Activar automáticamente modo de figuras y compases
-                            notationViewMode = 'rhythm';
-                            const rhythmRadio = document.querySelector('input[name="notation-view-mode"][value="rhythm"]');
-                            if (rhythmRadio) rhythmRadio.checked = true;
-
-                            // Cargar notas en Modo Aprender Canción MIDI
-                            stopPlayback(false);
-                            practiceSequence = bestTrack.notes.slice(0, TOTAL_MAX_NOTES);
-                            currentStepIndex = 0;
-                            hasErrorOnCurrentStep = false;
-                            document.getElementById("select-mode").value = "learn_midi";
-                            currentMode = "learn_midi";
-                            document.getElementById("welcome-hint").style.display = "none";
-                            updatePracticeStatusUI();
-                            renderNotesLayer();
-                            updateScoreScroll();
-
-                            const tempoMsg = window.currentMidiBpm ? ` | Tempo: ${window.currentMidiBpm} BPM` : "";
-                            const tracksCount = currentMidiTracks.length;
-                            alert(`🎶 Partitura MIDI cargada con éxito:\n\n• Pista para aprender en pantalla: "${bestTrack.name}" (${bestTrack.notes.length} notas)${tempoMsg}\n• Modo "Aprender (Me sigue a mí)": Toca cada nota en tu teclado Akai a tu ritmo para avanzar.\n• Mezclador: Están activadas las ${tracksCount} pistas para sonar con ▶ Escuchar (puedes personalizarlas con el botón 🎛️ Pistas Audio).`);
-                        } catch (renderErr) {
-                            console.error("Error al inicializar la partitura MIDI:", renderErr);
-                            alert("El archivo MIDI se procesó correctamente, pero ocurrió un aviso al dibujar los pentagramas: " + (renderErr.message || ""));
-                        }
-                    } else {
-                        alert("No se detectaron notas musicales en el archivo MIDI seleccionado.");
-                    }
+                const data = new Uint8Array(evt.target.result);
+                loadMidiFromUint8Array(data, file.name, false);
             };
             reader.readAsArrayBuffer(file);
         }
