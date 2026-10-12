@@ -923,9 +923,9 @@
             window.currentMidiBpm = newBpm;
             updateBpmSelectUI(newBpm);
 
-            // Si está reproduciendo pistas MIDI, reconstruir timeline con el nuevo tempo sin detener la música
+            // Si está reproduciendo pistas MIDI en modo learn_midi, reconstruir timeline con el nuevo tempo sin detener la música
             if (isPlaying) {
-                if (currentMidiTracks && currentMidiTracks.length > 0) {
+                if (currentMode === "learn_midi" && currentMidiTracks && currentMidiTracks.length > 0) {
                     const currentTick = (currentPlaybackTimeline && currentPlaybackTimeline[playbackTimelineIndex]) 
                         ? currentPlaybackTimeline[playbackTimelineIndex].tick 
                         : 0;
@@ -943,7 +943,7 @@
                     playbackTimelineIndex = nearestIdx;
                 }
             } else {
-                if (currentMidiTracks && currentMidiTracks.length > 0) {
+                if (currentMode === "learn_midi" && currentMidiTracks && currentMidiTracks.length > 0) {
                     buildPlaybackTimeline();
                 }
             }
@@ -955,7 +955,11 @@
             bpmVal = parseInt(bpmVal, 10);
             if (isNaN(bpmVal)) return;
 
-            // Verificar si el valor ya existe en las opciones estándar
+            // Eliminar cualquier opción custom temporal previa para reordenar limpiamente
+            const prevCustom = document.getElementById("opt-bpm-custom");
+            if (prevCustom) prevCustom.remove();
+
+            // Verificar si el valor ya existe exactamente en las opciones estándar
             let found = false;
             for (let i = 0; i < bpmSelect.options.length; i++) {
                 if (parseInt(bpmSelect.options[i].value, 10) === bpmVal) {
@@ -964,17 +968,26 @@
                     break;
                 }
             }
-            // Si es un BPM particular de un archivo MIDI, añadir o seleccionar opción personalizada
-            if (!found) {
-                // Eliminar opción custom anterior si existía
-                const customOpt = document.getElementById("opt-bpm-custom");
-                if (customOpt) customOpt.remove();
 
+            // Si es un BPM particular de la canción (ej: 96 BPM), insertarlo en su posición numérica exacta (entre 90 y 105)
+            if (!found) {
                 const newOpt = document.createElement("option");
                 newOpt.id = "opt-bpm-custom";
                 newOpt.value = bpmVal;
                 newOpt.textContent = `${bpmVal} BPM (Canción)`;
-                bpmSelect.appendChild(newOpt);
+
+                let inserted = false;
+                for (let i = 0; i < bpmSelect.options.length; i++) {
+                    const optVal = parseInt(bpmSelect.options[i].value, 10);
+                    if (bpmVal < optVal) {
+                        bpmSelect.insertBefore(newOpt, bpmSelect.options[i]);
+                        inserted = true;
+                        break;
+                    }
+                }
+                if (!inserted) {
+                    bpmSelect.appendChild(newOpt);
+                }
                 bpmSelect.value = bpmVal;
             }
         }
@@ -1001,11 +1014,7 @@
             initAudio();
 
             isPlaying = true;
-            currentStepIndex = 0;
             hasErrorOnCurrentStep = false;
-            updatePracticeStatusUI();
-            renderNotesLayer();
-            updateScoreScroll();
 
             const btn = document.getElementById("btn-playback");
             if (btn) {
@@ -1022,12 +1031,26 @@
                 updateBpmSelectUI(window.currentMidiBpm);
             }
 
-            // Si hay pistas MIDI cargadas, reproducir con el secuenciador multi-pista
-            if (currentMidiTracks && currentMidiTracks.length > 0) {
+            // Si estamos en modo de aprender MIDI y hay pistas MIDI cargadas, reproducir con el secuenciador multi-pista
+            if (currentMode === "learn_midi" && currentMidiTracks && currentMidiTracks.length > 0) {
                 buildPlaybackTimeline();
                 playbackTimelineIndex = 0;
+                // Si el primer paso ya tiene notas de melodía, empezamos en 0; si es intro de acompañamiento sin melodía, en -1
+                if (currentPlaybackTimeline && currentPlaybackTimeline.length > 0 && 
+                    currentPlaybackTimeline[0].displayIndices && currentPlaybackTimeline[0].displayIndices.length > 0) {
+                    currentStepIndex = currentPlaybackTimeline[0].displayIndices[0];
+                } else {
+                    currentStepIndex = (currentPlaybackTimeline && currentPlaybackTimeline.length > 0 && currentPlaybackTimeline[0].displayNotes && currentPlaybackTimeline[0].displayNotes.length > 0) ? 0 : -1;
+                }
+                updatePracticeStatusUI();
+                renderNotesLayer();
+                updateScoreScroll();
                 playMultiTrackStep();
             } else {
+                currentStepIndex = 0;
+                updatePracticeStatusUI();
+                renderNotesLayer();
+                updateScoreScroll();
                 playPlaybackStep();
             }
         }
@@ -1076,22 +1099,34 @@
                 step.notes.forEach(m => playSound(m));
             }
 
-            // 2. Si hay notas de la pista de partitura en este instante, iluminar y avanzar
+            // 2. Si hay notas de la pista de partitura en este instante, iluminar y avanzar con la melodía
+            if (step.displayIndices && step.displayIndices.length > 0) {
+                currentStepIndex = step.displayIndices[0];
+                updatePracticeStatusUI();
+                renderNotesLayer();
+                updateScoreScroll();
+            } else if (step.displayNotes && step.displayNotes.length > 0 && practiceSequence && practiceSequence.length > 0) {
+                // Respaldo de sincronización por tick exacto si displayIndices no estuviera presente
+                let foundIdx = -1;
+                for (let i = 0; i < practiceSequence.length; i++) {
+                    if (Math.abs(practiceSequence[i].startTick - step.tick) <= 25) {
+                        foundIdx = i;
+                        break;
+                    }
+                }
+                if (foundIdx >= 0) {
+                    currentStepIndex = foundIdx;
+                    updatePracticeStatusUI();
+                    renderNotesLayer();
+                    updateScoreScroll();
+                }
+            }
+
             if (step.displayNotes && step.displayNotes.length > 0) {
                 step.displayNotes.forEach(m => {
                     highlightVirtualKey(m, true);
                     setTimeout(() => highlightVirtualKey(m, false), 260);
                 });
-
-                // Avanzar currentStepIndex en practiceSequence según el tick actual
-                if (practiceSequence && practiceSequence.length > 0) {
-                    while (currentStepIndex < practiceSequence.length && practiceSequence[currentStepIndex].startTick < step.tick) {
-                        currentStepIndex++;
-                    }
-                    updatePracticeStatusUI();
-                    renderNotesLayer();
-                    updateScoreScroll();
-                }
             }
 
             // 3. Programar siguiente instante del timeline
@@ -1099,6 +1134,7 @@
                 if (!isPlaying) return;
                 playbackTimelineIndex++;
                 if (playbackTimelineIndex >= currentPlaybackTimeline.length) {
+                    currentStepIndex = practiceSequence ? practiceSequence.length : 0;
                     updatePracticeStatusUI();
                     renderNotesLayer();
                     setTimeout(() => stopPlayback(true), 600);
@@ -1240,8 +1276,8 @@
                 }
             }
 
-            // Si hay pistas MIDI cargadas, trasponer los datos de audio de la pista y reconstruir el timeline
-            if (currentMidiTracks && currentMidiTracks.length > 0) {
+            // Si hay pistas MIDI cargadas en modo learn_midi, trasponer los datos de audio de la pista y reconstruir el timeline
+            if (currentMode === "learn_midi" && currentMidiTracks && currentMidiTracks.length > 0) {
                 if (currentMidiTracks[currentMidiTrackIndex]) {
                     const trk = currentMidiTracks[currentMidiTrackIndex];
                     if (trk.notes) trk.notes.forEach(n => { n.midi += semitones; });
@@ -1258,7 +1294,7 @@
             // Si estaba en reproducción continua, continuar sonando en la nueva octava seleccionada
             if (wasPlaying) {
                 isPlaying = true;
-                if (currentMidiTracks && currentMidiTracks.length > 0) {
+                if (currentMode === "learn_midi" && currentMidiTracks && currentMidiTracks.length > 0) {
                     playMultiTrackStep();
                 } else {
                     playPlaybackStep();
@@ -1334,10 +1370,10 @@
                 if (restartBtn) restartBtn.style.display = "inline-block";
                 badge.style.display = "inline-block";
                 document.getElementById("welcome-hint").style.display = "none";
-                if (practiceSequence.length === 0) {
-                    loadSongByKey("alegria");
-                    return;
-                }
+                const selectedSongKey = songSelect.value || "alegria";
+                songSelect.value = selectedSongKey;
+                loadSongByKey(selectedSongKey);
+                return;
             }
             renderNotesLayer();
             updatePracticeStatusUI();
@@ -1426,7 +1462,7 @@
             }
 
             badge.style.display = "inline-block";
-            if (practiceSequence.length > 0 && currentStepIndex < practiceSequence.length) {
+            if (practiceSequence.length > 0 && currentStepIndex >= 0 && currentStepIndex < practiceSequence.length) {
                 const rawTarget = practiceSequence[currentStepIndex];
                 const targetMidi = (typeof rawTarget === 'object') ? rawTarget.midi : rawTarget;
                 noteTargetEl.textContent = NOTE_NAMES[targetMidi % 12];
@@ -1435,6 +1471,9 @@
                 } else {
                     countEl.textContent = `${currentStepIndex + 1}/${practiceSequence.length}`;
                 }
+            } else if (practiceSequence.length > 0 && currentStepIndex < 0) {
+                noteTargetEl.textContent = "⏱️ Intro...";
+                countEl.textContent = `0/${practiceSequence.length}`;
             } else if (practiceSequence.length > 0 && currentStepIndex >= practiceSequence.length) {
                 noteTargetEl.textContent = "🎉 ¡Completado!";
                 countEl.textContent = `${practiceSequence.length}/${practiceSequence.length}`;
@@ -1446,13 +1485,20 @@
 
         // GESTIÓN DE NOTAS PULSADAS / INTERACCIÓN (AKAI, KORG, TECLADO VIRTUAL Y MIC)
         let lastTriggerTimeByMidi = {};
+        const physicallyPressedMidiKeys = new Set();
 
         function triggerNoteOn(midi) {
             initAudio();
 
-            // Antirrebote ultra-efectivo (debounce de 120 ms por nota para evitar eventos duplicados/múltiples)
+            // Evitar que una tecla mantenida pulsada avance más de una nota consecutiva idéntica
+            if (physicallyPressedMidiKeys.has(midi)) {
+                return;
+            }
+            physicallyPressedMidiKeys.add(midi);
+
+            // Antirrebote ultra-efectivo (debounce de 140 ms por nota para evitar eventos duplicados/múltiples)
             const nowTime = Date.now();
-            if (lastTriggerTimeByMidi[midi] && (nowTime - lastTriggerTimeByMidi[midi] < 120)) {
+            if (lastTriggerTimeByMidi[midi] && (nowTime - lastTriggerTimeByMidi[midi] < 140)) {
                 return;
             }
             lastTriggerTimeByMidi[midi] = nowTime;
@@ -1516,6 +1562,7 @@
         }
 
         function triggerNoteOff(midi) {
+            physicallyPressedMidiKeys.delete(midi);
             activeKeysMap.delete(midi);
             highlightVirtualKey(midi, false);
         }
@@ -1871,16 +1918,16 @@
 
                 if (isPlaying) {
                     // MODO ESCUCHAR: La nota que está sonando en este instante se resalta con el círculo azul
-                    const isSoundingNote = (index === currentStepIndex) || 
+                    const isSoundingNote = (currentStepIndex >= 0) && ((index === currentStepIndex) || 
                         (typeof item === 'object' && typeof item.startTick === 'number' && 
-                         typeof activeList[currentStepIndex] === 'object' && 
+                         activeList[currentStepIndex] && typeof activeList[currentStepIndex] === 'object' && 
                          activeList[currentStepIndex].startTick === item.startTick && 
-                         Math.abs(index - currentStepIndex) <= 2);
+                         Math.abs(index - currentStepIndex) <= 4));
 
                     if (isSoundingNote) {
                         noteColor = "#1f6feb";
                         auraSvg = `<circle cx="${posX}" cy="${noteY}" r="22" fill="rgba(31, 111, 235, 0.22)" stroke="#1f6feb" stroke-width="3.5" opacity="0.95" />`;
-                    } else if (index < currentStepIndex) {
+                    } else if (currentStepIndex >= 0 && index < currentStepIndex) {
                         noteColor = "#2ea043"; // Notas ya reproducidas
                     } else {
                         noteColor = "#555555"; // Notas pendientes de sonar
@@ -2312,16 +2359,20 @@
             enabledAudioTrackIndices.forEach(tIdx => {
                 const trk = currentMidiTracks[tIdx];
                 if (!trk) return;
-                const notesToUse = trk.rawNotes || trk.notes || [];
                 const isDisplayTrack = (tIdx === currentMidiTrackIndex);
+                // Si es la pista activa en partitura, usamos practiceSequence para mantener sincronización 1 a 1 exacta
+                const notesToUse = (isDisplayTrack && practiceSequence && practiceSequence.length > 0) 
+                    ? practiceSequence 
+                    : (trk.rawNotes || trk.notes || []);
 
-                notesToUse.forEach(n => {
+                notesToUse.forEach((n, nIdx) => {
                     allEvents.push({
                         tick: n.startTick,
                         midi: n.midi,
                         durationTicks: n.durationTicks,
                         trackIndex: tIdx,
-                        isDisplayTrack: isDisplayTrack
+                        isDisplayTrack: isDisplayTrack,
+                        displayNoteIndex: isDisplayTrack ? nIdx : -1
                     });
                 });
             });
@@ -2337,20 +2388,25 @@
             let currentStep = {
                 tick: allEvents[0].tick,
                 notes: [allEvents[0].midi],
-                displayNotes: allEvents[0].isDisplayTrack ? [allEvents[0].midi] : []
+                displayNotes: allEvents[0].isDisplayTrack ? [allEvents[0].midi] : [],
+                displayIndices: (allEvents[0].isDisplayTrack && allEvents[0].displayNoteIndex >= 0) ? [allEvents[0].displayNoteIndex] : []
             };
 
             for (let k = 1; k < allEvents.length; k++) {
                 const ev = allEvents[k];
                 if (ev.tick - currentStep.tick <= 15) {
                     currentStep.notes.push(ev.midi);
-                    if (ev.isDisplayTrack) currentStep.displayNotes.push(ev.midi);
+                    if (ev.isDisplayTrack) {
+                        currentStep.displayNotes.push(ev.midi);
+                        if (ev.displayNoteIndex >= 0) currentStep.displayIndices.push(ev.displayNoteIndex);
+                    }
                 } else {
                     steps.push(currentStep);
                     currentStep = {
                         tick: ev.tick,
                         notes: [ev.midi],
-                        displayNotes: ev.isDisplayTrack ? [ev.midi] : []
+                        displayNotes: ev.isDisplayTrack ? [ev.midi] : [],
+                        displayIndices: (ev.isDisplayTrack && ev.displayNoteIndex >= 0) ? [ev.displayNoteIndex] : []
                     };
                 }
             }
