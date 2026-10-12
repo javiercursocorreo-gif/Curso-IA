@@ -308,6 +308,9 @@
                         <button class="btn btn-emerald" id="btnLoadPompeya" style="background: rgba(245, 158, 11, 0.2); color: #fbbf24; border-color: rgba(245, 158, 11, 0.4);" title="Cargar simulador: Arqueología Digital HD Pompeya (Ruinas vs. Reconstrucción)">
                 🏛️ Pompeya HD
             </button>
+            <button class="btn btn-emerald" id="btnLoadSolar" style="background: rgba(251, 191, 36, 0.2); color: #fbbf24; border-color: rgba(251, 191, 36, 0.45);" title="Cargar simulador: Sistema Solar 3D Interactivo (Fotogrametría Satelital NASA)">
+                🪐 Sistema Solar 3D
+            </button>
             <button class="btn btn-secondary" id="btnToggleLayout" title="Cambiar a pantalla completa">
                 🔍 Pantalla Completa
             </button>
@@ -348,8 +351,1769 @@
                 </div>
             </div>
         </div>
-    <textarea id="exampleOjoTemplate" style="display:none;">
-&lt;!DOCTYPE html&gt;
+        <textarea id="exampleSolarTemplate" style="display:none;">&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;es&quot;&gt;
+&lt;head&gt;
+    &lt;meta charset=&quot;UTF-8&quot;&gt;
+    &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot;&gt;
+    &lt;title&gt;Astronomía y Espacio 3D • Sistema Solar Interactivo, Vórtice Galáctico y Voyager (NASA)&lt;/title&gt;
+    &lt;!-- Three.js + OrbitControls para renderizado 3D PBR con mapas satelitales reales de la NASA --&gt;
+    &lt;script src=&quot;https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js&quot;&gt;&lt;/script&gt;
+    &lt;script src=&quot;https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js&quot;&gt;&lt;/script&gt;
+    &lt;style&gt;
+        :root {
+            --bg: #04070f;
+            --panel: #0f172a;
+            --border: #1e293b;
+            --accent: #38bdf8;
+            --accent-glow: rgba(56, 189, 248, 0.3);
+            --gold: #fbbf24;
+            --emerald: #34d399;
+            --rose: #fb7185;
+            --purple: #c084fc;
+            --cyan: #22d3ee;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        html, body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif;
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* HEADER COMPACTO */
+        header {
+            background: rgba(15, 23, 42, 0.96);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            padding: 7px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+            z-index: 50;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-icon {
+            font-size: 24px;
+            background: rgba(251, 191, 36, 0.14);
+            border: 1px solid rgba(251, 191, 36, 0.4);
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 18px rgba(251, 191, 36, 0.2);
+        }
+
+        .header-titles h1 {
+            font-size: 16.5px;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            color: #f8fafc;
+        }
+
+        .header-titles p {
+            font-size: 11.5px;
+            color: var(--text-muted);
+            margin-top: 1px;
+        }
+
+        .header-badges {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            font-size: 10.5px;
+            font-weight: 700;
+            padding: 5px 11px;
+            border-radius: 999px;
+            background: rgba(56, 189, 248, 0.12);
+            color: var(--accent);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .badge-gold {
+            background: rgba(251, 191, 36, 0.14);
+            color: var(--gold);
+            border-color: rgba(251, 191, 36, 0.4);
+        }
+
+        .badge-emerald {
+            background: rgba(52, 211, 153, 0.12);
+            color: var(--emerald);
+            border-color: rgba(52, 211, 153, 0.3);
+        }
+
+        /* CONTENEDOR PRINCIPAL A PANTALLA COMPLETA (OCUPA EL 100% DEL ALTO RESTANTE) */
+        main {
+            flex: 1;
+            min-height: 0;
+            width: 100%;
+            max-width: 100%;
+            padding: 8px 14px 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        /* BARRA SUPERIOR DE VIAJE A PLANETAS + VÓRTICE + VOYAGER 1 */
+        .toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            padding: 6px 12px;
+            border-radius: 12px;
+            flex-shrink: 0;
+        }
+
+        .toolbar-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            align-items: center;
+        }
+
+        .toolbar-label {
+            font-size: 10.5px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin-right: 3px;
+        }
+
+        .btn-tool {
+            background: #1e293b;
+            color: #e2e8f0;
+            border: 1px solid #334155;
+            padding: 6px 10px;
+            border-radius: 9px;
+            font-size: 11.2px;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.18s ease;
+        }
+
+        .btn-tool:hover {
+            background: #334155;
+            border-color: #475569;
+            transform: translateY(-1px);
+        }
+
+        .btn-tool.active {
+            background: rgba(56, 189, 248, 0.22);
+            color: #38bdf8;
+            border-color: #38bdf8;
+            box-shadow: 0 0 12px rgba(56, 189, 248, 0.25);
+        }
+
+        .btn-tool.gold.active {
+            background: rgba(251, 191, 36, 0.22);
+            color: #fbbf24;
+            border-color: #fbbf24;
+            box-shadow: 0 0 12px rgba(251, 191, 36, 0.25);
+        }
+
+        .btn-tool.rose-btn {
+            border-color: rgba(251, 113, 133, 0.45);
+            color: #fda4af;
+        }
+
+        .btn-tool.rose-btn.active {
+            background: rgba(251, 113, 133, 0.22);
+            color: #fb7185;
+            border-color: #fb7185;
+            box-shadow: 0 0 12px rgba(251, 113, 133, 0.3);
+        }
+
+        .btn-tool.cyan-btn {
+            border-color: rgba(34, 211, 238, 0.45);
+            color: #67e8f9;
+        }
+
+        .btn-tool.cyan-btn.active {
+            background: rgba(34, 211, 238, 0.22);
+            color: #22d3ee;
+            border-color: #22d3ee;
+            box-shadow: 0 0 12px rgba(34, 211, 238, 0.35);
+        }
+
+        /* LAYOUT DE 2 COLUMNAS QUE SE EXPANDE AL 100% DEL ESPACIO VERTICAL */
+        .stage-grid {
+            flex: 1;
+            min-height: 0;
+            display: grid;
+            grid-template-columns: 356px 1fr;
+            gap: 10px;
+            align-items: stretch;
+        }
+
+        @media (max-width: 960px) {
+            html, body { overflow-y: auto; height: auto; }
+            .stage-grid { grid-template-columns: 1fr; }
+            .canvas-card { min-height: 520px; }
+        }
+
+        /* COLUMNA IZQUIERDA: TELEMETRÍA NASA Y 5 EXPERIENCIAS INTERACTIVAS */
+        .left-guide-card {
+            background: var(--panel);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            border-radius: 16px;
+            padding: 10px 12px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 5px;
+            box-shadow: 0 14px 35px rgba(0, 0, 0, 0.45);
+            overflow-y: auto;
+        }
+
+        .guide-header {
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: var(--gold);
+            padding-bottom: 4px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        /* TARJETA DE TELEMETRÍA DEL PLANETA O SONDA ACTIVA */
+        .planet-telemetry {
+            background: linear-gradient(145deg, rgba(15, 23, 42, 0.95), rgba(2, 6, 23, 0.95));
+            border: 1px solid rgba(251, 191, 36, 0.4);
+            border-radius: 11px;
+            padding: 8px 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .planet-title-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 6px;
+        }
+
+        .planet-name {
+            font-size: 14px;
+            font-weight: 900;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .planet-probe-tag {
+            font-size: 9px;
+            font-weight: 800;
+            padding: 2px 6px;
+            border-radius: 999px;
+            background: rgba(56, 189, 248, 0.16);
+            color: #38bdf8;
+            border: 1px solid rgba(56, 189, 248, 0.35);
+            white-space: nowrap;
+        }
+
+        .planet-desc {
+            font-size: 10.6px;
+            color: #cbd5e1;
+            line-height: 1.34;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4px;
+        }
+
+        .stat-box {
+            background: rgba(30, 41, 59, 0.65);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            border-radius: 6px;
+            padding: 4px 6px;
+        }
+
+        .stat-label {
+            font-size: 8.5px;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: var(--text-muted);
+            font-weight: 700;
+        }
+
+        .stat-value {
+            font-size: 11px;
+            font-weight: 800;
+            color: #f8fafc;
+            margin-top: 1px;
+        }
+
+        /* 5 EXPERIENCIAS INTERACTIVAS EN EL PANEL IZQUIERDO */
+        .guide-item {
+            background: rgba(15, 23, 42, 0.78);
+            border: 1px solid #1e293b;
+            border-left: 3px solid var(--accent);
+            border-radius: 8px;
+            padding: 6px 9px;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            cursor: pointer;
+            transition: all 0.18s ease;
+        }
+
+        .guide-item:hover {
+            background: rgba(30, 41, 59, 0.92);
+            transform: translateX(2px);
+        }
+
+        .guide-item.cyan { border-left-color: var(--cyan); background: rgba(34, 211, 238, 0.07); }
+        .guide-item.amber { border-left-color: var(--gold); }
+        .guide-item.emerald { border-left-color: var(--emerald); }
+        .guide-item.purple { border-left-color: var(--purple); }
+        .guide-item.rose { border-left-color: var(--rose); background: rgba(244, 63, 94, 0.07); }
+
+        .guide-item-title {
+            font-size: 11.2px;
+            font-weight: 800;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .guide-item-tag {
+            font-size: 8.8px;
+            font-weight: 700;
+            padding: 1.5px 6px;
+            border-radius: 999px;
+            background: rgba(56, 189, 248, 0.15);
+            color: var(--accent);
+        }
+
+        .guide-item.cyan .guide-item-tag {
+            background: rgba(34, 211, 238, 0.2);
+            color: #67e8f9;
+        }
+
+        .guide-item.rose .guide-item-tag {
+            background: rgba(251, 113, 133, 0.2);
+            color: #fda4af;
+        }
+
+        .guide-item-desc {
+            font-size: 10px;
+            color: #cbd5e1;
+            line-height: 1.28;
+        }
+
+        /* VISOR 3D CENTRAL — OCUPA EL 100% DE LA ALTURA DISPONIBLE */
+        .canvas-card {
+            position: relative;
+            background: radial-gradient(circle at 50% 50%, #0b132b 0%, #030611 75%, #010206 100%);
+            border: 1px solid rgba(56, 189, 248, 0.35);
+            border-radius: 16px;
+            height: 100%;
+            min-height: 460px;
+            overflow: hidden;
+            box-shadow: 0 18px 45px rgba(0, 0, 0, 0.65);
+        }
+
+        #canvas3d {
+            width: 100%;
+            height: 100%;
+            display: block;
+            cursor: grab;
+        }
+
+        #canvas3d:active {
+            cursor: grabbing;
+        }
+
+        /* OVERLAY SUPERIOR EN EL VISOR 3D */
+        .canvas-overlay-top {
+            position: absolute;
+            top: 10px;
+            left: 12px;
+            right: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .hud-pill {
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            padding: 5px 11px;
+            border-radius: 9px;
+            font-size: 11px;
+            font-weight: 700;
+            color: #e2e8f0;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
+
+        .hud-counter {
+            color: var(--gold);
+            font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+            font-weight: 800;
+        }
+
+        /* ETIQUETAS 3D FLOTANTES SOBRE CADA PLANETA Y VOYAGER 1 */
+        .labels-layer {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 8;
+        }
+
+        .planet-label-pin {
+            position: absolute;
+            transform: translate(-50%, -130%);
+            background: rgba(15, 23, 42, 0.86);
+            border: 1px solid rgba(56, 189, 248, 0.55);
+            color: #f8fafc;
+            padding: 3px 8px;
+            border-radius: 999px;
+            font-size: 10.5px;
+            font-weight: 800;
+            white-space: nowrap;
+            pointer-events: auto;
+            cursor: pointer;
+            transition: background 0.15s, border-color 0.15s;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+        }
+
+        .planet-label-pin:hover {
+            background: rgba(56, 189, 248, 0.3);
+            border-color: #ffffff;
+        }
+
+        .planet-label-pin.voyager-pin {
+            border-color: #fb7185;
+            background: rgba(136, 19, 55, 0.85);
+            color: #ffe4e6;
+        }
+
+        .planet-label-pin.active-pin {
+            background: rgba(251, 191, 36, 0.28);
+            border-color: #fbbf24;
+            color: #fef08a;
+        }
+
+        /* OVERLAY INFERIOR DE AYUDA DE RATÓN */
+        .canvas-overlay-bottom {
+            position: absolute;
+            bottom: 10px;
+            left: 12px;
+            right: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .mouse-hint {
+            background: rgba(15, 23, 42, 0.82);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 10.5px;
+            color: #94a3b8;
+        }
+
+        /* PANEL INFERIOR COMPACTO: VELOCIDAD KEPLERIANA + CAPAS VISUALES */
+        .controls-panel {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 13px;
+            padding: 8px 16px;
+            display: grid;
+            grid-template-columns: 1.35fr 1fr;
+            gap: 16px;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        @media (max-width: 820px) {
+            .controls-panel {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .slider-block {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .slider-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 11.5px;
+            font-weight: 800;
+        }
+
+        .slider-badge {
+            font-size: 10.5px;
+            font-weight: 800;
+            padding: 2px 9px;
+            border-radius: 999px;
+            background: rgba(251, 191, 36, 0.16);
+            color: var(--gold);
+            border: 1px solid rgba(251, 191, 36, 0.35);
+        }
+
+        input[type=&quot;range&quot;] {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 7px;
+            border-radius: 999px;
+            background: linear-gradient(90deg, #1e293b 0%, #0284c7 50%, #fbbf24 100%);
+            outline: none;
+            cursor: pointer;
+        }
+
+        input[type=&quot;range&quot;]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #ffffff;
+            border: 3px solid #38bdf8;
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.8);
+            cursor: pointer;
+        }
+
+        .slider-legend {
+            display: flex;
+            justify-content: space-between;
+            font-size: 10px;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .quick-actions-box {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            justify-content: flex-end;
+            align-items: center;
+        }
+    &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+
+    &lt;!-- CABECERA --&gt;
+    &lt;header&gt;
+        &lt;div class=&quot;header-left&quot;&gt;
+            &lt;div class=&quot;header-icon&quot;&gt;🪐&lt;/div&gt;
+            &lt;div class=&quot;header-titles&quot;&gt;
+                &lt;h1&gt;Sistema Solar 3D Interactivo • Vórtice Galáctico y Frontera Voyager&lt;/h1&gt;
+                &lt;p&gt;Mapas Satelitales Reales (SDO • MESSENGER • Magellan • MODIS • Cassini • Voyager 1 &amp; 2)&lt;/p&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;header-badges&quot;&gt;
+            &lt;span class=&quot;badge badge-gold&quot;&gt;🛰️ Fotogrametría NASA / Solar System Scope 2K&lt;/span&gt;
+            &lt;span class=&quot;badge badge-emerald&quot; id=&quot;textureStatusBadge&quot;&gt;✅ Mapas Satelitales Activos&lt;/span&gt;
+        &lt;/div&gt;
+    &lt;/header&gt;
+
+    &lt;main&gt;
+        &lt;!-- BARRA SUPERIOR DE VIAJE DIRECTO A CADA PLANETA + VÓRTICE + VOYAGER 1 --&gt;
+        &lt;div class=&quot;toolbar&quot;&gt;
+            &lt;div class=&quot;toolbar-group&quot; id=&quot;planetButtonsGroup&quot;&gt;
+                &lt;span class=&quot;toolbar-label&quot;&gt;🚀 Explorar:&lt;/span&gt;
+                &lt;button class=&quot;btn-tool gold active&quot; data-target=&quot;overview&quot;&gt;🌌 Sistema Completo&lt;/button&gt;
+                &lt;button class=&quot;btn-tool cyan-btn&quot; id=&quot;btnTopVortex&quot;&gt;🌀 Tirabuzón Galáctico&lt;/button&gt;
+                &lt;button class=&quot;btn-tool&quot; data-target=&quot;sun&quot;&gt;☀️ Sol&lt;/button&gt;
+                &lt;button class=&quot;btn-tool&quot; data-target=&quot;mercury&quot;&gt;🪨 Mercurio&lt;/button&gt;
+                &lt;button class=&quot;btn-tool&quot; data-target=&quot;venus&quot;&gt;🌕 Venus&lt;/button&gt;
+                &lt;button class=&quot;btn-tool&quot; data-target=&quot;earth&quot;&gt;🌍 Tierra + Luna&lt;/button&gt;
+                &lt;button class=&quot;btn-tool&quot; data-target=&quot;mars&quot;&gt;🔴 Marte&lt;/button&gt;
+                &lt;button class=&quot;btn-tool&quot; data-target=&quot;jupiter&quot;&gt;🟠 Júpiter&lt;/button&gt;
+                &lt;button class=&quot;btn-tool&quot; data-target=&quot;saturn&quot;&gt;🪐 Saturno&lt;/button&gt;
+                &lt;button class=&quot;btn-tool&quot; data-target=&quot;uranus&quot;&gt;🔵 Urano&lt;/button&gt;
+                &lt;button class=&quot;btn-tool&quot; data-target=&quot;neptune&quot;&gt;🌊 Neptuno&lt;/button&gt;
+                &lt;button class=&quot;btn-tool rose-btn&quot; data-target=&quot;voyager&quot;&gt;🛰️ Voyager 1 (Heliopausa)&lt;/button&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+
+        &lt;!-- ESCENARIO DE 2 COLUMNAS A PANTALLA COMPLETA --&gt;
+        &lt;div class=&quot;stage-grid&quot;&gt;
+            &lt;!-- COLUMNA IZQUIERDA --&gt;
+            &lt;aside class=&quot;left-guide-card&quot;&gt;
+                &lt;div class=&quot;guide-header&quot;&gt;
+                    &lt;span&gt;📡 Telemetría Oficial NASA&lt;/span&gt;
+                    &lt;span style=&quot;font-size:9.5px; color:#38bdf8;&quot;&gt;Clic en cualquier astro&lt;/span&gt;
+                &lt;/div&gt;
+
+                &lt;!-- FICHA DINÁMICA DEL ASTRO O FENÓMENO SELECCIONADO --&gt;
+                &lt;div class=&quot;planet-telemetry&quot; id=&quot;telemetryCard&quot;&gt;
+                    &lt;div class=&quot;planet-title-row&quot;&gt;
+                        &lt;div class=&quot;planet-name&quot; id=&quot;infoName&quot;&gt;🌌 Sistema Solar&lt;/div&gt;
+                        &lt;span class=&quot;planet-probe-tag&quot; id=&quot;infoProbe&quot;&gt;Misiones NASA / ESA&lt;/span&gt;
+                    &lt;/div&gt;
+                    &lt;p class=&quot;planet-desc&quot; id=&quot;infoDesc&quot;&gt;
+                        Ocho planetas girando alrededor del Sol con las proporciones orbitales exactas de la 3ª Ley de Kepler (1x = 1 año terrestre cada 60 s). Activa debajo el Vórtice Galáctico en tirabuzón o viaja hasta la sonda Voyager 1.
+                    &lt;/p&gt;
+                    &lt;div class=&quot;stats-grid&quot;&gt;
+                        &lt;div class=&quot;stat-box&quot;&gt;
+                            &lt;div class=&quot;stat-label&quot;&gt;Diámetro / Escala&lt;/div&gt;
+                            &lt;div class=&quot;stat-value&quot; id=&quot;infoDiameter&quot;&gt;1.392.700 km (Sol)&lt;/div&gt;
+                        &lt;/div&gt;
+                        &lt;div class=&quot;stat-box&quot;&gt;
+                            &lt;div class=&quot;stat-label&quot;&gt;Distancia / Velocidad&lt;/div&gt;
+                            &lt;div class=&quot;stat-value&quot; id=&quot;infoDistance&quot;&gt;Hasta 120 UA (Heliopausa)&lt;/div&gt;
+                        &lt;/div&gt;
+                        &lt;div class=&quot;stat-box&quot;&gt;
+                            &lt;div class=&quot;stat-label&quot;&gt;Periodo Orbital&lt;/div&gt;
+                            &lt;div class=&quot;stat-value&quot; id=&quot;infoOrbit&quot;&gt;88 días a 165 años&lt;/div&gt;
+                        &lt;/div&gt;
+                        &lt;div class=&quot;stat-box&quot;&gt;
+                            &lt;div class=&quot;stat-label&quot;&gt;Temperatura / Lunas&lt;/div&gt;
+                            &lt;div class=&quot;stat-value&quot; id=&quot;infoTemp&quot;&gt;+5.500 °C • 290+ lunas&lt;/div&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+
+                &lt;div class=&quot;guide-header&quot; style=&quot;margin-top:1px;&quot;&gt;
+                    &lt;span&gt;🎛️ 5 Experiencias para Actuar en Clase&lt;/span&gt;
+                &lt;/div&gt;
+
+                &lt;div class=&quot;guide-item cyan&quot; id=&quot;cardModeVortex&quot;&gt;
+                    &lt;div class=&quot;guide-item-title&quot;&gt;
+                        &lt;span&gt;🌀 1. Vórtice Galáctico (Efecto Tirabuzón)&lt;/span&gt;
+                        &lt;span class=&quot;guide-item-tag&quot; id=&quot;tagVortex&quot;&gt;Activar Espiral&lt;/span&gt;
+                    &lt;/div&gt;
+                    &lt;div class=&quot;guide-item-desc&quot;&gt;
+                        El Sol viaja a 828.000 km/h alrededor de la Vía Láctea mientras los planetas giran en torno a él dibujando estelas helicoidales en tirabuzón.
+                    &lt;/div&gt;
+                &lt;/div&gt;
+
+                &lt;div class=&quot;guide-item amber&quot; id=&quot;cardModeCompare&quot;&gt;
+                    &lt;div class=&quot;guide-item-title&quot;&gt;
+                        &lt;span&gt;📏 2. Comparar Tamaño de Planetas&lt;/span&gt;
+                        &lt;span class=&quot;guide-item-tag&quot; id=&quot;tagCompare&quot;&gt;Activar Fila&lt;/span&gt;
+                    &lt;/div&gt;
+                    &lt;div class=&quot;guide-item-desc&quot;&gt;
+                        Detiene las órbitas y alinea los 8 planetas en fila junto al Sol para comparar el colosal tamaño de Júpiter y Saturno frente a la Tierra.
+                    &lt;/div&gt;
+                &lt;/div&gt;
+
+                &lt;div class=&quot;guide-item emerald&quot; id=&quot;cardModeEarthMoon&quot;&gt;
+                    &lt;div class=&quot;guide-item-title&quot;&gt;
+                        &lt;span&gt;🌍 3. Día/Noche en la Tierra y Luna&lt;/span&gt;
+                        &lt;span class=&quot;guide-item-tag&quot;&gt;Enfocar&lt;/span&gt;
+                    &lt;/div&gt;
+                    &lt;div class=&quot;guide-item-desc&quot;&gt;
+                        Acércate a la Tierra (mapa NASA Blue Marble + nubes MODIS) para ver cómo el Sol ilumina el día mientras la Luna orbita.
+                    &lt;/div&gt;
+                &lt;/div&gt;
+
+                &lt;div class=&quot;guide-item purple&quot; id=&quot;cardModeSaturn&quot;&gt;
+                    &lt;div class=&quot;guide-item-title&quot;&gt;
+                        &lt;span&gt;🪐 4. Anillos de Saturno (Cassini)&lt;/span&gt;
+                        &lt;span class=&quot;guide-item-tag&quot;&gt;Inspeccionar&lt;/span&gt;
+                    &lt;/div&gt;
+                    &lt;div class=&quot;guide-item-desc&quot;&gt;
+                        Observa de cerca los anillos de hielo de Saturno con la textura radial de transparencia captada por la sonda Cassini.
+                    &lt;/div&gt;
+                &lt;/div&gt;
+
+                &lt;div class=&quot;guide-item rose&quot; id=&quot;cardModeVoyager&quot;&gt;
+                    &lt;div class=&quot;guide-item-title&quot;&gt;
+                        &lt;span&gt;🛰️ 5. Voyager 1 y el &quot;Muro de Fuego&quot;&lt;/span&gt;
+                        &lt;span class=&quot;guide-item-tag&quot;&gt;Ver Frontera&lt;/span&gt;
+                    &lt;/div&gt;
+                    &lt;div class=&quot;guide-item-desc&quot;&gt;
+                        Viaja al límite del Sistema Solar (Heliopausa, 18.000 millones km) donde el viento solar choca con el espacio interestelar a 40.000 °C.
+                    &lt;/div&gt;
+                &lt;/div&gt;
+            &lt;/aside&gt;
+
+            &lt;!-- COLUMNA DERECHA: VISOR WEBGL THREE.JS A PANTALLA COMPLETA --&gt;
+            &lt;div class=&quot;canvas-card&quot; id=&quot;canvasContainer&quot;&gt;
+                &lt;div class=&quot;canvas-overlay-top&quot;&gt;
+                    &lt;div class=&quot;hud-pill&quot;&gt;
+                        &lt;span&gt;🗓️ Tiempo Kepleriano:&lt;/span&gt;
+                        &lt;span class=&quot;hud-counter&quot; id=&quot;simDaysCounter&quot;&gt;Día 0 (0.00 años terrestres)&lt;/span&gt;
+                    &lt;/div&gt;
+                    &lt;div class=&quot;hud-pill&quot; id=&quot;cameraTargetPill&quot;&gt;
+                        🎯 Enfoque: &lt;strong style=&quot;color:#fbbf24;&quot; id=&quot;hudTargetName&quot;&gt;Sistema Solar Completo&lt;/strong&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+
+                &lt;!-- CAPA DE ETIQUETAS 3D INTERACTIVAS --&gt;
+                &lt;div class=&quot;labels-layer&quot; id=&quot;labelsLayer&quot;&gt;&lt;/div&gt;
+
+                &lt;canvas id=&quot;canvas3d&quot;&gt;&lt;/canvas&gt;
+
+                &lt;div class=&quot;canvas-overlay-bottom&quot;&gt;
+                    &lt;div class=&quot;mouse-hint&quot;&gt;🖱️ Arrastra para rotar en 3D • Rueda para Zoom • Clic en un planeta o en Voyager 1 para seguirlo&lt;/div&gt;
+                    &lt;div class=&quot;mouse-hint&quot; id=&quot;scaleModeBadge&quot;&gt;Modo: Órbitas Keplerianas Activas (1x = 1 año / 60 s)&lt;/div&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+
+        &lt;!-- PANEL INFERIOR COMPACTO: VELOCIDAD KEPLERIANA + VISIBILIDAD DE CAPAS --&gt;
+        &lt;div class=&quot;controls-panel&quot;&gt;
+            &lt;div class=&quot;slider-block&quot;&gt;
+                &lt;div class=&quot;slider-header&quot;&gt;
+                    &lt;span&gt;⏱️ Velocidad Orbital Relativa (Proporciones Exactas 3ª Ley de Kepler • 1x = 1 año cada 60 s)&lt;/span&gt;
+                    &lt;span class=&quot;slider-badge&quot; id=&quot;speedValueBadge&quot;&gt;1.0x • Ritmo Natural de Aula&lt;/span&gt;
+                &lt;/div&gt;
+                &lt;input type=&quot;range&quot; id=&quot;speedSlider&quot; min=&quot;0&quot; max=&quot;4&quot; step=&quot;0.1&quot; value=&quot;1.0&quot;&gt;
+                &lt;div class=&quot;slider-legend&quot;&gt;
+                    &lt;span&gt;⏸️ 0x (Pausado)&lt;/span&gt;
+                    &lt;span&gt;🐢 0.5x (Muy Lento)&lt;/span&gt;
+                    &lt;span&gt;🌍 1.0x (Ritmo Natural: 1 año/min)&lt;/span&gt;
+                    &lt;span&gt;⚡ 2.0x (Rápido)&lt;/span&gt;
+                    &lt;span&gt;🚀 4.0x (Acelerado)&lt;/span&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+
+            &lt;div class=&quot;quick-actions-box&quot;&gt;
+                &lt;button class=&quot;btn-tool active&quot; id=&quot;btnToggleOrbits&quot;&gt;⭕ Órbitas y Cinturón&lt;/button&gt;
+                &lt;button class=&quot;btn-tool active&quot; id=&quot;btnToggleHeliopause&quot;&gt;🔥 Barrera Heliopausa&lt;/button&gt;
+                &lt;button class=&quot;btn-tool active&quot; id=&quot;btnToggleLabels&quot;&gt;🏷️ Etiquetas 3D&lt;/button&gt;
+                &lt;button class=&quot;btn-tool&quot; id=&quot;btnResetCamera&quot;&gt;🔄 Vista General&lt;/button&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/main&gt;
+
+    &lt;script&gt;
+        // ============================================================================
+        // CATÁLOGO CIENTÍFICO DE TEXTURAS SATELITALES REALES (NASA / SOLAR SYSTEM SCOPE)
+        // ============================================================================
+        const CDN_PRIMARY = &quot;https://cdn.jsdelivr.net/gh/zhangwenqiang0214/solar-system-3d@main/assets/&quot;;
+        const CDN_FALLBACK = &quot;https://raw.githubusercontent.com/zhangwenqiang0214/solar-system-3d/main/assets/&quot;;
+
+        const PLANET_DATA = {
+            overview: {
+                name: &quot;🌌 Sistema Solar&quot;,
+                probe: &quot;Misiones NASA / ESA&quot;,
+                desc: &quot;Ocho planetas girando alrededor del Sol con las proporciones orbitales exactas de la 3ª Ley de Kepler (1x = 1 año terrestre cada 60 s). Activa el Vórtice Galáctico en tirabuzón o viaja hasta la sonda Voyager 1.&quot;,
+                diameter: &quot;1.392.700 km (Sol)&quot;,
+                distance: &quot;Hasta 120 UA (Heliopausa)&quot;,
+                orbit: &quot;88 días a 165 años&quot;,
+                temp: &quot;+5.500 °C • 290+ lunas&quot;
+            },
+            vortex: {
+                name: &quot;🌀 Vórtice Helicoidal Galáctico («Efecto Tirabuzón»)&quot;,
+                probe: &quot;Astrofísica Galáctica • Misión ESA Gaia / NASA&quot;,
+                desc: &quot;¡El Sol no está quieto! Viaja a 828.000 km/h (230 km/s) orbitando el centro de la Vía Láctea con el plano de los planetas inclinado 60°. Al avanzar el Sol como un proyectil mientras los planetas lo rodean, sus trayectorias en el espacio dibujan espectaculares hélices o tirabuzones.&quot;,
+                diameter: &quot;Inclinación eclíptica: 60°&quot;,
+                distance: &quot;Velocidad Sol: 828.000 km/h&quot;,
+                orbit: &quot;Año galáctico: 225 millones años&quot;,
+                temp: &quot;Centro: Sagitario A* (26.000 años luz)&quot;
+            },
+            sun: {
+                name: &quot;☀️ El Sol (Estrella G2V)&quot;,
+                probe: &quot;NASA SDO (Solar Dynamics Observatory)&quot;,
+                desc: &quot;Contiene el 99,86% de toda la masa del Sistema Solar. Su textura muestra el plasma real de la fotosfera solar captado en ultravioleta extremo por el telescopio espacial SDO de la NASA.&quot;,
+                diameter: &quot;1.392.700 km (109 Tierras)&quot;,
+                distance: &quot;Centro del Sistema (0 km)&quot;,
+                orbit: &quot;Rotación ecuatorial: 25 días&quot;,
+                temp: &quot;5.500 °C (superficie)&quot;
+            },
+            mercury: {
+                name: &quot;🪨 Mercurio&quot;,
+                probe: &quot;Sonda NASA MESSENGER&quot;,
+                desc: &quot;El planeta más cercano al Sol y el más veloz (4,15 veces más rápido que la Tierra según las leyes de Kepler). Su superficie plagada de cráteres fue cartografiada por la sonda MESSENGER.&quot;,
+                diameter: &quot;4.879 km&quot;,
+                distance: &quot;57,9 millones km (0,39 UA)&quot;,
+                orbit: &quot;88 días terrestres&quot;,
+                temp: &quot;-180 °C a +430 °C • 0 lunas&quot;
+            },
+            venus: {
+                name: &quot;🌕 Venus&quot;,
+                probe: &quot;Sonda NASA Magellan / Akatsuki&quot;,
+                desc: &quot;Envuelto en densas nubes de ácido sulfúrico que provocan un efecto invernadero extremo. Gira en sentido contrario al resto de planetas (rotación retrógrada).&quot;,
+                diameter: &quot;12.104 km&quot;,
+                distance: &quot;108,2 millones km (0,72 UA)&quot;,
+                orbit: &quot;225 días terrestres&quot;,
+                temp: &quot;+465 °C • 0 lunas&quot;
+            },
+            earth: {
+                name: &quot;🌍 La Tierra y la Luna&quot;,
+                probe: &quot;NASA Blue Marble MODIS + Sonda LRO&quot;,
+                desc: &quot;Nuestro hogar oceánico combina el mapa satelital NASA Blue Marble con una segunda esfera transparente de nubes reales MODIS en rotación y la Luna cartografiada por el Lunar Reconnaissance Orbiter.&quot;,
+                diameter: &quot;12.742 km (Luna: 3.474 km)&quot;,
+                distance: &quot;149,6 millones km (1,00 UA)&quot;,
+                orbit: &quot;365,25 días (Luna: 27,3 días)&quot;,
+                temp: &quot;+15 °C media • 1 Luna&quot;
+            },
+            mars: {
+                name: &quot;🔴 Marte (El Planeta Rojo)&quot;,
+                probe: &quot;NASA Viking &amp; Mars Global Surveyor&quot;,
+                desc: &quot;Su color rojizo se debe al óxido de hierro. En su mapa fotográfico de la NASA destacan el colosal cañón Valles Marineris (4.000 km de longitud) y el volcán Monte Olimpo (21,9 km de altura).&quot;,
+                diameter: &quot;6.779 km&quot;,
+                distance: &quot;227,9 millones km (1,52 UA)&quot;,
+                orbit: &quot;687 días terrestres (1,88 años)&quot;,
+                temp: &quot;-63 °C media • 2 lunas&quot;
+            },
+            jupiter: {
+                name: &quot;🟠 Júpiter&quot;,
+                probe: &quot;NASA Cassini &amp; Telescopio Hubble&quot;,
+                desc: &quot;El gigante gaseoso más grande del Sistema Solar (cabrían 1.300 Tierras en su interior). Su mapa de la misión Cassini muestra las bandas de amoníaco y el anticiclón de la Gran Mancha Roja.&quot;,
+                diameter: &quot;139.820 km (11 Tierras)&quot;,
+                distance: &quot;778,5 millones km (5,20 UA)&quot;,
+                orbit: &quot;11,86 años terrestres&quot;,
+                temp: &quot;-110 °C • 95 lunas&quot;
+            },
+            saturn: {
+                name: &quot;🪐 Saturno y sus Anillos&quot;,
+                probe: &quot;Misión NASA / ESA Cassini-Huygens&quot;,
+                desc: &quot;Famoso por su espectacular sistema de anillos de hielo puro y roca. Tanto las bandas doradas del planeta como la estructura radial translúcida de los anillos proceden de la sonda Cassini.&quot;,
+                diameter: &quot;116.460 km (Anillos: 282.000 km)&quot;,
+                distance: &quot;1.434 millones km (9,58 UA)&quot;,
+                orbit: &quot;29,45 años terrestres&quot;,
+                temp: &quot;-140 °C • 146 lunas&quot;
+            },
+            uranus: {
+                name: &quot;🔵 Urano&quot;,
+                probe: &quot;Sonda NASA Voyager 2&quot;,
+                desc: &quot;Gigante helado de atmósfera de hidrógeno, helio y metano (que absorbe la luz roja y le da su tono azul cian). Tiene el eje de rotación tumbado a 97,7°, rodando sobre su órbita.&quot;,
+                diameter: &quot;50.724 km&quot;,
+                distance: &quot;2.871 millones km (19,2 UA)&quot;,
+                orbit: &quot;84 años terrestres&quot;,
+                temp: &quot;-195 °C • 28 lunas&quot;
+            },
+            neptune: {
+                name: &quot;🌊 Neptuno&quot;,
+                probe: &quot;Sonda NASA Voyager 2&quot;,
+                desc: &quot;El planeta más lejano del Sol, fotografiado de cerca por la sonda Voyager 2 de la NASA en 1989. Posee los vientos supersónicos más veloces del Sistema Solar (hasta 2.100 km/h).&quot;,
+                diameter: &quot;49.244 km&quot;,
+                distance: &quot;4.495 millones km (30,1 UA)&quot;,
+                orbit: &quot;164,8 años terrestres&quot;,
+                temp: &quot;-201 °C • 16 lunas&quot;
+            },
+            voyager: {
+                name: &quot;🛰️ Voyager 1 en la Heliopausa («Muro de Fuego»)&quot;,
+                probe: &quot;Misión Interestelar NASA Voyager 1 &amp; 2&quot;,
+                desc: &quot;¿Qué es la famosa &#x27;barrera&#x27; del límite del Sistema Solar? El Sol emite una burbuja protectora de viento solar (Heliosfera). A 18.000 millones de km (120 UA), ese viento choca contra el espacio interestelar formando la HELIOPAUSA: un &#x27;muro de plasma&#x27; a 40.000 °C. No funde a la Voyager porque allí el vacío es casi total (poquísimas partículas), pero frena en seco el viento solar.&quot;,
+                diameter: &quot;Antena 3,7 m • Peso: 722 kg&quot;,
+                distance: &quot;18.000+ millones km (&gt;120 UA)&quot;,
+                orbit: &quot;Velocidad escape: 61.200 km/h&quot;,
+                temp: &quot;Muro de plasma: 30.000–50.000 °C&quot;
+            }
+        };
+
+        const PLANETS_CONFIG = [
+            { key: &quot;mercury&quot;, label: &quot;Mercurio&quot;, radius: 1.05, distance: 15,  compareX: -28, speed: 4.15, rotSpeed: 0.003, tilt: 0.03, tex: &quot;2k_mercury.jpg&quot;, color: 0x94a3b8 },
+            { key: &quot;venus&quot;,   label: &quot;Venus&quot;,    radius: 1.75, distance: 21,  compareX: -22, speed: 1.62, rotSpeed: -0.0018, tilt: 3.09, tex: &quot;2k_venus_atmosphere.jpg&quot;, color: 0xfde047 },
+            { key: &quot;earth&quot;,   label: &quot;Tierra&quot;,   radius: 1.95, distance: 29,  compareX: -15, speed: 1.00, rotSpeed: 0.009, tilt: 0.41, tex: &quot;2k_earth_daymap.jpg&quot;, clouds: &quot;2k_earth_clouds.jpg&quot;, color: 0x38bdf8 },
+            { key: &quot;mars&quot;,    label: &quot;Marte&quot;,    radius: 1.40, distance: 37,  compareX: -9,  speed: 0.53, rotSpeed: 0.008, tilt: 0.44, tex: &quot;2k_mars.jpg&quot;, color: 0xf87171 },
+            { key: &quot;jupiter&quot;, label: &quot;Júpiter&quot;,  radius: 4.60, distance: 52,  compareX: 0,   speed: 0.18, rotSpeed: 0.016, tilt: 0.05, tex: &quot;2k_jupiter.jpg&quot;, color: 0xfb923c },
+            { key: &quot;saturn&quot;,  label: &quot;Saturno&quot;,  radius: 3.85, distance: 69,  compareX: 14,  speed: 0.10, rotSpeed: 0.014, tilt: 0.47, tex: &quot;2k_saturn.jpg&quot;, ringTex: &quot;2k_saturn_ring_alpha.png&quot;, color: 0xfacc15 },
+            { key: &quot;uranus&quot;,  label: &quot;Urano&quot;,    radius: 2.65, distance: 84,  compareX: 26,  speed: 0.06, rotSpeed: -0.010, tilt: 1.70, tex: &quot;2k_uranus.jpg&quot;, hasThinRing: true, color: 0x22d3ee },
+            { key: &quot;neptune&quot;, label: &quot;Neptuno&quot;,  radius: 2.55, distance: 97,  compareX: 35,  speed: 0.035, rotSpeed: 0.011, tilt: 0.49, tex: &quot;2k_neptune.jpg&quot;, color: 0x60a5fa }
+        ];
+
+        // ============================================================================
+        // INICIALIZACIÓN DEL MOTOR 3D THREE.JS
+        // ============================================================================
+        const container = document.getElementById(&quot;canvasContainer&quot;);
+        const canvas = document.getElementById(&quot;canvas3d&quot;);
+        const labelsLayer = document.getElementById(&quot;labelsLayer&quot;);
+
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(46, container.clientWidth / container.clientHeight, 0.1, 3000);
+        camera.position.set(0, 62, 138);
+
+        const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: &quot;high-performance&quot; });
+        renderer.setSize(container.clientWidth, container.clientHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        renderer.toneMappingExposure = 1.15;
+
+        const controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.06;
+        controls.minDistance = 2.8;
+        controls.maxDistance = 420;
+
+        const ambientLight = new THREE.AmbientLight(0xdbeafe, 0.44);
+        scene.add(ambientLight);
+
+        const sunPointLight = new THREE.PointLight(0xfffbeb, 2.35, 700, 0.32);
+        sunPointLight.position.set(0, 0, 0);
+        scene.add(sunPointLight);
+
+        const textureLoader = new THREE.TextureLoader();
+        textureLoader.setCrossOrigin(&quot;anonymous&quot;);
+
+        let loadedTexturesCount = 0;
+        const totalExpectedTextures = 12;
+        const statusBadge = document.getElementById(&quot;textureStatusBadge&quot;);
+
+        function loadNasaTexture(filename, onSuccess) {
+            const primaryUrl = CDN_PRIMARY + filename;
+            const fallbackUrl = CDN_FALLBACK + filename;
+            const tex = textureLoader.load(
+                primaryUrl,
+                (t) =&gt; {
+                    t.anisotropy = renderer.capabilities.getMaxAnisotropy();
+                    loadedTexturesCount++;
+                    if (statusBadge) {
+                        statusBadge.textContent = `✅ Mapas Satelitales NASA (${Math.min(loadedTexturesCount, totalExpectedTextures)}/${totalExpectedTextures})`;
+                    }
+                    if (onSuccess) onSuccess(t);
+                },
+                undefined,
+                () =&gt; {
+                    textureLoader.load(fallbackUrl, (t2) =&gt; {
+                        t2.anisotropy = renderer.capabilities.getMaxAnisotropy();
+                        if (onSuccess) onSuccess(t2);
+                    });
+                }
+            );
+            return tex;
+        }
+
+        // ============================================================================
+        // 1. ESFERA CELESTE DE LA VÍA LÁCTEA (ESO / NASA 8K)
+        // ============================================================================
+        const skyGeo = new THREE.SphereGeometry(1100, 48, 48);
+        const skyMat = new THREE.MeshBasicMaterial({
+            map: loadNasaTexture(&quot;8k_stars_milky_way.jpg&quot;),
+            side: THREE.BackSide,
+            transparent: true,
+            opacity: 0.92
+        });
+        const skyDome = new THREE.Mesh(skyGeo, skyMat);
+        scene.add(skyDome);
+
+        // ============================================================================
+        // 2. EL SOL CON FOTOSFERA NASA SDO Y CORONA SOLAR
+        // ============================================================================
+        const sunGroup = new THREE.Group();
+        scene.add(sunGroup);
+
+        const sunGeo = new THREE.SphereGeometry(7.2, 64, 64);
+        const sunMat = new THREE.MeshBasicMaterial({
+            map: loadNasaTexture(&quot;2k_sun.jpg&quot;)
+        });
+        const sunMesh = new THREE.Mesh(sunGeo, sunMat);
+        sunGroup.add(sunMesh);
+
+        function createCoronaTexture() {
+            const c = document.createElement(&quot;canvas&quot;);
+            c.width = 256; c.height = 256;
+            const ctx = c.getContext(&quot;2d&quot;);
+            const grad = ctx.createRadialGradient(128, 128, 22, 128, 128, 128);
+            grad.addColorStop(0.0, &quot;rgba(255, 251, 235, 1.0)&quot;);
+            grad.addColorStop(0.28, &quot;rgba(251, 191, 36, 0.72)&quot;);
+            grad.addColorStop(0.6, &quot;rgba(245, 158, 11, 0.22)&quot;);
+            grad.addColorStop(1.0, &quot;rgba(245, 158, 11, 0.0)&quot;);
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, 256, 256);
+            return new THREE.CanvasTexture(c);
+        }
+        const coronaSprite = new THREE.Sprite(new THREE.SpriteMaterial({
+            map: createCoronaTexture(),
+            blending: THREE.AdditiveBlending,
+            transparent: true,
+            depthWrite: false
+        }));
+        coronaSprite.scale.set(27, 27, 1);
+        sunGroup.add(coronaSprite);
+
+        // ============================================================================
+        // 3. CREACIÓN DE LOS 8 PLANETAS, LA LUNA, ANILLOS DE SATURNO Y ÓRBITAS
+        // ============================================================================
+        const planetObjects = {};
+        const orbitLinesGroup = new THREE.Group();
+        scene.add(orbitLinesGroup);
+        const pickableMeshes = [sunMesh];
+        sunMesh.userData = { key: &quot;sun&quot; };
+
+        const labelPins = {};
+        function createLabelPin(key, text, extraClass) {
+            const el = document.createElement(&quot;div&quot;);
+            el.className = &quot;planet-label-pin&quot; + (extraClass ? &quot; &quot; + extraClass : &quot;&quot;);
+            el.textContent = text;
+            el.addEventListener(&quot;click&quot;, (e) =&gt; {
+                e.stopPropagation();
+                focusBody(key);
+            });
+            labelsLayer.appendChild(el);
+            labelPins[key] = el;
+        }
+        createLabelPin(&quot;sun&quot;, &quot;☀️ Sol&quot;);
+
+        function createRadialRingGeometry(innerRadius, outerRadius, segments) {
+            const geo = new THREE.RingGeometry(innerRadius, outerRadius, segments, 2);
+            const pos = geo.attributes.position;
+            const uvs = geo.attributes.uv;
+            const v3 = new THREE.Vector3();
+            for (let i = 0; i &lt; pos.count; i++) {
+                v3.fromBufferAttribute(pos, i);
+                const r = v3.length();
+                const u = (r - innerRadius) / (outerRadius - innerRadius);
+                uvs.setXY(i, u, 0.5);
+            }
+            return geo;
+        }
+
+        // Grupo de estelas en espiral / tirabuzón para el Modo Vórtice Galáctico
+        const vortexGroup = new THREE.Group();
+        vortexGroup.visible = false;
+        scene.add(vortexGroup);
+
+        const TRAIL_POINTS = 260;
+        const VORTEX_Z_STEP = 0.42; // Velocidad de avance aparente del Sol por la galaxia
+
+        // Estela dorada central del avance rectilíneo del Sol hacia el centro galáctico
+        const sunBeamGeo = new THREE.CylinderGeometry(0.45, 2.2, 240, 20, 1, true);
+        const sunBeamMat = new THREE.MeshBasicMaterial({
+            color: 0xfbbf24,
+            transparent: true,
+            opacity: 0.28,
+            side: THREE.DoubleSide,
+            blending: THREE.AdditiveBlending,
+            depthWrite: false
+        });
+        const sunBeamMesh = new THREE.Mesh(sunBeamGeo, sunBeamMat);
+        sunBeamMesh.rotation.z = Math.PI / 2;
+        sunBeamMesh.position.set(0, -118, 0);
+        vortexGroup.add(sunBeamMesh);
+
+        // Flecha / cono de dirección galáctica en la proa del Sol
+        const sunArrowGeo = new THREE.ConeGeometry(2.2, 6.5, 24);
+        const sunArrowMat = new THREE.MeshBasicMaterial({
+            color: 0xfef08a,
+            transparent: true,
+            opacity: 0.75
+        });
+        const sunArrowMesh = new THREE.Mesh(sunArrowGeo, sunArrowMat);
+        sunArrowMesh.position.set(0, 16, 0);
+        vortexGroup.add(sunArrowMesh);
+
+        // Estrellas fugaces de referencia galáctica pasando alrededor del vórtice solar
+        const galStarsCount = 600;
+        const galStarsGeo = new THREE.BufferGeometry();
+        const galStarsPos = new Float32Array(galStarsCount * 3);
+        for (let i = 0; i &lt; galStarsCount; i++) {
+            const ang = Math.random() * Math.PI * 2;
+            const rad = 25 + Math.random() * 95;
+            galStarsPos[i * 3] = Math.cos(ang) * rad;
+            galStarsPos[i * 3 + 1] = 35 - Math.random() * 260;
+            galStarsPos[i * 3 + 2] = Math.sin(ang) * rad;
+        }
+        galStarsGeo.setAttribute(&quot;position&quot;, new THREE.BufferAttribute(galStarsPos, 3));
+        const galStarsPoints = new THREE.Points(
+            galStarsGeo,
+            new THREE.PointsMaterial({ color: 0xe0f2fe, size: 0.55, transparent: true, opacity: 0.65 })
+        );
+        vortexGroup.add(galStarsPoints);
+
+        PLANETS_CONFIG.forEach((cfg, idx) =&gt; {
+            const orbitCurve = new THREE.EllipseCurve(0, 0, cfg.distance, cfg.distance, 0, Math.PI * 2, false, 0);
+            const orbitPoints = orbitCurve.getPoints(128).map(p =&gt; new THREE.Vector3(p.x, 0, p.y));
+            const orbitGeo = new THREE.BufferGeometry().setFromPoints(orbitPoints);
+            const orbitMat = new THREE.LineBasicMaterial({
+                color: cfg.color,
+                transparent: true,
+                opacity: 0.28
+            });
+            const orbitLine = new THREE.LineLoop(orbitGeo, orbitMat);
+            orbitLinesGroup.add(orbitLine);
+
+            const holder = new THREE.Group();
+            const initialAngle = idx * 0.85 + 0.4;
+            holder.position.set(
+                Math.cos(initialAngle) * cfg.distance,
+                0,
+                Math.sin(initialAngle) * cfg.distance
+            );
+            scene.add(holder);
+
+            const sphereGeo = new THREE.SphereGeometry(cfg.radius, 64, 64);
+            const sphereMat = new THREE.MeshStandardMaterial({
+                map: loadNasaTexture(cfg.tex),
+                roughness: 0.82,
+                metalness: 0.05
+            });
+            const mesh = new THREE.Mesh(sphereGeo, sphereMat);
+            mesh.rotation.z = cfg.tilt;
+            mesh.userData = { key: cfg.key };
+            holder.add(mesh);
+            pickableMeshes.push(mesh);
+
+            let cloudsMesh = null;
+            let moonPivot = null;
+            let moonMesh = null;
+            if (cfg.key === &quot;earth&quot;) {
+                const cloudsGeo = new THREE.SphereGeometry(cfg.radius * 1.018, 48, 48);
+                const cloudsMat = new THREE.MeshStandardMaterial({
+                    alphaMap: loadNasaTexture(cfg.clouds),
+                    color: 0xffffff,
+                    transparent: true,
+                    opacity: 0.78,
+                    depthWrite: false
+                });
+                cloudsMesh = new THREE.Mesh(cloudsGeo, cloudsMat);
+                mesh.add(cloudsMesh);
+
+                moonPivot = new THREE.Group();
+                moonPivot.rotation.z = 0.09;
+                holder.add(moonPivot);
+
+                const moonGeo = new THREE.SphereGeometry(0.54, 36, 36);
+                const moonMat = new THREE.MeshStandardMaterial({
+                    map: loadNasaTexture(&quot;2k_moon.jpg&quot;),
+                    roughness: 0.9
+                });
+                moonMesh = new THREE.Mesh(moonGeo, moonMat);
+                moonMesh.position.set(3.9, 0, 0);
+                moonMesh.userData = { key: &quot;earth&quot; };
+                moonPivot.add(moonMesh);
+                pickableMeshes.push(moonMesh);
+
+                const mPts = new THREE.EllipseCurve(0, 0, 3.9, 3.9, 0, Math.PI * 2).getPoints(64).map(p =&gt; new THREE.Vector3(p.x, 0, p.y));
+                const mLine = new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints(mPts), new THREE.LineBasicMaterial({ color: 0x94a3b8, transparent: true, opacity: 0.45 }));
+                moonPivot.add(mLine);
+            }
+
+            if (cfg.ringTex) {
+                const ringGeo = createRadialRingGeometry(cfg.radius * 1.28, cfg.radius * 2.38, 128);
+                const ringMat = new THREE.MeshStandardMaterial({
+                    map: loadNasaTexture(cfg.ringTex),
+                    side: THREE.DoubleSide,
+                    transparent: true,
+                    opacity: 0.95,
+                    roughness: 0.65
+                });
+                const ringMesh = new THREE.Mesh(ringGeo, ringMat);
+                ringMesh.rotation.x = Math.PI / 2;
+                mesh.add(ringMesh);
+            }
+
+            if (cfg.hasThinRing) {
+                const uRingGeo = new THREE.RingGeometry(cfg.radius * 1.4, cfg.radius * 1.55, 64);
+                const uRingMat = new THREE.MeshBasicMaterial({
+                    color: 0xa5f3fc,
+                    side: THREE.DoubleSide,
+                    transparent: true,
+                    opacity: 0.25
+                });
+                const uRingMesh = new THREE.Mesh(uRingGeo, uRingMat);
+                uRingMesh.rotation.x = Math.PI / 2;
+                mesh.add(uRingMesh);
+            }
+
+            // Estela helicoidal en tirabuzón (Helical Trail) para este planeta
+            const trailGeo = new THREE.BufferGeometry();
+            const trailPositions = new Float32Array(TRAIL_POINTS * 3);
+            const trailColors = new THREE.Color(cfg.color);
+            const colorAttr = new Float32Array(TRAIL_POINTS * 3);
+            for (let i = 0; i &lt; TRAIL_POINTS; i++) {
+                const fade = Math.pow(1 - i / (TRAIL_POINTS - 1), 1.3);
+                colorAttr[i * 3] = trailColors.r * fade;
+                colorAttr[i * 3 + 1] = trailColors.g * fade;
+                colorAttr[i * 3 + 2] = trailColors.b * fade;
+            }
+            trailGeo.setAttribute(&quot;position&quot;, new THREE.BufferAttribute(trailPositions, 3));
+            trailGeo.setAttribute(&quot;color&quot;, new THREE.BufferAttribute(colorAttr, 3));
+            const trailLine = new THREE.Line(
+                trailGeo,
+                new THREE.LineBasicMaterial({ vertexColors: true, transparent: true, opacity: 0.95 })
+            );
+            vortexGroup.add(trailLine);
+
+            createLabelPin(cfg.key, cfg.label);
+
+            planetObjects[cfg.key] = {
+                cfg,
+                holder,
+                mesh,
+                cloudsMesh,
+                moonPivot,
+                moonMesh,
+                angle: initialAngle,
+                trailGeo,
+                trailPositions
+            };
+        });
+
+        // Pre-poblar la geometría helicoidal analítica de cada planeta para que el tirabuzón se vea completo al instante
+        function rebuildHelicalTrails() {
+            const baseStep = 0.0042 * Math.max(orbitSpeedMultiplier, 0.6);
+            Object.keys(planetObjects).forEach(key =&gt; {
+                const p = planetObjects[key];
+                const arr = p.trailPositions;
+                for (let i = 0; i &lt; TRAIL_POINTS; i++) {
+                    const pastAngle = p.angle - i * baseStep * p.cfg.speed * 2.2;
+                    const yWake = -i * VORTEX_Z_STEP * 1.65;
+                    arr[i * 3] = Math.cos(pastAngle) * p.cfg.distance;
+                    arr[i * 3 + 1] = yWake;
+                    arr[i * 3 + 2] = Math.sin(pastAngle) * p.cfg.distance;
+                }
+                p.trailGeo.attributes.position.needsUpdate = true;
+            });
+        }
+
+        // ============================================================================
+        // 4. CINTURÓN DE ASTEROIDES 3D (ENTRE MARTE Y JÚPITER)
+        // ============================================================================
+        const asteroidCount = 950;
+        const asteroidGeo = new THREE.BufferGeometry();
+        const astPositions = new Float32Array(asteroidCount * 3);
+        const astColors = new Float32Array(asteroidCount * 3);
+        for (let i = 0; i &lt; asteroidCount; i++) {
+            const angle = Math.random() * Math.PI * 2;
+            const r = 42.5 + Math.random() * 5.2;
+            const y = (Math.random() - 0.5) * 1.8;
+            astPositions[i * 3] = Math.cos(angle) * r;
+            astPositions[i * 3 + 1] = y;
+            astPositions[i * 3 + 2] = Math.sin(angle) * r;
+            const shade = 0.55 + Math.random() * 0.35;
+            astColors[i * 3] = shade;
+            astColors[i * 3 + 1] = shade * 0.94;
+            astColors[i * 3 + 2] = shade * 0.85;
+        }
+        asteroidGeo.setAttribute(&quot;position&quot;, new THREE.BufferAttribute(astPositions, 3));
+        asteroidGeo.setAttribute(&quot;color&quot;, new THREE.BufferAttribute(astColors, 3));
+        const asteroidBelt = new THREE.Points(
+            asteroidGeo,
+            new THREE.PointsMaterial({ size: 0.38, vertexColors: true, transparent: true, opacity: 0.75 })
+        );
+        orbitLinesGroup.add(asteroidBelt);
+
+        // ============================================================================
+        // 5. LA HELIOPAUSA (&quot;MURO DE FUEGO&quot; A 40.000 °C) Y LA SONDA VOYAGER 1 (120 UA)
+        // ============================================================================
+        const heliopauseGroup = new THREE.Group();
+        scene.add(heliopauseGroup);
+
+        const HELIOPAUSE_RADIUS = 118;
+
+        const helioRingGeo = new THREE.RingGeometry(HELIOPAUSE_RADIUS - 1.6, HELIOPAUSE_RADIUS + 1.6, 128);
+        const helioRingMat = new THREE.MeshBasicMaterial({
+            color: 0xf43f5e,
+            side: THREE.DoubleSide,
+            transparent: true,
+            opacity: 0.38,
+            blending: THREE.AdditiveBlending
+        });
+        const helioRingMesh = new THREE.Mesh(helioRingGeo, helioRingMat);
+        helioRingMesh.rotation.x = Math.PI / 2;
+        heliopauseGroup.add(helioRingMesh);
+
+        const helioShellGeo = new THREE.SphereGeometry(HELIOPAUSE_RADIUS, 48, 32);
+        const helioShellMat = new THREE.MeshBasicMaterial({
+            color: 0xfb7185,
+            wireframe: true,
+            transparent: true,
+            opacity: 0.08,
+            blending: THREE.AdditiveBlending
+        });
+        const helioShellMesh = new THREE.Mesh(helioShellGeo, helioShellMat);
+        heliopauseGroup.add(helioShellMesh);
+
+        const plasmaCount = 1200;
+        const plasmaGeo = new THREE.BufferGeometry();
+        const plasmaPos = new Float32Array(plasmaCount * 3);
+        const plasmaCol = new Float32Array(plasmaCount * 3);
+        for (let i = 0; i &lt; plasmaCount; i++) {
+            const theta = Math.random() * Math.PI * 2;
+            const phi = (Math.random() - 0.5) * 0.55;
+            const r = HELIOPAUSE_RADIUS + (Math.random() - 0.5) * 4.5;
+            plasmaPos[i * 3] = r * Math.cos(phi) * Math.cos(theta);
+            plasmaPos[i * 3 + 1] = r * Math.sin(phi) * 35;
+            plasmaPos[i * 3 + 2] = r * Math.cos(phi) * Math.sin(theta);
+            plasmaCol[i * 3] = 0.98;
+            plasmaCol[i * 3 + 1] = 0.35 + Math.random() * 0.45;
+            plasmaCol[i * 3 + 2] = 0.25 + Math.random() * 0.55;
+        }
+        plasmaGeo.setAttribute(&quot;position&quot;, new THREE.BufferAttribute(plasmaPos, 3));
+        plasmaGeo.setAttribute(&quot;color&quot;, new THREE.BufferAttribute(plasmaCol, 3));
+        const plasmaWallParticles = new THREE.Points(
+            plasmaGeo,
+            new THREE.PointsMaterial({
+                size: 0.65,
+                vertexColors: true,
+                transparent: true,
+                opacity: 0.75,
+                blending: THREE.AdditiveBlending
+            })
+        );
+        heliopauseGroup.add(plasmaWallParticles);
+
+        const voyagerHolder = new THREE.Group();
+        const voyagerAngle = 0.62;
+        voyagerHolder.position.set(
+            Math.cos(voyagerAngle) * HELIOPAUSE_RADIUS,
+            3.5,
+            Math.sin(voyagerAngle) * HELIOPAUSE_RADIUS
+        );
+        voyagerHolder.lookAt(0, 0, 0);
+        scene.add(voyagerHolder);
+
+        const dishGeo = new THREE.CylinderGeometry(1.65, 0.35, 0.45, 32, 1, true);
+        const dishMat = new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.3, metalness: 0.6, side: THREE.DoubleSide });
+        const dishMesh = new THREE.Mesh(dishGeo, dishMat);
+        dishMesh.rotation.x = Math.PI / 2;
+        dishMesh.userData = { key: &quot;voyager&quot; };
+        voyagerHolder.add(dishMesh);
+        pickableMeshes.push(dishMesh);
+
+        const busGeo = new THREE.CylinderGeometry(0.65, 0.65, 0.55, 10);
+        const goldMat = new THREE.MeshStandardMaterial({ color: 0xfbbf24, roughness: 0.25, metalness: 0.85 });
+        const busMesh = new THREE.Mesh(busGeo, goldMat);
+        busMesh.rotation.x = Math.PI / 2;
+        busMesh.position.z = -0.45;
+        busMesh.userData = { key: &quot;voyager&quot; };
+        voyagerHolder.add(busMesh);
+        pickableMeshes.push(busMesh);
+
+        const boomGeo = new THREE.CylinderGeometry(0.05, 0.05, 4.2, 8);
+        const boomMat = new THREE.MeshStandardMaterial({ color: 0x94a3b8, metalness: 0.8 });
+        const boomMesh = new THREE.Mesh(boomGeo, boomMat);
+        boomMesh.rotation.z = Math.PI / 2;
+        boomMesh.position.set(1.8, 0, -0.45);
+        voyagerHolder.add(boomMesh);
+
+        const rtgBoom = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 2.4, 8), boomMat);
+        rtgBoom.rotation.z = -Math.PI / 3;
+        rtgBoom.position.set(-1.1, -0.6, -0.45);
+        voyagerHolder.add(rtgBoom);
+
+        const bowShockSprite = new THREE.Sprite(new THREE.SpriteMaterial({
+            map: createCoronaTexture(),
+            color: 0xfb7185,
+            blending: THREE.AdditiveBlending,
+            transparent: true,
+            opacity: 0.65
+        }));
+        bowShockSprite.scale.set(7.5, 7.5, 1);
+        voyagerHolder.add(bowShockSprite);
+
+        const trajPoints = [];
+        for (let i = 0; i &lt;= 40; i++) {
+            const t = i / 40;
+            const r = 29 + t * (HELIOPAUSE_RADIUS - 29);
+            const a = voyagerAngle - (1 - t) * 0.55;
+            trajPoints.push(new THREE.Vector3(Math.cos(a) * r, t * 3.5, Math.sin(a) * r));
+        }
+        const trajGeo = new THREE.BufferGeometry().setFromPoints(trajPoints);
+        const trajLine = new THREE.Line(trajGeo, new THREE.LineBasicMaterial({ color: 0xfb7185, transparent: true, opacity: 0.65 }));
+        heliopauseGroup.add(trajLine);
+
+        createLabelPin(&quot;voyager&quot;, &quot;🛰️ Voyager 1 • Heliopausa (Muro de Plasma)&quot;, &quot;voyager-pin&quot;);
+
+        // ============================================================================
+        // 6. LÓGICA DE NAVEGACIÓN, MODOS INTERACTIVOS Y TELEMETRÍA
+        // ============================================================================
+        let currentTargetKey = &quot;overview&quot;;
+        let orbitSpeedMultiplier = 1.0;
+        let simulatedEarthDays = 0;
+        let isCompareMode = false;
+        let isVortexMode = false;
+        let showOrbits = true;
+        let showHeliopause = true;
+        let showLabels = true;
+        let cameraTransitionFrames = 0;
+        const desiredCamOffset = new THREE.Vector3();
+
+        function updateTelemetryUI(key) {
+            const data = PLANET_DATA[key] || PLANET_DATA.overview;
+            document.getElementById(&quot;infoName&quot;).textContent = data.name;
+            document.getElementById(&quot;infoProbe&quot;).textContent = data.probe;
+            document.getElementById(&quot;infoDesc&quot;).textContent = data.desc;
+            document.getElementById(&quot;infoDiameter&quot;).textContent = data.diameter;
+            document.getElementById(&quot;infoDistance&quot;).textContent = data.distance;
+            document.getElementById(&quot;infoOrbit&quot;).textContent = data.orbit;
+            document.getElementById(&quot;infoTemp&quot;).textContent = data.temp;
+            document.getElementById(&quot;hudTargetName&quot;).textContent = data.name;
+
+            document.querySelectorAll(&quot;#planetButtonsGroup .btn-tool[data-target]&quot;).forEach(btn =&gt; {
+                btn.classList.toggle(&quot;active&quot;, !isVortexMode &amp;&amp; btn.getAttribute(&quot;data-target&quot;) === key);
+            });
+
+            Object.keys(labelPins).forEach(k =&gt; {
+                labelPins[k].classList.toggle(&quot;active-pin&quot;, k === key);
+            });
+        }
+
+        function focusBody(key) {
+            currentTargetKey = key;
+            updateTelemetryUI(key);
+            cameraTransitionFrames = 48;
+
+            if (key === &quot;overview&quot;) {
+                desiredCamOffset.set(0, 62, 138);
+            } else if (key === &quot;sun&quot;) {
+                desiredCamOffset.set(0, 8, 24);
+            } else if (key === &quot;voyager&quot;) {
+                desiredCamOffset.set(8, 4.5, 11);
+            } else if (planetObjects[key]) {
+                const r = planetObjects[key].cfg.radius;
+                const dist = Math.max(r * 3.8, 6.2);
+                desiredCamOffset.set(dist * 0.75, dist * 0.42, dist);
+            }
+        }
+
+        // Experiencia 1: Modo Vórtice Galáctico (&quot;Efecto Tirabuzón&quot;)
+        function toggleVortexMode(forceState) {
+            isVortexMode = typeof forceState === &quot;boolean&quot; ? forceState : !isVortexMode;
+            if (isVortexMode &amp;&amp; isCompareMode) {
+                toggleCompareMode(false);
+            }
+            const tagVortex = document.getElementById(&quot;tagVortex&quot;);
+            const btnTopVortex = document.getElementById(&quot;btnTopVortex&quot;);
+            const scaleBadge = document.getElementById(&quot;scaleModeBadge&quot;);
+
+            tagVortex.textContent = isVortexMode ? &quot;Salir de Espiral&quot; : &quot;Activar Espiral&quot;;
+            btnTopVortex.classList.toggle(&quot;active&quot;, isVortexMode);
+            vortexGroup.visible = isVortexMode;
+
+            if (isVortexMode) {
+                rebuildHelicalTrails();
+                updateTelemetryUI(&quot;vortex&quot;);
+                scaleBadge.textContent = &quot;Modo: Vórtice Helicoidal Galáctico (Sol avanzando a 828.000 km/h)&quot;;
+                // Colocar la cámara de perfil oblicuo para ver el tirabuzón en toda su longitud
+                cameraTransitionFrames = 0;
+                camera.position.set(125, -45, 95);
+                controls.target.set(0, -42, 0);
+            } else {
+                scaleBadge.textContent = &quot;Modo: Órbitas Keplerianas Activas (1x = 1 año / 60 s)&quot;;
+                focusBody(&quot;overview&quot;);
+            }
+        }
+
+        document.getElementById(&quot;cardModeVortex&quot;).addEventListener(&quot;click&quot;, () =&gt; toggleVortexMode());
+        document.getElementById(&quot;btnTopVortex&quot;).addEventListener(&quot;click&quot;, () =&gt; toggleVortexMode());
+
+        // Experiencia 2: Comparar Tamaño de Planetas (Alinear en fila)
+        function toggleCompareMode(forceState) {
+            isCompareMode = typeof forceState === &quot;boolean&quot; ? forceState : !isCompareMode;
+            if (isCompareMode &amp;&amp; isVortexMode) {
+                isVortexMode = false;
+                vortexGroup.visible = false;
+                document.getElementById(&quot;tagVortex&quot;).textContent = &quot;Activar Espiral&quot;;
+                document.getElementById(&quot;btnTopVortex&quot;).classList.remove(&quot;active&quot;);
+            }
+            const tagCompare = document.getElementById(&quot;tagCompare&quot;);
+            const scaleBadge = document.getElementById(&quot;scaleModeBadge&quot;);
+
+            tagCompare.textContent = isCompareMode ? &quot;Volver a Órbitas&quot; : &quot;Activar Fila&quot;;
+            scaleBadge.textContent = isCompareMode
+                ? &quot;Modo: Alineación Comparativa de Tamaños&quot;
+                : &quot;Modo: Órbitas Keplerianas Activas (1x = 1 año / 60 s)&quot;;
+
+            if (isCompareMode) {
+                orbitLinesGroup.visible = false;
+                heliopauseGroup.visible = false;
+                voyagerHolder.visible = false;
+                if (labelPins.voyager) labelPins.voyager.style.display = &quot;none&quot;;
+                sunGroup.position.set(-40, 0, 0);
+                sunPointLight.position.set(0, 35, 65);
+                ambientLight.intensity = 0.85;
+                currentTargetKey = &quot;overview&quot;;
+                updateTelemetryUI(&quot;overview&quot;);
+                camera.position.set(0, 14, 58);
+                controls.target.set(2, 0, 0);
+            } else {
+                orbitLinesGroup.visible = showOrbits;
+                heliopauseGroup.visible = showHeliopause;
+                voyagerHolder.visible = showHeliopause;
+                sunGroup.position.set(0, 0, 0);
+                sunPointLight.position.set(0, 0, 0);
+                ambientLight.intensity = 0.44;
+                focusBody(&quot;overview&quot;);
+            }
+        }
+
+        document.getElementById(&quot;cardModeCompare&quot;).addEventListener(&quot;click&quot;, () =&gt; toggleCompareMode());
+
+        document.querySelectorAll(&quot;#planetButtonsGroup .btn-tool[data-target]&quot;).forEach(btn =&gt; {
+            btn.addEventListener(&quot;click&quot;, () =&gt; {
+                const target = btn.getAttribute(&quot;data-target&quot;);
+                if (isCompareMode) toggleCompareMode(false);
+                if (isVortexMode) toggleVortexMode(false);
+                focusBody(target);
+            });
+        });
+
+        // Clic directo sobre cualquier planeta o Voyager 1 en el visor 3D
+        const raycaster = new THREE.Raycaster();
+        const mouse = new THREE.Vector2();
+        let pointerDownPos = { x: 0, y: 0 };
+
+        canvas.addEventListener(&quot;pointerdown&quot;, (e) =&gt; {
+            pointerDownPos = { x: e.clientX, y: e.clientY };
+        });
+
+        canvas.addEventListener(&quot;pointerup&quot;, (e) =&gt; {
+            const dx = Math.abs(e.clientX - pointerDownPos.x);
+            const dy = Math.abs(e.clientY - pointerDownPos.y);
+            if (dx &gt; 5 || dy &gt; 5) return;
+
+            const rect = canvas.getBoundingClientRect();
+            mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+            mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+            raycaster.setFromCamera(mouse, camera);
+            const hits = raycaster.intersectObjects(pickableMeshes, false);
+            if (hits.length &gt; 0 &amp;&amp; hits[0].object.userData.key) {
+                if (isVortexMode) toggleVortexMode(false);
+                focusBody(hits[0].object.userData.key);
+            }
+        });
+
+        // Experiencia 3: Día/Noche Tierra + Luna
+        document.getElementById(&quot;cardModeEarthMoon&quot;).addEventListener(&quot;click&quot;, () =&gt; {
+            if (isCompareMode) toggleCompareMode(false);
+            if (isVortexMode) toggleVortexMode(false);
+            focusBody(&quot;earth&quot;);
+        });
+
+        // Experiencia 4: Anillos de Saturno (Cassini)
+        document.getElementById(&quot;cardModeSaturn&quot;).addEventListener(&quot;click&quot;, () =&gt; {
+            if (isCompareMode) toggleCompareMode(false);
+            if (isVortexMode) toggleVortexMode(false);
+            focusBody(&quot;saturn&quot;);
+        });
+
+        // Experiencia 5: Voyager 1 y la Heliopausa (&quot;Muro de Fuego&quot;)
+        document.getElementById(&quot;cardModeVoyager&quot;).addEventListener(&quot;click&quot;, () =&gt; {
+            if (isCompareMode) toggleCompareMode(false);
+            if (isVortexMode) toggleVortexMode(false);
+            if (!showHeliopause) {
+                showHeliopause = true;
+                heliopauseGroup.visible = true;
+                voyagerHolder.visible = true;
+                document.getElementById(&quot;btnToggleHeliopause&quot;).classList.add(&quot;active&quot;);
+            }
+            focusBody(&quot;voyager&quot;);
+        });
+
+        // Control deslizante de velocidad orbital (1.0x = ritmo pausado natural donde 1 año terrestre = 60 segundos)
+        const speedSlider = document.getElementById(&quot;speedSlider&quot;);
+        const speedValueBadge = document.getElementById(&quot;speedValueBadge&quot;);
+        speedSlider.addEventListener(&quot;input&quot;, () =&gt; {
+            orbitSpeedMultiplier = parseFloat(speedSlider.value);
+            if (orbitSpeedMultiplier === 0) {
+                speedValueBadge.textContent = &quot;⏸️ 0.0x • Órbitas en Pausa&quot;;
+            } else if (orbitSpeedMultiplier === 1.0) {
+                speedValueBadge.textContent = &quot;1.0x • Ritmo Natural de Aula&quot;;
+            } else {
+                speedValueBadge.textContent = `${orbitSpeedMultiplier.toFixed(1)}x • Velocidad Orbital`;
+            }
+        });
+
+        // Botón Órbitas y Cinturón
+        const btnToggleOrbits = document.getElementById(&quot;btnToggleOrbits&quot;);
+        btnToggleOrbits.addEventListener(&quot;click&quot;, () =&gt; {
+            showOrbits = !showOrbits;
+            orbitLinesGroup.visible = showOrbits &amp;&amp; !isCompareMode;
+            btnToggleOrbits.classList.toggle(&quot;active&quot;, showOrbits);
+        });
+
+        // Botón Barrera Heliopausa / Voyager
+        const btnToggleHeliopause = document.getElementById(&quot;btnToggleHeliopause&quot;);
+        btnToggleHeliopause.addEventListener(&quot;click&quot;, () =&gt; {
+            showHeliopause = !showHeliopause;
+            heliopauseGroup.visible = showHeliopause &amp;&amp; !isCompareMode;
+            voyagerHolder.visible = showHeliopause &amp;&amp; !isCompareMode;
+            btnToggleHeliopause.classList.toggle(&quot;active&quot;, showHeliopause);
+            if (!showHeliopause &amp;&amp; labelPins.voyager) {
+                labelPins.voyager.style.display = &quot;none&quot;;
+            }
+        });
+
+        // Botón Etiquetas 3D
+        const btnToggleLabels = document.getElementById(&quot;btnToggleLabels&quot;);
+        btnToggleLabels.addEventListener(&quot;click&quot;, () =&gt; {
+            showLabels = !showLabels;
+            labelsLayer.style.display = showLabels ? &quot;block&quot; : &quot;none&quot;;
+            btnToggleLabels.classList.toggle(&quot;active&quot;, showLabels);
+        });
+
+        // Botón Vista General
+        document.getElementById(&quot;btnResetCamera&quot;).addEventListener(&quot;click&quot;, () =&gt; {
+            if (isCompareMode) toggleCompareMode(false);
+            if (isVortexMode) toggleVortexMode(false);
+            focusBody(&quot;overview&quot;);
+        });
+
+        // ============================================================================
+        // 7. BUCLE DE ANIMACIÓN FÍSICA (1x = 1 VUELTA DE LA TIERRA CADA 60 SEGUNDOS)
+        // ============================================================================
+        const BASE_KEPLER_STEP = 0.001745;
+        const tempProjVec = new THREE.Vector3();
+        const targetWorldPos = new THREE.Vector3();
+        const simDaysCounter = document.getElementById(&quot;simDaysCounter&quot;);
+
+        function updateLabelPosition(key, worldVec, yOffset) {
+            const pin = labelPins[key];
+            if (!pin || !showLabels) return;
+            if (key === &quot;voyager&quot; &amp;&amp; (!showHeliopause || isCompareMode)) {
+                pin.style.display = &quot;none&quot;;
+                return;
+            }
+            tempProjVec.copy(worldVec);
+            tempProjVec.y += yOffset;
+            tempProjVec.project(camera);
+
+            if (tempProjVec.z &gt; 1) {
+                pin.style.display = &quot;none&quot;;
+                return;
+            }
+            const x = (tempProjVec.x * 0.5 + 0.5) * container.clientWidth;
+            const y = (-tempProjVec.y * 0.5 + 0.5) * container.clientHeight;
+            pin.style.display = &quot;block&quot;;
+            pin.style.left = `${x}px`;
+            pin.style.top = `${y}px`;
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            sunMesh.rotation.y += 0.0012;
+            asteroidBelt.rotation.y += 0.00025 * orbitSpeedMultiplier;
+            plasmaWallParticles.rotation.y += 0.00018;
+
+            if (!isCompareMode &amp;&amp; orbitSpeedMultiplier &gt; 0) {
+                simulatedEarthDays += 0.1015 * orbitSpeedMultiplier;
+                const years = (simulatedEarthDays / 365.25).toFixed(2);
+                simDaysCounter.textContent = `Día ${Math.floor(simulatedEarthDays)} (${years} años terrestres)`;
+            }
+
+            // En Modo Vórtice Galáctico, animar el flujo de estrellas y actualizar las estelas en tirabuzón
+            if (isVortexMode &amp;&amp; orbitSpeedMultiplier &gt; 0) {
+                const sArr = galStarsGeo.attributes.position.array;
+                for (let i = 0; i &lt; galStarsCount; i++) {
+                    sArr[i * 3 + 1] -= 1.35 * orbitSpeedMultiplier;
+                    if (sArr[i * 3 + 1] &lt; -225) {
+                        sArr[i * 3 + 1] = 35;
+                    }
+                }
+                galStarsGeo.attributes.position.needsUpdate = true;
+                rebuildHelicalTrails();
+            }
+
+            Object.keys(planetObjects).forEach(key =&gt; {
+                const p = planetObjects[key];
+                p.mesh.rotation.y += p.cfg.rotSpeed;
+
+                if (p.cloudsMesh) {
+                    p.cloudsMesh.rotation.y += 0.0022;
+                }
+                if (p.moonPivot) {
+                    p.moonPivot.rotation.y += 0.014 * Math.max(orbitSpeedMultiplier, 0.2);
+                }
+
+                if (isCompareMode) {
+                    const targetX = p.cfg.compareX;
+                    p.holder.position.x += (targetX - p.holder.position.x) * 0.08;
+                    p.holder.position.z += (0 - p.holder.position.z) * 0.08;
+                } else {
+                    const vortexBoost = isVortexMode ? 2.4 : 1.0;
+                    p.angle += BASE_KEPLER_STEP * p.cfg.speed * orbitSpeedMultiplier * vortexBoost;
+                    const tx = Math.cos(p.angle) * p.cfg.distance;
+                    const tz = Math.sin(p.angle) * p.cfg.distance;
+                    p.holder.position.x += (tx - p.holder.position.x) * 0.25;
+                    p.holder.position.z += (tz - p.holder.position.z) * 0.25;
+                }
+
+                updateLabelPosition(key, p.holder.position, p.cfg.radius + 0.9);
+            });
+
+            updateLabelPosition(&quot;sun&quot;, sunGroup.position, 8.2);
+            updateLabelPosition(&quot;voyager&quot;, voyagerHolder.position, 2.8);
+
+            if (!isCompareMode &amp;&amp; !isVortexMode) {
+                if (currentTargetKey === &quot;overview&quot; || currentTargetKey === &quot;sun&quot;) {
+                    targetWorldPos.copy(sunGroup.position);
+                } else if (currentTargetKey === &quot;voyager&quot;) {
+                    targetWorldPos.copy(voyagerHolder.position);
+                } else if (planetObjects[currentTargetKey]) {
+                    targetWorldPos.copy(planetObjects[currentTargetKey].holder.position);
+                }
+                controls.target.lerp(targetWorldPos, 0.12);
+
+                if (cameraTransitionFrames &gt; 0) {
+                    const desiredPos = targetWorldPos.clone().add(desiredCamOffset);
+                    camera.position.lerp(desiredPos, 0.10);
+                    cameraTransitionFrames--;
+                }
+            }
+
+            controls.update();
+            renderer.render(scene, camera);
+        }
+
+        function syncCanvasSize() {
+            const w = container.clientWidth;
+            const h = container.clientHeight;
+            if (w &gt; 0 &amp;&amp; h &gt; 0) {
+                camera.aspect = w / h;
+                camera.updateProjectionMatrix();
+                renderer.setSize(w, h);
+            }
+        }
+        window.addEventListener(&quot;resize&quot;, syncCanvasSize);
+        setTimeout(syncCanvasSize, 50);
+
+        animate();
+    &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+
+</textarea>
+    <textarea id="exampleOjoTemplate" style="display:none;">&lt;!DOCTYPE html&gt;
 &lt;html lang=&quot;es&quot;&gt;
 &lt;head&gt;
     &lt;meta charset=&quot;UTF-8&quot;&gt;
@@ -464,7 +2228,7 @@
         /* CONTENEDOR PRINCIPAL */
         main {
             flex: 1;
-            max-width: 1240px;
+            max-width: 1260px;
             width: 100%;
             margin: 0 auto;
             padding: 14px 20px 24px;
@@ -541,7 +2305,7 @@
         /* LAYOUT DE 2 COLUMNAS: CUADRO EXPLICATIVO A LA IZQUIERDA + VISOR 3D A LA DERECHA */
         .stage-grid {
             display: grid;
-            grid-template-columns: 320px 1fr;
+            grid-template-columns: 335px 1fr;
             gap: 14px;
             align-items: stretch;
         }
@@ -552,25 +2316,25 @@
             }
         }
 
-        /* CUADRO IZQUIERDO: EXPLICACIÓN DE LOS 3 BOTONES */
+        /* CUADRO IZQUIERDO: EXPLICACIÓN DE LOS 3 BOTONES Y CAPAS ANATÓMICAS */
         .left-guide-card {
             background: var(--panel);
             border: 1px solid rgba(56, 189, 248, 0.3);
             border-radius: 18px;
-            padding: 16px;
+            padding: 15px;
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 10px;
             box-shadow: 0 14px 35px rgba(0, 0, 0, 0.45);
         }
 
         .guide-header {
-            font-size: 13px;
+            font-size: 12.5px;
             font-weight: 800;
             text-transform: uppercase;
             letter-spacing: 0.04em;
             color: var(--accent);
-            padding-bottom: 8px;
+            padding-bottom: 7px;
             border-bottom: 1px solid var(--border);
             display: flex;
             align-items: center;
@@ -581,11 +2345,17 @@
             background: rgba(15, 23, 42, 0.75);
             border: 1px solid #1e293b;
             border-left: 3px solid var(--accent);
-            border-radius: 11px;
-            padding: 11px 12px;
+            border-radius: 10px;
+            padding: 9px 11px;
             display: flex;
             flex-direction: column;
-            gap: 5px;
+            gap: 4px;
+            cursor: pointer;
+            transition: border-color 0.2s, background 0.2s;
+        }
+
+        .guide-item:hover {
+            background: rgba(30, 41, 59, 0.85);
         }
 
         .guide-item.amber {
@@ -597,36 +2367,41 @@
         }
 
         .guide-item-title {
-            font-size: 12.5px;
+            font-size: 12.2px;
             font-weight: 800;
             color: #ffffff;
             display: flex;
             align-items: center;
+            justify-content: space-between;
             gap: 6px;
         }
 
         .guide-item-desc {
-            font-size: 11.8px;
-            line-height: 1.48;
+            font-size: 11.4px;
+            line-height: 1.44;
             color: #cbd5e1;
         }
 
-        .guide-tip {
+        .guide-anatomy-box {
             margin-top: auto;
-            background: rgba(56, 189, 248, 0.08);
-            border: 1px dashed rgba(56, 189, 248, 0.35);
+            background: rgba(56, 189, 248, 0.07);
+            border: 1px solid rgba(56, 189, 248, 0.28);
             border-radius: 10px;
-            padding: 10px 12px;
-            font-size: 11.5px;
-            line-height: 1.45;
-            color: #bae6fd;
+            padding: 9px 11px;
+            font-size: 11.2px;
+            line-height: 1.44;
+            color: #e2e8f0;
+        }
+
+        .guide-anatomy-box strong {
+            color: #38bdf8;
         }
 
         /* VISOR 3D CENTRAL */
         .viewport-wrap {
             position: relative;
             width: 100%;
-            height: 480px;
+            height: 490px;
             background: radial-gradient(circle at 50% 50%, #0f172a 0%, #050811 100%);
             border-radius: 18px;
             border: 1px solid var(--border);
@@ -658,7 +2433,7 @@
         }
 
         .hud-pill {
-            background: rgba(15, 23, 42, 0.85);
+            background: rgba(15, 23, 42, 0.88);
             backdrop-filter: blur(8px);
             border: 1px solid rgba(56, 189, 248, 0.35);
             padding: 8px 14px;
@@ -675,6 +2450,68 @@
         .hud-pill.right {
             border-color: rgba(52, 211, 153, 0.4);
             color: #6ee7b7;
+        }
+
+        /* ETIQUETAS ANATÓMICAS 3D EN MODO CORTE SAGITAL */
+        .anatomy-labels-layer {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 15;
+            display: none;
+        }
+
+        .anatomy-labels-layer.visible {
+            display: block;
+        }
+
+        .anat-pin {
+            position: absolute;
+            transform: translate(-50%, -50%);
+            background: rgba(15, 23, 42, 0.92);
+            border: 1.5px solid #38bdf8;
+            color: #f8fafc;
+            padding: 5px 10px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 700;
+            white-space: nowrap;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.65);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .anat-pin .pin-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #38bdf8;
+            box-shadow: 0 0 6px #38bdf8;
+        }
+
+        .anat-pin.gold {
+            border-color: #fbbf24;
+        }
+        .anat-pin.gold .pin-dot {
+            background: #fbbf24;
+            box-shadow: 0 0 6px #fbbf24;
+        }
+
+        .anat-pin.emerald {
+            border-color: #34d399;
+        }
+        .anat-pin.emerald .pin-dot {
+            background: #34d399;
+            box-shadow: 0 0 6px #34d399;
+        }
+
+        .anat-pin.rose {
+            border-color: #fb7185;
+        }
+        .anat-pin.rose .pin-dot {
+            background: #fb7185;
+            box-shadow: 0 0 6px #fb7185;
         }
 
         /* CONTROLES DEL REFLEJO FOTOMOTOR (BARRA DE LUZ) */
@@ -818,7 +2655,7 @@
             &lt;div class=&quot;header-icon&quot;&gt;👁️&lt;/div&gt;
             &lt;div class=&quot;header-titles&quot;&gt;
                 &lt;h1&gt;Óptica y Anatomía Humana 3D • Globo Ocular y Cristalino (V2)&lt;/h1&gt;
-                &lt;p&gt;Simulador Fotorrealista PBR con Pigmentación Humana Real, Reflejo Fotomotor y Guía Lateral&lt;/p&gt;
+                &lt;p&gt;Simulador Fotorrealista PBR con Pigmentación Humana Real, Reflejo Fotomotor y Corte Sagital Anatómico&lt;/p&gt;
             &lt;/div&gt;
         &lt;/div&gt;
         &lt;div class=&quot;header-badges&quot;&gt;
@@ -860,38 +2697,57 @@
                     &lt;span&gt;📋 ¿Para qué sirven los 3 botones?&lt;/span&gt;
                 &lt;/div&gt;
 
-                &lt;div class=&quot;guide-item&quot;&gt;
-                    &lt;div class=&quot;guide-item-title&quot;&gt;1. 👁️ Seguimiento Ocular&lt;/div&gt;
+                &lt;div class=&quot;guide-item&quot; onclick=&quot;toggleTracking()&quot;&gt;
+                    &lt;div class=&quot;guide-item-title&quot;&gt;
+                        &lt;span&gt;1. 👁️ Seguimiento Ocular&lt;/span&gt;
+                    &lt;/div&gt;
                     &lt;div class=&quot;guide-item-desc&quot;&gt;
-                        Hace que la mirada del ojo siga suavemente el movimiento de tu ratón cuando lo pasas por encima del visor. &lt;strong&gt;Al salir hacia los botones, el ojo vuelve solo al centro&lt;/strong&gt;. Si lo pulsas, dejas la mirada fija.
+                        Hace que la mirada siga suavemente tu ratón dentro del visor. &lt;strong&gt;Al salir hacia los botones, el ojo vuelve solo al centro&lt;/strong&gt;.
                     &lt;/div&gt;
                 &lt;/div&gt;
 
-                &lt;div class=&quot;guide-item amber&quot;&gt;
-                    &lt;div class=&quot;guide-item-title&quot;&gt;2. 🔦 Linterna Oftálmica&lt;/div&gt;
+                &lt;div class=&quot;guide-item amber&quot; onclick=&quot;toggleFlashlight()&quot;&gt;
+                    &lt;div class=&quot;guide-item-title&quot;&gt;
+                        &lt;span&gt;2. 🔦 Linterna Oftálmica&lt;/span&gt;
+                    &lt;/div&gt;
                     &lt;div class=&quot;guide-item-desc&quot;&gt;
-                        Enciende o apaga el foco médico para comprobar el &lt;strong&gt;reflejo fotomotor&lt;/strong&gt;: al iluminar el ojo, la pupila se contrae (&lt;em&gt;miosis&lt;/em&gt;) para proteger la retina; al apagarla, la pupila se dilata (&lt;em&gt;midriasis&lt;/em&gt;).
+                        Al &lt;strong&gt;encenderla (ON)&lt;/strong&gt; proyecta el haz clínico y &lt;strong&gt;contrae la pupila (miosis, 1.9 mm)&lt;/strong&gt;. Al &lt;strong&gt;apagarla (OFF)&lt;/strong&gt; deja el ojo en penumbra y &lt;strong&gt;dilata la pupila (midriasis, 6.8 mm)&lt;/strong&gt;.
                     &lt;/div&gt;
                 &lt;/div&gt;
 
-                &lt;div class=&quot;guide-item emerald&quot;&gt;
-                    &lt;div class=&quot;guide-item-title&quot;&gt;3. 🔬 Corte Sagital / Cristalino&lt;/div&gt;
+                &lt;div class=&quot;guide-item emerald&quot; onclick=&quot;toggleXRay()&quot;&gt;
+                    &lt;div class=&quot;guide-item-title&quot;&gt;
+                        &lt;span&gt;3. 🔬 Corte Sagital / Cristalino&lt;/span&gt;
+                    &lt;/div&gt;
                     &lt;div class=&quot;guide-item-desc&quot;&gt;
-                        Vuelve translúcida la pared blanca del ojo (esclerótica) y lo gira ligeramente para descubrir dentro la lente transparente del &lt;strong&gt;cristalino biconvexo&lt;/strong&gt; y el nervio óptico posterior.
+                        Abre una &lt;strong&gt;ventana anatómica lateral&lt;/strong&gt; en la pared del ojo para ver en su interior la &lt;strong&gt;lente biconvexa del cristalino&lt;/strong&gt;, el haz de luz enfocado y la retina.
                     &lt;/div&gt;
                 &lt;/div&gt;
 
-                &lt;div class=&quot;guide-tip&quot;&gt;
-                    💡 &lt;strong&gt;Truco interactivo:&lt;/strong&gt; También puedes arrastrar directamente sobre el globo ocular con el botón izquierdo del ratón para girarlo 360° o usar la rueda para acercar el zoom.
+                &lt;div class=&quot;guide-anatomy-box&quot;&gt;
+                    🔍 &lt;strong&gt;Diferencia clave al girar el ojo:&lt;/strong&gt;&lt;br/&gt;
+                    • &lt;strong&gt;Esclerótica:&lt;/strong&gt; Es la esfera &lt;em&gt;blanca&lt;/em&gt; exterior que protege todo el globo ocular.&lt;br/&gt;
+                    • &lt;strong&gt;Córnea:&lt;/strong&gt; Es la cúpula transparente frontal delante del iris.&lt;br/&gt;
+                    • &lt;strong&gt;Cristalino:&lt;/strong&gt; Es la &lt;em&gt;lente transparente biconvexa interna&lt;/em&gt; (detrás de la pupila), visible al activar el &lt;strong&gt;Corte Sagital&lt;/strong&gt;.
                 &lt;/div&gt;
             &lt;/aside&gt;
 
             &lt;!-- VISOR 3D INTERACTIVO --&gt;
             &lt;div class=&quot;viewport-wrap&quot; id=&quot;viewportWrap&quot;&gt;
                 &lt;div class=&quot;hud-overlay&quot;&gt;
-                    &lt;div class=&quot;hud-pill&quot; id=&quot;hudPupil&quot;&gt;&lt;span&gt;💡 Pupila: 3.5 mm (Normorreactiva)&lt;/span&gt;&lt;/div&gt;
-                    &lt;div class=&quot;hud-pill right&quot; id=&quot;hudMode&quot;&gt;🔦 Linterna Médica Activa&lt;/div&gt;
+                    &lt;div class=&quot;hud-pill&quot; id=&quot;hudPupil&quot;&gt;&lt;span&gt;💡 Pupila: 1.9 mm (Miosis • Linterna ON)&lt;/span&gt;&lt;/div&gt;
+                    &lt;div class=&quot;hud-pill right&quot; id=&quot;hudMode&quot;&gt;🔦 Linterna Oftálmica Encendida&lt;/div&gt;
                 &lt;/div&gt;
+
+                &lt;!-- ETIQUETAS FLOTANTES 3D (VISIBLES EN MODO CORTE SAGITAL / CRISTALINO) --&gt;
+                &lt;div class=&quot;anatomy-labels-layer&quot; id=&quot;anatomyLabels&quot;&gt;
+                    &lt;div class=&quot;anat-pin&quot; id=&quot;pinCornea&quot;&gt;&lt;span class=&quot;pin-dot&quot;&gt;&lt;/span&gt;1. Córnea (Cúpula Transparente)&lt;/div&gt;
+                    &lt;div class=&quot;anat-pin gold&quot; id=&quot;pinLens&quot;&gt;&lt;span class=&quot;pin-dot&quot;&gt;&lt;/span&gt;2. Cristalino (Lente Biconvexa Interna)&lt;/div&gt;
+                    &lt;div class=&quot;anat-pin emerald&quot; id=&quot;pinSclera&quot;&gt;&lt;span class=&quot;pin-dot&quot;&gt;&lt;/span&gt;3. Esclerótica (Pared Blanca Externa)&lt;/div&gt;
+                    &lt;div class=&quot;anat-pin rose&quot; id=&quot;pinRetina&quot;&gt;&lt;span class=&quot;pin-dot&quot;&gt;&lt;/span&gt;4. Retina y Fóvea (Enfoque de Luz)&lt;/div&gt;
+                    &lt;div class=&quot;anat-pin gold&quot; id=&quot;pinNerve&quot;&gt;&lt;span class=&quot;pin-dot&quot;&gt;&lt;/span&gt;5. Nervio Óptico (Hacia el Cerebro)&lt;/div&gt;
+                &lt;/div&gt;
+
                 &lt;canvas id=&quot;threeCanvas&quot;&gt;&lt;/canvas&gt;
             &lt;/div&gt;
         &lt;/div&gt;
@@ -900,15 +2756,15 @@
         &lt;div class=&quot;controls-card&quot;&gt;
             &lt;div class=&quot;slider-row&quot;&gt;
                 &lt;div class=&quot;slider-label&quot;&gt;💡 Intensidad de Luz:&lt;/div&gt;
-                &lt;input type=&quot;range&quot; id=&quot;lightRange&quot; min=&quot;0&quot; max=&quot;100&quot; value=&quot;50&quot; oninput=&quot;onLightChange(this.value)&quot;&gt;
-                &lt;div class=&quot;slider-value&quot; id=&quot;lightVal&quot;&gt;50%&lt;/div&gt;
+                &lt;input type=&quot;range&quot; id=&quot;lightRange&quot; min=&quot;0&quot; max=&quot;100&quot; value=&quot;90&quot; oninput=&quot;onLightChange(this.value)&quot;&gt;
+                &lt;div class=&quot;slider-value&quot; id=&quot;lightVal&quot;&gt;90%&lt;/div&gt;
             &lt;/div&gt;
             &lt;div class=&quot;quick-Row&quot;&gt;
                 &lt;span class=&quot;quick-hint&quot;&gt;↔ Arrastra con el ratón para rotar el ojo en 3D, o usa los accesos directos de luz:&lt;/span&gt;
                 &lt;div class=&quot;quick-btns&quot;&gt;
-                    &lt;button class=&quot;btn-quick&quot; onclick=&quot;setLightPreset(5)&quot;&gt;🌑 Penumbra (Midriasis 7.5 mm)&lt;/button&gt;
-                    &lt;button class=&quot;btn-quick&quot; onclick=&quot;setLightPreset(50)&quot;&gt;⚖️ Luz Media (Normal 3.5 mm)&lt;/button&gt;
-                    &lt;button class=&quot;btn-quick&quot; onclick=&quot;setLightPreset(98)&quot;&gt;☀️ Haz Intenso (Miosis 1.8 mm)&lt;/button&gt;
+                    &lt;button class=&quot;btn-quick&quot; onclick=&quot;setLightPreset(10)&quot;&gt;🌑 Penumbra (Midriasis 6.9 mm)&lt;/button&gt;
+                    &lt;button class=&quot;btn-quick&quot; onclick=&quot;setLightPreset(50)&quot;&gt;⚖️ Luz Media (Normal 4.5 mm)&lt;/button&gt;
+                    &lt;button class=&quot;btn-quick&quot; onclick=&quot;setLightPreset(90)&quot;&gt;☀️ Linterna Clínica (Miosis 1.9 mm)&lt;/button&gt;
                 &lt;/div&gt;
             &lt;/div&gt;
         &lt;/div&gt;
@@ -917,15 +2773,15 @@
         &lt;div class=&quot;pedagogic-banner&quot;&gt;
             &lt;span class=&quot;banner-icon&quot;&gt;🔬&lt;/span&gt;
             &lt;div class=&quot;banner-text&quot;&gt;
-                &lt;div class=&quot;banner-title&quot;&gt;¿Cómo funciona la óptica del ojo humano y la pigmentación real del iris?&lt;/div&gt;
-                El color de los ojos humanos depende de la concentración de &lt;strong&gt;melanina&lt;/strong&gt; (eumelanina marrón y feomelanina ámbar) y de la dispersión óptica de la luz en las fibras de colágeno del estroma del iris (&lt;em&gt;efecto Tyndall&lt;/em&gt;). El &lt;strong&gt;iris&lt;/strong&gt; contiene dos músculos involuntarios: el &lt;strong&gt;músculo esfínter&lt;/strong&gt; (que cierra la pupila ante la luz de la linterna oftálmica) y el &lt;strong&gt;músculo dilatador&lt;/strong&gt; (que abre la pupila en la penumbra). Detrás del iris se sitúa el &lt;strong&gt;cristalino&lt;/strong&gt;, una lente biológica transparente que enfoca la imagen sobre la retina.
+                &lt;div class=&quot;banner-title&quot;&gt;¿Cómo trabajan juntos la Esclerótica, la Córnea, el Iris y el Cristalino?&lt;/div&gt;
+                La &lt;strong&gt;esclerótica&lt;/strong&gt; es la cubierta blanca fibrosa externa que da forma esférica al ojo. En su parte frontal se abre como un cristal de reloj transparente llamado &lt;strong&gt;córnea&lt;/strong&gt;. Detrás de la córnea está el &lt;strong&gt;iris&lt;/strong&gt; con su abertura central (la &lt;strong&gt;pupila&lt;/strong&gt;, que se cierra con la luz de la linterna y se dilata al apagarla). Justo detrás de la pupila, en el interior del ojo, se encuentra suspendido el &lt;strong&gt;cristalino&lt;/strong&gt;: una lente biológica biconvexa y transparente que enfoca los rayos de luz hacia el fondo de la &lt;strong&gt;retina&lt;/strong&gt;, desde donde el &lt;strong&gt;nervio óptico&lt;/strong&gt; transmite la imagen al cerebro.
             &lt;/div&gt;
         &lt;/div&gt;
     &lt;/main&gt;
 
     &lt;script&gt;
         // -------------------------------------------------------------
-        // MOTOR 3D PBR THREE.JS (BASADO EN V1 CON LAS CORRECCIONES V2)
+        // MOTOR 3D PBR THREE.JS CON CORTE SAGITAL REAL (LOCAL CLIPPING)
         // -------------------------------------------------------------
         const canvas = document.getElementById(&quot;threeCanvas&quot;);
         const wrap = document.getElementById(&quot;viewportWrap&quot;);
@@ -934,13 +2790,14 @@
         scene.background = new THREE.Color(0x060913);
 
         const camera = new THREE.PerspectiveCamera(38, wrap.clientWidth / wrap.clientHeight, 0.1, 100);
-        camera.position.set(0, 0, 5.1);
+        camera.position.set(0, 0, 5.2);
 
         const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: false, powerPreference: &quot;high-performance&quot; });
         renderer.setSize(wrap.clientWidth, wrap.clientHeight);
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
         renderer.toneMapping = THREE.ACESFilmicToneMapping;
         renderer.toneMappingExposure = 1.12;
+        renderer.localClippingEnabled = true;
 
         const controls = new THREE.OrbitControls(camera, renderer.domElement);
         controls.enableDamping = true;
@@ -955,24 +2812,22 @@
         const ambientLight = new THREE.AmbientLight(0xffffff, 0.92);
         scene.add(ambientLight);
 
-        // Luz hemisférica difusa suave (ilumina el volumen sin crear puntos de bombilla extra)
         const hemiLight = new THREE.HemisphereLight(0xfffcf7, 0x1e293b, 0.85);
         scene.add(hemiLight);
 
-        // ÚNICA LUZ REFLECTANTE: Linterna médica frontal (1 único reflejo corneal de Purkinje)
-        const flashlight = new THREE.SpotLight(0xfff7e6, 3.0, 14, Math.PI / 5, 0.45, 1.0);
-        flashlight.position.set(0.38, 0.36, 4.8);
+        // ÚNICA LUZ REFLECTANTE: Linterna médica frontal blanca neutra (sin círculo amarillo sobre la pupila)
+        const flashlight = new THREE.SpotLight(0xffffff, 3.2, 14, Math.PI / 4.5, 0.65, 1.0);
+        flashlight.position.set(0.45, 0.38, 4.8);
         scene.add(flashlight);
         scene.add(flashlight.target);
 
         // -------------------------------------------------------------
         // TEXTURA HIPERREALISTA CON PIGMENTACIÓN HUMANA ORGÁNICA REAL
         // -------------------------------------------------------------
-        let currentPupilRatio = 0.36;
-        let targetPupilRatio = 0.36;
-        let currentIrisColorName = &#x27;brown&#x27;; // Castaño humano natural por defecto
+        let currentPupilRatio = 0.235;
+        let targetPupilRatio = 0.235; // Inicia con Linterna ON (90% -&gt; Pupila contraída / miosis)
+        let currentIrisColorName = &#x27;brown&#x27;;
 
-        // Paletas oftalmológicas basadas en melanina/lipocromo de ojos humanos reales (cero tonos neón)
         const colorPalettes = {
             brown: {
                 limbus: &#x27;#140904&#x27;,
@@ -1025,7 +2880,6 @@
         irisTexture.wrapT = THREE.ClampToEdgeWrapping;
         irisTexture.anisotropy = 8;
 
-        // Pre-generar tabla de variaciones orgánicas deterministas para las fibras y criptas de Fuchs
         const NUM_FIBERS = 720;
         const fiberSeeds = [];
         for (let i = 0; i &lt; NUM_FIBERS; i++) {
@@ -1058,8 +2912,7 @@
             irisCtx.fillStyle = scleraGrad;
             irisCtx.fillRect(0, 0, w, h);
 
-            // Corrección matemática de proyección esférica 2:1 (360° horizontal vs 180° vertical)
-            // para que en la esfera 3D el iris y la pupila se vean 100% REDONDOS Y CIRCULARES
+            // Corrección matemática de proyección esférica 2:1 para iris 100% redondo
             irisCtx.save();
             irisCtx.translate(cx, cy);
             irisCtx.scale(0.5, 1.0);
@@ -1069,7 +2922,7 @@
             const pupilRadius = maxIrisRadius * currentPupilRatio;
             const collaretteRadius = pupilRadius + (maxIrisRadius - pupilRadius) * 0.34;
 
-            // 2. Base cromática multicapa del estroma del iris (melanina + dispersión de Tyndall)
+            // 2. Base cromática multicapa del estroma del iris
             const baseGrad = irisCtx.createRadialGradient(cx, cy, pupilRadius * 0.95, cx, cy, maxIrisRadius);
             baseGrad.addColorStop(0.0, &#x27;#050302&#x27;);
             baseGrad.addColorStop(0.05, pal.pupillaryZone);
@@ -1084,7 +2937,7 @@
             irisCtx.fillStyle = baseGrad;
             irisCtx.fill();
 
-            // 3. Criptas estromales profundas (Criptas de Fuchs) que dan textura orgánica real
+            // 3. Criptas estromales profundas (Criptas de Fuchs)
             irisCtx.save();
             irisCtx.translate(cx, cy);
             for (let c = 0; c &lt; 64; c++) {
@@ -1103,7 +2956,7 @@
                 irisCtx.restore();
             }
 
-            // 4. Fibras colágenas trabeculares entrelazadas (sin líneas blancas artificiales)
+            // 4. Fibras colágenas trabeculares entrelazadas
             for (let i = 0; i &lt; NUM_FIBERS; i++) {
                 const seed = fiberSeeds[i];
                 const angle = (i / NUM_FIBERS) * Math.PI * 2 + seed.jitterA;
@@ -1129,7 +2982,7 @@
                 irisCtx.stroke();
             }
 
-            // 5. Collarete autónomo (corona iridis) con pigmento cálido fisiológico
+            // 5. Collarete autónomo (corona iridis)
             irisCtx.beginPath();
             for (let a = 0; a &lt;= 180; a++) {
                 const rad = (a / 180) * Math.PI * 2;
@@ -1146,18 +2999,18 @@
             irisCtx.stroke();
             irisCtx.restore();
 
-            // 6. Pupila central negra profunda y su reborde epitelial pigmentado (pupillary ruff)
+            // 6. Pupila central negra profunda (100% negra mate sin círculos amarillos)
             irisCtx.beginPath();
             irisCtx.arc(cx, cy, pupilRadius * 1.03, 0, Math.PI * 2);
-            irisCtx.fillStyle = &#x27;#140b06&#x27;;
+            irisCtx.fillStyle = &#x27;#120a05&#x27;;
             irisCtx.fill();
 
             irisCtx.beginPath();
             irisCtx.arc(cx, cy, pupilRadius, 0, Math.PI * 2);
-            irisCtx.fillStyle = &#x27;#010102&#x27;;
+            irisCtx.fillStyle = &#x27;#000000&#x27;;
             irisCtx.fill();
 
-            // 7. Anillo limbar difuminado (transición anatómica suave entre córnea/iris y esclerótica)
+            // 7. Anillo limbar difuminado
             const limbGrad = irisCtx.createRadialGradient(cx, cy, maxIrisRadius * 0.88, cx, cy, maxIrisRadius * 1.06);
             limbGrad.addColorStop(0.0, &#x27;rgba(15, 12, 10, 0)&#x27;);
             limbGrad.addColorStop(0.55, &#x27;rgba(18, 15, 14, 0.72)&#x27;);
@@ -1190,80 +3043,172 @@
             }
             irisCtx.restore();
 
-            irisCtx.restore(); // Fin de corrección esférica 2:1
-
+            irisCtx.restore();
             irisTexture.needsUpdate = true;
         }
 
         renderIrisTexture();
 
         // -------------------------------------------------------------
-        // CONSTRUCCIÓN ANATÓMICA DEL GLOBO OCULAR 3D
+        // CONSTRUCCIÓN ANATÓMICA DEL GLOBO OCULAR 3D Y VENTANA SAGITAL LATERAL
         // -------------------------------------------------------------
         const eyeGroup = new THREE.Group();
         scene.add(eyeGroup);
 
-        // 1. Globo ocular principal con sombreado PBR húmedo y relieve estromal
+        // Plano de corte sagital lateral: conserva el 100% del iris y la pupila frontal intactos,
+        // y abre únicamente la pared lateral de la esclerótica al girar el ojo o pulsar Corte Sagital.
+        const localClipNormal = new THREE.Vector3(-0.90, 0, 0.435).normalize();
+        const sagittalClipPlane = new THREE.Plane(new THREE.Vector3(-1, 0, 0), 10.0); // Inactivo por defecto (10.0)
+
+        // 1. Esclerótica (pared blanca externa del ojo, 100% opaca para que NUNCA se transparente el nervio óptico por la pupila)
         const scleraGeo = new THREE.SphereGeometry(1.6, 64, 64);
         const scleraMat = new THREE.MeshStandardMaterial({
             map: irisTexture,
-            roughness: 0.16,
-            metalness: 0.04,
+            roughness: 0.34,
+            metalness: 0.02,
             bumpMap: irisTexture,
-            bumpScale: 0.006
+            bumpScale: 0.005,
+            transparent: false,
+            opacity: 1.0,
+            side: THREE.DoubleSide,
+            clippingPlanes: [sagittalClipPlane],
+            clipShadows: true
         });
         const scleraMesh = new THREE.Mesh(scleraGeo, scleraMat);
         scleraMesh.rotation.y = -Math.PI / 2;
         eyeGroup.add(scleraMesh);
 
-        // 2. Córnea convexa transparente orientada hacia el frente (+Z) sin velo lechoso ni doble foco
-        const corneaGeo = new THREE.SphereGeometry(0.88, 64, 48, 0, Math.PI * 2, 0, Math.PI / 2.5);
+        // Disco oclusor negro mate justo detrás de la pupila frontal (garantiza que al mirar de frente la pupila sea 100% negra y nunca se vea nada del fondo)
+        const pupilBackdropGeo = new THREE.CircleGeometry(0.68, 48);
+        const pupilBackdropMat = new THREE.MeshBasicMaterial({
+            color: 0x010102,
+            side: THREE.FrontSide
+        });
+        const pupilBackdropMesh = new THREE.Mesh(pupilBackdropGeo, pupilBackdropMat);
+        pupilBackdropMesh.position.set(0, 0, 1.33);
+        eyeGroup.add(pupilBackdropMesh);
+
+        // 2. Capa interna de Coroides y Retina (visible únicamente al abrir la ventana lateral y girar el ojo)
+        const retinaGeo = new THREE.SphereGeometry(1.53, 56, 56, 0, Math.PI * 2, Math.PI * 0.28, Math.PI * 0.72);
+        retinaGeo.rotateX(Math.PI / 2);
+        const retinaMat = new THREE.MeshStandardMaterial({
+            color: 0xa83226,
+            emissive: 0x2a0704,
+            roughness: 0.45,
+            metalness: 0.02,
+            side: THREE.DoubleSide,
+            clippingPlanes: [sagittalClipPlane]
+        });
+        const retinaMesh = new THREE.Mesh(retinaGeo, retinaMat);
+        retinaMesh.visible = false;
+        eyeGroup.add(retinaMesh);
+
+        // 3. Córnea convexa transparente delante del iris (+Z)
+        const corneaGeo = new THREE.SphereGeometry(0.92, 64, 48, 0, Math.PI * 2, 0, Math.PI / 2.45);
         corneaGeo.rotateX(Math.PI / 2);
         const corneaMat = new THREE.MeshPhysicalMaterial({
-            color: 0xffffff,
-            roughness: 1.0, // Evita duplicar el punto de luz: el brillo único lo proyecta la superficie ocular PBR
-            transmission: 0.99,
+            color: 0xe0f2fe,
+            roughness: 1.0,
+            transmission: 0.96,
             ior: 1.376,
             specularIntensity: 0.0,
             clearcoat: 0.0,
             transparent: true,
             opacity: 0.04,
-            depthWrite: false
+            side: THREE.DoubleSide
         });
         const corneaMesh = new THREE.Mesh(corneaGeo, corneaMat);
-        corneaMesh.position.set(0, 0, 0.92);
+        corneaMesh.position.set(0, 0, 0.90);
         eyeGroup.add(corneaMesh);
 
-        // 3. Cristalino interno biconvexo (visible al pulsar Corte Sagital / Cristalino)
-        const lensGeo = new THREE.SphereGeometry(0.56, 48, 32);
-        lensGeo.scale(1.0, 1.0, 0.45);
+        // 4. LENTE BICONVEXA INTERNA DEL CRISTALINO (100% cristalina azul-hielo, sin círculos ni conos amarillos en el eje pupilar)
+        const internalAnatomyGroup = new THREE.Group();
+        internalAnatomyGroup.visible = false;
+        eyeGroup.add(internalAnatomyGroup);
+
+        const lensGeo = new THREE.SphereGeometry(0.62, 48, 36);
+        lensGeo.scale(1.0, 1.0, 0.48); // Lente óptica biconvexa real detrás del iris
         const lensMat = new THREE.MeshPhysicalMaterial({
-            color: 0xbae6fd,
-            roughness: 0.06,
-            transmission: 0.90,
+            color: 0xe0f2fe,
+            emissive: 0x0284c7,
+            emissiveIntensity: 0.22,
+            roughness: 0.08,
+            metalness: 0.04,
+            transmission: 0.86,
+            ior: 1.42,
             transparent: true,
-            opacity: 0.82,
-            thickness: 0.5
+            opacity: 0.90
         });
         const lensMesh = new THREE.Mesh(lensGeo, lensMat);
-        lensMesh.position.set(0, 0, 0.92);
-        lensMesh.visible = false;
-        eyeGroup.add(lensMesh);
+        lensMesh.position.set(0, 0, 0.84);
+        internalAnatomyGroup.add(lensMesh);
 
-        // 4. Nervio óptico posterior
-        const nerveGeo = new THREE.CylinderGeometry(0.28, 0.35, 1.2, 24);
+        // Cuerpo ciliar periférico (oculto tras el iris de frente, visible solo de perfil en Corte Sagital)
+        const ciliaryRingGeo = new THREE.TorusGeometry(0.84, 0.045, 16, 48);
+        const ciliaryRingMat = new THREE.MeshStandardMaterial({
+            color: 0x881337,
+            roughness: 0.50
+        });
+        const ciliaryRing = new THREE.Mesh(ciliaryRingGeo, ciliaryRingMat);
+        ciliaryRing.position.set(0, 0, 0.84);
+        internalAnatomyGroup.add(ciliaryRing);
+
+        // Fibras suspensorias periféricas suaves (color blanco-azulado, fuera del área de la pupila)
+        const zonuleMat = new THREE.LineBasicMaterial({ color: 0xbae6fd, transparent: true, opacity: 0.55 });
+        const zonulePts = [];
+        for (let z = 0; z &lt; 36; z++) {
+            const ang = (z / 36) * Math.PI * 2;
+            zonulePts.push(new THREE.Vector3(Math.cos(ang) * 0.60, Math.sin(ang) * 0.60, 0.84));
+            zonulePts.push(new THREE.Vector3(Math.cos(ang) * 0.82, Math.sin(ang) * 0.82, 0.84));
+        }
+        const zonuleGeo = new THREE.BufferGeometry().setFromPoints(zonulePts);
+        const zonuleLines = new THREE.LineSegments(zonuleGeo, zonuleMat);
+        internalAnatomyGroup.add(zonuleLines);
+
+        // 5. NERVIO ÓPTICO POSTERIOR ANATÓMICO (En la cara trasera exterior de la esfera, z = -1.58 a -2.90)
+        // Nunca penetra dentro de la esfera ni tiene color amarillo brillante: solo se ve cuando giras el ojo hacia atrás/lado.
+        const nerveCurve = new THREE.CatmullRomCurve3([
+            new THREE.Vector3(-0.18, -0.04, -1.58),
+            new THREE.Vector3(-0.28, -0.08, -1.92),
+            new THREE.Vector3(-0.46, -0.15, -2.38),
+            new THREE.Vector3(-0.74, -0.24, -2.88)
+        ]);
+        const nerveGeo = new THREE.TubeGeometry(nerveCurve, 32, 0.23, 24, false);
+
+        const nerveCanvas = document.createElement(&#x27;canvas&#x27;);
+        nerveCanvas.width = 256;
+        nerveCanvas.height = 256;
+        const nCtx = nerveCanvas.getContext(&#x27;2d&#x27;);
+        nCtx.fillStyle = &#x27;#e5d4c8&#x27;;
+        nCtx.fillRect(0, 0, 256, 256);
+        for (let i = 0; i &lt; 90; i++) {
+            nCtx.strokeStyle = i % 5 === 0 ? &#x27;rgba(175, 55, 65, 0.20)&#x27; : &#x27;rgba(180, 150, 130, 0.32)&#x27;;
+            nCtx.lineWidth = 1.5;
+            nCtx.beginPath();
+            const y = (i / 90) * 256;
+            nCtx.moveTo(0, y);
+            nCtx.bezierCurveTo(85, y + Math.sin(i) * 4, 170, y - Math.cos(i) * 4, 256, y);
+            nCtx.stroke();
+        }
+        const nerveTex = new THREE.CanvasTexture(nerveCanvas);
         const nerveMat = new THREE.MeshStandardMaterial({
-            color: 0xd97706,
-            roughness: 0.7,
-            metalness: 0.05
+            map: nerveTex,
+            roughness: 0.55,
+            metalness: 0.01,
+            bumpMap: nerveTex,
+            bumpScale: 0.004
         });
         const nerveMesh = new THREE.Mesh(nerveGeo, nerveMat);
-        nerveMesh.rotation.x = Math.PI / 2;
-        nerveMesh.position.set(0, 0, -1.9);
         eyeGroup.add(nerveMesh);
 
+        const opticCollarGeo = new THREE.SphereGeometry(0.30, 32, 24);
+        opticCollarGeo.scale(1.0, 1.0, 0.45);
+        const opticCollar = new THREE.Mesh(opticCollarGeo, nerveMat);
+        opticCollar.position.set(-0.18, -0.04, -1.59);
+        eyeGroup.add(opticCollar);
+
         // -------------------------------------------------------------
-        // CONTROL DE ILUMINACIÓN Y REFLEJO FOTOMOTOR
+        // CONTROL DE ILUMINACIÓN Y REFLEJO FOTOMOTOR (CONMUTACIÓN FIABLE ON/OFF)
         // -------------------------------------------------------------
         let trackingActive = true;
         let flashlightActive = true;
@@ -1273,33 +3218,44 @@
         const lightVal = document.getElementById(&quot;lightVal&quot;);
         const hudPupil = document.getElementById(&quot;hudPupil&quot;);
         const hudMode = document.getElementById(&quot;hudMode&quot;);
+        const anatomyLabels = document.getElementById(&quot;anatomyLabels&quot;);
 
         function updatePupilReaction(lightPercent) {
-            const norm = lightPercent / 100;
-            targetPupilRatio = 0.64 - norm * 0.45; // De 0.64 (dilatada) a 0.19 (contraída)
+            const norm = Math.max(0, Math.min(1, lightPercent / 100));
+            // De 0.64 (dilatada 7.5 mm en penumbra) a 0.19 (contraída 1.8 mm con linterna intensa)
+            targetPupilRatio = 0.64 - norm * 0.45;
 
             const mmDiameter = (7.5 - norm * 5.7).toFixed(1);
             let stateStr = &quot;Normorreactiva&quot;;
-            if (norm &gt; 0.7) stateStr = &quot;Miosis Reactiva&quot;;
-            else if (norm &lt; 0.25) stateStr = &quot;Midriasis Reactiva&quot;;
+            if (norm &gt;= 0.7) stateStr = &quot;Miosis • Pupila Contraída&quot;;
+            else if (norm &lt;= 0.25) stateStr = &quot;Midriasis • Pupila Dilatada&quot;;
 
             hudPupil.innerHTML = `&lt;span&gt;💡 Pupila: ${mmDiameter} mm (${stateStr})&lt;/span&gt;`;
             lightVal.textContent = Math.round(lightPercent) + &quot;%&quot;;
-            lightRange.value = lightPercent;
+            lightRange.value = Math.round(lightPercent);
 
-            if (flashlightActive) {
-                flashlight.intensity = 1.2 + norm * 3.0;
-            } else {
-                flashlight.intensity = 0;
-            }
+            flashlight.intensity = 0.5 + norm * 3.0;
         }
 
         function onLightChange(val) {
-            updatePupilReaction(parseFloat(val));
+            const num = parseFloat(val);
+            const btn = document.getElementById(&quot;btnFlashlight&quot;);
+            if (num &lt;= 20) {
+                flashlightActive = false;
+                btn.classList.remove(&quot;active&quot;);
+                btn.textContent = &quot;🌑 Linterna Oftálmica (OFF)&quot;;
+                hudMode.textContent = &quot;🌑 Linterna Apagada (Midriasis)&quot;;
+            } else {
+                flashlightActive = true;
+                btn.classList.add(&quot;active&quot;);
+                btn.textContent = &quot;🔦 Linterna Oftálmica (ON)&quot;;
+                hudMode.textContent = &quot;🔦 Linterna Oftálmica Encendida&quot;;
+            }
+            updatePupilReaction(num);
         }
 
         function setLightPreset(val) {
-            updatePupilReaction(val);
+            onLightChange(val);
         }
 
         // -------------------------------------------------------------
@@ -1314,24 +3270,22 @@
             mouseNorm.y = -(((e.clientY - rect.top) / rect.height) * 2 - 1);
 
             if (trackingActive &amp;&amp; !xRayActive) {
-                // Ángulo suave (±12°) para no perder nunca el centro del ojo
                 targetRotation.y = Math.max(-0.22, Math.min(0.22, mouseNorm.x * 0.22));
                 targetRotation.x = Math.max(-0.15, Math.min(0.15, -mouseNorm.y * 0.15));
             }
 
             if (flashlightActive) {
-                flashlight.position.x = 0.38 + mouseNorm.x * 0.85;
-                flashlight.position.y = 0.36 + mouseNorm.y * 0.65;
+                flashlight.position.x = 0.45 + mouseNorm.x * 0.75;
+                flashlight.position.y = 0.38 + mouseNorm.y * 0.55;
             }
         });
 
-        // Al salir del recuadro 3D hacia los botones o hacia el cuadro izquierdo, el ojo se centra solo
         canvas.addEventListener(&quot;pointerleave&quot;, () =&gt; {
             if (!xRayActive) {
                 targetRotation.x = 0;
                 targetRotation.y = 0;
             }
-            flashlight.position.set(0.38, 0.36, 4.8);
+            flashlight.position.set(0.45, 0.38, 4.8);
         });
 
         function toggleTracking() {
@@ -1343,8 +3297,10 @@
             } else {
                 btn.classList.remove(&quot;active&quot;);
                 btn.textContent = &quot;⏸ Seguimiento Ocular (PAUSA)&quot;;
-                targetRotation.x = 0;
-                targetRotation.y = 0;
+                if (!xRayActive) {
+                    targetRotation.x = 0;
+                    targetRotation.y = 0;
+                }
             }
         }
 
@@ -1354,16 +3310,13 @@
             if (flashlightActive) {
                 btn.classList.add(&quot;active&quot;);
                 btn.textContent = &quot;🔦 Linterna Oftálmica (ON)&quot;;
-                flashlight.visible = true;
-                hudMode.textContent = &quot;🔦 Linterna Médica Activa&quot;;
-                updatePupilReaction(parseFloat(lightRange.value));
+                hudMode.textContent = &quot;🔦 Linterna Oftálmica Encendida (Miosis)&quot;;
+                updatePupilReaction(90);
             } else {
                 btn.classList.remove(&quot;active&quot;);
                 btn.textContent = &quot;🌑 Linterna Oftálmica (OFF)&quot;;
-                flashlight.visible = false;
-                flashlight.intensity = 0;
-                hudMode.textContent = &quot;🌑 Luz Ambiente Tenue&quot;;
-                updatePupilReaction(15);
+                hudMode.textContent = &quot;🌑 Linterna Apagada (Midriasis)&quot;;
+                updatePupilReaction(12);
             }
         }
 
@@ -1372,20 +3325,27 @@
             const btn = document.getElementById(&quot;btnXRay&quot;);
             if (xRayActive) {
                 btn.classList.add(&quot;active&quot;);
-                btn.textContent = &quot;🔬 Vista Anatómica Interna (ON)&quot;;
-                lensMesh.visible = true;
-                scleraMat.transparent = true;
-                scleraMat.opacity = 0.42;
-                corneaMat.opacity = 0.22;
-                // Girar ligeramente de perfil para apreciar la lente biconvexa del cristalino
-                targetRotation.y = 0.55;
+                btn.textContent = &quot;🔬 Cerrar Corte Sagital&quot;;
+                retinaMesh.visible = true;
+                internalAnatomyGroup.visible = true;
+                corneaMat.opacity = 0.32;
+                anatomyLabels.classList.add(&quot;visible&quot;);
+                hudMode.textContent = &quot;🔬 Corte Sagital: Cristalino y Retina&quot;;
+                // Girar el ojo en perfil lateral para ver la ventana sagital, el cristalino y el nervio óptico detrás
+                controls.reset();
+                targetRotation.x = 0.05;
+                targetRotation.y = -1.05;
             } else {
                 btn.classList.remove(&quot;active&quot;);
                 btn.textContent = &quot;🔬 Corte Sagital / Cristalino&quot;;
-                lensMesh.visible = false;
-                scleraMat.transparent = false;
-                scleraMat.opacity = 1.0;
+                sagittalClipPlane.constant = 10.0;
+                retinaMesh.visible = false;
+                internalAnatomyGroup.visible = false;
                 corneaMat.opacity = 0.04;
+                anatomyLabels.classList.remove(&quot;visible&quot;);
+                hudMode.textContent = flashlightActive ? &quot;🔦 Linterna Oftálmica Encendida&quot; : &quot;🌑 Linterna Apagada (Midriasis)&quot;;
+                controls.reset();
+                targetRotation.x = 0;
                 targetRotation.y = 0;
             }
         }
@@ -1403,6 +3363,36 @@
             renderIrisTexture();
         }
 
+        // Proyección 3D -&gt; 2D de las etiquetas anatómicas cuando el Corte Sagital está activo
+        const labelAnchors = [
+            { id: &quot;pinCornea&quot;, localPos: new THREE.Vector3(0, 0.25, 1.85) },
+            { id: &quot;pinLens&quot;,   localPos: new THREE.Vector3(0, -0.32, 0.86) },
+            { id: &quot;pinSclera&quot;, localPos: new THREE.Vector3(-0.35, 1.48, 0.1) },
+            { id: &quot;pinRetina&quot;, localPos: new THREE.Vector3(0, -0.65, -1.25) },
+            { id: &quot;pinNerve&quot;,  localPos: new THREE.Vector3(-0.42, 0.18, -2.35) }
+        ];
+        const tempVec = new THREE.Vector3();
+
+        function updateAnatomyLabels2D() {
+            if (!xRayActive) return;
+            const w = wrap.clientWidth;
+            const h = wrap.clientHeight;
+            for (const item of labelAnchors) {
+                tempVec.copy(item.localPos);
+                eyeGroup.localToWorld(tempVec);
+                tempVec.project(camera);
+                const x = (tempVec.x * 0.5 + 0.5) * w;
+                const y = (-(tempVec.y * 0.5) + 0.5) * h;
+                const el = document.getElementById(item.id);
+                if (el) {
+                    const clampedX = Math.max(95, Math.min(w - 115, x));
+                    const clampedY = Math.max(55, Math.min(h - 25, y));
+                    el.style.left = clampedX + &quot;px&quot;;
+                    el.style.top = clampedY + &quot;px&quot;;
+                }
+            }
+        }
+
         // -------------------------------------------------------------
         // BUCLE PRINCIPAL DE ANIMACIÓN A 60 FPS
         // -------------------------------------------------------------
@@ -1410,14 +3400,33 @@
             requestAnimationFrame(animate);
 
             const pupilDiff = targetPupilRatio - currentPupilRatio;
-            if (Math.abs(pupilDiff) &gt; 0.002) {
-                currentPupilRatio += pupilDiff * 0.14;
+            if (Math.abs(pupilDiff) &gt; 0.0015) {
+                currentPupilRatio += pupilDiff * 0.16;
                 renderIrisTexture();
             }
 
-            // Interpolación suave hacia targetRotation (que vuelve a 0 al ir a los botones)
             eyeGroup.rotation.y += (targetRotation.y - eyeGroup.rotation.y) * 0.09;
             eyeGroup.rotation.x += (targetRotation.x - eyeGroup.rotation.x) * 0.09;
+
+            // Comprobar si se mira el ojo de frente o si se ha girado la esfera
+            const eyeForward = new THREE.Vector3(0, 0, 1).applyEuler(eyeGroup.rotation).normalize();
+            const camDir = camera.position.clone().normalize();
+            const frontDot = camDir.dot(eyeForward);
+            const isFrontView = frontDot &gt; 0.86;
+
+            // El nervio óptico posterior NUNCA se ve al mirar de frente; solo al girar el ojo en la esfera
+            nerveMesh.visible = !isFrontView;
+            opticCollar.visible = !isFrontView;
+
+            // Actualizar el plano de corte sagital lateral (mantiene 100% intactos el iris y la pupila frontal)
+            if (xRayActive) {
+                const normal = localClipNormal.clone().applyEuler(eyeGroup.rotation).normalize();
+                sagittalClipPlane.normal.copy(normal);
+                sagittalClipPlane.constant = 0.44;
+                updateAnatomyLabels2D();
+            } else {
+                sagittalClipPlane.constant = 10.0;
+            }
 
             controls.update();
             renderer.render(scene, camera);
@@ -1435,8 +3444,7 @@
     &lt;/script&gt;
 &lt;/body&gt;
 &lt;/html&gt;
-
-  </textarea>
+</textarea>
 
 </main>
 
@@ -3309,11 +5317,29 @@ window.POMPEII_RECON_B64 = &quot;data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAYABg
             });
         }
 
+        // Cargar simulador Sistema Solar 3D (NASA)
+        const btnLoadSolar = document.getElementById("btnLoadSolar");
+        if (btnLoadSolar) {
+            btnLoadSolar.addEventListener("click", () => {
+                const template = document.getElementById("exampleSolarTemplate");
+                editor.value = template.value;
+                charCount.textContent = template.value.length + " caracteres";
+                runCode(false);
+            });
+        }
+
         // Filtrado dinámico de botones por sesión (?sesion=4)
         (function() {
             const urlParams = new URLSearchParams(window.location.search);
             const sesionParam = urlParams.get('sesion') || urlParams.get('session');
-            if (sesionParam === '4') {
+            if (sesionParam === '5') {
+                if (btnLoadPulmones) btnLoadPulmones.style.display = 'none';
+                if (btnLoadCorazon) btnLoadCorazon.style.display = 'none';
+                if (btnLoadPompeya) btnLoadPompeya.style.display = 'none';
+                if (btnLoadOjo) btnLoadOjo.style.display = 'none';
+                if (btnLoadSolar) btnLoadSolar.style.display = 'inline-flex';
+            } else if (sesionParam === '4') {
+                if (btnLoadSolar) btnLoadSolar.style.display = 'none';
                 if (btnLoadPulmones) btnLoadPulmones.style.display = 'none';
                 if (btnLoadCorazon) btnLoadCorazon.style.display = 'none';
                 if (btnLoadPompeya) btnLoadPompeya.style.display = 'none';

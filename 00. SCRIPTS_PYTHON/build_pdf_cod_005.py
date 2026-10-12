@@ -90,7 +90,8 @@ def build_pure_python_cod_005(dest_path):
     mision = (
         "En este taller ordenarás a Gemini programar en Three.js un planetario 3D interactivo del Sistema Solar con mapas satelitales reales "
         "de la NASA. Sin saber programar: pedirás el código a Gemini con el prompt maestro, lo probarás pulsando «Ejecutar Creación» y "
-        "actuarás sobre la velocidad orbital, los anillos de Saturno y el viaje en cámara 3D a los 8 planetas y la Luna."
+        "explorarás los 8 planetas, la Luna, las 4 lunas galileanas de Júpiter (Ío, Europa, Ganímedes y Calisto), los anillos de Saturno, "
+        "el Vórtice Galáctico en tirabuzón y la sonda Voyager 1 en la Heliopausa."
     )
     draw_wrapped(36, 689, mision, 102, "F1", 8.0, 10.5)
 
@@ -101,7 +102,7 @@ def build_pure_python_cod_005(dest_path):
         ("Tarea 2 • Copia el código generado por la IA:", "En la respuesta de Gemini, haz clic en el botón «Copiar código» situado en la esquina superior derecha."),
         ("Tarea 3 • Abre el Taller Oficial de Pruebas (Pestaña 2):", "En el mapa de la Sesión 05, pulsa «Abrir Taller Interactivo de Pruebas»."),
         ("Tarea 4 • Pega con Ctrl+V y pulsa «Ejecutar Creación»:", "Pega el código en el cuadro izquierdo y pulsa «Ejecutar Creación» para explorar tu Sistema Solar 3D."),
-        ("Tarea 5 • Explora la Demo NASA («Sistema Solar 3D»):", "Pulsa «Sistema Solar 3D» en el taller o en el mapa para viajar a cada planeta con texturas reales de la NASA."),
+        ("Tarea 5 • Explora la Demo NASA («Sistema Solar 3D»):", "Pulsa «Sistema Solar 3D» y haz clic en «Júpiter + 4 Lunas» o «Tirabuzón Galáctico» para verlo en acción."),
     ]
     ty = 631
     for t_bold, t_rest in tasks:
@@ -123,10 +124,10 @@ def build_pure_python_cod_005(dest_path):
         "   (2k_sun.jpg, 2k_mercury.jpg, 2k_venus_atmosphere.jpg, 2k_earth_daymap.jpg, 2k_earth_clouds.jpg,",
         "   2k_moon.jpg, 2k_mars.jpg, 2k_jupiter.jpg, 2k_saturn.jpg, 2k_saturn_ring_alpha.png, 2k_uranus.jpg,",
         "   2k_neptune.jpg y 8k_stars_milky_way.jpg).",
-        "4. Modela el Sol central con luz puntual, los 8 planetas en órbitas keplerianas, la Luna orbitando la Tierra",
-        "   y los anillos translúcidos de Saturno.",
-        "5. Añade botones para viajar con la cámara a cualquier planeta, un botón para alinear y comparar tamaños, y un",
-        "   control deslizante (slider) de Velocidad Orbital.",
+        "4. Modela el Sol central, los 8 planetas en órbitas keplerianas, la Luna en la Tierra, las 4 lunas galileanas",
+        "   orbitando Júpiter (Ío, Europa, Ganímedes y Calisto) y los anillos translúcidos de Saturno.",
+        "5. Añade botones para viajar con la cámara a cualquier planeta, modo Vórtice Galáctico en tirabuzón, comparar",
+        "   tamaños y un control deslizante (slider) de Velocidad Orbital.",
         "6. Escribe exclusivamente el bloque de código sin explicaciones previas ni posteriores.\""
     ]
     py = 493
@@ -136,8 +137,8 @@ def build_pure_python_cod_005(dest_path):
 
     text_xy(36, 318, "El Reto Extra (Para Alumnos Curiosos):", "F2", 8.8, (0.01, 0.41, 0.63))
     reto = (
-        "¡Pídele a Gemini que amplíe tu planetario! En la misma conversación dile: «Añade las 4 grandes lunas galileanas orbitando alrededor "
-        "de Júpiter (Ío, Europa, Ganímedes y Calisto)» o «Añade un cometa con cola luminosa cruzando el Sistema Solar»."
+        "¡Pídele a Gemini que amplíe tu planetario! En la misma conversación dile: «Añade al simulador el Cometa Halley "
+        "cruzando el Sistema Solar en una órbita elíptica alargada con su núcleo brillante y una cola luminosa azulada»."
     )
     draw_wrapped(36, 305, reto, 102, "F1", 7.9, 10.2)
 
@@ -147,11 +148,10 @@ def build_pure_python_cod_005(dest_path):
         "• Origen de los mapas fotográficos satelitales (NASA / Solar System Scope 2K-8K): Cada esfera planetaria viste el mosaico",
         "  fotográfico real captado por las misiones espaciales de la NASA y la ESA: telescopio solar SDO (Sol), sonda MESSENGER",
         "  (Mercurio), radar Magellan / Akatsuki (Venus), satélite MODIS Blue Marble + nubes reales (Tierra), Lunar Reconnaissance",
-        "  Orbiter LRO (Luna), misiones Viking y MGS (Marte), sonda Cassini y Hubble (Júpiter y Saturno con transparencia radial",
-        "  real de los anillos A, B y División de Cassini), sonda Voyager 2 (Urano y Neptuno) y panorama 360° de la Vía Láctea (ESO).",
-        "• Montaje interactivo en Three.js (WebGL): Se combinan órbitas keplerianas con velocidades relativas reales (de los 88 días",
-        "  de Mercurio a los 165 años de Neptuno), un cinturón de 950 asteroides 3D entre Marte y Júpiter, interpolación suave de",
-        "  cámara (OrbitControls) para seguir en vivo a cualquier planeta y modo de alineación comparativa de tamaños."
+        "  Orbiter LRO (Luna), misiones Viking y MGS (Marte), sonda Cassini, Galileo y Juno (Júpiter con sus 4 lunas galileanas Ío,",
+        "  Europa, Ganímedes y Calisto, y Saturno con sus anillos), Voyager 2 (Urano y Neptuno) y panorama 360° de la Vía Láctea.",
+        "• Montaje interactivo en Three.js (WebGL): Incluye órbitas keplerianas (1x = 1 año/60 s), las 4 lunas de Júpiter con etiquetas",
+        "  en vivo, el Vórtice Helicoidal Galáctico (tirabuzón a 828.000 km/h) y la sonda Voyager 1 en la barrera de la Heliopausa."
     ]
     ty2 = 256
     for tl in tech_lines:
