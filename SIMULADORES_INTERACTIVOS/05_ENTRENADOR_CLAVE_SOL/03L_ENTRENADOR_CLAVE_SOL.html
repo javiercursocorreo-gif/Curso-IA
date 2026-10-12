@@ -1129,9 +1129,13 @@
                 return;
             }
 
-            // Detener reproducción en curso si está activa para re-sincronizar
-            if (isPlaying) {
-                stopPlayback(false);
+            const wasPlaying = isPlaying;
+            const savedStep = currentStepIndex;
+
+            // Si está reproduciendo, limpiar el temporizador activo para re-sincronizar
+            if (isPlaying && playbackTimeoutId) {
+                clearTimeout(playbackTimeoutId);
+                playbackTimeoutId = null;
             }
 
             // Aplicar la transposición de +12 o -12 semitonos a todas las notas de la partitura
@@ -1149,8 +1153,30 @@
                 }
             }
 
+            // Si hay pistas MIDI cargadas, trasponer los datos de audio de la pista y reconstruir el timeline
+            if (currentMidiTracks && currentMidiTracks.length > 0) {
+                if (currentMidiTracks[currentMidiTrackIndex]) {
+                    const trk = currentMidiTracks[currentMidiTrackIndex];
+                    if (trk.notes) trk.notes.forEach(n => { n.midi += semitones; });
+                    if (trk.rawNotes) trk.rawNotes.forEach(n => { n.midi += semitones; });
+                }
+                buildPlaybackTimeline();
+            }
+
+            currentStepIndex = savedStep;
             renderNotesLayer();
             updatePracticeStatusUI();
+            updateScoreScroll();
+
+            // Si estaba en reproducción continua, continuar sonando en la nueva octava seleccionada
+            if (wasPlaying) {
+                isPlaying = true;
+                if (currentMidiTracks && currentMidiTracks.length > 0) {
+                    playMultiTrackStep();
+                } else {
+                    playPlaybackStep();
+                }
+            }
         }
 
         function setNoteLabelMode(mode) {
@@ -1730,11 +1756,27 @@
                 let noteColor = "#111111";
                 let auraSvg = "";
 
-                if (currentMode === "free") {
+                if (isPlaying) {
+                    // MODO ESCUCHAR: La nota que está sonando en este instante se resalta con el círculo azul
+                    const isSoundingNote = (index === currentStepIndex) || 
+                        (typeof item === 'object' && typeof item.startTick === 'number' && 
+                         typeof activeList[currentStepIndex] === 'object' && 
+                         activeList[currentStepIndex].startTick === item.startTick && 
+                         Math.abs(index - currentStepIndex) <= 2);
+
+                    if (isSoundingNote) {
+                        noteColor = "#1f6feb";
+                        auraSvg = `<circle cx="${posX}" cy="${noteY}" r="22" fill="rgba(31, 111, 235, 0.22)" stroke="#1f6feb" stroke-width="3.5" opacity="0.95" />`;
+                    } else if (index < currentStepIndex) {
+                        noteColor = "#2ea043"; // Notas ya reproducidas
+                    } else {
+                        noteColor = "#555555"; // Notas pendientes de sonar
+                    }
+                } else if (currentMode === "free") {
                     const isLast = (index === noteSequence.length - 1);
                     noteColor = isLast ? (isSharp ? "#e63946" : "#0969da") : "#111111";
                 } else {
-                    // Modo Práctica / Wait / Intervals
+                    // Modo Práctica / Wait / Intervals / Canciones
                     if (index < currentStepIndex) {
                         // Ya tocada con acierto (Verde esmeralda elegante)
                         noteColor = "#2ea043";
