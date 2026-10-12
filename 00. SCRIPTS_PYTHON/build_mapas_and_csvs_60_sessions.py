@@ -207,12 +207,12 @@ def generate_columns_html(session_num, session_folder, files):
                 return (2, 5, 1, filename.lower())
         return file_sort_key(filename)
 
-    # Filtrar archivos reales de contenido (ignorando duplicados de sincronización de iCloud ' 2.pdf', etc.)
+    # Filtrar archivos reales de contenido (ignorando duplicados de sincronización de iCloud ' 2.pdf', modelos .glb y assets auxiliares)
     valid_files = [
         f for f in sorted(files, key=session_file_sort_key)
         if not f.startswith('.') and not f.startswith('MAPA_') and not f.startswith('~$')
-        and not f.endswith('.html')
-        and not f.endswith('.js') and not f.endswith('.mp3')
+        and not f.lower().endswith(('.html', '.js', '.mp3', '.glb', '.gltf', '.bin'))
+        and not f.lower().startswith(('lungs', 'eye', 'pompeii_', 'heart'))
         and not re.search(r'\s[2-9]\.(pdf|mp4|html)$', f, re.IGNORECASE)
         and not f.startswith('0. FASE_0')
         and not (session_num in (1, 2) and 'CUENT' in f)

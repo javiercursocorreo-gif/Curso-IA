@@ -786,18 +786,18 @@
             const now = audioCtx.currentTime;
 
             if (isError) {
-                // Tono corto disonante y suave de aviso de error
+                // Aviso sutil, suave y sin zumbidos molestos
                 const oscErr = audioCtx.createOscillator();
                 const gainErr = audioCtx.createGain();
                 oscErr.type = "sine";
-                oscErr.frequency.setValueAtTime(140, now);
+                oscErr.frequency.setValueAtTime(260, now);
                 gainErr.gain.setValueAtTime(0.0001, now);
-                gainErr.gain.exponentialRampToValueAtTime(0.12, now + 0.005);
-                gainErr.gain.exponentialRampToValueAtTime(0.0001, now + 0.18);
+                gainErr.gain.exponentialRampToValueAtTime(0.03, now + 0.004);
+                gainErr.gain.exponentialRampToValueAtTime(0.0001, now + 0.08);
                 oscErr.connect(gainErr);
                 gainErr.connect(audioCtx.destination);
                 oscErr.start(now);
-                oscErr.stop(now + 0.18);
+                oscErr.stop(now + 0.08);
                 return;
             }
 
@@ -1407,6 +1407,7 @@
 
         // GESTIÓN DE NOTAS PULSADAS / INTERACCIÓN (AKAI, KORG, TECLADO VIRTUAL Y MIC)
         let lastTriggerTimeByMidi = {};
+        let lastStepAdvanceTime = 0;
         const physicallyPressedMidiKeys = new Set();
 
         function triggerNoteOn(midi) {
@@ -1418,9 +1419,9 @@
             }
             physicallyPressedMidiKeys.add(midi);
 
-            // Antirrebote ultra-efectivo (debounce de 140 ms por nota para evitar eventos duplicados/múltiples)
+            // Antirrebote ultra-efectivo (debounce de 220 ms por nota para evitar eventos duplicados/múltiples)
             const nowTime = Date.now();
-            if (lastTriggerTimeByMidi[midi] && (nowTime - lastTriggerTimeByMidi[midi] < 140)) {
+            if (lastTriggerTimeByMidi[midi] && (nowTime - lastTriggerTimeByMidi[midi] < 220)) {
                 return;
             }
             lastTriggerTimeByMidi[midi] = nowTime;
@@ -1447,6 +1448,13 @@
                 // Modo Práctica (Wait for note) o Ejercicios
                 if (practiceSequence.length === 0) return;
 
+                // PROTECCIÓN CRÍTICA CONTRA ECO / DOBLE DISPARO DE TECLAS FÍSICAS:
+                // Si acabamos de acertar una nota y avanzar el paso hace menos de 280ms,
+                // cualquier pulsación residual es un rebote de la nota anterior y NO debe evaluarse como error.
+                if (Date.now() - lastStepAdvanceTime < 280) {
+                    return;
+                }
+
                 if (currentStepIndex < practiceSequence.length) {
                     const rawTarget = practiceSequence[currentStepIndex];
                     const targetMidi = (typeof rawTarget === 'object') ? rawTarget.midi : rawTarget;
@@ -1455,6 +1463,7 @@
                     if (midi === targetMidi || (midi % 12 === targetMidi % 12)) {
                         // ¡CORRECTO!
                         hasErrorOnCurrentStep = false;
+                        lastStepAdvanceTime = Date.now();
                         playSound(midi);
 
                         currentStepIndex++;
@@ -3076,6 +3085,9 @@
                         text.innerHTML = '🟡 Conecta el Akai / Korg por USB <span style="font-size:0.75rem; text-decoration:underline; cursor:pointer;" onclick="setupMIDI(true)">🔄 Re-escanear</span>';
                     }
 
+                    let lastMidiPacketTime = 0;
+                    let lastMidiPacketNote = -1;
+
                     inputs.forEach(input => {
                         input.onmidimessage = (e) => {
                             if (!e || !e.data || e.data.length < 2) return;
@@ -3084,8 +3096,18 @@
                             const vel = (e.data.length > 2) ? e.data[2] : 64;
                             const cmd = status >> 4;
                             if (cmd === 9) {
-                                if (vel > 0) triggerNoteOn(note);
-                                else triggerNoteOff(note);
+                                if (vel > 0) {
+                                    const now = Date.now();
+                                    // Filtrar duplicados instantáneos emitidos por múltiples puertos virtuales en macOS
+                                    if (note === lastMidiPacketNote && (now - lastMidiPacketTime < 100)) {
+                                        return;
+                                    }
+                                    lastMidiPacketTime = now;
+                                    lastMidiPacketNote = note;
+                                    triggerNoteOn(note);
+                                } else {
+                                    triggerNoteOff(note);
+                                }
                             } else if (cmd === 8) {
                                 triggerNoteOff(note);
                             }
