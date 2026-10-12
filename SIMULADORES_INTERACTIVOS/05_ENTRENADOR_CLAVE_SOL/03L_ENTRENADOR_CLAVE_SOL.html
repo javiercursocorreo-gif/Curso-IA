@@ -1740,11 +1740,11 @@
                         if (hasErrorOnCurrentStep) {
                             // ¡ERROR! ROJO ALERTA
                             noteColor = "#da3633";
-                            auraSvg = `<circle cx="${posX}" cy="${noteY}" r="22" fill="none" stroke="#da3633" stroke-width="3.5" opacity="0.8" class="note-error-shake" />`;
+                            auraSvg = `<circle cx="${posX}" cy="${noteY}" r="22" fill="none" stroke="#da3633" stroke-width="3" opacity="0.85" />`;
                         } else {
                             // Esperando con aura azul
                             noteColor = "#1f6feb";
-                            auraSvg = `<circle cx="${posX}" cy="${noteY}" r="20" fill="none" stroke="#1f6feb" stroke-width="2.5" opacity="0.6"><animate attributeName="r" values="18;23;18" dur="1.4s" repeatCount="indefinite"/></circle>`;
+                            auraSvg = `<circle cx="${posX}" cy="${noteY}" r="20" fill="none" stroke="#1f6feb" stroke-width="2.5" opacity="0.75" />`;
                         }
                     } else {
                         // Pendiente futura
@@ -2727,9 +2727,18 @@
             }
 
             try {
-                midiAccessInstance = await navigator.requestMIDIAccess({ sysex: false });
+                dot.style.background = "#e3b341";
+                text.innerHTML = '🔄 Conectando MIDI...';
+
+                // Usar Promise.race con timeout de 2.5s para blindar contra cualquier cuelgue de driver del SO
+                const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout MIDI")), 2500));
+                midiAccessInstance = await Promise.race([
+                    navigator.requestMIDIAccess({ sysex: false }),
+                    timeoutPromise
+                ]);
                 
                 function bindInputs() {
+                    if (!midiAccessInstance) return;
                     const inputs = Array.from(midiAccessInstance.inputs.values());
                     if (inputs.length > 0) {
                         dot.style.background = "#3fb950";
@@ -2764,9 +2773,10 @@
                 bindInputs();
                 midiAccessInstance.onstatechange = bindInputs;
             } catch (err) {
+                console.warn("Aviso al inicializar MIDI:", err);
                 dot.style.background = "#d29922";
                 dot.classList.remove("connected");
-                text.innerHTML = '🟡 Conecta el Akai / Korg por USB <span style="font-size:0.75rem; text-decoration:underline; cursor:pointer;" onclick="setupMIDI(true)">🔄 Re-escanear</span>';
+                text.innerHTML = '🟡 USB MIDI listo &bull; <span style="font-size:0.75rem; text-decoration:underline; cursor:pointer;" onclick="setupMIDI(true)">🔌 Conectar Akai</span>';
             }
         }
 
@@ -2801,7 +2811,7 @@
             }, { passive: true });
         }
 
-        // INICIALIZACIÓN ROBUSTA Y A PRUEBA DE FALLOS
+        // INICIALIZACIÓN ROBUSTA Y A PRUEBA DE FALLOS (CARGA ULTRA-RÁPIDA SIN BLOQUEOS)
         function initApp() {
             try {
                 // 1. Renderizar la partitura y los controles inmediatamente
@@ -2817,19 +2827,33 @@
                 console.error("Error en setupScoreWheelScroll:", err);
             }
 
-            try {
-                setupMIDI().catch(err => console.warn("MIDI init notice:", err));
-            } catch (err) {
-                console.warn("MIDI access notice:", err);
+            // En dispositivos iOS/iPad o Chrome sin interacción, mostrar estado listo de inmediato
+            const dot = document.getElementById("status-dot");
+            const text = document.getElementById("status-text");
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
+            if (isIOS) {
+                if (dot) dot.style.background = "#58a6ff";
+                if (text) text.textContent = "📱 iPad (Táctil / Mic listo)";
+            } else if (navigator.requestMIDIAccess) {
+                if (dot) dot.style.background = "#3fb950";
+                if (text) text.innerHTML = '🟢 Listo &bull; <span style="font-size:0.75rem; text-decoration:underline; cursor:pointer;" onclick="setupMIDI(true)">🎹 Conectar USB</span>';
             }
 
-            window.addEventListener("click", () => {
+            // Inicializar Web MIDI y Audio al primer clic o toque del usuario para cumplir con las políticas de Chrome y Safari
+            const activateAudioAndMidi = () => {
                 try {
                     initAudio();
-                    if (!midiAccessInstance && navigator.requestMIDIAccess) setupMIDI().catch(() => {});
+                    if (!midiAccessInstance && navigator.requestMIDIAccess && !isIOS) {
+                        setupMIDI().catch(() => {});
+                    }
                     [60, 62, 64, 65, 67, 69, 71, 72, 74, 76, 77, 79, 81].forEach(m => loadGrandPianoSample(m));
                 } catch(e){}
-            }, { once: true });
+            };
+
+            window.addEventListener("click", activateAudioAndMidi, { once: true });
+            window.addEventListener("touchstart", activateAudioAndMidi, { once: true, passive: true });
+            window.addEventListener("keydown", activateAudioAndMidi, { once: true });
         }
 
         if (document.readyState === "loading") {
