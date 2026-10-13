@@ -121,7 +121,7 @@ def _generate_page_stream(items, page_num, total_pages, title_part, subtitle_tex
         ops.append("ET")
 
     # Cabecera
-    text_xy(105, 558, f"CATÁLOGO MAESTRO: 21 GRANDES SIMULACIONES INTERACTIVAS 3D INTERCALADAS ({title_part})", "F2", 13.5, (0.06, 0.09, 0.16))
+    text_xy(105, 558, f"CATÁLOGO MAESTRO: SIMULACIONES INTERACTIVAS 3D INTERCALADAS ({title_part})", "F2", 13.5, (0.06, 0.09, 0.16))
     text_xy(125, 542, subtitle_text, "F3", 8.8, (0.28, 0.33, 0.41))
     rect(32, 534, W - 64, 1.5, fill_rgb=(0.01, 0.52, 0.78))
 
@@ -264,7 +264,7 @@ def build_html_catalog():
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Catálogo Maestro: 21 Grandes Simulaciones Interactivas 3D</title>
+    <title>Catálogo Maestro: Simulaciones Interactivas 3D</title>
     <style>
         body {{ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #070b14; color: #f8fafc; margin: 0; padding: 28px; }}
         .container {{ max-width: 1320px; margin: 0 auto; background: #0f172a; border: 1px solid #1e293b; border-radius: 18px; padding: 26px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }}
@@ -291,7 +291,7 @@ def build_html_catalog():
 </head>
 <body>
     <div class="container">
-        <h1>🌌 CATÁLOGO MAESTRO: 21 GRANDES SIMULACIONES INTERACTIVAS 3D INTERCALADAS</h1>
+        <h1>🌌 CATÁLOGO MAESTRO: SIMULACIONES INTERACTIVAS 3D INTERCALADAS</h1>
         <p class="sub">Plan Didáctico Intercalado: Alternancia de Anatomía Biomédica, Hitos Fotográficos NASA (Spitzer, Hubble, DSCOVR, Apollo, Gemini), Historia, Ingeniería y Geología</p>
         <table>
             <thead>
