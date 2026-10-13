@@ -86,14 +86,13 @@ def build_pure_python_cod_006(dest_path):
 
     text_xy(36, 720, "[COD-006] Taller: Crea tu propio simulador del cerebro humano", "F2", 12.0, (0.06, 0.09, 0.16))
 
-    text_xy(36, 702, "Misión Didáctica • Neurociencia y Redes Neuronales 3D con Inteligencia Artificial:", "F2", 8.8, (0.01, 0.41, 0.63))
+    text_xy(36, 705, "Misión Didáctica • Neurociencia y Redes Neuronales 3D con Inteligencia Artificial:", "F2", 8.8, (0.01, 0.41, 0.63))
     mision = (
-        "En este taller ordenarás a Gemini programar en Three.js un cerebro humano 3D interactivo con lóbulos cerebrales diferenciados "
-        "y pulsos de sinapsis bioeléctricos. Sin saber programar: pedirás el código a Gemini con el prompt maestro, lo probarás en el "
-        "taller pulsando «Ejecutar Creación» y explorarás el lóbulo frontal (pensamiento), parietal (tacto), temporal (memoria), occipital "
-        "(visión), cerebelo y los haces neuronales que comunican ambos hemisferios."
+        "En este taller ordenarás a Gemini programar en Three.js un cerebro humano 3D interactivo con lóbulos diferenciados y "
+        "pulsos de sinapsis bioeléctricos. Sin saber programar: pedirás el código a Gemini con el prompt maestro, lo probarás en el "
+        "taller pulsando «Ejecutar Creación» y explorarás el lóbulo frontal, parietal, temporal, occipital, el cerebelo y los axones."
     )
-    draw_wrapped(36, 689, mision, 102, "F1", 8.0, 10.5)
+    draw_wrapped(36, 693, mision, 102, "F1", 7.9, 9.8)
 
     text_xy(36, 650, "Lista de Tareas del Alumno (Paso a Paso en 2 Pestañas):", "F2", 8.8, (0.01, 0.41, 0.63))
     rect(36, 542, W - 72, 102, fill_rgb=(0.94, 0.98, 1.0), stroke_rgb=(0.01, 0.52, 0.78), lw=1.0)

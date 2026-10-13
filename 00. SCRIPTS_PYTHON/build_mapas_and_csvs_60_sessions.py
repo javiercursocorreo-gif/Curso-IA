@@ -1105,6 +1105,14 @@ def process_all_sessions():
                     shutil.copy2(solar_src, os.path.join(session_path, "05_SIMULADOR_SISTEMA_SOLAR_3D.html"))
                 except Exception:
                     pass
+        elif session_num == 6:
+            brain_src = os.path.join(BASE_DIR, "SIMULADORES_INTERACTIVOS", "01_SIMULADORES", "06_SIMULADOR_CEREBRO_3D.html")
+            if os.path.exists(brain_src):
+                try:
+                    shutil.copy2(brain_src, os.path.join(session_path, "SIMULADOR_CEREBRO_3D.html"))
+                    shutil.copy2(brain_src, os.path.join(session_path, "06_SIMULADOR_CEREBRO_3D.html"))
+                except Exception:
+                    pass
 
         files = os.listdir(session_path)
         html_content = generate_columns_html(session_num, session_path, files)
