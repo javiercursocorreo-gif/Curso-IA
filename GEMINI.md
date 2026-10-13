@@ -25,5 +25,15 @@
 - **Formato Estándar de Comandos en Terminal:**
   - Todos los comandos entregados al usuario deben comenzar con `cd "/Users/externo/Library/Mobile Documents/com~apple~CloudDocs/PERSONAL/CLASES DE TECNOLOGÍA/CURSO-IA"`, llevar encabezado descriptivo con comentarios `#` y mensajes `echo` claros para su fácil identificación visual en la terminal.
 
+## Estándar de Simulaciones 3D: Motor Babylon.js y Modelos Científicos Hiperrealistas
+- **Prohibición de Mallas Inventadas o Procedurales Primitivas:**
+  - Queda terminantemente prohibido generar órganos o artefactos mediante esferas, conos o cilindros básicos deformados por código (evitar acabados toscos o irreales).
+  - Toda simulación anatómica o científica debe emplear modelos 3D hiperrealistas reales (`.glb` / `.gltf`) procedentes de fuentes y repositorios científicos contrastados (NIH 3D Print Exchange, resonancias médicas reales, fotogrametría PBR 4K, NASA).
+- **Motor 3D Predeterminado (Babylon.js):**
+  - El motor estándar y prioritario para los laboratorios y simuladores 3D es **Babylon.js** (`babylon.js` + `babylonjs.loaders.min.js`), con sistema PBR, iluminación médica y shaders orgánicos.
+- **Arquitectura de Carga y Autonomía (Base64 + CDN Fallback):**
+  - Los modelos científicos deben estar respaldados en archivos `_b64.js` en `03_ASSETS_3D_Y_DATOS/` (ej. `brain_b64.js`, `heart_b64.js`, `lungs_b64.js`) para garantizar funcionamiento 100% offline y autónomo sin problemas de CORS ni caídas de servidor.
+
+
 
 

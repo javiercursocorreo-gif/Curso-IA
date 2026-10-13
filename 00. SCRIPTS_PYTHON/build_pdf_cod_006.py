@@ -88,9 +88,9 @@ def build_pure_python_cod_006(dest_path):
 
     text_xy(36, 705, "Misión Didáctica • Neurociencia y Redes Neuronales 3D con Inteligencia Artificial:", "F2", 8.8, (0.01, 0.41, 0.63))
     mision = (
-        "En este taller ordenarás a Gemini programar en Three.js un cerebro humano 3D interactivo con lóbulos diferenciados y "
-        "pulsos de sinapsis bioeléctricos. Sin saber programar: pedirás el código a Gemini con el prompt maestro, lo probarás en el "
-        "taller pulsando «Ejecutar Creación» y explorarás el lóbulo frontal, parietal, temporal, occipital, el cerebelo y los axones."
+        "En este taller ordenarás a Gemini programar en Babylon.js un cerebro humano 3D interactivo con escaneo anatómico real "
+        "(GLB) y pulsos de sinapsis bioeléctricos. Sin saber programar: pedirás el código a Gemini con el prompt maestro, lo probarás en el "
+        "taller pulsando «Ejecutar Creación» y explorarás el lóbulo frontal, parietal, temporal, occipital, el cerebelo y las vías axonales."
     )
     draw_wrapped(36, 693, mision, 102, "F1", 7.9, 9.8)
 
@@ -113,17 +113,15 @@ def build_pure_python_cod_006(dest_path):
     rect(36, 336, W - 72, 182, fill_rgb=(0.97, 0.98, 0.99), stroke_rgb=(0.39, 0.45, 0.55), lw=1.0)
     text_xy(44, 505, "Copia exactamente este texto en Gemini:", "F2", 7.8, (0.06, 0.09, 0.16))
     prompt_lines = [
-        "\"Genera el código completo en un único archivo (HTML, CSS y JavaScript con Three.js) para crear un simulador",
-        "interactivo 3D del Cerebro Humano con corteza bilateral hiperrealista, lóbulos y red sináptica bioeléctrica.",
+        "\"Genera el código completo en un único archivo (HTML, CSS y JavaScript con Babylon.js) para crear un simulador",
+        "interactivo 3D del Cerebro Humano con escaneo médico real (GLB/Base64), lóbulos y red sináptica bioeléctrica.",
         "Requisitos del código:",
         "1. Entrega todo en un único archivo autocontenido para pulsar «Copiar código» y pegarlo en el probador.",
-        "2. Carga Three.js, OrbitControls y GLTFLoader/DRACOLoader desde CDN oficial para visualización instantánea.",
-        "3. Modela el encéfalo bilateral con tono tisular cortical orgánico (#cf9583), micro-surcos y circunvoluciones",
-        "   (gyri/sulci), y resaltado luminiscente al pulsar cada lóbulo: Frontal, Parietal, Temporal, Occipital, Cerebelo y Tronco.",
-        "4. Genera una red axonal tridimensional (THREE.QuadraticBezierCurve3) y destellos bioluminiscentes en movimiento",
-        "   continuo que recreen potenciales de acción sinápticos viajando a 40 Hz por el encéfalo.",
-        "5. Añade botones para enfocar la cámara en cada lóbulo, alternar corteza/sinapsis, deslizar la velocidad del impulso",
-        "   y separar lateralmente ambos hemisferios cerebrales (cisura interhemisférica).",
+        "2. Carga Babylon.js y sus Loaders oficiales desde CDN oficial junto con el modelo real brain_b64.js.",
+        "3. Renderiza el encéfalo bilateral con circunvoluciones reales, pliegues corticales y material PBR médico.",
+        "4. Incluye un sistema de partículas bioluminiscentes simulando potenciales de acción sinápticos a 40 Hz.",
+        "5. Añade botones para enfocar la cámara en cada lóbulo (Frontal, Parietal, Temporal, Occipital, Cerebelo, Tronco),",
+        "   alternar hemisferios, deslizar la velocidad del impulso, ajustar la opacidad y activar giro suave 360°.",
         "6. Escribe exclusivamente el bloque de código sin explicaciones previas ni posteriores.\""
     ]
     py = 493
@@ -142,12 +140,11 @@ def build_pure_python_cod_006(dest_path):
     text_xy(36, 276, "¿Cómo se ha modelado la neuroanatomía hiperrealista y la red sináptica en 3D?", "F2", 8.8, (0.01, 0.41, 0.63))
     rect(36, 152, W - 72, 118, fill_rgb=(0.93, 0.99, 0.96), stroke_rgb=(0.02, 0.59, 0.41), lw=1.0)
     tech_lines = [
-        "• Modelado cortical bilateral y gyri/sulci: La corteza cerebral se genera con anatomía bilateral y relieve armónico de alta",
-        "  densidad poligonal emulando los pliegues, circunvoluciones y cisura longitudinal del encéfalo, con textura de micro-surcos",
-        "  y material PBR biológico (#cf9583) con compatibilidad directa para modelos oficiales Z-Anatomy / BodyParts3D GLB.",
-        "• Red axonal y destellos sinápticos: Una red tridimensional de más de 300 haces axonales interconecta los núcleos del tálamo,",
-        "  el cuerpo calloso y los cuatro polos corticales. Sobre ellos, 450 partículas bioluminiscentes (THREE.Points con shader aditivo)",
-        "  viajan a lo largo de curvas Bezier cuadráticas recreando el tráfico bioeléctrico de 40 Hz en tiempo real."
+        "• Modelado cortical mediante escaneo médico real: El encéfalo se renderiza en Babylon.js a partir de un escaneo",
+        "  anatómico tridimensional de resonancia magnética (GLB), reproduciendo con máxima fidelidad biológica los surcos,",
+        "  circunvoluciones y cisuras que multiplican la superficie de la corteza sin aproximaciones toscas.",
+        "• Red sináptica y partículas bioeléctricas: Un sistema de partículas dinámico (BABYLON.ParticleSystem) recrea los",
+        "  potenciales de acción viajando a 40 Hz por las redes axonales del cerebro con control de frecuencia e intensidad."
     ]
     ty2 = 256
     for tl in tech_lines:
