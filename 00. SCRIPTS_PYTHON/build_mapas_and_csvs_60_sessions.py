@@ -94,12 +94,14 @@ def clean_title_from_filename(filename, session_num=1):
     if 'COD-006' in f_up or ('COD-' in f_up and session_num == 6):
         return 'Taller: Crea tu propio simulador del cerebro humano'
     if 'COD-007' in f_up or ('COD-' in f_up and session_num == 7):
-        return 'Taller: Crea tu propio simulador del motor de 4 tiempos'
+        return 'Taller: Crea tu propio simulador 3D de la Luna (NASA LRO)'
     if 'COD-008' in f_up or ('COD-' in f_up and session_num == 8):
-        return 'Taller: Crea tu propio simulador del cráneo de Tiranosaurio Rex'
+        return 'Taller: Crea tu propio simulador del motor de 4 tiempos'
     if 'COD-009' in f_up or ('COD-' in f_up and session_num == 9):
-        return 'Taller: Crea tu propio simulador del molar humano'
+        return 'Taller: Crea tu propio simulador del cráneo de Tiranosaurio Rex'
     if 'COD-010' in f_up or ('COD-' in f_up and session_num == 10):
+        return 'Taller: Crea tu propio simulador del molar humano'
+    if 'COD-011' in f_up or ('COD-' in f_up and session_num == 11):
         return 'Taller: Crea tu propio simulador del violín Stradivarius'
     if 'SIMULADOR_PULMON' in f_up:
         return 'Simulador 3D del Árbol Bronquial y Pulmones'
@@ -111,6 +113,8 @@ def clean_title_from_filename(filename, session_num=1):
         return 'Simulador 3D del Ojo Humano y Cristalino'
     if 'SIMULADOR_SISTEMA_SOLAR' in f_up:
         return 'Simulador 3D del Sistema Solar (NASA)'
+    if 'SIMULADOR_LUNA' in f_up:
+        return 'Simulador 3D y Atlas Lunar de la Luna (NASA LRO)'
     if 'FRAC-000_B' in filename:
         return 'Reto Visual • Infografía de un Fractal en la Naturaleza'
     if 'FRAC-000_A' in filename:

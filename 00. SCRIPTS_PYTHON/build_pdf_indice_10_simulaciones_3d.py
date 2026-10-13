@@ -35,18 +35,21 @@ SIMULACIONES_DATA = [
     ("06", "[COD-006]", "Salud & Neurociencia", "Cerebro Humano & Red Sináptica",
      "Resonancia magnética médica cortical, vías neuronales, pulsos lumínicos bioeléctricos y selector de lóbulos cerebrales.",
      "Ver Simulador Cerebro 3D", "#", "Plan S06"),
-    ("07", "[COD-007]", "Mecánica & Automoción", "Motor de 4 Tiempos en Sección Abierta",
+    ("07", "[COD-007]", "Espacio & Selenografía", "Atlas 3D de la Luna & Topografía NASA LRO",
+     "Fotogrametría NASA LRO 4K, mares basálticos (Tranquillitatis, Oceanus Procellarum), cráteres (Tycho, Copernicus), sitios Apolo 11-17, cara oculta y fases lunares.",
+     "Ver Atlas Lunar 3D", "../01_SIMULADORES/07_SIMULADOR_LUNA_3D.html", "Plan S07"),
+    ("08", "[COD-008]", "Mecánica & Automoción", "Motor de 4 Tiempos en Sección Abierta",
      "Cilindro, pistón, cigüeñal y válvulas sincronizadas; ciclo térmico en corte transversal y control continuo de RPM con audio.",
-     "Ver Motor Mecánico 3D", "#", "Plan S07"),
-    ("08", "[COD-008]", "Paleontología & Evolución", "Cráneo Fósil de Tiranosaurio Rex",
+     "Ver Motor Mecánico 3D", "#", "Plan S08"),
+    ("09", "[COD-009]", "Paleontología & Evolución", "Cráneo Fósil de Tiranosaurio Rex",
      "Fotogrametría fósil de museo, porosidad mineralizada 4K, bisagra mandibular interactiva con apertura/cierre de fauces.",
-     "Ver Fósil T-Rex 3D", "#", "Plan S08"),
-    ("09", "[COD-009]", "Salud & Odontología", "Molar Humano en Sección Anatómica",
+     "Ver Fósil T-Rex 3D", "#", "Plan S09"),
+    ("10", "[COD-010]", "Salud & Odontología", "Molar Humano en Sección Anatómica",
      "Esmalte lúcido, dentina, pulpa vascularizada y terminaciones nerviosas; despiece tridimensional por capas clínicas.",
-     "Ver Molar Anatómico 3D", "#", "Plan S09"),
-    ("10", "[COD-010]", "Acústica & Arte Musical", "Violín Stradivarius & Resonancia Acústica",
+     "Ver Molar Anatómico 3D", "#", "Plan S10"),
+    ("11", "[COD-011]", "Acústica & Arte Musical", "Violín Stradivarius & Resonancia Acústica",
      "Madera de arce noble barnizada PBR 4K, simulación de cuerdas en vibración física armónica y ondas de presión acústica.",
-     "Ver Acústica Stradivarius 3D", "#", "Plan S10"),
+     "Ver Acústica Stradivarius 3D", "#", "Plan S11"),
 ]
 
 
@@ -84,51 +87,51 @@ def build_pure_python_pdf():
         ops.append("ET")
 
     # Cabecera
-    text_xy(135, 556, "CATÁLOGO MAESTRO: 10 GRANDES SIMULACIONES INTERACTIVAS 3D INTERCALADAS", "F2", 15.0, (0.06, 0.09, 0.16))
-    text_xy(185, 540, "Plan Didáctico Intercalado: Alternancia de Anatomía Biomédica, Historia, Sistema Solar 3D NASA, Mecánica y Paleontología", "F3", 9.2, (0.28, 0.33, 0.41))
-    rect(32, 532, W - 64, 1.5, fill_rgb=(0.01, 0.52, 0.78))
+    text_xy(135, 558, "CATÁLOGO MAESTRO: 11 GRANDES SIMULACIONES INTERACTIVAS 3D INTERCALADAS", "F2", 14.5, (0.06, 0.09, 0.16))
+    text_xy(165, 542, "Plan Didáctico Intercalado: Alternancia de Anatomía Biomédica, Historia, Espacio NASA, Selenografía Lunar, Mecánica y Paleontología", "F3", 8.8, (0.28, 0.33, 0.41))
+    rect(32, 534, W - 64, 1.5, fill_rgb=(0.01, 0.52, 0.78))
 
-    intro1 = "Metodología de Intercalación Temática: Para evitar la fatiga cognitiva y mantener la fascinación visual permanente en el alumnado senior (60+), el bloque de creación de simuladores con IA [COD]"
-    intro2 = "alterna una sesión de Anatomía y Salud Humana con una sesión de Grandes Hitos de la Ciencia (Pompeya, Sistema Solar 3D con mapas satelitales de la NASA, motor de 4 tiempos o fósiles)."
-    text_xy(32, 518, intro1, "F1", 8.2, (0.12, 0.16, 0.23))
-    text_xy(32, 507, intro2, "F1", 8.2, (0.12, 0.16, 0.23))
+    intro1 = "Metodología de Intercalación Temática: Para evitar la fatiga cognitiva y mantener la fascinación visual permanente en el alumnado senior (60+), el bloque de creación [COD]"
+    intro2 = "alterna sesiones de Anatomía y Salud Humana con Grandes Hitos de la Ciencia (Pompeya, Sistema Solar 3D NASA, Atlas Lunar 3D LRO, motor térmico y fósiles)."
+    text_xy(32, 520, intro1, "F1", 8.0, (0.12, 0.16, 0.23))
+    text_xy(32, 510, intro2, "F1", 8.0, (0.12, 0.16, 0.23))
 
     # Tabla
     col_x = [32, 84, 198, 338, 601, 739, 809]
     col_w = [col_x[i+1] - col_x[i] for i in range(len(col_x)-1)]
     headers = ["Sesión", "Universo / Temática", "Modelo Aprobado (PBR / NASA)", "Experiencia Visual e Interactiva", "Botón 2 • Simulador Terminado", "Estado"]
 
-    y_top = 494
-    row_h_header = 22
+    y_top = 498
+    row_h_header = 20
     rect(32, y_top - row_h_header, W - 64, row_h_header, fill_rgb=(0.06, 0.09, 0.16), stroke_rgb=(0.80, 0.84, 0.88))
     for i, h_txt in enumerate(headers):
-        text_xy(col_x[i] + 5, y_top - 14.5, h_txt, "F2", 8.2, (1, 1, 1))
+        text_xy(col_x[i] + 5, y_top - 13.5, h_txt, "F2", 8.0, (1, 1, 1))
 
     y_curr = y_top - row_h_header
-    row_h = 41.5
+    row_h = 38.0
     for idx, (ses, cod, univ, mod, exp, btn, _, est) in enumerate(SIMULACIONES_DATA):
         y_curr -= row_h
         bg = (0.97, 0.98, 0.99) if idx % 2 == 0 else (1.0, 1.0, 1.0)
-        if ses == "05":
+        if ses in ("05", "07"):
             bg = (0.94, 0.98, 1.0)
         for c_i in range(6):
             rect(col_x[c_i], y_curr, col_w[c_i], row_h, fill_rgb=bg, stroke_rgb=(0.80, 0.84, 0.88), lw=0.5)
 
-        text_xy(col_x[0] + 18, y_curr + 24, ses, "F2", 9.0, (0.06, 0.09, 0.16))
-        text_xy(col_x[0] + 6, y_curr + 12, cod, "F1", 7.6, (0.39, 0.45, 0.55))
+        text_xy(col_x[0] + 18, y_curr + 22, ses, "F2", 8.8, (0.06, 0.09, 0.16))
+        text_xy(col_x[0] + 6, y_curr + 10, cod, "F1", 7.4, (0.39, 0.45, 0.55))
 
-        text_xy(col_x[1] + 5, y_curr + 18, univ, "F2", 7.8, (0.01, 0.52, 0.78))
+        text_xy(col_x[1] + 5, y_curr + 15, univ, "F2", 7.6, (0.01, 0.52, 0.78))
 
         # Wrap model name into 2 lines if needed
         if len(mod) > 28:
             parts = mod.split(" ")
             mid = len(parts) // 2
-            text_xy(col_x[2] + 5, y_curr + 23, " ".join(parts[:mid]), "F2", 8.0, (0.06, 0.09, 0.16))
-            text_xy(col_x[2] + 5, y_curr + 12, " ".join(parts[mid:]), "F2", 8.0, (0.06, 0.09, 0.16))
+            text_xy(col_x[2] + 5, y_curr + 21, " ".join(parts[:mid]), "F2", 7.8, (0.06, 0.09, 0.16))
+            text_xy(col_x[2] + 5, y_curr + 10, " ".join(parts[mid:]), "F2", 7.8, (0.06, 0.09, 0.16))
         else:
-            text_xy(col_x[2] + 5, y_curr + 18, mod, "F2", 8.0, (0.06, 0.09, 0.16))
+            text_xy(col_x[2] + 5, y_curr + 15, mod, "F2", 7.8, (0.06, 0.09, 0.16))
 
-        # Wrap experience text into up to 3 lines (~56 chars per line)
+        # Wrap experience text into up to 3 lines (~58 chars per line)
         words = exp.split(" ")
         lines, cur = [], ""
         for w in words:
@@ -139,15 +142,15 @@ def build_pure_python_pdf():
                 cur = w
         if cur:
             lines.append(cur)
-        start_y = y_curr + 27 if len(lines) >= 3 else (y_curr + 23 if len(lines) == 2 else y_curr + 18)
+        start_y = y_curr + 25 if len(lines) >= 3 else (y_curr + 20 if len(lines) == 2 else y_curr + 15)
         for l_i, line_str in enumerate(lines[:3]):
-            text_xy(col_x[3] + 5, start_y - l_i * 9.5, line_str, "F1", 7.5, (0.20, 0.25, 0.33))
+            text_xy(col_x[3] + 5, start_y - l_i * 9.0, line_str, "F1", 7.3, (0.20, 0.25, 0.33))
 
-        text_xy(col_x[4] + 5, y_curr + 18, btn, "F2", 7.6, (0.02, 0.47, 0.34))
+        text_xy(col_x[4] + 5, y_curr + 15, btn, "F2", 7.4, (0.02, 0.47, 0.34))
 
         est_color = (0.02, 0.47, 0.34) if "Activo" in est else (0.28, 0.33, 0.41)
         est_font = "F2" if "Activo" in est else "F3"
-        text_xy(col_x[5] + 6, y_curr + 18, est, est_font, 7.6, est_color)
+        text_xy(col_x[5] + 6, y_curr + 15, est, est_font, 7.4, est_color)
 
     text_xy(32, 34, "Estándar Técnico Compartido: Todos los simuladores operan en el navegador sin descargas pesadas ni plugins externos, compatibles con WebGL / Three.js, y garantizan fluidez total en el aula.", "F1", 8.0, (0.12, 0.16, 0.23))
 
@@ -188,7 +191,7 @@ def build_html_catalog():
         badge_cls = "status-active" if is_active else "status-plan"
         btn_el = f'<a href="{href}" target="_blank" class="sim-link">🚀 {btn} ↗</a>' if href != "#" else f'<span class="sim-pending">⏳ {btn}</span>'
         rows_html += f"""
-        <tr class="{'row-highlight' if ses == '05' else ''}">
+        <tr class="{'row-highlight' if ses in ('05', '07') else ''}">
             <td class="col-ses"><strong>{ses}</strong><span>{cod}</span></td>
             <td class="col-univ">{univ}</td>
             <td class="col-mod">{mod}</td>
@@ -202,7 +205,7 @@ def build_html_catalog():
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Catálogo Maestro: 10 Grandes Simulaciones Interactivas 3D</title>
+    <title>Catálogo Maestro: 11 Grandes Simulaciones Interactivas 3D</title>
     <style>
         body {{ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #070b14; color: #f8fafc; margin: 0; padding: 28px; }}
         .container {{ max-width: 1280px; margin: 0 auto; background: #0f172a; border: 1px solid #1e293b; border-radius: 18px; padding: 26px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }}
@@ -212,7 +215,7 @@ def build_html_catalog():
         th {{ background: #1e293b; color: #38bdf8; text-transform: uppercase; font-size: 0.76rem; letter-spacing: 0.05em; padding: 12px 10px; text-align: left; border-bottom: 2px solid #334155; }}
         td {{ padding: 12px 10px; border-bottom: 1px solid #1e293b; vertical-align: middle; }}
         tr:hover {{ background: rgba(30, 41, 59, 0.5); }}
-        tr.row-highlight {{ background: rgba(251, 191, 36, 0.08); }}
+        tr.row-highlight {{ background: rgba(56, 189, 248, 0.08); }}
         .col-ses {{ text-align: center; width: 75px; }}
         .col-ses strong {{ display: block; font-size: 1rem; color: #fff; }}
         .col-ses span {{ font-size: 0.72rem; color: #64748b; font-family: monospace; }}
@@ -229,8 +232,8 @@ def build_html_catalog():
 </head>
 <body>
     <div class="container">
-        <h1>🌌 CATÁLOGO MAESTRO: 10 GRANDES SIMULACIONES INTERACTIVAS 3D INTERCALADAS</h1>
-        <p class="sub">Alternancia de Anatomía Biomédica, Historia, Sistema Solar 3D NASA, Mecánica y Paleontología</p>
+        <h1>🌌 CATÁLOGO MAESTRO: 11 GRANDES SIMULACIONES INTERACTIVAS 3D INTERCALADAS</h1>
+        <p class="sub">Alternancia de Anatomía Biomédica, Historia, Sistema Solar 3D NASA, Selenografía Lunar (LRO), Mecánica y Paleontología</p>
         <table>
             <thead>
                 <tr>
@@ -285,16 +288,16 @@ def build_pdf():
     tc_status = ParagraphStyle("TCStatus", parent=styles["Normal"], fontSize=7.5, leading=10, textColor=colors.HexColor("#475569"), fontName="Helvetica-Oblique", alignment=1)
 
     elements = []
-    elements.append(Paragraph("🌌 CATÁLOGO MAESTRO: 10 GRANDES SIMULACIONES INTERACTIVAS 3D INTERCALADAS", title_style))
+    elements.append(Paragraph("🌌 CATÁLOGO MAESTRO: 11 GRANDES SIMULACIONES INTERACTIVAS 3D INTERCALADAS", title_style))
     elements.append(Spacer(1, 2))
-    elements.append(Paragraph("Plan Didáctico Intercalado: Alternancia de Anatomía Biomédica, Historia, Sistema Solar 3D NASA, Mecánica y Paleontología", sub_style))
+    elements.append(Paragraph("Plan Didáctico Intercalado: Alternancia de Anatomía Biomédica, Historia, Sistema Solar 3D NASA, Selenografía Lunar, Mecánica y Paleontología", sub_style))
     elements.append(Spacer(1, 6))
     elements.append(HRFlowable(width="100%", thickness=1.5, color=colors.HexColor("#0284c7"), spaceAfter=6))
 
     intro_p = (
         "<b>Metodología de Intercalación Temática:</b> Para evitar la fatiga cognitiva y mantener la fascinación visual permanente en el alumnado senior (60+), "
-        "el bloque de creación de simuladores con IA <b>[COD]</b> alterna una sesión de <i>Anatomía y Salud Humana</i> (fotorrealismo biomédico con pulso, respiración o reflejo a la luz) "
-        "con una sesión de <i>Grandes Hitos de la Humanidad y el Cosmos</i> (arqueología milenaria, Sistema Solar 3D con mapas satelitales de la NASA, ingeniería mecánica o fósiles prehistóricos). "
+        "el bloque de creación de simuladores con IA <b>[COD]</b> alterna sesiones de <i>Anatomía y Salud Humana</i> (fotorrealismo biomédico con pulso, respiración o reflejo a la luz) "
+        "con sesiones de <i>Grandes Hitos de la Humanidad y el Cosmos</i> (arqueología milenaria, Sistema Solar 3D NASA, Atlas Lunar 3D LRO, ingeniería mecánica o fósiles prehistóricos). "
         "Cada experiencia incluye arquitectura de <b>Doble Botón</b>: Taller Interactivo de Pruebas de Código generado con Gemini y acceso directo al Simulador Terminado."
     )
     elements.append(Paragraph(intro_p, intro_style))
