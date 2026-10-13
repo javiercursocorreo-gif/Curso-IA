@@ -220,6 +220,18 @@
             box-shadow: 0 0 12px rgba(34, 211, 238, 0.35);
         }
 
+        .btn-tool.amber-btn {
+            border-color: rgba(251, 191, 36, 0.45);
+            color: #fde047;
+        }
+
+        .btn-tool.amber-btn.active {
+            background: rgba(251, 191, 36, 0.22);
+            color: #fbbf24;
+            border-color: #fbbf24;
+            box-shadow: 0 0 12px rgba(251, 191, 36, 0.35);
+        }
+
         /* LAYOUT DE 2 COLUMNAS QUE SE EXPANDE AL 100% DEL ESPACIO VERTICAL */
         .stage-grid {
             flex: 1;
@@ -495,6 +507,14 @@
             padding: 2px 7px;
         }
 
+        .planet-label-pin.asteroid-pin {
+            border-color: rgba(251, 191, 36, 0.75);
+            background: rgba(15, 23, 42, 0.92);
+            color: #fde047;
+            font-size: 10px;
+            padding: 2px 8px;
+        }
+
         .planet-label-pin.active-pin {
             background: rgba(251, 191, 36, 0.28);
             border-color: #fbbf24;
@@ -618,8 +638,8 @@
             </div>
         </div>
         <div class="header-badges">
-            <span class="badge badge-gold">🛰️ Fotogrametría NASA / Solar System Scope 2K</span>
-            <span class="badge badge-emerald" id="textureStatusBadge">✅ Mapas Satelitales Activos</span>
+            <span class="badge">🛰️ Mapas Satelitales NASA 2K</span>
+            <span class="badge badge-emerald" id="textureStatusBadge">✅ Texturas PBR Activas</span>
         </div>
     </header>
 
@@ -628,13 +648,14 @@
         <div class="toolbar">
             <div class="toolbar-group" id="planetButtonsGroup">
                 <span class="toolbar-label">🚀 Explorar:</span>
-                <button class="btn-tool gold active" data-target="overview">🌌 Sistema Completo</button>
+                <button class="btn-tool active" data-target="overview">🌌 Vista General</button>
                 <button class="btn-tool cyan-btn" id="btnTopVortex">🌀 Tirabuzón Galáctico</button>
                 <button class="btn-tool" data-target="sun">☀️ Sol</button>
                 <button class="btn-tool" data-target="mercury">🪨 Mercurio</button>
                 <button class="btn-tool" data-target="venus">🌕 Venus</button>
                 <button class="btn-tool" data-target="earth">🌍 Tierra + Luna</button>
                 <button class="btn-tool" data-target="mars">🔴 Marte</button>
+                <button class="btn-tool amber-btn" data-target="asteroids">☄️ Cinturón de Asteroides</button>
                 <button class="btn-tool" data-target="jupiter">🟠 Júpiter + 4 Lunas</button>
                 <button class="btn-tool" data-target="saturn">🪐 Saturno</button>
                 <button class="btn-tool" data-target="uranus">🔵 Urano</button>
@@ -856,6 +877,15 @@
                 distance: "227,9 millones km (1,52 UA)",
                 orbit: "687 días terrestres (1,88 años)",
                 temp: "-63 °C media • 2 lunas"
+            },
+            asteroids: {
+                name: "☄️ Cinturón Principal de Asteroides",
+                probe: "Misiones NASA Dawn (Ceres & Vesta) • OSIRIS-REx • Lucy",
+                desc: "Frontera astronómica natural que separa los 4 planetas rocosos interiores (Mercurio, Venus, Tierra, Marte) de los gigantes exteriores gaseosos y helados (Júpiter, Saturno, Urano, Neptuno). Está formado por millones de fragmentos de roca, silicatos y metales primordiales que no pudieron agruparse para formar un planeta debido a la inmensa gravedad perturbadora de Júpiter. Su objeto más masivo es el planeta enano Ceres (940 km).",
+                diameter: "Anillo toroidal (espesor orbital ~1,0 UA)",
+                distance: "329 a 478 millones km (2,2 a 3,2 UA del Sol)",
+                orbit: "Periodo orbital: de 3 a 6 años terrestres",
+                temp: "-73 °C a -108 °C • Millones de asteroides"
             },
             jupiter: {
                 name: "🟠 Júpiter y sus 4 Lunas Galileanas",
@@ -1454,6 +1484,7 @@
         const trajLine = new THREE.Line(trajGeo, new THREE.LineBasicMaterial({ color: 0xfb7185, transparent: true, opacity: 0.65 }));
         heliopauseGroup.add(trajLine);
 
+        createLabelPin("asteroids", "☄️ Cinturón de Asteroides (Frontera Interior-Exterior)", "asteroid-pin");
         createLabelPin("voyager", "🛰️ Voyager 1 • Heliopausa (Muro de Plasma)", "voyager-pin");
 
         // ============================================================================
@@ -1499,6 +1530,9 @@
                 desiredCamOffset.set(0, 62, 138);
             } else if (key === "sun") {
                 desiredCamOffset.set(0, 8, 24);
+            } else if (key === "asteroids") {
+                // Encuadre oblicuo panorámico para apreciar el anillo toroidal del Cinturón orbitando entre Marte y Júpiter
+                desiredCamOffset.set(0, 32, 64);
             } else if (key === "voyager") {
                 desiredCamOffset.set(8, 4.5, 11);
             } else if (key === "jupiter") {
@@ -1752,6 +1786,10 @@
                 pin.style.display = "none";
                 return;
             }
+            if (key === "asteroids" && (!showOrbits || isCompareMode || isVortexMode)) {
+                pin.style.display = "none";
+                return;
+            }
             if (key.startsWith("jmoon_") && (currentTargetKey !== "jupiter" || isCompareMode || isVortexMode)) {
                 pin.style.display = "none";
                 return;
@@ -1885,9 +1923,16 @@
 
             updateLabelPosition("sun", sunGroup.position, 8.2);
             updateLabelPosition("voyager", voyagerHolder.position, 2.8);
+            if (showOrbits && !isCompareMode && !isVortexMode) {
+                const astAngle = asteroidBelt.rotation.y + 0.35;
+                const astLabelPos = new THREE.Vector3(Math.cos(astAngle) * 44.8, 1.2, Math.sin(astAngle) * 44.8);
+                updateLabelPosition("asteroids", astLabelPos, 1.4);
+            } else if (labelPins.asteroids) {
+                labelPins.asteroids.style.display = "none";
+            }
 
             if (!isCompareMode && !isVortexMode) {
-                if (currentTargetKey === "overview" || currentTargetKey === "sun") {
+                if (currentTargetKey === "overview" || currentTargetKey === "sun" || currentTargetKey === "asteroids") {
                     targetWorldPos.copy(sunGroup.position);
                 } else if (currentTargetKey === "voyager") {
                     targetWorldPos.copy(voyagerHolder.position);

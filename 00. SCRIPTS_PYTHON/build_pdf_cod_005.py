@@ -80,20 +80,19 @@ def build_pure_python_cod_005(dest_path):
         return y
 
     # Cabecera
-    text_xy(105, 760, "CURSO DE INTELIGENCIA ARTIFICIAL Y TECNOLOGÍA PARA ADULTOS MAYORES (60+)", "F2", 8.2, (0.01, 0.52, 0.78))
-    text_xy(118, 746, "BLOQUE IV: CIENCIA INTERACTIVA & TALLER DE CÓDIGO CON GEMINI [COD]", "F2", 9.6, (0.06, 0.09, 0.16))
-    rect(36, 738, W - 72, 1.2, fill_rgb=(0.01, 0.52, 0.78))
+    text_xy(105, 762, "CURSO DE INTELIGENCIA ARTIFICIAL Y TECNOLOGÍA PARA ADULTOS MAYORES (60+)", "F2", 8.2, (0.01, 0.52, 0.78))
+    text_xy(118, 748, "BLOQUE IV: CIENCIA INTERACTIVA & TALLER DE CÓDIGO CON GEMINI [COD]", "F2", 9.6, (0.06, 0.09, 0.16))
+    rect(36, 740, W - 72, 1.2, fill_rgb=(0.01, 0.52, 0.78))
 
-    text_xy(36, 720, "[COD-005] Taller: Crea tu propio simulador 3D del Sistema Solar", "F2", 12.0, (0.06, 0.09, 0.16))
+    text_xy(36, 722, "[COD-005] Taller: Crea tu propio simulador 3D del Sistema Solar", "F2", 12.0, (0.06, 0.09, 0.16))
 
-    text_xy(36, 702, "Misión Didáctica • Exploración Espacial y Mecánica Orbital con Inteligencia Artificial:", "F2", 8.8, (0.01, 0.41, 0.63))
+    text_xy(36, 705, "Misión Didáctica • Exploración Espacial y Mecánica Orbital con Inteligencia Artificial:", "F2", 8.8, (0.01, 0.41, 0.63))
     mision = (
         "En este taller ordenarás a Gemini programar en Three.js un planetario 3D interactivo del Sistema Solar con mapas satelitales reales "
         "de la NASA. Sin saber programar: pedirás el código a Gemini con el prompt maestro, lo probarás pulsando «Ejecutar Creación» y "
-        "explorarás los 8 planetas, la Luna, las 4 lunas galileanas de Júpiter (Ío, Europa, Ganímedes y Calisto), los anillos de Saturno, "
-        "el Vórtice Galáctico en tirabuzón y la sonda Voyager 1 en la Heliopausa."
+        "explorarás los 8 planetas, la Luna, las 4 lunas de Júpiter, asteroides, anillos de Saturno, el Vórtice Galáctico y la Voyager 1."
     )
-    draw_wrapped(36, 689, mision, 102, "F1", 8.0, 10.5)
+    draw_wrapped(36, 693, mision, 102, "F1", 7.9, 10.0)
 
     text_xy(36, 650, "Lista de Tareas del Alumno (Paso a Paso en 2 Pestañas):", "F2", 8.8, (0.01, 0.41, 0.63))
     rect(36, 542, W - 72, 102, fill_rgb=(0.94, 0.98, 1.0), stroke_rgb=(0.01, 0.52, 0.78), lw=1.0)
@@ -125,9 +124,9 @@ def build_pure_python_cod_005(dest_path):
         "   2k_moon.jpg, 2k_mars.jpg, 2k_jupiter.jpg, 2k_saturn.jpg, 2k_saturn_ring_alpha.png, 2k_uranus.jpg,",
         "   2k_neptune.jpg y 8k_stars_milky_way.jpg).",
         "4. Modela el Sol central, los 8 planetas en órbitas keplerianas, la Luna en la Tierra, las 4 lunas galileanas",
-        "   orbitando Júpiter (Ío, Europa, Ganímedes y Calisto) y los anillos translúcidos de Saturno.",
-        "5. Añade botones para viajar con la cámara a cualquier planeta, modo Vórtice Galáctico en tirabuzón, comparar",
-        "   tamaños y un control deslizante (slider) de Velocidad Orbital.",
+        "   orbitando Júpiter (Ío, Europa, Ganímedes y Calisto), el Cinturón Principal de Asteroides y los anillos de Saturno.",
+        "5. Añade botones para enfocar cualquier planeta, Cinturón de Asteroides, Vórtice Galáctico, comparar tamaños",
+        "   y un control deslizante (slider) de Velocidad Orbital.",
         "6. Escribe exclusivamente el bloque de código sin explicaciones previas ni posteriores.\""
     ]
     py = 493

@@ -103,6 +103,30 @@ def clean_title_from_filename(filename, session_num=1):
         return 'Taller: Crea tu propio simulador del molar humano'
     if 'COD-011' in f_up or ('COD-' in f_up and session_num == 11):
         return 'Taller: Crea tu propio simulador del violín Stradivarius'
+    if 'COD-012' in f_up or ('COD-' in f_up and session_num == 12):
+        return 'Taller: Explora la Nebulosa Helix de la NASA (El Ojo de Dios)'
+    if 'COD-013' in f_up or ('COD-' in f_up and session_num == 13):
+        return 'Taller: Crea el modelo molecular 3D del ADN'
+    if 'COD-014' in f_up or ('COD-' in f_up and session_num == 14):
+        return 'Taller: Simula las auroras boreales de Júpiter (Hubble)'
+    if 'COD-015' in f_up or ('COD-' in f_up and session_num == 15):
+        return 'Taller: Reconstruye el Partenón 3D y la Proporción Áurea'
+    if 'COD-016' in f_up or ('COD-' in f_up and session_num == 16):
+        return 'Taller: Simula el tránsito de la cara oculta de la Luna (DSCOVR)'
+    if 'COD-017' in f_up or ('COD-' in f_up and session_num == 17):
+        return 'Taller: Crea una turbina eólica marina en sección 3D'
+    if 'COD-018' in f_up or ('COD-' in f_up and session_num == 18):
+        return 'Taller: Recrea la fotografía Earthrise de Apollo 11'
+    if 'COD-019' in f_up or ('COD-' in f_up and session_num == 19):
+        return 'Taller: Modela el sistema renal humano y la nefrona 3D'
+    if 'COD-020' in f_up or ('COD-' in f_up and session_num == 20):
+        return 'Taller: Recrea el primer paseo espacial de Gemini 4'
+    if 'COD-021' in f_up or ('COD-' in f_up and session_num == 21):
+        return 'Taller: Crea un volcán en erupción y su cámara magmática 3D'
+    if 'COD-022' in f_up or ('COD-' in f_up and session_num == 22):
+        return 'Taller: Modela el telescopio espacial James Webb 3D (JWST)'
+    if 'COD-023' in f_up or ('COD-' in f_up and session_num == 23):
+        return 'Taller: Simula el interior de la Tierra y la geodinamo del núcleo 3D'
     if 'SIMULADOR_PULMON' in f_up:
         return 'Simulador 3D del Árbol Bronquial y Pulmones'
     if 'SIMULADOR_CORAZON' in f_up or 'LATIDO_CARDIACO' in f_up:
@@ -111,6 +135,8 @@ def clean_title_from_filename(filename, session_num=1):
         return 'Simulador Arqueológico HD de Pompeya'
     if 'SIMULADOR_OJO' in f_up:
         return 'Simulador 3D del Ojo Humano y Cristalino'
+    if 'SIMULADOR_CEREBRO' in f_up:
+        return 'Simulador 3D del Cerebro Humano y Red Sináptica'
     if 'SIMULADOR_SISTEMA_SOLAR' in f_up:
         return 'Simulador 3D del Sistema Solar (NASA)'
     if 'SIMULADOR_LUNA' in f_up:
@@ -332,6 +358,11 @@ def generate_columns_html(session_num, session_folder, files):
                     sim_btn = """
                         <a href="SIMULADOR_SISTEMA_SOLAR_3D.html" target="_blank" class="btn-launch-interactive" style="margin-top:6px; background:linear-gradient(135deg, #d97706, #b45309); border-color:#fbbf24;" title="Abrir Simulador 3D del Sistema Solar (Fotogrametría Satelital NASA)">
                             🪐 Ver Simulador Sistema Solar 3D ↗
+                        </a>"""
+                elif session_num == 6:
+                    sim_btn = """
+                        <a href="SIMULADOR_CEREBRO_3D.html" target="_blank" class="btn-launch-interactive" style="margin-top:6px; background:linear-gradient(135deg, #7c3aed, #6d28d9); border-color:#c084fc;" title="Abrir Simulador 3D del Cerebro Humano y Red Sináptica">
+                            🧠 Ver Simulador Cerebro 3D ↗
                         </a>"""
                 cards_html += f"""
                     <div class="file-card file-card-special">
@@ -953,10 +984,19 @@ def generate_custom_probador(session_num, template_content):
             </button>"""
         empty_prompt = "prueba el botón <strong>«🪐 Sistema Solar 3D»</strong>"
         ph_text = "1. Pide a Gemini que programe el simulador 3D del Sistema Solar con texturas de la NASA.\\n2. Haz clic en «Copiar código» en la respuesta de Gemini.\\n3. Pulsa Ctrl+V (o Cmd+V en Mac) aquí para pegar el código.\\n4. Pulsa '▶️ Ejecutar Creación' para verlo funcionar."
+    elif session_num == 6:
+        btn_html = """            <button class="btn btn-emerald" id="btnLoadBrain" style="background: rgba(192, 132, 252, 0.2); color: #c084fc; border-color: rgba(192, 132, 252, 0.45);" title="Cargar simulador: Cerebro Humano 3D & Red Sináptica">
+                🧠 Cerebro 3D
+            </button>"""
+        empty_prompt = "prueba el botón <strong>«🧠 Cerebro 3D»</strong>"
+        ph_text = "1. Pide a Gemini que programe el simulador 3D del cerebro humano con red de sinapsis.\\n2. Haz clic en «Copiar código» en la respuesta de Gemini.\\n3. Pulsa Ctrl+V (o Cmd+V en Mac) aquí para pegar el código.\\n4. Pulsa '▶️ Ejecutar Creación' para verlo funcionar."
 
     # Reemplazar grupo de botones acumulados en el encabezado
-    buttons_pattern = re.compile(r'<button class="btn btn-emerald" id="btnLoadPulmones".*?id="btnLoad(?:Solar|Ojo)".*?</button>', re.DOTALL)
-    custom_content = buttons_pattern.sub(btn_html, template_content)
+    buttons_pattern = re.compile(
+        r'<button class="btn btn-emerald" id="btnLoadPulmones".*?id="btnLoad[a-zA-Z0-9_]+"[^>]*>[\s\S]*?</button>\s*(?=<button class="btn btn-secondary" id="btnToggleLayout")',
+        re.DOTALL
+    )
+    custom_content = buttons_pattern.sub(btn_html + "\n            ", template_content)
 
     # Reemplazar texto en empty notice
     notice_pattern = re.compile(r'prueba los botones <strong>«🫁 Pulmones 3D».*?demostración interactiva\.', re.DOTALL)

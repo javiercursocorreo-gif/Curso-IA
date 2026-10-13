@@ -23,22 +23,22 @@ SIMULACIONES_DATA = [
     ("02", "[COD-002]", "Salud & Cardiología", "Corazón Humano con Fonendoscopio",
      "Fotogrametría PBR 4K miocardio, ecuación Wiggers (sístole/diástole), slider BPM y fonendoscopio acústico.",
      "Ver Simulador Corazón 3D", "../01_SIMULADORES/02_SIMULADOR_CORAZON_3D.html", "Activo en S02"),
-    ("03", "[COD-003]", "Historia & Arqueología", "Tesoro de Pompeya (Foro & Ruinas CyArk)",
+    ("03", "[COD-003]", "Historia & Arqueología", "Tesoro de Pompeya (Foro CyArk)",
      "Arqueología digital HD, comparador de viaje en el tiempo (ruinas vs. reconstrucción imperial), iluminación cinematográfica.",
      "Ver Tesoro Arqueológico 3D", "../01_SIMULADORES/03_SIMULADOR_POMPEYA_3D.html", "Activo en S03"),
     ("04", "[COD-004]", "Salud & Óptica", "Globo Ocular Humano & Cristalino",
      "Córnea de cristal reflectante, iris 4K, pupila interactiva con reflejo fotomotor (miosis/midriasis por slider) y corte sagital.",
      "Ver Simulador Ojo Humano 3D", "../01_SIMULADORES/04_SIMULADOR_OJO_HUMANO_3D_V2.html", "Activo en S04"),
-    ("05", "[COD-005]", "Espacio & Exploración", "Sistema Solar 3D & Planetario Orbital (NASA)",
-     "Fotogrametría satelital NASA 2K-8K (SDO, MESSENGER, Magellan, MODIS, Cassini, Voyager 2), viaje 3D a los 8 planetas + Sol y Luna, velocidad orbital y comparación.",
+    ("05", "[COD-005]", "Espacio & Exploración", "Sistema Solar 3D Orbital & Cinturón (NASA)",
+     "Fotogrametría NASA 2K-8K, viaje 3D a 8 planetas + Sol, Luna, 4 lunas de Júpiter, Cinturón de Asteroides y Voyager 1.",
      "Ver Sistema Solar 3D", "../01_SIMULADORES/05_SIMULADOR_SISTEMA_SOLAR_3D.html", "Activo en S05"),
     ("06", "[COD-006]", "Salud & Neurociencia", "Cerebro Humano & Red Sináptica",
      "Resonancia magnética médica cortical, vías neuronales, pulsos lumínicos bioeléctricos y selector de lóbulos cerebrales.",
-     "Ver Simulador Cerebro 3D", "#", "Plan S06"),
-    ("07", "[COD-007]", "Espacio & Selenografía", "Atlas 3D de la Luna & Topografía NASA LRO",
-     "Fotogrametría NASA LRO 4K, mares basálticos (Tranquillitatis, Oceanus Procellarum), cráteres (Tycho, Copernicus), sitios Apolo 11-17, cara oculta y fases lunares.",
+     "Ver Simulador Cerebro 3D", "../01_SIMULADORES/06_SIMULADOR_CEREBRO_3D.html", "Activo en S06"),
+    ("07", "[COD-007]", "Espacio & Selenografía", "Atlas 3D de la Luna NASA LRO",
+     "Fotogrametría NASA LRO 4K, mares basálticos (Tranquillitatis, Procellarum), cráteres (Tycho), sitios Apolo 11-17 y fases.",
      "Ver Atlas Lunar 3D", "../01_SIMULADORES/07_SIMULADOR_LUNA_3D.html", "Plan S07"),
-    ("08", "[COD-008]", "Mecánica & Automoción", "Motor de 4 Tiempos en Sección Abierta",
+    ("08", "[COD-008]", "Mecánica & Automoción", "Motor de 4 Tiempos en Sección",
      "Cilindro, pistón, cigüeñal y válvulas sincronizadas; ciclo térmico en corte transversal y control continuo de RPM con audio.",
      "Ver Motor Mecánico 3D", "#", "Plan S08"),
     ("09", "[COD-009]", "Paleontología & Evolución", "Cráneo Fósil de Tiranosaurio Rex",
@@ -47,9 +47,45 @@ SIMULACIONES_DATA = [
     ("10", "[COD-010]", "Salud & Odontología", "Molar Humano en Sección Anatómica",
      "Esmalte lúcido, dentina, pulpa vascularizada y terminaciones nerviosas; despiece tridimensional por capas clínicas.",
      "Ver Molar Anatómico 3D", "#", "Plan S10"),
-    ("11", "[COD-011]", "Acústica & Arte Musical", "Violín Stradivarius & Resonancia Acústica",
+    ("11", "[COD-011]", "Acústica & Arte Musical", "Violín Stradivarius & Resonancia",
      "Madera de arce noble barnizada PBR 4K, simulación de cuerdas en vibración física armónica y ondas de presión acústica.",
      "Ver Acústica Stradivarius 3D", "#", "Plan S11"),
+    ("12", "[COD-012]", "NASA • Cosmos & Óptica", "Nebulosa Helix: El Ojo de Dios (Spitzer)",
+     "Fotografía infrarroja espacial Spitzer de NGC 7293: estrella central moribunda y disco de polvo cósmico con forma de iris.",
+     "Ver Nebulosa Helix 3D", "#", "Plan S12"),
+    ("13", "[COD-013]", "Salud & Genética", "Doble Hélice del ADN & Código Genético",
+     "Estructura molecular 3D Watson-Crick, pares de bases nitrogenadas (A-T, C-G) y animación de transcripción biológica.",
+     "Ver ADN Molecular 3D", "#", "Plan S13"),
+    ("14", "[COD-014]", "NASA • Espacio Profundo", "Auroras Ultravioletas de Júpiter (Hubble)",
+     "Espectacular fotografía UV del polo norte de Júpiter, anillo de plasma fluorescente y colisión de viento solar con la magnetosfera.",
+     "Ver Auroras de Júpiter 3D", "#", "Plan S14"),
+    ("15", "[COD-015]", "Historia & Arquitectura", "El Partenón & Proporción Áurea 3D",
+     "Reconstrucción arqueológica de la Acrópolis de Atenas, columnas dóricas y trazado interactivo de la espiral de Fibonacci / Phi.",
+     "Ver Partenón Dorado 3D", "#", "Plan S15"),
+    ("16", "[COD-016]", "NASA • Selenografía Real", "Tránsito Cara Oculta Lunar (DSCOVR)",
+     "Fotografía histórica de la cámara EPIC: la cara oculta de la Luna totalmente iluminada cruzando por delante de la Tierra.",
+     "Ver Tránsito Lunar 3D", "#", "Plan S16"),
+    ("17", "[COD-017]", "Ingeniería & Energía", "Turbina Eólica Marina en Sección",
+     "Góndola, rotor, multiplicadora y generador síncrono; orientación aerodinámica de palas eólica offshore frente al viento marino.",
+     "Ver Turbina Eólica 3D", "#", "Plan S17"),
+    ("18", "[COD-018]", "NASA • Hito Histórico", "Earthrise: Salida de la Tierra (Apollo 11)",
+     "La emblemática imagen de la Tierra azul elevándose sobre el horizonte árido del Mar de la Tranquilidad lunar tomada en 1969.",
+     "Ver Earthrise 3D", "#", "Plan S18"),
+    ("19", "[COD-019]", "Salud & Fisiología", "Sistema Renal & Nefrona Humana",
+     "Riñón en corte coronal con cápsula, pirámides y corteza; microestructura 3D del glomérulo y filtrado microscópico de sangre.",
+     "Ver Sistema Renal 3D", "#", "Plan S19"),
+    ("20", "[COD-020]", "NASA • Hazaña Humana", "Paseo Espacial en el Vacío (Gemini 4)",
+     "Fotografía histórica del astronauta Ed White flotando libre durante 21 minutos sobre la Tierra con cordón umbilical dorado.",
+     "Ver Paseo Espacial 3D", "#", "Plan S20"),
+    ("21", "[COD-021]", "Geología & Vulcanismo", "Cámara Magmática de un Volcán 3D",
+     "Corte transversal de un estratovolcán activo: chimenea central, cámara magmática incandescente, magma viscoso y erupción.",
+     "Ver Volcán Activo 3D", "#", "Plan S21"),
+    ("22", "[COD-022]", "NASA • Cosmos Profundo", "Telescopio Espacial James Webb (JWST)",
+     "Espejo primario hexagonal de oro de 24K, parasol de 5 capas de Kapton, instrumentos infrarrojos NIRCam y órbita en L2.",
+     "Ver James Webb 3D", "#", "Plan S22"),
+    ("23", "[COD-023]", "Geofísica & Tierra", "Viaje al Núcleo de la Tierra (Geodinamo)",
+     "Corte sagital 3D: corteza, manto en convección, núcleo externo líquido (geodinamo/magnetosfera) y núcleo interno sólido 5.500 °C.",
+     "Ver Núcleo de la Tierra 3D", "#", "Plan S23"),
 ]
 
 
@@ -63,10 +99,8 @@ def _pdf_escape(text):
     return out.decode("latin1")
 
 
-def build_pure_python_pdf():
-    """Genera el PDF vectorial horizontal A4 sin dependencias externas."""
-    os.makedirs(OUT_DIR, exist_ok=True)
-    W, H = 841.89, 595.27  # A4 Landscape
+def _generate_page_stream(items, page_num, total_pages, title_part, subtitle_text, intro1, intro2, W, H):
+    """Genera las instrucciones de dibujo vectoriales de una página en PDF nativo."""
     ops = []
 
     def rect(x, y, w, h, fill_rgb=None, stroke_rgb=None, lw=0.6):
@@ -87,12 +121,10 @@ def build_pure_python_pdf():
         ops.append("ET")
 
     # Cabecera
-    text_xy(135, 558, "CATÁLOGO MAESTRO: 11 GRANDES SIMULACIONES INTERACTIVAS 3D INTERCALADAS", "F2", 14.5, (0.06, 0.09, 0.16))
-    text_xy(165, 542, "Plan Didáctico Intercalado: Alternancia de Anatomía Biomédica, Historia, Espacio NASA, Selenografía Lunar, Mecánica y Paleontología", "F3", 8.8, (0.28, 0.33, 0.41))
+    text_xy(105, 558, f"CATÁLOGO MAESTRO: 21 GRANDES SIMULACIONES INTERACTIVAS 3D INTERCALADAS ({title_part})", "F2", 13.5, (0.06, 0.09, 0.16))
+    text_xy(125, 542, subtitle_text, "F3", 8.8, (0.28, 0.33, 0.41))
     rect(32, 534, W - 64, 1.5, fill_rgb=(0.01, 0.52, 0.78))
 
-    intro1 = "Metodología de Intercalación Temática: Para evitar la fatiga cognitiva y mantener la fascinación visual permanente en el alumnado senior (60+), el bloque de creación [COD]"
-    intro2 = "alterna sesiones de Anatomía y Salud Humana con Grandes Hitos de la Ciencia (Pompeya, Sistema Solar 3D NASA, Atlas Lunar 3D LRO, motor térmico y fósiles)."
     text_xy(32, 520, intro1, "F1", 8.0, (0.12, 0.16, 0.23))
     text_xy(32, 510, intro2, "F1", 8.0, (0.12, 0.16, 0.23))
 
@@ -108,30 +140,28 @@ def build_pure_python_pdf():
         text_xy(col_x[i] + 5, y_top - 13.5, h_txt, "F2", 8.0, (1, 1, 1))
 
     y_curr = y_top - row_h_header
-    row_h = 38.0
-    for idx, (ses, cod, univ, mod, exp, btn, _, est) in enumerate(SIMULACIONES_DATA):
+    row_h = 35.0 if len(items) > 11 else 38.0
+    for idx, (ses, cod, univ, mod, exp, btn, _, est) in enumerate(items):
         y_curr -= row_h
         bg = (0.97, 0.98, 0.99) if idx % 2 == 0 else (1.0, 1.0, 1.0)
-        if ses in ("05", "07"):
+        if ses in ("05", "07", "12", "14", "16", "18", "20", "22"):
             bg = (0.94, 0.98, 1.0)
         for c_i in range(6):
             rect(col_x[c_i], y_curr, col_w[c_i], row_h, fill_rgb=bg, stroke_rgb=(0.80, 0.84, 0.88), lw=0.5)
 
-        text_xy(col_x[0] + 18, y_curr + 22, ses, "F2", 8.8, (0.06, 0.09, 0.16))
-        text_xy(col_x[0] + 6, y_curr + 10, cod, "F1", 7.4, (0.39, 0.45, 0.55))
+        text_xy(col_x[0] + 18, y_curr + (20 if row_h < 36 else 22), ses, "F2", 8.8, (0.06, 0.09, 0.16))
+        text_xy(col_x[0] + 6, y_curr + (8 if row_h < 36 else 10), cod, "F1", 7.4, (0.39, 0.45, 0.55))
 
-        text_xy(col_x[1] + 5, y_curr + 15, univ, "F2", 7.6, (0.01, 0.52, 0.78))
+        text_xy(col_x[1] + 5, y_curr + (13 if row_h < 36 else 15), univ, "F2", 7.6, (0.01, 0.52, 0.78))
 
-        # Wrap model name into 2 lines if needed
         if len(mod) > 28:
             parts = mod.split(" ")
             mid = len(parts) // 2
-            text_xy(col_x[2] + 5, y_curr + 21, " ".join(parts[:mid]), "F2", 7.8, (0.06, 0.09, 0.16))
-            text_xy(col_x[2] + 5, y_curr + 10, " ".join(parts[mid:]), "F2", 7.8, (0.06, 0.09, 0.16))
+            text_xy(col_x[2] + 5, y_curr + (19 if row_h < 36 else 21), " ".join(parts[:mid]), "F2", 7.8, (0.06, 0.09, 0.16))
+            text_xy(col_x[2] + 5, y_curr + (8 if row_h < 36 else 10), " ".join(parts[mid:]), "F2", 7.8, (0.06, 0.09, 0.16))
         else:
-            text_xy(col_x[2] + 5, y_curr + 15, mod, "F2", 7.8, (0.06, 0.09, 0.16))
+            text_xy(col_x[2] + 5, y_curr + (13 if row_h < 36 else 15), mod, "F2", 7.8, (0.06, 0.09, 0.16))
 
-        # Wrap experience text into up to 3 lines (~58 chars per line)
         words = exp.split(" ")
         lines, cur = [], ""
         for w in words:
@@ -142,29 +172,57 @@ def build_pure_python_pdf():
                 cur = w
         if cur:
             lines.append(cur)
-        start_y = y_curr + 25 if len(lines) >= 3 else (y_curr + 20 if len(lines) == 2 else y_curr + 15)
+        start_y = y_curr + (22 if row_h < 36 else 25) if len(lines) >= 3 else (y_curr + (17 if row_h < 36 else 20) if len(lines) == 2 else y_curr + (13 if row_h < 36 else 15))
         for l_i, line_str in enumerate(lines[:3]):
-            text_xy(col_x[3] + 5, start_y - l_i * 9.0, line_str, "F1", 7.3, (0.20, 0.25, 0.33))
+            text_xy(col_x[3] + 5, start_y - l_i * (8.2 if row_h < 36 else 9.0), line_str, "F1", 7.3, (0.20, 0.25, 0.33))
 
-        text_xy(col_x[4] + 5, y_curr + 15, btn, "F2", 7.4, (0.02, 0.47, 0.34))
+        text_xy(col_x[4] + 5, y_curr + (13 if row_h < 36 else 15), btn, "F2", 7.4, (0.02, 0.47, 0.34))
 
         est_color = (0.02, 0.47, 0.34) if "Activo" in est else (0.28, 0.33, 0.41)
         est_font = "F2" if "Activo" in est else "F3"
-        text_xy(col_x[5] + 6, y_curr + 15, est, est_font, 7.4, est_color)
+        text_xy(col_x[5] + 6, y_curr + (13 if row_h < 36 else 15), est, est_font, 7.4, est_color)
 
-    text_xy(32, 34, "Estándar Técnico Compartido: Todos los simuladores operan en el navegador sin descargas pesadas ni plugins externos, compatibles con WebGL / Three.js, y garantizan fluidez total en el aula.", "F1", 8.0, (0.12, 0.16, 0.23))
+    foot_txt = f"Página {page_num} de {total_pages} • Estándar Técnico WebGL / Three.js sin descargas ni plugins externos, garantizando fluidez total en el aula senior (60+)."
+    text_xy(32, 34, foot_txt, "F1", 8.0, (0.12, 0.16, 0.23))
 
-    stream_bytes = "\n".join(ops).encode("latin1")
-    compressed = zlib.compress(stream_bytes)
+    return "\n".join(ops).encode("latin1")
+
+
+def build_pure_python_pdf():
+    """Genera el PDF vectorial horizontal A4 de 2 páginas sin dependencias externas."""
+    os.makedirs(OUT_DIR, exist_ok=True)
+    W, H = 841.89, 595.27  # A4 Landscape
+
+    intro1_p1 = "Metodología de Intercalación Temática (Fase 1: S01 a S11): Para evitar la fatiga cognitiva y mantener la fascinación visual permanente en el alumnado senior (60+),"
+    intro2_p1 = "el bloque de creación [COD] alterna sesiones de Anatomía y Salud Humana con Grandes Hitos de la Ciencia (Pompeya, Sistema Solar 3D NASA, Atlas Lunar LRO y Fósiles)."
+
+    intro1_p2 = "Expansión Cósmica e Innovación (Fase 2: S12 a S23): Intercala Grandes Fotografías de la NASA (Helix, Júpiter, DSCOVR, Apollo, Gemini, James Webb) con modelos"
+    intro2_p2 = "biomédicos (ADN, Nefrona), arquitectura clásica (Partenón), energía eólica marina, vulcanismo activo y el viaje al Núcleo de la Tierra (Geodinamo)."
+
+    stream1 = _generate_page_stream(
+        SIMULACIONES_DATA[:11], 1, 2, "Parte 1: Sesiones 01 a 11",
+        "Plan Didáctico Intercalado: Alternancia de Anatomía Biomédica, Historia, Sistema Solar NASA y Selenografía",
+        intro1_p1, intro2_p1, W, H
+    )
+    stream2 = _generate_page_stream(
+        SIMULACIONES_DATA[11:], 2, 2, "Parte 2: Sesiones 12 a 23",
+        "Expansión Cósmica y Geofísica: Hitos de la NASA (Spitzer, Hubble, DSCOVR, Apollo, Gemini, Webb) e Interior Terrestre",
+        intro1_p2, intro2_p2, W, H
+    )
+
+    comp1 = zlib.compress(stream1)
+    comp2 = zlib.compress(stream2)
 
     objs = []
     objs.append(b"1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n")
-    objs.append(b"2 0 obj\n<< /Type /Pages /Kids [3 0 R] /Count 1 >>\nendobj\n")
+    objs.append(b"2 0 obj\n<< /Type /Pages /Kids [3 0 R 8 0 R] /Count 2 >>\nendobj\n")
     objs.append(f"3 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 {W:.2f} {H:.2f}] /Resources << /Font << /F1 4 0 R /F2 5 0 R /F3 6 0 R >> >> /Contents 7 0 R >>\nendobj\n".encode("latin1"))
     objs.append(b"4 0 obj\n<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>\nendobj\n")
     objs.append(b"5 0 obj\n<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>\nendobj\n")
     objs.append(b"6 0 obj\n<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Oblique /Encoding /WinAnsiEncoding >>\nendobj\n")
-    objs.append(f"7 0 obj\n<< /Length {len(compressed)} /Filter /FlateDecode >>\nstream\n".encode("latin1") + compressed + b"\nendstream\nendobj\n")
+    objs.append(f"7 0 obj\n<< /Length {len(comp1)} /Filter /FlateDecode >>\nstream\n".encode("latin1") + comp1 + b"\nendstream\nendobj\n")
+    objs.append(f"8 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 {W:.2f} {H:.2f}] /Resources << /Font << /F1 4 0 R /F2 5 0 R /F3 6 0 R >> >> /Contents 9 0 R >>\nendobj\n".encode("latin1"))
+    objs.append(f"9 0 obj\n<< /Length {len(comp2)} /Filter /FlateDecode >>\nstream\n".encode("latin1") + comp2 + b"\nendstream\nendobj\n")
 
     pdf = bytearray(b"%PDF-1.4\n%\xe2\xe3\xcf\xd3\n")
     offsets = [0]
@@ -179,19 +237,20 @@ def build_pure_python_pdf():
 
     with open(PDF_PATH, "wb") as f:
         f.write(pdf)
-    print(f"✅ PDF del Catálogo Maestro (Vectorial Nativo) actualizado en: {PDF_PATH} ({len(pdf)} bytes)")
+    print(f"✅ PDF del Catálogo Maestro (2 Páginas Vectoriales Nativas) generado en: {PDF_PATH} ({len(pdf)} bytes)")
 
 
 def build_html_catalog():
-    """Genera también una versión HTML interactiva del Catálogo Maestro de las 10 Simulaciones."""
+    """Genera también una versión HTML interactiva del Catálogo Maestro de las 21 Simulaciones e Hitos NASA."""
     os.makedirs(OUT_DIR, exist_ok=True)
     rows_html = ""
     for ses, cod, univ, mod, exp, btn, href, est in SIMULACIONES_DATA:
         is_active = "Activo" in est
         badge_cls = "status-active" if is_active else "status-plan"
         btn_el = f'<a href="{href}" target="_blank" class="sim-link">🚀 {btn} ↗</a>' if href != "#" else f'<span class="sim-pending">⏳ {btn}</span>'
+        is_space = ses in ("05", "07", "12", "14", "16", "18", "20")
         rows_html += f"""
-        <tr class="{'row-highlight' if ses in ('05', '07') else ''}">
+        <tr class="{'row-highlight' if is_space else ''}">
             <td class="col-ses"><strong>{ses}</strong><span>{cod}</span></td>
             <td class="col-univ">{univ}</td>
             <td class="col-mod">{mod}</td>
@@ -205,26 +264,26 @@ def build_html_catalog():
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Catálogo Maestro: 11 Grandes Simulaciones Interactivas 3D</title>
+    <title>Catálogo Maestro: 21 Grandes Simulaciones Interactivas 3D</title>
     <style>
         body {{ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #070b14; color: #f8fafc; margin: 0; padding: 28px; }}
-        .container {{ max-width: 1280px; margin: 0 auto; background: #0f172a; border: 1px solid #1e293b; border-radius: 18px; padding: 26px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }}
+        .container {{ max-width: 1320px; margin: 0 auto; background: #0f172a; border: 1px solid #1e293b; border-radius: 18px; padding: 26px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }}
         h1 {{ font-size: 1.6rem; margin: 0 0 6px; color: #ffffff; text-align: center; }}
-        p.sub {{ text-align: center; color: #94a3b8; font-size: 0.92rem; margin: 0 0 18px; }}
+        p.sub {{ text-align: center; color: #94a3b8; font-size: 0.92rem; margin: 0 0 18px; line-height: 1.45; }}
         table {{ width: 100%; border-collapse: collapse; font-size: 0.88rem; }}
         th {{ background: #1e293b; color: #38bdf8; text-transform: uppercase; font-size: 0.76rem; letter-spacing: 0.05em; padding: 12px 10px; text-align: left; border-bottom: 2px solid #334155; }}
-        td {{ padding: 12px 10px; border-bottom: 1px solid #1e293b; vertical-align: middle; }}
+        td {{ padding: 11px 10px; border-bottom: 1px solid #1e293b; vertical-align: middle; }}
         tr:hover {{ background: rgba(30, 41, 59, 0.5); }}
         tr.row-highlight {{ background: rgba(56, 189, 248, 0.08); }}
         .col-ses {{ text-align: center; width: 75px; }}
         .col-ses strong {{ display: block; font-size: 1rem; color: #fff; }}
         .col-ses span {{ font-size: 0.72rem; color: #64748b; font-family: monospace; }}
-        .col-univ {{ color: #38bdf8; font-weight: 700; width: 150px; }}
-        .col-mod {{ font-weight: 800; color: #f8fafc; width: 220px; }}
-        .col-exp {{ color: #cbd5e1; line-height: 1.4; }}
-        .sim-link {{ display: inline-block; background: rgba(16, 185, 129, 0.16); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4); padding: 6px 11px; border-radius: 8px; text-decoration: none; font-weight: 700; font-size: 0.8rem; }}
+        .col-univ {{ color: #38bdf8; font-weight: 700; width: 160px; }}
+        .col-mod {{ font-weight: 800; color: #f8fafc; width: 230px; }}
+        .col-exp {{ color: #cbd5e1; line-height: 1.38; font-size: 0.85rem; }}
+        .sim-link {{ display: inline-block; background: rgba(16, 185, 129, 0.16); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4); padding: 5px 10px; border-radius: 8px; text-decoration: none; font-weight: 700; font-size: 0.78rem; white-space: nowrap; }}
         .sim-link:hover {{ background: rgba(16, 185, 129, 0.28); }}
-        .sim-pending {{ color: #64748b; font-size: 0.8rem; font-weight: 600; }}
+        .sim-pending {{ color: #64748b; font-size: 0.78rem; font-weight: 600; white-space: nowrap; }}
         .status-pill {{ display: inline-block; padding: 4px 9px; border-radius: 999px; font-size: 0.75rem; font-weight: 800; white-space: nowrap; }}
         .status-active {{ background: rgba(52, 211, 153, 0.15); color: #34d399; border: 1px solid rgba(52, 211, 153, 0.35); }}
         .status-plan {{ background: rgba(148, 163, 184, 0.12); color: #94a3b8; }}
@@ -232,8 +291,8 @@ def build_html_catalog():
 </head>
 <body>
     <div class="container">
-        <h1>🌌 CATÁLOGO MAESTRO: 11 GRANDES SIMULACIONES INTERACTIVAS 3D INTERCALADAS</h1>
-        <p class="sub">Alternancia de Anatomía Biomédica, Historia, Sistema Solar 3D NASA, Selenografía Lunar (LRO), Mecánica y Paleontología</p>
+        <h1>🌌 CATÁLOGO MAESTRO: 21 GRANDES SIMULACIONES INTERACTIVAS 3D INTERCALADAS</h1>
+        <p class="sub">Plan Didáctico Intercalado: Alternancia de Anatomía Biomédica, Hitos Fotográficos NASA (Spitzer, Hubble, DSCOVR, Apollo, Gemini), Historia, Ingeniería y Geología</p>
         <table>
             <thead>
                 <tr>
@@ -288,16 +347,16 @@ def build_pdf():
     tc_status = ParagraphStyle("TCStatus", parent=styles["Normal"], fontSize=7.5, leading=10, textColor=colors.HexColor("#475569"), fontName="Helvetica-Oblique", alignment=1)
 
     elements = []
-    elements.append(Paragraph("🌌 CATÁLOGO MAESTRO: 11 GRANDES SIMULACIONES INTERACTIVAS 3D INTERCALADAS", title_style))
+    elements.append(Paragraph("🌌 CATÁLOGO MAESTRO: 21 GRANDES SIMULACIONES INTERACTIVAS 3D INTERCALADAS", title_style))
     elements.append(Spacer(1, 2))
-    elements.append(Paragraph("Plan Didáctico Intercalado: Alternancia de Anatomía Biomédica, Historia, Sistema Solar 3D NASA, Selenografía Lunar, Mecánica y Paleontología", sub_style))
+    elements.append(Paragraph("Plan Didáctico Intercalado: Alternancia de Anatomía Biomédica, Hitos NASA (Spitzer, Hubble, DSCOVR, Apollo, Gemini), Historia e Ingeniería", sub_style))
     elements.append(Spacer(1, 6))
     elements.append(HRFlowable(width="100%", thickness=1.5, color=colors.HexColor("#0284c7"), spaceAfter=6))
 
     intro_p = (
         "<b>Metodología de Intercalación Temática:</b> Para evitar la fatiga cognitiva y mantener la fascinación visual permanente en el alumnado senior (60+), "
-        "el bloque de creación de simuladores con IA <b>[COD]</b> alterna sesiones de <i>Anatomía y Salud Humana</i> (fotorrealismo biomédico con pulso, respiración o reflejo a la luz) "
-        "con sesiones de <i>Grandes Hitos de la Humanidad y el Cosmos</i> (arqueología milenaria, Sistema Solar 3D NASA, Atlas Lunar 3D LRO, ingeniería mecánica o fósiles prehistóricos). "
+        "el bloque de creación de simuladores con IA <b>[COD]</b> alterna sesiones de <i>Anatomía y Salud Humana</i> (fotorrealismo biomédico con pulso, respiración o genética) "
+        "con sesiones de <i>Grandes Hitos de la Humanidad y el Cosmos</i> (arqueología milenaria, las 5 fotos más asombrosas de la NASA, energía eólica y vulcanología). "
         "Cada experiencia incluye arquitectura de <b>Doble Botón</b>: Taller Interactivo de Pruebas de Código generado con Gemini y acceso directo al Simulador Terminado."
     )
     elements.append(Paragraph(intro_p, intro_style))
