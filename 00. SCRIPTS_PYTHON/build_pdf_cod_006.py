@@ -114,16 +114,16 @@ def build_pure_python_cod_006(dest_path):
     text_xy(44, 505, "Copia exactamente este texto en Gemini:", "F2", 7.8, (0.06, 0.09, 0.16))
     prompt_lines = [
         "\"Genera el código completo en un único archivo (HTML, CSS y JavaScript con Three.js) para crear un simulador",
-        "interactivo 3D del Cerebro Humano con corteza translúcida, lóbulos diferenciados y red de sinapsis bioeléctricas.",
+        "interactivo 3D del Cerebro Humano con corteza bilateral hiperrealista, lóbulos y red sináptica bioeléctrica.",
         "Requisitos del código:",
-        "1. Entrega todo en un único bloque de código para pulsar «Copiar código» y pegarlo en mi taller interactivo.",
-        "2. Carga Three.js y OrbitControls desde CDN oficial (jsdelivr / cdnjs) para que funcione al instante.",
-        "3. Modela el encéfalo en 3D con buena iluminación (AmbientLight + DirectionalLight) y materiales translúcidos brillantes",
-        "   (MeshStandardMaterial con emissive) en cada lóbulo: Frontal, Parietal, Temporal, Occipital, Cerebelo y Tronco.",
-        "4. Genera una red neuronal interna con curvas sinápticas (THREE.QuadraticBezierCurve3) y partículas luminosas en",
-        "   movimiento continuo simulando la transmisión de impulsos bioeléctricos (potenciales de acción) a través del encéfalo.",
-        "5. Añade botones para enfocar la cámara en cada lóbulo, alternar la visibilidad de la corteza/sinapsis, deslizar la",
-        "   velocidad del impulso bioeléctrico y separar ambos hemisferios cerebrales.",
+        "1. Entrega todo en un único archivo autocontenido para pulsar «Copiar código» y pegarlo en el probador.",
+        "2. Carga Three.js, OrbitControls y GLTFLoader/DRACOLoader desde CDN oficial para visualización instantánea.",
+        "3. Modela el encéfalo bilateral con tono tisular cortical orgánico (#cf9583), micro-surcos y circunvoluciones",
+        "   (gyri/sulci), y resaltado luminiscente al pulsar cada lóbulo: Frontal, Parietal, Temporal, Occipital, Cerebelo y Tronco.",
+        "4. Genera una red axonal tridimensional (THREE.QuadraticBezierCurve3) y destellos bioluminiscentes en movimiento",
+        "   continuo que recreen potenciales de acción sinápticos viajando a 40 Hz por el encéfalo.",
+        "5. Añade botones para enfocar la cámara en cada lóbulo, alternar corteza/sinapsis, deslizar la velocidad del impulso",
+        "   y separar lateralmente ambos hemisferios cerebrales (cisura interhemisférica).",
         "6. Escribe exclusivamente el bloque de código sin explicaciones previas ni posteriores.\""
     ]
     py = 493
@@ -142,9 +142,9 @@ def build_pure_python_cod_006(dest_path):
     text_xy(36, 276, "¿Cómo se ha modelado la neuroanatomía hiperrealista y la red sináptica en 3D?", "F2", 8.8, (0.01, 0.41, 0.63))
     rect(36, 152, W - 72, 118, fill_rgb=(0.93, 0.99, 0.96), stroke_rgb=(0.02, 0.59, 0.41), lw=1.0)
     tech_lines = [
-        "• Modelado cortical orgánico (Gyri y Sulci): Las circunvoluciones del cerebro se sintetizan mediante perturbaciones",
-        "  armónicas tridimensionales (fórmulas trigonométricas sinusoidales acopladas) aplicadas a mallas esferoidales de alta",
-        "  densidad poligonal (SphereGeometry 48×48), logrando los pliegues y surcos anatómicos exactos de la corteza cerebral.",
+        "• Modelado cortical bilateral y gyri/sulci: La corteza cerebral se genera con anatomía bilateral y relieve armónico de alta",
+        "  densidad poligonal emulando los pliegues, circunvoluciones y cisura longitudinal del encéfalo, con textura de micro-surcos",
+        "  y material PBR biológico (#cf9583) con compatibilidad directa para modelos oficiales Z-Anatomy / BodyParts3D GLB.",
         "• Red axonal y destellos sinápticos: Una red tridimensional de más de 300 haces axonales interconecta los núcleos del tálamo,",
         "  el cuerpo calloso y los cuatro polos corticales. Sobre ellos, 450 partículas bioluminiscentes (THREE.Points con shader aditivo)",
         "  viajan a lo largo de curvas Bezier cuadráticas recreando el tráfico bioeléctrico de 40 Hz en tiempo real."

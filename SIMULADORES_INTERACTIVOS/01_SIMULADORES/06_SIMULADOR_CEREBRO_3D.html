@@ -4,9 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Salud y Neurociencia 3D • Cerebro Humano, Lóbulos Corticales y Red Sináptica</title>
-    <!-- Three.js + OrbitControls para renderizado biomédico 3D en tiempo real -->
+    <!-- Three.js + OrbitControls + GLTFLoader + DRACOLoader para renderizado biomédico anatómico 3D -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/DRACOLoader.js"></script>
+    <script src="../03_ASSETS_3D_Y_DATOS/brain_b64.js"></script>
     <style>
         :root {
             --bg: #040711;
@@ -832,41 +835,85 @@
         };
 
         // GENERACIÓN PROCEDURAL ANATÓMICA DE LA CORTEZA Y LÓBULOS (PBR CON SURCOS Y CIRCUNVOLUCIONES)
+        // =========================================================================
+        // MODELADO ANATÓMICO ULTRA-REALISTA: CÓRTEX CEREBRAL BILATERAL & SURCOS
+        // =========================================================================
         const lobeMeshes = [];
         const labelPins = [];
         let cortexVisible = true;
         let synapseVisible = true;
         let labelsVisible = true;
-        let currentOpacity = 0.75;
+        let currentOpacity = 0.88;
         let simSpeed = 1.0;
 
-        // Función matemática para deformar una esfera y simular circunvoluciones (gyri & sulci)
-        function createLobeMesh(colorHex, deformFn, nameKey) {
-            const geo = new THREE.SphereGeometry(1, 48, 48);
+        // Color tisular anatómico oficial del encéfalo humano (corteza gris/rosácea)
+        const CORTEX_TISSUE_COLOR = 0xcf9583;
+
+        // Textura procedimental de alta definición para micro-relieve de surcos y circunvoluciones (gyri & sulci)
+        function createCorticalBumpTexture() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 512;
+            canvas.height = 512;
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#808080';
+            ctx.fillRect(0, 0, 512, 512);
+
+            ctx.lineWidth = 4.5;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            for (let i = 0; i < 300; i++) {
+                let x = Math.random() * 512;
+                let y = Math.random() * 512;
+                ctx.strokeStyle = (i % 2 === 0) ? '#282828' : '#d8d8d8';
+                ctx.beginPath();
+                ctx.moveTo(x, y);
+                for (let j = 0; j < 6; j++) {
+                    x += (Math.random() - 0.5) * 45;
+                    y += (Math.random() - 0.5) * 45;
+                    ctx.lineTo(x, y);
+                }
+                ctx.stroke();
+            }
+            const tex = new THREE.CanvasTexture(canvas);
+            tex.wrapS = THREE.RepeatWrapping;
+            tex.wrapT = THREE.RepeatWrapping;
+            tex.repeat.set(3, 3);
+            return tex;
+        }
+
+        const corticalBumpTex = createCorticalBumpTexture();
+
+        // Función constructora de mallas anatómicas con circunvoluciones y micro-pliegues corticales
+        function createLobeMesh(highlightHex, deformFn, nameKey, posX) {
+            const geo = new THREE.SphereGeometry(1, 56, 56);
             const pos = geo.attributes.position;
             const v = new THREE.Vector3();
 
             for (let i = 0; i < pos.count; i++) {
                 v.fromBufferAttribute(pos, i);
                 
-                // Ruido armónico para crear circunvoluciones anatómicas (surcos cerebrales)
-                const f1 = Math.sin(v.x * 6.5) * Math.cos(v.y * 6.5) * Math.sin(v.z * 6.5) * 0.08;
-                const f2 = Math.sin(v.x * 12.0 + v.y * 12.0) * 0.035;
-                const r = 1.0 + f1 + f2;
+                // Circunvoluciones anatómicas armónicas de alta definición (gyri y surcos biológicos)
+                const g1 = Math.sin(v.x * 12.0) * Math.cos(v.y * 12.0) * Math.sin(v.z * 12.0) * 0.045;
+                const g2 = Math.sin(v.x * 24.0 + v.z * 18.0) * 0.022;
+                const g3 = Math.cos(v.y * 22.0 + v.x * 16.0) * 0.018;
+                const r = 1.0 + g1 + g2 + g3;
                 v.multiplyScalar(r);
 
                 // Aplicar la deformación anatómica específica del lóbulo
                 deformFn(v);
+
                 pos.setXYZ(i, v.x, v.y, v.z);
             }
             geo.computeVertexNormals();
 
             const mat = new THREE.MeshStandardMaterial({
-                color: colorHex,
-                emissive: colorHex,
-                emissiveIntensity: 0.22,
-                roughness: 0.35,
-                metalness: 0.1,
+                color: CORTEX_TISSUE_COLOR,
+                emissive: 0x3d1c16,
+                emissiveIntensity: 0.14,
+                roughness: 0.52,
+                metalness: 0.06,
+                bumpMap: corticalBumpTex,
+                bumpScale: 0.045,
                 transparent: true,
                 opacity: currentOpacity,
                 depthWrite: false,
@@ -874,107 +921,220 @@
             });
 
             const mesh = new THREE.Mesh(geo, mat);
-            mesh.userData = { name: nameKey, baseColor: colorHex };
+            mesh.position.x = posX || 0;
+            mesh.userData = { 
+                name: nameKey, 
+                baseColor: CORTEX_TISSUE_COLOR, 
+                highlightColor: highlightHex,
+                initX: posX || 0
+            };
             return mesh;
         }
 
-        // 1. HEMISFERIO IZQUIERDO Y DERECHO (LÓBULOS CORTICALES)
+        // 1. CONFIGURACIÓN ANATÓMICA BILATERAL (HEMISFERIO IZQUIERDO Y DERECHO)
         const lobesConfig = [
-            // LÓBULO FRONTAL (Anterior, curvado hacia el frente)
+            // LÓBULO FRONTAL IZQUIERDO Y DERECHO (Polo anterior, corteza prefrontal y motora)
             {
                 name: "frontal",
                 color: 0x38bdf8,
-                pinPos: [0, 1.4, 2.2],
-                pinLabel: "Lóbulo Frontal",
+                posX: -0.68,
+                pinPos: [-0.68, 1.4, 2.1],
+                pinLabel: "Lóbulo Frontal (I)",
                 deform: (v) => {
-                    v.x *= 1.35;
-                    v.y *= 1.25;
-                    v.z = (v.z * 1.4) + 0.8;
-                    if (v.z < 0.1) v.multiplyScalar(Math.max(0.1, 1.0 + v.z * 0.8));
+                    v.x *= 1.08;
+                    v.y *= 1.15;
+                    v.z = (v.z * 1.35) + 0.8;
+                    if (v.z < 0.1) v.multiplyScalar(Math.max(0.1, 1.0 + v.z * 0.7));
                 }
             },
-            // LÓBULO PARIETAL (Superior-medio)
+            {
+                name: "frontal",
+                color: 0x38bdf8,
+                posX: 0.68,
+                pinPos: [0.68, 1.4, 2.1],
+                pinLabel: "Lóbulo Frontal (D)",
+                deform: (v) => {
+                    v.x *= 1.08;
+                    v.y *= 1.15;
+                    v.z = (v.z * 1.35) + 0.8;
+                    if (v.z < 0.1) v.multiplyScalar(Math.max(0.1, 1.0 + v.z * 0.7));
+                }
+            },
+            // LÓBULO PARIETAL IZQUIERDO Y DERECHO (Bóveda superior somatosensorial)
             {
                 name: "parietal",
                 color: 0xfbbf24,
-                pinPos: [0, 2.2, -0.4],
-                pinLabel: "Lóbulo Parietal",
+                posX: -0.68,
+                pinPos: [-0.68, 2.2, -0.4],
+                pinLabel: "Lóbulo Parietal (I)",
                 deform: (v) => {
-                    v.x *= 1.32;
-                    v.y = (v.y * 1.3) + 0.9;
-                    v.z *= 1.1;
-                }
-            },
-            // LÓBULO TEMPORAL IZQUIERDO Y DERECHO (Lateral inferior)
-            {
-                name: "temporal",
-                color: 0x34d399,
-                pinPos: [1.9, -0.4, 0.4],
-                pinLabel: "Lóbulo Temporal (D)",
-                deform: (v) => {
-                    v.x = (v.x * 0.9) + 1.25;
-                    v.y = (v.y * 0.85) - 0.4;
-                    v.z = (v.z * 1.2) + 0.2;
+                    v.x *= 1.10;
+                    v.y = (v.y * 1.25) + 0.85;
+                    v.z *= 1.12;
                 }
             },
             {
+                name: "parietal",
+                color: 0xfbbf24,
+                posX: 0.68,
+                pinPos: [0.68, 2.2, -0.4],
+                pinLabel: "Lóbulo Parietal (D)",
+                deform: (v) => {
+                    v.x *= 1.10;
+                    v.y = (v.y * 1.25) + 0.85;
+                    v.z *= 1.12;
+                }
+            },
+            // LÓBULO TEMPORAL IZQUIERDO Y DERECHO (Región lateral auditiva e hipocampal)
+            {
                 name: "temporal",
                 color: 0x34d399,
-                pinPos: [-1.9, -0.4, 0.4],
+                posX: -1.35,
+                pinPos: [-1.8, -0.4, 0.4],
                 pinLabel: "Lóbulo Temporal (I)",
                 deform: (v) => {
-                    v.x = (v.x * 0.9) - 1.25;
-                    v.y = (v.y * 0.85) - 0.4;
-                    v.z = (v.z * 1.2) + 0.2;
+                    v.x *= 0.82;
+                    v.y = (v.y * 0.85) - 0.35;
+                    v.z = (v.z * 1.18) + 0.2;
                 }
             },
-            // LÓBULO OCCIPITAL (Posterior)
+            {
+                name: "temporal",
+                color: 0x34d399,
+                posX: 1.35,
+                pinPos: [1.8, -0.4, 0.4],
+                pinLabel: "Lóbulo Temporal (D)",
+                deform: (v) => {
+                    v.x *= 0.82;
+                    v.y = (v.y * 0.85) - 0.35;
+                    v.z = (v.z * 1.18) + 0.2;
+                }
+            },
+            // LÓBULO OCCIPITAL IZQUIERDO Y DERECHO (Polo posterior visual)
             {
                 name: "occipital",
                 color: 0xfb7185,
-                pinPos: [0, 0.8, -2.4],
-                pinLabel: "Lóbulo Occipital",
+                posX: -0.62,
+                pinPos: [-0.62, 0.8, -2.4],
+                pinLabel: "Lóbulo Occipital (I)",
                 deform: (v) => {
-                    v.x *= 1.25;
-                    v.y *= 1.1;
-                    v.z = (v.z * 1.2) - 1.4;
+                    v.x *= 1.05;
+                    v.y *= 1.08;
+                    v.z = (v.z * 1.18) - 1.35;
                 }
             },
-            // CEREBELO (Inferior posterior)
+            {
+                name: "occipital",
+                color: 0xfb7185,
+                posX: 0.62,
+                pinPos: [0.62, 0.8, -2.4],
+                pinLabel: "Lóbulo Occipital (D)",
+                deform: (v) => {
+                    v.x *= 1.05;
+                    v.y *= 1.08;
+                    v.z = (v.z * 1.18) - 1.35;
+                }
+            },
+            // CEREBELO BILATERAL (Inferior posterior con folia cerebelosa)
             {
                 name: "cerebelo",
                 color: 0xc084fc,
-                pinPos: [0, -1.5, -1.6],
-                pinLabel: "Cerebelo",
+                posX: -0.72,
+                pinPos: [-0.72, -1.5, -1.6],
+                pinLabel: "Cerebelo (I)",
                 deform: (v) => {
-                    v.x *= 1.45;
-                    v.y = (v.y * 0.8) - 1.4;
-                    v.z = (v.z * 0.95) - 1.2;
+                    v.x *= 1.08;
+                    v.y = (v.y * 0.78) - 1.35;
+                    v.z = (v.z * 0.92) - 1.18;
                 }
             },
-            // TRONCO ENCEFÁLICO (Bulbo raquídeo y puente de Varolio)
+            {
+                name: "cerebelo",
+                color: 0xc084fc,
+                posX: 0.72,
+                pinPos: [0.72, -1.5, -1.6],
+                pinLabel: "Cerebelo (D)",
+                deform: (v) => {
+                    v.x *= 1.08;
+                    v.y = (v.y * 0.78) - 1.35;
+                    v.z = (v.z * 0.92) - 1.18;
+                }
+            },
+            // TRONCO ENCEFÁLICO (Eje central: mesencéfalo, protuberancia y bulbo raquídeo)
             {
                 name: "tronco",
                 color: 0x64748b,
+                posX: 0,
                 pinPos: [0, -2.4, -0.4],
                 pinLabel: "Tronco Encefálico",
                 deform: (v) => {
-                    v.x *= 0.55;
-                    v.y = (v.y * 1.6) - 2.1;
-                    v.z = (v.z * 0.6) - 0.4;
+                    v.x *= 0.52;
+                    v.y = (v.y * 1.65) - 2.1;
+                    v.z = (v.z * 0.58) - 0.4;
                 }
             }
         ];
 
-        // Construir mallas de los lóbulos
+        // Construir mallas de los lóbulos corticales con anatomía bilateral
         lobesConfig.forEach(cfg => {
-            const mesh = createLobeMesh(cfg.color, cfg.deform, cfg.name);
+            const mesh = createLobeMesh(cfg.color, cfg.deform, cfg.name, cfg.posX);
             brainGroup.add(mesh);
             lobeMeshes.push(mesh);
 
             // Crear etiqueta interactiva en 3D
             createLabelPin(cfg.pinLabel, cfg.name, cfg.pinPos);
         });
+
+        // Carga opcional de modelo médico oficial .GLB (Z-Anatomy / BodyParts3D)
+        const gltfCandidateSources = [
+            "../03_ASSETS_3D_Y_DATOS/brain.glb",
+            (window.BRAIN_GLB_B64 && window.BRAIN_GLB_B64.length > 1000) ? window.BRAIN_GLB_B64 : null,
+            "https://javiercursocorreo-gif.github.io/Curso-IA/SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/brain.glb",
+            "https://cdn.jsdelivr.net/gh/itayinbarr/brainproject@main/brain-atlas/models/brain.glb"
+        ].filter(Boolean);
+
+        let gltfLoaded = false;
+        function tryLoadGLTF(idx) {
+            if (idx >= gltfCandidateSources.length || gltfLoaded) return;
+            if (!THREE.GLTFLoader || !THREE.DRACOLoader) return;
+            const src = gltfCandidateSources[idx];
+            const loader = new THREE.GLTFLoader();
+            const dracoLoader = new THREE.DRACOLoader();
+            dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.4.3/');
+            loader.setDRACOLoader(dracoLoader);
+
+            loader.load(src, function(gltf) {
+                console.log("[Simulador Cerebro 3D] Modelo anatómico Z-Anatomy GLB sincronizado:", src);
+                gltfLoaded = true;
+                const model = gltf.scene;
+                const box = new THREE.Box3().setFromObject(model);
+                const size = box.getSize(new THREE.Vector3());
+                const maxDim = Math.max(size.x, size.y, size.z);
+                const scale = 4.2 / maxDim;
+                model.scale.setScalar(scale);
+                box.setFromObject(model);
+                const center = box.getCenter(new THREE.Vector3());
+                model.position.sub(center);
+
+                model.traverse(node => {
+                    if (node.isMesh) {
+                        node.material = new THREE.MeshStandardMaterial({
+                            color: CORTEX_TISSUE_COLOR,
+                            roughness: 0.52,
+                            metalness: 0.06,
+                            transparent: true,
+                            opacity: currentOpacity,
+                            side: THREE.DoubleSide
+                        });
+                        lobeMeshes.push(node);
+                    }
+                });
+                brainGroup.add(model);
+            }, undefined, function() {
+                tryLoadGLTF(idx + 1);
+            });
+        }
+        tryLoadGLTF(0);
 
         // 2. RED SINÁPTICA Y TRAYECTORIAS NEURONALES (AXONES CON THREE.CURVES Y PULSOS LUMINOSOS)
         const synapseGroup = new THREE.Group();
@@ -1137,17 +1297,34 @@
             document.getElementById('metricFreq').textContent = data.freq;
             document.getElementById('hudRegion').textContent = regionKey === 'global' ? 'Visión Panorámica' : data.title.split(' ')[1] || data.title;
 
-            // Resaltar mallas 3D
+            // Resaltar mallas 3D con precisión clínica y contraste biomédico
             lobeMeshes.forEach(mesh => {
-                if (regionKey === 'global') {
-                    mesh.material.color.setHex(mesh.userData.baseColor);
-                    mesh.material.opacity = currentOpacity;
-                } else if (mesh.userData.name === regionKey) {
-                    mesh.material.color.setHex(mesh.userData.baseColor);
-                    mesh.material.opacity = 0.95;
-                } else {
-                    mesh.material.color.setHex(0x1e293b);
-                    mesh.material.opacity = 0.25;
+                if (mesh.material) {
+                    if (regionKey === 'global') {
+                        // Modo panorámico: restaurar color tisular anatómico natural (tejido cortical)
+                        mesh.material.color.setHex(mesh.userData.baseColor || CORTEX_TISSUE_COLOR);
+                        if (mesh.material.emissive) {
+                            mesh.material.emissive.setHex(0x3d1c16);
+                            mesh.material.emissiveIntensity = 0.14;
+                        }
+                        mesh.material.opacity = currentOpacity;
+                    } else if (mesh.userData.name === regionKey) {
+                        // Lóbulo seleccionado: activación diagnóstica bioluminiscente
+                        mesh.material.color.setHex(mesh.userData.highlightColor || 0x38bdf8);
+                        if (mesh.material.emissive) {
+                            mesh.material.emissive.setHex(mesh.userData.highlightColor || 0x38bdf8);
+                            mesh.material.emissiveIntensity = 0.48;
+                        }
+                        mesh.material.opacity = 0.95;
+                    } else {
+                        // Estructuras en reposo: atenuación para visualización de axones y conectoma
+                        mesh.material.color.setHex(0x1e293b);
+                        if (mesh.material.emissive) {
+                            mesh.material.emissive.setHex(0x020617);
+                            mesh.material.emissiveIntensity = 0.0;
+                        }
+                        mesh.material.opacity = 0.22;
+                    }
                 }
             });
 
@@ -1184,11 +1361,11 @@
             this.classList.toggle('active', splitHemis);
             
             lobeMeshes.forEach(mesh => {
-                // Separar suavemente el hemisferio derecho e izquierdo
-                if (mesh.position.x > 0) {
-                    mesh.position.x = splitHemis ? 0.35 : 0;
-                } else if (mesh.position.x < 0) {
-                    mesh.position.x = splitHemis ? -0.35 : 0;
+                const baseInitX = (mesh.userData && typeof mesh.userData.initX === 'number') ? mesh.userData.initX : mesh.position.x;
+                if (baseInitX > 0) {
+                    mesh.position.x = splitHemis ? (baseInitX + 0.55) : baseInitX;
+                } else if (baseInitX < 0) {
+                    mesh.position.x = splitHemis ? (baseInitX - 0.55) : baseInitX;
                 }
             });
         };
