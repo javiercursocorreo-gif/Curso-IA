@@ -44,6 +44,11 @@
 - **Arquitectura de Carga y Autonomía (Base64 + CDN Fallback):**
   - Los modelos científicos deben estar respaldados en archivos `_b64.js` en `03_ASSETS_3D_Y_DATOS/` (ej. `brain_b64.js`, `heart_b64.js`, `lungs_b64.js`) para garantizar funcionamiento 100% offline y autónomo sin problemas de CORS ni caídas de servidor.
 
+## Validación Visual Inmediata: Lanzamiento Automático en Google Chrome
+- **Apertura Local Inmediata en Navegador:**
+  - En cada turno donde se cree, ajuste, corrija o modifique cualquier simulador, probador de código o mapa interactivo, el asistente DEBE lanzar/abrir siempre automáticamente dicho archivo HTML en **Google Chrome** en local (ej. `open -a "Google Chrome" "/ruta/al/archivo.html"`).
+  - Esto permite al usuario inspeccionar, interactuar y validar visualmente el resultado de inmediato en su pantalla en 2 segundos, sin demoras y sin tener que esperar los minutos que toma la subida pesada y despliegue en Google Classroom / GitHub Pages.
+
 
 
 

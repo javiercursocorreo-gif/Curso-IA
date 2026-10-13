@@ -5382,11 +5382,11 @@
             scene.clearColor = new BABYLON.Color4(0.024, 0.035, 0.075, 1.0);
 
             // Cámara orbital cinemática perfectamente calibrada y centrada
-            const camera = new BABYLON.ArcRotateCamera(&quot;Camera&quot;, -Math.PI / 2, Math.PI / 2.3, 5.2, BABYLON.Vector3.Zero(), scene);
+            const camera = new BABYLON.ArcRotateCamera(&quot;Camera&quot;, -Math.PI / 2, Math.PI / 2.3, 6.8, BABYLON.Vector3.Zero(), scene);
             camera.attachControl(canvas, true);
-            camera.wheelPrecision = 40;
-            camera.lowerRadiusLimit = 2.0;
-            camera.upperRadiusLimit = 15.0;
+            camera.wheelPrecision = 20;
+            camera.lowerRadiusLimit = 1.0;
+            camera.upperRadiusLimit = 60.0;
 
             // Iluminación quirúrgica/médica PBR
             const hemiLight = new BABYLON.HemisphericLight(&quot;hemiLight&quot;, new BABYLON.Vector3(0, 1, 0), scene);
@@ -5461,18 +5461,18 @@
                             const maxDim = Math.max(size.x, size.y, size.z);
 
                             if (maxDim &gt; 0 &amp;&amp; isFinite(maxDim)) {
-                                fixedBaseScale = 2.8 / maxDim;
+                                fixedBaseScale = 1.8 / maxDim;
                                 lungsRoot.scaling = new BABYLON.Vector3(fixedBaseScale, fixedBaseScale, fixedBaseScale);
                                 baseCenter = center.scale(-fixedBaseScale);
                                 lungsRoot.position = baseCenter.clone();
                             } else {
-                                fixedBaseScale = 0.25;
+                                fixedBaseScale = 0.15;
                                 lungsRoot.scaling = new BABYLON.Vector3(fixedBaseScale, fixedBaseScale, fixedBaseScale);
                                 baseCenter = new BABYLON.Vector3(0, 0, 0);
                                 lungsRoot.position = baseCenter.clone();
                             }
 
-                            camera.radius = 5.2;
+                            camera.radius = 6.8;
                             camera.target = new BABYLON.Vector3(0, 0, 0);
                             isModelLoaded = true;
                             console.log(&quot;✅ [Simulador Pulmones 3D] Modelo estable y centrado cargado con éxito.&quot;);
@@ -6928,6 +6928,25 @@ window.POMPEII_RECON_B64 = &quot;data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAYABg
                                     BABYLON.Engine.Instances.forEach(function(eng) {
                                         if (eng && eng.scenes) {
                                             eng.scenes.forEach(function(sc) {
+                                                // Liberar zoom y calibrar cámara en tiempo real
+                                                if (sc.cameras) {
+                                                    sc.cameras.forEach(function(cam) {
+                                                        if (cam.upperRadiusLimit !== undefined && (cam.upperRadiusLimit < 50 || cam.upperRadiusLimit === 15)) {
+                                                            cam.upperRadiusLimit = 60.0;
+                                                        }
+                                                        if (cam.lowerRadiusLimit !== undefined && cam.lowerRadiusLimit > 1.0) {
+                                                            cam.lowerRadiusLimit = 1.0;
+                                                        }
+                                                        if (cam.wheelPrecision !== undefined && cam.wheelPrecision > 25) {
+                                                            cam.wheelPrecision = 20;
+                                                        }
+                                                        if (cam.radius !== undefined && cam.radius < 6.2 && !cam._userZoomed) {
+                                                            cam.radius = 6.8;
+                                                            cam._userZoomed = true;
+                                                        }
+                                                    });
+                                                }
+
                                                 if (sc.animationGroups && sc.animationGroups.length > 0) {
                                                     sc.animationGroups.forEach(function(ag) {
                                                         if (ag && ag.isPlaying) {
@@ -6936,11 +6955,26 @@ window.POMPEII_RECON_B64 = &quot;data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAYABg
                                                         }
                                                     });
                                                 }
+
+                                                // Calibrar escala proporcional si los pulmones son gigantes
                                                 if (sc.meshes) {
                                                     sc.meshes.forEach(function(m) {
-                                                        if (m.name && (m.name.toLowerCase().includes('lung') || m.name === '__root__')) {
+                                                        if (m.name && (m.name.toLowerCase().includes('lung') || m.name === '__root__' || m.name === 'lungsRoot')) {
                                                             if (m.animations && m.animations.length > 0) {
                                                                 sc.stopAnimation(m);
+                                                            }
+                                                            // Si la malla no tiene padre o es raíz, comprobar escala
+                                                            if (m.parent === null || m.name === 'lungsRoot' || m.name === '__root__') {
+                                                                try {
+                                                                    const bounds = m.getHierarchyBoundingVectors ? m.getHierarchyBoundingVectors() : m.getBoundingInfo().boundingBox;
+                                                                    const size = bounds.max.subtract(bounds.min);
+                                                                    const maxD = Math.max(size.x, size.y, size.z);
+                                                                    if (maxD > 2.5 && !m._scaledDown) {
+                                                                        const targetScale = (m.scaling.x > 0 ? m.scaling.x : 1.0) * (1.8 / maxD);
+                                                                        m.scaling = new BABYLON.Vector3(targetScale, targetScale, targetScale);
+                                                                        m._scaledDown = true;
+                                                                    }
+                                                                } catch (bErr) {}
                                                             }
                                                         }
                                                     });

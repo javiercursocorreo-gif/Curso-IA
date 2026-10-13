@@ -9,6 +9,7 @@
     <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
     <!-- Respaldo Base64 Autónomo (6.2 MB) para entornos locales y offline -->
     <script src="../03_ASSETS_3D_Y_DATOS/brain_b64.js"></script>
+    <script src="https://javiercursocorreo-gif.github.io/Curso-IA/SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/brain_b64.js"></script>
     <script src="https://javiercursocorreo-gif.github.io/Curso-IA/SIMULADORES_INTERACTIVOS/brain_b64.js"></script>
     <style>
         :root {
@@ -375,7 +376,7 @@
 
         /* 3D CANVAS CARD */
         .canvas-card {
-            background: radial-gradient(circle at 50% 40%, #0d1a30 0%, #060913 80%, #020408 100%);
+            background: radial-gradient(circle at 50% 35%, #0f1c33 0%, #060913 75%, #020408 100%);
             border: 1px solid var(--border);
             border-radius: 14px;
             position: relative;
@@ -697,23 +698,46 @@
         let camera = null;
         let brainRoot = null;
         let brainMeshes = [];
-        let synapseParticles = null;
         let isModelLoaded = false;
         let isAutoRotating = false;
         let labelsVisible = true;
+        let synapseActive = true;
         let simSpeed = 1.0;
         let currentOpacity = 1.0;
+        let currentFocusedRegion = "global";
+
+        // COLORES ANATÓMICOS POR LÓBULO
+        const LOBE_COLORS = {
+            frontal: new BABYLON.Color3(0.22, 0.74, 0.97),
+            parietal: new BABYLON.Color3(0.98, 0.75, 0.14),
+            temporal: new BABYLON.Color3(0.20, 0.83, 0.60),
+            occipital: new BABYLON.Color3(0.98, 0.44, 0.52),
+            cerebelo: new BABYLON.Color3(0.75, 0.52, 0.98),
+            tronco: new BABYLON.Color3(0.65, 0.75, 0.85)
+        };
+
+        // CLASIFICACIÓN ANATÓMICA DE NODOS
+        function classifyNodeLobe(name) {
+            const nl = (name || "").toLowerCase();
+            if (nl.includes("frontal") || nl.includes("orbital") || nl.includes("rectus") || nl.includes("precentral")) return "frontal";
+            if (nl.includes("parietal") || nl.includes("postcentral") || nl.includes("precuneus") || nl.includes("angular") || nl.includes("supramarginal")) return "parietal";
+            if (nl.includes("temporal") || nl.includes("hippocamp") || nl.includes("insula")) return "temporal";
+            if (nl.includes("occipital") || nl.includes("cuneus") || nl.includes("calcarine") || nl.includes("lingual")) return "occipital";
+            if (nl.includes("cerebel") || nl.includes("vermis") || nl.includes("flocculus") || nl.includes("tonsil")) return "cerebelo";
+            if (nl.includes("pons") || nl.includes("medulla") || nl.includes("olive") || nl.includes("pyramid") || nl.includes("midbrain")) return "tronco";
+            return "cortex";
+        }
 
         // DATOS DIDÁCTICOS DE LOS LÓBULOS Y REGIONES
         const REGION_DATA = {
             global: {
                 title: "🧠 Encéfalo Humano Completo",
-                desc: "Escaneo médico de resonancia magnética real. Muestra el cerebro con sus cisuras interhemisféricas, surcos corticales y circunvoluciones que multiplican la densidad neuronal.",
+                desc: "Escaneo médico de resonancia magnética real (MRI). Muestra el encéfalo bilateral con sus cisuras interhemisféricas, surcos corticales y circunvoluciones que multiplican la densidad neuronal.",
                 neurons: "86.000 Millones",
                 freq: "40 Hz (Gamma)",
                 camAlpha: -Math.PI / 2,
                 camBeta: Math.PI / 2.6,
-                camRadius: 5.5
+                camRadius: 4.8
             },
             frontal: {
                 title: "🟦 Lóbulo Frontal (Corteza Prefrontal & Motora)",
@@ -721,8 +745,8 @@
                 neurons: "24.000 Millones",
                 freq: "14 - 30 Hz (Beta)",
                 camAlpha: -Math.PI / 2,
-                camBeta: Math.PI / 2.3,
-                camRadius: 4.8
+                camBeta: Math.PI / 2.4,
+                camRadius: 4.2
             },
             parietal: {
                 title: "🟨 Lóbulo Parietal (Corteza Somatosensorial)",
@@ -731,7 +755,7 @@
                 freq: "8 - 13 Hz (Alfa)",
                 camAlpha: -Math.PI / 2.2,
                 camBeta: Math.PI / 3.4,
-                camRadius: 4.9
+                camRadius: 4.3
             },
             temporal: {
                 title: "🟩 Lóbulo Temporal (Memoria, Audición & Lenguaje)",
@@ -740,7 +764,7 @@
                 freq: "4 - 8 Hz (Theta)",
                 camAlpha: -0.2,
                 camBeta: Math.PI / 2.4,
-                camRadius: 4.8
+                camRadius: 4.2
             },
             occipital: {
                 title: "🟥 Lóbulo Occipital (Corteza Visual Primaria V1)",
@@ -749,7 +773,7 @@
                 freq: "8 - 12 Hz (Alfa)",
                 camAlpha: Math.PI / 2,
                 camBeta: Math.PI / 2.5,
-                camRadius: 4.8
+                camRadius: 4.2
             },
             cerebelo: {
                 title: "🟪 Cerebelo («Pequeño Cerebro»)",
@@ -758,7 +782,7 @@
                 freq: "50 Hz (Gamma Rápido)",
                 camAlpha: Math.PI / 2.3,
                 camBeta: Math.PI / 1.7,
-                camRadius: 4.8
+                camRadius: 4.2
             },
             tronco: {
                 title: "⚪ Tronco Encefálico (Mesencéfalo, Protuberancia & Bulbo)",
@@ -767,7 +791,7 @@
                 freq: "1 - 4 Hz (Delta)",
                 camAlpha: -Math.PI / 2,
                 camBeta: Math.PI / 1.5,
-                camRadius: 4.7
+                camRadius: 4.2
             },
             hemi_left: {
                 title: "🔵 Hemisferio Izquierdo (Lógica y Lenguaje)",
@@ -776,7 +800,7 @@
                 freq: "Beta & Gamma",
                 camAlpha: Math.PI,
                 camBeta: Math.PI / 2.4,
-                camRadius: 4.9
+                camRadius: 4.3
             },
             hemi_right: {
                 title: "🟠 Hemisferio Derecho (Creatividad y Espacio)",
@@ -785,27 +809,27 @@
                 freq: "Alfa & Theta",
                 camAlpha: 0.0,
                 camBeta: Math.PI / 2.4,
-                camRadius: 4.9
+                camRadius: 4.3
             },
             hemi_top: {
                 title: "⬆️ Vista Axial Superior (Cisura Interhemisférica)",
-                desc: "Perspectiva cenital que revela la simetría bilateral del cerebro humano y la profunda cisura interhemisférica que separa los hemisferios izquierdo y derecho.",
+                desc: "Perspectiva cenital que revela la simetría bilateral del encéfalo y la profunda cisura interhemisférica longitudinal que separa los hemisferios izquierdo y derecho.",
                 neurons: "86.000 Millones",
                 freq: "40 Hz",
                 camAlpha: -Math.PI / 2,
                 camBeta: 0.05,
-                camRadius: 5.2
+                camRadius: 4.6
             }
         };
 
-        // PINES ANATÓMICOS TRIDIMENSIONALES
+        // PINES ANATÓMICOS TRIDIMENSIONALES AJUSTADOS AL CENTRO DEL ENCÉFALO
         const LABEL_DEFS = [
-            { text: "Lóbulo Frontal", color: "rgba(56, 189, 248, 0.95)", pos: new BABYLON.Vector3(0, 0.5, 1.2), region: 'frontal' },
-            { text: "Lóbulo Parietal", color: "rgba(251, 191, 36, 0.95)", pos: new BABYLON.Vector3(0, 1.2, -0.3), region: 'parietal' },
-            { text: "Lóbulo Temporal", color: "rgba(52, 211, 153, 0.95)", pos: new BABYLON.Vector3(1.3, -0.3, 0.2), region: 'temporal' },
-            { text: "Lóbulo Occipital", color: "rgba(251, 113, 133, 0.95)", pos: new BABYLON.Vector3(0, 0.3, -1.3), region: 'occipital' },
-            { text: "Cerebelo", color: "rgba(192, 132, 252, 0.95)", pos: new BABYLON.Vector3(0.7, -1.0, -0.9), region: 'cerebelo' },
-            { text: "Tronco Encefálico", color: "rgba(203, 213, 225, 0.95)", pos: new BABYLON.Vector3(0, -1.3, -0.2), region: 'tronco' }
+            { text: "Lóbulo Frontal", color: "rgba(56, 189, 248, 0.95)", pos: new BABYLON.Vector3(0, 0.5, 1.35), region: 'frontal' },
+            { text: "Lóbulo Parietal", color: "rgba(251, 191, 36, 0.95)", pos: new BABYLON.Vector3(0, 1.35, -0.2), region: 'parietal' },
+            { text: "Lóbulo Temporal", color: "rgba(52, 211, 153, 0.95)", pos: new BABYLON.Vector3(1.35, -0.2, 0.1), region: 'temporal' },
+            { text: "Lóbulo Occipital", color: "rgba(251, 113, 133, 0.95)", pos: new BABYLON.Vector3(0, 0.25, -1.35), region: 'occipital' },
+            { text: "Cerebelo", color: "rgba(192, 132, 252, 0.95)", pos: new BABYLON.Vector3(0.65, -0.75, -0.9), region: 'cerebelo' },
+            { text: "Tronco Encefálico", color: "rgba(203, 213, 225, 0.95)", pos: new BABYLON.Vector3(0, -1.05, -0.1), region: 'tronco' }
         ];
 
         let labelElements = [];
@@ -816,53 +840,32 @@
             sc.clearColor = new BABYLON.Color4(0.015, 0.03, 0.07, 1.0);
 
             // CÁMARA ORBITAL CLÍNICA
-            camera = new BABYLON.ArcRotateCamera("Camera", -Math.PI / 2, Math.PI / 2.6, 5.5, new BABYLON.Vector3(0, 0, 0), sc);
+            camera = new BABYLON.ArcRotateCamera("Camera", -Math.PI / 2, Math.PI / 2.6, 4.8, new BABYLON.Vector3(0, 0, 0), sc);
             camera.attachControl(canvas, true);
             camera.wheelPrecision = 40;
-            camera.lowerRadiusLimit = 2.2;
-            camera.upperRadiusLimit = 14.0;
+            camera.lowerRadiusLimit = 2.0;
+            camera.upperRadiusLimit = 12.0;
             camera.minZ = 0.1;
 
-            // ILUMINACIÓN CLÍNICA ULTRA-PBR
+            // ILUMINACIÓN CLÍNICA EQUILIBRADA (SIN SOBREEXPOSICIÓN BLANCA)
             const hemiLight = new BABYLON.HemisphericLight("hemiLight", new BABYLON.Vector3(0, 1, 0), sc);
-            hemiLight.intensity = 1.35;
-            hemiLight.groundColor = new BABYLON.Color3(0.08, 0.1, 0.18);
+            hemiLight.intensity = 0.95;
+            hemiLight.groundColor = new BABYLON.Color3(0.12, 0.14, 0.20);
 
-            const keyLight = new BABYLON.DirectionalLight("keyLight", new BABYLON.Vector3(4, 6, 5), sc);
-            keyLight.intensity = 1.6;
-            keyLight.diffuse = new BABYLON.Color3(1.0, 0.98, 0.95);
+            const keyLight = new BABYLON.DirectionalLight("keyLight", new BABYLON.Vector3(3, 5, 4), sc);
+            keyLight.intensity = 1.1;
+            keyLight.diffuse = new BABYLON.Color3(1.0, 0.96, 0.92);
 
-            const fillLight = new BABYLON.DirectionalLight("fillLight", new BABYLON.Vector3(-5, -2, -4), sc);
-            fillLight.intensity = 1.1;
-            fillLight.diffuse = new BABYLON.Color3(0.2, 0.65, 0.95);
+            const fillLight = new BABYLON.DirectionalLight("fillLight", new BABYLON.Vector3(-4, -2, -3), sc);
+            fillLight.intensity = 0.75;
+            fillLight.diffuse = new BABYLON.Color3(0.25, 0.6, 0.95);
 
-            const backLight = new BABYLON.DirectionalLight("backLight", new BABYLON.Vector3(0, 4, -6), sc);
-            backLight.intensity = 1.2;
-            backLight.diffuse = new BABYLON.Color3(0.7, 0.4, 0.95);
-
-            // GLOW LAYER MÉDICO PARA RESALTAR EL RELIEVE
-            const gl = new BABYLON.GlowLayer("glow", sc);
-            gl.intensity = 0.22;
-
-            // SISTEMA DE PARTÍCULAS DE SINAPSIS BIOELÉCTRICA
-            synapseParticles = new BABYLON.ParticleSystem("synapses", 450, sc);
-            synapseParticles.particleTexture = new BABYLON.Texture("https://cdn.jsdelivr.net/gh/mrdoob/three.js@master/examples/textures/sprites/spark1.png", sc);
-            synapseParticles.emitter = new BABYLON.Vector3(0, 0, 0);
-            synapseParticles.minEmitBox = new BABYLON.Vector3(-1.2, -0.9, -1.2);
-            synapseParticles.maxEmitBox = new BABYLON.Vector3(1.2, 1.1, 1.2);
-            synapseParticles.color1 = new BABYLON.Color4(0.22, 0.74, 0.97, 0.95);
-            synapseParticles.color2 = new BABYLON.Color4(0.75, 0.52, 0.98, 0.95);
-            synapseParticles.colorDead = new BABYLON.Color4(0.1, 0.1, 0.3, 0.0);
-            synapseParticles.minSize = 0.04;
-            synapseParticles.maxSize = 0.12;
-            synapseParticles.minLifeTime = 0.4;
-            synapseParticles.maxLifeTime = 1.2;
-            synapseParticles.emitRate = 280;
-            synapseParticles.gravity = new BABYLON.Vector3(0, 0, 0);
-            synapseParticles.start();
+            const backLight = new BABYLON.DirectionalLight("backLight", new BABYLON.Vector3(0, 3, -5), sc);
+            backLight.intensity = 0.85;
+            backLight.diffuse = new BABYLON.Color3(0.65, 0.45, 0.85);
 
             // CARGA DEL ESCANEO ANATÓMICO REAL .GLB (Base64 local con fallback online)
-            const modelSource = (window.BRAIN_GLB_B64) ? window.BRAIN_GLB_B64 : "https://javiercursocorreo-gif.github.io/Curso-IA/SIMULADORES_INTERACTIVOS/brain.glb";
+            const modelSource = (window.BRAIN_GLB_B64) ? window.BRAIN_GLB_B64 : "https://javiercursocorreo-gif.github.io/Curso-IA/SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/brain.glb";
 
             BABYLON.SceneLoader.ImportMesh("", "", modelSource, sc, function (meshes) {
                 loadingOverlay.style.opacity = "0";
@@ -870,26 +873,64 @@
 
                 brainRoot = new BABYLON.TransformNode("brainRoot", sc);
 
+                // Filtrar nervios periféricos descendentes y configurar materiales orgánicos
                 meshes.forEach(m => {
+                    const nl = (m.name || "").toLowerCase();
+
+                    // Ocultar nervios largos periféricos que cuelgan del tronco
+                    if (nl.includes("vagus") || nl.includes("accessory") || nl.includes("corticospinal")) {
+                        m.setEnabled(false);
+                        return;
+                    }
+
                     if (m.parent === null) {
                         m.parent = brainRoot;
+                    }
+
+                    if (m.material) {
+                        // Clonar material para permitir tintes independientes por lóbulo
+                        m.material = m.material.clone(m.name + "_mat");
+
+                        // ⚠️ ELIMINAR EL EMISSIVE BLANCO HORRIBLE [1,1,1] QUE VENÍA EN EL GLB ORIGINAL
+                        m.material.emissiveColor = new BABYLON.Color3(0, 0, 0);
+                        m.material.roughness = 0.52;
+                        m.material.metallic = 0.05;
+
+                        // Asignar color tisular de corteza si el albedo original es blanco plano
+                        const origAlbedo = m.material.albedoColor;
+                        let baseColor = new BABYLON.Color3(0.85, 0.58, 0.50);
+                        if (origAlbedo && (origAlbedo.r < 0.92 || origAlbedo.g < 0.92 || origAlbedo.b < 0.92)) {
+                            baseColor = origAlbedo.clone();
+                        } else {
+                            m.material.albedoColor = baseColor;
+                        }
+
+                        // Colorear vasos sanguíneos en rojo carmesí
+                        if (nl.includes("artery") || nl.includes("vein") || nl.includes("sinus")) {
+                            baseColor = new BABYLON.Color3(0.82, 0.18, 0.18);
+                            m.material.albedoColor = baseColor;
+                        }
+
+                        const lobeKey = classifyNodeLobe(nl);
+                        m.userData = {
+                            baseAlbedo: baseColor,
+                            lobe: lobeKey,
+                            name: m.name
+                        };
                     }
                     brainMeshes.push(m);
                 });
 
-                // CENTRADO Y ESCALADO EXACTO SEGÚN LA CAJA ENVOLVENTE
-                const hierarchy = brainRoot.getHierarchyBoundingVectors();
-                const center = hierarchy.max.add(hierarchy.min).scale(0.5);
-                const size = hierarchy.max.subtract(hierarchy.min);
-                const maxDim = Math.max(size.x, size.y, size.z);
+                // CENTRADO Y ESCALADO EXACTO DEL ENCÉFALO (Excluyendo las fibras inferiores)
+                const fixedCenterY = 1.561;
+                const fixedCenterZ = -0.006;
+                const brainHeight = 0.282; // Altura real del encéfalo
+                const scale = 3.6 / brainHeight; // Escalar a ~3.6 unidades estándar de visualización
 
-                if (maxDim > 0) {
-                    const fixedBaseScale = 3.2 / maxDim;
-                    brainRoot.scaling = new BABYLON.Vector3(fixedBaseScale, fixedBaseScale, fixedBaseScale);
-                    brainRoot.position = center.scale(-fixedBaseScale);
-                }
+                brainRoot.scaling = new BABYLON.Vector3(scale, scale, scale);
+                brainRoot.position = new BABYLON.Vector3(0, -fixedCenterY * scale, -fixedCenterZ * scale);
 
-                camera.radius = 5.5;
+                camera.radius = 4.8;
                 camera.target = new BABYLON.Vector3(0, 0, 0);
                 isModelLoaded = true;
 
@@ -914,7 +955,7 @@
                 const badge = document.createElement("div");
                 badge.className = "brain-label";
                 badge.style.background = "rgba(15, 23, 42, 0.90)";
-                badge.style.border = `1px solid ${def.color}`;
+                badge.style.border = `1.5px solid ${def.color}`;
                 badge.style.color = "#f8fafc";
                 badge.innerHTML = `<span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:${def.color};"></span>${def.text}`;
                 badge.onclick = () => focusRegion(def.region);
@@ -954,6 +995,33 @@
             });
         }
 
+        // RESALTADO DINÁMICO DE LÓBULOS ANATÓMICOS
+        function applyLobeHighlight(targetLobe) {
+            currentFocusedRegion = targetLobe;
+            brainMeshes.forEach(m => {
+                if (!m.material || !m.userData) return;
+                const lobe = m.userData.lobe;
+
+                if (targetLobe === "global") {
+                    // Vista general: restaurar todos los tonos de corteza natural
+                    m.material.albedoColor.copyFrom(m.userData.baseAlbedo);
+                    m.material.emissiveColor = new BABYLON.Color3(0, 0, 0);
+                    m.visibility = currentOpacity;
+                } else if (lobe === targetLobe) {
+                    // Resaltar lóbulo activo con su color de contraste
+                    const c = LOBE_COLORS[targetLobe] || new BABYLON.Color3(0.3, 0.75, 1.0);
+                    m.material.albedoColor = c;
+                    m.material.emissiveColor = c.scale(0.18);
+                    m.visibility = currentOpacity;
+                } else {
+                    // Atenuar ligeramente los demás lóbulos para enfocar la atención
+                    m.material.albedoColor = m.userData.baseAlbedo.scale(0.40);
+                    m.material.emissiveColor = new BABYLON.Color3(0, 0, 0);
+                    m.visibility = currentOpacity * 0.75;
+                }
+            });
+        }
+
         // NAVEGACIÓN Y ENFOQUE SUAVE DE CÁMARA
         window.focusRegion = function (regionKey) {
             const data = REGION_DATA[regionKey];
@@ -973,6 +1041,9 @@
             document.getElementById("infoDesc").textContent = data.desc;
             document.getElementById("metricNeurons").textContent = data.neurons;
             document.getElementById("metricFreq").textContent = data.freq;
+
+            // Resaltar lóbulo anatómico
+            applyLobeHighlight(regionKey);
 
             // Animación suave de cámara en Babylon.js
             const animCamAlpha = new BABYLON.Animation("camAlpha", "alpha", 60, BABYLON.Animation.ANIMATIONTYPE_FLOAT, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
@@ -1005,16 +1076,15 @@
             });
         };
 
-        // Toggle Sinapsis
-        let synapseVisible = true;
+        // Toggle Sinapsis Bioeléctrica
         document.getElementById("btnToggleSynapse").onclick = function () {
-            synapseVisible = !synapseVisible;
-            this.classList.toggle("active", synapseVisible);
-            if (synapseParticles) {
-                if (synapseVisible) synapseParticles.start();
-                else synapseParticles.stop();
+            synapseActive = !synapseActive;
+            this.classList.toggle("active", synapseActive);
+            document.getElementById("hudPulses").textContent = synapseActive ? "40 Hz (Ondas Gamma)" : "Pausados";
+            if (!synapseActive) {
+                // Resetear brillo
+                applyLobeHighlight(currentFocusedRegion);
             }
-            document.getElementById("hudPulses").textContent = synapseVisible ? "40 Hz (Ondas Gamma)" : "Pausados";
         };
 
         // Toggle Giro Automático
@@ -1036,10 +1106,6 @@
         sliderSpeed.oninput = (e) => {
             simSpeed = parseFloat(e.target.value);
             lblSpeed.textContent = `${simSpeed.toFixed(1)}x`;
-            if (synapseParticles) {
-                synapseParticles.updateSpeed = 0.01 * simSpeed;
-                synapseParticles.emitRate = 280 * simSpeed;
-            }
         };
 
         // Slider Opacidad Cortical
@@ -1052,6 +1118,27 @@
                 m.visibility = currentOpacity;
             });
         };
+
+        // ONDAS DE SINAPSIS BIOELÉCTRICA LIMPIAS (SIN PARTÍCULAS CUADRADAS NI NIEBLA)
+        let bioPulseTimer = 0;
+        scene.onBeforeRenderObservable.add(() => {
+            if (synapseActive && isModelLoaded) {
+                bioPulseTimer += 0.05 * simSpeed;
+                const waveIntensity = (Math.sin(bioPulseTimer * 4.0) + 1.0) * 0.06; // Pulso bioeléctrico sutil
+
+                // Pulsar suavemente el brillo en los lóbulos activos
+                brainMeshes.forEach((m, idx) => {
+                    if (m.material && m.userData) {
+                        if (currentFocusedRegion === "global") {
+                            // Ondas viajeras por la corteza
+                            const phase = (idx % 12) * 0.35;
+                            const pulse = Math.max(0, Math.sin(bioPulseTimer * 3.0 + phase)) * 0.12;
+                            m.material.emissiveColor = new BABYLON.Color3(pulse * 0.3, pulse * 0.7, pulse * 1.0);
+                        }
+                    }
+                });
+            }
+        });
 
         // BUCLE PRINCIPAL DE RENDERIZADO
         engine.runRenderLoop(() => {
