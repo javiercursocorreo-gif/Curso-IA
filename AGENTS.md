@@ -18,4 +18,12 @@
   - El alumno debe poder copiar el prompt de su ficha en Gemini y obtener exactamente el 100% de las funciones implementadas en el simulador oficial.
   - Confirmar explícitamente en la respuesta al usuario que dicha sincronización ha quedado sellada en la ficha.
 
+## Regla de Despliegue: Todo se Sube a GitHub Siempre (GitHub Pages & Classroom)
+- **Subida Obligatoria a GitHub en Cada Turno:**
+  - Todo cambio, corrección, regeneración de PDF, mapa o simulador DEBE incluir siempre e indefectiblemente el bloque de subida a GitHub (`git add -A`, `git commit` y `git push origin main`) en el comando del terminal para el usuario, aunque el usuario no lo pida explícitamente.
+  - Esto garantiza que Google Classroom y GitHub Pages reflejen en tiempo real el estado real del proyecto sin desfases ni versiones obsoletas en caché.
+- **Formato Estándar de Comandos en Terminal:**
+  - Todos los comandos entregados al usuario deben comenzar con `cd "/Users/externo/Library/Mobile Documents/com~apple~CloudDocs/PERSONAL/CLASES DE TECNOLOGÍA/CURSO-IA"`, llevar encabezado descriptivo con comentarios `#` y mensajes `echo` claros para su fácil identificación visual en la terminal.
+
+
 
