@@ -2067,6 +2067,9 @@
         const tempProjVec = new THREE.Vector3();
         const jmoonWorldVec = new THREE.Vector3();
         const targetWorldPos = new THREE.Vector3();
+        const _occV1 = new THREE.Vector3();
+        const _occV2 = new THREE.Vector3();
+        const _occV3 = new THREE.Vector3();
         const simDaysCounter = document.getElementById(&quot;simDaysCounter&quot;);
 
         function updateLabelPosition(key, worldVec, yOffset) {
@@ -2080,6 +2083,49 @@
                 pin.style.display = &quot;none&quot;;
                 return;
             }
+
+            // Oclusión 3D de las lunas de Júpiter: si la luna pasa por detrás de la esfera de Júpiter, ocultar la etiqueta
+            if (key.startsWith(&quot;jmoon_&quot;) &amp;&amp; planetObjects.jupiter) {
+                const jupPos = planetObjects.jupiter.holder.position;
+                const camToMoon = _occV1.subVectors(worldVec, camera.position);
+                const camToJup = _occV2.subVectors(jupPos, camera.position);
+                const moonDistSq = camToMoon.lengthSq();
+                const jupDistSq = camToJup.lengthSq();
+
+                // Si la luna está más lejos de la cámara que Júpiter
+                if (moonDistSq &gt; jupDistSq) {
+                    const proj = camToJup.dot(camToMoon) / moonDistSq;
+                    if (proj &gt; 0 &amp;&amp; proj &lt; 1) {
+                        const closestPoint = _occV3.copy(camera.position).addScaledVector(camToMoon, proj);
+                        const distToJupCenter = closestPoint.distanceTo(jupPos);
+                        const jupRadius = planetObjects.jupiter.cfg.radius; // 4.60
+                        if (distToJupCenter &lt; jupRadius * 1.05) {
+                            pin.style.display = &quot;none&quot;;
+                            return;
+                        }
+                    }
+                }
+            }
+
+            // Oclusión de astros si pasan por detrás del Sol al ver el sistema completo
+            if (key !== &quot;sun&quot; &amp;&amp; !key.startsWith(&quot;jmoon_&quot;) &amp;&amp; currentTargetKey === &quot;overview&quot;) {
+                const sunPos = sunGroup.position;
+                const camToBody = _occV1.subVectors(worldVec, camera.position);
+                const camToSun = _occV2.subVectors(sunPos, camera.position);
+                const bodyDistSq = camToBody.lengthSq();
+                const sunDistSq = camToSun.lengthSq();
+                if (bodyDistSq &gt; sunDistSq) {
+                    const proj = camToSun.dot(camToBody) / bodyDistSq;
+                    if (proj &gt; 0 &amp;&amp; proj &lt; 1) {
+                        const closestPoint = _occV3.copy(camera.position).addScaledVector(camToBody, proj);
+                        if (closestPoint.distanceTo(sunPos) &lt; 7.2) {
+                            pin.style.display = &quot;none&quot;;
+                            return;
+                        }
+                    }
+                }
+            }
+
             tempProjVec.copy(worldVec);
             tempProjVec.y += yOffset;
             tempProjVec.project(camera);
