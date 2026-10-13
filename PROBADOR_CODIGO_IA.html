@@ -6916,6 +6916,65 @@ window.POMPEII_RECON_B64 = &quot;data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAYABg
                             window.dispatchEvent(new Event('resize'));
                         }
                     }, false);
+
+                    // Estabilizador anatómico universal para Pulmones 3D (Babylon.js):
+                    // Detiene cualquier animación interna baked de vaivén/morphing y mantiene los pulmones 100% quietos, firmes y centrados.
+                    function stabilizeBabylonLungs() {
+                        try {
+                            if (window.BABYLON) {
+                                // Interceptar SceneLoader.ImportMesh si aún no se ha llamado
+                                if (!window._origBabylonImportMesh && BABYLON.SceneLoader && BABYLON.SceneLoader.ImportMesh) {
+                                    window._origBabylonImportMesh = BABYLON.SceneLoader.ImportMesh;
+                                    BABYLON.SceneLoader.ImportMesh = function(meshNames, rootUrl, sceneFilename, scene, onSuccess, onProgress, onError, pluginExtension) {
+                                        return window._origBabylonImportMesh.call(this, meshNames, rootUrl, sceneFilename, scene, function(meshes, particleSystems, skeletons, animationGroups) {
+                                            if (animationGroups && animationGroups.length > 0) {
+                                                animationGroups.forEach(function(ag) {
+                                                    if (ag && typeof ag.stop === 'function') {
+                                                        ag.stop();
+                                                        ag.reset();
+                                                    }
+                                                });
+                                            }
+                                            if (onSuccess) {
+                                                onSuccess(meshes, particleSystems, skeletons, animationGroups);
+                                            }
+                                        }, onProgress, onError, pluginExtension);
+                                    };
+                                }
+
+                                // Inspeccionar motores y escenas de Babylon existentes
+                                if (BABYLON.Engine && BABYLON.Engine.Instances) {
+                                    BABYLON.Engine.Instances.forEach(function(eng) {
+                                        if (eng && eng.scenes) {
+                                            eng.scenes.forEach(function(sc) {
+                                                if (sc.animationGroups && sc.animationGroups.length > 0) {
+                                                    sc.animationGroups.forEach(function(ag) {
+                                                        if (ag && ag.isPlaying) {
+                                                            ag.stop();
+                                                            ag.reset();
+                                                        }
+                                                    });
+                                                }
+                                                if (sc.meshes) {
+                                                    sc.meshes.forEach(function(m) {
+                                                        if (m.name && (m.name.toLowerCase().includes('lung') || m.name === '__root__')) {
+                                                            if (m.animations && m.animations.length > 0) {
+                                                                sc.stopAnimation(m);
+                                                            }
+                                                        }
+                                                    });
+                                                }
+                                            });
+                                        }
+                                    });
+                                }
+                            }
+                        } catch (err) {}
+                    }
+
+                    window.addEventListener('DOMContentLoaded', stabilizeBabylonLungs);
+                    window.addEventListener('load', stabilizeBabylonLungs);
+                    setInterval(stabilizeBabylonLungs, 120);
                 })();
             <\/script>`;
 

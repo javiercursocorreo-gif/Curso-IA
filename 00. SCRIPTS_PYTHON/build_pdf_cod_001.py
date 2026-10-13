@@ -124,7 +124,7 @@ def build_cod_001_taller_3d_pdf(output_path=PDF_PATH):
         "&lt;script src=&quot;https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js&quot;&gt;&lt;/script&gt;<br/>"
         "&lt;script src=&quot;https://javiercursocorreo-gif.github.io/Curso-IA/SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/lungs_b64.js&quot;&gt;&lt;/script&gt;<br/>"
         "3. Carga el modelo 3D anatómico real con SceneLoader.ImportMesh('', '', window.LUNGS_GLB_B64, ...) y céntralo con cámara orbital 360° e iluminación de estudio sobre fondo azul noche (#060913).<br/>"
-        "4. En el bucle de animación, programa el ciclo respiratorio continuo con expansión volumétrica biológica suave (inhalación activa y retroceso elástico).<br/>"
+        "4. Detén cualquier animación interna o de morphing del archivo 3D (animationGroups.forEach(ag => ag.stop())) para mantener el árbol traqueobronquial y los pulmones 100% firmes, estables y quietos en el centro (sin vaivén vertical, sin subir ni bajar), permitiendo rotar libremente en 360° con el ratón e incluyendo una rotación suave automática.<br/>"
         "5. Escribe exclusivamente el bloque de código para que al copiarlo a mi simulador genere los pulmones 3D hiperrealistas.\"</i>"
     )
     p_table = Table([[Paragraph(prompt_text, style_prompt)]], colWidths=[letter[0] - 72])
@@ -143,8 +143,8 @@ def build_cod_001_taller_3d_pdf(output_path=PDF_PATH):
     story.append(Paragraph("🌟 <b>El Reto Extra (Para Alumnos Curiosos):</b>", style_section_h))
     story.append(Paragraph(
         "👉 <b>¡Pídele a Gemini que modifique tu código!</b> En la misma conversación dile: "
-        "<i>«Modifica el código para que los pulmones respiren más rápido como al hacer deporte (25 respiraciones por minuto)»</i> o "
-        "<i>«Añade una luz azul turquesa que se intensifique al inhalar aire»</i>. "
+        "<i>«Añade una luz de quirófano azul cian que ilumine la tráquea por detrás»</i> o "
+        "<i>«Haz que gire lentamente sobre su eje vertical para ver los bronquios desde todos los ángulos»</i>. "
         "Vuelve a copiar el código, pégalo en tu Taller y ¡mira cómo cambia en directo!",
         style_body
     ))
@@ -154,7 +154,7 @@ def build_cod_001_taller_3d_pdf(output_path=PDF_PATH):
     story.append(Paragraph("🔬 <b>¿De dónde proceden los modelos hiperrealistas y cómo se ha montado el objeto 3D?</b>", style_section_h))
     tech_text = (
         "• <b>Origen del modelo anatómico hiperrealista (<i>lungs.glb / lungs_b64.js</i>):</b> Procede del repositorio biomédico oficial <b>NIH 3D Print Exchange (National Institutes of Health, EE. UU.)</b> y <b>BodyParts3D / Anatomography</b> (Instituto DBCLS de Ciencias de la Vida, Japón, bajo licencia abierta <i>Creative Commons</i>), reconstruido mediante <b>tomografía computarizada (TC) médica real</b> de la tráquea, bronquios y lóbulos pulmonares.<br/>"
-        "• <b>Cómo se ha montado el objeto en la Demo y en el Taller:</b> El archivo tridimensional <i>.glb</i> (formato <i>glTF 2.0</i> con texturas PBR de tejido mucoso húmedo y anillos cartilaginosos) se ha empaquetado en Base64 dentro de <i>lungs_b64.js</i> para evitar bloqueos de seguridad del navegador (CORS). En el motor <b>Babylon.js</b>, se carga la malla 3D con <i>SceneLoader.ImportMesh</i> y se aplica en cada fotograma una onda sinusoidal fisiológica asimétrica (inspiración activa y retroceso elástico) conectada al deslizador de frecuencia respiratoria (8 a 28 RPM)."
+        "• <b>Cómo se ha montado el objeto en la Demo y en el Taller:</b> El archivo tridimensional <i>.glb</i> (formato <i>glTF 2.0</i> con texturas PBR de tejido mucoso y anillos cartilaginosos) se ha empaquetado en Base64 dentro de <i>lungs_b64.js</i> para evitar bloqueos de seguridad del navegador (CORS). En el motor <b>Babylon.js</b>, se carga la malla 3D con <i>SceneLoader.ImportMesh</i>, se detienen las animaciones internas para mantener el órgano firme, quieto y sin vaivén vertical, permitiendo la exploración científica 360° limpia y centrada con iluminación médica de estudio."
     )
     tech_table = Table([[Paragraph(tech_text, style_task)]], colWidths=[letter[0] - 72])
     tech_table.setStyle(TableStyle([
