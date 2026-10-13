@@ -22,8 +22,18 @@
 - **Subida Obligatoria a GitHub en Cada Turno:**
   - Todo cambio, corrección, regeneración de PDF, mapa o simulador DEBE incluir siempre e indefectiblemente el bloque de subida a GitHub (`git add -A`, `git commit` y `git push origin main`) en el comando del terminal para el usuario, aunque el usuario no lo pida explícitamente.
   - Esto garantiza que Google Classroom y GitHub Pages reflejen en tiempo real el estado real del proyecto sin desfases ni versiones obsoletas en caché.
-- **Formato Estándar de Comandos en Terminal:**
-  - Todos los comandos entregados al usuario deben comenzar con `cd "/Users/externo/Library/Mobile Documents/com~apple~CloudDocs/PERSONAL/CLASES DE TECNOLOGÍA/CURSO-IA"`, llevar encabezado descriptivo con comentarios `#` y mensajes `echo` claros para su fácil identificación visual en la terminal.
+- **Formato Estándar y Numeración Correlativa Obligatoria de Comandos en Terminal:**
+  - **Título en Canvas / Chat:** Cada bloque de comandos entregado al usuario debe llevar un título claro y visible en Markdown destacando su numeración correlativa (ej. `### 💻 [COMANDO 01] - Título Descriptivo`).
+  - **Título y Numeración Correlativa DENTRO del Comando:** Es VITAL y obligatorio que dentro del propio bloque de script el encabezado con `#` y los mensajes `echo` lleven exactamente la misma numeración correlativa secuencial (`[COMANDO 01]`, `[COMANDO 02]`, etc.) y el título descriptivo para que el usuario pueda identificar y seguir de forma inequívoca qué tarea se ejecuta en el scroll de su terminal externa cuando ejecuta varios comandos seguidos:
+    ```bash
+    # ==============================================================================
+    # [COMANDO XX] - TÍTULO DESCRIPTIVO DE LA TAREA
+    # ==============================================================================
+    cd "/Users/externo/Library/Mobile Documents/com~apple~CloudDocs/PERSONAL/CLASES DE TECNOLOGÍA/CURSO-IA"
+    echo "=== [COMANDO XX] INICIANDO: TÍTULO DESCRIPTIVO ==="
+    # ... instrucciones ...
+    echo "=== [COMANDO XX] FINALIZADO CON ÉXITO ==="
+    ```
 
 ## Estándar de Simulaciones 3D: Motor Babylon.js y Modelos Científicos Hiperrealistas
 - **Prohibición de Mallas Inventadas o Procedurales Primitivas:**
