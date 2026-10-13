@@ -3,31 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Salud y Neurociencia 3D • Encéfalo Humano, Lóbulos Corticales y Red Sináptica</title>
-    <!-- Three.js + OrbitControls + GLTFLoader para renderizado biomédico anatómico 3D PBR -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
-    <script src="../03_ASSETS_3D_Y_DATOS/brain_b64.js"></script>
-    <script src="https://javiercursocorreo-gif.github.io/Curso-IA/SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/brain_b64.js"></script>
+    <title>Laboratorio Anatómico 3D Ultra-Realista • Encéfalo Humano (GLB + Babylon.js)</title>
+    <!-- Babylon.js CDN Oficial y Loaders para GLTF/GLB -->
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+    <!-- Respaldo Base64 Autónomo (6.2 MB) para entornos locales y offline -->
+    <script src="brain_b64.js"></script>
+    <script src="../../../../SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/brain_b64.js"></script>
+    <script src="https://javiercursocorreo-gif.github.io/Curso-IA/SIMULADORES_INTERACTIVOS/brain_b64.js"></script>
     <style>
         :root {
-            --bg: #040711;
-            --panel: #0d1424;
+            --bg: #030712;
+            --panel: #0d1527;
             --border: #1e293b;
             --accent: #38bdf8;
-            --accent-glow: rgba(56, 189, 248, 0.35);
             --gold: #fbbf24;
             --emerald: #34d399;
             --rose: #fb7185;
             --purple: #c084fc;
             --slate: #94a3b8;
-            --frontal: #38bdf8;
-            --parietal: #fbbf24;
-            --temporal: #34d399;
-            --occipital: #fb7185;
-            --cerebelo: #c084fc;
-            --tronco: #94a3b8;
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
         }
@@ -51,11 +45,12 @@
             overflow: hidden;
         }
 
+        /* HEADER */
         header {
-            background: rgba(13, 20, 36, 0.96);
+            background: rgba(13, 21, 39, 0.96);
             backdrop-filter: blur(12px);
             border-bottom: 1px solid var(--border);
-            padding: 7px 20px;
+            padding: 6px 18px;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -71,19 +66,18 @@
 
         .header-icon {
             font-size: 24px;
-            background: rgba(56, 189, 248, 0.14);
-            border: 1px solid rgba(56, 189, 248, 0.4);
-            width: 40px;
-            height: 40px;
+            background: rgba(56, 189, 248, 0.12);
+            border: 1px solid rgba(56, 189, 248, 0.35);
+            width: 38px;
+            height: 38px;
             border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 0 18px rgba(56, 189, 248, 0.25);
         }
 
         .header-titles h1 {
-            font-size: 16px;
+            font-size: 15.5px;
             font-weight: 800;
             letter-spacing: -0.02em;
             color: #f8fafc;
@@ -99,7 +93,6 @@
             display: flex;
             gap: 8px;
             align-items: center;
-            flex-wrap: wrap;
         }
 
         .badge {
@@ -127,6 +120,7 @@
             border-color: rgba(192, 132, 252, 0.4);
         }
 
+        /* MAIN */
         main {
             flex: 1;
             min-height: 0;
@@ -136,15 +130,16 @@
             gap: 8px;
         }
 
+        /* TOOLBAR */
         .toolbar {
-            background: rgba(15, 23, 42, 0.88);
+            background: rgba(15, 23, 42, 0.9);
             border: 1px solid var(--border);
             border-radius: 12px;
             padding: 6px 12px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 10px;
+            gap: 8px;
             flex-shrink: 0;
             flex-wrap: wrap;
         }
@@ -152,7 +147,7 @@
         .toolbar-group {
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 5px;
             flex-wrap: wrap;
         }
 
@@ -171,58 +166,27 @@
             color: var(--text-main);
             font-size: 11px;
             font-weight: 700;
-            padding: 5px 10px;
-            border-radius: 8px;
+            padding: 4px 9px;
+            border-radius: 7px;
             cursor: pointer;
             display: inline-flex;
             align-items: center;
-            gap: 5px;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            gap: 4px;
+            transition: all 0.15s ease;
         }
 
         .btn-tool:hover {
-            background: rgba(56, 189, 248, 0.15);
+            background: rgba(56, 189, 248, 0.16);
             border-color: var(--accent);
             color: #ffffff;
             transform: translateY(-1px);
         }
 
         .btn-tool.active {
-            background: rgba(56, 189, 248, 0.24);
+            background: rgba(56, 189, 248, 0.25);
             border-color: var(--accent);
             color: #38bdf8;
-            box-shadow: 0 0 14px rgba(56, 189, 248, 0.35);
-        }
-
-        .btn-tool.frontal-btn.active {
-            background: rgba(56, 189, 248, 0.24);
-            color: #38bdf8;
-            border-color: #38bdf8;
-        }
-        .btn-tool.parietal-btn.active {
-            background: rgba(251, 191, 36, 0.24);
-            color: #fbbf24;
-            border-color: #fbbf24;
-        }
-        .btn-tool.temporal-btn.active {
-            background: rgba(52, 211, 153, 0.24);
-            color: #34d399;
-            border-color: #34d399;
-        }
-        .btn-tool.occipital-btn.active {
-            background: rgba(251, 113, 133, 0.24);
-            color: #fb7185;
-            border-color: #fb7185;
-        }
-        .btn-tool.cerebelo-btn.active {
-            background: rgba(192, 132, 252, 0.24);
-            color: #c084fc;
-            border-color: #c084fc;
-        }
-        .btn-tool.tronco-btn.active {
-            background: rgba(148, 163, 184, 0.24);
-            color: #cbd5e1;
-            border-color: #cbd5e1;
+            box-shadow: 0 0 12px rgba(56, 189, 248, 0.35);
         }
 
         .slider-group {
@@ -242,16 +206,17 @@
         }
 
         .slider-group input[type="range"] {
-            width: 70px;
+            width: 65px;
             cursor: pointer;
             accent-color: var(--accent);
         }
 
+        /* 2-COLUMN GRID */
         .stage-grid {
             flex: 1;
             min-height: 0;
             display: grid;
-            grid-template-columns: 340px 1fr;
+            grid-template-columns: 330px 1fr;
             gap: 10px;
             align-items: stretch;
         }
@@ -262,6 +227,7 @@
             .canvas-card { min-height: 520px; }
         }
 
+        /* SIDEBAR */
         .sidebar-card {
             background: var(--panel);
             border: 1px solid var(--border);
@@ -269,7 +235,7 @@
             padding: 12px 14px;
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 9px;
             overflow-y: auto;
             min-height: 0;
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
@@ -288,7 +254,7 @@
             align-items: center;
             justify-content: space-between;
             border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-            padding-bottom: 7px;
+            padding-bottom: 6px;
         }
 
         .telemetry-title {
@@ -308,12 +274,6 @@
             border-radius: 50%;
             background: var(--emerald);
             box-shadow: 0 0 8px var(--emerald);
-            animation: pulse-dot 2s infinite;
-        }
-
-        @keyframes pulse-dot {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.45; transform: scale(0.85); }
         }
 
         .info-box {
@@ -342,18 +302,18 @@
         .metric-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 6px;
+            gap: 5px;
         }
 
         .metric-item {
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid rgba(255, 255, 255, 0.06);
             border-radius: 8px;
-            padding: 6px 8px;
+            padding: 5px 8px;
         }
 
         .metric-label {
-            font-size: 9px;
+            font-size: 8.5px;
             color: var(--text-muted);
             text-transform: uppercase;
             font-weight: 700;
@@ -361,7 +321,7 @@
         }
 
         .metric-val {
-            font-size: 12px;
+            font-size: 11.5px;
             font-weight: 800;
             color: #f8fafc;
             margin-top: 1px;
@@ -381,7 +341,7 @@
             text-transform: uppercase;
             letter-spacing: 0.05em;
             color: var(--gold);
-            margin-bottom: 6px;
+            margin-bottom: 5px;
         }
 
         .legend-item {
@@ -389,35 +349,34 @@
             align-items: center;
             justify-content: space-between;
             font-size: 10.5px;
-            padding: 3.5px 0;
+            padding: 4px 6px;
+            border-radius: 6px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.04);
             cursor: pointer;
             transition: all 0.15s ease;
         }
 
         .legend-item:hover {
+            background: rgba(56, 189, 248, 0.12);
             color: var(--accent);
             transform: translateX(2px);
-        }
-
-        .legend-item:last-child {
-            border-bottom: none;
         }
 
         .legend-left {
             display: flex;
             align-items: center;
-            gap: 7px;
+            gap: 6px;
         }
 
         .legend-dot {
-            width: 9px;
-            height: 9px;
+            width: 8px;
+            height: 8px;
             border-radius: 50%;
         }
 
+        /* 3D CANVAS CARD */
         .canvas-card {
-            background: #02040a;
+            background: radial-gradient(circle at 50% 40%, #0d1a30 0%, #060913 80%, #020408 100%);
             border: 1px solid var(--border);
             border-radius: 14px;
             position: relative;
@@ -428,10 +387,40 @@
             box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
         }
 
-        #webgl-canvas {
+        #renderCanvas {
             width: 100%;
             height: 100%;
             display: block;
+            touch-action: none;
+            outline: none;
+        }
+
+        /* OVERLAY LOADING */
+        #loadingOverlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(6, 9, 19, 0.94);
+            backdrop-filter: blur(8px);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            transition: opacity 0.4s ease;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(56, 189, 248, 0.18);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 0.9s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
 
         .canvas-overlay-top {
@@ -448,12 +437,12 @@
             background: rgba(15, 23, 42, 0.88);
             backdrop-filter: blur(8px);
             border: 1px solid var(--border);
-            padding: 5px 10px;
+            padding: 4px 9px;
             border-radius: 8px;
-            font-size: 10.5px;
+            font-size: 10px;
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 5px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.4);
         }
 
@@ -477,6 +466,7 @@
 
         .canvas-instructions span { color: #f8fafc; font-weight: 700; }
 
+        /* LABELS CONTAINER */
         #labelsContainer {
             position: absolute;
             inset: 0;
@@ -506,94 +496,74 @@
             transform: translate(-50%, -50%) scale(1.12);
             box-shadow: 0 0 14px currentColor;
         }
-
-        #loadingBadge {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(15, 23, 42, 0.95);
-            border: 1px solid var(--accent);
-            padding: 14px 22px;
-            border-radius: 12px;
-            font-size: 13px;
-            color: #f8fafc;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            z-index: 30;
-            box-shadow: 0 0 30px rgba(56, 189, 248, 0.3);
-            transition: opacity 0.4s ease;
-        }
-
-        .spin-loader {
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(56, 189, 248, 0.2);
-            border-top-color: var(--accent);
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
-
-        @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
+
     <header>
         <div class="header-left">
             <div class="header-icon">🧠</div>
             <div class="header-titles">
-                <h1>Encéfalo Humano 3D • Lóbulos Corticales y Red Sináptica</h1>
-                <p>Laboratorio Biomédico Digital • Modelo Anatómico Oficial Z-Anatomy & BodyParts3D</p>
+                <h1>Encéfalo Humano 3D • Escaneo Médico Real PBR (Babylon.js)</h1>
+                <p>Laboratorio Biomédico Digital • Circunvoluciones, Red Sináptica y Lóbulos Corticales</p>
             </div>
         </div>
         <div class="header-badges">
-            <div class="badge badge-gold">⭐ PBR Fotogrametría 3D</div>
-            <div class="badge badge-purple">⚡ 40 Hz Red Sináptica</div>
+            <div class="badge badge-gold">⭐ Resonancia Médica GLB</div>
+            <div class="badge badge-purple">⚡ Babylon.js PBR Engine</div>
             <div class="badge">🎓 Sesión 06 [COD-006]</div>
         </div>
     </header>
 
     <main>
+        <!-- TOOLBAR SUPERIOR -->
         <div class="toolbar">
             <div class="toolbar-group">
-                <span class="toolbar-label">Lóbulos Anatómicos:</span>
-                <button class="btn-tool active" data-view="global" title="Visión panorámica del encéfalo completo">🌐 General</button>
-                <button class="btn-tool frontal-btn" data-view="frontal" title="Corteza Prefrontal y Motora">🟦 Frontal</button>
-                <button class="btn-tool parietal-btn" data-view="parietal" title="Corteza Somatosensorial y Visoespacial">🟨 Parietal</button>
-                <button class="btn-tool temporal-btn" data-view="temporal" title="Corteza Auditiva, Memoria e Hipocampo">🟩 Temporal</button>
-                <button class="btn-tool occipital-btn" data-view="occipital" title="Corteza Visual Primaria V1">🟥 Occipital</button>
-                <button class="btn-tool cerebelo-btn" data-view="cerebelo" title="Coordinación Motora y Equilibrio">🟪 Cerebelo</button>
-                <button class="btn-tool tronco-btn" data-view="tronco" title="Mesencéfalo, Protuberancia y Bulbo Raquídeo">⚪ Tronco</button>
+                <span class="toolbar-label">Vistas:</span>
+                <button class="btn-tool active" data-view="global" title="Visión panorámica del cerebro completo">🌐 General</button>
+                <button class="btn-tool" data-view="frontal" title="Corteza Prefrontal y Motora">🟦 Frontal</button>
+                <button class="btn-tool" data-view="parietal" title="Corteza Somatosensorial">🟨 Parietal</button>
+                <button class="btn-tool" data-view="temporal" title="Corteza Auditiva y Memoria">🟩 Temporal</button>
+                <button class="btn-tool" data-view="occipital" title="Corteza Visual Primaria">🟥 Occipital</button>
+                <button class="btn-tool" data-view="cerebelo" title="Coordinación Motora y Equilibrio">🟪 Cerebelo</button>
+                <button class="btn-tool" data-view="tronco" title="Tronco Encefálico Vital">⚪ Tronco</button>
             </div>
 
             <div class="toolbar-group">
-                <span class="toolbar-label">Capas Clínicas:</span>
-                <button class="btn-tool active" id="btnToggleCortex" title="Mostrar u ocultar tejido cortical">🧠 Corteza</button>
-                <button class="btn-tool active" id="btnToggleSynapse" title="Activar o pausar pulsos de sinapsis bioeléctricos">⚡ Sinapsis</button>
-                <button class="btn-tool" id="btnToggleHemis" title="Separar hemisferios cerebrales para examinar el cuerpo calloso">↔️ Hemisferios</button>
-                <button class="btn-tool active" id="btnToggleLabels" title="Mostrar u ocultar pines de nombres anatómicos">🏷️ Nombres</button>
+                <span class="toolbar-label">Hemisferios:</span>
+                <button class="btn-tool" id="btnHemiLeft" title="Enfocar Hemisferio Izquierdo">🔵 Izquierdo</button>
+                <button class="btn-tool" id="btnHemiRight" title="Enfocar Hemisferio Derecho">🟠 Derecho</button>
+                <button class="btn-tool" id="btnHemiTop" title="Vista Superior Axial de Ambos Hemisferios">⬆️ Axial (Cénit)</button>
+            </div>
 
-                <div class="slider-group" title="Controlar la velocidad de transmisión de los impulsos neuronales">
-                    <span>Velocidad:</span>
+            <div class="toolbar-group">
+                <span class="toolbar-label">Controles:</span>
+                <button class="btn-tool active" id="btnToggleCortex" title="Mostrar u ocultar tejido cortical">🧠 Corteza</button>
+                <button class="btn-tool active" id="btnToggleSynapse" title="Activar pulsos de sinapsis bioeléctrica">⚡ Sinapsis</button>
+                <button class="btn-tool" id="btnToggleRotate" title="Activar rotación automática suave">🔄 Giro</button>
+                <button class="btn-tool active" id="btnToggleLabels" title="Mostrar nombres anatómicos">🏷️ Pines</button>
+
+                <div class="slider-group" title="Velocidad de los impulsos neuronales bioeléctricos">
+                    <span>Sinapsis:</span>
                     <input type="range" id="sliderSpeed" min="0.2" max="3.0" step="0.1" value="1.0">
-                    <span id="lblSpeed" style="color: #f8fafc; min-width: 26px;">1.0x</span>
+                    <span id="lblSpeed" style="color: #f8fafc; min-width: 24px;">1.0x</span>
                 </div>
 
-                <div class="slider-group" title="Ajustar transparencia cortical para visualizar conectoma interno">
+                <div class="slider-group" title="Opacidad del tejido cerebral">
                     <span>Opacidad:</span>
-                    <input type="range" id="sliderOpacity" min="0.1" max="1.0" step="0.05" value="0.88">
-                    <span id="lblOpacity" style="color: #f8fafc; min-width: 28px;">88%</span>
+                    <input type="range" id="sliderOpacity" min="0.2" max="1.0" step="0.05" value="1.0">
+                    <span id="lblOpacity" style="color: #f8fafc; min-width: 26px;">100%</span>
                 </div>
             </div>
         </div>
 
+        <!-- STAGE GRID -->
         <div class="stage-grid">
             <div class="sidebar-card">
                 <div class="telemetry-header">
                     <div class="telemetry-title">
                         <div class="status-dot"></div>
-                        <span>Telemetría Neurobiológica</span>
+                        <span>Fisiología Cerebral</span>
                     </div>
                     <span style="font-size: 10px; color: var(--emerald); font-weight: 700;">En Tiempo Real</span>
                 </div>
@@ -601,7 +571,7 @@
                 <div class="info-box" style="border-color: rgba(56, 189, 248, 0.3); background: rgba(56, 189, 248, 0.04);">
                     <h3 id="infoTitle" style="color: var(--accent);">🧠 Encéfalo Humano Completo</h3>
                     <p id="infoDesc">
-                        Estructura principal del sistema nervioso central. Integra ambos hemisferios cerebrales mediante el cuerpo calloso, procesando información sensorial, cognitiva, emocional y motora en paralelo con más de 100 billones de sinapsis activas.
+                        Estructura principal del sistema nervioso central modelada a partir de escaneo médico de resonancia magnética real (MRI). Sus pliegues (circunvoluciones y surcos) multiplican la superficie cortical y albergan más de 86.000 millones de neuronas conectadas por sinapsis.
                     </p>
                 </div>
 
@@ -611,59 +581,59 @@
                         <div class="metric-val" id="metricNeurons">86.000 Millones</div>
                     </div>
                     <div class="metric-item">
-                        <div class="metric-label">Frecuencia Sináptica</div>
+                        <div class="metric-label">Frecuencia Neuronal</div>
                         <div class="metric-val" id="metricFreq">40 Hz (Gamma)</div>
                     </div>
                     <div class="metric-item">
-                        <div class="metric-label">Consumo Energético</div>
+                        <div class="metric-label">Consumo de Oxígeno</div>
                         <div class="metric-val">20% del Cuerpo</div>
                     </div>
                     <div class="metric-item">
-                        <div class="metric-label">Velocidad Impulso</div>
-                        <div class="metric-val">120 m/s (432 km/h)</div>
+                        <div class="metric-label">Velocidad Axonal</div>
+                        <div class="metric-val">120 m/s (430 km/h)</div>
                     </div>
                 </div>
 
                 <div class="legend-card">
-                    <h4>Mapa de Lóbulos y Especialización</h4>
+                    <h4>Mapa de Regiones y Funciones</h4>
                     <div class="legend-item" onclick="focusRegion('frontal')">
                         <div class="legend-left">
-                            <span class="legend-dot" style="background: var(--frontal);"></span>
+                            <span class="legend-dot" style="background: var(--accent);"></span>
                             <strong>Lóbulo Frontal</strong>
                         </div>
-                        <span style="color: var(--text-muted); font-size: 9.5px;">Razonamiento & Motor</span>
+                        <span style="color: var(--text-muted); font-size: 9.5px;">Decisiones & Motor</span>
                     </div>
                     <div class="legend-item" onclick="focusRegion('parietal')">
                         <div class="legend-left">
-                            <span class="legend-dot" style="background: var(--parietal);"></span>
+                            <span class="legend-dot" style="background: var(--gold);"></span>
                             <strong>Lóbulo Parietal</strong>
                         </div>
-                        <span style="color: var(--text-muted); font-size: 9.5px;">Tacto, Espacio & Dolor</span>
+                        <span style="color: var(--text-muted); font-size: 9.5px;">Tacto & Espacio</span>
                     </div>
                     <div class="legend-item" onclick="focusRegion('temporal')">
                         <div class="legend-left">
-                            <span class="legend-dot" style="background: var(--temporal);"></span>
+                            <span class="legend-dot" style="background: var(--emerald);"></span>
                             <strong>Lóbulo Temporal</strong>
                         </div>
-                        <span style="color: var(--text-muted); font-size: 9.5px;">Audición & Memoria</span>
+                        <span style="color: var(--text-muted); font-size: 9.5px;">Memoria & Lenguaje</span>
                     </div>
                     <div class="legend-item" onclick="focusRegion('occipital')">
                         <div class="legend-left">
-                            <span class="legend-dot" style="background: var(--occipital);"></span>
+                            <span class="legend-dot" style="background: var(--rose);"></span>
                             <strong>Lóbulo Occipital</strong>
                         </div>
                         <span style="color: var(--text-muted); font-size: 9.5px;">Corteza Visual V1</span>
                     </div>
                     <div class="legend-item" onclick="focusRegion('cerebelo')">
                         <div class="legend-left">
-                            <span class="legend-dot" style="background: var(--cerebelo);"></span>
+                            <span class="legend-dot" style="background: var(--purple);"></span>
                             <strong>Cerebelo</strong>
                         </div>
                         <span style="color: var(--text-muted); font-size: 9.5px;">Equilibrio & Precisión</span>
                     </div>
                     <div class="legend-item" onclick="focusRegion('tronco')">
                         <div class="legend-left">
-                            <span class="legend-dot" style="background: var(--tronco);"></span>
+                            <span class="legend-dot" style="background: var(--slate);"></span>
                             <strong>Tronco Encefálico</strong>
                         </div>
                         <span style="color: var(--text-muted); font-size: 9.5px;">Funciones Vitales</span>
@@ -671,20 +641,27 @@
                 </div>
 
                 <div class="info-box" style="border-color: rgba(52, 211, 153, 0.3); background: rgba(52, 211, 153, 0.04);">
-                    <h3 style="color: #34d399;">💡 Guía para el Alumno</h3>
-                    <p>
-                        Usa el ratón para rotar 360° y hacer zoom. Pulsa <strong>«↔️ Hemisferios»</strong> para separar ambos hemisferios y ver el cuerpo calloso, o pulsa en cualquier lóbulo para un diagnóstico focalizado.
+                    <h3 style="color: #34d399;">💡 Guía Interactiva</h3>
+                    <p style="font-size: 10.5px; color: #94a3b8;">
+                        Arrastra con el ratón para rotar 360°, usa la rueda para acercar el microscopio a las circunvoluciones y pulsa los botones de los lóbulos para orientar la cámara clínica automáticamente.
                     </p>
                 </div>
             </div>
 
+            <!-- CANVAS CONTAINER -->
             <div class="canvas-card" id="canvasCard">
-                <div id="loadingBadge">
-                    <div class="spin-loader"></div>
-                    <span>Cargando Modelo Anatómico Z-Anatomy 3D...</span>
-                </div>
+                <canvas id="renderCanvas"></canvas>
 
-                <canvas id="webgl-canvas"></canvas>
+                <!-- OVERLAY DE CARGA -->
+                <div id="loadingOverlay">
+                    <div class="spinner"></div>
+                    <div style="font-size: 13.5px; font-weight: 700; color: #f8fafc; letter-spacing: -0.01em;">
+                        Cargando Escaneo Anatómico Real (MRI 3D)...
+                    </div>
+                    <div style="font-size: 11px; color: var(--text-muted);">
+                        Inicializando motor Babylon.js y decodificando malla cortical
+                    </div>
+                </div>
 
                 <div class="canvas-overlay-top">
                     <div class="hud-chip">
@@ -692,8 +669,8 @@
                         <strong id="hudRegion">Visión Panorámica</strong>
                     </div>
                     <div class="hud-chip">
-                        <span>Pulsos Sinápticos:</span>
-                        <strong id="hudPulses">Activos (40 Hz)</strong>
+                        <span>Oscilación Eléctrica:</span>
+                        <strong id="hudPulses">40 Hz (Ondas Gamma)</strong>
                     </div>
                 </div>
 
@@ -709,594 +686,391 @@
     </main>
 
     <script>
-        const canvas = document.getElementById('webgl-canvas');
-        const container = document.getElementById('canvasCard');
-        const labelsContainer = document.getElementById('labelsContainer');
-        const loadingBadge = document.getElementById('loadingBadge');
+        const canvas = document.getElementById("renderCanvas");
+        const container = document.getElementById("canvasCard");
+        const labelsContainer = document.getElementById("labelsContainer");
+        const loadingOverlay = document.getElementById("loadingOverlay");
 
-        const scene = new THREE.Scene();
-        scene.background = new THREE.Color(0x040711);
+        // CREACIÓN DEL MOTOR BABYLON.JS
+        const engine = new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true });
 
-        const initialW = container.clientWidth || 800;
-        const initialH = container.clientHeight || 550;
+        let scene = null;
+        let camera = null;
+        let brainRoot = null;
+        let brainMeshes = [];
+        let synapseParticles = null;
+        let isModelLoaded = false;
+        let isAutoRotating = false;
+        let labelsVisible = true;
+        let simSpeed = 1.0;
+        let currentOpacity = 1.0;
 
-        const camera = new THREE.PerspectiveCamera(45, initialW / initialH, 0.1, 100);
-        camera.position.set(0, 3.2, 8.2);
-
-        const renderer = new THREE.WebGLRenderer({
-            canvas: canvas,
-            antialias: true,
-            alpha: false,
-            powerPreference: "high-performance"
-        });
-        renderer.setClearColor(0x040711, 1.0);
-        renderer.setSize(initialW, initialH);
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-        renderer.toneMapping = THREE.ACESFilmicToneMapping;
-        renderer.toneMappingExposure = 1.35;
-
-        const controls = new THREE.OrbitControls(camera, renderer.domElement);
-        controls.enableDamping = true;
-        controls.dampingFactor = 0.06;
-        controls.minDistance = 2.0;
-        controls.maxDistance = 20;
-        controls.target.set(0, 0, 0);
-
-        const ambientLight = new THREE.AmbientLight(0xffffff, 1.3);
-        scene.add(ambientLight);
-
-        const keyLight = new THREE.DirectionalLight(0xffffff, 1.6);
-        keyLight.position.set(5, 8, 6);
-        scene.add(keyLight);
-
-        const frontLight = new THREE.DirectionalLight(0xffffff, 1.2);
-        frontLight.position.set(0, 2, 9);
-        scene.add(frontLight);
-
-        const fillLight = new THREE.DirectionalLight(0x38bdf8, 1.1);
-        fillLight.position.set(-6, -2, -4);
-        scene.add(fillLight);
-
-        const rimLight = new THREE.PointLight(0xc084fc, 2.2, 22);
-        rimLight.position.set(0, 6, -5);
-        scene.add(rimLight);
-
-        const brainGroup = new THREE.Group();
-        scene.add(brainGroup);
-
+        // DATOS DIDÁCTICOS DE LOS LÓBULOS Y REGIONES
         const REGION_DATA = {
             global: {
                 title: "🧠 Encéfalo Humano Completo",
-                desc: "Estructura principal del sistema nervioso central. Integra ambos hemisferios cerebrales mediante el cuerpo calloso, procesando información sensorial, cognitiva, emocional y motora en paralelo.",
+                desc: "Escaneo médico de resonancia magnética real. Muestra el cerebro con sus cisuras interhemisféricas, surcos corticales y circunvoluciones que multiplican la densidad neuronal.",
                 neurons: "86.000 Millones",
                 freq: "40 Hz (Gamma)",
-                camPos: [0, 3.2, 8.2],
-                camTarget: [0, 0, 0]
+                camAlpha: -Math.PI / 2,
+                camBeta: Math.PI / 2.6,
+                camRadius: 5.5
             },
             frontal: {
-                title: "🟦 Lóbulo Frontal (Corteza Prefrontal y Motora)",
-                desc: "Sede de las funciones ejecutivas avanzadas: toma de decisiones, planificación, memoria de trabajo, personalidad, lenguaje articulado (Área de Broca) y control de los movimientos voluntarios.",
+                title: "🟦 Lóbulo Frontal (Corteza Prefrontal & Motora)",
+                desc: "Sede ejecutiva del cerebro humano: planifica el futuro, toma decisiones éticas, regula la personalidad, controla los movimientos voluntarios y alberga el área de Broca para el habla.",
                 neurons: "24.000 Millones",
-                freq: "30-50 Hz (Beta/Gamma)",
-                camPos: [0, 2.2, 6.5],
-                camTarget: [0, 0.5, 1.2]
+                freq: "14 - 30 Hz (Beta)",
+                camAlpha: -Math.PI / 2,
+                camBeta: Math.PI / 2.3,
+                camRadius: 4.8
             },
             parietal: {
                 title: "🟨 Lóbulo Parietal (Corteza Somatosensorial)",
-                desc: "Integra la información sensitiva de todo el cuerpo (tacto, temperatura, presión, dolor y posición espacial o propiocepción) y participa activamente en el procesamiento matemático y visoespacial.",
+                desc: "Integra la información del tacto, temperatura, dolor y presión de todo el cuerpo. Alberga el mapa del homúnculo sensorial y calcula la navegación espacial tridimensional.",
                 neurons: "18.000 Millones",
-                freq: "12-25 Hz (Alfa/Beta)",
-                camPos: [0, 5.8, 3.8],
-                camTarget: [0, 1.0, -0.3]
+                freq: "8 - 13 Hz (Alfa)",
+                camAlpha: -Math.PI / 2.2,
+                camBeta: Math.PI / 3.4,
+                camRadius: 4.9
             },
             temporal: {
-                title: "🟩 Lóbulo Temporal (Corteza Auditiva e Hipocampo)",
-                desc: "Fundamental para la audición, el reconocimiento de rostros y objetos, la comprensión del lenguaje (Área de Wernicke) y la consolidación de la memoria a largo plazo a través del hipocampo.",
-                neurons: "21.000 Millones",
-                freq: "8-12 Hz (Alfa/Theta)",
-                camPos: [5.8, 0.6, 1.4],
-                camTarget: [1.5, -0.2, 0.2]
+                title: "🟩 Lóbulo Temporal (Memoria, Audición & Lenguaje)",
+                desc: "Aloja el hipocampo (fábrica de los recuerdos a largo plazo) y la corteza auditiva primaria. Contiene el área de Wernicke encargada de comprender el significado de las palabras.",
+                neurons: "16.000 Millones",
+                freq: "4 - 8 Hz (Theta)",
+                camAlpha: -0.2,
+                camBeta: Math.PI / 2.4,
+                camRadius: 4.8
             },
             occipital: {
                 title: "🟥 Lóbulo Occipital (Corteza Visual Primaria V1)",
-                desc: "Centro de procesamiento visual del encéfalo. Recibe las señales del nervio óptico y descompone las imágenes en color, orientación, movimiento, profundidad y contraste espacial.",
-                neurons: "12.000 Millones",
-                freq: "10-18 Hz (Alfa Visual)",
-                camPos: [0, 1.8, -6.8],
-                camTarget: [0, 0.2, -1.5]
+                desc: "Procesa la visión humana: descodifica formas, colores, bordes, profundidad y movimiento a partir de los impulsos recibidos por el nervio óptico desde los ojos.",
+                neurons: "10.000 Millones",
+                freq: "8 - 12 Hz (Alfa)",
+                camAlpha: Math.PI / 2,
+                camBeta: Math.PI / 2.5,
+                camRadius: 4.8
             },
             cerebelo: {
-                title: "🟪 Cerebelo («Pequeño Cerebro» Posterior)",
-                desc: "Coordina la precisión motora, el equilibrio, la postura y el aprendizaje de habilidades motoras complejas. Alberga más del 50% de todas las neuronas de todo el encéfalo.",
+                title: "🟪 Cerebelo («Pequeño Cerebro»)",
+                desc: "Estructura altamente plegada en la base posterior. Contiene más del 50% de las neuronas de todo el encéfalo. Modula el equilibrio, la postura y la motricidad fina de precisión.",
                 neurons: "69.000 Millones",
-                freq: "15-35 Hz",
-                camPos: [0, -2.6, -5.6],
-                camTarget: [0, -1.0, -1.0]
+                freq: "50 Hz (Gamma Rápido)",
+                camAlpha: Math.PI / 2.3,
+                camBeta: Math.PI / 1.7,
+                camRadius: 4.8
             },
             tronco: {
-                title: "⚪ Tronco Encefálico (Eje Vital Central)",
-                desc: "Conecta el cerebro con la médula espinal. Regula funciones vegetativas vitales involuntarias: respiración rítmica, frecuencia cardíaca, presión arterial, deglución y ciclos de sueño.",
-                neurons: "1.000 Millones",
-                freq: "4-8 Hz (Theta)",
-                camPos: [0, -3.2, 4.2],
-                camTarget: [0, -1.6, -0.2]
+                title: "⚪ Tronco Encefálico (Mesencéfalo, Protuberancia & Bulbo)",
+                desc: "Conecta el cerebro con la médula espinal. Controla de forma autónoma e involuntaria las funciones vitales del organismo: respiración, ritmo cardíaco, presión arterial y deglución.",
+                neurons: "2.000 Millones",
+                freq: "1 - 4 Hz (Delta)",
+                camAlpha: -Math.PI / 2,
+                camBeta: Math.PI / 1.5,
+                camRadius: 4.7
+            },
+            hemi_left: {
+                title: "🔵 Hemisferio Izquierdo (Lógica y Lenguaje)",
+                desc: "Controla la mitad derecha del cuerpo. Especializado en el razonamiento analítico, la gramática, el lenguaje verbal, las matemáticas y el procesamiento secuencial.",
+                neurons: "43.000 Millones",
+                freq: "Beta & Gamma",
+                camAlpha: Math.PI,
+                camBeta: Math.PI / 2.4,
+                camRadius: 4.9
+            },
+            hemi_right: {
+                title: "🟠 Hemisferio Derecho (Creatividad y Espacio)",
+                desc: "Controla la mitad izquierda del cuerpo. Destaca en la percepción holística, el reconocimiento de rostros, la interpretación emocional, la música y la intuición visual.",
+                neurons: "43.000 Millones",
+                freq: "Alfa & Theta",
+                camAlpha: 0.0,
+                camBeta: Math.PI / 2.4,
+                camRadius: 4.9
+            },
+            hemi_top: {
+                title: "⬆️ Vista Axial Superior (Cisura Interhemisférica)",
+                desc: "Perspectiva cenital que revela la simetría bilateral del cerebro humano y la profunda cisura interhemisférica que separa los hemisferios izquierdo y derecho.",
+                neurons: "86.000 Millones",
+                freq: "40 Hz",
+                camAlpha: -Math.PI / 2,
+                camBeta: 0.05,
+                camRadius: 5.2
             }
         };
 
-        const lobeMeshes = [];
-        const labelPins = [];
-        let cortexVisible = true;
-        let synapseVisible = true;
-        let labelsVisible = true;
-        let splitHemis = false;
-        let currentOpacity = 0.88;
-        let simSpeed = 1.0;
-
-        const CORTEX_TISSUE_COLOR = 0xd59b8c;
-
-        function base64ToArrayBuffer(base64) {
-            const clean = base64.replace(/^data:.*?;base64,/, '');
-            const binary_string = window.atob(clean);
-            const len = binary_string.length;
-            const bytes = new Uint8Array(len);
-            for (let i = 0; i < len; i++) {
-                bytes[i] = binary_string.charCodeAt(i);
-            }
-            return bytes.buffer;
-        }
-
-        function classifyNodeName(rawName) {
-            const nl = (rawName || '').toLowerCase();
-            if (nl.includes('frontal') || nl.includes('orbitofrontal')) return { key: 'frontal', color: 0x38bdf8 };
-            if (nl.includes('parietal')) return { key: 'parietal', color: 0xfbbf24 };
-            if (nl.includes('temporal') || nl.includes('hippocamp')) return { key: 'temporal', color: 0x34d399 };
-            if (nl.includes('occipital')) return { key: 'occipital', color: 0xfb7185 };
-            if (nl.includes('cerebel')) return { key: 'cerebelo', color: 0xc084fc };
-            if (nl.includes('midbrain') || nl.includes('pons') || nl.includes('pontine') || nl.includes('medulla') || nl.includes('spinal') || nl.includes('basilar')) {
-                return { key: 'tronco', color: 0x94a3b8 };
-            }
-            return { key: 'cortex', color: CORTEX_TISSUE_COLOR };
-        }
-
-        function createLabelPin(text, regionKey, posVec) {
-            const el = document.createElement('div');
-            el.className = 'brain-label';
-            el.dataset.region = regionKey;
-
-            let dotColor = '#38bdf8';
-            if (regionKey === 'frontal') dotColor = '#38bdf8';
-            else if (regionKey === 'parietal') dotColor = '#fbbf24';
-            else if (regionKey === 'temporal') dotColor = '#34d399';
-            else if (regionKey === 'occipital') dotColor = '#fb7185';
-            else if (regionKey === 'cerebelo') dotColor = '#c084fc';
-            else if (regionKey === 'tronco') dotColor = '#94a3b8';
-
-            el.style.backgroundColor = 'rgba(15, 23, 42, 0.92)';
-            el.style.border = '1.5px solid ' + dotColor;
-            el.style.color = dotColor;
-
-            el.innerHTML = '<span style="display:inline-block; width:7px; height:7px; border-radius:50%; background:' + dotColor + ';"></span> ' + text;
-            el.onclick = () => focusRegion(regionKey);
-
-            labelsContainer.appendChild(el);
-            labelPins.push({
-                element: el,
-                pos: new THREE.Vector3(posVec[0], posVec[1], posVec[2])
-            });
-        }
-
-        function setupModelHierarchy(model) {
-            const box = new THREE.Box3().setFromObject(model);
-            const size = box.getSize(new THREE.Vector3());
-            const maxDim = Math.max(size.x, size.y, size.z);
-            const scale = 4.6 / (maxDim > 0 ? maxDim : 1);
-            model.scale.setScalar(scale);
-
-            box.setFromObject(model);
-            const center = box.getCenter(new THREE.Vector3());
-            model.position.sub(center);
-
-            model.traverse(node => {
-                if (node.isMesh) {
-                    const info = classifyNodeName(node.name);
-                    const nl = (node.name || '').toLowerCase();
-                    const isVessel = nl.includes('artery') || nl.includes('sinus') || nl.includes('vein');
-
-                    const mat = new THREE.MeshStandardMaterial({
-                        color: isVessel ? 0xcc3333 : CORTEX_TISSUE_COLOR,
-                        roughness: 0.52,
-                        metalness: 0.05,
-                        transparent: true,
-                        opacity: currentOpacity,
-                        side: THREE.DoubleSide
-                    });
-                    node.material = mat;
-
-                    const isLeft = nl.includes('.l') || nl.includes('left');
-                    const isRight = nl.includes('.r') || nl.includes('right');
-
-                    node.userData = {
-                        name: info.key,
-                        highlightColor: info.color,
-                        baseColor: mat.color.getHex(),
-                        initPos: node.position.clone(),
-                        isLeft: isLeft,
-                        isRight: isRight
-                    };
-                    lobeMeshes.push(node);
-                }
-            });
-
-            brainGroup.add(model);
-
-            if (loadingBadge) {
-                loadingBadge.style.opacity = '0';
-                setTimeout(() => loadingBadge.style.display = 'none', 400);
-            }
-
-            createLabelPin('Lóbulo Frontal', 'frontal', [0, 0.9, 1.8]);
-            createLabelPin('Lóbulo Parietal', 'parietal', [0, 1.7, -0.4]);
-            createLabelPin('Lóbulo Temporal (D)', 'temporal', [1.8, -0.2, 0.3]);
-            createLabelPin('Lóbulo Occipital', 'occipital', [0, 0.3, -1.9]);
-            createLabelPin('Cerebelo', 'cerebelo', [0, -1.2, -1.1]);
-            createLabelPin('Tronco Encefálico', 'tronco', [0, -1.8, -0.2]);
-
-            console.log('✅ [Simulador Cerebro 3D] Modelo oficial Z-Anatomy cargado con éxito: ' + lobeMeshes.length + ' estructuras.');
-        }
-
-        const loader = new THREE.GLTFLoader();
-
-        if (window.BRAIN_GLB_B64 && window.BRAIN_GLB_B64.length > 1000) {
-            try {
-                const buffer = base64ToArrayBuffer(window.BRAIN_GLB_B64);
-                loader.parse(buffer, '', function(gltf) {
-                    setupModelHierarchy(gltf.scene);
-                }, function(parseErr) {
-                    console.warn('Error parseando Base64:', parseErr);
-                    loadFromUrlCascade();
-                });
-            } catch (e) {
-                console.warn('Error convirtiendo Base64:', e);
-                loadFromUrlCascade();
-            }
-        } else {
-            loadFromUrlCascade();
-        }
-
-        function loadFromUrlCascade() {
-            const urls = [
-                '../03_ASSETS_3D_Y_DATOS/brain.glb',
-                'https://javiercursocorreo-gif.github.io/Curso-IA/SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/brain.glb'
-            ];
-            let idx = 0;
-            function tryNext() {
-                if (idx >= urls.length) {
-                    if (loadingBadge) loadingBadge.innerHTML = '<span style="color:#fb7185;">⚠️ Modo Conectoma Procedimental</span>';
-                    setTimeout(() => { if (loadingBadge) loadingBadge.style.display = 'none'; }, 800);
-                    buildProceduralFallback();
-                    return;
-                }
-                const url = urls[idx++];
-                loader.load(url, function(gltf) {
-                    setupModelHierarchy(gltf.scene);
-                }, undefined, function() {
-                    tryNext();
-                });
-            }
-            tryNext();
-        }
-
-        function buildProceduralFallback() {
-            const fallbackConfigs = [
-                { name: 'frontal', color: 0x38bdf8, pos: [0, 0.6, 0.9], scale: [1.4, 1.2, 1.3], label: 'Lóbulo Frontal' },
-                { name: 'parietal', color: 0xfbbf24, pos: [0, 1.3, -0.4], scale: [1.5, 1.1, 1.2], label: 'Lóbulo Parietal' },
-                { name: 'temporal', color: 0x34d399, pos: [1.3, -0.2, 0.2], scale: [0.9, 0.9, 1.3], label: 'Lóbulo Temporal (D)' },
-                { name: 'temporal', color: 0x34d399, pos: [-1.3, -0.2, 0.2], scale: [0.9, 0.9, 1.3], label: 'Lóbulo Temporal (I)' },
-                { name: 'occipital', color: 0xfb7185, pos: [0, 0.3, -1.5], scale: [1.3, 1.0, 1.1], label: 'Lóbulo Occipital' },
-                { name: 'cerebelo', color: 0xc084fc, pos: [0, -1.1, -1.0], scale: [1.4, 0.8, 1.0], label: 'Cerebelo' },
-                { name: 'tronco', color: 0x94a3b8, pos: [0, -1.6, -0.2], scale: [0.6, 1.5, 0.6], label: 'Tronco Encefálico' }
-            ];
-
-            fallbackConfigs.forEach(cfg => {
-                const geo = new THREE.SphereGeometry(1, 32, 32);
-                const mat = new THREE.MeshStandardMaterial({
-                    color: CORTEX_TISSUE_COLOR,
-                    roughness: 0.52,
-                    metalness: 0.05,
-                    transparent: true,
-                    opacity: currentOpacity,
-                    side: THREE.DoubleSide
-                });
-                const mesh = new THREE.Mesh(geo, mat);
-                mesh.position.set(cfg.pos[0], cfg.pos[1], cfg.pos[2]);
-                mesh.scale.set(cfg.scale[0], cfg.scale[1], cfg.scale[2]);
-                mesh.userData = {
-                    name: cfg.name,
-                    highlightColor: cfg.color,
-                    baseColor: CORTEX_TISSUE_COLOR,
-                    initPos: mesh.position.clone(),
-                    isLeft: cfg.pos[0] < 0,
-                    isRight: cfg.pos[0] > 0
-                };
-                brainGroup.add(mesh);
-                lobeMeshes.push(mesh);
-                createLabelPin(cfg.label, cfg.name, cfg.pos);
-            });
-        }
-
-        const synapseGroup = new THREE.Group();
-        brainGroup.add(synapseGroup);
-
-        const synapticPaths = [];
-        const numSynapses = 320;
-        const lineMat = new THREE.LineBasicMaterial({
-            color: 0x67e8f9,
-            transparent: true,
-            opacity: 0.65,
-            blending: THREE.AdditiveBlending
-        });
-
-        const coreNodes = [
-            new THREE.Vector3(0, 0.4, 0.2),
-            new THREE.Vector3(0.8, 0.2, 0.1),
-            new THREE.Vector3(-0.8, 0.2, 0.1),
-            new THREE.Vector3(0, 1.1, 1.6),
-            new THREE.Vector3(0, 1.6, -0.3),
-            new THREE.Vector3(1.5, -0.2, 0.2),
-            new THREE.Vector3(-1.5, -0.2, 0.2),
-            new THREE.Vector3(0, 0.3, -1.8),
-            new THREE.Vector3(0, -1.1, -1.0)
+        // PINES ANATÓMICOS TRIDIMENSIONALES
+        const LABEL_DEFS = [
+            { text: "Lóbulo Frontal", color: "rgba(56, 189, 248, 0.95)", pos: new BABYLON.Vector3(0, 0.5, 1.2), region: 'frontal' },
+            { text: "Lóbulo Parietal", color: "rgba(251, 191, 36, 0.95)", pos: new BABYLON.Vector3(0, 1.2, -0.3), region: 'parietal' },
+            { text: "Lóbulo Temporal", color: "rgba(52, 211, 153, 0.95)", pos: new BABYLON.Vector3(1.3, -0.3, 0.2), region: 'temporal' },
+            { text: "Lóbulo Occipital", color: "rgba(251, 113, 133, 0.95)", pos: new BABYLON.Vector3(0, 0.3, -1.3), region: 'occipital' },
+            { text: "Cerebelo", color: "rgba(192, 132, 252, 0.95)", pos: new BABYLON.Vector3(0.7, -1.0, -0.9), region: 'cerebelo' },
+            { text: "Tronco Encefálico", color: "rgba(203, 213, 225, 0.95)", pos: new BABYLON.Vector3(0, -1.3, -0.2), region: 'tronco' }
         ];
 
-        for (let i = 0; i < numSynapses; i++) {
-            const startNode = coreNodes[Math.floor(Math.random() * coreNodes.length)];
-            const endNode = coreNodes[Math.floor(Math.random() * coreNodes.length)];
-            if (startNode === endNode) continue;
+        let labelElements = [];
 
-            const midNode = new THREE.Vector3(
-                (startNode.x + endNode.x) * 0.5 + (Math.random() - 0.5) * 1.1,
-                (startNode.y + endNode.y) * 0.5 + (Math.random() - 0.5) * 1.1,
-                (startNode.z + endNode.z) * 0.5 + (Math.random() - 0.5) * 1.1
-            );
+        // CONSTRUCCIÓN DE LA ESCENA BABYLON
+        const createScene = function () {
+            const sc = new BABYLON.Scene(engine);
+            sc.clearColor = new BABYLON.Color4(0.015, 0.03, 0.07, 1.0);
 
-            const curve = new THREE.QuadraticBezierCurve3(startNode, midNode, endNode);
-            const points = curve.getPoints(20);
-            const geo = new THREE.BufferGeometry().setFromPoints(points);
-            const line = new THREE.Line(geo, lineMat);
-            synapseGroup.add(line);
+            // CÁMARA ORBITAL CLÍNICA
+            camera = new BABYLON.ArcRotateCamera("Camera", -Math.PI / 2, Math.PI / 2.6, 5.5, new BABYLON.Vector3(0, 0, 0), sc);
+            camera.attachControl(canvas, true);
+            camera.wheelPrecision = 40;
+            camera.lowerRadiusLimit = 2.2;
+            camera.upperRadiusLimit = 14.0;
+            camera.minZ = 0.1;
 
-            synapticPaths.push({ curve: curve });
-        }
+            // ILUMINACIÓN CLÍNICA ULTRA-PBR
+            const hemiLight = new BABYLON.HemisphericLight("hemiLight", new BABYLON.Vector3(0, 1, 0), sc);
+            hemiLight.intensity = 1.35;
+            hemiLight.groundColor = new BABYLON.Color3(0.08, 0.1, 0.18);
 
-        const pulseCount = 420;
-        const pulseGeo = new THREE.BufferGeometry();
-        const pulsePos = new Float32Array(pulseCount * 3);
-        const pulseColors = new Float32Array(pulseCount * 3);
+            const keyLight = new BABYLON.DirectionalLight("keyLight", new BABYLON.Vector3(4, 6, 5), sc);
+            keyLight.intensity = 1.6;
+            keyLight.diffuse = new BABYLON.Color3(1.0, 0.98, 0.95);
 
-        for (let i = 0; i < pulseCount; i++) {
-            pulsePos[i * 3] = 0;
-            pulsePos[i * 3 + 1] = 0;
-            pulsePos[i * 3 + 2] = 0;
+            const fillLight = new BABYLON.DirectionalLight("fillLight", new BABYLON.Vector3(-5, -2, -4), sc);
+            fillLight.intensity = 1.1;
+            fillLight.diffuse = new BABYLON.Color3(0.2, 0.65, 0.95);
 
-            const rChoice = Math.random();
-            if (rChoice < 0.6) {
-                pulseColors[i * 3] = 0.22; pulseColors[i * 3 + 1] = 0.82; pulseColors[i * 3 + 2] = 1.0;
-            } else if (rChoice < 0.85) {
-                pulseColors[i * 3] = 0.98; pulseColors[i * 3 + 1] = 0.75; pulseColors[i * 3 + 2] = 0.14;
-            } else {
-                pulseColors[i * 3] = 0.98; pulseColors[i * 3 + 1] = 0.44; pulseColors[i * 3 + 2] = 0.52;
-            }
-        }
+            const backLight = new BABYLON.DirectionalLight("backLight", new BABYLON.Vector3(0, 4, -6), sc);
+            backLight.intensity = 1.2;
+            backLight.diffuse = new BABYLON.Color3(0.7, 0.4, 0.95);
 
-        pulseGeo.setAttribute('position', new THREE.BufferAttribute(pulsePos, 3));
-        pulseGeo.setAttribute('color', new THREE.BufferAttribute(pulseColors, 3));
+            // GLOW LAYER MÉDICO PARA RESALTAR EL RELIEVE
+            const gl = new BABYLON.GlowLayer("glow", sc);
+            gl.intensity = 0.22;
 
-        const pulseCanvas = document.createElement('canvas');
-        pulseCanvas.width = 32; pulseCanvas.height = 32;
-        const pCtx = pulseCanvas.getContext('2d');
-        const grad = pCtx.createRadialGradient(16, 16, 0, 16, 16, 16);
-        grad.addColorStop(0, 'rgba(255, 255, 255, 1)');
-        grad.addColorStop(0.3, 'rgba(56, 189, 248, 0.85)');
-        grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
-        pCtx.fillStyle = grad;
-        pCtx.fillRect(0, 0, 32, 32);
-        const pulseTexture = new THREE.CanvasTexture(pulseCanvas);
+            // SISTEMA DE PARTÍCULAS DE SINAPSIS BIOELÉCTRICA
+            synapseParticles = new BABYLON.ParticleSystem("synapses", 450, sc);
+            synapseParticles.particleTexture = new BABYLON.Texture("https://cdn.jsdelivr.net/gh/mrdoob/three.js@master/examples/textures/sprites/spark1.png", sc);
+            synapseParticles.emitter = new BABYLON.Vector3(0, 0, 0);
+            synapseParticles.minEmitBox = new BABYLON.Vector3(-1.2, -0.9, -1.2);
+            synapseParticles.maxEmitBox = new BABYLON.Vector3(1.2, 1.1, 1.2);
+            synapseParticles.color1 = new BABYLON.Color4(0.22, 0.74, 0.97, 0.95);
+            synapseParticles.color2 = new BABYLON.Color4(0.75, 0.52, 0.98, 0.95);
+            synapseParticles.colorDead = new BABYLON.Color4(0.1, 0.1, 0.3, 0.0);
+            synapseParticles.minSize = 0.04;
+            synapseParticles.maxSize = 0.12;
+            synapseParticles.minLifeTime = 0.4;
+            synapseParticles.maxLifeTime = 1.2;
+            synapseParticles.emitRate = 280;
+            synapseParticles.gravity = new BABYLON.Vector3(0, 0, 0);
+            synapseParticles.start();
 
-        const pulseMat = new THREE.PointsMaterial({
-            size: 0.16,
-            map: pulseTexture,
-            vertexColors: true,
-            transparent: true,
-            blending: THREE.AdditiveBlending,
-            depthWrite: false
-        });
+            // CARGA DEL ESCANEO ANATÓMICO REAL .GLB (Base64 local con fallback online)
+            const modelSource = (window.BRAIN_GLB_B64) ? window.BRAIN_GLB_B64 : "https://javiercursocorreo-gif.github.io/Curso-IA/SIMULADORES_INTERACTIVOS/brain.glb";
 
-        const pulsePoints = new THREE.Points(pulseGeo, pulseMat);
-        synapseGroup.add(pulsePoints);
+            BABYLON.SceneLoader.ImportMesh("", "", modelSource, sc, function (meshes) {
+                loadingOverlay.style.opacity = "0";
+                setTimeout(() => loadingOverlay.style.display = "none", 400);
 
-        const pulseParticles = [];
-        for (let i = 0; i < pulseCount; i++) {
-            pulseParticles.push({
-                pathIdx: i % synapticPaths.length,
-                t: Math.random(),
-                speed: 0.0035 + Math.random() * 0.0045
+                brainRoot = new BABYLON.TransformNode("brainRoot", sc);
+
+                meshes.forEach(m => {
+                    if (m.parent === null) {
+                        m.parent = brainRoot;
+                    }
+                    brainMeshes.push(m);
+                });
+
+                // CENTRADO Y ESCALADO EXACTO SEGÚN LA CAJA ENVOLVENTE
+                const hierarchy = brainRoot.getHierarchyBoundingVectors();
+                const center = hierarchy.max.add(hierarchy.min).scale(0.5);
+                const size = hierarchy.max.subtract(hierarchy.min);
+                const maxDim = Math.max(size.x, size.y, size.z);
+
+                if (maxDim > 0) {
+                    const fixedBaseScale = 3.2 / maxDim;
+                    brainRoot.scaling = new BABYLON.Vector3(fixedBaseScale, fixedBaseScale, fixedBaseScale);
+                    brainRoot.position = center.scale(-fixedBaseScale);
+                }
+
+                camera.radius = 5.5;
+                camera.target = new BABYLON.Vector3(0, 0, 0);
+                isModelLoaded = true;
+
+                // CREAR PINES EN EL DOM
+                createLabelPins();
+            }, null, function (sc, message) {
+                console.error("Error al cargar brain.glb:", message);
+                loadingOverlay.innerHTML = '<div style="color:#ef4444;font-weight:700;">Error al cargar el archivo 3D del cerebro</div>';
+            });
+
+            return sc;
+        };
+
+        scene = createScene();
+
+        // CREAR ELEMENTOS DE PINES EN EL DOM
+        function createLabelPins() {
+            labelsContainer.innerHTML = "";
+            labelElements = [];
+
+            LABEL_DEFS.forEach(def => {
+                const badge = document.createElement("div");
+                badge.className = "brain-label";
+                badge.style.background = "rgba(15, 23, 42, 0.90)";
+                badge.style.border = `1px solid ${def.color}`;
+                badge.style.color = "#f8fafc";
+                badge.innerHTML = `<span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:${def.color};"></span>${def.text}`;
+                badge.onclick = () => focusRegion(def.region);
+                labelsContainer.appendChild(badge);
+
+                labelElements.push({
+                    element: badge,
+                    pos3D: def.pos
+                });
             });
         }
 
-        let cameraTargetPos = new THREE.Vector3().copy(camera.position);
-        let controlsTargetPos = new THREE.Vector3().copy(controls.target);
-        let isTransitioningCamera = false;
+        // PROYECCIÓN 3D A PANTALLA 2D PARA LOS PINES
+        function updateLabels() {
+            if (!labelsVisible || !isModelLoaded) {
+                labelsContainer.style.display = "none";
+                return;
+            }
+            labelsContainer.style.display = "block";
 
-        window.focusRegion = function(regionKey) {
+            const w = engine.getRenderWidth();
+            const h = engine.getRenderHeight();
+            const transformMatrix = scene.getTransformMatrix();
+
+            labelElements.forEach(item => {
+                // Posición mundial del pin
+                const worldPos = BABYLON.Vector3.TransformCoordinates(item.pos3D, brainRoot.getWorldMatrix());
+                const proj = BABYLON.Vector3.Project(worldPos, BABYLON.Matrix.Identity(), transformMatrix, camera.viewport.toGlobal(w, h));
+
+                if (proj.z < 0 || proj.z > 1) {
+                    item.element.style.display = "none";
+                } else {
+                    item.element.style.display = "flex";
+                    item.element.style.left = `${proj.x}px`;
+                    item.element.style.top = `${proj.y}px`;
+                }
+            });
+        }
+
+        // NAVEGACIÓN Y ENFOQUE SUAVE DE CÁMARA
+        window.focusRegion = function (regionKey) {
             const data = REGION_DATA[regionKey];
             if (!data) return;
 
-            document.querySelectorAll('.toolbar button[data-view]').forEach(btn => {
-                btn.classList.toggle('active', btn.dataset.view === regionKey);
+            // Actualizar botones activos
+            document.querySelectorAll(".toolbar button[data-view]").forEach(btn => {
+                btn.classList.toggle("active", btn.dataset.view === regionKey);
             });
+            document.getElementById("btnHemiLeft").classList.toggle("active", regionKey === "hemi_left");
+            document.getElementById("btnHemiRight").classList.toggle("active", regionKey === "hemi_right");
+            document.getElementById("btnHemiTop").classList.toggle("active", regionKey === "hemi_top");
 
-            document.getElementById('infoTitle').textContent = data.title;
-            document.getElementById('infoDesc').textContent = data.desc;
-            document.getElementById('metricNeurons').textContent = data.neurons;
-            document.getElementById('metricFreq').textContent = data.freq;
-            document.getElementById('hudRegion').textContent = regionKey === 'global' ? 'Visión Panorámica' : data.title.split(' ')[1] || data.title;
+            // Telemetría del HUD
+            document.getElementById("hudRegion").textContent = data.title.split("(")[0].replace(/[^\w\sÁÉÍÓÚáéíóúñÑ]/g, '').trim();
+            document.getElementById("infoTitle").textContent = data.title;
+            document.getElementById("infoDesc").textContent = data.desc;
+            document.getElementById("metricNeurons").textContent = data.neurons;
+            document.getElementById("metricFreq").textContent = data.freq;
 
-            lobeMeshes.forEach(mesh => {
-                if (!mesh.material) return;
-                if (regionKey === 'global') {
-                    mesh.material.color.setHex(mesh.userData.baseColor || CORTEX_TISSUE_COLOR);
-                    if (mesh.material.emissive) {
-                        mesh.material.emissive.setHex(0x28120d);
-                        mesh.material.emissiveIntensity = 0.12;
-                    }
-                    mesh.material.opacity = currentOpacity;
-                } else if (mesh.userData.name === regionKey) {
-                    mesh.material.color.setHex(mesh.userData.highlightColor || 0x38bdf8);
-                    if (mesh.material.emissive) {
-                        mesh.material.emissive.setHex(mesh.userData.highlightColor || 0x38bdf8);
-                        mesh.material.emissiveIntensity = 0.55;
-                    }
-                    mesh.material.opacity = 0.98;
-                } else {
-                    mesh.material.color.setHex(0x334155);
-                    if (mesh.material.emissive) {
-                        mesh.material.emissive.setHex(0x000000);
-                        mesh.material.emissiveIntensity = 0.0;
-                    }
-                    mesh.material.opacity = 0.22;
-                }
-            });
+            // Animación suave de cámara en Babylon.js
+            const animCamAlpha = new BABYLON.Animation("camAlpha", "alpha", 60, BABYLON.Animation.ANIMATIONTYPE_FLOAT, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
+            const animCamBeta = new BABYLON.Animation("camBeta", "beta", 60, BABYLON.Animation.ANIMATIONTYPE_FLOAT, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
+            const animCamRadius = new BABYLON.Animation("camRadius", "radius", 60, BABYLON.Animation.ANIMATIONTYPE_FLOAT, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
 
-            cameraTargetPos.set(data.camPos[0], data.camPos[1], data.camPos[2]);
-            controlsTargetPos.set(data.camTarget[0], data.camTarget[1], data.camTarget[2]);
-            isTransitioningCamera = true;
+            animCamAlpha.setKeys([{ frame: 0, value: camera.alpha }, { frame: 35, value: data.camAlpha }]);
+            animCamBeta.setKeys([{ frame: 0, value: camera.beta }, { frame: 35, value: data.camBeta }]);
+            animCamRadius.setKeys([{ frame: 0, value: camera.radius }, { frame: 35, value: data.camRadius }]);
+
+            scene.beginDirectAnimation(camera, [animCamAlpha, animCamBeta, animCamRadius], 0, 35, false);
         };
 
-        document.querySelectorAll('.toolbar button[data-view]').forEach(btn => {
+        // EVENTOS DE LA BARRA DE HERRAMIENTAS
+        document.querySelectorAll(".toolbar button[data-view]").forEach(btn => {
             btn.onclick = () => focusRegion(btn.dataset.view);
         });
 
-        document.getElementById('btnToggleCortex').onclick = function() {
+        document.getElementById("btnHemiLeft").onclick = () => focusRegion("hemi_left");
+        document.getElementById("btnHemiRight").onclick = () => focusRegion("hemi_right");
+        document.getElementById("btnHemiTop").onclick = () => focusRegion("hemi_top");
+
+        // Toggle Corteza
+        let cortexVisible = true;
+        document.getElementById("btnToggleCortex").onclick = function () {
             cortexVisible = !cortexVisible;
-            this.classList.toggle('active', cortexVisible);
-            lobeMeshes.forEach(m => m.visible = cortexVisible);
-        };
-
-        document.getElementById('btnToggleSynapse').onclick = function() {
-            synapseVisible = !synapseVisible;
-            this.classList.toggle('active', synapseVisible);
-            synapseGroup.visible = synapseVisible;
-            document.getElementById('hudPulses').textContent = synapseVisible ? 'Activos (40 Hz)' : 'Pausados';
-        };
-
-        document.getElementById('btnToggleHemis').onclick = function() {
-            splitHemis = !splitHemis;
-            this.classList.toggle('active', splitHemis);
-            lobeMeshes.forEach(mesh => {
-                const initP = mesh.userData.initPos || mesh.position;
-                if (mesh.userData.isLeft) {
-                    mesh.position.x = splitHemis ? (initP.x - 0.55) : initP.x;
-                } else if (mesh.userData.isRight) {
-                    mesh.position.x = splitHemis ? (initP.x + 0.55) : initP.x;
-                }
+            this.classList.toggle("active", cortexVisible);
+            brainMeshes.forEach(m => {
+                m.visibility = cortexVisible ? currentOpacity : 0.0;
             });
         };
 
-        document.getElementById('btnToggleLabels').onclick = function() {
-            labelsVisible = !labelsVisible;
-            this.classList.toggle('active', labelsVisible);
-            labelsContainer.style.display = labelsVisible ? 'block' : 'none';
+        // Toggle Sinapsis
+        let synapseVisible = true;
+        document.getElementById("btnToggleSynapse").onclick = function () {
+            synapseVisible = !synapseVisible;
+            this.classList.toggle("active", synapseVisible);
+            if (synapseParticles) {
+                if (synapseVisible) synapseParticles.start();
+                else synapseParticles.stop();
+            }
+            document.getElementById("hudPulses").textContent = synapseVisible ? "40 Hz (Ondas Gamma)" : "Pausados";
         };
 
-        const sliderSpeed = document.getElementById('sliderSpeed');
-        const lblSpeed = document.getElementById('lblSpeed');
+        // Toggle Giro Automático
+        document.getElementById("btnToggleRotate").onclick = function () {
+            isAutoRotating = !isAutoRotating;
+            this.classList.toggle("active", isAutoRotating);
+        };
+
+        // Toggle Pines / Etiquetas
+        document.getElementById("btnToggleLabels").onclick = function () {
+            labelsVisible = !labelsVisible;
+            this.classList.toggle("active", labelsVisible);
+            updateLabels();
+        };
+
+        // Slider Velocidad de Impulsos
+        const sliderSpeed = document.getElementById("sliderSpeed");
+        const lblSpeed = document.getElementById("lblSpeed");
         sliderSpeed.oninput = (e) => {
             simSpeed = parseFloat(e.target.value);
-            lblSpeed.textContent = simSpeed.toFixed(1) + 'x';
+            lblSpeed.textContent = `${simSpeed.toFixed(1)}x`;
+            if (synapseParticles) {
+                synapseParticles.updateSpeed = 0.01 * simSpeed;
+                synapseParticles.emitRate = 280 * simSpeed;
+            }
         };
 
-        const sliderOpacity = document.getElementById('sliderOpacity');
-        const lblOpacity = document.getElementById('lblOpacity');
+        // Slider Opacidad Cortical
+        const sliderOpacity = document.getElementById("sliderOpacity");
+        const lblOpacity = document.getElementById("lblOpacity");
         sliderOpacity.oninput = (e) => {
             currentOpacity = parseFloat(e.target.value);
-            lblOpacity.textContent = Math.round(currentOpacity * 100) + '%';
-            lobeMeshes.forEach(m => m.material.opacity = currentOpacity);
+            lblOpacity.textContent = `${Math.round(currentOpacity * 100)}%`;
+            brainMeshes.forEach(m => {
+                m.visibility = currentOpacity;
+            });
         };
 
-        const tempVec = new THREE.Vector3();
-        function updateLabels() {
-            if (!labelsVisible) return;
-            const wHalf = container.clientWidth / 2;
-            const hHalf = container.clientHeight / 2;
-
-            labelPins.forEach(pin => {
-                tempVec.copy(pin.pos);
-                tempVec.applyMatrix4(brainGroup.matrixWorld);
-                tempVec.project(camera);
-
-                if (tempVec.z > 1.0) {
-                    pin.element.style.display = 'none';
-                    return;
+        // BUCLE PRINCIPAL DE RENDERIZADO
+        engine.runRenderLoop(() => {
+            if (scene) {
+                if (isAutoRotating && brainRoot) {
+                    brainRoot.rotation.y += 0.0035;
                 }
-
-                pin.element.style.display = 'flex';
-                const x = (tempVec.x * wHalf) + wHalf;
-                const y = -(tempVec.y * hHalf) + hHalf;
-                pin.element.style.left = x + 'px';
-                pin.element.style.top = y + 'px';
-            });
-        }
-
-        const clock = new THREE.Clock();
-
-        function animate() {
-            requestAnimationFrame(animate);
-
-            brainGroup.rotation.y += 0.0012 * simSpeed;
-
-            if (isTransitioningCamera) {
-                camera.position.lerp(cameraTargetPos, 0.05);
-                controls.target.lerp(controlsTargetPos, 0.05);
-                if (camera.position.distanceTo(cameraTargetPos) < 0.05) {
-                    isTransitioningCamera = false;
-                }
+                scene.render();
+                updateLabels();
             }
+        });
 
-            if (synapseVisible && synapticPaths.length > 0) {
-                const posArr = pulseGeo.attributes.position.array;
-                for (let i = 0; i < pulseCount; i++) {
-                    const p = pulseParticles[i];
-                    p.t += p.speed * simSpeed;
-                    if (p.t > 1.0) p.t = 0.0;
-
-                    const curve = synapticPaths[p.pathIdx].curve;
-                    const pt = curve.getPoint(p.t);
-                    posArr[i * 3] = pt.x;
-                    posArr[i * 3 + 1] = pt.y;
-                    posArr[i * 3 + 2] = pt.z;
-                }
-                pulseGeo.attributes.position.needsUpdate = true;
-            }
-
-            controls.update();
-            updateLabels();
-            renderer.render(scene, camera);
-        }
-
-        animate();
-
-        function handleResize() {
-            const width = container.clientWidth;
-            const height = container.clientHeight;
-            if (width > 0 && height > 0) {
-                camera.aspect = width / height;
-                camera.updateProjectionMatrix();
-                renderer.setSize(width, height);
-            }
-        }
-        window.addEventListener('resize', handleResize);
+        // RESIZE RESPONSIVE
+        window.addEventListener("resize", () => {
+            engine.resize();
+        });
         if (window.ResizeObserver) {
-            new ResizeObserver(handleResize).observe(container);
+            new ResizeObserver(() => engine.resize()).observe(container);
         }
     </script>
 </body>
