@@ -1,0 +1,1362 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laboratorio Transaccional Mainframe • Terminal 3270 + CICS + COBOL + DB2 (Playground Interactivo)</title>
+    <!-- Google Fonts: JetBrains Mono y VT323 para el efecto terminal retro CRT -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700;800&family=VT323&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-body: #060810;
+            --bg-panel: #0d121f;
+            --border: #1e293b;
+            --border-highlight: #38bdf8;
+            --crt-green: #33ff33;
+            --crt-green-dim: #1a8c1a;
+            --crt-green-glow: rgba(51, 255, 51, 0.45);
+            --crt-amber: #ffb000;
+            --crt-white: #e0f2fe;
+            --crt-red: #ff3344;
+            --primary: #38bdf8;
+            --cics-blue: #60a5fa;
+            --db2-cyan: #22d3ee;
+            --accent-purple: #c084fc;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-body);
+            color: #f1f5f9;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* HEADER SUPERIOR */
+        header {
+            background: linear-gradient(180deg, rgba(15, 23, 42, 0.95) 0%, rgba(10, 15, 29, 0.95) 100%);
+            border-bottom: 1px solid #1e293b;
+            padding: 12px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .header-title {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .header-badge {
+            background: rgba(56, 189, 248, 0.15);
+            border: 1px solid var(--border-highlight);
+            color: var(--primary);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+        }
+
+        .header-h1 {
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: #ffffff;
+            letter-spacing: -0.01em;
+        }
+
+        .header-sub {
+            font-size: 0.76rem;
+            color: #94a3b8;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .btn-prompt {
+            background: rgba(192, 132, 252, 0.15);
+            border: 1px solid var(--accent-purple);
+            color: var(--accent-purple);
+            padding: 7px 14px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+
+        .btn-prompt:hover {
+            background: rgba(192, 132, 252, 0.28);
+            transform: translateY(-1px);
+        }
+
+        .btn-back {
+            background: rgba(148, 163, 184, 0.1);
+            border: 1px solid #334155;
+            color: #cbd5e1;
+            padding: 7px 14px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .btn-back:hover {
+            background: rgba(148, 163, 184, 0.2);
+            color: #fff;
+        }
+
+        /* GRID PRINCIPAL DE TRES COLUMNAS */
+        .workspace {
+            display: grid;
+            grid-template-columns: 460px 290px 1fr;
+            gap: 16px;
+            padding: 16px 20px;
+            flex: 1;
+            align-items: stretch;
+        }
+
+        @media (max-width: 1400px) {
+            .workspace {
+                grid-template-columns: 430px 260px 1fr;
+            }
+        }
+
+        @media (max-width: 1200px) {
+            .workspace {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+        }
+
+        /* COLUMNA 1: TERMINAL IBM 3270 */
+        .card-panel {
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .panel-header {
+            background: #0a0f1d;
+            border-bottom: 1px solid var(--border);
+            padding: 10px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .panel-title {
+            font-size: 0.86rem;
+            font-weight: 700;
+            color: #e2e8f0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .panel-tag {
+            font-size: 0.7rem;
+            padding: 2px 7px;
+            border-radius: 4px;
+            font-weight: 700;
+            font-family: monospace;
+        }
+
+        .panel-tag-green { background: rgba(51, 255, 51, 0.15); color: #4ade80; border: 1px solid rgba(51, 255, 51, 0.3); }
+        .panel-tag-blue { background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3); }
+        .panel-tag-amber { background: rgba(251, 176, 0, 0.15); color: #fbbf24; border: 1px solid rgba(251, 176, 0, 0.3); }
+
+        /* CHASIS DEL MONITOR RETRO 3270 */
+        .crt-bezel {
+            background: #151922;
+            border: 12px solid #232a38;
+            border-radius: 18px;
+            margin: 12px;
+            padding: 10px;
+            box-shadow: inset 0 0 25px rgba(0, 0, 0, 0.9), 0 8px 25px rgba(0, 0, 0, 0.7);
+            position: relative;
+        }
+
+        .crt-screen {
+            background: #020703;
+            border-radius: 8px;
+            padding: 16px 14px;
+            font-family: 'VT323', 'JetBrains Mono', monospace;
+            font-size: 1.15rem;
+            line-height: 1.25;
+            color: var(--crt-green);
+            text-shadow: 0 0 5px var(--crt-green-glow);
+            min-height: 380px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: inset 0 0 35px rgba(0, 30, 0, 0.9);
+            letter-spacing: 0.04em;
+        }
+
+        /* Scanlines y curva de tubo CRT */
+        .crt-screen::before {
+            content: " ";
+            display: block;
+            position: absolute;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.35) 50%);
+            background-size: 100% 4px;
+            z-index: 2;
+            pointer-events: none;
+            opacity: 0.65;
+        }
+
+        .crt-screen::after {
+            content: " ";
+            display: block;
+            position: absolute;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: radial-gradient(circle at center, transparent 65%, rgba(0,0,0,0.4) 100%);
+            z-index: 3;
+            pointer-events: none;
+        }
+
+        .crt-line {
+            display: flex;
+            align-items: center;
+            white-space: pre;
+            margin-bottom: 2px;
+            position: relative;
+            z-index: 5;
+        }
+
+        .crt-title {
+            color: var(--crt-white);
+            text-shadow: 0 0 6px rgba(224, 242, 254, 0.6);
+            font-weight: bold;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .crt-field-label {
+            color: var(--crt-green-dim);
+            font-weight: normal;
+        }
+
+        .crt-field-val {
+            color: var(--crt-green);
+            font-weight: bold;
+        }
+
+        .crt-field-white {
+            color: var(--crt-white);
+            text-shadow: 0 0 6px rgba(255, 255, 255, 0.7);
+        }
+
+        .crt-field-amber {
+            color: var(--crt-amber);
+            text-shadow: 0 0 6px rgba(255, 176, 0, 0.6);
+        }
+
+        .crt-field-red {
+            color: var(--crt-red);
+            text-shadow: 0 0 6px rgba(255, 51, 68, 0.8);
+            animation: pulse-red 0.9s infinite alternate;
+        }
+
+        @keyframes pulse-red {
+            from { opacity: 0.8; }
+            to { opacity: 1; text-shadow: 0 0 12px rgba(255, 51, 68, 1); }
+        }
+
+        .crt-input {
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid var(--crt-green);
+            color: var(--crt-white);
+            font-family: inherit;
+            font-size: 1.15rem;
+            width: 220px;
+            outline: none;
+            padding: 0 4px;
+            text-shadow: 0 0 6px rgba(255, 255, 255, 0.8);
+            caret-color: var(--crt-green);
+        }
+
+        .cursor-block {
+            display: inline-block;
+            width: 9px;
+            height: 16px;
+            background: var(--crt-green);
+            animation: blink-cursor 0.8s infinite;
+            vertical-align: middle;
+            margin-left: 2px;
+        }
+
+        @keyframes blink-cursor {
+            0%, 49% { opacity: 1; }
+            50%, 100% { opacity: 0; }
+        }
+
+        /* CONTROLES DEL MONITOR */
+        .crt-controls {
+            padding: 10px 14px 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .crt-btn-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 8px;
+        }
+
+        .btn-3270 {
+            background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+            border: 1px solid #334155;
+            color: #f1f5f9;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.82rem;
+            font-weight: 700;
+            padding: 10px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+            transition: all 0.15s ease;
+        }
+
+        .btn-3270:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            transform: translateY(-1px);
+        }
+
+        .btn-3270:active {
+            transform: translateY(1px);
+        }
+
+        .btn-enter {
+            background: linear-gradient(180deg, #10b981 0%, #047857 100%);
+            border: 1px solid #34d399;
+            color: #ffffff;
+            box-shadow: 0 0 12px rgba(16, 185, 129, 0.35);
+        }
+
+        .btn-enter:hover {
+            border-color: #a7f3d0;
+            color: #ffffff;
+            box-shadow: 0 0 18px rgba(16, 185, 129, 0.55);
+        }
+
+        .accounts-selector {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            background: #090e1a;
+            border: 1px solid #1e293b;
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        .accounts-selector-label {
+            font-size: 0.72rem;
+            color: #94a3b8;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .account-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .chip-acc {
+            background: #131b2e;
+            border: 1px solid #28354f;
+            color: #cbd5e1;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.72rem;
+            font-family: monospace;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .chip-acc:hover, .chip-acc.active {
+            background: rgba(56, 189, 248, 0.2);
+            border-color: var(--primary);
+            color: #ffffff;
+        }
+
+        /* COLUMNA 2: FLUJO TRANSACCIONAL ANIMADO */
+        .pipeline-container {
+            padding: 14px 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .pipeline-node {
+            background: #0a0f1d;
+            border: 1px solid #1e293b;
+            border-radius: 10px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            position: relative;
+            transition: all 0.3s;
+        }
+
+        .pipeline-node.active {
+            border-color: var(--primary);
+            box-shadow: 0 0 16px rgba(56, 189, 248, 0.25);
+            background: #0c152a;
+        }
+
+        .node-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .node-name {
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: #f1f5f9;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .node-led {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #475569;
+            transition: all 0.3s;
+        }
+
+        .pipeline-node.active .node-led {
+            background: #10b981;
+            box-shadow: 0 0 10px #10b981;
+        }
+
+        .node-desc {
+            font-size: 0.72rem;
+            color: #94a3b8;
+            line-height: 1.3;
+        }
+
+        .node-meta {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.68rem;
+            color: #38bdf8;
+            margin-top: 4px;
+            background: rgba(15, 23, 42, 0.7);
+            padding: 3px 6px;
+            border-radius: 4px;
+            border: 1px solid rgba(56, 189, 248, 0.2);
+        }
+
+        .pipeline-connector {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 18px;
+            color: #475569;
+            font-size: 1rem;
+            position: relative;
+        }
+
+        .packet-indicator {
+            width: 10px;
+            height: 10px;
+            background: #38bdf8;
+            border-radius: 50%;
+            position: absolute;
+            box-shadow: 0 0 8px #38bdf8;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .packet-indicator.traveling {
+            opacity: 1;
+            animation: pulse-packet 0.4s infinite alternate;
+        }
+
+        @keyframes pulse-packet {
+            from { transform: scale(0.8); }
+            to { transform: scale(1.3); }
+        }
+
+        .metrics-box {
+            background: #080c16;
+            border: 1px solid #1e293b;
+            border-radius: 10px;
+            padding: 10px;
+            margin-top: auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .metric-item {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .metric-title {
+            font-size: 0.66rem;
+            color: #64748b;
+            text-transform: uppercase;
+            font-weight: 700;
+        }
+
+        .metric-val {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            font-weight: 800;
+            color: #e2e8f0;
+        }
+
+        /* COLUMNA 3: PLAYGROUND COBOL INTERACTIVO */
+        .cobol-panel {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+
+        .preset-bar {
+            padding: 10px 16px;
+            background: #0a0f1d;
+            border-bottom: 1px solid #1e293b;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .preset-label {
+            font-size: 0.74rem;
+            font-weight: 700;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .btn-preset {
+            background: #131b2e;
+            border: 1px solid #28354f;
+            color: #cbd5e1;
+            padding: 5px 11px;
+            border-radius: 6px;
+            font-size: 0.74rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-preset:hover, .btn-preset.active {
+            background: rgba(56, 189, 248, 0.2);
+            border-color: var(--primary);
+            color: #fff;
+        }
+
+        .editor-wrapper {
+            position: relative;
+            flex: 1;
+            display: flex;
+            min-height: 440px;
+            background: #050811;
+        }
+
+        .editor-textarea {
+            width: 100%;
+            height: 100%;
+            background: #050811;
+            color: #a5b4fc;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            line-height: 1.5;
+            padding: 14px 16px;
+            border: none;
+            outline: none;
+            resize: none;
+            tab-size: 4;
+            white-space: pre;
+            overflow-x: auto;
+        }
+
+        .editor-footer {
+            padding: 12px 16px;
+            background: #0a0f1d;
+            border-top: 1px solid #1e293b;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .editor-tip {
+            font-size: 0.75rem;
+            color: #94a3b8;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-compile {
+            background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+            border: 1px solid #38bdf8;
+            color: #ffffff;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.82rem;
+            font-weight: 800;
+            padding: 8px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 0 15px rgba(2, 132, 199, 0.4);
+            transition: all 0.2s;
+        }
+
+        .btn-compile:hover {
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.6);
+            transform: translateY(-1px);
+        }
+
+        /* MODAL DE PROMPT MAESTRO */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(8px);
+            z-index: 100;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-overlay.open {
+            display: flex;
+        }
+
+        .modal-card {
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 16px;
+            max-width: 750px;
+            width: 100%;
+            max-height: 85vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7);
+        }
+
+        .modal-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid #1e293b;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-close-modal {
+            background: transparent;
+            border: none;
+            color: #94a3b8;
+            font-size: 1.4rem;
+            cursor: pointer;
+        }
+
+        .modal-body {
+            padding: 20px;
+            overflow-y: auto;
+            font-size: 0.88rem;
+            line-height: 1.55;
+            color: #cbd5e1;
+        }
+
+        .prompt-code-block {
+            background: #050811;
+            border: 1px solid #1e293b;
+            border-radius: 10px;
+            padding: 14px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: #38bdf8;
+            white-space: pre-wrap;
+            margin-top: 12px;
+            user-select: all;
+        }
+
+        .modal-footer {
+            padding: 14px 20px;
+            border-top: 1px solid #1e293b;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .btn-copy-prompt {
+            background: #38bdf8;
+            color: #04101e;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-copy-prompt:hover {
+            background: #7dd3fc;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- HEADER DE CONTROL -->
+    <header>
+        <div class="header-title">
+            <span class="header-badge">SESIÓN 02 • COD-002B</span>
+            <div>
+                <h1 class="header-h1">Laboratorio Mainframe: Core Bancario CICS + COBOL + DB2</h1>
+                <p class="header-sub">Simulación del ciclo transaccional con terminal IBM 3270 y editor de reglas de negocio en COBOL</p>
+            </div>
+        </div>
+        <div class="header-actions">
+            <button class="btn-prompt" onclick="openPromptModal()">✨ Ver Prompt Maestro para Gemini / Claude</button>
+            <a href="../02_INDICES_Y_CATALOGOS/INDICE_10_SIMULACIONES_INTERACTIVAS_3D.html" class="btn-back">⬅ Volver al Catálogo S02</a>
+        </div>
+    </header>
+
+    <!-- ZONA PRINCIPAL DE TRABAJO -->
+    <div class="workspace">
+
+        <!-- PANEL 1: TERMINAL IBM 3270 CRT -->
+        <div class="card-panel">
+            <div class="panel-header">
+                <span class="panel-title">
+                    <span>🖥️</span> Terminal IBM 3270 (BMS Screen)
+                </span>
+                <span class="panel-tag panel-tag-green" id="termStatusTag">ONLINE • LU02</span>
+            </div>
+
+            <div class="crt-bezel">
+                <div class="crt-screen" id="crtDisplay">
+                    <!-- Cabecera del terminal -->
+                    <div class="crt-line crt-title">===================================================</div>
+                    <div class="crt-line crt-title">BANCO CENTRAL CORPORATIVO • CICS TS z/OS v6.1</div>
+                    <div class="crt-line crt-title">TRANSACCION: CONS  •  MAPSET: BANCSET  •  TERM: T327</div>
+                    <div class="crt-line crt-title">===================================================</div>
+                    <div class="crt-line"> </div>
+
+                    <!-- Campos BMS -->
+                    <div class="crt-line">
+                        <span class="crt-field-label">NUM. CUENTA : </span>
+                        <input type="text" id="inputIban" class="crt-input" value="ES912100041845" maxlength="24">
+                        <span class="cursor-block"></span>
+                    </div>
+                    <div class="crt-line"> </div>
+
+                    <div class="crt-line">
+                        <span class="crt-field-label">TITULAR     : </span>
+                        <span class="crt-field-white" id="outTitular">D. CARLOS SANTOS VEGA</span>
+                    </div>
+
+                    <div class="crt-line">
+                        <span class="crt-field-label">DIVISA      : </span>
+                        <span class="crt-field-val" id="outDivisa">EUR</span>
+                    </div>
+
+                    <div class="crt-line">
+                        <span class="crt-field-label">SALDO CONT. : </span>
+                        <span class="crt-field-val" id="outSaldo">14.850,75 EUR</span>
+                    </div>
+
+                    <div class="crt-line">
+                        <span class="crt-field-label">DISPONIBLE  : </span>
+                        <span class="crt-field-white" id="outDisponible">14.850,75 EUR</span>
+                    </div>
+
+                    <div class="crt-line">
+                        <span class="crt-field-label">ESTADO CTA. : </span>
+                        <span class="crt-field-val" id="outEstado">ACTIVA (NORMAL)</span>
+                    </div>
+
+                    <div class="crt-line"> </div>
+                    <div class="crt-line">
+                        <span class="crt-field-label">MENSAJE CICS: </span>
+                        <span class="crt-field-amber" id="outMensaje">CONSULTA COMPLETADA EXITOSAMENTE</span>
+                    </div>
+
+                    <div class="crt-line"> </div>
+                    <div class="crt-line" style="font-size: 0.95rem; color: var(--crt-green-dim); justify-content: space-between;">
+                        <span>ENTER=TRANSMITIR</span>
+                        <span>PF3=SALIR</span>
+                        <span>PF5=LIMPIAR</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Controles del terminal -->
+            <div class="crt-controls">
+                <div class="crt-btn-row">
+                    <button class="btn-3270 btn-enter" onclick="executeTransaction()">⚡ ENTER (Transmitir)</button>
+                    <button class="btn-3270" onclick="resetForm()">PF5 (Reset)</button>
+                    <button class="btn-3270" onclick="toggleNoise()">CRT FX</button>
+                </div>
+
+                <!-- Selector de Cuentas Preconfiguradas -->
+                <div class="accounts-selector">
+                    <span class="accounts-selector-label">Cuentas de Prueba en Base de Datos DB2:</span>
+                    <div class="account-chips">
+                        <span class="chip-acc active" onclick="loadAccount('ES912100041845')">ES912100 (Solvente)</span>
+                        <span class="chip-acc" onclick="loadAccount('ES440049150233')">ES440049 (Descubierto)</span>
+                        <span class="chip-acc" onclick="loadAccount('ES760182998811')">ES760182 (Bloqueada)</span>
+                        <span class="chip-acc" onclick="loadAccount('ES000000000000')">ES000000 (Inexistente)</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PANEL 2: PIPELINE TRANSACCIONAL ANIMADO -->
+        <div class="card-panel">
+            <div class="panel-header">
+                <span class="panel-title">
+                    <span>🔄</span> Bus Transaccional
+                </span>
+                <span class="panel-tag panel-tag-blue" id="pipeStatusTag">READY</span>
+            </div>
+
+            <div class="pipeline-container">
+                <!-- Nodo 1: Terminal 3270 -->
+                <div class="pipeline-node active" id="nodeTerm">
+                    <div class="node-header">
+                        <span class="node-name">🖥️ 1. Terminal 3270</span>
+                        <span class="node-led"></span>
+                    </div>
+                    <p class="node-desc">Captura buffer BMS y emite AID code (DFHENTER).</p>
+                    <span class="node-meta">MAP: BANCSET / AID: ENTER</span>
+                </div>
+
+                <div class="pipeline-connector">
+                    <span>↓</span>
+                    <div class="packet-indicator" id="pkt1"></div>
+                </div>
+
+                <!-- Nodo 2: Gateway TCP/IP SNA -->
+                <div class="pipeline-node" id="nodeNet">
+                    <div class="node-header">
+                        <span class="node-name">🌐 2. Gateway SNA / LU6.2</span>
+                        <span class="node-led"></span>
+                    </div>
+                    <p class="node-desc">Encapsulado EBCDIC en tramas TCP/IP de alta velocidad.</p>
+                    <span class="node-meta">PORT: 3023 / BYTES: 128</span>
+                </div>
+
+                <div class="pipeline-connector">
+                    <span>↓</span>
+                    <div class="packet-indicator" id="pkt2"></div>
+                </div>
+
+                <!-- Nodo 3: Región CICS y COBOL -->
+                <div class="pipeline-node" id="nodeCics">
+                    <div class="node-header">
+                        <span class="node-name">⚙️ 3. Región CICS (COBOL)</span>
+                        <span class="node-led"></span>
+                    </div>
+                    <p class="node-desc">Despacho de tarea transaccional concurrente `INQBAL01`.</p>
+                    <span class="node-meta">TRAN: CONS / PROG: INQBAL01</span>
+                </div>
+
+                <div class="pipeline-connector">
+                    <span>↓</span>
+                    <div class="packet-indicator" id="pkt3"></div>
+                </div>
+
+                <!-- Nodo 4: Motor DB2 SQL -->
+                <div class="pipeline-node" id="nodeDb2">
+                    <div class="node-header">
+                        <span class="node-name">🗄️ 4. Substack DB2 (SQL)</span>
+                        <span class="node-led"></span>
+                    </div>
+                    <p class="node-desc">Ejecución del Plan SQL (`EXEC SQL SELECT`).</p>
+                    <span class="node-meta" id="sqlcaMeta">SQLCODE: +000 (OK)</span>
+                </div>
+
+                <!-- Métricas Técnicas -->
+                <div class="metrics-box">
+                    <div class="metric-item">
+                        <span class="metric-title">SQLCODE</span>
+                        <span class="metric-val" id="metricSql">000</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-title">CICS CPU</span>
+                        <span class="metric-val" id="metricCpu">0.0012s</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-title">TASK ID</span>
+                        <span class="metric-val" id="metricTask">#48192</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-title">ABEND</span>
+                        <span class="metric-val" id="metricAbend" style="color: #4ade80;">NONE</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PANEL 3: PLAYGROUND COBOL CICS + SQL -->
+        <div class="card-panel cobol-panel">
+            <div class="panel-header">
+                <span class="panel-title">
+                    <span>💻</span> Programa COBOL CICS + DB2 (`INQBAL01.cbl`)
+                </span>
+                <span class="panel-tag panel-tag-amber">PLAYGROUND EDITABLE</span>
+            </div>
+
+            <!-- Barra de Presets -->
+            <div class="preset-bar">
+                <span class="preset-label">Escenarios Didácticos:</span>
+                <button class="btn-preset active" onclick="loadPreset('standard')">1. Consulta Estándar</button>
+                <button class="btn-preset" onclick="loadPreset('overdraft')">2. Alerta Descubierto</button>
+                <button class="btn-preset" onclick="loadPreset('blocked')">3. Bloqueo Fraude</button>
+                <button class="btn-preset" onclick="loadPreset('abend')">4. Provocar ABEND (ASRA)</button>
+            </div>
+
+            <!-- Editor de Texto de Código COBOL -->
+            <div class="editor-wrapper">
+                <textarea id="cobolEditor" class="editor-textarea" spellcheck="false"></textarea>
+            </div>
+
+            <!-- Pie de compilación -->
+            <div class="editor-footer">
+                <div class="editor-tip">
+                    <span>💡</span> Modifica cualquier texto, condición `IF` o variable y pulsa compilar para ver el resultado en la 3270.
+                </div>
+                <button class="btn-compile" onclick="compileAndRun()">
+                    <span>⚙️</span> Compilar & Transmitir a CICS
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- MODAL CON EL PROMPT MAESTRO -->
+    <div class="modal-overlay" id="promptModal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <span class="modal-title">✨ Prompt Maestro para Generar Mainframe con IA</span>
+                <button class="btn-close-modal" onclick="closePromptModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Copia este prompt exacto y pégalo en <strong>Gemini, Claude o ChatGPT</strong> para comprobar cómo la IA genera en 10 segundos una arquitectura bancaria que antes requería semanas:</p>
+                <div class="prompt-code-block" id="promptText">Actúa como un Ingeniero Principal de Sistemas Mainframe IBM z/OS experto en COBOL, CICS Transaction Server y DB2.
+
+Genera una solución bancaria completa para la transacción de consulta de saldo "INQS" (Inquire Account Balance):
+
+1. MAPA BMS (Basic Mapping Support):
+   - Definición del mapa de pantalla 3270 (24x80) con campos de cabecera protegidos (intensidad normal), campo de entrada de 14 dígitos para NUM_CUENTA (desprotegido, alta intensidad), campos de salida para NOMBRE_TITULAR, SALDO_DISPONIBLE y MENSAJE_ERROR, y línea de estado inferior con teclas PF/ENTER.
+
+2. PROGRAMA COBOL CICS + SQL DB2 (INQSALDO.cbl):
+   - Estructura estándar ANSI 85 con IDENTIFICATION, ENVIRONMENT, DATA y PROCEDURE DIVISION.
+   - LINKAGE SECTION y WORKING-STORAGE con SQLCA.
+   - Lógica de CICS pseudo-conversacional con evaluación de EIBCALEN y EIBAID (ENTER para consultar, PF3 para salir).
+   - Consulta EXEC SQL con sentencia SELECT ... INTO ... FROM CUENTAS_BANCARIAS WHERE ID_CUENTA = :WS-CUENTA.
+   - Tratamiento de excepciones: SQLCODE = 0 (Éxito), SQLCODE = +100 (No encontrado), SQLCODE < 0 (Error BD).
+   - Emisión de respuesta mediante EXEC CICS SEND MAP.
+
+3. EXPLICACIÓN DIDÁCTICA:
+   - Resumen en 3 viñetas del ciclo de vida de la transacción para explicarlo a personas que nunca han visto un Mainframe.</div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-copy-prompt" onclick="copyPrompt()">📋 Copiar Prompt al Portapapeles</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // BASE DE DATOS SIMULADA DE DB2
+        const DB2_DATABASE = {
+            "ES912100041845": {
+                titular: "D. CARLOS SANTOS VEGA",
+                divisa: "EUR",
+                saldo: 14850.75,
+                estado: "ACTIVA (NORMAL)",
+                bloqueada: false
+            },
+            "ES440049150233": {
+                titular: "DA. MARIA DEL CARMEN LOPEZ",
+                divisa: "EUR",
+                saldo: -320.40,
+                estado: "EN DESCUBIERTO",
+                bloqueada: false
+            },
+            "ES760182998811": {
+                titular: "INVERSIONES Y VALORES SL",
+                divisa: "EUR",
+                saldo: 89400.00,
+                estado: "BLOQUEADA (RETENCION JUDICIAL)",
+                bloqueada: true
+            }
+        };
+
+        // PRESETS DE COBOL PARA EL PLAYGROUND
+        const PRESETS = {
+            standard: `      ******************************************************************
+      * PROGRAMA: INQBAL01.cbl - TRANSACCION BANCARIA CICS TS v6.1     *
+      * AUTOR   : CURSO IA - SESION 02 (MAINFRAME PLAYGROUND)          *
+      ******************************************************************
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. INQBAL01.
+       
+       ENVIRONMENT DIVISION.
+       
+       DATA DIVISION.
+       WORKING-STORAGE SECTION.
+       01  WS-CAMPOS-CONTROL.
+           05  WS-CUENTA-IN            PIC X(14).
+           05  WS-TITULAR-OUT          PIC X(30).
+           05  WS-SALDO-OUT            PIC S9(9)V99 COMP-3.
+           05  WS-COMISION-CONSULTA    PIC S9(3)V99 VALUE +000.00.
+           05  WS-MENSAJE-RESPUESTA    PIC X(40) 
+               VALUE 'CONSULTA COMPLETADA EXITOSAMENTE'.
+               
+       EXEC SQL INCLUDE SQLCA END-EXEC.
+       
+       PROCEDURE DIVISION.
+       0000-CONTROL-PRINCIPAL.
+           EXEC CICS RECEIVE MAP('BANCSET') INTO(WS-CUENTA-IN) END-EXEC.
+           
+           EXEC SQL
+               SELECT NOMBRE_CLIENTE, SALDO_DISPONIBLE
+               INTO  :WS-TITULAR-OUT, :WS-SALDO-OUT
+               FROM   TB_CUENTAS_BANCO
+               WHERE  NUM_CUENTA = :WS-CUENTA-IN
+           END-EXEC.
+           
+           IF SQLCODE = 0
+               MOVE 'CONSULTA COMPLETADA EXITOSAMENTE' TO WS-MENSAJE-RESPUESTA
+           ELSE
+               MOVE 'ERROR: CUENTA NO LOCALIZADA EN DB2' TO WS-MENSAJE-RESPUESTA
+           END-IF.
+           
+           EXEC CICS SEND MAP('BANCSET') ERASE END-EXEC.
+           EXEC CICS RETURN END-EXEC.`,
+
+            overdraft: `      ******************************************************************
+      * PRESET 2: CONTROL Y ALERTA DE DESCUBIERTO BANCARIO EN COBOL    *
+      ******************************************************************
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. INQBAL01.
+       
+       DATA DIVISION.
+       WORKING-STORAGE SECTION.
+       01  WS-CONTROL.
+           05  WS-CUENTA-IN            PIC X(14).
+           05  WS-SALDO-OUT            PIC S9(9)V99 COMP-3.
+           05  WS-MENSAJE-RESPUESTA    PIC X(45) 
+               VALUE 'ALERTA: CLIENTE EN POSICION DEUDORA'.
+               
+       EXEC SQL INCLUDE SQLCA END-EXEC.
+       
+       PROCEDURE DIVISION.
+       0000-CONTROL-DESCUBIERTO.
+           EXEC CICS RECEIVE MAP('BANCSET') INTO(WS-CUENTA-IN) END-EXEC.
+           
+           IF WS-SALDO-OUT < 0
+               MOVE 'AVISO: CUENTA EN DESCUBIERTO AUTORIZADO' 
+                   TO WS-MENSAJE-RESPUESTA
+           ELSE
+               MOVE 'ESTADO FINANCIERO POSITIVO' TO WS-MENSAJE-RESPUESTA
+           END-IF.
+           
+           EXEC CICS SEND MAP('BANCSET') ERASE END-EXEC.
+           EXEC CICS RETURN END-EXEC.`,
+
+            blocked: `      ******************************************************************
+      * PRESET 3: DETECCION DE FRAUDE Y EMBARGO JUDICIAL EN CICS       *
+      ******************************************************************
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. INQBAL01.
+       
+       DATA DIVISION.
+       WORKING-STORAGE SECTION.
+       01  WS-FRAUDE.
+           05  WS-CUENTA-IN            PIC X(14).
+           05  WS-ESTADO-CTA           PIC X(20).
+           05  WS-MENSAJE-RESPUESTA    PIC X(45) 
+               VALUE 'BLOQUEO: OPERACION RETENIDA POR COMPLIANCE'.
+               
+       PROCEDURE DIVISION.
+       0000-EVALUAR-ESTADO.
+           EXEC CICS RECEIVE MAP('BANCSET') INTO(WS-CUENTA-IN) END-EXEC.
+           
+           MOVE 'ALERTA DE SEGURIDAD: CUENTA BLOQUEADA' 
+               TO WS-MENSAJE-RESPUESTA.
+               
+           EXEC CICS SEND MAP('BANCSET') ERASE END-EXEC.
+           EXEC CICS RETURN END-EXEC.`,
+
+            abend: `      ******************************************************************
+      * PRESET 4: PROVOCAR EXCEPCION CICS "ABEND ASRA" (DATA EXCEPTION) *
+      ******************************************************************
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. INQBAL01.
+       
+       DATA DIVISION.
+       WORKING-STORAGE SECTION.
+       01  WS-DATOS-NUMERICOS.
+           05  WS-CAMPO-PACKED         PIC S9(7) COMP-3 VALUE ZERO.
+           05  WS-TEXTO-BASURA         PIC X(05) VALUE 'ERROR'.
+           
+       PROCEDURE DIVISION.
+       0000-PROVOCAR-ABEND.
+           * Se intenta mover texto a un campo decimal empaquetado
+           MOVE WS-TEXTO-BASURA TO WS-CAMPO-PACKED.
+           
+           * CICS aborta la transacción inmediatamente con código ASRA
+           EXEC CICS ABEND ABCODE('ASRA') NODUMP END-EXEC.`
+        };
+
+        // INICIALIZACIÓN
+        const editor = document.getElementById('cobolEditor');
+        editor.value = PRESETS.standard;
+
+        function loadPreset(key) {
+            document.querySelectorAll('.btn-preset').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+            editor.value = PRESETS[key];
+            if (key === 'abend') {
+                document.getElementById('inputIban').value = "ES912100041845";
+            }
+        }
+
+        function loadAccount(iban) {
+            document.querySelectorAll('.chip-acc').forEach(c => c.classList.remove('active'));
+            event.target.classList.add('active');
+            document.getElementById('inputIban').value = iban;
+            executeTransaction();
+        }
+
+        function resetForm() {
+            document.getElementById('inputIban').value = "ES912100041845";
+            document.getElementById('outTitular').textContent = "---";
+            document.getElementById('outDivisa').textContent = "EUR";
+            document.getElementById('outSaldo').textContent = "---";
+            document.getElementById('outDisponible').textContent = "---";
+            document.getElementById('outEstado').textContent = "ESPERANDO TRANSACCION";
+            document.getElementById('outMensaje').textContent = "PULSAR ENTER PARA CONSULTAR";
+            document.getElementById('outMensaje').className = "crt-field-amber";
+            resetPipeline();
+        }
+
+        function resetPipeline() {
+            document.querySelectorAll('.pipeline-node').forEach(n => n.classList.remove('active'));
+            document.querySelectorAll('.packet-indicator').forEach(p => p.classList.remove('traveling'));
+            document.getElementById('nodeTerm').classList.add('active');
+            document.getElementById('pipeStatusTag').textContent = "IDLE";
+            document.getElementById('pipeStatusTag').className = "panel-tag panel-tag-blue";
+        }
+
+        // EJECUCIÓN TRANSACCIONAL ANIMADA
+        function executeTransaction() {
+            const iban = document.getElementById('inputIban').value.trim();
+            const code = editor.value;
+
+            // Comprobar si en el editor se ha configurado el ABEND
+            const isAbend = code.includes("ABCODE('ASRA')") || code.includes("ASRA");
+
+            resetPipeline();
+            document.getElementById('pipeStatusTag').textContent = "PROCESSING...";
+            document.getElementById('pipeStatusTag').className = "panel-tag panel-tag-amber";
+
+            // Animación paso a paso por los 4 nodos
+            // Paso 1: Terminal
+            document.getElementById('nodeTerm').classList.add('active');
+            document.getElementById('pkt1').classList.add('traveling');
+
+            setTimeout(() => {
+                // Paso 2: Red
+                document.getElementById('nodeTerm').classList.remove('active');
+                document.getElementById('nodeNet').classList.add('active');
+                document.getElementById('pkt1').classList.remove('traveling');
+                document.getElementById('pkt2').classList.add('traveling');
+            }, 300);
+
+            setTimeout(() => {
+                // Paso 3: CICS
+                document.getElementById('nodeNet').classList.remove('active');
+                document.getElementById('nodeCics').classList.add('active');
+                document.getElementById('pkt2').classList.remove('traveling');
+                document.getElementById('pkt3').classList.add('traveling');
+            }, 600);
+
+            setTimeout(() => {
+                // Paso 4: DB2 y respuesta
+                document.getElementById('pkt3').classList.remove('traveling');
+                
+                if (isAbend) {
+                    handleAbendCase();
+                } else {
+                    document.getElementById('nodeDb2').classList.add('active');
+                    handleNormalCase(iban, code);
+                }
+            }, 900);
+        }
+
+        function handleAbendCase() {
+            document.getElementById('nodeCics').classList.add('active');
+            document.getElementById('pipeStatusTag').textContent = "ABEND ASRA";
+            document.getElementById('pipeStatusTag').className = "panel-tag panel-tag-amber";
+            
+            document.getElementById('metricSql').textContent = "-999";
+            document.getElementById('metricAbend').textContent = "ASRA";
+            document.getElementById('metricAbend').style.color = "#ff3344";
+            document.getElementById('sqlcaMeta').textContent = "ABEND TRAPPED IN CICS REGION";
+
+            document.getElementById('outTitular').textContent = "TERMINATION ERROR";
+            document.getElementById('outSaldo').textContent = "0.00 EUR";
+            document.getElementById('outDisponible').textContent = "0.00 EUR";
+            document.getElementById('outEstado').textContent = "TRANSACTION TERMINATED BY CICS";
+            document.getElementById('outMensaje').textContent = "ABEND ASRA: DATA EXCEPTION (INVALID PACKED DECIMAL)";
+            document.getElementById('outMensaje').className = "crt-field-red";
+        }
+
+        function handleNormalCase(iban, code) {
+            document.getElementById('pipeStatusTag').textContent = "COMPLETED";
+            document.getElementById('pipeStatusTag').className = "panel-tag panel-tag-green";
+            document.getElementById('metricAbend').textContent = "NONE";
+            document.getElementById('metricAbend').style.color = "#4ade80";
+
+            const record = DB2_DATABASE[iban];
+
+            if (record) {
+                document.getElementById('metricSql').textContent = "000";
+                document.getElementById('sqlcaMeta').textContent = "SQLCODE: +000 (SUCCESSFUL)";
+                document.getElementById('outTitular').textContent = record.titular;
+                document.getElementById('outDivisa').textContent = record.divisa;
+                document.getElementById('outSaldo').textContent = record.saldo.toLocaleString('es-ES', { minimumFractionDigits: 2 }) + " " + record.divisa;
+                document.getElementById('outDisponible').textContent = record.saldo.toLocaleString('es-ES', { minimumFractionDigits: 2 }) + " " + record.divisa;
+                document.getElementById('outEstado').textContent = record.estado;
+
+                // Extraer mensaje personalizado si el usuario editó WS-MENSAJE-RESPUESTA en el editor
+                let customMsg = "CONSULTA COMPLETADA EXITOSAMENTE";
+                const matchMsg = code.match(/VALUE\s+'([^']+)'/i);
+                if (matchMsg && matchMsg[1]) {
+                    customMsg = matchMsg[1];
+                }
+
+                if (record.saldo < 0) {
+                    document.getElementById('outMensaje').textContent = customMsg.includes('DESCUBIERTO') ? customMsg : "ALERTA: POSICION DEUDORA EN CUENTA";
+                    document.getElementById('outMensaje').className = "crt-field-amber";
+                } else if (record.bloqueada) {
+                    document.getElementById('outMensaje').textContent = customMsg.includes('BLOQUE') ? customMsg : "CUENTA RETENIDA POR SEGURIDAD";
+                    document.getElementById('outMensaje').className = "crt-field-red";
+                } else {
+                    document.getElementById('outMensaje').textContent = customMsg;
+                    document.getElementById('outMensaje').className = "crt-field-val";
+                }
+            } else {
+                // Cuenta no encontrada en DB2
+                document.getElementById('metricSql').textContent = "+100";
+                document.getElementById('sqlcaMeta').textContent = "SQLCODE: +100 (ROW NOT FOUND)";
+                document.getElementById('outTitular').textContent = "CLIENTE NO ENCONTRADO";
+                document.getElementById('outSaldo').textContent = "0.00 EUR";
+                document.getElementById('outDisponible').textContent = "0.00 EUR";
+                document.getElementById('outEstado').textContent = "NO EXISTE EN DB2";
+                document.getElementById('outMensaje').textContent = "SQLCODE +100: CUENTA INEXISTENTE EN TABLA";
+                document.getElementById('outMensaje').className = "crt-field-amber";
+            }
+
+            // Simular variación aleatoria de tiempo de CPU CICS
+            const randCpu = (0.0010 + Math.random() * 0.0008).toFixed(4);
+            document.getElementById('metricCpu').textContent = randCpu + "s";
+            document.getElementById('metricTask').textContent = "#" + Math.floor(40000 + Math.random() * 20000);
+        }
+
+        function compileAndRun() {
+            executeTransaction();
+        }
+
+        function toggleNoise() {
+            const screen = document.getElementById('crtDisplay');
+            screen.style.textShadow = screen.style.textShadow ? "" : "0 0 10px #33ff33, 0 0 20px #33ff33";
+        }
+
+        // Permite presionar Enter en el input para disparar la transacción
+        document.getElementById('inputIban').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                executeTransaction();
+            }
+        });
+
+        // MODAL PROMPT
+        function openPromptModal() {
+            document.getElementById('promptModal').classList.add('open');
+        }
+
+        function closePromptModal() {
+            document.getElementById('promptModal').classList.remove('open');
+        }
+
+        function copyPrompt() {
+            const text = document.getElementById('promptText').innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                const btn = document.querySelector('.btn-copy-prompt');
+                const old = btn.textContent;
+                btn.textContent = "✅ ¡Prompt Copiado!";
+                setTimeout(() => btn.textContent = old, 2000);
+            });
+        }
+    </script>
+</body>
+</html>
+

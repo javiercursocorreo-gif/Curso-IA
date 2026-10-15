@@ -123,7 +123,7 @@ def build_cod_001_taller_3d_pdf(output_path=PDF_PATH):
         "&lt;script src=&quot;https://cdn.babylonjs.com/babylon.js&quot;&gt;&lt;/script&gt;<br/>"
         "&lt;script src=&quot;https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js&quot;&gt;&lt;/script&gt;<br/>"
         "&lt;script src=&quot;https://javiercursocorreo-gif.github.io/Curso-IA/SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/lungs_b64.js&quot;&gt;&lt;/script&gt;<br/>"
-        "3. Carga el modelo 3D anatómico real con SceneLoader.ImportMesh('', '', window.LUNGS_GLB_B64, ...), calibra su escala a tamaño equilibrado (scaling 0.08 o 1.8/maxDim) para que no salga gigante, y encuádralo con cámara orbital 360° de radio 6.8 y zoom libre (upperRadiusLimit de 60.0) e iluminación de estudio sobre fondo azul noche (#060913).<br/>"
+        "3. Carga el modelo 3D anatómico real con SceneLoader.ImportMesh('', '', window.LUNGS_GLB_B64, ...) y céntralo con cámara orbital 360° e iluminación de estudio sobre fondo azul noche (#060913).<br/>"
         "4. Detén cualquier animación interna o de morphing del archivo 3D (animationGroups.forEach(ag => ag.stop())) para mantener el árbol traqueobronquial y los pulmones 100% firmes, estables y quietos en el centro (sin vaivén vertical, sin subir ni bajar), permitiendo rotar libremente en 360° con el ratón e incluyendo una rotación suave automática.<br/>"
         "5. Escribe exclusivamente el bloque de código para que al copiarlo a mi simulador genere los pulmones 3D hiperrealistas.\"</i>"
     )
