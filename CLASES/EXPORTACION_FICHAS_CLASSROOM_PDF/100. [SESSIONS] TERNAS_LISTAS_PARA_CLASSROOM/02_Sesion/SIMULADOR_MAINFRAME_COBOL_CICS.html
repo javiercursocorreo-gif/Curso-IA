@@ -336,42 +336,24 @@
         }
 
         .crt-screen {
-            background: #020703;
+            background: #020904;
+            border: 2px solid #15803d;
             border-radius: 8px;
             padding: 16px 14px;
-            font-family: 'VT323', 'JetBrains Mono', monospace;
-            font-size: 1.15rem;
-            line-height: 1.25;
-            color: var(--crt-green);
-            text-shadow: 0 0 5px var(--crt-green-glow);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.96rem;
+            line-height: 1.38;
+            color: #34d399;
             min-height: 380px;
             position: relative;
             overflow: hidden;
-            box-shadow: inset 0 0 35px rgba(0, 30, 0, 0.9);
-            letter-spacing: 0.04em;
+            box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.9);
+            letter-spacing: 0.02em;
         }
 
-        /* Scanlines y curva de tubo CRT */
-        .crt-screen::before {
-            content: " ";
-            display: block;
-            position: absolute;
-            top: 0; left: 0; bottom: 0; right: 0;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.35) 50%);
-            background-size: 100% 4px;
-            z-index: 2;
-            pointer-events: none;
-            opacity: 0.65;
-        }
-
-        .crt-screen::after {
-            content: " ";
-            display: block;
-            position: absolute;
-            top: 0; left: 0; bottom: 0; right: 0;
-            background: radial-gradient(circle at center, transparent 65%, rgba(0,0,0,0.4) 100%);
-            z-index: 3;
-            pointer-events: none;
+        /* Eliminamos cualquier filtro que distorsione o emborrone los laterales */
+        .crt-screen::before, .crt-screen::after {
+            display: none !important;
         }
 
         .crt-line {
@@ -621,35 +603,110 @@
             border: 1px solid rgba(56, 189, 248, 0.2);
         }
 
+        /* NARRADOR Y CONECTORES VISUALES */
+        .bus-narrator {
+            background: #080d19;
+            border: 1px solid #1e293b;
+            border-radius: 8px;
+            padding: 9px 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            margin-bottom: 2px;
+        }
+
+        .bus-narrator-badge {
+            font-size: 0.68rem;
+            font-weight: 800;
+            padding: 2px 7px;
+            border-radius: 4px;
+            align-self: flex-start;
+            font-family: monospace;
+            background: rgba(56, 189, 248, 0.15);
+            color: #38bdf8;
+            border: 1px solid rgba(56, 189, 248, 0.3);
+        }
+
+        .bus-narrator-text {
+            font-size: 0.74rem;
+            color: #f1f5f9;
+            font-weight: 600;
+            line-height: 1.35;
+        }
+
+        .bus-progress-bar {
+            height: 4px;
+            background: #1e293b;
+            border-radius: 999px;
+            overflow: hidden;
+            width: 100%;
+            margin-top: 2px;
+        }
+
+        .bus-progress-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #38bdf8, #10b981);
+            transition: width 0.3s ease;
+        }
+
         .pipeline-connector {
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
-            height: 18px;
-            color: #475569;
-            font-size: 1rem;
+            height: 30px;
             position: relative;
         }
 
-        .packet-indicator {
-            width: 10px;
-            height: 10px;
+        .connector-line {
+            width: 3px;
+            height: 100%;
+            background: #1e293b;
+            border-radius: 2px;
+            transition: all 0.3s;
+        }
+
+        .connector-line.active-down {
             background: #38bdf8;
-            border-radius: 50%;
+            box-shadow: 0 0 10px #38bdf8;
+        }
+
+        .connector-line.active-up {
+            background: #10b981;
+            box-shadow: 0 0 10px #10b981;
+        }
+
+        .packet-capsule {
             position: absolute;
-            box-shadow: 0 0 8px #38bdf8;
+            font-size: 0.66rem;
+            font-weight: 800;
+            padding: 3px 10px;
+            border-radius: 999px;
+            font-family: monospace;
+            white-space: nowrap;
             opacity: 0;
-            transition: opacity 0.2s;
+            transform: scale(0.7);
+            transition: all 0.25s ease;
+            z-index: 10;
         }
 
-        .packet-indicator.traveling {
+        .packet-capsule.active-down {
             opacity: 1;
-            animation: pulse-packet 0.4s infinite alternate;
+            transform: scale(1);
+            background: #0284c7;
+            color: #ffffff;
+            box-shadow: 0 0 12px #38bdf8;
+            border: 1px solid #7dd3fc;
         }
 
-        @keyframes pulse-packet {
-            from { transform: scale(0.8); }
-            to { transform: scale(1.3); }
+        .packet-capsule.active-up {
+            opacity: 1;
+            transform: scale(1);
+            background: #059669;
+            color: #ffffff;
+            box-shadow: 0 0 12px #34d399;
+            border: 1px solid #a7f3d0;
         }
 
         .metrics-box {
@@ -978,10 +1035,9 @@
 
             <!-- Controles del terminal -->
             <div class="crt-controls">
-                <div class="crt-btn-row">
+                <div class="crt-btn-row" style="grid-template-columns: 1.8fr 1fr;">
                     <button class="btn-3270 btn-enter" onclick="executeTransaction()">⚡ ENTER (Transmitir)</button>
-                    <button class="btn-3270" onclick="resetForm()">PF5 (Reset)</button>
-                    <button class="btn-3270" onclick="toggleNoise()">CRT FX</button>
+                    <button class="btn-3270" onclick="resetForm(true)">🔄 Limpiar Pantalla</button>
                 </div>
 
                 <!-- Selector de Cuentas Preconfiguradas -->
@@ -1007,34 +1063,45 @@
             </div>
 
             <div class="pipeline-container">
+                <!-- Narrador Didáctico Superior -->
+                <div class="bus-narrator">
+                    <span class="bus-narrator-badge" id="narratorBadge">PAUSADO</span>
+                    <span class="bus-narrator-text" id="narratorText">Elige una cuenta o preset y pulsa ENTER para iniciar el ciclo transaccional.</span>
+                    <div class="bus-progress-bar">
+                        <div class="bus-progress-fill" id="narratorProgress"></div>
+                    </div>
+                </div>
+
                 <!-- Nodo 1: Terminal 3270 -->
                 <div class="pipeline-node active" id="nodeTerm">
                     <div class="node-header">
-                        <span class="node-name">🖥️ 1. Terminal 3270</span>
+                        <span class="node-name">🖥️ 1. Terminal IBM 3270</span>
                         <span class="node-led"></span>
                     </div>
-                    <p class="node-desc">Captura buffer BMS y emite AID code (DFHENTER).</p>
+                    <p class="node-desc">Captura buffer BMS del formulario y emite tecla ENTER.</p>
                     <span class="node-meta">MAP: BANCSET / AID: ENTER</span>
                 </div>
 
+                <!-- Conector 1 con Cápsula Animada -->
                 <div class="pipeline-connector">
-                    <span>↓</span>
-                    <div class="packet-indicator" id="pkt1"></div>
+                    <div class="connector-line" id="line1"></div>
+                    <div class="packet-capsule" id="cap1">📦 Petición IBAN ⬇</div>
                 </div>
 
                 <!-- Nodo 2: Gateway TCP/IP SNA -->
                 <div class="pipeline-node" id="nodeNet">
                     <div class="node-header">
-                        <span class="node-name">🌐 2. Gateway SNA / LU6.2</span>
+                        <span class="node-name">🌐 2. Red SNA / TCP-IP</span>
                         <span class="node-led"></span>
                     </div>
-                    <p class="node-desc">Encapsulado EBCDIC en tramas TCP/IP de alta velocidad.</p>
-                    <span class="node-meta">PORT: 3023 / BYTES: 128</span>
+                    <p class="node-desc">Encapsula y transporta el paquete cifrado al Data Center.</p>
+                    <span class="node-meta">PORT: 3023 / LU6.2 BANCARIO</span>
                 </div>
 
+                <!-- Conector 2 con Cápsula Animada -->
                 <div class="pipeline-connector">
-                    <span>↓</span>
-                    <div class="packet-indicator" id="pkt2"></div>
+                    <div class="connector-line" id="line2"></div>
+                    <div class="packet-capsule" id="cap2">⚙️ Hilo CICS ⬇</div>
                 </div>
 
                 <!-- Nodo 3: Región CICS y COBOL -->
@@ -1043,23 +1110,24 @@
                         <span class="node-name">⚙️ 3. Región CICS (COBOL)</span>
                         <span class="node-led"></span>
                     </div>
-                    <p class="node-desc">Despacho de tarea transaccional concurrente `INQBAL01`.</p>
+                    <p class="node-desc">Ejecuta el programa transaccional concurrente `INQBAL01`.</p>
                     <span class="node-meta">TRAN: CONS / PROG: INQBAL01</span>
                 </div>
 
+                <!-- Conector 3 con Cápsula Animada -->
                 <div class="pipeline-connector">
-                    <span>↓</span>
-                    <div class="packet-indicator" id="pkt3"></div>
+                    <div class="connector-line" id="line3"></div>
+                    <div class="packet-capsule" id="cap3">🗄️ Query DB2 ⬇</div>
                 </div>
 
                 <!-- Nodo 4: Motor DB2 SQL -->
                 <div class="pipeline-node" id="nodeDb2">
                     <div class="node-header">
-                        <span class="node-name">🗄️ 4. Substack DB2 (SQL)</span>
+                        <span class="node-name">🗄️ 4. Base de Datos DB2 (SQL)</span>
                         <span class="node-led"></span>
                     </div>
-                    <p class="node-desc">Ejecución del Plan SQL (`EXEC SQL SELECT`).</p>
-                    <span class="node-meta" id="sqlcaMeta">SQLCODE: +000 (OK)</span>
+                    <p class="node-desc">Ejecuta SELECT en `TB_CUENTAS_BANCO` y extrae saldo.</p>
+                    <span class="node-meta" id="sqlcaMeta">SQLCODE: +000 (EXITO)</span>
                 </div>
 
                 <!-- Métricas Técnicas -->
@@ -1377,104 +1445,260 @@ Genera una solución bancaria completa para la transacción de consulta de saldo
         const editor = document.getElementById('cobolEditor');
         editor.value = PRESETS.standard;
 
+        // MAPA DE CUENTAS ASOCIADAS A CADA ESCENARIO
+        const PRESET_ACCOUNTS = {
+            standard: "ES912100041845",  // Solvente (Carlos Santos)
+            overdraft: "ES440049150233", // Descubierto (Maria del Carmen)
+            blocked: "ES760182998811",   // Bloqueada (Inversiones)
+            abend: "ES912100041845"      // Provocar error CICS
+        };
+
+        function setNarrator(badge, text, progressPercent) {
+            const b = document.getElementById('narratorBadge');
+            const t = document.getElementById('narratorText');
+            const p = document.getElementById('narratorProgress');
+            if (b) b.textContent = badge;
+            if (t) t.textContent = text;
+            if (p) p.style.width = progressPercent + "%";
+        }
+
+        function selectAccountChip(iban) {
+            document.querySelectorAll('.chip-acc').forEach(c => {
+                const clickAttr = c.getAttribute('onclick') || '';
+                c.classList.toggle('active', clickAttr.includes(iban));
+            });
+        }
+
         function loadPreset(key) {
             document.querySelectorAll('.btn-preset').forEach(b => b.classList.remove('active'));
             event.target.classList.add('active');
             editor.value = PRESETS[key];
-            if (key === 'abend') {
-                document.getElementById('inputIban').value = "ES912100041845";
+            
+            const targetIban = PRESET_ACCOUNTS[key];
+            selectAccountChip(targetIban);
+            document.getElementById('inputIban').value = targetIban;
+            resetPipeline();
+
+            const rec = DB2_DATABASE[targetIban];
+            if (key === 'overdraft') {
+                document.getElementById('outTitular').textContent = rec.titular;
+                document.getElementById('outSaldo').textContent = rec.saldo.toLocaleString('es-ES', { minimumFractionDigits: 2 }) + " EUR";
+                document.getElementById('outSaldo').className = "crt-field-amber";
+                document.getElementById('outDisponible').textContent = "0,00 EUR (AGOTADO)";
+                document.getElementById('outDisponible').className = "crt-field-amber";
+                document.getElementById('outEstado').textContent = "EN DESCUBIERTO (DEUDA)";
+                document.getElementById('outEstado').className = "crt-field-amber";
+                document.getElementById('outMensaje').textContent = "ESCENARIO DEUDOR CARGADO • PULSA ENTER";
+                document.getElementById('outMensaje').className = "crt-field-amber";
+                setNarrator("LISTO", "Escenario de cuenta en descubierto preparado. Pulsa ENTER para transmitir.", 0);
+            } else if (key === 'blocked') {
+                document.getElementById('outTitular').textContent = rec.titular;
+                document.getElementById('outSaldo').textContent = rec.saldo.toLocaleString('es-ES', { minimumFractionDigits: 2 }) + " EUR";
+                document.getElementById('outSaldo').className = "crt-field-red";
+                document.getElementById('outDisponible').textContent = "0,00 EUR (BLOQUEADO)";
+                document.getElementById('outDisponible').className = "crt-field-red";
+                document.getElementById('outEstado').textContent = "BLOQUEADA (RETENCION JUDICIAL)";
+                document.getElementById('outEstado').className = "crt-field-red";
+                document.getElementById('outMensaje').textContent = "ALERTA SEGURIDAD CARGADA • PULSA ENTER";
+                document.getElementById('outMensaje').className = "crt-field-red";
+                setNarrator("LISTO", "Escenario de cuenta bloqueada preparado. Pulsa ENTER para transmitir.", 0);
+            } else if (key === 'abend') {
+                document.getElementById('outTitular').textContent = "D. CARLOS SANTOS VEGA";
+                document.getElementById('outSaldo').textContent = "---";
+                document.getElementById('outDisponible').textContent = "---";
+                document.getElementById('outEstado').textContent = "PREPARANDO EXCEPCION ASRA";
+                document.getElementById('outEstado').className = "crt-field-amber";
+                document.getElementById('outMensaje').textContent = "CODIGO ASRA LISTO • PULSA ENTER PARA ABORTAR";
+                document.getElementById('outMensaje').className = "crt-field-amber";
+                setNarrator("LISTO", "Código defectuoso listo. Pulsa ENTER para ver cómo CICS aborta con ASRA.", 0);
+            } else {
+                document.getElementById('outTitular').textContent = rec.titular;
+                document.getElementById('outSaldo').textContent = rec.saldo.toLocaleString('es-ES', { minimumFractionDigits: 2 }) + " EUR";
+                document.getElementById('outSaldo').className = "crt-field-val";
+                document.getElementById('outDisponible').textContent = rec.saldo.toLocaleString('es-ES', { minimumFractionDigits: 2 }) + " EUR";
+                document.getElementById('outDisponible').className = "crt-field-white";
+                document.getElementById('outEstado').textContent = "ACTIVA (NORMAL)";
+                document.getElementById('outEstado').className = "crt-field-val";
+                document.getElementById('outMensaje').textContent = "CONSULTA ESTÁNDAR LISTA • PULSA ENTER";
+                document.getElementById('outMensaje').className = "crt-field-amber";
+                setNarrator("LISTO", "Consulta estándar preparada. Pulsa ENTER para iniciar el ciclo.", 0);
             }
         }
 
         function loadAccount(iban) {
-            document.querySelectorAll('.chip-acc').forEach(c => c.classList.remove('active'));
-            event.target.classList.add('active');
+            selectAccountChip(iban);
             document.getElementById('inputIban').value = iban;
-            executeTransaction();
+            resetPipeline();
+
+            const rec = DB2_DATABASE[iban];
+            if (rec) {
+                document.getElementById('outTitular').textContent = rec.titular;
+                document.getElementById('outSaldo').textContent = rec.saldo.toLocaleString('es-ES', { minimumFractionDigits: 2 }) + " EUR";
+                document.getElementById('outDisponible').textContent = rec.saldo < 0 ? "0,00 EUR" : (rec.saldo.toLocaleString('es-ES', { minimumFractionDigits: 2 }) + " EUR");
+                document.getElementById('outEstado').textContent = rec.estado;
+                document.getElementById('outEstado').className = rec.bloqueada ? "crt-field-red" : (rec.saldo < 0 ? "crt-field-amber" : "crt-field-val");
+                document.getElementById('outSaldo').className = rec.bloqueada ? "crt-field-red" : (rec.saldo < 0 ? "crt-field-amber" : "crt-field-val");
+                document.getElementById('outMensaje').textContent = "CUENTA SELECCIONADA • PULSA ENTER PARA TRANSMITIR";
+                document.getElementById('outMensaje').className = "crt-field-amber";
+                setNarrator("LISTO", `Cuenta ${iban} cargada en pantalla. Pulsa ENTER para transmitir.`, 0);
+            } else {
+                document.getElementById('outTitular').textContent = "---";
+                document.getElementById('outSaldo').textContent = "---";
+                document.getElementById('outDisponible').textContent = "---";
+                document.getElementById('outEstado').textContent = "NO EXISTE EN TABLA DB2";
+                document.getElementById('outEstado').className = "crt-field-amber";
+                document.getElementById('outMensaje').textContent = "CUENTA INEXISTENTE • PULSA ENTER PARA COMPROBAR";
+                document.getElementById('outMensaje').className = "crt-field-amber";
+                setNarrator("LISTO", "Cuenta de prueba inexistente. Pulsa ENTER para ver el SQLCODE +100.", 0);
+            }
         }
 
-        function resetForm() {
-            document.getElementById('inputIban').value = "ES912100041845";
-            document.getElementById('outTitular').textContent = "---";
-            document.getElementById('outDivisa').textContent = "EUR";
-            document.getElementById('outSaldo').textContent = "---";
-            document.getElementById('outDisponible').textContent = "---";
-            document.getElementById('outEstado').textContent = "ESPERANDO TRANSACCION";
-            document.getElementById('outMensaje').textContent = "PULSAR ENTER PARA CONSULTAR";
-            document.getElementById('outMensaje').className = "crt-field-amber";
+        function resetForm(clearAll = false) {
+            if (clearAll) {
+                document.getElementById('inputIban').value = "ES912100041845";
+                document.getElementById('outTitular').textContent = "---";
+                document.getElementById('outDivisa').textContent = "EUR";
+                document.getElementById('outSaldo').textContent = "---";
+                document.getElementById('outDisponible').textContent = "---";
+                document.getElementById('outEstado').textContent = "ESPERANDO TRANSMISIÓN";
+                document.getElementById('outEstado').className = "crt-field-val";
+                document.getElementById('outMensaje').textContent = "PULSAR ENTER PARA CONSULTAR";
+                document.getElementById('outMensaje').className = "crt-field-amber";
+                setNarrator("PAUSADO", "Pantalla reiniciada. Elige una cuenta o preset y pulsa ENTER.", 0);
+            }
             resetPipeline();
         }
 
         function resetPipeline() {
             document.querySelectorAll('.pipeline-node').forEach(n => n.classList.remove('active'));
-            document.querySelectorAll('.packet-indicator').forEach(p => p.classList.remove('traveling'));
-            document.getElementById('nodeTerm').classList.add('active');
-            document.getElementById('pipeStatusTag').textContent = "IDLE";
-            document.getElementById('pipeStatusTag').className = "panel-tag panel-tag-blue";
+            document.querySelectorAll('.connector-line').forEach(l => {
+                l.classList.remove('active-down', 'active-up');
+            });
+            document.querySelectorAll('.packet-capsule').forEach(p => {
+                p.classList.remove('active-down', 'active-up');
+            });
+            const term = document.getElementById('nodeTerm');
+            if (term) term.classList.add('active');
+            const tag = document.getElementById('pipeStatusTag');
+            if (tag) {
+                tag.textContent = "IDLE";
+                tag.className = "panel-tag panel-tag-blue";
+            }
         }
 
-        // EJECUCIÓN TRANSACCIONAL ANIMADA
+        function highlightNode(id) {
+            document.querySelectorAll('.pipeline-node').forEach(n => n.classList.remove('active'));
+            const n = document.getElementById(id);
+            if (n) n.classList.add('active');
+        }
+
+        function showCapsuleDown(capId, lineId) {
+            document.querySelectorAll('.connector-line').forEach(l => l.classList.remove('active-down', 'active-up'));
+            document.querySelectorAll('.packet-capsule').forEach(p => p.classList.remove('active-down', 'active-up'));
+            const line = document.getElementById(lineId);
+            const cap = document.getElementById(capId);
+            if (line) line.classList.add('active-down');
+            if (cap) cap.classList.add('active-down');
+        }
+
+        function showCapsuleUp(capId, lineId) {
+            document.querySelectorAll('.connector-line').forEach(l => l.classList.remove('active-down', 'active-up'));
+            document.querySelectorAll('.packet-capsule').forEach(p => p.classList.remove('active-down', 'active-up'));
+            const line = document.getElementById(lineId);
+            const cap = document.getElementById(capId);
+            if (line) line.classList.add('active-up');
+            if (cap) cap.classList.add('active-up');
+        }
+
+        let isTransacting = false;
+
+        // EJECUCIÓN TRANSACCIONAL VISUAL BIDIRECCIONAL (IDA Y VUELTA)
         function executeTransaction() {
+            if (isTransacting) return;
+            isTransacting = true;
+
             const iban = document.getElementById('inputIban').value.trim();
             const code = editor.value;
-
-            // Comprobar si en el editor se ha configurado el ABEND
             const isAbend = code.includes("ABCODE('ASRA')") || code.includes("ASRA");
 
             resetPipeline();
-            document.getElementById('pipeStatusTag').textContent = "PROCESSING...";
+            document.getElementById('pipeStatusTag').textContent = "TRANSMITIENDO...";
             document.getElementById('pipeStatusTag').className = "panel-tag panel-tag-amber";
 
-            // Animación paso a paso por los 4 nodos
-            // Paso 1: Terminal
-            document.getElementById('nodeTerm').classList.add('active');
-            document.getElementById('pkt1').classList.add('traveling');
+            // PASO 1 (0ms): Terminal 3270 emite la transacción
+            highlightNode('nodeTerm');
+            setNarrator("PASO 1/4 • TERMINAL", "📤 Terminal 3270 captura el IBAN y emite la petición al canal...", 20);
 
+            // PASO 2 (650ms): Red SNA / TCP-IP transmite hacia el Data Center
             setTimeout(() => {
-                // Paso 2: Red
-                document.getElementById('nodeTerm').classList.remove('active');
-                document.getElementById('nodeNet').classList.add('active');
-                document.getElementById('pkt1').classList.remove('traveling');
-                document.getElementById('pkt2').classList.add('traveling');
-            }, 300);
+                showCapsuleDown('cap1', 'line1');
+                highlightNode('nodeNet');
+                setNarrator("PASO 2/4 • RED", "🌐 La Red SNA/IP transporta el paquete cifrado al Mainframe...", 45);
+            }, 650);
 
+            // PASO 3 (1300ms): CICS arranca la transacción y ejecuta el COBOL
             setTimeout(() => {
-                // Paso 3: CICS
-                document.getElementById('nodeNet').classList.remove('active');
-                document.getElementById('nodeCics').classList.add('active');
-                document.getElementById('pkt2').classList.remove('traveling');
-                document.getElementById('pkt3').classList.add('traveling');
-            }, 600);
+                showCapsuleDown('cap2', 'line2');
+                highlightNode('nodeCics');
+                setNarrator("PASO 3/4 • CICS", "⚙️ Región CICS despacha la tarea concurrente y ejecuta INQBAL01...", 70);
+            }, 1300);
 
+            // PASO 4 (1950ms): DB2 ejecuta la consulta SQL
             setTimeout(() => {
-                // Paso 4: DB2 y respuesta
-                document.getElementById('pkt3').classList.remove('traveling');
-                
                 if (isAbend) {
+                    showCapsuleDown('cap3', 'line3');
                     handleAbendCase();
+                    isTransacting = false;
                 } else {
-                    document.getElementById('nodeDb2').classList.add('active');
-                    handleNormalCase(iban, code);
+                    showCapsuleDown('cap3', 'line3');
+                    highlightNode('nodeDb2');
+                    setNarrator("PASO 4/4 • DB2", "🗄️ Motor DB2 ejecuta SELECT en TB_CUENTAS y extrae el registro...", 88);
+
+                    // RETORNO (2600ms): El resultado viaja de vuelta hacia arriba (DB2 -> CICS -> Red -> Terminal)
+                    setTimeout(() => {
+                        showCapsuleUp('cap3', 'line3');
+                        setNarrator("RETORNO • RESPUESTA", "📥 El resultado de saldo viaja de vuelta hacia el Terminal 3270...", 94);
+
+                        setTimeout(() => {
+                            showCapsuleUp('cap2', 'line2');
+                        }, 250);
+
+                        setTimeout(() => {
+                            showCapsuleUp('cap1', 'line1');
+                        }, 500);
+
+                        setTimeout(() => {
+                            highlightNode('nodeTerm');
+                            handleNormalCase(iban, code);
+                            document.querySelectorAll('.packet-capsule').forEach(p => p.classList.remove('active-down', 'active-up'));
+                            document.querySelectorAll('.connector-line').forEach(l => l.classList.remove('active-down', 'active-up'));
+                            setNarrator("COMPLETADO", "✅ Transacción completada en 0.012s. Datos reflejados en el Terminal 3270.", 100);
+                            isTransacting = false;
+                        }, 800);
+                    }, 650);
                 }
-            }, 900);
+            }, 1950);
         }
 
         function handleAbendCase() {
-            document.getElementById('nodeCics').classList.add('active');
+            highlightNode('nodeCics');
             document.getElementById('pipeStatusTag').textContent = "ABEND ASRA";
             document.getElementById('pipeStatusTag').className = "panel-tag panel-tag-amber";
             
             document.getElementById('metricSql').textContent = "-999";
             document.getElementById('metricAbend').textContent = "ASRA";
             document.getElementById('metricAbend').style.color = "#ff3344";
-            document.getElementById('sqlcaMeta').textContent = "ABEND TRAPPED IN CICS REGION";
+            document.getElementById('sqlcaMeta').textContent = "ABEND ATRAPADO EN REGIÓN CICS";
 
             document.getElementById('outTitular').textContent = "TERMINATION ERROR";
-            document.getElementById('outSaldo').textContent = "0.00 EUR";
-            document.getElementById('outDisponible').textContent = "0.00 EUR";
-            document.getElementById('outEstado').textContent = "TRANSACTION TERMINATED BY CICS";
-            document.getElementById('outMensaje').textContent = "ABEND ASRA: DATA EXCEPTION (INVALID PACKED DECIMAL)";
+            document.getElementById('outSaldo').textContent = "0,00 EUR";
+            document.getElementById('outDisponible').textContent = "0,00 EUR";
+            document.getElementById('outEstado').textContent = "TAREA INTERRUMPIDA POR CICS";
+            document.getElementById('outEstado').className = "crt-field-red";
+            document.getElementById('outMensaje').textContent = "ABEND ASRA: DATA EXCEPTION (ERROR NUMÉRICO COMP-3)";
             document.getElementById('outMensaje').className = "crt-field-red";
+
+            setNarrator("ABEND ASRA", "🚨 CICS interceptó un error fatal de formato numérico y abortó la tarea de forma segura.", 100);
         }
 
         function handleNormalCase(iban, code) {
@@ -1487,11 +1711,11 @@ Genera una solución bancaria completa para la transacción de consulta de saldo
 
             if (record) {
                 document.getElementById('metricSql').textContent = "000";
-                document.getElementById('sqlcaMeta').textContent = "SQLCODE: +000 (SUCCESSFUL)";
+                document.getElementById('sqlcaMeta').textContent = "SQLCODE: +000 (EXITO)";
                 document.getElementById('outTitular').textContent = record.titular;
                 document.getElementById('outDivisa').textContent = record.divisa;
                 document.getElementById('outSaldo').textContent = record.saldo.toLocaleString('es-ES', { minimumFractionDigits: 2 }) + " " + record.divisa;
-                document.getElementById('outDisponible').textContent = record.saldo.toLocaleString('es-ES', { minimumFractionDigits: 2 }) + " " + record.divisa;
+                document.getElementById('outDisponible').textContent = record.saldo < 0 ? "0,00 EUR" : (record.saldo.toLocaleString('es-ES', { minimumFractionDigits: 2 }) + " " + record.divisa);
                 document.getElementById('outEstado').textContent = record.estado;
 
                 // Extraer mensaje personalizado si el usuario editó WS-MENSAJE-RESPUESTA en el editor
@@ -1502,12 +1726,21 @@ Genera una solución bancaria completa para la transacción de consulta de saldo
                 }
 
                 if (record.saldo < 0) {
-                    document.getElementById('outMensaje').textContent = customMsg.includes('DESCUBIERTO') ? customMsg : "ALERTA: POSICION DEUDORA EN CUENTA";
+                    document.getElementById('outSaldo').className = "crt-field-amber";
+                    document.getElementById('outDisponible').className = "crt-field-amber";
+                    document.getElementById('outEstado').className = "crt-field-amber";
+                    document.getElementById('outMensaje').textContent = customMsg.includes('DESCUBIERTO') || customMsg.includes('DEUDOR') ? customMsg : "ALERTA: CLIENTE EN POSICION DEUDORA";
                     document.getElementById('outMensaje').className = "crt-field-amber";
                 } else if (record.bloqueada) {
-                    document.getElementById('outMensaje').textContent = customMsg.includes('BLOQUE') ? customMsg : "CUENTA RETENIDA POR SEGURIDAD";
+                    document.getElementById('outSaldo').className = "crt-field-red";
+                    document.getElementById('outDisponible').className = "crt-field-red";
+                    document.getElementById('outEstado').className = "crt-field-red";
+                    document.getElementById('outMensaje').textContent = customMsg.includes('BLOQUE') ? customMsg : "CUENTA RETENIDA POR MEDIDA JUDICIAL";
                     document.getElementById('outMensaje').className = "crt-field-red";
                 } else {
+                    document.getElementById('outSaldo').className = "crt-field-val";
+                    document.getElementById('outDisponible').className = "crt-field-white";
+                    document.getElementById('outEstado').className = "crt-field-val";
                     document.getElementById('outMensaje').textContent = customMsg;
                     document.getElementById('outMensaje').className = "crt-field-val";
                 }
@@ -1516,15 +1749,15 @@ Genera una solución bancaria completa para la transacción de consulta de saldo
                 document.getElementById('metricSql').textContent = "+100";
                 document.getElementById('sqlcaMeta').textContent = "SQLCODE: +100 (ROW NOT FOUND)";
                 document.getElementById('outTitular').textContent = "CLIENTE NO ENCONTRADO";
-                document.getElementById('outSaldo').textContent = "0.00 EUR";
-                document.getElementById('outDisponible').textContent = "0.00 EUR";
-                document.getElementById('outEstado').textContent = "NO EXISTE EN DB2";
-                document.getElementById('outMensaje').textContent = "SQLCODE +100: CUENTA INEXISTENTE EN TABLA";
+                document.getElementById('outSaldo').textContent = "0,00 EUR";
+                document.getElementById('outDisponible').textContent = "0,00 EUR";
+                document.getElementById('outEstado').textContent = "INEXISTENTE EN DB2";
+                document.getElementById('outEstado').className = "crt-field-amber";
+                document.getElementById('outMensaje').textContent = "SQLCODE +100: CUENTA NO REGISTRADA EN TABLA";
                 document.getElementById('outMensaje').className = "crt-field-amber";
             }
 
-            // Simular variación aleatoria de tiempo de CPU CICS
-            const randCpu = (0.0010 + Math.random() * 0.0008).toFixed(4);
+            const randCpu = (0.0010 + Math.random() * 0.0006).toFixed(4);
             document.getElementById('metricCpu').textContent = randCpu + "s";
             document.getElementById('metricTask').textContent = "#" + Math.floor(40000 + Math.random() * 20000);
         }
@@ -1533,12 +1766,6 @@ Genera una solución bancaria completa para la transacción de consulta de saldo
             executeTransaction();
         }
 
-        function toggleNoise() {
-            const screen = document.getElementById('crtDisplay');
-            screen.style.textShadow = screen.style.textShadow ? "" : "0 0 10px #33ff33, 0 0 20px #33ff33";
-        }
-
-        // Permite presionar Enter en el input para disparar la transacción
         document.getElementById('inputIban').addEventListener('keydown', function(e) {
             if (e.key === 'Enter') {
                 executeTransaction();
