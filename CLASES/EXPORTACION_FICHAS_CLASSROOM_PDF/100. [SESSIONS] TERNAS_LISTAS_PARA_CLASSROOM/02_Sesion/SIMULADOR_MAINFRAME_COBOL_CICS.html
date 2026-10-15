@@ -634,6 +634,35 @@
             line-height: 1.35;
         }
 
+        .btn-step {
+            background: linear-gradient(180deg, #0284c7 0%, #0369a1 100%);
+            border: 1px solid #38bdf8;
+            color: #ffffff;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .btn-step:hover {
+            background: #0ea5e9;
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.4);
+        }
+
+        .btn-step-auto {
+            background: #1e293b;
+            border-color: #475569;
+            color: #cbd5e1;
+        }
+
+        .btn-step-auto:hover {
+            border-color: var(--primary);
+            color: #fff;
+        }
+
         .bus-progress-bar {
             height: 4px;
             background: #1e293b;
@@ -1035,9 +1064,10 @@
 
             <!-- Controles del terminal -->
             <div class="crt-controls">
-                <div class="crt-btn-row" style="grid-template-columns: 1.8fr 1fr;">
-                    <button class="btn-3270 btn-enter" onclick="executeTransaction()">⚡ ENTER (Transmitir)</button>
-                    <button class="btn-3270" onclick="resetForm(true)">🔄 Limpiar Pantalla</button>
+                <div class="crt-btn-row">
+                    <button class="btn-3270 btn-enter" onclick="executeTransaction(false)">⚡ ENTER (Auto)</button>
+                    <button class="btn-3270 btn-step" onclick="advanceStep()">⏩ Siguiente Paso</button>
+                    <button class="btn-3270" onclick="resetForm(true)">🔄 Limpiar</button>
                 </div>
 
                 <!-- Selector de Cuentas Preconfiguradas -->
@@ -1063,10 +1093,16 @@
             </div>
 
             <div class="pipeline-container">
-                <!-- Narrador Didáctico Superior -->
+                <!-- Narrador Didáctico Superior con Control Paso a Paso -->
                 <div class="bus-narrator">
-                    <span class="bus-narrator-badge" id="narratorBadge">PAUSADO</span>
-                    <span class="bus-narrator-text" id="narratorText">Elige una cuenta o preset y pulsa ENTER para iniciar el ciclo transaccional.</span>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
+                        <span class="bus-narrator-badge" id="narratorBadge">PAUSADO</span>
+                        <div style="display: flex; gap: 6px;">
+                            <button class="btn-step" id="btnNextStep" onclick="advanceStep()">⏩ Siguiente Paso</button>
+                            <button class="btn-step btn-step-auto" onclick="executeTransaction(false)">⚡ Auto</button>
+                        </div>
+                    </div>
+                    <span class="bus-narrator-text" id="narratorText">Elige una cuenta o preset y pulsa «Siguiente Paso ⏩» o «ENTER (Auto)» para iniciar el ciclo transaccional.</span>
                     <div class="bus-progress-bar">
                         <div class="bus-progress-fill" id="narratorProgress"></div>
                     </div>
@@ -1218,9 +1254,11 @@
                 <div class="instr-step">
                     <div class="step-num">2</div>
                     <div class="step-body">
-                        <div class="step-title">Pulsa «⚡ ENTER (Transmitir)»</div>
+                        <div class="step-title">Pulsa «⏩ Paso a Paso» o «⚡ Auto»</div>
                         <p class="step-desc">
-                            Mira la columna central (Bus Transaccional): un pulso luminoso viaja del <strong>Terminal 3270</strong> ➔ <strong>Red</strong> ➔ <strong>CICS</strong> ➔ <strong>DB2</strong> en menos de 0,01 segundos.
+                            Puedes observar el ciclo transaccional a tu ritmo:
+                            <br>• <strong>⏩ Paso a Paso:</strong> Avanza nodo por nodo (Terminal ➔ Red ➔ CICS ➔ DB2 ➔ Retorno) para inspeccionar cada etapa.
+                            <br>• <strong>⚡ Auto:</strong> Ejecuta el ciclo completo automáticamente en 1 segundo.
                         </p>
                     </div>
                 </div>
@@ -1469,104 +1507,73 @@ Genera una solución bancaria completa para la transacción de consulta de saldo
             });
         }
 
+        let currentStep = 0;
+        let isTransacting = false;
+
+        function clearTerminalOutputs() {
+            document.getElementById('outTitular').textContent = "---";
+            document.getElementById('outDivisa').textContent = "EUR";
+            document.getElementById('outSaldo').textContent = "---";
+            document.getElementById('outSaldo').className = "crt-field-val";
+            document.getElementById('outDisponible').textContent = "---";
+            document.getElementById('outDisponible').className = "crt-field-white";
+            document.getElementById('outEstado').textContent = "ESPERANDO TRANSMISIÓN";
+            document.getElementById('outEstado').className = "crt-field-val";
+            document.getElementById('outMensaje').textContent = "PULSA «SIGUIENTE PASO ⏩» O «ENTER (AUTO)»";
+            document.getElementById('outMensaje').className = "crt-field-amber";
+        }
+
         function loadPreset(key) {
             document.querySelectorAll('.btn-preset').forEach(b => b.classList.remove('active'));
-            event.target.classList.add('active');
+            if (event && event.target) event.target.classList.add('active');
             editor.value = PRESETS[key];
             
             const targetIban = PRESET_ACCOUNTS[key];
             selectAccountChip(targetIban);
             document.getElementById('inputIban').value = targetIban;
+            
+            currentStep = 0;
             resetPipeline();
+            clearTerminalOutputs();
 
-            const rec = DB2_DATABASE[targetIban];
+            const btnNext = document.getElementById('btnNextStep');
+            if (btnNext) btnNext.textContent = "⏩ Siguiente Paso";
+
             if (key === 'overdraft') {
-                document.getElementById('outTitular').textContent = rec.titular;
-                document.getElementById('outSaldo').textContent = rec.saldo.toLocaleString('es-ES', { minimumFractionDigits: 2 }) + " EUR";
-                document.getElementById('outSaldo').className = "crt-field-amber";
-                document.getElementById('outDisponible').textContent = "0,00 EUR (AGOTADO)";
-                document.getElementById('outDisponible').className = "crt-field-amber";
-                document.getElementById('outEstado').textContent = "EN DESCUBIERTO (DEUDA)";
-                document.getElementById('outEstado').className = "crt-field-amber";
-                document.getElementById('outMensaje').textContent = "ESCENARIO DEUDOR CARGADO • PULSA ENTER";
-                document.getElementById('outMensaje').className = "crt-field-amber";
-                setNarrator("LISTO", "Escenario de cuenta en descubierto preparado. Pulsa ENTER para transmitir.", 0);
+                setNarrator("LISTO", "Escenario de cuenta con descubierto preparado en buffer. Pulsa «Siguiente Paso ⏩» o «ENTER (Auto)» para iniciar.", 0);
             } else if (key === 'blocked') {
-                document.getElementById('outTitular').textContent = rec.titular;
-                document.getElementById('outSaldo').textContent = rec.saldo.toLocaleString('es-ES', { minimumFractionDigits: 2 }) + " EUR";
-                document.getElementById('outSaldo').className = "crt-field-red";
-                document.getElementById('outDisponible').textContent = "0,00 EUR (BLOQUEADO)";
-                document.getElementById('outDisponible').className = "crt-field-red";
-                document.getElementById('outEstado').textContent = "BLOQUEADA (RETENCION JUDICIAL)";
-                document.getElementById('outEstado').className = "crt-field-red";
-                document.getElementById('outMensaje').textContent = "ALERTA SEGURIDAD CARGADA • PULSA ENTER";
-                document.getElementById('outMensaje').className = "crt-field-red";
-                setNarrator("LISTO", "Escenario de cuenta bloqueada preparado. Pulsa ENTER para transmitir.", 0);
+                setNarrator("LISTO", "Escenario de cuenta bloqueada preparado en buffer. Pulsa «Siguiente Paso ⏩» o «ENTER (Auto)» para iniciar.", 0);
             } else if (key === 'abend') {
-                document.getElementById('outTitular').textContent = "D. CARLOS SANTOS VEGA";
-                document.getElementById('outSaldo').textContent = "---";
-                document.getElementById('outDisponible').textContent = "---";
-                document.getElementById('outEstado').textContent = "PREPARANDO EXCEPCION ASRA";
-                document.getElementById('outEstado').className = "crt-field-amber";
-                document.getElementById('outMensaje').textContent = "CODIGO ASRA LISTO • PULSA ENTER PARA ABORTAR";
-                document.getElementById('outMensaje').className = "crt-field-amber";
-                setNarrator("LISTO", "Código defectuoso listo. Pulsa ENTER para ver cómo CICS aborta con ASRA.", 0);
+                setNarrator("LISTO", "Código defectuoso (ASRA) cargado. Pulsa «Siguiente Paso ⏩» o «ENTER (Auto)» para ver el ABEND en CICS.", 0);
             } else {
-                document.getElementById('outTitular').textContent = rec.titular;
-                document.getElementById('outSaldo').textContent = rec.saldo.toLocaleString('es-ES', { minimumFractionDigits: 2 }) + " EUR";
-                document.getElementById('outSaldo').className = "crt-field-val";
-                document.getElementById('outDisponible').textContent = rec.saldo.toLocaleString('es-ES', { minimumFractionDigits: 2 }) + " EUR";
-                document.getElementById('outDisponible').className = "crt-field-white";
-                document.getElementById('outEstado').textContent = "ACTIVA (NORMAL)";
-                document.getElementById('outEstado').className = "crt-field-val";
-                document.getElementById('outMensaje').textContent = "CONSULTA ESTÁNDAR LISTA • PULSA ENTER";
-                document.getElementById('outMensaje').className = "crt-field-amber";
-                setNarrator("LISTO", "Consulta estándar preparada. Pulsa ENTER para iniciar el ciclo.", 0);
+                setNarrator("LISTO", "Consulta estándar preparada en buffer. Pulsa «Siguiente Paso ⏩» o «ENTER (Auto)» para iniciar.", 0);
             }
         }
 
         function loadAccount(iban) {
             selectAccountChip(iban);
             document.getElementById('inputIban').value = iban;
+            currentStep = 0;
             resetPipeline();
+            clearTerminalOutputs();
+            
+            const btnNext = document.getElementById('btnNextStep');
+            if (btnNext) btnNext.textContent = "⏩ Siguiente Paso";
 
-            const rec = DB2_DATABASE[iban];
-            if (rec) {
-                document.getElementById('outTitular').textContent = rec.titular;
-                document.getElementById('outSaldo').textContent = rec.saldo.toLocaleString('es-ES', { minimumFractionDigits: 2 }) + " EUR";
-                document.getElementById('outDisponible').textContent = rec.saldo < 0 ? "0,00 EUR" : (rec.saldo.toLocaleString('es-ES', { minimumFractionDigits: 2 }) + " EUR");
-                document.getElementById('outEstado').textContent = rec.estado;
-                document.getElementById('outEstado').className = rec.bloqueada ? "crt-field-red" : (rec.saldo < 0 ? "crt-field-amber" : "crt-field-val");
-                document.getElementById('outSaldo').className = rec.bloqueada ? "crt-field-red" : (rec.saldo < 0 ? "crt-field-amber" : "crt-field-val");
-                document.getElementById('outMensaje').textContent = "CUENTA SELECCIONADA • PULSA ENTER PARA TRANSMITIR";
-                document.getElementById('outMensaje').className = "crt-field-amber";
-                setNarrator("LISTO", `Cuenta ${iban} cargada en pantalla. Pulsa ENTER para transmitir.`, 0);
-            } else {
-                document.getElementById('outTitular').textContent = "---";
-                document.getElementById('outSaldo').textContent = "---";
-                document.getElementById('outDisponible').textContent = "---";
-                document.getElementById('outEstado').textContent = "NO EXISTE EN TABLA DB2";
-                document.getElementById('outEstado').className = "crt-field-amber";
-                document.getElementById('outMensaje').textContent = "CUENTA INEXISTENTE • PULSA ENTER PARA COMPROBAR";
-                document.getElementById('outMensaje').className = "crt-field-amber";
-                setNarrator("LISTO", "Cuenta de prueba inexistente. Pulsa ENTER para ver el SQLCODE +100.", 0);
-            }
+            setNarrator("LISTO", `Cuenta ${iban} cargada en buffer del terminal. Pulsa «Siguiente Paso ⏩» o «ENTER (Auto)» para transmitir.`, 0);
         }
 
         function resetForm(clearAll = false) {
+            currentStep = 0;
             if (clearAll) {
                 document.getElementById('inputIban').value = "ES912100041845";
-                document.getElementById('outTitular').textContent = "---";
-                document.getElementById('outDivisa').textContent = "EUR";
-                document.getElementById('outSaldo').textContent = "---";
-                document.getElementById('outDisponible').textContent = "---";
-                document.getElementById('outEstado').textContent = "ESPERANDO TRANSMISIÓN";
-                document.getElementById('outEstado').className = "crt-field-val";
-                document.getElementById('outMensaje').textContent = "PULSAR ENTER PARA CONSULTAR";
-                document.getElementById('outMensaje').className = "crt-field-amber";
-                setNarrator("PAUSADO", "Pantalla reiniciada. Elige una cuenta o preset y pulsa ENTER.", 0);
+                selectAccountChip("ES912100041845");
+                clearTerminalOutputs();
+                setNarrator("PAUSADO", "Pantalla reiniciada. Elige una cuenta o preset y pulsa «Siguiente Paso ⏩» o «ENTER (Auto)».", 0);
             }
             resetPipeline();
+            const btnNext = document.getElementById('btnNextStep');
+            if (btnNext) btnNext.textContent = "⏩ Siguiente Paso";
         }
 
         function resetPipeline() {
@@ -1581,7 +1588,7 @@ Genera una solución bancaria completa para la transacción de consulta de saldo
             if (term) term.classList.add('active');
             const tag = document.getElementById('pipeStatusTag');
             if (tag) {
-                tag.textContent = "IDLE";
+                tag.textContent = "READY";
                 tag.className = "panel-tag panel-tag-blue";
             }
         }
@@ -1610,12 +1617,86 @@ Genera una solución bancaria completa para la transacción de consulta de saldo
             if (cap) cap.classList.add('active-up');
         }
 
-        let isTransacting = false;
+        // CONTROL PASO A PASO (STEP-BY-STEP)
+        function advanceStep() {
+            if (isTransacting) return;
+            const iban = document.getElementById('inputIban').value.trim();
+            const code = editor.value;
+            const isAbend = code.includes("ABCODE('ASRA')") || code.includes("ASRA");
+            const btnNext = document.getElementById('btnNextStep');
 
-        // EJECUCIÓN TRANSACCIONAL VISUAL BIDIRECCIONAL (IDA Y VUELTA)
-        function executeTransaction() {
+            if (currentStep === 0) {
+                // PASO 1: TERMINAL 3270
+                currentStep = 1;
+                resetPipeline();
+                highlightNode('nodeTerm');
+                document.getElementById('pipeStatusTag').textContent = "PASO 1/5 • TERMINAL";
+                document.getElementById('pipeStatusTag').className = "panel-tag panel-tag-amber";
+                document.getElementById('outMensaje').textContent = "EMITIENDO BUFFER BMS AL CANAL...";
+                document.getElementById('outMensaje').className = "crt-field-amber";
+                setNarrator("PASO 1/5 • TERMINAL", "📤 [1/5] El terminal 3270 captura el IBAN y prepara la trama BMS. Pulsa «Siguiente Paso ⏩» para enviar a la Red.", 20);
+                if (btnNext) btnNext.textContent = "⏩ Paso 2: Red SNA";
+            } else if (currentStep === 1) {
+                // PASO 2: RED SNA / TCP-IP
+                currentStep = 2;
+                showCapsuleDown('cap1', 'line1');
+                highlightNode('nodeNet');
+                document.getElementById('pipeStatusTag').textContent = "PASO 2/5 • RED SNA/IP";
+                document.getElementById('pipeStatusTag').className = "panel-tag panel-tag-amber";
+                setNarrator("PASO 2/5 • RED SNA", "🌐 [2/5] La trama viaja por la Red SNA/IP cifrada hacia el Data Center del Mainframe. Pulsa «Siguiente Paso ⏩» para entrar a CICS.", 40);
+                if (btnNext) btnNext.textContent = "⏩ Paso 3: CICS TS";
+            } else if (currentStep === 2) {
+                // PASO 3: REGION CICS & COBOL
+                currentStep = 3;
+                showCapsuleDown('cap2', 'line2');
+                highlightNode('nodeCics');
+                document.getElementById('pipeStatusTag').textContent = "PASO 3/5 • CICS TS";
+                document.getElementById('pipeStatusTag').className = "panel-tag panel-tag-amber";
+                setNarrator("PASO 3/5 • CICS TS", "⚙️ [3/5] La región CICS recibe la transacción CONS y ejecuta el programa COBOL INQBAL01. Pulsa «Siguiente Paso ⏩» para consultar DB2.", 60);
+                if (btnNext) btnNext.textContent = "⏩ Paso 4: DB2 SQL";
+            } else if (currentStep === 3) {
+                // PASO 4: MOTOR DB2 SQL
+                if (isAbend) {
+                    showCapsuleDown('cap3', 'line3');
+                    handleAbendCase();
+                    currentStep = 0;
+                    if (btnNext) btnNext.textContent = "⏩ Siguiente Paso";
+                    return;
+                }
+                currentStep = 4;
+                showCapsuleDown('cap3', 'line3');
+                highlightNode('nodeDb2');
+                document.getElementById('pipeStatusTag').textContent = "PASO 4/5 • MOTOR DB2";
+                document.getElementById('pipeStatusTag').className = "panel-tag panel-tag-amber";
+                setNarrator("PASO 4/5 • DB2 SQL", "🗄️ [4/5] DB2 ejecuta la sentencia SQL SELECT sobre TB_CUENTAS y localiza el saldo. Pulsa «Siguiente Paso ⏩» para devolver el resultado al terminal.", 80);
+                if (btnNext) btnNext.textContent = "⏩ Paso 5: Retorno";
+            } else if (currentStep === 4) {
+                // PASO 5: RETORNO BIDIRECCIONAL HACIA EL TERMINAL 3270
+                currentStep = 5;
+                document.getElementById('pipeStatusTag').textContent = "PASO 5/5 • RETORNO";
+                document.getElementById('pipeStatusTag').className = "panel-tag panel-tag-green";
+                setNarrator("PASO 5/5 • RETORNO", "📥 [5/5] Los datos suben de vuelta por CICS y la red hacia la pantalla 3270...", 95);
+                
+                showCapsuleUp('cap3', 'line3');
+                setTimeout(() => showCapsuleUp('cap2', 'line2'), 250);
+                setTimeout(() => showCapsuleUp('cap1', 'line1'), 500);
+                setTimeout(() => {
+                    highlightNode('nodeTerm');
+                    handleNormalCase(iban, code);
+                    document.querySelectorAll('.packet-capsule').forEach(p => p.classList.remove('active-down', 'active-up'));
+                    document.querySelectorAll('.connector-line').forEach(l => l.classList.remove('active-down', 'active-up'));
+                    setNarrator("COMPLETADO", "✅ Ciclo completado. El Terminal 3270 ahora muestra los datos recibidos de DB2.", 100);
+                    currentStep = 0;
+                    if (btnNext) btnNext.textContent = "⏩ Siguiente Paso";
+                }, 800);
+            }
+        }
+
+        // EJECUCIÓN AUTOMÁTICA COMPLETA (MODO AUTO)
+        function executeTransaction(isStepMode = false) {
             if (isTransacting) return;
             isTransacting = true;
+            currentStep = 0;
 
             const iban = document.getElementById('inputIban').value.trim();
             const code = editor.value;
@@ -1625,25 +1706,25 @@ Genera una solución bancaria completa para la transacción de consulta de saldo
             document.getElementById('pipeStatusTag').textContent = "TRANSMITIENDO...";
             document.getElementById('pipeStatusTag').className = "panel-tag panel-tag-amber";
 
-            // PASO 1 (0ms): Terminal 3270 emite la transacción
+            // PASO 1 (0ms): Terminal 3270
             highlightNode('nodeTerm');
-            setNarrator("PASO 1/4 • TERMINAL", "📤 Terminal 3270 captura el IBAN y emite la petición al canal...", 20);
+            setNarrator("PASO 1/5 • TERMINAL", "📤 [1/5] Terminal 3270 captura el IBAN y emite la petición al canal...", 20);
 
-            // PASO 2 (650ms): Red SNA / TCP-IP transmite hacia el Data Center
+            // PASO 2 (600ms): Red SNA / TCP-IP
             setTimeout(() => {
                 showCapsuleDown('cap1', 'line1');
                 highlightNode('nodeNet');
-                setNarrator("PASO 2/4 • RED", "🌐 La Red SNA/IP transporta el paquete cifrado al Mainframe...", 45);
-            }, 650);
+                setNarrator("PASO 2/5 • RED", "🌐 [2/5] La Red SNA/IP transporta el paquete cifrado al Mainframe...", 45);
+            }, 600);
 
-            // PASO 3 (1300ms): CICS arranca la transacción y ejecuta el COBOL
+            // PASO 3 (1200ms): CICS TS & COBOL
             setTimeout(() => {
                 showCapsuleDown('cap2', 'line2');
                 highlightNode('nodeCics');
-                setNarrator("PASO 3/4 • CICS", "⚙️ Región CICS despacha la tarea concurrente y ejecuta INQBAL01...", 70);
-            }, 1300);
+                setNarrator("PASO 3/5 • CICS", "⚙️ [3/5] Región CICS despacha la tarea concurrente y ejecuta INQBAL01...", 70);
+            }, 1200);
 
-            // PASO 4 (1950ms): DB2 ejecuta la consulta SQL
+            // PASO 4 (1800ms): DB2 SQL
             setTimeout(() => {
                 if (isAbend) {
                     showCapsuleDown('cap3', 'line3');
@@ -1652,20 +1733,15 @@ Genera una solución bancaria completa para la transacción de consulta de saldo
                 } else {
                     showCapsuleDown('cap3', 'line3');
                     highlightNode('nodeDb2');
-                    setNarrator("PASO 4/4 • DB2", "🗄️ Motor DB2 ejecuta SELECT en TB_CUENTAS y extrae el registro...", 88);
+                    setNarrator("PASO 4/5 • DB2", "🗄️ [4/5] Motor DB2 ejecuta SELECT en TB_CUENTAS y extrae el registro...", 88);
 
-                    // RETORNO (2600ms): El resultado viaja de vuelta hacia arriba (DB2 -> CICS -> Red -> Terminal)
+                    // RETORNO (2400ms): Subida de vuelta al Terminal
                     setTimeout(() => {
                         showCapsuleUp('cap3', 'line3');
-                        setNarrator("RETORNO • RESPUESTA", "📥 El resultado de saldo viaja de vuelta hacia el Terminal 3270...", 94);
+                        setNarrator("RETORNO • RESPUESTA", "📥 [5/5] El resultado de saldo viaja de vuelta hacia el Terminal 3270...", 94);
 
-                        setTimeout(() => {
-                            showCapsuleUp('cap2', 'line2');
-                        }, 250);
-
-                        setTimeout(() => {
-                            showCapsuleUp('cap1', 'line1');
-                        }, 500);
+                        setTimeout(() => showCapsuleUp('cap2', 'line2'), 250);
+                        setTimeout(() => showCapsuleUp('cap1', 'line1'), 500);
 
                         setTimeout(() => {
                             highlightNode('nodeTerm');
@@ -1675,9 +1751,9 @@ Genera una solución bancaria completa para la transacción de consulta de saldo
                             setNarrator("COMPLETADO", "✅ Transacción completada en 0.012s. Datos reflejados en el Terminal 3270.", 100);
                             isTransacting = false;
                         }, 800);
-                    }, 650);
+                    }, 600);
                 }
-            }, 1950);
+            }, 1800);
         }
 
         function handleAbendCase() {
@@ -1763,12 +1839,12 @@ Genera una solución bancaria completa para la transacción de consulta de saldo
         }
 
         function compileAndRun() {
-            executeTransaction();
+            executeTransaction(false);
         }
 
         document.getElementById('inputIban').addEventListener('keydown', function(e) {
             if (e.key === 'Enter') {
-                executeTransaction();
+                executeTransaction(false);
             }
         });
 
