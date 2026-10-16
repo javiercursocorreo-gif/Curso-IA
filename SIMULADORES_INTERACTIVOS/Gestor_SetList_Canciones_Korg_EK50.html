@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KORG EK-50 — Gestor de Repertorio y Set List</title>
+<style>
+  :root {
+    --bg-page: #f8fafc;
+    --card-bg: #ffffff;
+    --border-color: #e2e8f0;
+    --text-main: #0f172a;
+    --text-muted: #64748b;
+    --korg-red: #dc2626;
+    --korg-gold: #d97706;
+    --korg-blue: #2563eb;
+    --accent-bg: #eff6ff;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background-color: var(--bg-page);
+    color: var(--text-main);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.5;
+    padding: 24px;
+  }
+  .app-container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  /* HEADER */
+  header {
+    background: #1e293b;
+    color: white;
+    border-radius: 12px;
+    padding: 24px 30px;
+    margin-bottom: 24px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  header h1 {
+    font-size: 24px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  header .korg-tag {
+    background: var(--korg-red);
+    color: white;
+    font-size: 13px;
+    font-weight: 800;
+    padding: 3px 8px;
+    border-radius: 6px;
+    letter-spacing: 1px;
+  }
+  header p {
+    color: #94a3b8;
+    font-size: 14px;
+    margin-top: 4px;
+  }
+  .header-actions {
+    display: flex;
+    gap: 10px;
+  }
+  .btn-header {
+    background: #334155;
+    color: white;
+    border: 1px solid #475569;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-header:hover {
+    background: #475569;
+  }
+
+  /* GUÍA RÁPIDA PANEL */
+  .guide-card {
+    background: #fffbeb;
+    border: 1px solid #fef3c7;
+    border-left: 5px solid var(--korg-gold);
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin-bottom: 24px;
+    font-size: 14px;
+    color: #92400e;
+  }
+  .guide-card h3 {
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 6px;
+    color: #78350f;
+  }
+  .guide-card ol {
+    margin-left: 20px;
+    margin-top: 6px;
+  }
+  .guide-card li {
+    margin-bottom: 4px;
+  }
+
+  /* LAYOUT PRINCIPAL: 2 COLUMNAS */
+  .main-layout {
+    display: grid;
+    grid-template-columns: 360px 1fr;
+    gap: 24px;
+  }
+  @media (max-width: 900px) {
+    .main-layout { grid-template-columns: 1fr; }
+  }
+
+  /* BANCO Y CANCIONES (SIDEBAR) */
+  .sidebar-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 18px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  }
+  .sidebar-card h2 {
+    font-size: 17px;
+    font-weight: 700;
+    margin-bottom: 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .bank-group {
+    margin-bottom: 18px;
+  }
+  .bank-title {
+    font-size: 12px;
+    font-weight: 800;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .song-item {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin-bottom: 8px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .song-item:hover {
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+    transform: translateY(-1px);
+  }
+  .song-item.active {
+    background: #eff6ff;
+    border-color: var(--korg-blue);
+    box-shadow: 0 0 0 1px var(--korg-blue);
+  }
+  .song-info {
+    display: flex;
+    flex-direction: column;
+  }
+  .song-name {
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--text-main);
+  }
+  .song-artist {
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+  .btn-korg-tag {
+    background: #1e293b;
+    color: white;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 8px;
+    border-radius: 6px;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+  }
+  .song-item.active .btn-korg-tag {
+    background: var(--korg-blue);
+  }
+
+  /* DETALLE DE CANCIÓN (FICHA DE INTERPRETACIÓN) */
+  .song-detail {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 28px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  }
+  .detail-header {
+    border-bottom: 2px solid #f1f5f9;
+    padding-bottom: 18px;
+    margin-bottom: 22px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  .detail-title h2 {
+    font-size: 24px;
+    font-weight: 800;
+    color: #0f172a;
+  }
+  .detail-title p {
+    color: #64748b;
+    font-size: 15px;
+    margin-top: 2px;
+  }
+  .setlist-badge-large {
+    background: #fef2f2;
+    border: 2px solid #f87171;
+    color: var(--korg-red);
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-weight: 800;
+    font-size: 14px;
+    letter-spacing: 0.5px;
+    text-align: center;
+  }
+
+  /* TABLA DE PARÁMETROS KORG */
+  .params-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 14px;
+    margin-bottom: 26px;
+  }
+  .param-box {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 12px 14px;
+  }
+  .param-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+  }
+  .param-value {
+    font-size: 16px;
+    font-weight: 800;
+    color: #0f172a;
+  }
+  .param-hint {
+    font-size: 11px;
+    color: #94a3b8;
+    margin-top: 2px;
+  }
+
+  /* ESQUEMA DE ACORDES Y COMPASES */
+  .section-box {
+    margin-bottom: 24px;
+  }
+  .section-header-tag {
+    font-size: 13px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: #1e293b;
+    background: #e2e8f0;
+    padding: 4px 10px;
+    border-radius: 6px;
+    display: inline-block;
+    margin-bottom: 12px;
+  }
+  .measures-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 6px;
+    margin-bottom: 14px;
+  }
+  .measure-cell {
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    padding: 10px 12px;
+    text-align: center;
+    width: 25%;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+  }
+  .measure-cell.misterioso {
+    border: 2px solid #ef4444;
+    background: #fef2f2;
+  }
+  .measure-chord {
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--korg-blue);
+    margin-bottom: 4px;
+  }
+  .measure-cell.misterioso .measure-chord {
+    color: var(--korg-red);
+  }
+  .measure-text {
+    font-size: 11px;
+    color: #64748b;
+    font-style: italic;
+  }
+  .measure-notes {
+    font-size: 12px;
+    font-weight: 700;
+    color: #334155;
+    margin-top: 4px;
+    font-family: monospace;
+  }
+
+  /* INSTRUCCIONES PRÁCTICAS */
+  .tips-box {
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    border-left: 4px solid #16a34a;
+    border-radius: 8px;
+    padding: 14px 18px;
+    font-size: 13px;
+    color: #166534;
+    margin-top: 20px;
+  }
+  .tips-box strong {
+    color: #14532d;
+  }
+</style>
+</head>
+<body>
+
+<div class="app-container">
+
+  <!-- CABECERA PRINCIPAL -->
+  <header>
+    <div>
+      <h1><span class="korg-tag">KORG EK-50</span> Libro de Repertorio y Set List</h1>
+      <p>Índice oficial de bancos de memoria, estilos, tempos y esquemas armónicos para atril.</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn-header" onclick="window.print()">🖨️ Imprimir Ficha</button>
+    </div>
+  </header>
+
+  <!-- GUÍA RÁPIDA DE PROGRAMACIÓN EN EL KORG EK-50 -->
+  <div class="guide-card">
+    <h3>📌 ¿Cómo programar cualquier canción en el Set List de tu Korg EK-50? (Solo se hace una vez):</h3>
+    <ol>
+      <li><strong>Ajusta el teclado a tu gusto</strong>: Pon el Estilo indicado, el Tempo (BPM), el sonido de la derecha y activa el botón <code>[SPLIT]</code>.</li>
+      <li><strong>Elige el banco</strong>: Pulsa el botón <code>[BANK/WRITE]</code> en el Korg hasta seleccionar el Banco deseado (A, B, C...).</li>
+      <li><strong>Guarda en 1 segundo</strong>: Mantén presionado <code>[BANK/WRITE]</code> y, <strong>sin soltarlo</strong>, pulsa el botón del número correspondiente (<code>[1]</code>, <code>[2]</code>, <code>[3]</code> o <code>[4]</code>). El botón parpadeará y se quedará fijo. ¡Guardado para siempre!</li>
+    </ol>
+  </div>
+
+  <!-- LAYOUT PRINCIPAL -->
+  <div class="main-layout">
+
+    <!-- BARRA LATERAL: LISTA DE BANCOS Y CANCIONES -->
+    <div class="sidebar-card">
+      <h2>
+        <span>📚 Repertorio</span>
+        <span style="font-size:12px; color:#64748b; font-weight:600;">10 Bancos (40 memorias)</span>
+      </h2>
+
+      <!-- BANCO A -->
+      <div class="bank-group">
+        <div class="bank-title">📁 BANCO A — BALADAS Y TEMAS CLÁSICOS</div>
+
+        <!-- Canción 1 -->
+        <div class="song-item active" onclick="loadSong('to_all_the_girls', this)">
+          <div class="song-info">
+            <span class="song-name">To All The Girls I've Loved Before</span>
+            <span class="song-artist">Julio Iglesias &amp; Willie Nelson</span>
+          </div>
+          <span class="btn-korg-tag">A — BOTÓN 1</span>
+        </div>
+
+        <!-- Canción 2 -->
+        <div class="song-item" onclick="loadSong('hymn_to_the_fallen', this)">
+          <div class="song-info">
+            <span class="song-name">Hymn to the Fallen</span>
+            <span class="song-artist">John Williams (Salvar al Soldado Ryan)</span>
+          </div>
+          <span class="btn-korg-tag">A — BOTÓN 2</span>
+        </div>
+
+        <!-- Canción 3 -->
+        <div class="song-item" onclick="loadSong('besame_mucho', this)">
+          <div class="song-info">
+            <span class="song-name">Bésame Mucho</span>
+            <span class="song-artist">Consuelo Velázquez (Bolero Clásico)</span>
+          </div>
+          <span class="btn-korg-tag">A — BOTÓN 3</span>
+        </div>
+
+        <!-- Canción 4 -->
+        <div class="song-item" onclick="loadSong('stand_by_me', this)">
+          <div class="song-info">
+            <span class="song-name">Stand by Me</span>
+            <span class="song-artist">Ben E. King (Soul / Pop Clásico)</span>
+          </div>
+          <span class="btn-korg-tag">A — BOTÓN 4</span>
+        </div>
+      </div>
+
+      <!-- BANCO B -->
+      <div class="bank-group">
+        <div class="bank-title">📁 BANCO B — POP &amp; ROCK (DISPONIBLE)</div>
+        <div style="font-size:12px; color:#94a3b8; padding:8px 12px; background:#f8fafc; border-radius:6px; border:1px dashed #cbd5e1;">
+          Slots B-1 a B-4 disponibles para añadir nuevas canciones.
+        </div>
+      </div>
+    </div>
+
+    <!-- PANEL CENTRAL: FICHA DE LA CANCIÓN SELECCIONADA -->
+    <div class="song-detail" id="songDetail">
+      <!-- Se inyecta dinámicamente -->
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+const SONGS_DATABASE = {
+  "to_all_the_girls": {
+    title: "To All The Girls I've Loved Before",
+    artist: "Julio Iglesias & Willie Nelson",
+    key: "Sol Mayor (G)",
+    timeSig: "4/4",
+    bank: "BANCO A — BOTÓN 1",
+    styleNum: "041 Love Ballad",
+    styleAlt: "(o 039 Country Bld)",
+    tempo: "78 BPM",
+    upperVoice: "235 St. Strings",
+    voiceHint: "Para seleccionar 235: Mantén [SHIFT] y pulsa [UPPER 1], luego teclea 235.",
+    split: "ON (Corte en Do4 / C4)",
+    variation: "Intro: Intro 1 | Estrofas: Var 1 | Clímax: Var 3 o 4",
+    sections: [
+      {
+        name: "SECCIÓN 1: VERSO 1 (Willie Nelson) — Compases 1 al 8",
+        measures: [
+          { m: 1, chord: "G", text: "To all the girls...", notes: "D4 - G4 - B4 - D5" },
+          { m: 2, chord: "G", text: "...I've loved before", notes: "D5 - C5 - B4 - A4" },
+          { m: 3, chord: "Am", text: "Who traveled in...", notes: "E4 - A4 - C5 - E5" },
+          { m: 4, chord: "Am", text: "...and out my door", notes: "E5 - D5 - C5 - B4" },
+          { m: 5, chord: "D7", text: "I'm glad they came along...", notes: "D4 - F#4 - A4 - C5" },
+          { m: 6, chord: "D7", text: "...I dedicate this song", notes: "C5 - B4 - A4 - G4" },
+          { m: 7, chord: "G", text: "To all the girls...", notes: "D4 - G4 - B4 - A4" },
+          { m: 8, chord: "G", text: "...I've loved before.", notes: "G4 (redonda)" }
+        ]
+      },
+      {
+        name: "SECCIÓN 2: VERSO 2 (Julio Iglesias) — Compases 9 al 16",
+        measures: [
+          { m: 9, chord: "G", text: "To all the girls...", notes: "D4 - G4 - B4 - D5" },
+          { m: 10, chord: "G", text: "...I once caressed", notes: "D5 - C5 - B4 - A4" },
+          { m: 11, chord: "Am", text: "And may I say...", notes: "E4 - A4 - C5 - E5" },
+          { m: 12, chord: "Am", text: "...I've held the best", notes: "E5 - D5 - C5 - B4" },
+          { m: 13, chord: "D7", text: "For helping me to grow...", notes: "D4 - F#4 - A4 - C5" },
+          { m: 14, chord: "D7", text: "...I owe a lot I know", notes: "C5 - B4 - A4 - G4" },
+          { m: 15, chord: "G", text: "To all the girls...", notes: "D4 - G4 - B4 - A4" },
+          { m: 16, chord: "G", text: "...I've loved before.", notes: "G4 (redonda)" }
+        ]
+      },
+      {
+        name: "SECCIÓN 3: PUENTE 1 (The winds of change...) — Compases 17 al 24",
+        measures: [
+          { m: 17, chord: "G", text: "The winds of change...", notes: "D4 - G4 - A4 - B4" },
+          { m: 18, chord: "G", text: "...are always blowing", notes: "D5 - D5 - E5 - D5" },
+          { m: 19, chord: "Am", text: "And every time...", notes: "C5 - B4 - A4 - G4" },
+          { m: 20, chord: "Am", text: "...I try to stay", notes: "A4 - A4 - B4 - A4" },
+          { m: 21, chord: "G", text: "The winds of change...", notes: "D4 - G4 - A4 - B4" },
+          { m: 22, chord: "G", text: "...continue blowing", notes: "D5 - D5 - E5 - D5" },
+          { m: 23, chord: "D7", text: "And they just carry me away...", notes: "C5 - B4 - A4 - D4" },
+          { m: 24, chord: "G", text: "...carry me away.", notes: "G4 (Cierra en Sol)" }
+        ]
+      },
+      {
+        name: "SECCIÓN 4: PUENTE 2 (Repetición Clímax) — Compases 25 al 32",
+        measures: [
+          { m: 25, chord: "G", text: "The winds of change...", notes: "D4 - G4 - A4 - B4" },
+          { m: 26, chord: "G", text: "...are always blowing", notes: "D5 - D5 - E5 - D5" },
+          { m: 27, chord: "Am", text: "And every time...", notes: "C5 - B4 - A4 - G4" },
+          { m: 28, chord: "Am", text: "...I try to stay", notes: "A4 - A4 - B4 - A4" },
+          { m: 29, chord: "G", text: "The winds of change...", notes: "D4 - G4 - A4 - B4" },
+          { m: 30, chord: "G", text: "...continue blowing", notes: "D5 - D5 - E5 - D5" },
+          { m: 31, chord: "D7", text: "And they just carry me a-way...", notes: "C5 - B4 - A4 - D4" },
+          { m: 32, chord: "D7(b9)", text: "¡SEMITONO MISTERIOSO!", notes: "C5 - B4 - A#4 (Tensión)", misterioso: true }
+        ]
+      }
+    ],
+    tips: "<strong>Consejo de interpretación en el Korg EK-50:</strong> En el compás 32, al tocar la melodía en <code>A#4</code> (La sostenido), toca en la mano izquierda el acorde <code>D7</code> manteniendo la tecla <code>D#</code> o simplemente pulsa <code>D7</code>: el choque con el semitono creará exactamente la misma magia orquestal que en la grabación de Julio Iglesias."
+  },
+
+  "hymn_to_the_fallen": {
+    title: "Hymn to the Fallen (Saving Private Ryan)",
+    artist: "John Williams",
+    key: "Sol Mayor (G)",
+    timeSig: "4/4",
+    bank: "BANCO A — BOTÓN 2",
+    styleNum: "040 4/4 Ballad",
+    styleAlt: "(o Marcha Lenta)",
+    tempo: "60 BPM",
+    upperVoice: "French Horn & Strings",
+    voiceHint: "Usa trompa suave o colchón de cuerdas sinfónicas.",
+    split: "ON (Corte en C4)",
+    variation: "Intro: Redoble militar | Tema: Var 1 y 2 | Clímax: Var 4 con tutti",
+    sections: [
+      {
+        name: "TEMA PRINCIPAL A1 — Compases 1 al 8",
+        measures: [
+          { m: 1, chord: "G", text: "Tema solemne...", notes: "D4 - G4 - A4 - B4" },
+          { m: 2, chord: "Em", text: "Reflexivo...", notes: "B4 - A4 - G4 (larga)" },
+          { m: 3, chord: "C", text: "Elevación...", notes: "E4 - G4 - D4 - B3" },
+          { m: 4, chord: "D", text: "Resolución parcial...", notes: "C4 - D4 - A3 (larga)" },
+          { m: 5, chord: "G", text: "Repite motivo...", notes: "D4 - G4 - A4 - B4" },
+          { m: 6, chord: "Bm", text: "Tensión menor...", notes: "D5 - C5 - B4 (larga)" },
+          { m: 7, chord: "C", text: "Hacia el clímax...", notes: "E5 - D5 - C5 - B4" },
+          { m: 8, chord: "D7", text: "Cierre en dominante...", notes: "A4 - B4 - A4 (larga)" }
+        ]
+      }
+    ],
+    tips: "<strong>Consejo de interpretación:</strong> Toca muy ligado (legato) con el pedal de sustain y cambia el pedal con precisión en cada cambio de acorde para mantener la atmósfera solemne de John Williams."
+  },
+
+  "besame_mucho": {
+    title: "Bésame Mucho",
+    artist: "Consuelo Velázquez",
+    key: "Re menor (Dm)",
+    timeSig: "4/4",
+    bank: "BANCO A — BOTÓN 3",
+    styleNum: "Latin Bolero",
+    styleAlt: "(o Bossa / Bolero 082)",
+    tempo: "82 BPM",
+    upperVoice: "Nylon Guitar / Accordion",
+    voiceHint: "Guitarra española acústica o acordeón suave.",
+    split: "ON (Corte en C4)",
+    variation: "Var 1 para estrofa íntima, Var 2 al subir de intensidad",
+    sections: [
+      {
+        name: "ESTROFA PRINCIPAL — Compases 1 al 8",
+        measures: [
+          { m: 1, chord: "Dm", text: "Bésame...", notes: "D4 - F4 - A4 - D5" },
+          { m: 2, chord: "Dm", text: "...bésame mucho...", notes: "C#5 - D5 - A4 (larga)" },
+          { m: 3, chord: "Gm", text: "Como si fuera esta noche...", notes: "G4 - Bb4 - D5 - G5" },
+          { m: 4, chord: "Gm", text: "...la última vez...", notes: "F5 - G5 - D5 (larga)" },
+          { m: 5, chord: "A7", text: "Bésame...", notes: "C#5 - E5 - G5 - Bb5" },
+          { m: 6, chord: "A7", text: "...bésame mucho...", notes: "A5 - G5 - F5 - E5" },
+          { m: 7, chord: "Dm", text: "Que tengo miedo perderte...", notes: "D5 - F5 - E5 - D5" },
+          { m: 8, chord: "Dm", text: "...perderte después.", notes: "D4 (redonda)" }
+        ]
+      }
+    ],
+    tips: "<strong>Consejo de interpretación:</strong> En la mano izquierda basta con poner el acorde fundamental (Dm, Gm, A7); el motor de ritmos del Korg generará automáticamente el punteo y la percusión típica de bolero."
+  },
+
+  "stand_by_me": {
+    title: "Stand by Me",
+    artist: "Ben E. King",
+    key: "La Mayor (A) o Sol (G)",
+    timeSig: "4/4",
+    bank: "BANCO A — BOTÓN 4",
+    styleNum: "010 8-Beat Pop",
+    styleAlt: "(o 012 R&B Ballad)",
+    tempo: "118 BPM",
+    upperVoice: "001 Grand Piano",
+    voiceHint: "Piano de cola brillante con ataque percusivo.",
+    split: "ON (Corte en C4)",
+    variation: "Var 1 con bajo caminando",
+    sections: [
+      {
+        name: "PATRÓN MÍTICO (I - vi - IV - V) — Compases 1 al 8",
+        measures: [
+          { m: 1, chord: "G", text: "When the night has come...", notes: "G4 - B4 - D5" },
+          { m: 2, chord: "G", text: "...and the land is dark...", notes: "B4 - A4 - G4" },
+          { m: 3, chord: "Em", text: "And the moon is the only...", notes: "E4 - G4 - B4" },
+          { m: 4, chord: "Em", text: "...light we'll see...", notes: "G4 - F#4 - E4" },
+          { m: 5, chord: "C", text: "No I won't be afraid...", notes: "E4 - G4 - C5" },
+          { m: 6, chord: "D7", text: "No I won't be afraid...", notes: "F#4 - A4 - D5" },
+          { m: 7, chord: "G", text: "Just as long as you stand...", notes: "B4 - A4 - G4" },
+          { m: 8, chord: "G", text: "...stand by me.", notes: "G4 (redonda)" }
+        ]
+      }
+    ],
+    tips: "<strong>Consejo de interpretación:</strong> La magia de esta canción es la rueda de acordes <code>G -> Em -> C -> D7</code>. Una vez la grabas en el Set List, puedes tocarla durante horas improvisando melodías con la mano derecha."
+  }
+};
+
+function loadSong(songKey, element) {
+  if (element) {
+    document.querySelectorAll(".song-item").forEach(el => el.classList.remove("active"));
+    element.classList.add("active");
+  }
+
+  const s = SONGS_DATABASE[songKey];
+  if (!s) return;
+
+  let sectionsHtml = "";
+  s.sections.forEach(sec => {
+    let measuresRows = "";
+    for (let i = 0; i < sec.measures.length; i += 4) {
+      let cells = "";
+      for (let j = 0; j < 4; j++) {
+        const mData = sec.measures[i + j];
+        if (mData) {
+          cells += `
+            <td class="measure-cell ${mData.misterioso ? 'misterioso' : ''}">
+              <div style="font-size:10px; color:#94a3b8; text-align:left; margin-bottom:2px;">Compás ${mData.m}</div>
+              <div class="measure-chord">${mData.chord}</div>
+              <div class="measure-text">${mData.text}</div>
+              <div class="measure-notes">${mData.notes}</div>
+            </td>
+          `;
+        }
+      }
+      measuresRows += `<tr>${cells}</tr>`;
+    }
+
+    sectionsHtml += `
+      <div class="section-box">
+        <span class="section-header-tag">${sec.name}</span>
+        <table class="measures-table">${measuresRows}</table>
+      </div>
+    `;
+  });
+
+  const html = `
+    <div class="detail-header">
+      <div class="detail-title">
+        <h2>${s.title}</h2>
+        <p>${s.artist} — Tonalidad: <strong>${s.key}</strong> | Compás: <strong>${s.timeSig}</strong></p>
+      </div>
+      <div class="setlist-badge-large">
+        <div style="font-size:11px; text-transform:uppercase; letter-spacing:0.5px; opacity:0.8;">Asignación de Memoria</div>
+        ${s.bank}
+      </div>
+    </div>
+
+    <!-- PARÁMETROS OFICIALES KORG EK-50 -->
+    <div class="params-grid">
+      <div class="param-box">
+        <div class="param-label">1. Estilo / Ritmo</div>
+        <div class="param-value" style="color:var(--korg-red);">${s.styleNum}</div>
+        <div class="param-hint">${s.styleAlt}</div>
+      </div>
+      <div class="param-box">
+        <div class="param-label">2. Tempo</div>
+        <div class="param-value" style="color:var(--korg-gold);">${s.tempo}</div>
+        <div class="param-hint">Velocidad oficial</div>
+      </div>
+      <div class="param-box">
+        <div class="param-label">3. Mano Derecha (Upper 1)</div>
+        <div class="param-value" style="color:var(--korg-blue);">${s.upperVoice}</div>
+        <div class="param-hint">${s.voiceHint}</div>
+      </div>
+      <div class="param-box">
+        <div class="param-label">4. Teclado Dividido</div>
+        <div class="param-value" style="color:#059669;">${s.split}</div>
+        <div class="param-hint">Mano izquierda aislada</div>
+      </div>
+    </div>
+
+    <!-- ESQUEMA DE COMPASES -->
+    ${sectionsHtml}
+
+    <!-- CONSEJOS KORG -->
+    <div class="tips-box">
+      ${s.tips}
+    </div>
+  `;
+
+  document.getElementById("songDetail").innerHTML = html;
+}
+
+// Cargar primera canción al inicio
+window.addEventListener("DOMContentLoaded", () => {
+  loadSong("to_all_the_girls");
+});
+</script>
+
+</body>
+</html>

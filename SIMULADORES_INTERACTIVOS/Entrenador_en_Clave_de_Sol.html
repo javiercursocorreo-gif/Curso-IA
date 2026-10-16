@@ -1,0 +1,1579 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Partituras y Biblioteca Korg EK-50</title>
+<style>
+  :root {
+    --bg-page: #f8fafc;
+    --paper-bg: #ffffff;
+    --text-dark: #0f172a;
+    --text-muted: #64748b;
+    --border-light: #cbd5e1;
+    --staff-black: #1e293b;
+    --note-black: #000000;
+    --chord-blue: #1d4ed8;
+    --gold: #d97706;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background-color: var(--bg-page);
+    color: var(--text-dark);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+  }
+  .app-container {
+    max-width: 1100px;
+    width: 100%;
+  }
+
+  /* BARRA SUPERIOR */
+  .control-panel {
+    background: #ffffff;
+    border: 1px solid var(--border-light);
+    border-radius: 12px;
+    padding: 16px 22px;
+    margin-bottom: 18px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+  }
+  .top-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+  .selector-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .selector-group label {
+    font-size: 13px;
+    font-weight: 800;
+    color: #475569;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  select.song-select {
+    background: #ffffff;
+    border: 2px solid #3b82f6;
+    color: #0f172a;
+    font-size: 15px;
+    font-weight: 700;
+    padding: 9px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    min-width: 340px;
+  }
+
+  /* BOTONES DE REPRODUCCIÓN LIMPIA */
+  .audio-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid #e2e8f0;
+  }
+  .btn-play {
+    background: linear-gradient(135deg, #d97706, #b45309);
+    color: #ffffff;
+    border: none;
+    font-size: 14px;
+    font-weight: 800;
+    padding: 10px 22px;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 4px 12px rgba(217, 119, 6, 0.25);
+  }
+  .btn-aux {
+    background: #f1f5f9;
+    color: #334155;
+    border: 1px solid #cbd5e1;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 9px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  .btn-aux:hover { background: #e2e8f0; }
+  .tempo-box {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #475569;
+  }
+  .tempo-box input { accent-color: #d97706; width: 80px; cursor: pointer; }
+
+  /* PAPEL DE PARTITURA: NOTAS NEGRAS, FONDO BLANCO */
+  .score-sheet {
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 12px;
+    padding: 28px 32px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+  }
+  .sheet-header {
+    text-align: center;
+    margin-bottom: 24px;
+    border-bottom: 1px solid #e2e8f0;
+    padding-bottom: 18px;
+  }
+  .sheet-header h2 {
+    font-size: 26px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    color: #0f172a;
+    margin-bottom: 8px;
+  }
+  .sheet-header p {
+    font-size: 14px;
+    color: #64748b;
+  }
+
+  /* RÓTULO DESTACADO DEL SET LIST EN LA PARTITURA */
+  .setlist-badge-banner {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    background: #eff6ff;
+    border: 2px solid #2563eb;
+    padding: 10px 24px;
+    border-radius: 10px;
+    margin-top: 12px;
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.15);
+  }
+  .setlist-btn-tag {
+    background: #1e3a8a;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 800;
+    padding: 4px 12px;
+    border-radius: 6px;
+    letter-spacing: 0.5px;
+  }
+  .setlist-desc {
+    font-size: 13px;
+    font-weight: 700;
+    color: #1e40af;
+    text-align: left;
+  }
+
+  .system-row { margin-bottom: 30px; }
+  .system-meta {
+    font-size: 11px;
+    font-weight: 700;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 2px;
+  }
+  svg.staff-svg {
+    width: 100%;
+    height: 135px;
+    display: block;
+    overflow: visible;
+  }
+
+  .measure-box {
+    fill: transparent;
+    transition: fill 0.12s;
+    cursor: pointer;
+  }
+  .measure-box:hover { fill: rgba(217, 119, 6, 0.05); }
+  .measure-playing {
+    fill: rgba(217, 119, 6, 0.08) !important;
+    stroke: #d97706 !important;
+    stroke-width: 1.5px !important;
+  }
+  .measure-misterioso {
+    fill: rgba(220, 38, 38, 0.04);
+    stroke: #dc2626;
+    stroke-width: 1.5px;
+    stroke-dasharray: 4 2;
+  }
+
+  .note-playing ellipse {
+    fill: #d97706 !important;
+    stroke: #b45309 !important;
+    stroke-width: 1.5px !important;
+    filter: drop-shadow(0 0 4px rgba(217, 119, 6, 0.6));
+  }
+  .note-playing text {
+    fill: #d97706 !important;
+    font-size: 11px !important;
+  }
+</style>
+</head>
+<body>
+
+<div class="app-container">
+  
+  <div class="control-panel">
+    <div class="top-row">
+      <div class="selector-group">
+        <label>Biblioteca de Canciones:</label>
+        <select id="songDropdown" class="song-select" onchange="switchSong(this.value)">
+          <option value="to_all_the_girls" selected>To All The Girls I've Loved Before</option>
+          <option value="hymn_to_the_fallen">Hymn to the Fallen (Saving Private Ryan)</option>
+          <option value="besame_mucho">Bésame Mucho (Bolero Clásico)</option>
+        </select>
+      </div>
+
+      <div style="font-size:13px; color:#64748b; font-weight:600;">
+        💡 Pulsa el botón del <strong>Set List</strong> en tu Korg para tocar al instante.
+      </div>
+    </div>
+
+    <!-- BARRA DE AUDICIÓN LIMPIA -->
+    <div class="audio-toolbar">
+      <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+        <button id="btnPlayDemo" class="btn-play" onclick="togglePlayDemo()">
+          <span id="demoIcon">▶</span> <span id="demoText">Escuchar Melodía (Piano Limpio)</span>
+        </button>
+        <select id="audioTrackSelect" onchange="changeAudioTrack(this.value)" style="padding:8px 12px; border-radius:8px; border:1px solid #cbd5e1; font-weight:600; font-size:13px; color:#1e293b; background:#fff; cursor:pointer;">
+          <option value="to_all_the_girls_solo.mp3" selected>🎹 Solo Melodía (Piano Acústico - Cero Ruido)</option>
+          <option value="to_all_the_girls_studio.mp3">🎼 Melodía + Acompañamiento Suave</option>
+        </select>
+        <button class="btn-aux" onclick="stopAudio()">⏹ Parar</button>
+        <button class="btn-aux" style="color:#b91c1c; border-color:#fca5a5; background:#fef2f2;" onclick="playSingleMeasure(32)">
+          ⚡ Oír Compás 32 (Semitono Misterioso)
+        </button>
+      </div>
+
+      <div class="tempo-box">
+        <span>Tempo: <strong id="bpmDisplay" style="color:#d97706;">78</strong> BPM</span>
+        <input type="range" id="tempoRange" min="50" max="110" value="78" oninput="changeBpm(this.value)">
+      </div>
+    </div>
+  </div>
+
+  <!-- PAPEL DE LA PARTITURA -->
+  <div class="score-sheet">
+    <div class="sheet-header">
+      <h2 id="sheetTitle">To All The Girls I've Loved Before</h2>
+      <p id="sheetSubtitle">Julio Iglesias &amp; Willie Nelson — 32 Compases (Tonalidad: Sol Mayor / Clave de Sol)</p>
+      
+      <!-- RÓTULO DESTACADO DEL SET LIST -->
+      <div class="setlist-badge-banner">
+        <div class="setlist-btn-tag" id="setlistBtnTag">🔘 SET LIST: BANCO 1 — BOTÓN 1</div>
+        <div class="setlist-desc" id="setlistDesc">
+          Ajustes Korg: <strong>Estilo 041 Love Ballad</strong> (78 BPM) | <strong>Strings 235</strong> | Split C4
+        </div>
+      </div>
+    </div>
+
+    <div id="scoreContainer"></div>
+  </div>
+
+</div>
+
+<script>
+const PITCH_Y = {
+  'G5': 35, 'F#5': 40, 'F5': 40, 'E5': 45, 'D5': 50, 'C#5': 55, 'C5': 55,
+  'B4': 60, 'A#4': 65, 'A4': 65, 'G#4': 70, 'G4': 70, 'F#4': 75, 'F4': 75,
+  'E4': 80, 'D#4': 85, 'D4': 85, 'C4': 90
+};
+
+const NOTE_FREQS = {
+  'C4': 261.63, 'D4': 293.66, 'D#4': 311.13, 'E4': 329.63, 'F4': 349.23, 'F#4': 369.99,
+  'G4': 392.00, 'G#4': 415.30, 'A4': 440.00, 'A#4': 466.16, 'B4': 493.88,
+  'C5': 523.25, 'C#5': 554.37, 'D5': 587.33, 'D#5': 622.25, 'E5': 659.25, 'F#5': 739.99, 'G5': 783.99
+};
+
+const CHORD_NOTES = {
+  'G': [196.00, 246.94, 293.66],
+  'Am': [220.00, 261.63, 329.63],
+  'D7': [185.00, 220.00, 261.63, 293.66],
+  'D7(b9)': [146.83, 185.00, 261.63, 311.13]
+};
+
+const MEASURES = [
+  {
+    "num": 1,
+    "chord": "G",
+    "text": "To all the girls...",
+    "notes": [
+      {
+        "id": "n_1_1",
+        "n": "D4",
+        "beat": 0.0,
+        "d": 1.0
+      },
+      {
+        "id": "n_1_2",
+        "n": "G4",
+        "beat": 1.0,
+        "d": 1.0
+      },
+      {
+        "id": "n_1_3",
+        "n": "B4",
+        "beat": 2.0,
+        "d": 1.0
+      },
+      {
+        "id": "n_1_4",
+        "n": "D5",
+        "beat": 3.0,
+        "d": 1.0
+      }
+    ]
+  },
+  {
+    "num": 2,
+    "chord": "G",
+    "text": "...I've loved before",
+    "notes": [
+      {
+        "id": "n_2_1",
+        "n": "D5",
+        "beat": 0.0,
+        "d": 1.0
+      },
+      {
+        "id": "n_2_2",
+        "n": "C5",
+        "beat": 1.0,
+        "d": 1.0
+      },
+      {
+        "id": "n_2_3",
+        "n": "B4",
+        "beat": 2.0,
+        "d": 1.0
+      },
+      {
+        "id": "n_2_4",
+        "n": "A4",
+        "beat": 3.0,
+        "d": 1.0
+      }
+    ]
+  },
+  {
+    "num": 3,
+    "chord": "Am",
+    "text": "Who traveled in...",
+    "notes": [
+      {
+        "id": "n_3_1",
+        "n": "E4",
+        "beat": 0.0,
+        "d": 1.0
+      },
+      {
+        "id": "n_3_2",
+        "n": "A4",
+        "beat": 1.0,
+        "d": 1.0
+      },
+      {
+        "id": "n_3_3",
+        "n": "C5",
+        "beat": 2.0,
+        "d": 1.0
+      },
+      {
+        "id": "n_3_4",
+        "n": "E5",
+        "beat": 3.0,
+        "d": 1.0
+      }
+    ]
+  },
+  {
+    "num": 4,
+    "chord": "Am",
+    "text": "...and out my door",
+    "notes": [
+      {
+        "id": "n_4_1",
+        "n": "E5",
+        "beat": 0.0,
+        "d": 1.0
+      },
+      {
+        "id": "n_4_2",
+        "n": "D5",
+        "beat": 1.0,
+        "d": 1.0
+      },
+      {
+        "id": "n_4_3",
+        "n": "C5",
+        "beat": 2.0,
+        "d": 1.0
+      },
+      {
+        "id": "n_4_4",
+        "n": "B4",
+        "beat": 3.0,
+        "d": 1.0
+      }
+    ]
+  },
+  {
+    "num": 5,
+    "chord": "D7",
+    "text": "I'm glad they came along...",
+    "notes": [
+      {
+        "id": "n_5_1",
+        "n": "D4",
+        "beat": 0.0,
+        "d": 1.0
+      },
+      {
+        "id": "n_5_2",
+        "n": "F#4",
+        "beat": 1.0,
+        "d": 1.0
+      },
+      {
+        "id": "n_5_3",
+        "n": "A4",
+        "beat": 2.0,
+        "d": 1.0
+      },
+      {
+        "id": "n_5_4",
+        "n": "C5",
+        "beat": 3.0,
+        "d": 1.0
+      }
+    ]
+  },
+  {
+    "num": 6,
+    "chord": "D7",
+    "text": "...I dedicate this song",
+    "notes": [
+      {
+        "id": "n_6_1",
+        "n": "C5",
+        "beat": 0.0,
+        "d": 1.0
+      },
+      {
+        "id": "n_6_2",
+        "n": "B4",
+        "beat": 1.0,
+        "d": 1.0
+      },
+      {
+        "id": "n_6_3",
+        "n": "A4",
+        "beat": 2.0,
+        "d": 1.0
+      },
+      {
+        "id": "n_6_4",
+        "n": "G4",
+        "beat": 3.0,
+        "d": 1.0
+      }
+    ]
+  },
+  {
+    "num": 7,
+    "chord": "G",
+    "text": "To all the girls...",
+    "notes": [
+      {
+        "id": "n_7_1",
+        "n": "D4",
+        "beat": 0.0,
+        "d": 1.0
+      },
+      {
+        "id": "n_7_2",
+        "n": "G4",
+        "beat": 1.0,
+        "d": 1.0
+      },
+      {
+        "id": "n_7_3",
+        "n": "B4",
+        "beat": 2.0,
+        "d": 1.0
+      },
+      {
+        "id": "n_7_4",
+        "n": "A4",
+        "beat": 3.0,
+        "d": 1.0
+      }
+    ]
+  },
+  {
+    "num": 8,
+    "chord": "G",
+    "text": "...I've loved before.",
+    "notes": [
+      {
+        "id": "n_8_1",
+        "n": "G4",
+        "beat": 0.0,
+        "d": 3.8
+      }
+    ]
+  },
+  {
+    "num": 9,
+    "chord": "G",
+    "text": "To all the girls...",
+    "notes": [
+      {
+        "id": "n_9_1",
+        "n": "D4",
+        "beat": 0.0,
+        "d": 1.0
+      },
+      {
+        "id": "n_9_2",
+        "n": "G4",
+        "beat": 1.0,
+        "d": 1.0
+      },
+      {
+        "id": "n_9_3",
+        "n": "B4",
+        "beat": 2.0,
+        "d": 1.0
+      },
+      {
+        "id": "n_9_4",
+        "n": "D5",
+        "beat": 3.0,
+        "d": 1.0
+      }
+    ]
+  },
+  {
+    "num": 10,
+    "chord": "G",
+    "text": "...I once caressed",
+    "notes": [
+      {
+        "id": "n_10_1",
+        "n": "D5",
+        "beat": 0.0,
+        "d": 1.0
+      },
+      {
+        "id": "n_10_2",
+        "n": "C5",
+        "beat": 1.0,
+        "d": 1.0
+      },
+      {
+        "id": "n_10_3",
+        "n": "B4",
+        "beat": 2.0,
+        "d": 1.0
+      },
+      {
+        "id": "n_10_4",
+        "n": "A4",
+        "beat": 3.0,
+        "d": 1.0
+      }
+    ]
+  },
+  {
+    "num": 11,
+    "chord": "Am",
+    "text": "And may I say...",
+    "notes": [
+      {
+        "id": "n_11_1",
+        "n": "E4",
+        "beat": 0.0,
+        "d": 1.0
+      },
+      {
+        "id": "n_11_2",
+        "n": "A4",
+        "beat": 1.0,
+        "d": 1.0
+      },
+      {
+        "id": "n_11_3",
+        "n": "C5",
+        "beat": 2.0,
+        "d": 1.0
+      },
+      {
+        "id": "n_11_4",
+        "n": "E5",
+        "beat": 3.0,
+        "d": 1.0
+      }
+    ]
+  },
+  {
+    "num": 12,
+    "chord": "Am",
+    "text": "...I've held the best",
+    "notes": [
+      {
+        "id": "n_12_1",
+        "n": "E5",
+        "beat": 0.0,
+        "d": 1.0
+      },
+      {
+        "id": "n_12_2",
+        "n": "D5",
+        "beat": 1.0,
+        "d": 1.0
+      },
+      {
+        "id": "n_12_3",
+        "n": "C5",
+        "beat": 2.0,
+        "d": 1.0
+      },
+      {
+        "id": "n_12_4",
+        "n": "B4",
+        "beat": 3.0,
+        "d": 1.0
+      }
+    ]
+  },
+  {
+    "num": 13,
+    "chord": "D7",
+    "text": "For helping me to grow...",
+    "notes": [
+      {
+        "id": "n_13_1",
+        "n": "D4",
+        "beat": 0.0,
+        "d": 1.0
+      },
+      {
+        "id": "n_13_2",
+        "n": "F#4",
+        "beat": 1.0,
+        "d": 1.0
+      },
+      {
+        "id": "n_13_3",
+        "n": "A4",
+        "beat": 2.0,
+        "d": 1.0
+      },
+      {
+        "id": "n_13_4",
+        "n": "C5",
+        "beat": 3.0,
+        "d": 1.0
+      }
+    ]
+  },
+  {
+    "num": 14,
+    "chord": "D7",
+    "text": "...I owe a lot I know",
+    "notes": [
+      {
+        "id": "n_14_1",
+        "n": "C5",
+        "beat": 0.0,
+        "d": 1.0
+      },
+      {
+        "id": "n_14_2",
+        "n": "B4",
+        "beat": 1.0,
+        "d": 1.0
+      },
+      {
+        "id": "n_14_3",
+        "n": "A4",
+        "beat": 2.0,
+        "d": 1.0
+      },
+      {
+        "id": "n_14_4",
+        "n": "G4",
+        "beat": 3.0,
+        "d": 1.0
+      }
+    ]
+  },
+  {
+    "num": 15,
+    "chord": "G",
+    "text": "To all the girls...",
+    "notes": [
+      {
+        "id": "n_15_1",
+        "n": "D4",
+        "beat": 0.0,
+        "d": 1.0
+      },
+      {
+        "id": "n_15_2",
+        "n": "G4",
+        "beat": 1.0,
+        "d": 1.0
+      },
+      {
+        "id": "n_15_3",
+        "n": "B4",
+        "beat": 2.0,
+        "d": 1.0
+      },
+      {
+        "id": "n_15_4",
+        "n": "A4",
+        "beat": 3.0,
+        "d": 1.0
+      }
+    ]
+  },
+  {
+    "num": 16,
+    "chord": "G",
+    "text": "...I've loved before.",
+    "notes": [
+      {
+        "id": "n_16_1",
+        "n": "G4",
+        "beat": 0.0,
+        "d": 3.8
+      }
+    ]
+  },
+  {
+    "num": 17,
+    "chord": "G",
+    "text": "The winds of change...",
+    "notes": [
+      {
+        "id": "n_17_1",
+        "n": "D4",
+        "beat": 0.0,
+        "d": 1.0
+      },
+      {
+        "id": "n_17_2",
+        "n": "G4",
+        "beat": 1.0,
+        "d": 1.0
+      },
+      {
+        "id": "n_17_3",
+        "n": "A4",
+        "beat": 2.0,
+        "d": 1.0
+      },
+      {
+        "id": "n_17_4",
+        "n": "B4",
+        "beat": 3.0,
+        "d": 1.0
+      }
+    ]
+  },
+  {
+    "num": 18,
+    "chord": "G",
+    "text": "...are always blowing",
+    "notes": [
+      {
+        "id": "n_18_1",
+        "n": "D5",
+        "beat": 0.0,
+        "d": 1.0
+      },
+      {
+        "id": "n_18_2",
+        "n": "D5",
+        "beat": 1.0,
+        "d": 1.0
+      },
+      {
+        "id": "n_18_3",
+        "n": "E5",
+        "beat": 2.0,
+        "d": 1.0
+      },
+      {
+        "id": "n_18_4",
+        "n": "D5",
+        "beat": 3.0,
+        "d": 1.0
+      }
+    ]
+  },
+  {
+    "num": 19,
+    "chord": "Am",
+    "text": "And every time...",
+    "notes": [
+      {
+        "id": "n_19_1",
+        "n": "C5",
+        "beat": 0.0,
+        "d": 1.0
+      },
+      {
+        "id": "n_19_2",
+        "n": "B4",
+        "beat": 1.0,
+        "d": 1.0
+      },
+      {
+        "id": "n_19_3",
+        "n": "A4",
+        "beat": 2.0,
+        "d": 1.0
+      },
+      {
+        "id": "n_19_4",
+        "n": "G4",
+        "beat": 3.0,
+        "d": 1.0
+      }
+    ]
+  },
+  {
+    "num": 20,
+    "chord": "Am",
+    "text": "...I try to stay",
+    "notes": [
+      {
+        "id": "n_20_1",
+        "n": "A4",
+        "beat": 0.0,
+        "d": 1.0
+      },
+      {
+        "id": "n_20_2",
+        "n": "A4",
+        "beat": 1.0,
+        "d": 1.0
+      },
+      {
+        "id": "n_20_3",
+        "n": "B4",
+        "beat": 2.0,
+        "d": 1.0
+      },
+      {
+        "id": "n_20_4",
+        "n": "A4",
+        "beat": 3.0,
+        "d": 1.0
+      }
+    ]
+  },
+  {
+    "num": 21,
+    "chord": "G",
+    "text": "The winds of change...",
+    "notes": [
+      {
+        "id": "n_21_1",
+        "n": "D4",
+        "beat": 0.0,
+        "d": 1.0
+      },
+      {
+        "id": "n_21_2",
+        "n": "G4",
+        "beat": 1.0,
+        "d": 1.0
+      },
+      {
+        "id": "n_21_3",
+        "n": "A4",
+        "beat": 2.0,
+        "d": 1.0
+      },
+      {
+        "id": "n_21_4",
+        "n": "B4",
+        "beat": 3.0,
+        "d": 1.0
+      }
+    ]
+  },
+  {
+    "num": 22,
+    "chord": "G",
+    "text": "...continue blowing",
+    "notes": [
+      {
+        "id": "n_22_1",
+        "n": "D5",
+        "beat": 0.0,
+        "d": 1.0
+      },
+      {
+        "id": "n_22_2",
+        "n": "D5",
+        "beat": 1.0,
+        "d": 1.0
+      },
+      {
+        "id": "n_22_3",
+        "n": "E5",
+        "beat": 2.0,
+        "d": 1.0
+      },
+      {
+        "id": "n_22_4",
+        "n": "D5",
+        "beat": 3.0,
+        "d": 1.0
+      }
+    ]
+  },
+  {
+    "num": 23,
+    "chord": "D7",
+    "text": "And they just carry me away...",
+    "notes": [
+      {
+        "id": "n_23_1",
+        "n": "C5",
+        "beat": 0.0,
+        "d": 1.0
+      },
+      {
+        "id": "n_23_2",
+        "n": "B4",
+        "beat": 1.0,
+        "d": 1.0
+      },
+      {
+        "id": "n_23_3",
+        "n": "A4",
+        "beat": 2.0,
+        "d": 1.0
+      },
+      {
+        "id": "n_23_4",
+        "n": "D4",
+        "beat": 3.0,
+        "d": 1.0
+      }
+    ]
+  },
+  {
+    "num": 24,
+    "chord": "G",
+    "text": "...carry me away.",
+    "notes": [
+      {
+        "id": "n_24_1",
+        "n": "G4",
+        "beat": 0.0,
+        "d": 3.8
+      }
+    ]
+  },
+  {
+    "num": 25,
+    "chord": "G",
+    "text": "The winds of change...",
+    "notes": [
+      {
+        "id": "n_25_1",
+        "n": "D4",
+        "beat": 0.0,
+        "d": 1.0
+      },
+      {
+        "id": "n_25_2",
+        "n": "G4",
+        "beat": 1.0,
+        "d": 1.0
+      },
+      {
+        "id": "n_25_3",
+        "n": "A4",
+        "beat": 2.0,
+        "d": 1.0
+      },
+      {
+        "id": "n_25_4",
+        "n": "B4",
+        "beat": 3.0,
+        "d": 1.0
+      }
+    ]
+  },
+  {
+    "num": 26,
+    "chord": "G",
+    "text": "...are always blowing",
+    "notes": [
+      {
+        "id": "n_26_1",
+        "n": "D5",
+        "beat": 0.0,
+        "d": 1.0
+      },
+      {
+        "id": "n_26_2",
+        "n": "D5",
+        "beat": 1.0,
+        "d": 1.0
+      },
+      {
+        "id": "n_26_3",
+        "n": "E5",
+        "beat": 2.0,
+        "d": 1.0
+      },
+      {
+        "id": "n_26_4",
+        "n": "D5",
+        "beat": 3.0,
+        "d": 1.0
+      }
+    ]
+  },
+  {
+    "num": 27,
+    "chord": "Am",
+    "text": "And every time...",
+    "notes": [
+      {
+        "id": "n_27_1",
+        "n": "C5",
+        "beat": 0.0,
+        "d": 1.0
+      },
+      {
+        "id": "n_27_2",
+        "n": "B4",
+        "beat": 1.0,
+        "d": 1.0
+      },
+      {
+        "id": "n_27_3",
+        "n": "A4",
+        "beat": 2.0,
+        "d": 1.0
+      },
+      {
+        "id": "n_27_4",
+        "n": "G4",
+        "beat": 3.0,
+        "d": 1.0
+      }
+    ]
+  },
+  {
+    "num": 28,
+    "chord": "Am",
+    "text": "...I try to stay",
+    "notes": [
+      {
+        "id": "n_28_1",
+        "n": "A4",
+        "beat": 0.0,
+        "d": 1.0
+      },
+      {
+        "id": "n_28_2",
+        "n": "A4",
+        "beat": 1.0,
+        "d": 1.0
+      },
+      {
+        "id": "n_28_3",
+        "n": "B4",
+        "beat": 2.0,
+        "d": 1.0
+      },
+      {
+        "id": "n_28_4",
+        "n": "A4",
+        "beat": 3.0,
+        "d": 1.0
+      }
+    ]
+  },
+  {
+    "num": 29,
+    "chord": "G",
+    "text": "The winds of change...",
+    "notes": [
+      {
+        "id": "n_29_1",
+        "n": "D4",
+        "beat": 0.0,
+        "d": 1.0
+      },
+      {
+        "id": "n_29_2",
+        "n": "G4",
+        "beat": 1.0,
+        "d": 1.0
+      },
+      {
+        "id": "n_29_3",
+        "n": "A4",
+        "beat": 2.0,
+        "d": 1.0
+      },
+      {
+        "id": "n_29_4",
+        "n": "B4",
+        "beat": 3.0,
+        "d": 1.0
+      }
+    ]
+  },
+  {
+    "num": 30,
+    "chord": "G",
+    "text": "...continue blowing",
+    "notes": [
+      {
+        "id": "n_30_1",
+        "n": "D5",
+        "beat": 0.0,
+        "d": 1.0
+      },
+      {
+        "id": "n_30_2",
+        "n": "D5",
+        "beat": 1.0,
+        "d": 1.0
+      },
+      {
+        "id": "n_30_3",
+        "n": "E5",
+        "beat": 2.0,
+        "d": 1.0
+      },
+      {
+        "id": "n_30_4",
+        "n": "D5",
+        "beat": 3.0,
+        "d": 1.0
+      }
+    ]
+  },
+  {
+    "num": 31,
+    "chord": "D7",
+    "text": "And they just carry me a-way...",
+    "notes": [
+      {
+        "id": "n_31_1",
+        "n": "C5",
+        "beat": 0.0,
+        "d": 1.0
+      },
+      {
+        "id": "n_31_2",
+        "n": "B4",
+        "beat": 1.0,
+        "d": 1.0
+      },
+      {
+        "id": "n_31_3",
+        "n": "A4",
+        "beat": 2.0,
+        "d": 1.0
+      },
+      {
+        "id": "n_31_4",
+        "n": "D4",
+        "beat": 3.0,
+        "d": 1.0
+      }
+    ]
+  },
+  {
+    "num": 32,
+    "chord": "D7(b9)",
+    "text": "\u00a1SEMITONO MISTERIOSO!",
+    "isMisterioso": true,
+    "notes": [
+      {
+        "id": "n_32_1",
+        "n": "C5",
+        "beat": 0.0,
+        "d": 1.0
+      },
+      {
+        "id": "n_32_2",
+        "n": "B4",
+        "beat": 1.0,
+        "d": 1.0
+      },
+      {
+        "id": "n_32_3",
+        "n": "A#4",
+        "beat": 2.0,
+        "d": 2.0
+      }
+    ]
+  }
+];
+
+let isPlaying = false;
+let demoStep = 0;
+let activeTimers = [];
+let bpm = 78;
+
+// --- DIBUJADO DE LA PARTITURA (NOTAS NEGRAS / FONDO BLANCO) ---
+function renderFullScore() {
+  const container = document.getElementById("scoreContainer");
+  container.innerHTML = "";
+
+  const sectionTitles = [
+    "SECCIÓN 1: VERSO 1 (Willie Nelson) — Compases 1 al 4",
+    "SECCIÓN 1: VERSO 1 (Continuación) — Compases 5 al 8",
+    "SECCIÓN 2: VERSO 2 (Julio Iglesias) — Compases 9 al 12",
+    "SECCIÓN 2: VERSO 2 (Continuación) — Compases 13 al 16",
+    "SECCIÓN 3: PUENTE (The winds of change...) — Compases 17 al 20",
+    "SECCIÓN 3: PUENTE (Resolución a Sol) — Compases 21 al 24",
+    "SECCIÓN 4: PUENTE REPETICIÓN (Clímax) — Compases 25 al 28",
+    "SECCIÓN 4: PUENTE REPETICIÓN (¡SEMITONO MISTERIOSO!) — Compases 29 al 32"
+  ];
+
+  for (let s = 0; s < 8; s++) {
+    const row = document.createElement("div");
+    row.className = "system-row";
+
+    const meta = document.createElement("div");
+    meta.className = "system-meta";
+    meta.textContent = sectionTitles[s];
+    row.appendChild(meta);
+
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.setAttribute("class", "staff-svg");
+    svg.setAttribute("viewBox", "0 0 1000 135");
+
+    for (let l = 0; l < 5; l++) {
+      const lineY = 40 + l * 10;
+      const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+      line.setAttribute("x1", "10");
+      line.setAttribute("y1", lineY);
+      line.setAttribute("x2", "990");
+      line.setAttribute("y2", lineY);
+      line.setAttribute("stroke", "#1e293b");
+      line.setAttribute("stroke-width", "1.5");
+      svg.appendChild(line);
+    }
+
+    // Clave de Sol
+    const clef = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    clef.setAttribute("x", "18");
+    clef.setAttribute("y", "75");
+    clef.setAttribute("font-size", "44");
+    clef.setAttribute("fill", "#000000");
+    clef.setAttribute("font-family", "serif");
+    clef.textContent = "𝄞";
+    svg.appendChild(clef);
+
+    // Armadura Fa#
+    const sharp = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    sharp.setAttribute("x", "52");
+    sharp.setAttribute("y", "44");
+    sharp.setAttribute("font-size", "20");
+    sharp.setAttribute("fill", "#000000");
+    sharp.setAttribute("font-weight", "bold");
+    sharp.textContent = "♯";
+    svg.appendChild(sharp);
+
+    // 4/4
+    const tsTop = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    tsTop.setAttribute("x", "68");
+    tsTop.setAttribute("y", "58");
+    tsTop.setAttribute("font-size", "20");
+    tsTop.setAttribute("font-weight", "bold");
+    tsTop.setAttribute("fill", "#000000");
+    tsTop.textContent = "4";
+    svg.appendChild(tsTop);
+
+    const tsBot = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    tsBot.setAttribute("x", "68");
+    tsBot.setAttribute("y", "78");
+    tsBot.setAttribute("font-size", "20");
+    tsBot.setAttribute("font-weight", "bold");
+    tsBot.setAttribute("fill", "#000000");
+    tsBot.textContent = "4";
+    svg.appendChild(tsBot);
+
+    const startX = 90;
+    const measureWidth = (990 - startX) / 4;
+
+    for (let m = 0; m < 4; m++) {
+      const mIdx = s * 4 + m;
+      const mData = MEASURES[mIdx];
+      const mX = startX + m * measureWidth;
+
+      const box = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+      box.setAttribute("id", `box-m-${mData.num}`);
+      box.setAttribute("class", mData.isMisterioso ? "measure-box measure-misterioso" : "measure-box");
+      box.setAttribute("x", mX);
+      box.setAttribute("y", "5");
+      box.setAttribute("width", measureWidth);
+      box.setAttribute("height", "125");
+      box.setAttribute("rx", "6");
+      box.onclick = () => playSingleMeasure(mData.num);
+      svg.appendChild(box);
+
+      const barLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
+      barLine.setAttribute("x1", mX + measureWidth);
+      barLine.setAttribute("y1", "40");
+      barLine.setAttribute("x2", mX + measureWidth);
+      barLine.setAttribute("y2", "80");
+      barLine.setAttribute("stroke", mIdx === 31 ? "#dc2626" : "#1e293b");
+      barLine.setAttribute("stroke-width", mIdx === 31 ? "3" : "1.5");
+      svg.appendChild(barLine);
+
+      const numTxt = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      numTxt.setAttribute("x", mX + 6);
+      numTxt.setAttribute("y", "20");
+      numTxt.setAttribute("font-size", "10");
+      numTxt.setAttribute("font-weight", "bold");
+      numTxt.setAttribute("fill", "#64748b");
+      numTxt.textContent = `C.${mData.num}`;
+      svg.appendChild(numTxt);
+
+      // ACORDES AZULES ARRIBA DEL PENTAGRAMA
+      const chordTxt = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      chordTxt.setAttribute("x", mX + 28);
+      chordTxt.setAttribute("y", "26");
+      chordTxt.setAttribute("font-size", "17");
+      chordTxt.setAttribute("font-weight", "800");
+      chordTxt.setAttribute("fill", mData.isMisterioso ? "#dc2626" : "#1d4ed8");
+      chordTxt.textContent = mData.chord;
+      svg.appendChild(chordTxt);
+
+      if (mData.isMisterioso) {
+        const badge = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        badge.setAttribute("x", mX + 85);
+        badge.setAttribute("y", "26");
+        badge.setAttribute("font-size", "11");
+        badge.setAttribute("font-weight", "bold");
+        badge.setAttribute("fill", "#dc2626");
+        badge.textContent = "⚡ SEMITONO MISTERIOSO";
+        svg.appendChild(badge);
+
+        const subNote = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        subNote.setAttribute("x", mX + measureWidth / 2);
+        subNote.setAttribute("y", "120");
+        subNote.setAttribute("text-anchor", "middle");
+        subNote.setAttribute("font-size", "11");
+        subNote.setAttribute("font-weight", "bold");
+        subNote.setAttribute("fill", "#dc2626");
+        subNote.textContent = "D7(b9) tensión misteriosa";
+        svg.appendChild(subNote);
+      } else {
+        const lyricTxt = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        lyricTxt.setAttribute("x", mX + measureWidth / 2);
+        lyricTxt.setAttribute("y", "118");
+        lyricTxt.setAttribute("text-anchor", "middle");
+        lyricTxt.setAttribute("font-size", "11");
+        lyricTxt.setAttribute("fill", "#64748b");
+        lyricTxt.textContent = mData.text;
+        svg.appendChild(lyricTxt);
+      }
+
+      // NOTAS NEGRAS DE LA MELODÍA
+      mData.notes.forEach(nt => {
+        const noteX = mX + 24 + (nt.beat / 4.0) * (measureWidth - 42);
+        const noteY = PITCH_Y[nt.n] || 70;
+
+        const noteGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
+        noteGroup.setAttribute("id", `group-${nt.id}`);
+
+        if (nt.n === "D4") {
+          const addLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
+          addLine.setAttribute("x1", noteX - 8);
+          addLine.setAttribute("y1", "85");
+          addLine.setAttribute("x2", noteX + 8);
+          addLine.setAttribute("y2", "85");
+          addLine.setAttribute("stroke", "#000000");
+          addLine.setAttribute("stroke-width", "1.5");
+          noteGroup.appendChild(addLine);
+        }
+
+        const head = document.createElementNS("http://www.w3.org/2000/svg", "ellipse");
+        head.setAttribute("id", `head-${nt.id}`);
+        head.setAttribute("cx", noteX);
+        head.setAttribute("cy", noteY);
+        head.setAttribute("rx", "5.5");
+        head.setAttribute("ry", "4");
+        head.setAttribute("transform", `rotate(-20 ${noteX} ${noteY})`);
+        head.setAttribute("fill", "#000000");
+        if (nt.d >= 2) {
+          head.setAttribute("fill", "none");
+          head.setAttribute("stroke", "#000000");
+          head.setAttribute("stroke-width", "2");
+        }
+        noteGroup.appendChild(head);
+
+        if (nt.d < 4) {
+          const stem = document.createElementNS("http://www.w3.org/2000/svg", "line");
+          stem.setAttribute("id", `stem-${nt.id}`);
+          stem.setAttribute("x1", noteX + 4.5);
+          stem.setAttribute("y1", noteY);
+          stem.setAttribute("x2", noteX + 4.5);
+          stem.setAttribute("y2", noteY - 24);
+          stem.setAttribute("stroke", "#000000");
+          stem.setAttribute("stroke-width", "1.5");
+          noteGroup.appendChild(stem);
+        }
+
+        const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        label.setAttribute("id", `label-${nt.id}`);
+        label.setAttribute("x", noteX);
+        label.setAttribute("y", noteY - (nt.d < 4 ? 28 : 10));
+        label.setAttribute("text-anchor", "middle");
+        label.setAttribute("font-size", "9");
+        label.setAttribute("font-weight", "bold");
+        label.setAttribute("fill", "#334155");
+        label.textContent = nt.n;
+        noteGroup.appendChild(label);
+
+        svg.appendChild(noteGroup);
+      });
+    }
+
+    row.appendChild(svg);
+    container.appendChild(row);
+  }
+}
+
+// --- REPRODUCTOR DE AUDIO DE ALTA FIDELIDAD NATIVO (APPLE ROLAND GS - CERO RUIDOS / CERO PARONES) ---
+let audioPlayer = new Audio("to_all_the_girls_solo.mp3?nocache=" + Date.now());
+audioPlayer.preload = "auto";
+
+let lastMeasureNum = -1;
+
+function changeAudioTrack(trackFile) {
+  const wasPlaying = isPlaying;
+  stopAudio();
+  audioPlayer = new Audio(trackFile + "?nocache=" + Date.now());
+  audioPlayer.preload = "auto";
+  audioPlayer.ontimeupdate = handleTimeUpdate;
+  audioPlayer.onended = stopAudio;
+  if (wasPlaying) {
+    togglePlayDemo();
+  }
+}
+
+function handleTimeUpdate() {
+  if (!isPlaying) return;
+  const t = audioPlayer.currentTime;
+  const secPerMeasure = (60.0 / bpm) * 4.0;
+  const currentMeasureNum = Math.min(32, Math.floor(t / secPerMeasure) + 1);
+
+  if (currentMeasureNum !== lastMeasureNum) {
+    lastMeasureNum = currentMeasureNum;
+    document.querySelectorAll(".measure-playing").forEach(el => el.classList.remove("measure-playing"));
+    const mBox = document.getElementById(`box-m-${currentMeasureNum}`);
+    if (mBox) {
+      mBox.classList.add("measure-playing");
+    }
+  }
+}
+
+audioPlayer.ontimeupdate = handleTimeUpdate;
+audioPlayer.onended = stopAudio;
+
+function togglePlayDemo() {
+  if (isPlaying) {
+    stopAudio();
+  } else {
+    isPlaying = true;
+    document.getElementById("demoIcon").innerText = "⏸";
+    document.getElementById("demoText").innerText = "Pausar";
+    audioPlayer.play().catch(e => console.warn(e));
+  }
+}
+
+function stopAudio() {
+  isPlaying = false;
+  audioPlayer.pause();
+  audioPlayer.currentTime = 0;
+  lastMeasureNum = -1;
+  document.getElementById("demoIcon").innerText = "▶";
+  document.getElementById("demoText").innerText = "Escuchar Melodía (Piano Limpio)";
+  document.querySelectorAll(".measure-playing").forEach(el => el.classList.remove("measure-playing"));
+  document.querySelectorAll(".note-playing").forEach(el => el.classList.remove("note-playing"));
+}
+
+function playSingleMeasure(measureNum) {
+  stopAudio();
+  const secPerMeasure = (60.0 / bpm) * 4.0;
+  const targetStartTime = (measureNum - 1) * secPerMeasure;
+
+  audioPlayer.currentTime = targetStartTime;
+  isPlaying = true;
+  document.getElementById("demoIcon").innerText = "⏸";
+  document.getElementById("demoText").innerText = "Pausar";
+  audioPlayer.play().catch(e => console.warn(e));
+
+  // Parar automáticamente al terminar el compás
+  setTimeout(() => {
+    if (isPlaying) stopAudio();
+  }, secPerMeasure * 1000);
+}
+
+// --- CAMBIAR CANCIÓN Y ACTUALIZAR RÓTULO DEL SET LIST ---
+function switchSong(songKey) {
+  stopAudio();
+  if (songKey === "to_all_the_girls") {
+    document.getElementById("sheetTitle").innerText = "To All The Girls I've Loved Before";
+    document.getElementById("sheetSubtitle").innerText = "Julio Iglesias & Willie Nelson — 32 Compases (Tonalidad: Sol Mayor)";
+    document.getElementById("setlistBtnTag").innerText = "🔘 SET LIST: BANCO 1 — BOTÓN 1";
+    document.getElementById("setlistDesc").innerHTML = "Ajustes Korg: <strong>Estilo 041 Love Ballad</strong> (78 BPM) | <strong>Strings 235</strong> | Split C4";
+    changeBpm(78);
+  } else if (songKey === "hymn_to_the_fallen") {
+    document.getElementById("sheetTitle").innerText = "Hymn to the Fallen (Saving Private Ryan)";
+    document.getElementById("sheetSubtitle").innerText = "John Williams — Himno Solemne (Tonalidad: Sol Mayor)";
+    document.getElementById("setlistBtnTag").innerText = "🔘 SET LIST: BANCO 1 — BOTÓN 2";
+    document.getElementById("setlistDesc").innerHTML = "Ajustes Korg: <strong>Estilo 040 4/4 Ballad</strong> (60 BPM) | <strong>French Horn & Strings</strong>";
+    changeBpm(60);
+  } else if (songKey === "besame_mucho") {
+    document.getElementById("sheetTitle").innerText = "Bésame Mucho";
+    document.getElementById("sheetSubtitle").innerText = "Consuelo Velázquez — Bolero Latino (Tonalidad: Re menor)";
+    document.getElementById("setlistBtnTag").innerText = "🔘 SET LIST: BANCO 1 — BOTÓN 3";
+    document.getElementById("setlistDesc").innerHTML = "Ajustes Korg: <strong>Estilo Latin Bolero</strong> (82 BPM) | <strong>Acoustic Guitar & Accordion</strong>";
+    changeBpm(82);
+  }
+}
+
+function changeBpm(v) {
+  bpm = parseInt(v, 10);
+  document.getElementById("bpmDisplay").innerText = bpm;
+  document.getElementById("tempoRange").value = bpm;
+}
+
+window.addEventListener("DOMContentLoaded", () => {
+  renderFullScore();
+});
+</script>
+</body>
+</html>
