@@ -349,43 +349,45 @@
                 <p>Julio Iglesias & Willie Nelson · Country Ballad · Compás 4/4 · <b style="color:#34d399;">⏱️ Tempo: 100 BPM</b></p>
             </div>
             <div class="meta-pills-row">
-                <span class="meta-pill midi">🥁 Estilo: 041 Love Ballad (Tempo: 100 BPM)</span>
-                <span class="meta-pill strings">🎻 Melodía: Upper 1 = St. Strings · Upper 2 = St. Strings · Upper 3 = StringQuart</span>
+                <span class="meta-pill midi">🥁 Estilo: 041 Love Ballad (100 BPM)</span>
+                <span class="meta-pill strings">🎹 Sonido: Piano & Strings ligeros (sin capas graves)</span>
             </div>
         </div>
     </div>
 
     <!-- SECCIÓN 1: CONTROL MIDI EN VIVO (OPTIMIZADO PARA TOCAR EN IPAD) -->
     <div class="section-box">
-        <div class="section-title">⚡ Control MIDI en Directo (Gatillos para Tocar)</div>
+        <div class="section-title">⚡ Sonidos de Melodía Recomendados (Ligeros y Nítidos)</div>
+        
+        <div style="background:#172554; border:1px solid #1e40af; border-radius:8px; padding:10px 14px; font-size:0.84rem; color:#bfdbfe; line-height:1.45;">
+            💡 <b>Eliminada la saturación de graves:</b> Los 3 violines a la vez metían cellos y octavas bajas que oscurecían la canción. Ahora tienes dos opciones limpias y brillantes:
+        </div>
+
         <div class="stage-midi-grid">
-            <button class="btn-stage btn-stage-soft" onclick="cargarInicioSuave()" title="Para empezar la canción suave con menos instrumentos en la intro/estrofa">
-                <span class="stage-icon">🎵</span>
+            <button class="btn-stage btn-stage-soft" onclick="cargarPianoStrings()" title="El sonido por excelencia para Julio Iglesias: piano nítido y violines suaves de fondo">
+                <span class="stage-icon">🎹</span>
                 <div class="stage-text">
-                    <span class="stage-title">1. Empezar Suave (100 BPM)</span>
-                    <span class="stage-sub">Estilo 041 (100 BPM) + Strings Suaves (Intro/Estrofa)</span>
+                    <span class="stage-title">1. Piano & Strings Cristalino</span>
+                    <span class="stage-sub">Melodía clara de piano con violines flotando de fondo (Set 021)</span>
                 </div>
             </button>
-            <button class="btn-stage btn-stage-strings" onclick="cargarCargaTotalStrings()" title="Pulsar en el estribillo para desatar los 3 violines a la vez">
-                <span class="stage-icon">🔥</span>
+            <button class="btn-stage btn-stage-strings" onclick="cargarViolinesAgudos()" title="Solo la sección alta de violines sin cellos ni contrabajos graves">
+                <span class="stage-icon">🎻</span>
                 <div class="stage-text">
-                    <span class="stage-title">2. Carga Total Strings</span>
-                    <span class="stage-sub">Upper 1, 2 y 3 al 100% (Estribillo/Clímax)</span>
+                    <span class="stage-title">2. Violines Agudos (Solo Upper 1)</span>
+                    <span class="stage-sub">Cuerdas solistas finas y brillantes (Upper 2 y 3 apagados)</span>
                 </div>
             </button>
         </div>
         <div class="secondary-actions">
-            <button class="btn-secondary" onclick="cargarCancion1Completa()">
-                ⚡ Cargar Todo (100 BPM + 3 Upper)
+            <button class="btn-secondary" onclick="cargarChamberStrings()">
+                🎻 Cuerdas de Cámara Ligeras (Set 062)
             </button>
             <button class="btn-secondary" onclick="enviarSoloEstilo(32, 2, 8)">
                 🥁 Solo Ritmo 041 (100 BPM)
             </button>
-            <button class="btn-secondary" onclick="cargarSet61()">
-                🎻 Solo Set 061 (Strings Suaves)
-            </button>
         </div>
-        <div id="log-1" class="live-log">Listo para enviar comandos al Korg EK-50 (Tempo: 100 BPM).</div>
+        <div id="log-1" class="live-log">Listo para configurar el sonido en el Korg EK-50.</div>
     </div>
 
     <!-- SECCIÓN 2: GUÍA MUSICAL RÁPIDA -->
@@ -590,7 +592,7 @@
         }
     }
 
-    function cargarInicioSuave() {
+    function cargarPianoStrings() {
         const log = document.getElementById('log-1');
         if (!midiOutput && midiAccessInstance) {
             const outputs = Array.from(midiAccessInstance.outputs.values());
@@ -606,18 +608,24 @@
         midiOutput.send([0xB0 | 15, 0x20, 2]);
         midiOutput.send([0xC0 | 15, 8]);
 
-        // 2. Inyectar Keyboard Set 61 "The Strings" (sonido suave e íntimo para la estrofa)
+        // 2. Cargar Keyboard Set 021 (Piano & Strings)
         setTimeout(() => {
             midiOutput.send([0xB0 | 0, 0x00, 33]);
-            midiOutput.send([0xB0 | 0, 0x20, 6]);
-            midiOutput.send([0xC0 | 0, 0]); // Set 61
-            log.textContent = `✅ ¡Inicio suave listo en ${midiOutput.name}! -> Estilo 041 + Set 61 (Strings suaves para Intro/Estrofa)`;
+            midiOutput.send([0xB0 | 0, 0x20, 2]);
+            midiOutput.send([0xC0 | 0, 0]); // Set 021 Piano & Strings
+
+            // Calibrar volúmenes: Piano nítido (120) + Cuerdas de fondo sutiles (70) + Upper 3 apagado (0)
+            midiOutput.send([0xB0 | 0, 0x07, 120]); // Upper 1 (Piano de cola nítido)
+            midiOutput.send([0xB0 | 1, 0x07, 70]);  // Upper 2 (Violines suaves de fondo)
+            midiOutput.send([0xB0 | 2, 0x07, 0]);   // Upper 3 (APAGADO: elimina retumbos graves)
+
+            log.textContent = `✅ ¡Cargado en ${midiOutput.name}! -> Estilo 041 + Piano & Violines Suaves (sin graves pesados)`;
         }, 300);
 
-        log.textContent = `⏳ Configurando inicio suave (Estilo 041 + Strings suaves)...`;
+        log.textContent = `⏳ Configurando Piano & Violines Suaves...`;
     }
 
-    function cargarCargaTotalStrings() {
+    function cargarViolinesAgudos() {
         const log = document.getElementById('log-1');
         if (!midiOutput && midiAccessInstance) {
             const outputs = Array.from(midiAccessInstance.outputs.values());
@@ -628,51 +636,19 @@
             return;
         }
 
-        // Inyectar en vivo Set 66 "Oct.Strings" activando Upper 1, 2 y 3 al máximo para el estribillo/crescendo
+        // Inyectar en vivo Set 061 "The Strings" dejando solo Upper 1 activo (violines solistas agudos)
         midiOutput.send([0xB0 | 0, 0x00, 33]);
         midiOutput.send([0xB0 | 0, 0x20, 6]);
-        midiOutput.send([0xC0 | 0, 5]); // Set 66 Oct.Strings
+        midiOutput.send([0xC0 | 0, 0]); // Set 061 The Strings
 
-        [0, 1, 2].forEach(ch => {
-            midiOutput.send([0xB0 | ch, 0x07, 127]); // Volumen CC7 = 127
-            midiOutput.send([0xB0 | ch, 0x0B, 127]); // Expresión CC11 = 127
-        });
+        midiOutput.send([0xB0 | 0, 0x07, 127]); // Upper 1: Violines solistas al 100%
+        midiOutput.send([0xB0 | 1, 0x07, 0]);   // Upper 2: APAGADO (sin octava grave)
+        midiOutput.send([0xB0 | 2, 0x07, 0]);   // Upper 3: APAGADO (sin cellos graves)
 
-        log.textContent = `🔥 ¡Carga total de strings activada en ${midiOutput.name}! -> Upper 1, 2 y 3 al 100% (Clímax/Estribillo)`;
+        log.textContent = `🎻 ¡Violines solistas agudos activados en ${midiOutput.name}! -> Solo Upper 1 (fino y brillante)`;
     }
 
-    function cargarCancion1Completa() {
-        const log = document.getElementById('log-1');
-        if (!midiOutput && midiAccessInstance) {
-            const outputs = Array.from(midiAccessInstance.outputs.values());
-            if (outputs.length > 0) midiOutput = outputs[0];
-        }
-        if (!midiOutput) {
-            log.textContent = '⚠️ Conecta el Korg y pulsa Conectar arriba.';
-            return;
-        }
-
-        // 1. Enviar primero el Estilo 041 (Canal 16)
-        midiOutput.send([0xB0 | 15, 0x00, 32]); // CC0 MSB 32
-        midiOutput.send([0xB0 | 15, 0x20, 2]);  // CC32 LSB 2
-        midiOutput.send([0xC0 | 15, 8]);        // PC 8 -> Estilo 041 Love Ballad
-
-        // 2. Esperar 300ms y después inyectar el Keyboard Set 66 "Oct.Strings":
-        setTimeout(() => {
-            midiOutput.send([0xB0 | 0, 0x00, 33]);  // CC0 MSB 33 (Keyboard Set)
-            midiOutput.send([0xB0 | 0, 0x20, 6]);   // CC32 LSB 6
-            midiOutput.send([0xC0 | 0, 5]);         // PC 5 -> Set 66
-            [0, 1, 2].forEach(ch => {
-                midiOutput.send([0xB0 | ch, 0x07, 127]);
-                midiOutput.send([0xB0 | ch, 0x0B, 127]);
-            });
-            log.textContent = `✅ ¡Cargado en ${midiOutput.name}! -> Estilo 041 + Set 66 (Upper 1, 2 y 3 ENCENDIDOS)`;
-        }, 300);
-
-        log.textContent = `⏳ Enviando Estilo 041 y activando los 3 Upper...`;
-    }
-
-    function cargarSet61() {
+    function cargarChamberStrings() {
         const log = document.getElementById('log-1');
         if (!midiOutput && midiAccessInstance) {
             const outputs = Array.from(midiAccessInstance.outputs.values());
@@ -680,10 +656,14 @@
         }
         if (!midiOutput) return;
 
+        // Set 062: ChamberStrings (Cuerdas ligeras y transparentes)
         midiOutput.send([0xB0 | 0, 0x00, 33]);
         midiOutput.send([0xB0 | 0, 0x20, 6]);
-        midiOutput.send([0xC0 | 0, 0]);
-        log.textContent = `✅ ¡Cargado en ${midiOutput.name}! -> Set 061 The Strings`;
+        midiOutput.send([0xC0 | 0, 1]); // Set 062
+        midiOutput.send([0xB0 | 0, 0x07, 115]);
+        midiOutput.send([0xB0 | 1, 0x07, 0]);
+        midiOutput.send([0xB0 | 2, 0x07, 0]);
+        log.textContent = `✅ ¡Cargado en ${midiOutput.name}! -> Set 062 Cuerdas de Cámara Ligeras`;
     }
 
     function enviarSoloEstilo(msb, lsb, stylePC) {
