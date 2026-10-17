@@ -339,8 +339,8 @@
         if (midiClockTimer) clearInterval(midiClockTimer);
         if (!midiOutput) return;
 
-        // 24 ticks por negra. 60000 / (bpm * 24) = ms por tick
-        const msPerTick = 60000 / (bpm * 24);
+        // 24 ticks por negra. Para 60 BPM = 41.66 ms por pulso 0xF8
+        const msPerTick = Math.round(60000 / (bpm * 24));
         midiClockTimer = setInterval(() => {
             if (midiOutput) {
                 try {
@@ -355,6 +355,18 @@
         const text = document.getElementById("midi-label");
         if (!dot || !text) return null;
 
+        if (midiAccessInstance) {
+            const outputs = Array.from(midiAccessInstance.outputs.values());
+            if (outputs.length > 0) {
+                const korg = outputs.find(o => o.name && (o.name.toLowerCase().includes('ek-50') || o.name.toLowerCase().includes('korg') || o.name.toLowerCase().includes('keyboard')));
+                midiOutput = korg || outputs[0];
+                dot.style.background = "#10b981";
+                dot.classList.add("connected");
+                text.innerHTML = `🟢 Conectado: <b>${midiOutput.name}</b>`;
+                return midiOutput;
+            }
+        }
+
         if (!navigator.requestMIDIAccess) {
             dot.style.background = "#f85149";
             text.textContent = "Usa Google Chrome (Web MIDI no soportado en Safari)";
@@ -366,7 +378,7 @@
             let midiAccess = null;
             try {
                 midiAccess = await navigator.requestMIDIAccess({ sysex: true });
-            } catch(e) {
+            } catch(sysexErr) {
                 midiAccess = await navigator.requestMIDIAccess();
             }
             midiAccessInstance = midiAccess;
@@ -374,6 +386,8 @@
             function bindPorts() {
                 if (!midiAccessInstance) return null;
                 const outputs = Array.from(midiAccessInstance.outputs.values());
+                const inputs = Array.from(midiAccessInstance.inputs.values());
+
                 if (outputs.length > 0) {
                     const korg = outputs.find(o => o.name && (o.name.toLowerCase().includes('ek-50') || o.name.toLowerCase().includes('korg') || o.name.toLowerCase().includes('keyboard')));
                     midiOutput = korg || outputs[0];
@@ -381,6 +395,11 @@
                     dot.classList.add("connected");
                     text.innerHTML = `🟢 Conectado: <b>${midiOutput.name}</b>`;
                     return midiOutput;
+                } else if (inputs.length > 0) {
+                    dot.style.background = "#10b981";
+                    dot.classList.add("connected");
+                    text.innerHTML = `🟢 Conectado (Entrada): <b>${inputs[0].name}</b>`;
+                    return null;
                 } else {
                     midiOutput = null;
                     dot.style.background = "#d29922";
@@ -402,32 +421,47 @@
 
     async function cargarMetalesCoro() {
         const log = document.getElementById('log-1');
-        if (!midiOutput) await conectarMIDI();
         if (!midiOutput) {
-            if (log) log.innerHTML = '⚠️ No se detecta el Korg EK-50. Conecta el USB y pulsa "Detectar" arriba.';
+            await conectarMIDI();
+        }
+        if (!midiOutput && midiAccessInstance) {
+            const outputs = Array.from(midiAccessInstance.outputs.values());
+            if (outputs.length > 0) midiOutput = outputs[0];
+        }
+        if (!midiOutput) {
+            if (log) log.innerHTML = '⚠️ No se detecta el Korg EK-50. Comprueba el cable USB y pulsa "Detectar" arriba.';
             return;
         }
 
         try {
-            // Upper 1 = French Horn / Brass solemne (Banco 0, PC 60: French Horn)
-            midiOutput.send([0xB0 | 0, 0x00, 0]);
+            // 1. Cargar en pantalla del Korg el Keyboard Set de Metales: "Classical Brass" (Banco 33, LSB 7, PC 0)
+            midiOutput.send([0xB0 | 0, 0x00, 33]);
+            midiOutput.send([0xB0 | 0, 0x20, 7]);
+            midiOutput.send([0xC0 | 0, 0]);
+
+            midiOutput.send([0xB0 | 15, 0x00, 33]);
+            midiOutput.send([0xB0 | 15, 0x20, 7]);
+            midiOutput.send([0xC0 | 15, 0]);
+
+            // 2. Upper 1 = French Horn / Trompas solemnes
+            midiOutput.send([0xB0 | 0, 0x00, 121]);
             midiOutput.send([0xB0 | 0, 0x20, 0]);
             midiOutput.send([0xC0 | 0, 60]); // French Horn
             midiOutput.send([0xB0 | 0, 0x07, 125]);
 
-            // Upper 2 = Choir Aahs / Fondo coral solemne (Banco 0, PC 52)
-            midiOutput.send([0xB0 | 1, 0x00, 0]);
+            // 3. Upper 2 = Choir Aahs / Colchón coral
+            midiOutput.send([0xB0 | 1, 0x00, 121]);
             midiOutput.send([0xB0 | 1, 0x20, 0]);
             midiOutput.send([0xC0 | 1, 52]); // Choir Aahs
-            midiOutput.send([0xB0 | 1, 0x07, 75]);
+            midiOutput.send([0xB0 | 1, 0x07, 80]);
 
             // Upper 3 apagado
             midiOutput.send([0xB0 | 2, 0x07, 0]);
 
-            // Fijar reloj a 60 BPM
+            // 4. Fijar reloj MIDI a 60 BPM
             fijarTempoMIDI(60);
 
-            if (log) log.innerHTML = `🎺 <b>Metales Heroicos & Coro</b> activado en ${midiOutput.name} · <b>⏱️ 60 BPM</b> (Trompa solemne en Upper 1 + Coro majestuoso en Upper 2).`;
+            if (log) log.innerHTML = `🎺 <b>1. Metales Heroicos & Coro</b> activado en ${midiOutput.name} (Línea 2: <b>Classical Brass</b> · <b>⏱️ 60 BPM</b> · Trompa Upper 1 + Coro Upper 2).`;
         } catch(e) {
             if (log) log.innerHTML = `⚠️ Error enviando al Korg: ${e.message}`;
         }
@@ -435,14 +469,20 @@
 
     async function cargarCuerdasSolemne() {
         const log = document.getElementById('log-1');
-        if (!midiOutput) await conectarMIDI();
         if (!midiOutput) {
-            if (log) log.innerHTML = '⚠️ No se detecta el Korg EK-50. Conecta el USB y pulsa "Detectar" arriba.';
+            await conectarMIDI();
+        }
+        if (!midiOutput && midiAccessInstance) {
+            const outputs = Array.from(midiAccessInstance.outputs.values());
+            if (outputs.length > 0) midiOutput = outputs[0];
+        }
+        if (!midiOutput) {
+            if (log) log.innerHTML = '⚠️ No se detecta el Korg EK-50. Comprueba el cable USB y pulsa "Detectar" arriba.';
             return;
         }
 
         try {
-            // Cargar Keyboard Set No. 61: "The Strings" (Banco 33, LSB 6, PC 0)
+            // 1. Cargar en pantalla del Korg el Keyboard Set No. 61: "The Strings" (Banco 33, LSB 6, PC 0)
             midiOutput.send([0xB0 | 0, 0x00, 33]);
             midiOutput.send([0xB0 | 0, 0x20, 6]);
             midiOutput.send([0xC0 | 0, 0]);
@@ -451,13 +491,13 @@
             midiOutput.send([0xB0 | 15, 0x20, 6]);
             midiOutput.send([0xC0 | 15, 0]);
 
-            // Upper 1 = St. Strings
+            // 2. Upper 1 = St. Strings
             midiOutput.send([0xB0 | 0, 0x00, 121]);
             midiOutput.send([0xB0 | 0, 0x20, 3]);
             midiOutput.send([0xC0 | 0, 48]);
             midiOutput.send([0xB0 | 0, 0x07, 120]);
 
-            // Upper 2 = Cuarteto de cuerdas de fondo
+            // 3. Upper 2 = Cuarteto de cuerdas de fondo
             midiOutput.send([0xB0 | 1, 0x00, 121]);
             midiOutput.send([0xB0 | 1, 0x20, 9]);
             midiOutput.send([0xC0 | 1, 48]);
@@ -466,10 +506,10 @@
             // Upper 3 apagado
             midiOutput.send([0xB0 | 2, 0x07, 0]);
 
-            // Fijar reloj a 60 BPM
+            // 4. Fijar reloj MIDI a 60 BPM
             fijarTempoMIDI(60);
 
-            if (log) log.innerHTML = `🎻 <b>Cuerdas Solemnes (The Strings)</b> activado en ${midiOutput.name} · <b>⏱️ 60 BPM</b>.`;
+            if (log) log.innerHTML = `🎻 <b>2. Cuerdas Solemnes (The Strings)</b> activado en ${midiOutput.name} (Línea 2: <b>The Strings</b> · <b>⏱️ 60 BPM</b>).`;
         } catch(e) {
             if (log) log.innerHTML = `⚠️ Error enviando al Korg: ${e.message}`;
         }
