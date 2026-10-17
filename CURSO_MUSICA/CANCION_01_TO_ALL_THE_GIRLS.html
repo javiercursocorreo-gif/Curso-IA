@@ -390,6 +390,74 @@
         <div id="log-1" class="live-log">Listo para configurar el sonido en el Korg EK-50.</div>
     </div>
 
+    <!-- SECCIÓN: CAMBIO DE TONO AL VUELO (TRANSPOSER 1-TAP PARA WILLIE NELSON) -->
+    <div class="section-box" style="border: 2px solid #8b5cf6; background: radial-gradient(circle at top left, #1e1b4b 0%, #0f172a 100%);">
+        <div class="section-title" style="color:#c4b5fd;">
+            🔀 Cambio de Tono en Directo (Transposer para Willie Nelson)
+        </div>
+        <div style="font-size:0.86rem; color:#e0e7ff; line-height:1.45;">
+            💡 <b>¡Sin soltar las dos manos del teclado!</b> En lugar de pulsar <i>Shift + Transpose</i> en el Korg, toca este botón en la pantalla con un solo dedo cuando empiece la estrofa de Willie Nelson:
+        </div>
+
+        <div class="stage-midi-grid" style="margin-top:10px;">
+            <button class="btn-stage" style="background: linear-gradient(135deg, #6d28d9 0%, #9333ea 100%); border: 1px solid #c084fc; box-shadow: 0 4px 14px rgba(147, 51, 234, 0.4);" onclick="transportarWillieNelson()" title="Baja 4 semitonos: tocas Sol (G) y suena Mi bemol (Eb) automáticamente">
+                <span class="stage-icon">🔀</span>
+                <div class="stage-text">
+                    <span class="stage-title">1-TAP: Willie Nelson (-4 Semitonos)</span>
+                    <span class="stage-sub">Tocas Sol (G) y suena Mi♭ (Eb) · ¡Mismos acordes que Julio!</span>
+                </div>
+            </button>
+            <button class="btn-stage" style="background: linear-gradient(135deg, #1e293b 0%, #334155 100%); border: 1px solid #64748b; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);" onclick="resetTonoOriginal()" title="Restaura la afinación estándar a 0 semitonos para las estrofas de Julio Iglesias">
+                <span class="stage-icon">🔄</span>
+                <div class="stage-text">
+                    <span class="stage-title">Reset Tono Julio Iglesias (0)</span>
+                    <span class="stage-sub">Vuelve al tono natural de Sol Mayor (G) sin transposición</span>
+                </div>
+            </button>
+        </div>
+
+        <div id="log-transpose" class="live-log" style="margin-top:8px; border-color:#7c3aed; color:#ddd6fe;">
+            Estado transposición: Tono normal (0 semitonos).
+        </div>
+
+        <!-- TABLA DE CORRESPONDENCIA FÁCIL -->
+        <div style="background:#172554; border:1px solid #2563eb; border-radius:8px; padding:10px 14px; margin-top:10px; font-size:0.83rem; color:#bfdbfe;">
+            <b style="color:#93c5fd; font-size:0.9rem;">🎯 CÓMO TOCAR LA SEGUNDA PARTE SIN APRENDERTE ACORDES NUEVOS:</b>
+            <div style="margin-top:4px; font-size:0.8rem; color:#94a3b8;">Al pulsar <b>-4 semitonos</b>, usas exactamente los mismos acordes que ya dominas de la 1ª parte:</div>
+            <table style="width:100%; border-collapse:collapse; margin-top:8px; font-size:0.83rem;">
+                <thead>
+                    <tr style="border-bottom:1px solid #3b82f6; color:#60a5fa; text-align:left;">
+                        <th style="padding:4px 6px;">En la partitura (Willie)</th>
+                        <th style="padding:4px 6px;">👉 Tú tocas en el teclado (Fácil)</th>
+                        <th style="padding:4px 6px;">Lo que oye el público</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style="border-bottom:1px solid #1e3a8a;">
+                        <td style="padding:5px 6px; color:#e9d5ff; font-weight:700;">Eb (Mi bemol)</td>
+                        <td style="padding:5px 6px; color:#34d399; font-weight:800;">G (Sol Mayor)</td>
+                        <td style="padding:5px 6px; color:#cbd5e1;">Suena Mi♭ perfecto</td>
+                    </tr>
+                    <tr style="border-bottom:1px solid #1e3a8a;">
+                        <td style="padding:5px 6px; color:#e9d5ff; font-weight:700;">Fm7 (Fa menor 7ª)</td>
+                        <td style="padding:5px 6px; color:#34d399; font-weight:800;">Am7 (La menor 7ª)</td>
+                        <td style="padding:5px 6px; color:#cbd5e1;">Suena Fa m7 perfecto</td>
+                    </tr>
+                    <tr style="border-bottom:1px solid #1e3a8a;">
+                        <td style="padding:5px 6px; color:#e9d5ff; font-weight:700;">Bb7 (Si bemol 7ª)</td>
+                        <td style="padding:5px 6px; color:#34d399; font-weight:800;">D7 (Re séptima)</td>
+                        <td style="padding:5px 6px; color:#cbd5e1;">Suena Si♭ 7 perfecto</td>
+                    </tr>
+                    <tr>
+                        <td style="padding:5px 6px; color:#e9d5ff; font-weight:700;">Ab (La bemol)</td>
+                        <td style="padding:5px 6px; color:#34d399; font-weight:800;">C (Do Mayor)</td>
+                        <td style="padding:5px 6px; color:#cbd5e1;">Suena La♭ perfecto</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
     <!-- SECCIÓN 2: GUÍA MUSICAL RÁPIDA -->
     <div class="section-box">
         <div class="section-title">🎼 Referencia de Partitura y Entrada</div>
@@ -726,6 +794,67 @@
         midiOutput.send([0xB0 | 15, 0x20, lsb]);
         midiOutput.send([0xC0 | 15, stylePC]);
         log.textContent = `✅ ¡Estilo ${stylePC} enviado a ${midiOutput.name}!`;
+    }
+
+    function transportarWillieNelson() {
+        const log = document.getElementById('log-transpose');
+        if (!midiOutput && midiAccessInstance) {
+            const outputs = Array.from(midiAccessInstance.outputs.values());
+            if (outputs.length > 0) midiOutput = outputs[0];
+        }
+
+        try {
+            if (midiOutput) {
+                // 1. SysEx Universal Real-Time Master Coarse Tuning (MMA MIDI Standard)
+                // mm = 60 (0x3C = -4 semitonos respecto a 64 centro)
+                midiOutput.send([0xF0, 0x7F, 0x7F, 0x04, 0x04, 0x00, 60, 0xF7]);
+
+                // 2. RPN 0,2 (Master Coarse Tuning) en los 16 canales MIDI
+                for (let ch = 0; ch < 16; ch++) {
+                    midiOutput.send([0xB0 | ch, 101, 0]);   // RPN MSB = 0
+                    midiOutput.send([0xB0 | ch, 100, 2]);   // RPN LSB = 2 (Coarse Tuning)
+                    midiOutput.send([0xB0 | ch, 6, 60]);    // Data Entry MSB = 60 (-4 st)
+                    midiOutput.send([0xB0 | ch, 38, 0]);    // Data Entry LSB = 0
+                    midiOutput.send([0xB0 | ch, 101, 127]); // RPN Reset
+                    midiOutput.send([0xB0 | ch, 100, 127]);
+                }
+                if (log) log.innerHTML = `✅ <b>Korg transportado a -4 semitonos (${midiOutput.name})</b>. ¡Toca Sol (G) y sonará Mi♭ (Eb)!`;
+            } else {
+                if (log) log.innerHTML = `⚠️ MIDI no detectado. En el Korg pulsa el botón <b>TRANSPOSE b</b> hasta marcar <b>-4</b>.`;
+            }
+        } catch(e) {
+            if (log) log.innerHTML = `⚠️ Transposición enviada: ${e.message}`;
+        }
+    }
+
+    function resetTonoOriginal() {
+        const log = document.getElementById('log-transpose');
+        if (!midiOutput && midiAccessInstance) {
+            const outputs = Array.from(midiAccessInstance.outputs.values());
+            if (outputs.length > 0) midiOutput = outputs[0];
+        }
+
+        try {
+            if (midiOutput) {
+                // 1. SysEx Universal Real-Time Master Coarse Tuning (mm = 64 = 0 semitonos)
+                midiOutput.send([0xF0, 0x7F, 0x7F, 0x04, 0x04, 0x00, 64, 0xF7]);
+
+                // 2. RPN 0,2 (Master Coarse Tuning) en los 16 canales MIDI
+                for (let ch = 0; ch < 16; ch++) {
+                    midiOutput.send([0xB0 | ch, 101, 0]);
+                    midiOutput.send([0xB0 | ch, 100, 2]);
+                    midiOutput.send([0xB0 | ch, 6, 64]);    // 64 = 0 st centro
+                    midiOutput.send([0xB0 | ch, 38, 0]);
+                    midiOutput.send([0xB0 | ch, 101, 127]);
+                    midiOutput.send([0xB0 | ch, 100, 127]);
+                }
+                if (log) log.innerHTML = `🔄 <b>Tono original restaurado (0 semitonos)</b>. Vuelves a Sol Mayor normal en ${midiOutput.name}.`;
+            } else {
+                if (log) log.innerHTML = `⚠️ Pulsa en el Korg <b>TRANSPOSE b y # a la vez</b> para volver a 0.`;
+            }
+        } catch(e) {
+            if (log) log.innerHTML = `⚠️ Reset tono: ${e.message}`;
+        }
     }
 
     window.addEventListener('DOMContentLoaded', () => {
