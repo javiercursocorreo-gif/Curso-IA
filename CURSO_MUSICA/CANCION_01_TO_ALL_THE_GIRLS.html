@@ -642,47 +642,58 @@
     async function conectarMIDI() {
         const dot = document.getElementById("midi-dot");
         const text = document.getElementById("midi-label");
-        if (!dot || !text) return;
+        if (!dot || !text) return null;
 
         if (!navigator.requestMIDIAccess) {
             dot.style.background = "#f85149";
             text.textContent = "Usa Google Chrome (Web MIDI no soportado en Safari)";
-            return;
+            return null;
         }
 
         try {
             dot.style.background = "#e3b341";
-            const midiAccess = await navigator.requestMIDIAccess({ sysex: true });
+            let midiAccess = null;
+            try {
+                midiAccess = await navigator.requestMIDIAccess({ sysex: true });
+            } catch(sysexErr) {
+                // Fallback inmediato a MIDI estándar (imprescindible para orígenes locales file://)
+                midiAccess = await navigator.requestMIDIAccess();
+            }
             midiAccessInstance = midiAccess;
 
             function bindPorts() {
-                if (!midiAccessInstance) return;
+                if (!midiAccessInstance) return null;
                 const outputs = Array.from(midiAccessInstance.outputs.values());
                 const inputs = Array.from(midiAccessInstance.inputs.values());
 
                 if (outputs.length > 0) {
-                    const korg = outputs.find(o => o.name && (o.name.toLowerCase().includes('ek-50') || o.name.toLowerCase().includes('korg')));
+                    const korg = outputs.find(o => o.name && (o.name.toLowerCase().includes('ek-50') || o.name.toLowerCase().includes('korg') || o.name.toLowerCase().includes('keyboard')));
                     midiOutput = korg || outputs[0];
                     dot.style.background = "#10b981";
                     dot.classList.add("connected");
                     text.innerHTML = `🟢 Conectado: <b>${midiOutput.name}</b>`;
+                    return midiOutput;
                 } else if (inputs.length > 0) {
                     dot.style.background = "#10b981";
                     dot.classList.add("connected");
                     text.innerHTML = `🟢 Conectado (Entrada): <b>${inputs[0].name}</b>`;
+                    return null;
                 } else {
+                    midiOutput = null;
                     dot.style.background = "#d29922";
                     dot.classList.remove("connected");
                     text.innerHTML = '🟡 Conecta el Korg por USB <span style="font-size:0.75rem; text-decoration:underline; cursor:pointer;" onclick="conectarMIDI()">🔄 Re-escanear</span>';
+                    return null;
                 }
             }
 
-            bindPorts();
             midiAccessInstance.onstatechange = bindPorts;
+            return bindPorts();
         } catch (err) {
             dot.style.background = "#d29922";
             dot.classList.remove("connected");
             text.innerHTML = '🟡 Korg listo <span style="font-size:0.75rem; text-decoration:underline; cursor:pointer;" onclick="conectarMIDI()">🔌 Conectar</span>';
+            return null;
         }
     }
 
@@ -693,7 +704,7 @@
             if (outputs.length > 0) midiOutput = outputs[0];
         }
         if (!midiOutput) {
-            log.textContent = '⚠️ Conecta el Korg y pulsa Conectar arriba.';
+            if (log) log.textContent = '⚠️ Conecta el Korg y pulsa Conectar arriba.';
             return;
         }
 
@@ -706,7 +717,7 @@
         midiOutput.send([0xB0 | 1, 0x07, 0]);   // Upper 2 al 0% (SILENCIA EL ACORDEÓN)
         midiOutput.send([0xB0 | 2, 0x07, 0]);   // Upper 3 al 0%
 
-        log.textContent = `🎹 ¡Acordeón eliminado! -> Restaurado Grand Piano de Cola limpio en ${midiOutput.name}.`;
+        if (log) log.textContent = `🎹 ¡Acordeón eliminado! -> Restaurado Grand Piano de Cola limpio en ${midiOutput.name}.`;
     }
 
     let midiClockTimer = null;
@@ -717,7 +728,6 @@
 
         // Estándar MIDI Clock a 100 BPM:
         // 24 ticks por negra * 100 BPM = 2.400 pulsos/minuto = 40 pulsos/segundo = exactamente 25 ms por pulso (0xF8).
-        // Si el Korg tiene MIDI Clock en External, sincroniza el estilo directamente a 100 BPM.
         midiClockTimer = setInterval(() => {
             if (midiOutput) {
                 try {
@@ -732,35 +742,42 @@
         if (!midiOutput) {
             await conectarMIDI();
         }
+        if (!midiOutput && midiAccessInstance) {
+            const outputs = Array.from(midiAccessInstance.outputs.values());
+            if (outputs.length > 0) midiOutput = outputs[0];
+        }
         if (!midiOutput) {
             if (log) log.innerHTML = '⚠️ No se detecta el Korg EK-50. Comprueba el cable USB y pulsa "Detectar" arriba.';
             return;
         }
 
-        // 1. Refrescar Estilo 041 en el display LCD del Korg (Canal 16) para confirmación visual
-        midiOutput.send([0xB0 | 15, 0x00, 32]);
-        midiOutput.send([0xB0 | 15, 0x20, 2]);
-        midiOutput.send([0xC0 | 15, 8]); // Style 041 Love Ballad -> Refresca pantalla LCD
+        try {
+            // 1. Cargar Estilo 041 Love Ballad (Canal 16)
+            midiOutput.send([0xB0 | 15, 0x00, 32]);
+            midiOutput.send([0xB0 | 15, 0x20, 2]);
+            midiOutput.send([0xC0 | 15, 8]);
 
-        // 2. Upper 1 = Grand Piano puro (Banco 0, PC 0)
-        midiOutput.send([0xB0 | 0, 0x00, 0]);
-        midiOutput.send([0xB0 | 0, 0x20, 0]);
-        midiOutput.send([0xC0 | 0, 0]); // Grand Piano
+            // 2. Cargar en pantalla del Korg el Keyboard Set No. 5: "Piano&Str" (Banco 33, LSB 0, PC 4)
+            midiOutput.send([0xB0 | 0, 0x00, 33]);
+            midiOutput.send([0xB0 | 0, 0x20, 0]);
+            midiOutput.send([0xC0 | 0, 4]); // PC 4 = Piano&Str en Korg EK-50
 
-        // 3. Upper 2 = Strings suaves estándar (Banco 0, PC 48) a volumen sutil
-        midiOutput.send([0xB0 | 1, 0x00, 0]);
-        midiOutput.send([0xB0 | 1, 0x20, 0]);
-        midiOutput.send([0xC0 | 1, 48]); // Strings Ensemble suave
+            midiOutput.send([0xB0 | 15, 0x00, 33]);
+            midiOutput.send([0xB0 | 15, 0x20, 0]);
+            midiOutput.send([0xC0 | 15, 4]);
 
-        // Volúmenes calibrados: Piano dominante (125), Cuerdas sutiles (65), Upper 3 silenciado (0)
-        midiOutput.send([0xB0 | 0, 0x07, 125]);
-        midiOutput.send([0xB0 | 1, 0x07, 65]);
-        midiOutput.send([0xB0 | 2, 0x07, 0]); // Upper 3 silenciado (0)
+            // 3. Calibrar volúmenes para que no sature: Piano protagonista (125), Cuerdas sutiles (65), Upper 3 apagado (0)
+            midiOutput.send([0xB0 | 0, 0x07, 125]);
+            midiOutput.send([0xB0 | 1, 0x07, 65]);
+            midiOutput.send([0xB0 | 2, 0x07, 0]); // Upper 3 silenciado (0)
 
-        // 4. Emitir reloj MIDI a 100 BPM continuo
-        fijarTempoMIDI100BPM();
+            // 4. Emitir reloj MIDI a 100 BPM
+            fijarTempoMIDI100BPM();
 
-        if (log) log.innerHTML = `✅ <b>1. Piano & Strings</b> activado en ${midiOutput.name} (Display Korg: 041 Love Ballad · Sonido: Grand Piano + Violines). ¡Toca las teclas para comprobarlo!`;
+            if (log) log.innerHTML = `🎹 <b>1. Piano & Strings</b> activado en ${midiOutput.name} (Línea 1: 041 Love Ballad · Línea 2: <b>Piano&Str</b>).`;
+        } catch(e) {
+            if (log) log.innerHTML = `⚠️ Error enviando al Korg: ${e.message}`;
+        }
     }
 
     async function cargarViolinesAgudos() {
@@ -768,29 +785,36 @@
         if (!midiOutput) {
             await conectarMIDI();
         }
+        if (!midiOutput && midiAccessInstance) {
+            const outputs = Array.from(midiAccessInstance.outputs.values());
+            if (outputs.length > 0) midiOutput = outputs[0];
+        }
         if (!midiOutput) {
             if (log) log.innerHTML = '⚠️ No se detecta el Korg EK-50. Comprueba el cable USB y pulsa "Detectar" arriba.';
             return;
         }
 
-        // 1. Refrescar display LCD del Korg (Canal 16)
-        midiOutput.send([0xB0 | 15, 0x00, 32]);
-        midiOutput.send([0xB0 | 15, 0x20, 2]);
-        midiOutput.send([0xC0 | 15, 8]); // Refresca pantalla LCD
+        try {
+            // 1. Enviar orden de STS 1 (Strings Ens.) en Canal 16 (PC 64)
+            midiOutput.send([0xC0 | 15, 64]);
 
-        // 2. Upper 1 = Solo Strings (Banco 0, PC 48), Upper 2 y 3 silenciados (sin acordeón ni graves)
-        midiOutput.send([0xB0 | 0, 0x00, 0]);
-        midiOutput.send([0xB0 | 0, 0x20, 0]);
-        midiOutput.send([0xC0 | 0, 48]); // Strings solista
+            // 2. Upper 1 = Solo Strings finas y brillantes (Banco 121, LSB 3, PC 48)
+            midiOutput.send([0xB0 | 0, 0x00, 121]);
+            midiOutput.send([0xB0 | 0, 0x20, 3]);
+            midiOutput.send([0xC0 | 0, 48]); // St. Strings
 
-        midiOutput.send([0xB0 | 0, 0x07, 127]);
-        midiOutput.send([0xB0 | 1, 0x07, 0]); // Upper 2 al 0%
-        midiOutput.send([0xB0 | 2, 0x07, 0]); // Upper 3 al 0%
+            // Silenciar Upper 2 y 3 al 0% (elimina el acordeón y los graves)
+            midiOutput.send([0xB0 | 0, 0x07, 127]);
+            midiOutput.send([0xB0 | 1, 0x07, 0]); // Upper 2 apagado
+            midiOutput.send([0xB0 | 2, 0x07, 0]); // Upper 3 apagado
 
-        // 3. Emitir reloj MIDI a 100 BPM continuo
-        fijarTempoMIDI100BPM();
+            // 3. Emitir reloj MIDI a 100 BPM
+            fijarTempoMIDI100BPM();
 
-        if (log) log.innerHTML = `🎻 <b>2. Violines Agudos</b> activado en ${midiOutput.name} (Display Korg: 041 Love Ballad · Sonido: Violines solistas puros). ¡Toca las teclas para comprobarlo!`;
+            if (log) log.innerHTML = `🎻 <b>2. Violines Agudos</b> activado en ${midiOutput.name} (Línea 1: 041 Love Ballad · Línea 2: <b>Strings Ens.</b>).`;
+        } catch(e) {
+            if (log) log.innerHTML = `⚠️ Error enviando al Korg: ${e.message}`;
+        }
     }
 
     function enviarSoloEstilo(msb, lsb, stylePC) {
