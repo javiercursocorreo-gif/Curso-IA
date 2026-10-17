@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <!-- Optimización iOS / iPadOS como Web App Nativa a pantalla completa -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Repertorio">
+    <meta name="theme-color" content="#0b0f17">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='bg' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%231e3a8a'/%3E%3Cstop offset='100%25' stop-color='%230b0f17'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='100' height='100' rx='22' fill='url(%23bg)' stroke='%2338bdf8' stroke-width='3'/%3E%3Ctext x='50' y='74' font-family='-apple-system, BlinkMacSystemFont, sans-serif' font-weight='900' font-size='68' text-anchor='middle' fill='%2338bdf8'%3ER%3C/text%3E%3C/svg%3E">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='bg' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%231e3a8a'/%3E%3Cstop offset='100%25' stop-color='%230b0f17'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='100' height='100' rx='22' fill='url(%23bg)' stroke='%2338bdf8' stroke-width='3'/%3E%3Ctext x='50' y='74' font-family='-apple-system, BlinkMacSystemFont, sans-serif' font-weight='900' font-size='68' text-anchor='middle' fill='%2338bdf8'%3ER%3C/text%3E%3C/svg%3E">
+    <title>🎹 Korg EK-50: Repertorio Musical Interactivo</title>
+    <style>
+        :root {
+            --bg-color: #0b0f17;
+            --card-bg: #161d27;
+            --border-color: #263345;
+            --text-main: #f0f6fc;
+            --text-muted: #8b9bb4;
+            --accent-blue: #38bdf8;
+            --accent-green: #34d399;
+            --accent-amber: #fbbf24;
+            --accent-purple: #c084fc;
+        }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            padding: max(16px, env(safe-area-inset-top)) max(18px, env(safe-area-inset-right)) max(24px, env(safe-area-inset-bottom)) max(18px, env(safe-area-inset-left));
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1040px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #1e3a8a 0%, #0f172a 100%);
+            border: 1px solid #3b82f6;
+            border-radius: 14px;
+            padding: 18px 22px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+        }
+        .header h1 {
+            font-size: clamp(1.2rem, 3.2vw, 1.55rem);
+            color: #fff;
+            font-weight: 800;
+            letter-spacing: -0.3px;
+        }
+        .header p {
+            font-size: clamp(0.82rem, 2vw, 0.9rem);
+            color: #93c5fd;
+            margin-top: 3px;
+        }
+        
+        .midi-bar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #0f172a;
+            border: 1px solid #334155;
+            padding: 8px 14px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            font-weight: 700;
+        }
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #ef4444;
+            flex-shrink: 0;
+        }
+        .status-dot.connected {
+            background: #10b981;
+            box-shadow: 0 0 10px #10b981;
+        }
+
+        .btn-reconectar {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            cursor: pointer;
+            touch-action: manipulation;
+            transition: 0.15s;
+        }
+        .btn-reconectar:hover, .btn-reconectar:active { background: #1d4ed8; }
+
+        .section-intro {
+            font-size: 0.92rem;
+            color: #94a3b8;
+            margin: 2px 0 2px 4px;
+            line-height: 1.45;
+        }
+
+        .songs-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .song-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+        .song-card:hover {
+            border-color: #3b82f6;
+            box-shadow: 0 4px 18px rgba(30, 58, 138, 0.25);
+        }
+        .song-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .song-title {
+            font-size: clamp(1.2rem, 3vw, 1.4rem);
+            font-weight: 800;
+            color: #fff;
+            line-height: 1.3;
+        }
+        .song-sub {
+            font-size: 0.88rem;
+            color: #94a3b8;
+            margin-top: 3px;
+        }
+        
+        .meta-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+        }
+        .meta-pill {
+            background: #1e293b;
+            border: 1px solid #334155;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.82rem;
+            color: #cbd5e1;
+            font-weight: 600;
+        }
+        .meta-pill.midi { border-color: #38bdf8; color: #38bdf8; }
+        .meta-pill.purple { border-color: #a855f7; color: #c084fc; }
+
+        /* Adaptación táctil para iPad (apoyo sobre atril de teclado) */
+        .card-actions {
+            display: grid;
+            grid-template-columns: 1.4fr 1fr auto;
+            gap: 10px;
+            align-items: stretch;
+        }
+        @media (max-width: 860px) {
+            .card-actions {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .btn-action {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            min-height: 48px;
+            padding: 12px 18px;
+            border-radius: 10px;
+            font-size: 0.92rem;
+            font-weight: 700;
+            text-decoration: none;
+            cursor: pointer;
+            border: none;
+            touch-action: manipulation;
+            transition: all 0.15s;
+            text-align: center;
+        }
+        .btn-action:active { transform: scale(0.98); }
+        .btn-primary-link {
+            background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+            color: #fff;
+            border: 1px solid #3b82f6;
+            box-shadow: 0 3px 8px rgba(59, 130, 246, 0.3);
+            font-size: 0.95rem;
+        }
+        .btn-primary-link:hover, .btn-primary-link:active {
+            background: #2563eb;
+        }
+        
+        .btn-send-midi {
+            background: #059669;
+            color: white;
+            border: 1px solid #10b981;
+        }
+        .btn-send-midi:hover, .btn-send-midi:active { background: #047857; }
+        .btn-sheet {
+            background: #1e293b;
+            color: #93c5fd;
+            border: 1px solid #334155;
+            min-width: 90px;
+        }
+        .btn-sheet:hover, .btn-sheet:active { background: #334155; color: #fff; }
+
+        .live-log {
+            background: #090d16;
+            border: 1px solid #1e293b;
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-family: monospace;
+            font-size: 0.8rem;
+            color: #38bdf8;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    
+    <!-- CABECERA PRINCIPAL -->
+    <div class="header">
+        <div>
+            <h1>🏠 Índice del Repertorio Musical · Korg EK-50</h1>
+            <p>Catálogo central: pulsa en cualquier canción para abrir su guía completa de acordes y control</p>
+        </div>
+        <div class="midi-bar">
+            <span id="midi-dot" class="status-dot"></span>
+            <span id="midi-label">Iniciando MIDI...</span>
+            <button class="btn-reconectar" onclick="conectarMIDI()">Detectar</button>
+        </div>
+    </div>
+
+    <div class="section-intro">
+        👇 Pulsa en el botón azul <b>Abrir Ficha Completa</b> o en el título de la canción para ver los acordes y la partitura:
+    </div>
+
+    <!-- LISTA DE CANCIONES -->
+    <div class="songs-grid">
+
+        <!-- CANCIÓN 1: TO ALL THE GIRLS -->
+        <div class="song-card">
+            <div class="song-top">
+                <div>
+                    <a href="CANCION_01_TO_ALL_THE_GIRLS.html" style="text-decoration:none;" title="Abrir ficha de la canción 1">
+                        <div class="song-title" style="color:#60a5fa; display:flex; align-items:center; gap:8px;">
+                            1. To All The Girls I've Loved Before <span style="font-size:0.9rem; color:#93c5fd;">➔</span>
+                        </div>
+                    </a>
+                    <div class="song-sub">Julio Iglesias & Willie Nelson · Country Ballad · Compás 4/4</div>
+                </div>
+                <div class="meta-pills">
+                    <span class="meta-pill midi">🥁 Estilo: 041 Love Ballad</span>
+                    <span class="meta-pill purple">🎻 3 Strings (Upper 1, 2, 3)</span>
+                    <span class="meta-pill">🎼 Sol Mayor (1 sostenido Fa♯)</span>
+                </div>
+            </div>
+
+            <div class="card-actions">
+                <!-- ENLACE A LA FICHA COMPLETA INDEPENDIENTE -->
+                <a class="btn-action btn-primary-link" href="CANCION_01_TO_ALL_THE_GIRLS.html">
+                    📖 Abrir Ficha Completa (Acordes y Partitura) ➔
+                </a>
+
+                <!-- CARGA DIRECTA -->
+                <button class="btn-action btn-send-midi" onclick="cargarCancion1()">
+                    ⚡ Cargar Estilo 041 + Strings
+                </button>
+
+                <!-- PDF RÁPIDO -->
+                <a class="btn-action btn-sheet" href="CANCIONES%20PDF/To%20the%20girls%20I%CC%82%CC%81ve%20loved%20before.pdf" target="_blank">
+                    📄 PDF
+                </a>
+            </div>
+            <div id="log-1" class="live-log">Listo para cargar en Korg EK-50.</div>
+        </div>
+
+        <!-- CANCIÓN 2: HALLELUJAH -->
+        <div class="song-card">
+            <div class="song-top">
+                <div>
+                    <div class="song-title">2. Hallelujah</div>
+                    <div class="song-sub">Leonard Cohen · Slow Pop · Compás 6/8</div>
+                </div>
+                <div class="meta-pills">
+                    <span class="meta-pill midi">🥁 Estilo: 051 Slow 6/8 (PC 50)</span>
+                    <span class="meta-pill">🎼 Do Mayor (C)</span>
+                </div>
+            </div>
+
+            <div class="card-actions">
+                <a class="btn-action btn-sheet" href="CANCIONES%20PDF/Hallelujah-%20Leonard%20Cohen.pdf" target="_blank" style="background:#1e293b; color:#93c5fd; border:1px solid #3b82f6;">
+                    📄 Ver Partitura PDF
+                </a>
+                <button class="btn-action btn-send-midi" onclick="cargarEstiloGenerico('log-2', 0, 0, 50, '051 Slow 6/8')">
+                    ⚡ Cargar en Korg EK-50
+                </button>
+            </div>
+            <div id="log-2" class="live-log">Listo para enviar a Korg EK-50.</div>
+        </div>
+
+        <!-- CANCIÓN 3: HYMN TO THE FALLEN -->
+        <div class="song-card">
+            <div class="song-top">
+                <div>
+                    <div class="song-title">3. Hymn to the Fallen</div>
+                    <div class="song-sub">John Williams · Salvar al Soldado Ryan · Movie Ballad</div>
+                </div>
+                <div class="meta-pills">
+                    <span class="meta-pill midi">🥁 Estilo: 120 Movie Ballad (PC 119)</span>
+                    <span class="meta-pill">🎼 Sib Mayor / Fa Mayor</span>
+                </div>
+            </div>
+
+            <div class="card-actions">
+                <a class="btn-action btn-sheet" href="CANCIONES%20PDF/Hymn%20to%20the%20Fallen%20-%20John%20Williams.pdf" target="_blank" style="background:#1e293b; color:#93c5fd; border:1px solid #3b82f6;">
+                    📄 Ver Partitura PDF
+                </a>
+                <button class="btn-action btn-send-midi" onclick="cargarEstiloGenerico('log-3', 0, 1, 19, '120 Movie Ballad')">
+                    ⚡ Cargar en Korg EK-50
+                </button>
+            </div>
+            <div id="log-3" class="live-log">Listo para enviar a Korg EK-50.</div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    let midiOutput = null;
+    let midiAccessInstance = null;
+
+    async function conectarMIDI() {
+        const dot = document.getElementById("midi-dot");
+        const text = document.getElementById("midi-label");
+        if (!dot || !text) return;
+
+        if (!navigator.requestMIDIAccess) {
+            dot.style.background = "#f85149";
+            text.textContent = "Usa Google Chrome (Web MIDI no soportado en Safari)";
+            return;
+        }
+
+        try {
+            dot.style.background = "#e3b341";
+            const midiAccess = await navigator.requestMIDIAccess({ sysex: true });
+            midiAccessInstance = midiAccess;
+
+            function bindPorts() {
+                if (!midiAccessInstance) return;
+                const outputs = Array.from(midiAccessInstance.outputs.values());
+                const inputs = Array.from(midiAccessInstance.inputs.values());
+
+                if (outputs.length > 0) {
+                    const korg = outputs.find(o => o.name && (o.name.toLowerCase().includes('ek-50') || o.name.toLowerCase().includes('korg')));
+                    midiOutput = korg || outputs[0];
+                    dot.style.background = "#10b981";
+                    dot.classList.add("connected");
+                    text.innerHTML = `🟢 Conectado: <b>${midiOutput.name}</b>`;
+                } else if (inputs.length > 0) {
+                    dot.style.background = "#10b981";
+                    dot.classList.add("connected");
+                    text.innerHTML = `🟢 Conectado (Entrada): <b>${inputs[0].name}</b>`;
+                } else {
+                    dot.style.background = "#d29922";
+                    dot.classList.remove("connected");
+                    text.innerHTML = '🟡 Conecta el Korg por USB <span style="font-size:0.75rem; text-decoration:underline; cursor:pointer;" onclick="conectarMIDI()">🔄 Re-escanear</span>';
+                }
+            }
+
+            bindPorts();
+            midiAccessInstance.onstatechange = bindPorts;
+        } catch (err) {
+            dot.style.background = "#d29922";
+            dot.classList.remove("connected");
+            text.innerHTML = '🟡 Korg listo <span style="font-size:0.75rem; text-decoration:underline; cursor:pointer;" onclick="conectarMIDI()">🔌 Conectar</span>';
+        }
+    }
+
+    function cargarCancion1() {
+        const log = document.getElementById('log-1');
+        if (!midiOutput && midiAccessInstance) {
+            const outputs = Array.from(midiAccessInstance.outputs.values());
+            if (outputs.length > 0) midiOutput = outputs[0];
+        }
+        if (!midiOutput) {
+            log.textContent = '⚠️ Conecta el Korg y pulsa Conectar arriba.';
+            return;
+        }
+
+        // 1. Enviar Estilo 041
+        midiOutput.send([0xB0 | 15, 0x00, 32]);
+        midiOutput.send([0xB0 | 15, 0x20, 2]);
+        midiOutput.send([0xC0 | 15, 8]);
+
+        // 2. Temporizador para activar Keyboard Set 66
+        setTimeout(() => {
+            midiOutput.send([0xB0 | 0, 0x00, 33]);
+            midiOutput.send([0xB0 | 0, 0x20, 6]);
+            midiOutput.send([0xC0 | 0, 5]);
+
+            [0, 1, 2].forEach(ch => {
+                midiOutput.send([0xB0 | ch, 0x07, 127]);
+                midiOutput.send([0xB0 | ch, 0x0B, 127]);
+            });
+
+            log.textContent = `✅ ¡Cargado en ${midiOutput.name}! -> Estilo 041 + 3 Strings (Upper 1, 2, 3 ENCENDIDOS)`;
+        }, 300);
+
+        log.textContent = `⏳ Cargando en Korg EK-50...`;
+    }
+
+    function cargarEstiloGenerico(logId, msb, lsb, pc, desc) {
+        const log = document.getElementById(logId);
+        if (!midiOutput && midiAccessInstance) {
+            const outputs = Array.from(midiAccessInstance.outputs.values());
+            if (outputs.length > 0) midiOutput = outputs[0];
+        }
+        if (!midiOutput) {
+            log.textContent = '⚠️ Conecta el Korg y pulsa Conectar arriba.';
+            return;
+        }
+
+        midiOutput.send([0xB0 | 15, 0x00, msb]);
+        midiOutput.send([0xB0 | 15, 0x20, lsb]);
+        midiOutput.send([0xC0 | 15, pc]);
+        log.textContent = `✅ ¡Cargado en ${midiOutput.name}! -> ${desc}`;
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+        conectarMIDI();
+        // Generar icono PNG de alta resolución (192x192) para máxima compatibilidad con Safari iOS / iPadOS
+        try {
+            const canvas = document.createElement('canvas');
+            canvas.width = 192;
+            canvas.height = 192;
+            const ctx = canvas.getContext('2d');
+            const grad = ctx.createLinearGradient(0, 0, 192, 192);
+            grad.addColorStop(0, '#1e3a8a');
+            grad.addColorStop(1, '#0b0f17');
+            ctx.fillStyle = grad;
+            ctx.beginPath();
+            if (ctx.roundRect) {
+                ctx.roundRect(0, 0, 192, 192, 42);
+            } else {
+                ctx.rect(0, 0, 192, 192);
+            }
+            ctx.fill();
+            ctx.strokeStyle = '#38bdf8';
+            ctx.lineWidth = 4;
+            ctx.stroke();
+            ctx.fillStyle = '#38bdf8';
+            ctx.font = '900 132px -apple-system, BlinkMacSystemFont, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('R', 96, 102);
+            const pngUrl = canvas.toDataURL('image/png');
+            const appleIcon = document.querySelector('link[rel="apple-touch-icon"]');
+            if (appleIcon) appleIcon.href = pngUrl;
+            const favIcon = document.querySelector('link[rel="icon"]');
+            if (favIcon) favIcon.href = pngUrl;
+        } catch(e) {}
+    });
+</script>
+</body>
+</html>
