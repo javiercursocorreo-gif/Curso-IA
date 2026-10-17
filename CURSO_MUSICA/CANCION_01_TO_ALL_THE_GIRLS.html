@@ -380,8 +380,8 @@
             </button>
         </div>
         <div class="secondary-actions">
-            <button class="btn-secondary" onclick="cargarChamberStrings()">
-                🎻 Cuerdas de Cámara Ligeras (Set 062)
+            <button class="btn-secondary" style="background:#7f1d1d; border-color:#ef4444; color:#fff; font-weight:700;" onclick="resetAPianoLimpio()" title="Silencia el acordeón de Upper 2 y restaura el Grand Piano de cola">
+                🔴 Quitar Acordeón (Reset a Piano Limpio)
             </button>
             <button class="btn-secondary" onclick="enviarSoloEstilo(32, 2, 8)">
                 🥁 Solo Ritmo 041 (100 BPM)
@@ -427,6 +427,16 @@
                 <li><b>A la derecha de la barra:</b> La <b>nota del bajo</b> más grave que debe sonar.</li>
             </ul>
             💡 <b>TRUCO PARA TU KORG EK-50:</b> Si te resulta complicado poner el bajo, <b>toca simplemente el acorde de la izquierda</b> (en <code>C/G</code> toca solo <code>C</code>; en <code>Bb/Eb</code> toca solo <code>Bb</code>). ¡El Korg lo reconoce y la banda suena perfecta!
+        </div>
+
+        <!-- RECUADRO ACOMPAÑAMIENTO CONTINUO CON MANO LEVANTADA -->
+        <div style="background:#064e3b; border:1px solid #10b981; border-radius:10px; padding:12px 16px; font-size:0.86rem; color:#d1fae5; line-height:1.5; margin-top:8px;">
+            <b style="color:#6ee7b7; font-size:0.95rem;">🎹 CÓMO MANTENER EL ACOMPAÑAMIENTO CON LA MANO LEVANTADA:</b><br>
+            Si al levantar la mano izquierda el ritmo se apaga, revisa estos dos botones en tu Korg EK-50:
+            <ul style="margin:6px 0 4px 18px;">
+                <li>🔴 <b>Botón SYNC STOP (¡Debe estar APAGADO!):</b> Si el botón <i>SYNC STOP</i> tiene la luz encendida, el Korg corta la banda en seco en cuanto levantas la mano. Púlsalo para que la luz quede <b>apagada</b>.</li>
+                <li>🟢 <b>Función MEMORY (Debe estar ENCENDIDA):</b> Con <i>MEMORY</i> activo, tocas el acorde una vez, levantas la mano y el bajo y la batería siguen tocando solos indefinidamente hasta que marques el siguiente acorde.</li>
+            </ul>
         </div>
 
         <div style="color:#38bdf8; font-weight:700; font-size:0.85rem; border-bottom:1px solid #334155; padding-bottom:4px; margin-top:6px;">
@@ -592,6 +602,29 @@
         }
     }
 
+    function resetAPianoLimpio() {
+        const log = document.getElementById('log-1');
+        if (!midiOutput && midiAccessInstance) {
+            const outputs = Array.from(midiAccessInstance.outputs.values());
+            if (outputs.length > 0) midiOutput = outputs[0];
+        }
+        if (!midiOutput) {
+            log.textContent = '⚠️ Conecta el Korg y pulsa Conectar arriba.';
+            return;
+        }
+
+        // Reset total: Grand Piano puro (Banco 0, PC 0) en Upper 1, apagando Upper 2 y 3 (elimina el acordeón)
+        midiOutput.send([0xB0 | 0, 0x00, 0]); // CC0 = 0 (Banco estándar)
+        midiOutput.send([0xB0 | 0, 0x20, 0]); // CC32 = 0
+        midiOutput.send([0xC0 | 0, 0]);       // PC 0 -> Grand Piano de Cola
+
+        midiOutput.send([0xB0 | 0, 0x07, 127]); // Upper 1 al 100%
+        midiOutput.send([0xB0 | 1, 0x07, 0]);   // Upper 2 al 0% (SILENCIA EL ACORDEÓN)
+        midiOutput.send([0xB0 | 2, 0x07, 0]);   // Upper 3 al 0%
+
+        log.textContent = `🎹 ¡Acordeón eliminado! -> Restaurado Grand Piano de Cola limpio en ${midiOutput.name}.`;
+    }
+
     function cargarPianoStrings() {
         const log = document.getElementById('log-1');
         if (!midiOutput && midiAccessInstance) {
@@ -608,21 +641,30 @@
         midiOutput.send([0xB0 | 15, 0x20, 2]);
         midiOutput.send([0xC0 | 15, 8]);
 
-        // 2. Cargar Keyboard Set 021 (Piano & Strings)
-        setTimeout(() => {
-            midiOutput.send([0xB0 | 0, 0x00, 33]);
-            midiOutput.send([0xB0 | 0, 0x20, 2]);
-            midiOutput.send([0xC0 | 0, 0]); // Set 021 Piano & Strings
+        // 2. Fijar Tempo a 100 BPM mediante NRPN de Tempo Arranger Korg (MSB 88, LSB 97, Data 100)
+        midiOutput.send([0xB0 | 15, 0x63, 0x58]);
+        midiOutput.send([0xB0 | 15, 0x62, 0x61]);
+        midiOutput.send([0xB0 | 15, 0x06, 100]);
+        midiOutput.send([0xB0 | 0, 0x63, 0x58]);
+        midiOutput.send([0xB0 | 0, 0x62, 0x61]);
+        midiOutput.send([0xB0 | 0, 0x06, 100]);
 
-            // Calibrar volúmenes: Piano nítido (120) + Cuerdas de fondo sutiles (70) + Upper 3 apagado (0)
-            midiOutput.send([0xB0 | 0, 0x07, 120]); // Upper 1 (Piano de cola nítido)
-            midiOutput.send([0xB0 | 1, 0x07, 70]);  // Upper 2 (Violines suaves de fondo)
-            midiOutput.send([0xB0 | 2, 0x07, 0]);   // Upper 3 (APAGADO: elimina retumbos graves)
+        // 3. Upper 1 = Grand Piano puro (Banco 0, PC 0)
+        midiOutput.send([0xB0 | 0, 0x00, 0]);
+        midiOutput.send([0xB0 | 0, 0x20, 0]);
+        midiOutput.send([0xC0 | 0, 0]); // Grand Piano
 
-            log.textContent = `✅ ¡Cargado en ${midiOutput.name}! -> Estilo 041 + Piano & Violines Suaves (sin graves pesados)`;
-        }, 300);
+        // 3. Upper 2 = Strings suaves estándar (Banco 0, PC 48) a volumen sutil
+        midiOutput.send([0xB0 | 1, 0x00, 0]);
+        midiOutput.send([0xB0 | 1, 0x20, 0]);
+        midiOutput.send([0xC0 | 1, 48]); // Strings Ensemble suave
 
-        log.textContent = `⏳ Configurando Piano & Violines Suaves...`;
+        // Volúmenes calibrados: Piano dominante (125), Cuerdas de fondo sutiles (65), Upper 3 apagado (0)
+        midiOutput.send([0xB0 | 0, 0x07, 125]);
+        midiOutput.send([0xB0 | 1, 0x07, 65]);
+        midiOutput.send([0xB0 | 2, 0x07, 0]);
+
+        log.textContent = `✅ ¡Cargado en ${midiOutput.name}! -> Grand Piano nítido + Violines suaves de fondo (Sin acordeones ni graves).`;
     }
 
     function cargarViolinesAgudos() {
@@ -636,34 +678,16 @@
             return;
         }
 
-        // Inyectar en vivo Set 061 "The Strings" dejando solo Upper 1 activo (violines solistas agudos)
-        midiOutput.send([0xB0 | 0, 0x00, 33]);
-        midiOutput.send([0xB0 | 0, 0x20, 6]);
-        midiOutput.send([0xC0 | 0, 0]); // Set 061 The Strings
+        // Upper 1 = Solo Strings (Banco 0, PC 48), Upper 2 y 3 apagados
+        midiOutput.send([0xB0 | 0, 0x00, 0]);
+        midiOutput.send([0xB0 | 0, 0x20, 0]);
+        midiOutput.send([0xC0 | 0, 48]); // Strings
 
-        midiOutput.send([0xB0 | 0, 0x07, 127]); // Upper 1: Violines solistas al 100%
-        midiOutput.send([0xB0 | 1, 0x07, 0]);   // Upper 2: APAGADO (sin octava grave)
-        midiOutput.send([0xB0 | 2, 0x07, 0]);   // Upper 3: APAGADO (sin cellos graves)
+        midiOutput.send([0xB0 | 0, 0x07, 127]);
+        midiOutput.send([0xB0 | 1, 0x07, 0]); // Apagado
+        midiOutput.send([0xB0 | 2, 0x07, 0]); // Apagado
 
-        log.textContent = `🎻 ¡Violines solistas agudos activados en ${midiOutput.name}! -> Solo Upper 1 (fino y brillante)`;
-    }
-
-    function cargarChamberStrings() {
-        const log = document.getElementById('log-1');
-        if (!midiOutput && midiAccessInstance) {
-            const outputs = Array.from(midiAccessInstance.outputs.values());
-            if (outputs.length > 0) midiOutput = outputs[0];
-        }
-        if (!midiOutput) return;
-
-        // Set 062: ChamberStrings (Cuerdas ligeras y transparentes)
-        midiOutput.send([0xB0 | 0, 0x00, 33]);
-        midiOutput.send([0xB0 | 0, 0x20, 6]);
-        midiOutput.send([0xC0 | 0, 1]); // Set 062
-        midiOutput.send([0xB0 | 0, 0x07, 115]);
-        midiOutput.send([0xB0 | 1, 0x07, 0]);
-        midiOutput.send([0xB0 | 2, 0x07, 0]);
-        log.textContent = `✅ ¡Cargado en ${midiOutput.name}! -> Set 062 Cuerdas de Cámara Ligeras`;
+        log.textContent = `🎻 ¡Solo Violines activos en ${midiOutput.name}! -> Sin acordeón ni graves.`;
     }
 
     function enviarSoloEstilo(msb, lsb, stylePC) {
