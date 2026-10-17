@@ -379,14 +379,6 @@
                 </div>
             </button>
         </div>
-        <div class="secondary-actions">
-            <button class="btn-secondary" style="background:#7f1d1d; border-color:#ef4444; color:#fff; font-weight:700;" onclick="resetAPianoLimpio()" title="Silencia el acordeón de Upper 2 y restaura el Grand Piano de cola">
-                🔴 Quitar Acordeón (Reset a Piano Limpio)
-            </button>
-            <button class="btn-secondary" onclick="enviarSoloEstilo(32, 2, 8)">
-                🥁 Solo Ritmo 041 (100 BPM)
-            </button>
-        </div>
         <div id="log-1" class="live-log">Listo para configurar el sonido en el Korg EK-50.</div>
     </div>
 
@@ -725,38 +717,54 @@
         }
         if (!midiOutput) {
             log.textContent = '⚠️ Conecta el Korg y pulsa Conectar arriba.';
+    let midiClockTimer = null;
+
+    function fijarTempoMIDI100BPM() {
+        if (midiClockTimer) clearInterval(midiClockTimer);
+        if (!midiOutput) return;
+
+        // Estándar MIDI Clock a 100 BPM:
+        // 24 ticks por negra * 100 BPM = 2.400 pulsos/minuto = 40 pulsos/segundo = exactamente 25 ms por pulso (0xF8).
+        // Si el Korg tiene MIDI Clock en External, sincroniza el estilo directamente a 100 BPM.
+        midiClockTimer = setInterval(() => {
+            if (midiOutput) {
+                try {
+                    midiOutput.send([0xF8]); // MIDI Timing Clock
+                } catch(e) {}
+            }
+        }, 25);
+    }
+
+    function cargarPianoStrings() {
+        const log = document.getElementById('log-1');
+        if (!midiOutput && midiAccessInstance) {
+            const outputs = Array.from(midiAccessInstance.outputs.values());
+            if (outputs.length > 0) midiOutput = outputs[0];
+        }
+        if (!midiOutput) {
+            if (log) log.textContent = '⚠️ Conecta el Korg y pulsa Conectar arriba.';
             return;
         }
 
-        // 1. Enviar Estilo 041 Love Ballad (Canal 16)
-        midiOutput.send([0xB0 | 15, 0x00, 32]);
-        midiOutput.send([0xB0 | 15, 0x20, 2]);
-        midiOutput.send([0xC0 | 15, 8]);
-
-        // 2. Fijar Tempo a 100 BPM mediante NRPN de Tempo Arranger Korg (MSB 88, LSB 97, Data 100)
-        midiOutput.send([0xB0 | 15, 0x63, 0x58]);
-        midiOutput.send([0xB0 | 15, 0x62, 0x61]);
-        midiOutput.send([0xB0 | 15, 0x06, 100]);
-        midiOutput.send([0xB0 | 0, 0x63, 0x58]);
-        midiOutput.send([0xB0 | 0, 0x62, 0x61]);
-        midiOutput.send([0xB0 | 0, 0x06, 100]);
-
-        // 3. Upper 1 = Grand Piano puro (Banco 0, PC 0)
+        // 1. Upper 1 = Grand Piano puro (Banco 0, PC 0)
         midiOutput.send([0xB0 | 0, 0x00, 0]);
         midiOutput.send([0xB0 | 0, 0x20, 0]);
         midiOutput.send([0xC0 | 0, 0]); // Grand Piano
 
-        // 3. Upper 2 = Strings suaves estándar (Banco 0, PC 48) a volumen sutil
+        // 2. Upper 2 = Strings suaves estándar (Banco 0, PC 48) a volumen sutil
         midiOutput.send([0xB0 | 1, 0x00, 0]);
         midiOutput.send([0xB0 | 1, 0x20, 0]);
         midiOutput.send([0xC0 | 1, 48]); // Strings Ensemble suave
 
-        // Volúmenes calibrados: Piano dominante (125), Cuerdas de fondo sutiles (65), Upper 3 apagado (0)
+        // Volúmenes calibrados: Piano dominante (125), Cuerdas sutiles (65), Upper 3 apagado (0)
         midiOutput.send([0xB0 | 0, 0x07, 125]);
         midiOutput.send([0xB0 | 1, 0x07, 65]);
-        midiOutput.send([0xB0 | 2, 0x07, 0]);
+        midiOutput.send([0xB0 | 2, 0x07, 0]); // Upper 3 silenciado (0)
 
-        log.textContent = `✅ ¡Cargado en ${midiOutput.name}! -> Grand Piano nítido + Violines suaves de fondo (Sin acordeones ni graves).`;
+        // 3. Emitir reloj MIDI a 100 BPM continuo
+        fijarTempoMIDI100BPM();
+
+        if (log) log.innerHTML = `✅ <b>1. Piano & Strings</b> activado en ${midiOutput.name} · <b>⏱️ 100 BPM</b> (Sin acordeón ni graves).`;
     }
 
     function cargarViolinesAgudos() {
@@ -766,20 +774,23 @@
             if (outputs.length > 0) midiOutput = outputs[0];
         }
         if (!midiOutput) {
-            log.textContent = '⚠️ Conecta el Korg y pulsa Conectar arriba.';
+            if (log) log.textContent = '⚠️ Conecta el Korg y pulsa Conectar arriba.';
             return;
         }
 
-        // Upper 1 = Solo Strings (Banco 0, PC 48), Upper 2 y 3 apagados
+        // Upper 1 = Solo Strings (Banco 0, PC 48), Upper 2 y 3 apagados (sin acordeón ni graves)
         midiOutput.send([0xB0 | 0, 0x00, 0]);
         midiOutput.send([0xB0 | 0, 0x20, 0]);
         midiOutput.send([0xC0 | 0, 48]); // Strings
 
         midiOutput.send([0xB0 | 0, 0x07, 127]);
-        midiOutput.send([0xB0 | 1, 0x07, 0]); // Apagado
-        midiOutput.send([0xB0 | 2, 0x07, 0]); // Apagado
+        midiOutput.send([0xB0 | 1, 0x07, 0]); // Upper 2 al 0%
+        midiOutput.send([0xB0 | 2, 0x07, 0]); // Upper 3 al 0%
 
-        log.textContent = `🎻 ¡Solo Violines activos en ${midiOutput.name}! -> Sin acordeón ni graves.`;
+        // Emitir reloj MIDI a 100 BPM continuo
+        fijarTempoMIDI100BPM();
+
+        if (log) log.innerHTML = `🎻 <b>2. Violines Agudos</b> activado en ${midiOutput.name} · <b>⏱️ 100 BPM</b> (Upper 1 brillante).`;
     }
 
     function enviarSoloEstilo(msb, lsb, stylePC) {
