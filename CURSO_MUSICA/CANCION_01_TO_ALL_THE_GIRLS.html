@@ -364,18 +364,18 @@
         </div>
 
         <div class="stage-midi-grid">
-            <button class="btn-stage btn-stage-soft" onclick="cargarPianoStrings()" title="El sonido por excelencia para Julio Iglesias: piano nítido y violines suaves de fondo">
-                <span class="stage-icon">🎹</span>
+            <button class="btn-stage btn-stage-soft" onclick="cargarStringsSuaves()" title="Cuerdas cálidas y envolventes sin piano">
+                <span class="stage-icon">🎻</span>
                 <div class="stage-text">
-                    <span class="stage-title">1. Piano & Strings Cristalino</span>
-                    <span class="stage-sub">Melodía clara de piano con violines flotando de fondo (Set 021)</span>
+                    <span class="stage-title">1. Strings Suaves (Sin Piano)</span>
+                    <span class="stage-sub">Cuerdas aterciopeladas y cálidas (Set: The Strings) · Sin piano ni graves</span>
                 </div>
             </button>
             <button class="btn-stage btn-stage-strings" onclick="cargarViolinesAgudos()" title="Solo la sección alta de violines sin cellos ni contrabajos graves">
                 <span class="stage-icon">🎻</span>
                 <div class="stage-text">
-                    <span class="stage-title">2. Violines Agudos (Solo Upper 1)</span>
-                    <span class="stage-sub">Cuerdas solistas finas y brillantes (Upper 2 y 3 apagados)</span>
+                    <span class="stage-title">2. Violines Agudos (Solistas)</span>
+                    <span class="stage-sub">Violines solistas finos y brillantes (Set: Bow Strings) · Upper 1 destacado</span>
                 </div>
             </button>
         </div>
@@ -737,7 +737,7 @@
         }, 25);
     }
 
-    async function cargarPianoStrings() {
+    async function cargarStringsSuaves() {
         const log = document.getElementById('log-1');
         if (!midiOutput) {
             await conectarMIDI();
@@ -757,28 +757,38 @@
             midiOutput.send([0xB0 | 15, 0x20, 2]);
             midiOutput.send([0xC0 | 15, 8]);
 
-            // 2. Cargar en pantalla del Korg el Keyboard Set No. 5: "Piano&Str" (Banco 33, LSB 0, PC 4)
+            // 2. Cargar en pantalla del Korg el Keyboard Set No. 61: "The Strings" (Banco 33, LSB 6, PC 0)
             midiOutput.send([0xB0 | 0, 0x00, 33]);
-            midiOutput.send([0xB0 | 0, 0x20, 0]);
-            midiOutput.send([0xC0 | 0, 4]); // PC 4 = Piano&Str en Korg EK-50
+            midiOutput.send([0xB0 | 0, 0x20, 6]);
+            midiOutput.send([0xC0 | 0, 0]);
 
             midiOutput.send([0xB0 | 15, 0x00, 33]);
-            midiOutput.send([0xB0 | 15, 0x20, 0]);
-            midiOutput.send([0xC0 | 15, 4]);
+            midiOutput.send([0xB0 | 15, 0x20, 6]);
+            midiOutput.send([0xC0 | 15, 0]);
 
-            // 3. Calibrar volúmenes para que no sature: Piano protagonista (125), Cuerdas sutiles (65), Upper 3 apagado (0)
-            midiOutput.send([0xB0 | 0, 0x07, 125]);
-            midiOutput.send([0xB0 | 1, 0x07, 65]);
-            midiOutput.send([0xB0 | 2, 0x07, 0]); // Upper 3 silenciado (0)
+            // 3. Voces suaves sin piano: St. Strings (Upper 1) + String Quartet sutil (Upper 2)
+            midiOutput.send([0xB0 | 0, 0x00, 121]);
+            midiOutput.send([0xB0 | 0, 0x20, 3]);
+            midiOutput.send([0xC0 | 0, 48]); // St. Strings
+            midiOutput.send([0xB0 | 0, 0x07, 105]);
+
+            midiOutput.send([0xB0 | 1, 0x00, 121]);
+            midiOutput.send([0xB0 | 1, 0x20, 9]);
+            midiOutput.send([0xC0 | 1, 48]); // StringQuart
+            midiOutput.send([0xB0 | 1, 0x07, 60]);
+
+            // Upper 3 apagado (sin octavas bajas ni acordeón)
+            midiOutput.send([0xB0 | 2, 0x07, 0]);
 
             // 4. Emitir reloj MIDI a 100 BPM
             fijarTempoMIDI100BPM();
 
-            if (log) log.innerHTML = `🎹 <b>1. Piano & Strings</b> activado en ${midiOutput.name} (Línea 1: 041 Love Ballad · Línea 2: <b>Piano&Str</b>).`;
+            if (log) log.innerHTML = `🎻 <b>1. Strings Suaves</b> activado en ${midiOutput.name} (Línea 1: 041 Love Ballad · Línea 2: <b>The Strings</b> · Sin piano).`;
         } catch(e) {
             if (log) log.innerHTML = `⚠️ Error enviando al Korg: ${e.message}`;
         }
     }
+    const cargarPianoStrings = cargarStringsSuaves;
 
     async function cargarViolinesAgudos() {
         const log = document.getElementById('log-1');
@@ -795,23 +805,29 @@
         }
 
         try {
-            // 1. Enviar orden de STS 1 (Strings Ens.) en Canal 16 (PC 64)
-            midiOutput.send([0xC0 | 15, 64]);
+            // 1. Cargar en pantalla del Korg el Keyboard Set No. 62: "Bow Strings" (Banco 33, LSB 6, PC 1)
+            midiOutput.send([0xB0 | 0, 0x00, 33]);
+            midiOutput.send([0xB0 | 0, 0x20, 6]);
+            midiOutput.send([0xC0 | 0, 1]);
 
-            // 2. Upper 1 = Solo Strings finas y brillantes (Banco 121, LSB 3, PC 48)
+            midiOutput.send([0xB0 | 15, 0x00, 33]);
+            midiOutput.send([0xB0 | 15, 0x20, 6]);
+            midiOutput.send([0xC0 | 15, 1]);
+
+            // 2. Upper 1 = Solo Strings finas y brillantes
             midiOutput.send([0xB0 | 0, 0x00, 121]);
             midiOutput.send([0xB0 | 0, 0x20, 3]);
-            midiOutput.send([0xC0 | 0, 48]); // St. Strings
+            midiOutput.send([0xC0 | 0, 48]);
+            midiOutput.send([0xB0 | 0, 0x07, 127]);
 
             // Silenciar Upper 2 y 3 al 0% (elimina el acordeón y los graves)
-            midiOutput.send([0xB0 | 0, 0x07, 127]);
-            midiOutput.send([0xB0 | 1, 0x07, 0]); // Upper 2 apagado
-            midiOutput.send([0xB0 | 2, 0x07, 0]); // Upper 3 apagado
+            midiOutput.send([0xB0 | 1, 0x07, 0]);
+            midiOutput.send([0xB0 | 2, 0x07, 0]);
 
             // 3. Emitir reloj MIDI a 100 BPM
             fijarTempoMIDI100BPM();
 
-            if (log) log.innerHTML = `🎻 <b>2. Violines Agudos</b> activado en ${midiOutput.name} (Línea 1: 041 Love Ballad · Línea 2: <b>Strings Ens.</b>).`;
+            if (log) log.innerHTML = `🎻 <b>2. Violines Agudos</b> activado en ${midiOutput.name} (Línea 1: 041 Love Ballad · Línea 2: <b>Bow Strings</b> · Solistas).`;
         } catch(e) {
             if (log) log.innerHTML = `⚠️ Error enviando al Korg: ${e.message}`;
         }
