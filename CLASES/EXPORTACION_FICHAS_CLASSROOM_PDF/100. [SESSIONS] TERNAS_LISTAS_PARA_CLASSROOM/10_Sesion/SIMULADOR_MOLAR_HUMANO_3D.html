@@ -4,661 +4,838 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sesión 10 • Simulador 3D: Molar Humano en Sección Anatómica [COD-010]</title>
+    <!-- Babylon.js CDN Oficial -->
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-base: #060911;
-            --bg-panel: rgba(15, 23, 42, 0.92);
-            --enamel: #ffffff;
+            --bg-base: #060912;
+            --bg-panel: rgba(14, 20, 32, 0.94);
+            --cyan: #38bdf8;
+            --cyan-glow: rgba(56, 189, 248, 0.35);
+            --enamel: #f8fafc;
             --dentin: #fde047;
             --pulp: #ef4444;
-            --nerve: #38bdf8;
             --gum: #fb7185;
-            --bone: #94a3b8;
+            --text-main: #f8fafc;
+            --text-sub: #cbd5e1;
             --font-sans: 'Inter', sans-serif;
             --font-mono: 'JetBrains Mono', monospace;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body {
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+        html, body {
             background-color: var(--bg-base);
-            color: #f8fafc;
+            color: var(--text-main);
             font-family: var(--font-sans);
             height: 100vh;
             width: 100vw;
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            user-select: none;
+            font-size: 16px;
         }
 
+        /* HEADER */
         header {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 20;
-            padding: 14px 24px;
+            background: linear-gradient(180deg, rgba(14, 20, 32, 0.98) 0%, rgba(14, 20, 32, 0.88) 100%);
+            backdrop-filter: blur(14px);
+            border-bottom: 1px solid rgba(56, 189, 248, 0.25);
+            padding: 10px 24px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            background: linear-gradient(180deg, rgba(6, 9, 17, 0.96) 0%, rgba(6, 9, 17, 0.6) 80%, transparent 100%);
-            border-bottom: 1px solid rgba(56, 189, 248, 0.25);
-            backdrop-filter: blur(10px);
+            flex-shrink: 0;
+            z-index: 50;
         }
-
-        .brand-box {
+        .header-title-box {
             display: flex;
             align-items: center;
             gap: 14px;
         }
-
-        .brand-badge {
+        .badge-code {
             background: rgba(56, 189, 248, 0.15);
-            border: 1px solid #38bdf8;
-            color: #38bdf8;
+            color: var(--cyan);
+            border: 1px solid rgba(56, 189, 248, 0.45);
             font-family: var(--font-mono);
+            font-size: 0.88rem;
             font-weight: 800;
-            font-size: 1rem;
-            padding: 5px 12px;
+            padding: 4px 10px;
             border-radius: 8px;
+            letter-spacing: 0.05em;
         }
-
-        .brand-title {
-            font-size: 1.35rem;
-            font-weight: 900;
-            color: #ffffff;
+        h1 {
+            font-size: 1.25rem;
+            font-weight: 800;
             letter-spacing: -0.01em;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
-
-        .brand-sub {
-            font-size: 0.78rem;
-            color: #94a3b8;
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
-
-        .btn-action {
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            color: #f1f5f9;
-            padding: 8px 16px;
-            border-radius: 9999px;
-            font-size: 0.82rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .btn-action:hover {
-            background: rgba(56, 189, 248, 0.2);
-            border-color: #38bdf8;
+        .pill-status {
+            background: rgba(56, 189, 248, 0.15);
             color: #38bdf8;
+            border: 1px solid rgba(56, 189, 248, 0.4);
+            font-size: 0.85rem;
+            font-weight: 700;
+            padding: 5px 13px;
+            border-radius: 9999px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
 
-        #molarStage {
+        /* GRID PRINCIPAL */
+        .workspace-grid {
             flex: 1;
-            width: 100%;
-            height: 100%;
-            display: block;
+            min-height: 0;
+            display: grid;
+            grid-template-columns: 420px 1fr;
+            background: #020409;
         }
 
-        /* PANEL DIDÁCTICO DERECHO */
-        .info-card {
-            position: absolute;
-            top: 80px;
-            right: 24px;
-            width: 400px;
+        /* PANEL IZQUIERDO DIDÁCTICO */
+        aside.sidebar-panel {
             background: var(--bg-panel);
-            border: 1.5px solid #38bdf8;
-            border-radius: 20px;
-            padding: 22px;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9), 0 0 25px rgba(56, 189, 248, 0.25);
-            backdrop-filter: blur(20px);
-            z-index: 15;
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
             display: flex;
             flex-direction: column;
-            gap: 14px;
-        }
-
-        .layer-badge {
-            font-family: var(--font-mono);
-            font-size: 0.8rem;
-            font-weight: 800;
-            padding: 5px 12px;
-            border-radius: 9999px;
-            background: rgba(56, 189, 248, 0.15);
-            color: #38bdf8;
-            border: 1px solid rgba(56, 189, 248, 0.35);
-            width: fit-content;
-        }
-
-        .info-title {
-            font-size: 1.3rem;
-            font-weight: 900;
-            color: #ffffff;
-            line-height: 1.25;
-        }
-
-        .info-summary {
-            background: rgba(255, 255, 255, 0.05);
-            border-left: 3.5px solid #38bdf8;
-            padding: 10px 14px;
-            border-radius: 0 10px 10px 0;
-            font-size: 0.9rem;
-            color: #f1f5f9;
-            line-height: 1.45;
-            font-weight: 500;
-        }
-
-        .info-detail {
-            font-size: 0.84rem;
-            color: #cbd5e1;
-            line-height: 1.6;
-            max-height: 230px;
             overflow-y: auto;
-            padding-right: 6px;
+            padding: 20px;
+            gap: 18px;
+            z-index: 20;
         }
 
-        .info-detail strong {
-            color: #38bdf8;
-            display: block;
-            margin-top: 6px;
-            margin-bottom: 2px;
+        /* TARJETA LA IDEA FÁCIL */
+        .card-easy-concept {
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.95) 100%);
+            border: 1px solid rgba(56, 189, 248, 0.35);
+            border-radius: 14px;
+            padding: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+        }
+        .easy-tag {
             font-size: 0.78rem;
+            font-weight: 800;
+            color: var(--cyan);
             text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .easy-title {
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: #ffffff;
+            line-height: 1.3;
+            margin-bottom: 8px;
+        }
+        .easy-text {
+            font-size: 0.94rem;
+            color: var(--text-sub);
+            line-height: 1.5;
+        }
+        .easy-text strong {
+            color: #ffffff;
         }
 
-        .info-facts {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
+        /* SIMULADOR DE PROGRESIÓN DE CARIES */
+        .caries-control-box {
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            border-radius: 14px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
         }
-
-        .fact-box {
-            background: rgba(0, 0, 0, 0.45);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 10px;
-            padding: 8px 10px;
+        .section-title {
+            font-size: 0.88rem;
+            font-weight: 800;
+            color: var(--cyan);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .caries-slider-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+        .caries-slider-row input[type="range"] {
+            flex: 1;
+            accent-color: #ef4444;
+            cursor: pointer;
+            height: 6px;
+        }
+        .caries-badge {
+            font-family: var(--font-mono);
+            font-size: 0.95rem;
+            font-weight: 800;
+            color: #22c55e;
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid #22c55e;
+            padding: 4px 10px;
+            border-radius: 6px;
+            min-width: 120px;
             text-align: center;
         }
 
+        /* SELECTOR DE CAPAS ANATÓMICAS */
+        <div>
+            <div class="section-title">
+                <span>Capas en Corte Sagital</span>
+            </div>
+            <div class="layer-selector-grid">
+                <button class="btn-layer active" id="btnLayerEnamel" onclick="selectLayer('enamel')">
+                    <span>✨ Esmalte</span>
+                </button>
+                <button class="btn-layer" id="btnLayerDentin" onclick="selectLayer('dentin')">
+                    <span>🟡 Dentina</span>
+                </button>
+                <button class="btn-layer" id="btnLayerPulp" onclick="selectLayer('pulp')">
+                    <span>🩸 Pulpa y Nervio</span>
+                </button>
+                <button class="btn-layer" id="btnLayerBone" onclick="selectLayer('bone')">
+                    <span>🦴 Hueso y Encía</span>
+                </button>
+            </div>
+        </div>
+
+        /* FICHA DIDÁCTICA DETALLADA */
+        .layer-info-card {
+            background: rgba(15, 23, 42, 0.9);
+            border: 1.5px solid var(--cyan);
+            border-radius: 14px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .layer-badge {
+            font-family: var(--font-mono);
+            font-size: 0.76rem;
+            font-weight: 800;
+            color: var(--cyan);
+            letter-spacing: 0.05em;
+        }
+        .layer-title {
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: #ffffff;
+        }
+        .layer-desc {
+            font-size: 0.92rem;
+            color: var(--text-sub);
+            line-height: 1.5;
+        }
+        .layer-facts {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-top: 6px;
+        }
+        .fact-box {
+            background: rgba(0, 0, 0, 0.45);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+            padding: 8px 10px;
+            text-align: center;
+        }
         .fact-val {
             font-family: var(--font-mono);
             font-size: 1.05rem;
             font-weight: 800;
-            color: #38bdf8;
+            color: var(--cyan);
         }
-
         .fact-lbl {
-            font-size: 0.68rem;
+            font-size: 0.72rem;
             color: #94a3b8;
             text-transform: uppercase;
             margin-top: 2px;
         }
 
-        /* BARRA INFERIOR DE CONTROLES */
-        .bottom-dock {
+        /* VIEWPORT 3D BABYLON */
+        .viewport-3d {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+        #renderCanvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+            touch-action: none;
+            outline: none;
+        }
+
+        /* HUD TOP */
+        .hud-overlay-top {
             position: absolute;
-            bottom: 16px;
-            left: 50%;
-            transform: translateX(-50%);
+            top: 18px;
+            right: 20px;
             display: flex;
-            align-items: center;
-            gap: 16px;
-            background: rgba(15, 23, 42, 0.95);
-            border: 1px solid rgba(56, 189, 248, 0.35);
-            box-shadow: 0 10px 35px rgba(0,0,0,0.85);
-            backdrop-filter: blur(16px);
-            padding: 10px 24px;
-            border-radius: 9999px;
-            z-index: 15;
-            max-width: 94%;
-        }
-
-        .slider-group {
-            display: flex;
-            align-items: center;
             gap: 10px;
+            z-index: 10;
         }
-
-        .dock-label {
-            font-size: 0.8rem;
-            font-weight: 800;
-            color: #38bdf8;
-            font-family: var(--font-mono);
-            white-space: nowrap;
-        }
-
-        .dock-slider {
-            width: 140px;
-            accent-color: #ef4444;
-            cursor: pointer;
-        }
-
-        .caries-badge {
-            font-family: var(--font-mono);
-            font-size: 0.85rem;
-            font-weight: 800;
-            color: #22c55e;
-            background: rgba(0,0,0,0.5);
-            padding: 3px 8px;
-            border-radius: 6px;
-            min-width: 110px;
-            text-align: center;
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-
-        .divider {
-            width: 1px;
-            height: 22px;
-            background: rgba(255, 255, 255, 0.15);
-        }
-
-        .dock-btn {
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            color: #ffffff;
-            padding: 8px 14px;
-            border-radius: 9999px;
-            font-size: 0.82rem;
+        .btn-hud {
+            background: rgba(15, 23, 42, 0.88);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            color: #e2e8f0;
+            padding: 9px 16px;
+            border-radius: 10px;
+            font-size: 0.88rem;
             font-weight: 700;
             cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 6px;
-            transition: all 0.2s ease;
-            white-space: nowrap;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+        .btn-hud:hover, .btn-hud.active {
+            background: rgba(56, 189, 248, 0.28);
+            border-color: var(--cyan);
+            color: #ffffff;
         }
 
-        .dock-btn:hover {
-            background: rgba(56, 189, 248, 0.2);
-            border-color: #38bdf8;
-            color: #38bdf8;
+        /* HUD BOTTOM */
+        .hud-overlay-bottom {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            pointer-events: none;
+            z-index: 10;
         }
-
-        .dock-btn.active {
-            background: #38bdf8;
-            color: #060911;
-            font-weight: 800;
+        .hud-legend {
+            background: rgba(15, 23, 42, 0.9);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            padding: 10px 18px;
+            border-radius: 10px;
+            font-size: 0.88rem;
+            color: #94a3b8;
+            pointer-events: auto;
+            display: flex;
+            align-items: center;
+            gap: 18px;
         }
-
-        @media (max-width: 950px) {
-            .info-card {
-                top: auto;
-                bottom: 85px;
-                right: 12px;
-                left: 12px;
-                width: auto;
-                max-height: 38vh;
-            }
-            .bottom-dock {
-                bottom: 8px;
-                padding: 6px 14px;
-                overflow-x: auto;
-            }
-        }
+        .hud-legend strong { color: #ffffff; }
     </style>
 </head>
 <body>
 
+    <!-- CABECERA -->
     <header>
-        <div class="brand-box">
-            <div class="brand-badge">[COD-010]</div>
-            <div>
-                <h1 class="brand-title">Molar Humano en Sección Anatómica</h1>
-                <p class="brand-sub">SALUD Y ODONTOLOGÍA • ESMALTE, DENTINA, PULPA DENTAL VASCULARIZADA Y CARIES</p>
-            </div>
+        <div class="header-title-box">
+            <span class="badge-code">[COD-010]</span>
+            <h1>🦷 Molar Humano en Sección Anatómica • Motor Babylon.js</h1>
         </div>
-        <div>
-            <button class="btn-action" onclick="toggleFullScreen()">⛶ Pantalla Completa</button>
+        <div class="header-right">
+            <span class="pill-status">🔬 Microtomografía CBCT & Plexo Nervioso 3D</span>
+            <span class="pill-status" style="background: rgba(56, 189, 248, 0.15); color: #38bdf8; border-color: rgba(56, 189, 248, 0.4);">
+                S10 • Salud & Odontología
+            </span>
         </div>
     </header>
 
-    <canvas id="molarStage"></canvas>
+    <!-- WORKSPACE -->
+    <main class="workspace-grid">
 
-    <div class="info-card" id="infoCard">
-        <div class="layer-badge" id="partBadge">CAPA PROTECTORA SUPREMA</div>
-        <h2 class="info-title" id="partTitle">El Esmalte Dental (96% Mineral)</h2>
-        <div class="info-summary" id="partSummary">
-            Es la sustancia más dura del cuerpo humano, incluso más resistente que el titanio o los huesos, pero no puede autoregenerarse si se pierde.
-        </div>
-        <div class="info-detail" id="partDetail">
-            <strong>Estructura interna del molar:</strong>
-            1. <strong>Esmalte:</strong> Escudo exterior translúcido que soporta hasta 120 kg de fuerza por mordisco.<br>
-            2. <strong>Dentina:</strong> Capa amarillenta atravesada por 30.000 túbulos microscópicos llenos de líquido.<br>
-            3. <strong>Pulpa viva:</strong> La cámara que contiene arterias, venas y las ramificaciones del nervio trigémino.<br>
-            4. <strong>Ligamento periodontal:</strong> Fibras elásticas que unen la raíz al hueso maxilar y amortiguan la masticación.
-        </div>
-        <div class="info-facts">
-            <div class="fact-box">
-                <div class="fact-val" id="fact1">5 Dureza Mohs</div>
-                <div class="fact-lbl">Dureza de Esmalte</div>
+        <!-- PANEL IZQUIERDO -->
+        <aside class="sidebar-panel">
+
+            <!-- LA IDEA FÁCIL -->
+            <div class="card-easy-concept">
+                <div class="easy-tag">✨ La Idea Fácil • Para Todos</div>
+                <div class="easy-title">El material más duro de nuestro cuerpo</div>
+                <p class="easy-text">
+                    El <strong>esmalte dental</strong> es 96% mineral puro y resiste hasta <strong>120 kg de fuerza por mordisco</strong> (más duro que el hueso o el titanio), pero no tiene células vivas: <strong>no puede regenerarse</strong> si el ácido bacteriano lo perfora.
+                    <br><br>
+                    Debajo está la <strong>dentina</strong> (con 30.000 túbulos microscópicos llenos de líquido) y en el centro la <strong>pulpa viva</strong> con arterias y el nervio trigémino.
+                </p>
             </div>
-            <div class="fact-box">
-                <div class="fact-val" id="fact2">30.000/mm²</div>
-                <div class="fact-lbl">Túbulos en Dentina</div>
+
+            <!-- PROGRESIÓN CLÍNICA DE CARIES -->
+            <div class="caries-control-box">
+                <div class="section-title">
+                    <span>Simulación de Caries Dental</span>
+                    <span style="font-size:0.76rem; color:#ef4444;">Fases 0 a 4</span>
+                </div>
+                <div class="caries-slider-row">
+                    <input type="range" id="cariesSlider" min="0" max="4" step="1" value="0" oninput="setCariesLevel(this.value)">
+                    <span class="caries-badge" id="cariesBadge">0 • Diente Sano</span>
+                </div>
+            </div>
+
+            <!-- SELECTOR DE CAPAS ANATÓMICAS -->
+            <div>
+                <div class="section-title">
+                    <span>Capas en Corte Sagital</span>
+                </div>
+                <div class="layer-selector-grid">
+                    <button class="btn-layer active" id="btnLayerEnamel" onclick="selectLayer('enamel')">
+                        <span>✨ Esmalte</span>
+                    </button>
+                    <button class="btn-layer" id="btnLayerDentin" onclick="selectLayer('dentin')">
+                        <span>🟡 Dentina</span>
+                    </button>
+                    <button class="btn-layer" id="btnLayerPulp" onclick="selectLayer('pulp')">
+                        <span>🩸 Pulpa y Nervio</span>
+                    </button>
+                    <button class="btn-layer" id="btnLayerBone" onclick="selectLayer('bone')">
+                        <span>🦴 Hueso y Encía</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- FICHA DIDÁCTICA DETALLADA -->
+            <div class="layer-info-card" id="layerInfoCard">
+                <div class="layer-badge" id="layerBadge">ESCUDO EXTERNO MINERAL</div>
+                <h2 class="layer-title" id="layerTitle">El Esmalte Dental (96% Mineral)</h2>
+                <div class="layer-desc" id="layerDesc">
+                    Es la sustancia más dura del organismo. Forma un escudo translúcido de cristales de hidroxiapatita que protege la corona de la abrasión y las bacterias ácidas.
+                </div>
+                <div class="layer-facts">
+                    <div class="fact-box">
+                        <div class="fact-val" id="fact1">96% Mineral</div>
+                        <div class="fact-lbl">Composición</div>
+                    </div>
+                    <div class="fact-box">
+                        <div class="fact-val" id="fact2">120 kg</div>
+                        <div class="fact-lbl">Carga Oclusal</div>
+                    </div>
+                </div>
+            </div>
+
+        </aside>
+
+        <!-- VIEWPORT 3D BABYLON -->
+        <div class="viewport-3d" id="viewport3D">
+            <canvas id="renderCanvas"></canvas>
+
+            <!-- HUD TOP -->
+            <div class="hud-overlay-top">
+                <button class="btn-hud" id="btnAutoRotate" onclick="toggleAutoRotate()">
+                    🔄 Giro Clínico 360°
+                </button>
+                <button class="btn-hud" onclick="resetMolarCamera()">
+                    🎯 Centrar Molar
+                </button>
+            </div>
+
+            <!-- HUD BOTTOM -->
+            <div class="hud-overlay-bottom">
+                <div class="hud-legend">
+                    <span>🖱️ <strong>Arrastrar:</strong> Orbitar molar 360°</span>
+                    <span>🔍 <strong>Rueda:</strong> Zoom a cámara pulpar o raíces</span>
+                    <span>🔬 <strong>Corte Histológico:</strong> Esmalte vítreo, dentina y red vásculo-nerviosa</span>
+                </div>
             </div>
         </div>
-    </div>
 
-    <div class="bottom-dock">
-        <!-- Selector de capas anatómicas -->
-        <button class="dock-btn active" id="btnEnamel" onclick="selectLayer('enamel')">✨ Esmalte</button>
-        <button class="dock-btn" id="btnDentin" onclick="selectLayer('dentin')">🟡 Dentina</button>
-        <button class="dock-btn" id="btnPulp" onclick="selectLayer('pulp')">🩸 Pulpa y Nervio</button>
-        <button class="dock-btn" id="btnBone" onclick="selectLayer('bone')">🦴 Hueso y Encía</button>
-
-        <div class="divider"></div>
-
-        <!-- Simulación de Caries -->
-        <div class="slider-group">
-            <span class="dock-label">PROGRESIÓN CARIES:</span>
-            <input type="range" id="cariesSlider" class="dock-slider" min="0" max="4" step="1" value="0">
-            <span class="caries-badge" id="cariesBadge">0 • Diente Sano</span>
-        </div>
-    </div>
+    </main>
 
     <script>
-        const canvas = document.getElementById("molarStage");
-        const ctx = canvas.getContext("2d");
-
-        let currentLayer = "enamel";
-        let cariesLevel = 0; // 0: Sano, 1: Esmalte, 2: Dentina, 3: Pulpa, 4: Absceso
-
-        const TOOTH_DATA = {
+        // ============================================================================
+        // 1. DATOS CLÍNICOS Y ETAPAS DE CARIES
+        // ============================================================================
+        const TOOTH_LAYERS = {
             enamel: {
                 badge: "ESCUDO EXTERNO MINERAL",
                 title: "El Esmalte Dental (96% Mineral)",
-                summary: "La sustancia más dura del cuerpo humano. No tiene células vivas, por lo que no puede autorepararse sin ayuda del dentista.",
-                detail: "<strong>¿Por qué se desgasta en mayores de 60 años?</strong> El paso de los años, el bruxismo nocturno y los alimentos ácidos erosionan el esmalte, dejando al descubierto la dentina sensible amarilla.<br><br><strong>Consejo de oro:</strong> Usar pastas fluoradas remineralizantes y cepillo de cerdas suaves.",
+                desc: "Es la sustancia más dura del cuerpo humano, capaz de soportar hasta 120 kg de presión en cada mordisco. Al ser acelular no se regenera, por lo que requiere pastas fluoradas remineralizantes.",
                 f1: "96% Mineral",
-                f2: "Hasta 120 kg mordida"
+                f2: "120 kg Fuerza",
+                camAlpha: -Math.PI / 2,
+                camBeta: Math.PI / 2.3,
+                camRadius: 6.8
             },
             dentin: {
                 badge: "TEJIDO VIBRATORIO SENSIBLE",
-                title: "La Dentina y los Túbulos Microscópicos",
-                summary: "Una capa elástica y amarillenta que actúa como amortiguador para que el esmalte no se fracture con la masticación.",
-                detail: "<strong>¿Por qué duele el frío o el calor?</strong> La dentina está perforada por millones de microtúbulos. Cuando el esmalte se desgasta o la encía se retrae, el líquido del túbulo se mueve y estimula el nervio provocando hipersensibilidad.",
-                f1: "70% Hidroxiapatita",
-                f2: "30.000 túbulos/mm²"
+                title: "Dentina y Túbulos Microscópicos",
+                desc: "Capa intermedia elástica marfil atravesada por 30.000 microtúbulos por mm². Cuando el esmalte se erosiona, el líquido de los túbulos vibra con el frío o calor provocando hipersensibilidad.",
+                f1: "30.000/mm²",
+                f2: "70% Hidroxiapatita",
+                camAlpha: -Math.PI / 1.7,
+                camBeta: Math.PI / 2.2,
+                camRadius: 6.2
             },
             pulp: {
                 badge: "CORAZÓN VIVO DEL DIENTE",
                 title: "Cámara Pulpar y Nervio Trigémino",
-                summary: "El tejido blando vivo que nutre al diente con vasos sanguíneos y detecta presión, frío y dolor agudo.",
-                detail: "<strong>Pulpitis y Endodoncia:</strong> Cuando una caries atraviesa el esmalte y la dentina, las bacterias infectan la pulpa. Como está atrapada dentro de un espacio cerrado de hueso, la inflamación comprime el nervio causando el típico e insoportable 'dolor de muelas'.",
-                f1: "Arteria + Vena",
-                f2: "Nervio Sensitivo"
+                desc: "Aloja las arteriolas, vénulas y las terminaciones del nervio alveolar inferior. Nutre al diente y transmite dolor ante inflamación (pulpitis aguda por caries profunda).",
+                f1: "Plexo Vascular",
+                f2: "Nervio Trigémino",
+                camAlpha: -Math.PI / 2,
+                camBeta: Math.PI / 2.0,
+                camRadius: 5.6
             },
             bone: {
                 badge: "SOPORTE PERIODONTAL",
                 title: "Hueso Alveolar y Encía Protectora",
-                summary: "El diente no está pegado rígidamente al hueso: flota sobre millones de ligamentos periodontales microscópicos.",
-                detail: "<strong>Salud de encías en adultos mayores:</strong> La periodontitis es la pérdida de hueso de soporte provocada por sarro acumulado. Mantener la encía sana y rosa es la clave número uno para no perder piezas dentales con la edad.",
-                f1: "Ligamento periodontal",
-                f2: "Amortiguador elástico"
+                desc: "El molar no está soldado rígidamente al hueso: flota sobre millones de ligamentos periodontales elásticos que amortiguan la masticación y previenen fracturas.",
+                f1: "Ligamento Fibroso",
+                f2: "Hueso Alveolar",
+                camAlpha: -Math.PI / 2.5,
+                camBeta: Math.PI / 1.8,
+                camRadius: 7.5
             }
         };
 
-        const CARIES_TEXTS = [
-            { text: "0 • Diente Sano", color: "#22c55e", desc: "Esmalte intacto, sin dolor ni bacterias." },
-            { text: "1 • Mancha Blanca", color: "#eab308", desc: "Desmineralización leve en la superficie del esmalte. Asintomático y reversible con flúor." },
-            { text: "2 • Caries en Dentina", color: "#f97316", desc: "La bacteria ha penetrado. Sensibilidad al tomar agua fría, café caliente o dulces." },
-            { text: "3 • Infección en Pulpa", color: "#ef4444", desc: "Pulpitis aguda. Dolor punzante continuo. Requiere tratamiento de conducto (endodoncia)." },
-            { text: "4 • Absceso en Raíz", color: "#dc2626", desc: "Infección bacteriana en el hueso maxilar. Inflamación de mejilla ('flemón')." }
+        const CARIES_STAGES = [
+            { text: "0 • Diente Sano", color: "#22c55e", desc: "Esmalte intacto, sin dolor ni bacterias. Pulpa rosada y relajada." },
+            { text: "1 • Mancha Blanca", color: "#eab308", desc: "Desmineralización superficial en surco oclusal. Asintomático y reversible con flúor." },
+            { text: "2 • Caries en Dentina", color: "#f97316", desc: "La bacteria ha penetrado el esmalte. Sensibilidad punzante al tomar agua fría, café caliente o dulces." },
+            { text: "3 • Infección en Pulpa", color: "#ef4444", desc: "Pulpitis aguda. Inflamación de arteriolas y nervio dentro de una cavidad cerrada. Dolor intenso que requiere endodoncia." },
+            { text: "4 • Absceso en Raíz", color: "#dc2626", desc: "Necrosis pulpar completa e infección bacteriana que perfora el hueso alveolar maxilar formando un flemón." }
         ];
 
-        function resize() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        }
-        window.addEventListener("resize", resize);
+        // ============================================================================
+        // 2. INICIALIZACIÓN DE BABYLON.JS
+        // ============================================================================
+        const canvas = document.getElementById("renderCanvas");
+        const engine = new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true });
+        const scene = new BABYLON.Scene(engine);
+        scene.clearColor = new BABYLON.Color4(0.02, 0.03, 0.06, 1.0);
 
-        function selectLayer(layer) {
-            currentLayer = layer;
-            document.querySelectorAll(".dock-btn").forEach(b => b.classList.remove("active"));
-            const map = { enamel: "btnEnamel", dentin: "btnDentin", pulp: "btnPulp", bone: "btnBone" };
-            if (map[layer]) document.getElementById(map[layer]).classList.add("active");
+        // Cámara ArcRotate de odontología
+        const camera = new BABYLON.ArcRotateCamera("Camera", -Math.PI / 2, Math.PI / 2.3, 6.8, new BABYLON.Vector3(0, 0, 0), scene);
+        camera.attachControl(canvas, true);
+        camera.wheelPrecision = 35;
+        camera.lowerRadiusLimit = 3.5;
+        camera.upperRadiusLimit = 15.0;
 
-            const d = TOOTH_DATA[layer];
-            document.getElementById("partBadge").innerText = d.badge;
-            document.getElementById("partTitle").innerText = d.title;
-            document.getElementById("partSummary").innerText = d.summary;
-            document.getElementById("partDetail").innerHTML = d.detail;
-            document.getElementById("fact1").innerText = d.f1;
-            document.getElementById("fact2").innerText = d.f2;
-        }
+        // Iluminación de clínica dental (lámpara scialítica LED)
+        const hemiLight = new BABYLON.HemisphericLight("hemi", new BABYLON.Vector3(0, 1, 0), scene);
+        hemiLight.intensity = 0.75;
+        hemiLight.groundColor = new BABYLON.Color3(0.08, 0.1, 0.15);
 
-        const cariesSlider = document.getElementById("cariesSlider");
-        const cariesBadge = document.getElementById("cariesBadge");
-        cariesSlider.addEventListener("input", (e) => {
-            cariesLevel = parseInt(e.target.value);
-            const info = CARIES_TEXTS[cariesLevel];
-            cariesBadge.innerText = info.text;
-            cariesBadge.style.color = info.color;
-            cariesBadge.style.borderColor = info.color;
-            document.getElementById("partSummary").innerText = info.desc;
+        const scialyticLight = new BABYLON.SpotLight("scialytic", new BABYLON.Vector3(2, 6, -3), new BABYLON.Vector3(-0.3, -0.9, 0.4), Math.PI / 2.5, 2, scene);
+        scialyticLight.intensity = 1.9;
+        scialyticLight.diffuse = new BABYLON.Color3(1.0, 0.98, 0.95);
+
+        const rimLight = new BABYLON.DirectionalLight("rim", new BABYLON.Vector3(-3, -1, 3), scene);
+        rimLight.intensity = 0.8;
+        rimLight.diffuse = new BABYLON.Color3(0.3, 0.6, 0.9);
+
+        // ============================================================================
+        // 3. MATERIALES PBR HISTOLÓGICOS DENTALES
+        // ============================================================================
+        // Esmalte translúcido con brillo vítreo
+        const matEnamel = new BABYLON.PBRMaterial("matEnamel", scene);
+        matEnamel.metallic = 0.1;
+        matEnamel.roughness = 0.15;
+        matEnamel.albedoColor = new BABYLON.Color3(0.96, 0.97, 0.99);
+        matEnamel.alpha = 0.88;
+
+        // Dentina amarilla marfil
+        const matDentin = new BABYLON.PBRMaterial("matDentin", scene);
+        matDentin.metallic = 0.1;
+        matDentin.roughness = 0.55;
+        matDentin.albedoColor = new BABYLON.Color3(0.92, 0.84, 0.55);
+
+        // Cámara pulpar vascularizada
+        const matPulp = new BABYLON.PBRMaterial("matPulp", scene);
+        matPulp.metallic = 0.15;
+        matPulp.roughness = 0.35;
+        matPulp.albedoColor = new BABYLON.Color3(0.85, 0.22, 0.25);
+        matPulp.emissiveColor = new BABYLON.Color3(0.3, 0.05, 0.05);
+
+        // Nervio trigémino bioluminiscente
+        const matNerve = new BABYLON.StandardMaterial("matNerve", scene);
+        matNerve.emissiveColor = new BABYLON.Color3(0.98, 0.85, 0.2);
+        matNerve.diffuseColor = new BABYLON.Color3(1.0, 0.9, 0.3);
+
+        // Vena azul pulpar
+        const matVein = new BABYLON.StandardMaterial("matVein", scene);
+        matVein.emissiveColor = new BABYLON.Color3(0.15, 0.45, 0.95);
+        matVein.diffuseColor = new BABYLON.Color3(0.2, 0.5, 1.0);
+
+        // Encía rosa
+        const matGum = new BABYLON.PBRMaterial("matGum", scene);
+        matGum.metallic = 0.1;
+        matGum.roughness = 0.65;
+        matGum.albedoColor = new BABYLON.Color3(0.92, 0.45, 0.55);
+
+        // Hueso alveolar maxilar
+        const matBone = new BABYLON.PBRMaterial("matBone", scene);
+        matBone.metallic = 0.15;
+        matBone.roughness = 0.8;
+        matBone.albedoColor = new BABYLON.Color3(0.75, 0.72, 0.65);
+
+        // Cavidad de Caries bacteriana
+        const matCaries = new BABYLON.StandardMaterial("matCaries", scene);
+        matCaries.diffuseColor = new BABYLON.Color3(0.1, 0.08, 0.05);
+        matCaries.emissiveColor = new BABYLON.Color3(0.15, 0.05, 0.0);
+
+        // Absceso purulento periapical
+        const matAbscess = new BABYLON.StandardMaterial("matAbscess", scene);
+        matAbscess.diffuseColor = new BABYLON.Color3(0.7, 0.85, 0.2);
+        matAbscess.emissiveColor = new BABYLON.Color3(0.8, 0.95, 0.1);
+
+        // ============================================================================
+        // 4. MODELADO 3D DEL MOLAR EN CORTE SAGITAL HISTOLÓGICO
+        // ============================================================================
+        const molarRoot = new BABYLON.TransformNode("molarRoot", scene);
+        molarRoot.position.y = 0.2;
+
+        // Bloque de Hueso Alveolar y Encía (sección frontal abierta)
+        const boneBlock = BABYLON.MeshBuilder.CreateBox("boneBlock", { width: 4.4, height: 2.2, depth: 2.0 }, scene);
+        boneBlock.position = new BABYLON.Vector3(0, -1.8, 0.4);
+        boneBlock.material = matBone;
+        boneBlock.parent = molarRoot;
+
+        const gumLayer = BABYLON.MeshBuilder.CreateBox("gumLayer", { width: 4.5, height: 0.5, depth: 2.1 }, scene);
+        gumLayer.position = new BABYLON.Vector3(0, -0.65, 0.4);
+        gumLayer.material = matGum;
+        gumLayer.parent = molarRoot;
+
+        // --- CAPA 1: ESMALTE EXTERNO (Corona con 4 cúspides anatómicas en semicorte) ---
+        const enamelCrown = BABYLON.MeshBuilder.CreateCylinder("enamelCrown", {
+            diameterTop: 2.5,
+            diameterBottom: 2.1,
+            height: 1.6,
+            tessellation: 32,
+            arc: 0.55 // Sección abierta a 200° para exponer las capas internas
+        }, scene);
+        enamelCrown.position.y = 0.65;
+        enamelCrown.rotation.y = Math.PI * 0.72;
+        enamelCrown.material = matEnamel;
+        enamelCrown.parent = molarRoot;
+
+        // 4 Cúspides oclusales talladas anatómicamente
+        const cuspPositions = [
+            new BABYLON.Vector3(-0.65, 1.45, -0.45), // Mesiobucal
+            new BABYLON.Vector3(0.65, 1.45, -0.45),  // Distobucal
+            new BABYLON.Vector3(-0.65, 1.45, 0.45),  // Mesiolingual
+            new BABYLON.Vector3(0.65, 1.45, 0.45)    // Distolingual
+        ];
+        cuspPositions.forEach((pos, idx) => {
+            const cusp = BABYLON.MeshBuilder.CreateSphere("cusp_" + idx, { diameter: 0.65, segments: 16 }, scene);
+            cusp.position = pos;
+            cusp.scaling.y = 0.8;
+            cusp.material = matEnamel;
+            cusp.parent = molarRoot;
         });
 
-        // =========================================================================
-        // MOTOR DE DIBUJO DEL MOLAR
-        // =========================================================================
-        function render() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        // --- CAPA 2: DENTINA (Corona interna + 2 Raíces anatómicas) ---
+        const dentinCrown = BABYLON.MeshBuilder.CreateCylinder("dentinCrown", {
+            diameterTop: 2.1,
+            diameterBottom: 1.8,
+            height: 1.4,
+            tessellation: 32,
+            arc: 0.55
+        }, scene);
+        dentinCrown.position.y = 0.55;
+        dentinCrown.rotation.y = Math.PI * 0.72;
+        dentinCrown.material = matDentin;
+        dentinCrown.parent = molarRoot;
 
-            const cx = canvas.width / 2 - 140;
-            const cy = canvas.height / 2 + 10;
-            const scale = Math.min(canvas.width, canvas.height) / 780;
+        // Raíz Mesial (izquierda)
+        const rootMesial = BABYLON.MeshBuilder.CreateCylinder("rootMesial", {
+            diameterTop: 0.85,
+            diameterBottom: 0.25,
+            height: 2.4,
+            tessellation: 20
+        }, scene);
+        rootMesial.position = new BABYLON.Vector3(-0.65, -1.25, 0);
+        rootMesial.rotation.z = -0.12;
+        rootMesial.material = matDentin;
+        rootMesial.parent = molarRoot;
 
-            ctx.save();
-            ctx.translate(cx, cy);
-            ctx.scale(scale, scale);
+        // Raíz Distal (derecha)
+        const rootDistal = BABYLON.MeshBuilder.CreateCylinder("rootDistal", {
+            diameterTop: 0.85,
+            diameterBottom: 0.25,
+            height: 2.4,
+            tessellation: 20
+        }, scene);
+        rootDistal.position = new BABYLON.Vector3(0.65, -1.25, 0);
+        rootDistal.rotation.z = 0.12;
+        rootDistal.material = matDentin;
+        rootDistal.parent = molarRoot;
 
-            // 1. Hueso Alveolar y Encía Rosa de Fondo
-            drawBoneAndGum();
+        // --- CAPA 3: CÁMARA PULPAR Y CUERNOS PULPARES ---
+        const pulpChamber = BABYLON.MeshBuilder.CreateSphere("pulpChamber", {
+            diameterX: 1.25,
+            diameterY: 0.9,
+            diameterZ: 0.95,
+            segments: 20
+        }, scene);
+        pulpChamber.position = new BABYLON.Vector3(0, 0.45, 0);
+        pulpChamber.material = matPulp;
+        pulpChamber.parent = molarRoot;
 
-            // 2. Capa Exterior: Corona de Esmalte Blanco
-            drawEnamelLayer();
+        // Cuernos pulpares bajo las cúspides
+        const hornL = BABYLON.MeshBuilder.CreateCylinder("hornL", { diameterTop: 0.08, diameterBottom: 0.35, height: 0.55 }, scene);
+        hornL.position = new BABYLON.Vector3(-0.45, 0.95, 0);
+        hornL.material = matPulp;
+        hornL.parent = molarRoot;
 
-            // 3. Capa Media: Dentina Amarillenta
-            drawDentinLayer();
+        const hornR = BABYLON.MeshBuilder.CreateCylinder("hornR", { diameterTop: 0.08, diameterBottom: 0.35, height: 0.55 }, scene);
+        hornR.position = new BABYLON.Vector3(0.45, 0.95, 0);
+        hornR.material = matPulp;
+        hornR.parent = molarRoot;
 
-            // 4. Capa Central: Cámara Pulpar y Raíces (Arterias, Venas y Nervios)
-            drawPulpAndNerves();
+        // Conductos radiculares mesial y distal
+        const canalMesial = BABYLON.MeshBuilder.CreateCylinder("canalM", { diameterTop: 0.3, diameterBottom: 0.1, height: 2.2 }, scene);
+        canalMesial.position = new BABYLON.Vector3(-0.65, -1.2, 0);
+        canalMesial.rotation.z = -0.12;
+        canalMesial.material = matPulp;
+        canalMesial.parent = molarRoot;
 
-            // 5. Simulación visual de la Caries activa
-            if (cariesLevel > 0) {
-                drawCariesEffect();
-            }
+        const canalDistal = BABYLON.MeshBuilder.CreateCylinder("canalD", { diameterTop: 0.3, diameterBottom: 0.1, height: 2.2 }, scene);
+        canalDistal.position = new BABYLON.Vector3(0.65, -1.2, 0);
+        canalDistal.rotation.z = 0.12;
+        canalDistal.material = matPulp;
+        canalDistal.parent = molarRoot;
 
-            ctx.restore();
+        // --- RED VÁSCULO-NERVIOSA 3D (Arteriola + Vénula + Nervio) ---
+        const nerveStrandL = BABYLON.MeshBuilder.CreateCylinder("nerveL", { diameter: 0.06, height: 2.5 }, scene);
+        nerveStrandL.position = new BABYLON.Vector3(-0.62, -1.25, 0.08);
+        nerveStrandL.rotation.z = -0.12;
+        nerveStrandL.material = matNerve;
+        nerveStrandL.parent = molarRoot;
 
-            requestAnimationFrame(render);
-        }
+        const nerveStrandR = BABYLON.MeshBuilder.CreateCylinder("nerveR", { diameter: 0.06, height: 2.5 }, scene);
+        nerveStrandR.position = new BABYLON.Vector3(0.62, -1.25, 0.08);
+        nerveStrandR.rotation.z = 0.12;
+        nerveStrandR.material = matNerve;
+        nerveStrandR.parent = molarRoot;
 
-        function drawBoneAndGum() {
-            ctx.save();
-            // Hueso maxilar esponjoso
-            ctx.fillStyle = currentLayer === "bone" ? "#475569" : "#1e293b";
-            ctx.fillRect(-220, 30, 440, 260);
+        const veinStrandL = BABYLON.MeshBuilder.CreateCylinder("veinL", { diameter: 0.06, height: 2.5 }, scene);
+        veinStrandL.position = new BABYLON.Vector3(-0.68, -1.25, -0.08);
+        veinStrandL.rotation.z = -0.12;
+        veinStrandL.material = matVein;
+        veinStrandL.parent = molarRoot;
 
-            // Textura trabecular del hueso
-            ctx.fillStyle = "rgba(255, 255, 255, 0.05)";
-            for (let bx = -200; bx < 200; bx += 25) {
-                for (let by = 50; by < 270; by += 25) {
-                    ctx.beginPath();
-                    ctx.arc(bx + (by % 20), by, 3, 0, Math.PI * 2);
-                    ctx.fill();
-                }
-            }
+        // --- ELEMENTOS DE CARIES Y ABSCESO (Dinámicos) ---
+        const cariesMesh = BABYLON.MeshBuilder.CreateSphere("cariesCavity", { diameter: 0.65, segments: 16 }, scene);
+        cariesMesh.position = new BABYLON.Vector3(0.1, 1.45, -0.3);
+        cariesMesh.scaling = new BABYLON.Vector3(0.001, 0.001, 0.001);
+        cariesMesh.material = matCaries;
+        cariesMesh.parent = molarRoot;
 
-            // Encía rosada gingival
-            ctx.fillStyle = currentLayer === "bone" ? "#fb7185" : "#be185d";
-            ctx.beginPath();
-            ctx.moveTo(-220, 30);
-            ctx.quadraticCurveTo(-90, 15, -70, 30);
-            ctx.quadraticCurveTo(0, 5, 70, 30);
-            ctx.quadraticCurveTo(90, 15, 220, 30);
-            ctx.lineTo(220, 75);
-            ctx.lineTo(-220, 75);
-            ctx.closePath();
-            ctx.fill();
-            ctx.restore();
-        }
+        const abscessMesial = BABYLON.MeshBuilder.CreateSphere("abscessM", { diameter: 0.65, segments: 16 }, scene);
+        abscessMesial.position = new BABYLON.Vector3(-0.82, -2.45, 0);
+        abscessMesial.scaling = new BABYLON.Vector3(0.001, 0.001, 0.001);
+        abscessMesial.material = matAbscess;
+        abscessMesial.parent = molarRoot;
 
-        function drawEnamelLayer() {
-            ctx.save();
-            ctx.fillStyle = currentLayer === "enamel" ? "#ffffff" : "#cbd5e1";
-            ctx.strokeStyle = currentLayer === "enamel" ? "#38bdf8" : "#94a3b8";
-            ctx.lineWidth = currentLayer === "enamel" ? 4 : 2;
+        // ============================================================================
+        // 5. CONTROL DINÁMICO DE CARIES
+        // ============================================================================
+        let currentCariesLevel = 0;
+        let isAutoRotate = false;
 
-            // Corona del molar con 4 cúspides masticatorias
-            ctx.beginPath();
-            ctx.moveTo(-110, 30);
-            ctx.quadraticCurveTo(-115, -80, -80, -110); // Cúspide 1
-            ctx.quadraticCurveTo(-45, -95, -25, -120); // Cúspide 2
-            ctx.quadraticCurveTo(0, -100, 25, -120);   // Cúspide 3
-            ctx.quadraticCurveTo(45, -95, 80, -110);   // Cúspide 4
-            ctx.quadraticCurveTo(115, -80, 110, 30);
-            ctx.lineTo(-110, 30);
-            ctx.closePath();
-            ctx.shadowColor = currentLayer === "enamel" ? "#38bdf8" : "transparent";
-            ctx.shadowBlur = currentLayer === "enamel" ? 20 : 0;
-            ctx.fill();
-            ctx.stroke();
-            ctx.restore();
-        }
+        function setCariesLevel(val) {
+            currentCariesLevel = parseInt(val);
+            const data = CARIES_STAGES[currentCariesLevel];
 
-        function drawDentinLayer() {
-            ctx.save();
-            ctx.fillStyle = currentLayer === "dentin" ? "#fde047" : "#eab308";
-            ctx.strokeStyle = currentLayer === "dentin" ? "#ea580c" : "#ca8a04";
-            ctx.lineWidth = 3;
+            const badge = document.getElementById("cariesBadge");
+            badge.textContent = data.text;
+            badge.style.color = data.color;
+            badge.style.borderColor = data.color;
 
-            // Dentina que ocupa el cuerpo y las dos raíces
-            ctx.beginPath();
-            // Corona interna
-            ctx.moveTo(-85, 25);
-            ctx.quadraticCurveTo(-90, -60, -60, -85);
-            ctx.quadraticCurveTo(-20, -75, 0, -85);
-            ctx.quadraticCurveTo(20, -75, 60, -85);
-            ctx.quadraticCurveTo(90, -60, 85, 25);
-            // Raíz derecha
-            ctx.quadraticCurveTo(80, 140, 50, 230);
-            ctx.quadraticCurveTo(35, 240, 25, 220);
-            ctx.quadraticCurveTo(20, 130, 0, 80); // Bifurcación entre raíces
-            // Raíz izquierda
-            ctx.quadraticCurveTo(-20, 130, -25, 220);
-            ctx.quadraticCurveTo(-35, 240, -50, 230);
-            ctx.quadraticCurveTo(-80, 140, -85, 25);
-            ctx.closePath();
-            ctx.shadowColor = currentLayer === "dentin" ? "#fde047" : "transparent";
-            ctx.shadowBlur = currentLayer === "dentin" ? 18 : 0;
-            ctx.fill();
-            ctx.stroke();
-            ctx.restore();
-        }
+            document.getElementById("layerDesc").textContent = data.desc;
 
-        function drawPulpAndNerves() {
-            ctx.save();
-            ctx.fillStyle = currentLayer === "pulp" ? "#ef4444" : "#b91c1c";
-            ctx.strokeStyle = currentLayer === "pulp" ? "#38bdf8" : "#991b1b";
-            ctx.lineWidth = 2.5;
-
-            // Cámara pulpar central
-            ctx.beginPath();
-            ctx.moveTo(-35, 10);
-            ctx.quadraticCurveTo(-40, -35, -20, -50); // Cuerno pulpar 1
-            ctx.quadraticCurveTo(0, -38, 20, -50);   // Cuerno pulpar 2
-            ctx.quadraticCurveTo(40, -35, 35, 10);
-            // Conducto radicular derecho
-            ctx.quadraticCurveTo(32, 100, 38, 225);
-            ctx.lineTo(28, 225);
-            ctx.quadraticCurveTo(20, 100, 0, 45); // Bifurcación
-            // Conducto radicular izquierdo
-            ctx.quadraticCurveTo(-20, 100, -28, 225);
-            ctx.lineTo(-38, 225);
-            ctx.quadraticCurveTo(-32, 100, -35, 10);
-            ctx.closePath();
-            ctx.shadowColor = currentLayer === "pulp" ? "#ef4444" : "transparent";
-            ctx.shadowBlur = currentLayer === "pulp" ? 22 : 0;
-            ctx.fill();
-            ctx.stroke();
-
-            // Nervios y vasos sanguíneos (filamentos)
-            ctx.strokeStyle = "#38bdf8";
-            ctx.lineWidth = 2;
-            // Nervio izquierdo
-            ctx.beginPath();
-            ctx.moveTo(0, -25);
-            ctx.quadraticCurveTo(-15, 80, -33, 235);
-            ctx.stroke();
-            // Nervio derecho
-            ctx.beginPath();
-            ctx.moveTo(0, -25);
-            ctx.quadraticCurveTo(15, 80, 33, 235);
-            ctx.stroke();
-
-            ctx.restore();
-        }
-
-        // Efecto visual de caries según nivel (0 a 4)
-        function drawCariesEffect() {
-            ctx.save();
-            const cariesX = -25;
-            const cariesY = -120;
-
-            if (cariesLevel >= 1) {
-                // Etapa 1: Mancha en el esmalte
-                ctx.beginPath();
-                ctx.arc(cariesX, cariesY + 8, 8, 0, Math.PI * 2);
-                ctx.fillStyle = "#78350f";
-                ctx.fill();
-            }
-            if (cariesLevel >= 2) {
-                // Etapa 2: Cráter que penetra en la dentina
-                ctx.beginPath();
-                ctx.ellipse(cariesX, cariesY + 28, 16, 20, 0, 0, Math.PI * 2);
-                ctx.fillStyle = "#451a03";
-                ctx.fill();
-            }
-            if (cariesLevel >= 3) {
-                // Etapa 3: Infección bacteriana en la pulpa (Pulpitis roja activa)
-                ctx.beginPath();
-                ctx.arc(-20, -50, 18, 0, Math.PI * 2);
-                ctx.fillStyle = "#dc2626";
-                ctx.shadowColor = "#ef4444";
-                ctx.shadowBlur = 25;
-                ctx.fill();
-            }
-            if (cariesLevel >= 4) {
-                // Etapa 4: Absceso / Infección en la punta de la raíz
-                ctx.beginPath();
-                ctx.arc(-33, 240, 24, 0, Math.PI * 2);
-                ctx.fillStyle = "rgba(220, 38, 38, 0.75)";
-                ctx.shadowColor = "#dc2626";
-                ctx.shadowBlur = 30;
-                ctx.fill();
-                ctx.fillStyle = "#ffffff";
-                ctx.font = "800 11px 'JetBrains Mono'";
-                ctx.fillText("¡ABSCESO APICAL!", -90, 280);
-            }
-            ctx.restore();
-        }
-
-        function toggleFullScreen() {
-            if (!document.fullscreenElement) {
-                document.documentElement.requestFullscreen().catch(() => {});
-            } else {
-                document.exitFullscreen().catch(() => {});
+            if (currentCariesLevel === 0) {
+                cariesMesh.scaling = new BABYLON.Vector3(0.001, 0.001, 0.001);
+                abscessMesial.scaling = new BABYLON.Vector3(0.001, 0.001, 0.001);
+                matPulp.albedoColor = new BABYLON.Color3(0.85, 0.22, 0.25);
+                matPulp.emissiveColor = new BABYLON.Color3(0.3, 0.05, 0.05);
+                matEnamel.albedoColor = new BABYLON.Color3(0.96, 0.97, 0.99);
+            } else if (currentCariesLevel === 1) {
+                cariesMesh.scaling = new BABYLON.Vector3(0.35, 0.25, 0.35);
+                matCaries.diffuseColor = new BABYLON.Color3(0.9, 0.85, 0.6);
+                matCaries.emissiveColor = new BABYLON.Color3(0.1, 0.1, 0.05);
+                abscessMesial.scaling = new BABYLON.Vector3(0.001, 0.001, 0.001);
+            } else if (currentCariesLevel === 2) {
+                cariesMesh.scaling = new BABYLON.Vector3(0.75, 0.65, 0.75);
+                matCaries.diffuseColor = new BABYLON.Color3(0.25, 0.15, 0.08);
+                matCaries.emissiveColor = new BABYLON.Color3(0.05, 0.02, 0.0);
+                abscessMesial.scaling = new BABYLON.Vector3(0.001, 0.001, 0.001);
+            } else if (currentCariesLevel === 3) {
+                cariesMesh.scaling = new BABYLON.Vector3(1.1, 0.95, 1.1);
+                matCaries.diffuseColor = new BABYLON.Color3(0.1, 0.05, 0.02);
+                matPulp.albedoColor = new BABYLON.Color3(1.0, 0.1, 0.1);
+                matPulp.emissiveColor = new BABYLON.Color3(0.8, 0.1, 0.1);
+                abscessMesial.scaling = new BABYLON.Vector3(0.001, 0.001, 0.001);
+            } else if (currentCariesLevel === 4) {
+                cariesMesh.scaling = new BABYLON.Vector3(1.35, 1.15, 1.35);
+                matPulp.albedoColor = new BABYLON.Color3(0.2, 0.2, 0.25);
+                matPulp.emissiveColor = new BABYLON.Color3(0.05, 0.05, 0.08);
+                abscessMesial.scaling = new BABYLON.Vector3(1.2, 1.2, 1.2);
             }
         }
 
-        window.addEventListener("DOMContentLoaded", () => {
-            resize();
-            selectLayer("enamel");
-            render();
+        // ============================================================================
+        // 6. SELECTOR DE CAPAS Y NAVEGACIÓN
+        // ============================================================================
+        function selectLayer(layerKey) {
+            const data = TOOTH_LAYERS[layerKey];
+
+            document.querySelectorAll(".btn-layer").forEach(b => b.classList.remove("active"));
+            const mapBtn = { enamel: "btnLayerEnamel", dentin: "btnLayerDentin", pulp: "btnLayerPulp", bone: "btnLayerBone" };
+            if (mapBtn[layerKey]) document.getElementById(mapBtn[layerKey]).classList.add("active");
+
+            document.getElementById("layerBadge").textContent = data.badge;
+            document.getElementById("layerTitle").textContent = data.title;
+            document.getElementById("layerDesc").textContent = data.desc;
+            document.getElementById("fact1").textContent = data.f1;
+            document.getElementById("fact2").textContent = data.f2;
+
+            BABYLON.Animation.CreateAndStartAnimation("camAlpha", camera, "alpha", 30, 20, camera.alpha, data.camAlpha, 2);
+            BABYLON.Animation.CreateAndStartAnimation("camBeta", camera, "beta", 30, 20, camera.beta, data.camBeta, 2);
+            BABYLON.Animation.CreateAndStartAnimation("camRadius", camera, "radius", 30, 20, camera.radius, data.camRadius, 2);
+        }
+
+        function toggleAutoRotate() {
+            isAutoRotate = !isAutoRotate;
+            const btn = document.getElementById("btnAutoRotate");
+            btn.classList.toggle("active", isAutoRotate);
+        }
+
+        function resetMolarCamera() {
+            BABYLON.Animation.CreateAndStartAnimation("camAlpha", camera, "alpha", 30, 20, camera.alpha, -Math.PI / 2, 2);
+            BABYLON.Animation.CreateAndStartAnimation("camBeta", camera, "beta", 30, 20, camera.beta, Math.PI / 2.3, 2);
+            BABYLON.Animation.CreateAndStartAnimation("camRadius", camera, "radius", 30, 20, camera.radius, 6.8, 2);
+        }
+
+        // ============================================================================
+        // 7. RENDER LOOP
+        // ============================================================================
+        scene.registerBeforeRender(() => {
+            if (isAutoRotate) {
+                camera.alpha += 0.003;
+            }
+        });
+
+        engine.runRenderLoop(() => {
+            scene.render();
+        });
+
+        window.addEventListener("resize", () => {
+            engine.resize();
         });
     </script>
 </body>
 </html>
-

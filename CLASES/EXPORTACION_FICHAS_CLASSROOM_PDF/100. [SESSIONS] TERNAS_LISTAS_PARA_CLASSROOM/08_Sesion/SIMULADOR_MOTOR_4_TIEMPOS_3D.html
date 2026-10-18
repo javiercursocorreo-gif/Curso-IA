@@ -3,444 +3,979 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sesión 08 • Simulador 3D: Motor Térmico de 4 Tiempos [COD-008]</title>
+    <title>Sesión 08 • Simulador 3D: Motor Térmico de 4 Tiempos en Sección [COD-008]</title>
+    <!-- Babylon.js CDN Oficial -->
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-base: #060911;
-            --bg-panel: rgba(15, 23, 42, 0.92);
-            --flame: #ef4444;
+            --bg-base: #05070d;
+            --bg-panel: rgba(13, 19, 33, 0.94);
+            --border-glow: rgba(245, 158, 11, 0.4);
+            --amber: #f59e0b;
+            --amber-glow: rgba(245, 158, 11, 0.25);
             --intake: #38bdf8;
             --compress: #f59e0b;
-            --power: #fbbf24;
+            --power: #ef4444;
             --exhaust: #a855f7;
             --metal: #cbd5e1;
+            --text-main: #f8fafc;
+            --text-sub: #cbd5e1;
             --font-sans: 'Inter', sans-serif;
             --font-mono: 'JetBrains Mono', monospace;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body {
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+        html, body {
             background-color: var(--bg-base);
-            color: #f8fafc;
+            color: var(--text-main);
             font-family: var(--font-sans);
             height: 100vh;
             width: 100vw;
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            user-select: none;
+            font-size: 16px;
         }
 
+        /* HEADER */
         header {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 20;
-            padding: 14px 24px;
+            background: linear-gradient(180deg, rgba(15, 23, 42, 0.98) 0%, rgba(15, 23, 42, 0.88) 100%);
+            backdrop-filter: blur(14px);
+            border-bottom: 1px solid rgba(245, 158, 11, 0.25);
+            padding: 10px 24px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            background: linear-gradient(180deg, rgba(6, 9, 17, 0.96) 0%, rgba(6, 9, 17, 0.6) 80%, transparent 100%);
-            border-bottom: 1px solid rgba(245, 158, 11, 0.25);
-            backdrop-filter: blur(10px);
+            flex-shrink: 0;
+            z-index: 50;
         }
-
-        .brand-box {
+        .header-title-box {
             display: flex;
             align-items: center;
             gap: 14px;
         }
-
-        .brand-badge {
+        .badge-code {
             background: rgba(245, 158, 11, 0.15);
-            border: 1px solid #f59e0b;
-            color: #f59e0b;
+            color: var(--amber);
+            border: 1px solid rgba(245, 158, 11, 0.45);
             font-family: var(--font-mono);
+            font-size: 0.88rem;
             font-weight: 800;
-            font-size: 1rem;
-            padding: 5px 12px;
+            padding: 4px 10px;
             border-radius: 8px;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.05em;
         }
-
-        .brand-title {
-            font-size: 1.3rem;
-            font-weight: 900;
-            color: #ffffff;
+        h1 {
+            font-size: 1.25rem;
+            font-weight: 800;
             letter-spacing: -0.01em;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
-
-        .brand-sub {
-            font-size: 0.78rem;
-            color: #94a3b8;
-            font-weight: 500;
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
-
-        .btn-action {
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            color: #f1f5f9;
-            padding: 8px 16px;
+        .pill-status {
+            background: rgba(245, 158, 11, 0.15);
+            color: #fbbf24;
+            border: 1px solid rgba(245, 158, 11, 0.4);
+            font-size: 0.85rem;
+            font-weight: 700;
+            padding: 5px 13px;
             border-radius: 9999px;
-            font-size: 0.82rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
 
-        .btn-action:hover {
-            background: rgba(245, 158, 11, 0.2);
-            border-color: #f59e0b;
-            color: #f59e0b;
-        }
-
-        #engineStage {
+        /* GRID PRINCIPAL */
+        .workspace-grid {
             flex: 1;
-            width: 100%;
-            height: 100%;
-            display: block;
+            min-height: 0;
+            display: grid;
+            grid-template-columns: 420px 1fr;
+            background: #020409;
         }
 
-        /* PANEL DIDÁCTICO */
-        .info-card {
-            position: absolute;
-            top: 80px;
-            right: 24px;
-            width: 395px;
+        /* PANEL IZQUIERDO DIDÁCTICO */
+        aside.sidebar-panel {
             background: var(--bg-panel);
-            border: 1.5px solid #f59e0b;
-            border-radius: 20px;
-            padding: 22px;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9), 0 0 25px rgba(245, 158, 11, 0.25);
-            backdrop-filter: blur(20px);
-            z-index: 15;
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
             display: flex;
             flex-direction: column;
-            gap: 14px;
+            overflow-y: auto;
+            padding: 20px;
+            gap: 18px;
+            z-index: 20;
         }
 
-        .cycle-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            font-family: var(--font-mono);
-            font-size: 0.85rem;
+        /* TARJETA LA IDEA FÁCIL */
+        .card-easy-concept {
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.95) 100%);
+            border: 1px solid rgba(245, 158, 11, 0.35);
+            border-radius: 14px;
+            padding: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+        }
+        .easy-tag {
+            font-size: 0.78rem;
             font-weight: 800;
-            padding: 6px 14px;
+            color: var(--amber);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .easy-title {
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: #ffffff;
+            line-height: 1.3;
+            margin-bottom: 8px;
+        }
+        .easy-text {
+            font-size: 0.94rem;
+            color: var(--text-sub);
+            line-height: 1.5;
+        }
+        .easy-text strong {
+            color: #ffffff;
+        }
+
+        /* SELECTOR DE LOS 4 TIEMPOS */
+        .section-title {
+            font-size: 0.88rem;
+            font-weight: 800;
+            color: var(--amber);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .stroke-selector-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+        .btn-stroke {
+            background: rgba(30, 41, 59, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: #e2e8f0;
+            padding: 10px 12px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            text-align: left;
+        }
+        .btn-stroke span:first-child {
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            color: #94a3b8;
+            text-transform: uppercase;
+        }
+        .btn-stroke:hover {
+            border-color: var(--amber);
+            background: rgba(245, 158, 11, 0.15);
+            color: #ffffff;
+        }
+        .btn-stroke.active {
+            border-color: var(--stroke-color, var(--amber));
+            background: rgba(245, 158, 11, 0.22);
+            color: #ffffff;
+            box-shadow: 0 0 14px rgba(245, 158, 11, 0.3);
+        }
+
+        /* FICHA DIDÁCTICA DEL TIEMPO ACTUAL */
+        .info-card-detail {
+            background: rgba(15, 23, 42, 0.9);
+            border: 1.5px solid var(--amber);
+            border-radius: 14px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            box-shadow: 0 6px 25px rgba(0, 0, 0, 0.5);
+        }
+        .stroke-badge {
+            font-family: var(--font-mono);
+            font-size: 0.82rem;
+            font-weight: 800;
+            padding: 4px 10px;
             border-radius: 9999px;
             background: rgba(56, 189, 248, 0.15);
             color: #38bdf8;
             border: 1px solid rgba(56, 189, 248, 0.4);
             width: fit-content;
         }
-
-        .info-title {
-            font-size: 1.35rem;
+        .stroke-title {
+            font-size: 1.2rem;
             font-weight: 900;
             color: #ffffff;
             line-height: 1.25;
         }
-
-        .info-summary {
-            background: rgba(255, 255, 255, 0.05);
-            border-left: 3.5px solid #f59e0b;
-            padding: 10px 14px;
-            border-radius: 0 10px 10px 0;
+        .stroke-desc {
             font-size: 0.92rem;
-            color: #f1f5f9;
-            line-height: 1.45;
-            font-weight: 600;
+            color: var(--text-sub);
+            line-height: 1.5;
         }
-
-        .info-detail {
-            font-size: 0.85rem;
-            color: #cbd5e1;
-            line-height: 1.6;
-            max-height: 240px;
-            overflow-y: auto;
-            padding-right: 6px;
-        }
-
-        .info-detail strong {
-            color: #f59e0b;
-            display: block;
-            margin-top: 6px;
-            margin-bottom: 2px;
-            font-size: 0.78rem;
-            text-transform: uppercase;
-        }
-
-        .info-facts {
+        .stroke-facts {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 8px;
+            margin-top: 4px;
         }
-
         .fact-box {
             background: rgba(0, 0, 0, 0.45);
             border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 10px;
+            border-radius: 8px;
             padding: 8px 10px;
             text-align: center;
         }
-
         .fact-val {
             font-family: var(--font-mono);
-            font-size: 1.1rem;
+            font-size: 1.05rem;
             font-weight: 800;
-            color: #f59e0b;
+            color: var(--amber);
         }
-
         .fact-lbl {
-            font-size: 0.68rem;
+            font-size: 0.72rem;
             color: #94a3b8;
             text-transform: uppercase;
             margin-top: 2px;
         }
 
-        /* BARRA INFERIOR DE CONTROLES */
-        .bottom-dock {
-            position: absolute;
-            bottom: 16px;
-            left: 50%;
-            transform: translateX(-50%);
+        /* CONTROL DE VELOCIDAD Y RPM */
+        .control-dock {
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 14px;
             display: flex;
-            align-items: center;
-            gap: 16px;
-            background: rgba(15, 23, 42, 0.95);
-            border: 1px solid rgba(245, 158, 11, 0.35);
-            box-shadow: 0 10px 35px rgba(0,0,0,0.85);
-            backdrop-filter: blur(16px);
-            padding: 10px 24px;
-            border-radius: 9999px;
-            z-index: 15;
-            max-width: 94%;
-        }
-
-        .slider-group {
-            display: flex;
-            align-items: center;
+            flex-direction: column;
             gap: 10px;
         }
-
-        .dock-label {
-            font-size: 0.8rem;
-            font-weight: 800;
-            color: #f59e0b;
-            font-family: var(--font-mono);
-            white-space: nowrap;
+        .slider-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
         }
-
-        .dock-slider {
-            width: 170px;
-            accent-color: #f59e0b;
+        .slider-row input[type="range"] {
+            flex: 1;
+            accent-color: var(--amber);
             cursor: pointer;
+            height: 6px;
         }
-
-        .rpm-badge {
+        .rpm-display {
             font-family: var(--font-mono);
-            font-size: 0.88rem;
+            font-size: 0.95rem;
             font-weight: 800;
             color: #ffffff;
-            background: rgba(0,0,0,0.5);
-            padding: 3px 8px;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 4px 10px;
             border-radius: 6px;
-            min-width: 72px;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            min-width: 85px;
             text-align: center;
-            border: 1px solid rgba(255,255,255,0.1);
         }
-
-        .divider {
-            width: 1px;
-            height: 22px;
-            background: rgba(255, 255, 255, 0.15);
+        .action-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
         }
-
-        .dock-btn {
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.15);
+        .btn-action {
+            background: rgba(30, 41, 59, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            color: #f1f5f9;
+            padding: 9px 12px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        .btn-action:hover, .btn-action.active {
+            background: rgba(245, 158, 11, 0.25);
+            border-color: var(--amber);
             color: #ffffff;
-            padding: 8px 14px;
-            border-radius: 9999px;
-            font-size: 0.82rem;
+        }
+
+        /* VIEWPORT 3D BABYLON */
+        .viewport-3d {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+        #renderCanvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+            touch-action: none;
+            outline: none;
+        }
+
+        /* HUD TOP */
+        .hud-overlay-top {
+            position: absolute;
+            top: 18px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 10;
+        }
+        .btn-hud {
+            background: rgba(15, 23, 42, 0.88);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            color: #e2e8f0;
+            padding: 9px 16px;
+            border-radius: 10px;
+            font-size: 0.88rem;
             font-weight: 700;
             cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 6px;
-            transition: all 0.2s ease;
-            white-space: nowrap;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+        .btn-hud:hover, .btn-hud.active {
+            background: rgba(245, 158, 11, 0.28);
+            border-color: var(--amber);
+            color: #ffffff;
         }
 
-        .dock-btn:hover {
-            background: rgba(245, 158, 11, 0.2);
-            border-color: #f59e0b;
-            color: #f59e0b;
+        /* HUD BOTTOM */
+        .hud-overlay-bottom {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            pointer-events: none;
+            z-index: 10;
         }
-
-        .dock-btn.active {
-            background: #f59e0b;
-            color: #060911;
-            font-weight: 800;
+        .hud-legend {
+            background: rgba(15, 23, 42, 0.9);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            padding: 10px 18px;
+            border-radius: 10px;
+            font-size: 0.88rem;
+            color: #94a3b8;
+            pointer-events: auto;
+            display: flex;
+            align-items: center;
+            gap: 18px;
         }
-
-        @media (max-width: 950px) {
-            .info-card {
-                top: auto;
-                bottom: 85px;
-                right: 12px;
-                left: 12px;
-                width: auto;
-                max-height: 38vh;
-            }
-            .bottom-dock {
-                bottom: 8px;
-                padding: 6px 14px;
-                overflow-x: auto;
-            }
-        }
+        .hud-legend strong { color: #ffffff; }
     </style>
 </head>
 <body>
 
+    <!-- CABECERA -->
     <header>
-        <div class="brand-box">
-            <div class="brand-badge">[COD-008]</div>
-            <div>
-                <h1 class="brand-title">Motor de 4 Tiempos en Sección</h1>
-                <p class="brand-sub">MECÁNICA Y AUTOMOCIÓN • CICLO OTTO: ADMISIÓN, COMPRESIÓN, EXPLOSIÓN Y ESCAPE</p>
-            </div>
+        <div class="header-title-box">
+            <span class="badge-code">COD-008</span>
+            <h1>⚙️ Motor Térmico de 4 Tiempos en Sección • Motor Babylon.js</h1>
         </div>
-        <div>
-            <button class="btn-action" onclick="toggleFullScreen()">⛶ Pantalla Completa</button>
+        <div class="header-right">
+            <span class="pill-status">⚡ Ciclo Otto Sincronizado & PBR Industrial</span>
+            <span class="pill-status" style="background: rgba(56, 189, 248, 0.15); color: #38bdf8; border-color: rgba(56, 189, 248, 0.4);">
+                S08 • Ingeniería Mecánica
+            </span>
         </div>
     </header>
 
-    <canvas id="engineStage"></canvas>
+    <!-- WORKSPACE -->
+    <main class="workspace-grid">
 
-    <div class="info-card" id="infoCard">
-        <div class="cycle-badge" id="strokeBadge">TIEMPO 1 • ADMISIÓN</div>
-        <h2 class="info-title" id="strokeTitle">Aspiración de Aire y Gasolina</h2>
-        <div class="info-summary" id="strokeSummary">
-            La válvula de admisión se abre. El pistón desciende creando un vacío que aspira la mezcla fresca de aire y combustible.
-        </div>
-        <div class="info-detail" id="strokeDetail">
-            <strong>¿Cómo funciona el ciclo de 4 tiempos?</strong>
-            Por cada 2 vueltas completas del cigüeñal (720°), el motor realiza 4 movimientos del pistón:
-            1. <strong>Admisión:</strong> Entra aire fresco y gasolina.<br>
-            2. <strong>Compresión:</strong> Se cierran las dos válvulas y el pistón aprieta la mezcla.<br>
-            3. <strong>Explosión:</strong> Salta la chispa en la bujía y el fuego empuja el pistón con enorme fuerza.<br>
-            4. <strong>Escape:</strong> Se abre la válvula de escape para expulsar los gases quemados.
-        </div>
-        <div class="info-facts">
-            <div class="fact-box">
-                <div class="fact-val" id="factRpm">1.200 RPM</div>
-                <div class="fact-lbl">Régimen de Giro</div>
+        <!-- PANEL IZQUIERDO -->
+        <aside class="sidebar-panel">
+
+            <!-- LA IDEA FÁCIL -->
+            <div class="card-easy-concept">
+                <div class="easy-tag">✨ La Idea Fácil • Para Todos</div>
+                <div class="easy-title">¿Cómo funciona un motor de 4 tiempos?</div>
+                <p class="easy-text">
+                    Por cada <strong>2 vueltas completas</strong> de la manivela (cigüeñal), el pistón sube y baja 4 veces:
+                    <br><br>
+                    1. <strong>Admisión:</strong> Aspira aire y gasolina fría.<br>
+                    2. <strong>Compresión:</strong> Aprieta la mezcla con fuerza.<br>
+                    3. <strong>Explosión:</strong> Salta la chispa y el fuego empuja el coche.<br>
+                    4. <strong>Escape:</strong> Abre la válvula para expulsar el humo.
+                </p>
             </div>
-            <div class="fact-box">
-                <div class="fact-val" id="factAngle">0° TDC</div>
-                <div class="fact-lbl">Ángulo Cigüeñal</div>
+
+            <!-- SELECTOR DE LOS 4 TIEMPOS -->
+            <div>
+                <div class="section-title">
+                    <span>Fases del Ciclo Otto</span>
+                    <span style="font-size:0.78rem; color:var(--amber);">Pausa y Estudia</span>
+                </div>
+                <div class="stroke-selector-grid">
+                    <button class="btn-stroke active" id="btnStroke1" onclick="jumpToStroke(0)" style="--stroke-color: #38bdf8;">
+                        <span>0° - 180°</span>
+                        <span>1. Admisión 🔵</span>
+                    </button>
+                    <button class="btn-stroke" id="btnStroke2" onclick="jumpToStroke(1)" style="--stroke-color: #f59e0b;">
+                        <span>180° - 360°</span>
+                        <span>2. Compresión 🟡</span>
+                    </button>
+                    <button class="btn-stroke" id="btnStroke3" onclick="jumpToStroke(2)" style="--stroke-color: #ef4444;">
+                        <span>360° - 540°</span>
+                        <span>3. Explosión 🔥</span>
+                    </button>
+                    <button class="btn-stroke" id="btnStroke4" onclick="jumpToStroke(3)" style="--stroke-color: #a855f7;">
+                        <span>540° - 720°</span>
+                        <span>4. Escape 🟣</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- FICHA DIDÁCTICA DETALLADA -->
+            <div class="info-card-detail" id="infoCardDetail">
+                <div class="stroke-badge" id="strokeBadge">TIEMPO 1 • ADMISIÓN</div>
+                <h2 class="stroke-title" id="strokeTitle">Aspiración de Aire y Gasolina</h2>
+                <div class="stroke-desc" id="strokeDesc">
+                    La válvula de admisión izquierda se abre empujada por el árbol de levas. El pistón baja hacia el punto muerto inferior creando un vacío que succiona la mezcla fresca.
+                </div>
+                <div class="stroke-facts">
+                    <div class="fact-box">
+                        <div class="fact-val" id="factAngle">90°</div>
+                        <div class="fact-lbl">Giro Cigüeñal</div>
+                    </div>
+                    <div class="fact-box">
+                        <div class="fact-val" id="factState">V. Adm. ABIERTA</div>
+                        <div class="fact-lbl">Estado Mecánico</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CONTROLES DE FUNCIONAMIENTO -->
+            <div class="control-dock">
+                <div class="section-title">
+                    <span>Velocidad de Giro (RPM)</span>
+                </div>
+                <div class="slider-row">
+                    <input type="range" id="rpmSlider" min="0" max="2400" step="50" value="750" oninput="setRpm(this.value)">
+                    <span class="rpm-display" id="rpmVal">750 RPM</span>
+                </div>
+                <div class="action-buttons">
+                    <button class="btn-action active" id="btnPlayPause" onclick="togglePlay()">
+                        ⏸ Pausar
+                    </button>
+                    <button class="btn-action" id="btnAudio" onclick="toggleAudio()">
+                        🔊 Sonido Motor
+                    </button>
+                </div>
+            </div>
+
+        </aside>
+
+        <!-- VIEWPORT 3D BABYLON -->
+        <div class="viewport-3d" id="viewport3D">
+            <canvas id="renderCanvas"></canvas>
+
+            <!-- HUD TOP -->
+            <div class="hud-overlay-top">
+                <button class="btn-hud" onclick="resetEngineCamera()">
+                    🎯 Centrar Vista 3D
+                </button>
+            </div>
+
+            <!-- HUD BOTTOM -->
+            <div class="hud-overlay-bottom">
+                <div class="hud-legend">
+                    <span>🖱️ <strong>Arrastrar:</strong> Orbitar motor 360°</span>
+                    <span>🔍 <strong>Rueda:</strong> Zoom a bujía o pistón</span>
+                    <span>⚡ <strong>Corte Transversal:</strong> Muestra biela, segmentos y válvulas PBR</span>
+                </div>
             </div>
         </div>
-    </div>
 
-    <div class="bottom-dock">
-        <!-- Control de velocidad RPM -->
-        <div class="slider-group">
-            <span class="dock-label">VELOCIDAD:</span>
-            <input type="range" id="rpmSlider" class="dock-slider" min="0" max="3000" step="50" value="900">
-            <span class="rpm-badge" id="rpmBadge">900 RPM</span>
-        </div>
-
-        <div class="divider"></div>
-
-        <button class="dock-btn active" id="btnPlayPause" onclick="togglePlayPause()">⏸ Pausar</button>
-        <button class="dock-btn" id="btnAudio" onclick="toggleEngineSound()">🔊 Sonido Motor</button>
-        <button class="dock-btn" onclick="stepSlow()">🔄 Paso a Paso</button>
-    </div>
+    </main>
 
     <script>
-        const canvas = document.getElementById("engineStage");
-        const ctx = canvas.getContext("2d");
+        // ============================================================================
+        // 1. DATOS DIDÁCTICOS DEL CICLO OTTO
+        // ============================================================================
+        const STROKE_DATA = [
+            {
+                name: "TIEMPO 1 • ADMISIÓN",
+                color: "#38bdf8",
+                title: "Aspiración de Aire y Gasolina",
+                desc: "La válvula izquierda (admisión) desciende abierta. El pistón baja succionando la mezcla fresca combustible-aire hacia la cámara.",
+                state: "V. Adm. ABIERTA",
+                targetAngle: Math.PI / 2
+            },
+            {
+                name: "TIEMPO 2 • COMPRESIÓN",
+                color: "#f59e0b",
+                title: "Compresión Hermética",
+                desc: "Ambas válvulas cerradas herméticamente. El pistón sube comprimiendo la mezcla a alta presión y temperatura en la culata.",
+                state: "Válvulas CERRADAS",
+                targetAngle: 3 * Math.PI / 2
+            },
+            {
+                name: "TIEMPO 3 • COMBUSTIÓN Y FUERZA",
+                color: "#ef4444",
+                title: "¡Explosión y Fuerza Motriz!",
+                desc: "Salta la chispa eléctrica de la bujía. La violenta deflagración empuja con enorme fuerza el pistón hacia abajo produciendo la tracción útil.",
+                state: "CHISPA BUJÍA 🔥",
+                targetAngle: 5 * Math.PI / 2
+            },
+            {
+                name: "TIEMPO 4 • ESCAPE",
+                color: "#a855f7",
+                title: "Expulsión de Gases Quemados",
+                desc: "La válvula derecha (escape) se abre. El pistón sube barriendo los gases residuales quemados hacia el colector de escape.",
+                state: "V. Esc. ABIERTA",
+                targetAngle: 7 * Math.PI / 2
+            }
+        ];
 
-        let rpm = 900;
+        // ============================================================================
+        // 2. INICIALIZACIÓN DE BABYLON.JS
+        // ============================================================================
+        const canvas = document.getElementById("renderCanvas");
+        const engine = new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true });
+        const scene = new BABYLON.Scene(engine);
+        scene.clearColor = new BABYLON.Color4(0.02, 0.03, 0.06, 1.0);
+
+        // Cámara ArcRotate para inspeccionar el motor en 3D
+        const camera = new BABYLON.ArcRotateCamera("Camera", -Math.PI / 2, Math.PI / 2.3, 8.5, new BABYLON.Vector3(0, 0.5, 0), scene);
+        camera.attachControl(canvas, true);
+        camera.wheelPrecision = 35;
+        camera.lowerRadiusLimit = 4.0;
+        camera.upperRadiusLimit = 16.0;
+
+        // Iluminación industrial
+        const hemiLight = new BABYLON.HemisphericLight("hemi", new BABYLON.Vector3(0, 1, 0), scene);
+        hemiLight.intensity = 0.85;
+        hemiLight.groundColor = new BABYLON.Color3(0.1, 0.12, 0.18);
+
+        const dirLight = new BABYLON.DirectionalLight("dir", new BABYLON.Vector3(2, 4, -3), scene);
+        dirLight.intensity = 1.3;
+        dirLight.diffuse = new BABYLON.Color3(1.0, 0.95, 0.9);
+
+        const sparkLight = new BABYLON.PointLight("sparkLight", new BABYLON.Vector3(0, 2.35, 0), scene);
+        sparkLight.intensity = 0;
+        sparkLight.diffuse = new BABYLON.Color3(1.0, 0.85, 0.4);
+        sparkLight.radius = 2.0;
+
+        // ============================================================================
+        // 3. MATERIALES PBR METÁLICOS INDUSTRIALES
+        // ============================================================================
+        const matBlock = new BABYLON.PBRMaterial("matBlock", scene);
+        matBlock.metallic = 0.85;
+        matBlock.roughness = 0.45;
+        matBlock.albedoColor = new BABYLON.Color3(0.25, 0.28, 0.35);
+
+        const matSleeve = new BABYLON.PBRMaterial("matSleeve", scene);
+        matSleeve.metallic = 0.95;
+        matSleeve.roughness = 0.15;
+        matSleeve.albedoColor = new BABYLON.Color3(0.85, 0.88, 0.92);
+
+        const matPiston = new BABYLON.PBRMaterial("matPiston", scene);
+        matPiston.metallic = 0.9;
+        matPiston.roughness = 0.25;
+        matPiston.albedoColor = new BABYLON.Color3(0.78, 0.82, 0.88);
+
+        const matRod = new BABYLON.PBRMaterial("matRod", scene);
+        matRod.metallic = 0.92;
+        matRod.roughness = 0.3;
+        matRod.albedoColor = new BABYLON.Color3(0.65, 0.70, 0.75);
+
+        const matCrank = new BABYLON.PBRMaterial("matCrank", scene);
+        matCrank.metallic = 0.95;
+        matCrank.roughness = 0.22;
+        matCrank.albedoColor = new BABYLON.Color3(0.45, 0.48, 0.52);
+
+        const matBronze = new BABYLON.PBRMaterial("matBronze", scene);
+        matBronze.metallic = 0.85;
+        matBronze.roughness = 0.35;
+        matBronze.albedoColor = new BABYLON.Color3(0.85, 0.58, 0.25);
+
+        const matIntakeValve = new BABYLON.PBRMaterial("matIntakeValve", scene);
+        matIntakeValve.metallic = 0.85;
+        matIntakeValve.roughness = 0.2;
+        matIntakeValve.albedoColor = new BABYLON.Color3(0.22, 0.74, 0.97);
+
+        const matExhaustValve = new BABYLON.PBRMaterial("matExhaustValve", scene);
+        matExhaustValve.metallic = 0.85;
+        matExhaustValve.roughness = 0.2;
+        matExhaustValve.albedoColor = new BABYLON.Color3(0.88, 0.34, 0.97);
+
+        const matGasVol = new BABYLON.StandardMaterial("matGasVol", scene);
+        matGasVol.diffuseColor = new BABYLON.Color3(0.2, 0.6, 1.0);
+        matGasVol.emissiveColor = new BABYLON.Color3(0.1, 0.3, 0.8);
+        matGasVol.alpha = 0.35;
+
+        // ============================================================================
+        // 4. MODELADO CINEMÁTICO 3D EN SECCIÓN TRANSVERSAL
+        // ============================================================================
+        // Parámetros mecánicos
+        const crankRadius = 0.75; // r
+        const rodLength = 2.45;   // L
+        const pistonHeight = 1.1;
+        const pistonRadius = 1.05;
+        const cylinderTop = 2.4;
+        const crankCenterY = -1.6;
+
+        // Raíz del motor
+        const engineRoot = new BABYLON.TransformNode("engineRoot", scene);
+
+        // Bloque del cilindro en sección abierta (semicilindro con aletas)
+        const cylinderOuter = BABYLON.MeshBuilder.CreateCylinder("cylinderOuter", {
+            diameter: 2.7,
+            height: 3.2,
+            tessellation: 36,
+            arc: 0.62 // Corte a 220° para ver el interior
+        }, scene);
+        cylinderOuter.position.y = 1.0;
+        cylinderOuter.rotation.y = Math.PI * 0.7;
+        cylinderOuter.material = matBlock;
+        cylinderOuter.parent = engineRoot;
+
+        // Camisa interior rectificada
+        const cylinderInner = BABYLON.MeshBuilder.CreateCylinder("cylinderInner", {
+            diameter: 2.14,
+            height: 3.1,
+            tessellation: 36,
+            arc: 0.62
+        }, scene);
+        cylinderInner.position.y = 1.0;
+        cylinderInner.rotation.y = Math.PI * 0.7;
+        cylinderInner.material = matSleeve;
+        cylinderInner.parent = engineRoot;
+
+        // Aletas de refrigeración exteriores (5 aletas)
+        for (let i = 0; i < 5; i++) {
+            const fin = BABYLON.MeshBuilder.CreateTorus("fin_" + i, {
+                diameter: 3.2,
+                thickness: 0.08,
+                tessellation: 36
+            }, scene);
+            fin.position.y = -0.2 + i * 0.55;
+            fin.rotation.y = Math.PI * 0.7;
+            fin.material = matBlock;
+            fin.parent = engineRoot;
+        }
+
+        // Culata superior con cámara de combustión
+        const headMesh = BABYLON.MeshBuilder.CreateCylinder("headMesh", {
+            diameter: 2.8,
+            height: 0.8,
+            tessellation: 36
+        }, scene);
+        headMesh.position.y = 2.8;
+        headMesh.material = matBlock;
+        headMesh.parent = engineRoot;
+
+        // Volumen de gas de la cámara (cambia tamaño y color dinámicamente)
+        const gasVolumeMesh = BABYLON.MeshBuilder.CreateCylinder("gasVolume", {
+            diameter: 2.08,
+            height: 1.0,
+            tessellation: 32
+        }, scene);
+        gasVolumeMesh.position.y = 2.1;
+        gasVolumeMesh.material = matGasVol;
+        gasVolumeMesh.parent = engineRoot;
+
+        // Bujía central
+        const plugBody = BABYLON.MeshBuilder.CreateCylinder("plugBody", { diameter: 0.28, height: 0.9 }, scene);
+        plugBody.position.y = 3.3;
+        const matCeramic = new BABYLON.StandardMaterial("matCeramic", scene);
+        matCeramic.diffuseColor = new BABYLON.Color3(0.95, 0.95, 0.95);
+        plugBody.material = matCeramic;
+        plugBody.parent = engineRoot;
+
+        // Electrodos de la bujía
+        const plugTip = BABYLON.MeshBuilder.CreateSphere("plugTip", { diameter: 0.12 }, scene);
+        plugTip.position.y = 2.75;
+        const matTip = new BABYLON.StandardMaterial("matTip", scene);
+        matTip.emissiveColor = new BABYLON.Color3(1.0, 0.9, 0.3);
+        plugTip.material = matTip;
+        plugTip.parent = engineRoot;
+
+        // Válvula de Admisión (izquierda)
+        const valveIntakeRoot = new BABYLON.TransformNode("valveIntakeRoot", scene);
+        valveIntakeRoot.position = new BABYLON.Vector3(-0.55, 2.75, 0);
+        valveIntakeRoot.parent = engineRoot;
+
+        const valveIntakeHead = BABYLON.MeshBuilder.CreateCylinder("vInHead", { diameterTop: 0.65, diameterBottom: 0.5, height: 0.15 }, scene);
+        valveIntakeHead.material = matIntakeValve;
+        valveIntakeHead.parent = valveIntakeRoot;
+
+        const valveIntakeStem = BABYLON.MeshBuilder.CreateCylinder("vInStem", { diameter: 0.1, height: 1.1 }, scene);
+        valveIntakeStem.position.y = 0.55;
+        valveIntakeStem.material = matIntakeValve;
+        valveIntakeStem.parent = valveIntakeRoot;
+
+        // Resorte de admisión
+        const springIntake = BABYLON.MeshBuilder.CreateCylinder("springIn", { diameter: 0.3, height: 0.7, tessellation: 12 }, scene);
+        springIntake.position.y = 0.6;
+        springIntake.material = matRod;
+        springIntake.parent = valveIntakeRoot;
+
+        // Válvula de Escape (derecha)
+        const valveExhaustRoot = new BABYLON.TransformNode("valveExhaustRoot", scene);
+        valveExhaustRoot.position = new BABYLON.Vector3(0.55, 2.75, 0);
+        valveExhaustRoot.parent = engineRoot;
+
+        const valveExhaustHead = BABYLON.MeshBuilder.CreateCylinder("vExHead", { diameterTop: 0.65, diameterBottom: 0.5, height: 0.15 }, scene);
+        valveExhaustHead.material = matExhaustValve;
+        valveExhaustHead.parent = valveExhaustRoot;
+
+        const valveExhaustStem = BABYLON.MeshBuilder.CreateCylinder("vExStem", { diameter: 0.1, height: 1.1 }, scene);
+        valveExhaustStem.position.y = 0.55;
+        valveExhaustStem.material = matExhaustValve;
+        valveExhaustStem.parent = valveExhaustRoot;
+
+        const springExhaust = BABYLON.MeshBuilder.CreateCylinder("springEx", { diameter: 0.3, height: 0.7, tessellation: 12 }, scene);
+        springExhaust.position.y = 0.6;
+        springExhaust.material = matRod;
+        springExhaust.parent = valveExhaustRoot;
+
+        // Pistón
+        const pistonMesh = BABYLON.MeshBuilder.CreateCylinder("piston", {
+            diameter: pistonRadius * 2,
+            height: pistonHeight,
+            tessellation: 36
+        }, scene);
+        pistonMesh.material = matPiston;
+        pistonMesh.parent = engineRoot;
+
+        // Bulón del pistón
+        const wristPin = BABYLON.MeshBuilder.CreateCylinder("wristPin", { diameter: 0.28, height: 1.6 }, scene);
+        wristPin.rotation.x = Math.PI / 2;
+        wristPin.material = matBronze;
+        wristPin.parent = pistonMesh;
+
+        // Aros de pistón (3 ranuras oscuras)
+        for (let i = 0; i < 3; i++) {
+            const ring = BABYLON.MeshBuilder.CreateTorus("ring_" + i, { diameter: 2.11, thickness: 0.035 }, scene);
+            ring.position.y = 0.35 - i * 0.14;
+            const matRing = new BABYLON.StandardMaterial("matRing", scene);
+            matRing.diffuseColor = new BABYLON.Color3(0.15, 0.15, 0.18);
+            ring.material = matRing;
+            ring.parent = pistonMesh;
+        }
+
+        // Biela
+        const rodMesh = BABYLON.MeshBuilder.CreateBox("rod", { width: 0.24, height: rodLength, depth: 0.32 }, scene);
+        rodMesh.material = matRod;
+        rodMesh.parent = engineRoot;
+
+        // Cigüeñal
+        const crankAxis = BABYLON.MeshBuilder.CreateCylinder("crankAxis", { diameter: 0.4, height: 1.8 }, scene);
+        crankAxis.position = new BABYLON.Vector3(0, crankCenterY, 0);
+        crankAxis.rotation.x = Math.PI / 2;
+        crankAxis.material = matCrank;
+        crankAxis.parent = engineRoot;
+
+        // Contrapeso del cigüeñal
+        const counterWeight = BABYLON.MeshBuilder.CreateCylinder("counterWeight", { diameter: 1.6, height: 0.45, tessellation: 24, arc: 0.5 }, scene);
+        counterWeight.position = new BABYLON.Vector3(0, crankCenterY, 0.4);
+        counterWeight.rotation.x = Math.PI / 2;
+        counterWeight.material = matCrank;
+        counterWeight.parent = engineRoot;
+
+        // Muñequilla del cigüeñal
+        const crankPin = BABYLON.MeshBuilder.CreateCylinder("crankPin", { diameter: 0.32, height: 0.55 }, scene);
+        crankPin.rotation.x = Math.PI / 2;
+        crankPin.material = matBronze;
+        crankPin.parent = engineRoot;
+
+        // ============================================================================
+        // 5. CINEMÁTICA Y ACTUALIZACIÓN EN TIEMPO REAL
+        // ============================================================================
+        let rpm = 750;
         let isRunning = true;
-        let crankAngle = 0; // 0 a 4*PI (720 grados = 4 tiempos)
+        let crankAngle = 0; // 0 a 4*PI (720° ciclo Otto completo)
         let audioActive = false;
         let audioCtx = null;
         let oscNode = null;
         let gainNode = null;
 
-        const STROKES = [
-            {
-                name: "TIEMPO 1 • ADMISIÓN (0° - 180°)",
-                color: "#38bdf8",
-                title: "Aspiración de Aire y Combustible",
-                summary: "La válvula izquierda (admisión) se abre. El pistón baja y chupa la mezcla fría de gasolina y aire.",
-                f1: "Válvula Admisión ABIERTA",
-                f2: "Pistón BAJANDO"
-            },
-            {
-                name: "TIEMPO 2 • COMPRESIÓN (180° - 360°)",
-                color: "#f59e0b",
-                title: "Compresión de la Mezcla",
-                summary: "Ambas válvulas cerradas herméticamente. El pistón sube comprimiendo la mezcla a alta presión y temperatura.",
-                f1: "Válvulas CERRADAS",
-                f2: "Pistón SUBIENDO"
-            },
-            {
-                name: "TIEMPO 3 • COMBUSTIÓN Y FUERZA (360° - 540°)",
-                color: "#ef4444",
-                title: "¡Explosión de Potencia!",
-                summary: "Salta la chispa eléctrica de la bujía. La violenta deflagración empuja con toneladas de fuerza el pistón hacia abajo.",
-                f1: "Chispa en BUJÍA",
-                f2: "Genera TRACCIÓN"
-            },
-            {
-                name: "TIEMPO 4 • ESCAPE (540° - 720°)",
-                color: "#a855f7",
-                title: "Expulsión de Gases Quemados",
-                summary: "La válvula derecha (escape) se abre. El pistón sube barriendo los gases hacia el tubo de escape y catalizador.",
-                f1: "Válvula Escape ABIERTA",
-                f2: "Evacua HUMO"
+        function updateMechanics(dt) {
+            if (isRunning) {
+                // Velocidad angular omega = (RPM / 60) * 2*PI rad/s
+                const omega = (rpm / 60) * Math.PI * 2;
+                crankAngle = (crankAngle + omega * dt) % (Math.PI * 4);
             }
-        ];
 
-        function resize() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
+            // Ángulo normalizado para cálculo trigonométrico (0 a 2*PI por vuelta)
+            const theta = crankAngle % (Math.PI * 2);
+
+            // Coordenadas de la muñequilla del cigüeñal
+            const crankX = crankRadius * Math.sin(theta);
+            const crankY = crankCenterY + crankRadius * Math.cos(theta);
+
+            crankPin.position.x = crankX;
+            crankPin.position.y = crankY;
+
+            // Orientación del contrapeso opuesto a la muñequilla
+            counterWeight.rotation.z = -theta + Math.PI;
+
+            // Posición exacta del pistón según mecanismo biela-manivela
+            const cosT = Math.cos(theta);
+            const sinT = Math.sin(theta);
+            const pistonY = crankCenterY + crankRadius * cosT + Math.sqrt(rodLength * rodLength - crankRadius * crankRadius * sinT * sinT);
+
+            pistonMesh.position.y = pistonY;
+
+            // Biela: centro, orientación y longitud
+            const rodCenterX = crankX / 2;
+            const rodCenterY = (crankY + pistonY) / 2;
+            rodMesh.position.x = rodCenterX;
+            rodMesh.position.y = rodCenterY;
+
+            const rodAngle = Math.atan2(crankX, pistonY - crankY);
+            rodMesh.rotation.z = -rodAngle;
+
+            // Actualizar volumen de gas
+            const chamberHeight = Math.max(0.2, cylinderTop - pistonY);
+            gasVolumeMesh.scaling.y = chamberHeight;
+            gasVolumeMesh.position.y = pistonY + chamberHeight / 2;
+
+            // Control de válvulas y cámara según los 4 tiempos (0 a 4*PI = 720°)
+            const deg = (crankAngle * 180 / Math.PI) % 720;
+            let currentStrokeIdx = 0;
+
+            if (deg < 180) {
+                // TIEMPO 1: ADMISIÓN (0° a 180°)
+                currentStrokeIdx = 0;
+                const lift = Math.sin((deg / 180) * Math.PI) * 0.35;
+                valveIntakeRoot.position.y = 2.75 - lift;
+                valveExhaustRoot.position.y = 2.75;
+                springIntake.scaling.y = 1.0 - lift * 1.5;
+                springExhaust.scaling.y = 1.0;
+
+                matGasVol.diffuseColor = new BABYLON.Color3(0.2, 0.7, 1.0);
+                matGasVol.emissiveColor = new BABYLON.Color3(0.1, 0.4, 0.8);
+                matGasVol.alpha = 0.35;
+                sparkLight.intensity = 0;
+            } else if (deg < 360) {
+                // TIEMPO 2: COMPRESIÓN (180° a 360°)
+                currentStrokeIdx = 1;
+                valveIntakeRoot.position.y = 2.75;
+                valveExhaustRoot.position.y = 2.75;
+                springIntake.scaling.y = 1.0;
+                springExhaust.scaling.y = 1.0;
+
+                const compFact = (deg - 180) / 180;
+                matGasVol.diffuseColor = new BABYLON.Color3(0.9, 0.6, 0.1);
+                matGasVol.emissiveColor = new BABYLON.Color3(0.8, 0.4, 0.0);
+                matGasVol.alpha = 0.3 + compFact * 0.4;
+                sparkLight.intensity = 0;
+            } else if (deg < 540) {
+                // TIEMPO 3: EXPLOSIÓN / FUERZA (360° a 540°)
+                currentStrokeIdx = 2;
+                valveIntakeRoot.position.y = 2.75;
+                valveExhaustRoot.position.y = 2.75;
+
+                const burnFact = (deg - 360) / 180;
+                if (burnFact < 0.15) {
+                    // Flash violento de chispa
+                    sparkLight.intensity = 4.0;
+                    matGasVol.emissiveColor = new BABYLON.Color3(1.0, 0.9, 0.4);
+                    matGasVol.diffuseColor = new BABYLON.Color3(1.0, 0.5, 0.1);
+                    matGasVol.alpha = 0.85;
+                } else {
+                    sparkLight.intensity = Math.max(0, 3.0 * (1.0 - burnFact));
+                    matGasVol.emissiveColor = new BABYLON.Color3(0.9 * (1 - burnFact), 0.3 * (1 - burnFact), 0.0);
+                    matGasVol.diffuseColor = new BABYLON.Color3(0.8, 0.3, 0.1);
+                    matGasVol.alpha = 0.6 * (1.0 - burnFact * 0.5);
+                }
+            } else {
+                // TIEMPO 4: ESCAPE (540° a 720°)
+                currentStrokeIdx = 3;
+                const lift = Math.sin(((deg - 540) / 180) * Math.PI) * 0.35;
+                valveExhaustRoot.position.y = 2.75 - lift;
+                valveIntakeRoot.position.y = 2.75;
+                springExhaust.scaling.y = 1.0 - lift * 1.5;
+                springIntake.scaling.y = 1.0;
+
+                matGasVol.diffuseColor = new BABYLON.Color3(0.65, 0.35, 0.85);
+                matGasVol.emissiveColor = new BABYLON.Color3(0.4, 0.2, 0.6);
+                matGasVol.alpha = 0.4;
+                sparkLight.intensity = 0;
+            }
+
+            // Actualizar UI
+            updateUI(currentStrokeIdx, deg);
         }
-        window.addEventListener("resize", resize);
 
-        // Control RPM
-        const rpmSlider = document.getElementById("rpmSlider");
-        const rpmBadge = document.getElementById("rpmBadge");
-        rpmSlider.addEventListener("input", (e) => {
-            rpm = parseInt(e.target.value);
-            rpmBadge.innerText = `${rpm} RPM`;
-            document.getElementById("factRpm").innerText = `${rpm} RPM`;
+        function updateUI(strokeIdx, deg) {
+            const data = STROKE_DATA[strokeIdx];
+            document.querySelectorAll(".btn-stroke").forEach((b, i) => {
+                b.classList.toggle("active", i === strokeIdx);
+            });
+
+            document.getElementById("strokeBadge").textContent = data.name;
+            document.getElementById("strokeBadge").style.color = data.color;
+            document.getElementById("strokeBadge").style.borderColor = data.color;
+            document.getElementById("strokeTitle").textContent = data.title;
+            document.getElementById("strokeDesc").textContent = data.desc;
+            document.getElementById("factAngle").textContent = `${Math.round(deg)}°`;
+            document.getElementById("factState").textContent = data.state;
+        }
+
+        // ============================================================================
+        // 6. CONTROLES DIDÁCTICOS E INTERACCIÓN
+        // ============================================================================
+        function setRpm(val) {
+            rpm = parseInt(val);
+            document.getElementById("rpmVal").textContent = `${rpm} RPM`;
             if (audioCtx && oscNode) {
-                oscNode.frequency.setValueAtTime(Math.max(20, (rpm / 60) * 2), audioCtx.currentTime);
+                oscNode.frequency.setValueAtTime(Math.max(18, (rpm / 60) * 2), audioCtx.currentTime);
             }
-        });
+        }
 
-        function togglePlayPause() {
+        function togglePlay() {
             isRunning = !isRunning;
             const btn = document.getElementById("btnPlayPause");
-            btn.innerText = isRunning ? "⏸ Pausar" : "▶ Reanudar";
+            btn.textContent = isRunning ? "⏸ Pausar" : "▶ Reanudar";
             btn.classList.toggle("active", isRunning);
         }
 
-        function stepSlow() {
+        function jumpToStroke(idx) {
             isRunning = false;
-            document.getElementById("btnPlayPause").innerText = "▶ Reanudar";
+            document.getElementById("btnPlayPause").textContent = "▶ Reanudar";
             document.getElementById("btnPlayPause").classList.remove("active");
-            crankAngle = (crankAngle + Math.PI / 8) % (Math.PI * 4);
+            crankAngle = STROKE_DATA[idx].targetAngle;
         }
 
-        function toggleEngineSound() {
+        function resetEngineCamera() {
+            BABYLON.Animation.CreateAndStartAnimation("camAlpha", camera, "alpha", 30, 20, camera.alpha, -Math.PI / 2, 2);
+            BABYLON.Animation.CreateAndStartAnimation("camBeta", camera, "beta", 30, 20, camera.beta, Math.PI / 2.3, 2);
+            BABYLON.Animation.CreateAndStartAnimation("camRadius", camera, "radius", 30, 20, camera.radius, 8.5, 2);
+        }
+
+        function toggleAudio() {
             audioActive = !audioActive;
             const btn = document.getElementById("btnAudio");
             btn.classList.toggle("active", audioActive);
@@ -451,239 +986,36 @@
                     oscNode = audioCtx.createOscillator();
                     gainNode = audioCtx.createGain();
                     oscNode.type = "sawtooth";
-                    oscNode.frequency.setValueAtTime((rpm / 60) * 2, audioCtx.currentTime);
-                    gainNode.gain.setValueAtTime(0.08, audioCtx.currentTime);
+                    oscNode.frequency.setValueAtTime(Math.max(20, (rpm / 60) * 2), audioCtx.currentTime);
+                    gainNode.gain.setValueAtTime(0.04, audioCtx.currentTime);
                     oscNode.connect(gainNode);
                     gainNode.connect(audioCtx.destination);
                     oscNode.start();
                 } else if (audioCtx.state === "suspended") {
                     audioCtx.resume();
                 }
-            } else if (audioCtx) {
-                audioCtx.suspend();
-            }
-        }
-
-        // =========================================================================
-        // MOTOR DE DIBUJO CINEMÁTICO REAL
-        // =========================================================================
-        function render() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            // Avance de ángulo según RPM
-            if (isRunning && rpm > 0) {
-                const dAngle = (rpm / 60) * (Math.PI * 2) * (1 / 60);
-                crankAngle = (crankAngle + dAngle) % (Math.PI * 4);
-            }
-
-            // Identificar en qué tiempo del ciclo de 4 tiempos estamos (0 a 3)
-            const strokeIdx = Math.floor(crankAngle / Math.PI);
-            const currentStroke = STROKES[strokeIdx % 4];
-
-            // Actualizar panel didáctico
-            const sBadge = document.getElementById("strokeBadge");
-            sBadge.innerText = currentStroke.name;
-            sBadge.style.color = currentStroke.color;
-            sBadge.style.borderColor = currentStroke.color;
-            document.getElementById("strokeTitle").innerText = currentStroke.title;
-            document.getElementById("strokeSummary").innerText = currentStroke.summary;
-            document.getElementById("factAngle").innerText = `${Math.floor((crankAngle * 180 / Math.PI) % 720)}°`;
-
-            // Dimensiones cinemáticas del motor
-            const cx = canvas.width / 2 - 140;
-            const cy = canvas.height / 2 + 130; // Centro del cigüeñal
-            const crankR = 65; // Radio del cigüeñal
-            const rodL = 190; // Longitud de la biela
-            const cylW = 150; // Anchura del cilindro
-            const cylTopY = cy - rodL - crankR - 100; // Culata del motor
-            const cylBotY = cy - 20;
-
-            // Posición cinemática del cigüeñal y pistón
-            // theta: ángulo de giro del cigüeñal
-            const theta = crankAngle % (Math.PI * 2);
-            const crankPinX = cx + Math.sin(theta) * crankR;
-            const crankPinY = cy - Math.cos(theta) * crankR;
-
-            // Altura del pistón (mecanismo biela-manivela)
-            const pistonPinY = cy - (Math.cos(theta) * crankR + Math.sqrt(rodL * rodL - Math.pow(Math.sin(theta) * crankR, 2)));
-            const pistonH = 75;
-
-            // 1. Cárter de aceite y bloque del motor
-            ctx.save();
-            ctx.fillStyle = "#1e293b";
-            ctx.strokeStyle = "#475569";
-            ctx.lineWidth = 4;
-
-            // Paredes exteriores del cilindro
-            ctx.beginPath();
-            ctx.rect(cx - cylW / 2 - 25, cylTopY, 25, cylBotY - cylTopY);
-            ctx.rect(cx + cylW / 2, cylTopY, 25, cylBotY - cylTopY);
-            ctx.fill();
-            ctx.stroke();
-
-            // Conductos de agua de refrigeración
-            ctx.fillStyle = "rgba(56, 189, 248, 0.4)";
-            ctx.fillRect(cx - cylW / 2 - 20, cylTopY + 50, 15, 120);
-            ctx.fillRect(cx + cylW / 2 + 5, cylTopY + 50, 15, 120);
-
-            // 2. Gas en la cámara de combustión (cambia según el tiempo del motor)
-            const chamberTopY = cylTopY + 20;
-            const chamberH = Math.max(10, pistonPinY - chamberTopY);
-            let gasGrad = ctx.createLinearGradient(cx, chamberTopY, cx, pistonPinY);
-
-            if (strokeIdx === 0) {
-                // Admisión: mezcla fresca azul
-                gasGrad.addColorStop(0, "rgba(56, 189, 248, 0.8)");
-                gasGrad.addColorStop(1, "rgba(56, 189, 248, 0.2)");
-            } else if (strokeIdx === 1) {
-                // Compresión: naranja denso
-                gasGrad.addColorStop(0, "rgba(245, 158, 11, 0.9)");
-                gasGrad.addColorStop(1, "rgba(234, 88, 12, 0.5)");
-            } else if (strokeIdx === 2) {
-                // Explosión: llamarada incandescente amarilla/roja
-                gasGrad.addColorStop(0, "#fef08a");
-                gasGrad.addColorStop(0.3, "#f97316");
-                gasGrad.addColorStop(1, "#ef4444");
             } else {
-                // Escape: humo morado/gris
-                gasGrad.addColorStop(0, "rgba(168, 85, 247, 0.7)");
-                gasGrad.addColorStop(1, "rgba(100, 116, 139, 0.3)");
-            }
-
-            ctx.fillStyle = gasGrad;
-            ctx.fillRect(cx - cylW / 2, chamberTopY, cylW, chamberH);
-
-            // 3. Culata y válvulas de admisión y escape
-            drawCylinderHead(cx, cylTopY, cylW, strokeIdx);
-
-            // 4. Pistón y aros de compresión
-            ctx.fillStyle = "#94a3b8";
-            ctx.strokeStyle = "#e2e8f0";
-            ctx.lineWidth = 3;
-            ctx.beginPath();
-            ctx.rect(cx - cylW / 2 + 3, pistonPinY, cylW - 6, pistonH);
-            ctx.fill();
-            ctx.stroke();
-
-            // Aros de pistón (segmentos)
-            ctx.strokeStyle = "#475569";
-            ctx.lineWidth = 2;
-            for (let r = 8; r < 24; r += 7) {
-                ctx.beginPath();
-                ctx.moveTo(cx - cylW / 2 + 3, pistonPinY + r);
-                ctx.lineTo(cx + cylW / 2 - 3, pistonPinY + r);
-                ctx.stroke();
-            }
-
-            // Pasador del pistón (bulón)
-            ctx.beginPath();
-            ctx.arc(cx, pistonPinY + pistonH / 2, 12, 0, Math.PI * 2);
-            ctx.fillStyle = "#334155";
-            ctx.fill();
-            ctx.stroke();
-
-            // 5. Biela (Connecting Rod)
-            ctx.beginPath();
-            ctx.moveTo(cx, pistonPinY + pistonH / 2);
-            ctx.lineTo(crankPinX, crankPinY);
-            ctx.lineWidth = 22;
-            ctx.strokeStyle = "#64748b";
-            ctx.lineCap = "round";
-            ctx.stroke();
-
-            ctx.lineWidth = 14;
-            ctx.strokeStyle = "#cbd5e1";
-            ctx.stroke();
-
-            // 6. Cigüeñal y contrapeso (Crankshaft)
-            ctx.beginPath();
-            ctx.arc(cx, cy, crankR + 25, theta - 1.2, theta + 1.2);
-            ctx.lineTo(cx, cy);
-            ctx.closePath();
-            ctx.fillStyle = "#475569";
-            ctx.fill();
-            ctx.stroke();
-
-            // Muñón del cigüeñal
-            ctx.beginPath();
-            ctx.arc(crankPinX, crankPinY, 14, 0, Math.PI * 2);
-            ctx.fillStyle = "#f59e0b";
-            ctx.fill();
-            ctx.stroke();
-
-            // Eje central de rotación
-            ctx.beginPath();
-            ctx.arc(cx, cy, 18, 0, Math.PI * 2);
-            ctx.fillStyle = "#0f172a";
-            ctx.fill();
-            ctx.stroke();
-
-            ctx.restore();
-
-            requestAnimationFrame(render);
-        }
-
-        // Culata, bujía y válvulas
-        function drawCylinderHead(cx, topY, w, strokeIdx) {
-            ctx.save();
-            ctx.fillStyle = "#334155";
-            ctx.fillRect(cx - w / 2 - 25, topY - 50, w + 50, 70);
-
-            // Bujía central
-            ctx.fillStyle = "#e2e8f0";
-            ctx.fillRect(cx - 7, topY - 45, 14, 45);
-            ctx.fillStyle = "#f59e0b";
-            ctx.fillRect(cx - 3, topY - 55, 6, 10);
-
-            // Electrodo y chispa
-            const isSparking = strokeIdx === 2 && (crankAngle % Math.PI < 0.6);
-            if (isSparking) {
-                ctx.beginPath();
-                ctx.arc(cx, topY + 22, 14, 0, Math.PI * 2);
-                ctx.fillStyle = "#fef08a";
-                ctx.shadowColor = "#fef08a";
-                ctx.shadowBlur = 25;
-                ctx.fill();
-            }
-
-            // Válvula de admisión (izquierda) - Se abre en Tiempo 1
-            const intakeOpen = strokeIdx === 0;
-            const valveDropIn = intakeOpen ? 18 : 0;
-            ctx.fillStyle = intakeOpen ? "#38bdf8" : "#94a3b8";
-            // Vástago
-            ctx.fillRect(cx - 42, topY - 35, 8, 45 + valveDropIn);
-            // Plato de válvula
-            ctx.beginPath();
-            ctx.ellipse(cx - 38, topY + 12 + valveDropIn, 22, 5, 0, 0, Math.PI * 2);
-            ctx.fill();
-
-            // Válvula de escape (derecha) - Se abre en Tiempo 4
-            const exhaustOpen = strokeIdx === 3;
-            const valveDropEx = exhaustOpen ? 18 : 0;
-            ctx.fillStyle = exhaustOpen ? "#a855f7" : "#94a3b8";
-            // Vástago
-            ctx.fillRect(cx + 34, topY - 35, 8, 45 + valveDropEx);
-            // Plato de válvula
-            ctx.beginPath();
-            ctx.ellipse(cx + 38, topY + 12 + valveDropEx, 22, 5, 0, 0, Math.PI * 2);
-            ctx.fill();
-
-            ctx.restore();
-        }
-
-        function toggleFullScreen() {
-            if (!document.fullscreenElement) {
-                document.documentElement.requestFullscreen().catch(() => {});
-            } else {
-                document.exitFullscreen().catch(() => {});
+                if (audioCtx && audioCtx.state === "running") {
+                    audioCtx.suspend();
+                }
             }
         }
 
-        window.addEventListener("DOMContentLoaded", () => {
-            resize();
-            render();
+        // ============================================================================
+        // 7. BUCLE DE RENDER BABYLON.JS
+        // ============================================================================
+        scene.registerBeforeRender(() => {
+            const dt = engine.getDeltaTime() / 1000;
+            updateMechanics(dt);
+        });
+
+        engine.runRenderLoop(() => {
+            scene.render();
+        });
+
+        window.addEventListener("resize", () => {
+            engine.resize();
         });
     </script>
 </body>
 </html>
-
