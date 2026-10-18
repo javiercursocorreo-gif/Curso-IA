@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sesión 07 • Simulador 3D: Atlas de la Luna NASA LRO [COD-007]</title>
+    <!-- Babylon.js CDN Oficial -->
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-base: #03060d;
+            --bg-panel: rgba(11, 17, 32, 0.94);
+            --border-glow: rgba(56, 189, 248, 0.35);
+            --primary: #38bdf8;
+            --primary-glow: rgba(56, 189, 248, 0.25);
+            --gold: #fbbf24;
+            --emerald: #34d399;
+            --rose: #fb7185;
+            --text-main: #f8fafc;
+            --text-sub: #94a3b8;
+            --font-sans: 'Inter', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+        html, body {
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            font-family: var(--font-sans);
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* HEADER SUPERIOR */
+        header {
+            background: linear-gradient(180deg, rgba(15, 23, 42, 0.98) 0%, rgba(15, 23, 42, 0.88) 100%);
+            backdrop-filter: blur(14px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 8px 22px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+            z-index: 50;
+        }
+        .header-title-box {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .badge-code {
+            background: rgba(56, 189, 248, 0.15);
+            color: var(--primary);
+            border: 1px solid rgba(56, 189, 248, 0.4);
+            font-family: var(--font-mono);
+            font-size: 0.76rem;
+            font-weight: 800;
+            padding: 3px 9px;
+            border-radius: 6px;
+            letter-spacing: 0.05em;
+        }
+        h1 {
+            font-size: 1.15rem;
+            font-weight: 800;
+            letter-spacing: -0.01em;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .pill-status {
+            background: rgba(16, 185, 129, 0.15);
+            color: #34d399;
+            border: 1px solid rgba(16, 185, 129, 0.35);
+            font-size: 0.78rem;
+            font-weight: 700;
+            padding: 4px 11px;
+            border-radius: 9999px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* GRID PRINCIPAL */
+        .workspace-grid {
+            flex: 1;
+            min-height: 0;
+            display: grid;
+            grid-template-columns: 375px 1fr;
+            background: #020409;
+        }
+
+        /* PANEL DE CONTROL DIDÁCTICO PARA SENIORS */
+        .control-panel {
+            background: var(--bg-panel);
+            backdrop-filter: blur(12px);
+            border-right: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            padding: 16px 18px 24px;
+            gap: 16px;
+            z-index: 20;
+        }
+        .control-panel::-webkit-scrollbar { width: 6px; }
+        .control-panel::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+
+        .card-easy-idea {
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.95) 100%);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            border-radius: 14px;
+            padding: 14px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+        }
+        .card-easy-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+        .card-easy-tag {
+            font-size: 0.72rem;
+            font-weight: 800;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            background: rgba(56, 189, 248, 0.12);
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+        .card-easy-title {
+            font-size: 0.96rem;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 6px;
+        }
+        .card-easy-desc {
+            font-size: 0.85rem;
+            color: #cbd5e1;
+            line-height: 1.45;
+        }
+
+        /* SECCIONES Y BOTONES */
+        .section-title {
+            font-size: 0.78rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #94a3b8;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .mode-button-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+        .btn-mode {
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #e2e8f0;
+            padding: 9px 10px;
+            border-radius: 9px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+        }
+        .btn-mode:hover {
+            background: rgba(56, 189, 248, 0.15);
+            border-color: var(--primary);
+            color: #ffffff;
+            transform: translateY(-1px);
+        }
+        .btn-mode.active {
+            background: linear-gradient(135deg, rgba(2, 132, 199, 0.4) 0%, rgba(56, 189, 248, 0.3) 100%);
+            border-color: var(--primary);
+            color: #ffffff;
+            box-shadow: 0 0 14px rgba(56, 189, 248, 0.3);
+        }
+
+        /* FASES LUNARES */
+        .phases-box {
+            background: rgba(15, 23, 42, 0.65);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 12px;
+        }
+        .phases-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 6px;
+            margin-bottom: 10px;
+        }
+        .btn-phase {
+            background: rgba(30, 41, 59, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: #cbd5e1;
+            padding: 8px 4px;
+            border-radius: 8px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            transition: all 0.2s;
+        }
+        .btn-phase:hover, .btn-phase.active {
+            background: rgba(56, 189, 248, 0.2);
+            border-color: var(--primary);
+            color: #fff;
+        }
+        .phase-slider-container {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .phase-slider-container input[type="range"] {
+            width: 100%;
+            height: 6px;
+            border-radius: 4px;
+            background: #1e293b;
+            outline: none;
+            cursor: pointer;
+            accent-color: var(--primary);
+        }
+        .phase-slider-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.74rem;
+            color: #94a3b8;
+            font-family: var(--font-mono);
+        }
+
+        /* LISTA DE SITIOS */
+        .poi-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .poi-card {
+            background: rgba(15, 23, 42, 0.65);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            border-radius: 9px;
+            padding: 9px 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.18s ease;
+        }
+        .poi-card:hover {
+            background: rgba(56, 189, 248, 0.12);
+            border-color: rgba(56, 189, 248, 0.4);
+            transform: translateX(3px);
+        }
+        .poi-card.active {
+            background: rgba(56, 189, 248, 0.18);
+            border-color: var(--primary);
+            box-shadow: 0 0 12px rgba(56, 189, 248, 0.25);
+        }
+        .poi-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        .poi-name {
+            font-size: 0.86rem;
+            font-weight: 700;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .poi-sub {
+            font-size: 0.74rem;
+            color: #94a3b8;
+        }
+        .poi-arrow {
+            color: var(--primary);
+            font-weight: 800;
+            font-size: 0.9rem;
+        }
+
+        /* FICHA DETALLADA */
+        .detail-box {
+            background: rgba(15, 23, 42, 0.85);
+            border: 1px solid rgba(56, 189, 248, 0.35);
+            border-radius: 12px;
+            padding: 14px;
+        }
+        .detail-badge {
+            font-size: 0.7rem;
+            font-weight: 800;
+            color: var(--gold);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            margin-bottom: 4px;
+        }
+        .detail-title {
+            font-size: 1.02rem;
+            font-weight: 800;
+            color: #fff;
+            margin-bottom: 6px;
+        }
+        .detail-body {
+            font-size: 0.84rem;
+            color: #cbd5e1;
+            line-height: 1.5;
+        }
+
+        /* VIEWPORT BABYLON.JS */
+        .viewport-3d {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+        #renderCanvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+            touch-action: none;
+            outline: none;
+        }
+
+        /* OVERLAYS */
+        .hud-overlay-top {
+            position: absolute;
+            top: 14px;
+            right: 18px;
+            display: flex;
+            gap: 8px;
+            z-index: 10;
+        }
+        .btn-hud {
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #e2e8f0;
+            padding: 7px 12px;
+            border-radius: 8px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+        .btn-hud:hover, .btn-hud.active {
+            background: rgba(56, 189, 248, 0.25);
+            border-color: var(--primary);
+            color: #ffffff;
+        }
+
+        .hud-overlay-bottom {
+            position: absolute;
+            bottom: 16px;
+            left: 20px;
+            right: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            pointer-events: none;
+            z-index: 10;
+        }
+        .hud-legend {
+            background: rgba(15, 23, 42, 0.88);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 0.78rem;
+            color: #94a3b8;
+            pointer-events: auto;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+        .hud-legend strong { color: #ffffff; }
+
+        /* PINES Y ETIQUETAS */
+        .pin-label {
+            position: absolute;
+            transform: translate(-50%, -100%);
+            background: rgba(15, 23, 42, 0.92);
+            border: 1px solid var(--primary);
+            color: #ffffff;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 0.74rem;
+            font-weight: 700;
+            pointer-events: none;
+            white-space: nowrap;
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.4);
+            margin-top: -10px;
+            transition: opacity 0.15s;
+        }
+        .pin-label::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 5px;
+            border-style: solid;
+            border-color: var(--primary) transparent transparent transparent;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- CABECERA -->
+    <header>
+        <div class="header-title-box">
+            <span class="badge-code">COD-007</span>
+            <h1>🌕 Atlas 3D de la Luna NASA LRO • Motor Babylon.js</h1>
+        </div>
+        <div class="header-right">
+            <span class="pill-status">🔭 Fotometría NASA 4K & Altimetría LOLA</span>
+            <span class="pill-status" style="background: rgba(56, 189, 248, 0.15); color: #38bdf8; border-color: rgba(56, 189, 248, 0.35);">
+                S07 • Espacio & Selenografía
+            </span>
+        </div>
+    </header>
+
+    <!-- WORKSPACE -->
+    <main class="workspace-grid">
+        
+        <!-- PANEL IZQUIERDO -->
+        <aside class="control-panel">
+            
+            <!-- TARJETA LA IDEA FÁCIL -->
+            <div class="card-easy-idea">
+                <div class="card-easy-header">
+                    <span class="card-easy-tag">💡 La Idea Fácil</span>
+                    <span style="font-size:1.1rem;">🌕</span>
+                </div>
+                <div class="card-easy-title">¿Por qué siempre vemos la misma cara?</div>
+                <div class="card-easy-desc">
+                    La gravedad terrestre actuó como un freno suave durante millones de años hasta bloquear su rotación: la Luna tarda <strong>27,3 días</strong> en girar sobre sí misma y exactamente lo mismo en dar una vuelta a la Tierra (<strong>rotación sincrónica</strong>). Por eso, desde la Tierra, ¡la cara oculta estuvo oculta para la humanidad hasta la era espacial!
+                </div>
+            </div>
+
+            <!-- MODOS DE VISIÓN -->
+            <div>
+                <div class="section-title">
+                    <span>Modos de Observación</span>
+                </div>
+                <div class="mode-button-group">
+                    <button class="btn-mode active" id="btnModeNatural" onclick="setMode('natural')">
+                        📸 Vista Natural
+                    </button>
+                    <button class="btn-mode" id="btnModeTopo" onclick="setMode('topo')">
+                        🗺️ Altimetría LOLA
+                    </button>
+                    <button class="btn-mode" id="btnFarSide" onclick="toggleFarSide()">
+                        🔄 Cara Oculta (180°)
+                    </button>
+                    <button class="btn-mode" id="btnAutoRotate" onclick="toggleAutoRotate()">
+                        ⏯️ Auto-Rotación
+                    </button>
+                </div>
+            </div>
+
+            <!-- SIMULADOR DE FASES LUNARES -->
+            <div class="phases-box">
+                <div class="section-title" style="margin-bottom:6px;">
+                    <span>Simulador de Fases Lunares</span>
+                    <span id="phaseNameDisplay" style="color:var(--primary); font-family:var(--font-mono);">Cuarto Creciente</span>
+                </div>
+                <div class="phases-grid">
+                    <button class="btn-phase" onclick="setPhase(0, 'Luna Nueva')">
+                        <span>🌑</span><span>Nueva</span>
+                    </button>
+                    <button class="btn-phase active" onclick="setPhase(90, 'Cuarto Creciente')">
+                        <span>🌓</span><span>Creciente</span>
+                    </button>
+                    <button class="btn-phase" onclick="setPhase(180, 'Luna Llena')">
+                        <span>🌕</span><span>Llena</span>
+                    </button>
+                    <button class="btn-phase" onclick="setPhase(270, 'Cuarto Menguante')">
+                        <span>🌗</span><span>Menguante</span>
+                    </button>
+                </div>
+                <div class="phase-slider-container">
+                    <input type="range" id="phaseSlider" min="0" max="360" value="90" oninput="onPhaseSlider(this.value)">
+                    <div class="phase-slider-label">
+                        <span>0° (Sol Detrás)</span>
+                        <span>180° (Frente)</span>
+                        <span>360°</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PUNTOS HISTÓRICOS Y GEOLÓGICOS -->
+            <div>
+                <div class="section-title">
+                    <span>Sitios Clave & Misiones Apolo</span>
+                    <span style="font-size:0.75rem; color:var(--primary);">Haz clic para volar</span>
+                </div>
+                <div class="poi-list" id="poiListContainer">
+                    <!-- Se llena con JS -->
+                </div>
+            </div>
+
+            <!-- FICHA DETALLADA DEL SITIO SELECCIONADO -->
+            <div class="detail-box" id="detailBox">
+                <div class="detail-badge" id="detailBadge">SITIO DE ALUNIZAJE HISTÓRICO</div>
+                <div class="detail-title" id="detailTitle">Mare Tranquillitatis (Apolo 11)</div>
+                <div class="detail-body" id="detailDesc">
+                    El 20 de julio de 1969, el módulo lunar <em>Eagle</em> se posó sobre esta llanura basáltica de lava solidificada. Neil Armstrong y Buzz Aldrin se convirtieron en los primeros humanos en pisar otro cuerpo celeste del cosmos.
+                </div>
+            </div>
+
+        </aside>
+
+        <!-- ESCENARIO BABYLON.JS 3D -->
+        <div class="viewport-3d" id="viewport3D">
+            <canvas id="renderCanvas"></canvas>
+            
+            <!-- CONTROLES FLOTANTES SUPERIORES -->
+            <div class="hud-overlay-top">
+                <button class="btn-hud active" id="btnTogglePins" onclick="togglePins()">
+                    📍 Pines de Sitios
+                </button>
+                <button class="btn-hud" onclick="resetCameraView()">
+                    🎯 Centrar Vista
+                </button>
+            </div>
+
+            <!-- LEYENDA HUD INFERIOR -->
+            <div class="hud-overlay-bottom">
+                <div class="hud-legend">
+                    <span>🖱️ <strong>Arrastrar:</strong> Rotar 360° (Babylon.js)</span>
+                    <span>🔍 <strong>Rueda:</strong> Zoom</span>
+                    <span>🌓 <strong>Terminador:</strong> Relieve nítido con sombras rasantes</span>
+                </div>
+            </div>
+
+            <!-- CONTENEDOR DE ETIQUETAS 2D -->
+            <div id="labelsContainer" style="position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; overflow:hidden;"></div>
+        </div>
+
+    </main>
+
+    <script>
+        // ============================================================================
+        // 1. CATÁLOGO DE SITIOS HISTÓRICOS Y SELENOGRÁFICOS
+        // ============================================================================
+        const POI_DATA = [
+            {
+                id: "apolo11",
+                name: "Mare Tranquillitatis",
+                sub: "Alunizaje Apolo 11 • 20 julio 1969",
+                type: "Misión Apolo",
+                lat: 0.67,
+                lon: 23.47,
+                desc: "Neil Armstrong y Buzz Aldrin alunizaron aquí con el módulo Eagle. Una inmensa llanura de basalto rico en titanio, llana y segura para el primer paso de la humanidad en la Luna."
+            },
+            {
+                id: "oceanus",
+                name: "Oceanus Procellarum",
+                sub: "El mayor mar lunar • 2.500 km",
+                type: "Geología Basáltica",
+                lat: 18.4,
+                lon: -57.4,
+                desc: "El 'Océano de las Tormentas' es la mayor llanura de lava de la Luna. Visible a simple vista como la mancha oscura más grande en la mitad izquierda de la cara visible."
+            },
+            {
+                id: "tycho",
+                name: "Cráter Tycho",
+                sub: "85 km • Rayos eyectados colosales",
+                type: "Cráter de Impacto",
+                lat: -43.3,
+                lon: -11.2,
+                desc: "Un impacto relativamente joven (hace 108 millones de años). Sus colosales rayos de material pulverizado brillante se extienden más de 1.500 km por todo el hemisferio sur."
+            },
+            {
+                id: "copernicus",
+                name: "Cráter Copérnico",
+                sub: "93 km • Terrazas concéntricas",
+                type: "Cráter Clásico",
+                lat: 9.6,
+                lon: -20.1,
+                desc: "Uno de los cráteres más espectaculares al telescopio. Posee paredes escalonadas en terrazas de 3.800 metros de profundidad y tres picos montañosos en su centro."
+            },
+            {
+                id: "apolo17",
+                name: "Taurus-Littrow (Apolo 17)",
+                sub: "Última misión tripulada • Diciembre 1972",
+                type: "Misión Apolo",
+                lat: 20.19,
+                lon: 30.77,
+                desc: "Eugene Cernan y el geólogo Harrison Schmitt recorrieron este valle estrecho rodeado de macizos montañosos con el Rover Lunar, recogiendo suelo volcánico naranja."
+            },
+            {
+                id: "shackleton",
+                name: "Polo Sur / Cráter Shackleton",
+                sub: "Objetivo Artemisa (NASA) • Hielo eterno",
+                type: "Futuro Espacial",
+                lat: -89.9,
+                lon: 0.0,
+                desc: "Sus bordes están bañados por luz solar casi perpetua mientras su fondo profundo permanece en sombra absoluta a -230 °C, albergando depósitos de hielo de agua vitales."
+            },
+            {
+                id: "aitken",
+                name: "Cuenca Aitken (Cara Oculta)",
+                sub: "2.500 km • 13 km de profundidad",
+                type: "Cara Oculta",
+                lat: -53.0,
+                lon: 169.0,
+                desc: "Una de las mayores cuencas de impacto del Sistema Solar. Jamás visible desde la Tierra, esta cara está saturada de cráteres antiguos sin apenas mares basálticos oscuros."
+            },
+            {
+                id: "imbrium",
+                name: "Mare Imbrium & Montes Apeninos",
+                sub: "Apolo 15 • Cañón Hadley Rille",
+                type: "Misión Apolo & Cordillera",
+                lat: 26.1,
+                lon: 3.6,
+                desc: "El 'Mar de las Lluvias' está flanqueado por los Montes Apeninos, con cumbres de hasta 5.000 metros. Aquí Apolo 15 exploró la grieta serpenteante Hadley Rille."
+            }
+        ];
+
+        // ============================================================================
+        // 2. INICIALIZACIÓN DE BABYLON.JS
+        // ============================================================================
+        const canvas = document.getElementById("renderCanvas");
+        const engine = new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true });
+        const scene = new BABYLON.Scene(engine);
+        scene.clearColor = new BABYLON.Color4(0.015, 0.025, 0.05, 1.0);
+
+        // Cámara orbital ArcRotate
+        const camera = new BABYLON.ArcRotateCamera("Camera", -Math.PI / 2, Math.PI / 2.2, 4.2, BABYLON.Vector3.Zero(), scene);
+        camera.attachControl(canvas, true);
+        camera.wheelPrecision = 45;
+        camera.lowerRadiusLimit = 1.7;
+        camera.upperRadiusLimit = 10.0;
+        camera.inertia = 0.85;
+
+        // Iluminación
+        const hemiLight = new BABYLON.HemisphericLight("hemiLight", new BABYLON.Vector3(0, 1, 0), scene);
+        hemiLight.intensity = 0.18; // Suave luz cenicienta
+        hemiLight.groundColor = new BABYLON.Color3(0.04, 0.06, 0.1);
+
+        const sunLight = new BABYLON.DirectionalLight("sunLight", new BABYLON.Vector3(-1, -0.1, 0), scene);
+        sunLight.intensity = 2.4;
+        sunLight.diffuse = new BABYLON.Color3(1.0, 0.98, 0.95);
+
+        // ============================================================================
+        // 3. GENERACIÓN DE TEXTURAS PROCEDURALES CANVAS
+        // ============================================================================
+        function createProceduralMoonTexture(scene, isTopo = false) {
+            const w = 2048, h = 1024;
+            const dynamicTex = new BABYLON.DynamicTexture(isTopo ? "topoTex" : "naturalTex", { width: w, height: h }, scene, false);
+            const ctx = dynamicTex.getContext();
+
+            if (!isTopo) {
+                ctx.fillStyle = "#a8abb2";
+                ctx.fillRect(0, 0, w, h);
+
+                const imgData = ctx.getImageData(0, 0, w, h);
+                const d = imgData.data;
+                for (let i = 0; i < d.length; i += 4) {
+                    const noise = (Math.random() - 0.5) * 35;
+                    d[i] = Math.min(255, Math.max(0, d[i] + noise));
+                    d[i+1] = Math.min(255, Math.max(0, d[i+1] + noise));
+                    d[i+2] = Math.min(255, Math.max(0, d[i+2] + noise));
+                }
+                ctx.putImageData(imgData, 0, 0);
+
+                // Dibujar Mares en cara visible
+                drawMare(ctx, w * 0.51, h * 0.32, 130, 110, "#3a3c42");
+                drawMare(ctx, w * 0.59, h * 0.35, 95, 85, "#37393f");
+                drawMare(ctx, w * 0.61, h * 0.48, 105, 90, "#33353b");
+                drawMare(ctx, w * 0.38, h * 0.40, 220, 260, "#3d3f45");
+                drawMare(ctx, w * 0.72, h * 0.41, 60, 50, "#2c2e33");
+                drawMare(ctx, w * 0.47, h * 0.62, 90, 80, "#3e4046");
+                drawMare(ctx, w * 0.68, h * 0.54, 85, 75, "#383a40");
+
+                // Cráteres Tycho y Copérnico
+                drawCraterWithRays(ctx, w * 0.47, h * 0.72, 16, 280);
+                drawCraterWithRays(ctx, w * 0.44, h * 0.42, 18, 150);
+
+                // Cráteres cara oculta
+                for (let k = 0; k < 180; k++) {
+                    const cx = (Math.random() < 0.5 ? Math.random() * w * 0.25 : w * 0.75 + Math.random() * w * 0.25);
+                    const cy = Math.random() * h;
+                    drawSmallCrater(ctx, cx, cy, 4 + Math.random() * 14);
+                }
+            } else {
+                // Altimetría LOLA
+                const grad = ctx.createLinearGradient(0, 0, 0, h);
+                grad.addColorStop(0, "#ffffff");
+                grad.addColorStop(0.2, "#f43f5e");
+                grad.addColorStop(0.4, "#fbbf24");
+                grad.addColorStop(0.6, "#10b981");
+                grad.addColorStop(0.8, "#0284c7");
+                grad.addColorStop(1, "#312e81");
+                ctx.fillStyle = grad;
+                ctx.fillRect(0, 0, w, h);
+
+                drawMare(ctx, w * 0.51, h * 0.32, 130, 110, "#1e3a8a");
+                drawMare(ctx, w * 0.61, h * 0.48, 105, 90, "#172554");
+                drawMare(ctx, w * 0.38, h * 0.40, 220, 260, "#1d4ed8");
+                drawMare(ctx, w * 0.92, h * 0.78, 140, 120, "#0f172a");
+            }
+
+            dynamicTex.update();
+            return dynamicTex;
+        }
+
+        function drawMare(ctx, x, y, rx, ry, color) {
+            ctx.save();
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            ctx.ellipse(x, y, rx, ry, Math.random() * 0.3, 0, Math.PI * 2);
+            ctx.filter = "blur(14px)";
+            ctx.fill();
+            ctx.restore();
+        }
+
+        function drawCraterWithRays(ctx, x, y, r, rayLen) {
+            ctx.save();
+            ctx.strokeStyle = "rgba(255, 255, 255, 0.42)";
+            ctx.lineWidth = 1.5;
+            for(let a = 0; a < Math.PI * 2; a += Math.PI / 12) {
+                const len = rayLen * (0.6 + Math.random() * 0.5);
+                ctx.beginPath();
+                ctx.moveTo(x, y);
+                ctx.lineTo(x + Math.cos(a) * len, y + Math.sin(a) * len);
+                ctx.stroke();
+            }
+            ctx.fillStyle = "#ffffff";
+            ctx.beginPath();
+            ctx.arc(x, y, r, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = "#333333";
+            ctx.beginPath();
+            ctx.arc(x, y, r * 0.7, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = "#ffffff";
+            ctx.beginPath();
+            ctx.arc(x, y, r * 0.25, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
+        }
+
+        function drawSmallCrater(ctx, x, y, r) {
+            ctx.save();
+            ctx.fillStyle = "rgba(255, 255, 255, 0.35)";
+            ctx.beginPath();
+            ctx.arc(x, y, r, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = "rgba(40, 42, 46, 0.65)";
+            ctx.beginPath();
+            ctx.arc(x, y, r * 0.7, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
+        }
+
+        // ============================================================================
+        // 4. CREACIÓN DE LA MALLA BABYLON.JS
+        // ============================================================================
+        const moonRadius = 1.35;
+        const moonMesh = BABYLON.MeshBuilder.CreateSphere("moon", { diameter: moonRadius * 2, segments: 64 }, scene);
+
+        const naturalTex = createProceduralMoonTexture(scene, false);
+        const topoTex = createProceduralMoonTexture(scene, true);
+
+        const moonMat = new BABYLON.StandardMaterial("moonMat", scene);
+        moonMat.diffuseTexture = naturalTex;
+        moonMat.specularColor = new BABYLON.Color3(0.04, 0.04, 0.04);
+        moonMat.roughness = 0.95;
+        moonMesh.material = moonMat;
+
+        // Cargar mapa satelital NASA LRO real si hay red
+        const nasaMoonUrl = "https://cdn.jsdelivr.net/gh/zhangwenqiang0214/solar-system-3d@main/assets/2k_moon.jpg";
+        const realNasaTex = new BABYLON.Texture(nasaMoonUrl, scene, false, false, BABYLON.Texture.TRILINEAR_SAMPLINGMODE, () => {
+            moonMat.diffuseTexture = realNasaTex;
+        }, () => {
+            console.log("Usando textura procedural de alta resolución Babylon.js");
+        });
+
+        // ============================================================================
+        // 5. PINES SELENOGRÁFICOS EN BABYLON.JS
+        // ============================================================================
+        function latLonToBabylon(lat, lon, radius) {
+            const phi = (90 - lat) * (Math.PI / 180);
+            const theta = (lon + 180) * (Math.PI / 180);
+            const x = -(radius * Math.sin(phi) * Math.cos(theta));
+            const z = (radius * Math.sin(phi) * Math.sin(theta));
+            const y = (radius * Math.cos(phi));
+            return new BABYLON.Vector3(x, y, z);
+        }
+
+        const pinMeshes = [];
+        const pinElements = [];
+        const labelsContainer = document.getElementById("labelsContainer");
+
+        const pinMat = new BABYLON.StandardMaterial("pinMat", scene);
+        pinMat.emissiveColor = new BABYLON.Color3(0.22, 0.74, 0.97);
+
+        POI_DATA.forEach((poi, index) => {
+            const pos = latLonToBabylon(poi.lat, poi.lon, moonRadius * 1.018);
+
+            const pin = BABYLON.MeshBuilder.CreateSphere("pin_" + poi.id, { diameter: 0.05, segments: 16 }, scene);
+            pin.position = pos;
+            pin.material = pinMat;
+            pinMeshes.push(pin);
+
+            // Etiqueta DOM 2D
+            const labelEl = document.createElement("div");
+            labelEl.className = "pin-label";
+            labelEl.textContent = poi.name;
+            labelsContainer.appendChild(labelEl);
+            pinElements.push({ el: labelEl, mesh: pin, pos: pos, id: poi.id });
+        });
+
+        // Lista en el panel izquierdo
+        const poiListContainer = document.getElementById("poiListContainer");
+        POI_DATA.forEach((poi, index) => {
+            const card = document.createElement("div");
+            card.className = "poi-card" + (index === 0 ? " active" : "");
+            card.id = `poi-card-${poi.id}`;
+            card.onclick = () => selectPOI(index);
+            card.innerHTML = `
+                <div class="poi-info">
+                    <span class="poi-name">📍 ${poi.name}</span>
+                    <span class="poi-sub">${poi.sub}</span>
+                </div>
+                <span class="poi-arrow">↗</span>
+            `;
+            poiListContainer.appendChild(card);
+        });
+
+        // ============================================================================
+        // 6. INTERACCIÓN Y NAVEGACIÓN
+        // ============================================================================
+        let isPinsVisible = true;
+        let isAutoRotating = false;
+
+        function playSoftBeep() {
+            try {
+                const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                if (!AudioCtx) return;
+                const ctx = new AudioCtx();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = "sine";
+                osc.frequency.setValueAtTime(587.33, ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.08);
+                gain.gain.setValueAtTime(0.08, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.12);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start();
+                osc.stop(ctx.currentTime + 0.12);
+            } catch(e) {}
+        }
+
+        function selectPOI(index) {
+            playSoftBeep();
+            const poi = POI_DATA[index];
+
+            document.querySelectorAll(".poi-card").forEach(c => c.classList.remove("active"));
+            const card = document.getElementById(`poi-card-${poi.id}`);
+            if (card) card.classList.add("active");
+
+            document.getElementById("detailBadge").textContent = poi.type.toUpperCase();
+            document.getElementById("detailTitle").textContent = poi.name;
+            document.getElementById("detailDesc").textContent = poi.desc;
+
+            // Orientar cámara de Babylon hacia el punto
+            const targetAlpha = -((poi.lon) * (Math.PI / 180)) - Math.PI / 2;
+            const targetBeta = ((90 - poi.lat) * (Math.PI / 180));
+
+            BABYLON.Animation.CreateAndStartAnimation("camAlpha", camera, "alpha", 30, 20, camera.alpha, targetAlpha, 2);
+            BABYLON.Animation.CreateAndStartAnimation("camBeta", camera, "beta", 30, 20, camera.beta, Math.max(0.2, Math.min(Math.PI - 0.2, targetBeta)), 2);
+            BABYLON.Animation.CreateAndStartAnimation("camRadius", camera, "radius", 30, 20, camera.radius, 3.2, 2);
+        }
+
+        function setMode(mode) {
+            playSoftBeep();
+            document.getElementById("btnModeNatural").classList.toggle("active", mode === "natural");
+            document.getElementById("btnModeTopo").classList.toggle("active", mode === "topo");
+
+            if (mode === "topo") {
+                moonMat.diffuseTexture = topoTex;
+            } else {
+                moonMat.diffuseTexture = naturalTex;
+            }
+        }
+
+        let isFarSide = false;
+        function toggleFarSide() {
+            playSoftBeep();
+            isFarSide = !isFarSide;
+            document.getElementById("btnFarSide").classList.toggle("active", isFarSide);
+            const targetAlpha = isFarSide ? Math.PI / 2 : -Math.PI / 2;
+            BABYLON.Animation.CreateAndStartAnimation("camAlpha", camera, "alpha", 30, 25, camera.alpha, targetAlpha, 2);
+            BABYLON.Animation.CreateAndStartAnimation("camBeta", camera, "beta", 30, 25, camera.beta, Math.PI / 2.2, 2);
+        }
+
+        function toggleAutoRotate() {
+            playSoftBeep();
+            isAutoRotating = !isAutoRotating;
+            document.getElementById("btnAutoRotate").classList.toggle("active", isAutoRotating);
+        }
+
+        function togglePins() {
+            playSoftBeep();
+            isPinsVisible = !isPinsVisible;
+            pinMeshes.forEach(m => m.setEnabled(isPinsVisible));
+            labelsContainer.style.display = isPinsVisible ? "block" : "none";
+            document.getElementById("btnTogglePins").classList.toggle("active", isPinsVisible);
+        }
+
+        function resetCameraView() {
+            playSoftBeep();
+            BABYLON.Animation.CreateAndStartAnimation("camAlpha", camera, "alpha", 30, 20, camera.alpha, -Math.PI / 2, 2);
+            BABYLON.Animation.CreateAndStartAnimation("camBeta", camera, "beta", 30, 20, camera.beta, Math.PI / 2.2, 2);
+            BABYLON.Animation.CreateAndStartAnimation("camRadius", camera, "radius", 30, 20, camera.radius, 4.2, 2);
+        }
+
+        // Fases Lunares con Babylon.js
+        function setPhase(angleDeg, name) {
+            playSoftBeep();
+            document.getElementById("phaseSlider").value = angleDeg;
+            document.getElementById("phaseNameDisplay").textContent = name;
+            document.querySelectorAll(".btn-phase").forEach(b => b.classList.remove("active"));
+            event.currentTarget.classList.add("active");
+            updateSunLight(angleDeg);
+        }
+
+        function onPhaseSlider(val) {
+            updateSunLight(val);
+            let name = "Fase Intermedia";
+            if (val <= 20 || val >= 340) name = "Luna Nueva";
+            else if (val >= 70 && val <= 110) name = "Cuarto Creciente";
+            else if (val >= 160 && val <= 200) name = "Luna Llena";
+            else if (val >= 250 && val <= 290) name = "Cuarto Menguante";
+            document.getElementById("phaseNameDisplay").textContent = `${name} (${val}°)`;
+        }
+
+        function updateSunLight(angleDeg) {
+            const rad = (angleDeg - 90) * (Math.PI / 180);
+            sunLight.direction = new BABYLON.Vector3(-Math.cos(rad), -0.05, -Math.sin(rad));
+        }
+
+        updateSunLight(90);
+
+        // ============================================================================
+        // 7. BUCLE DE RENDERIZADO BABYLON.JS Y PROYECCIÓN 2D
+        // ============================================================================
+        engine.runRenderLoop(() => {
+            if (isAutoRotating) {
+                camera.alpha += 0.003;
+            }
+
+            scene.render();
+
+            // Proyectar coordenadas 3D a coordenadas 2D de pantalla para etiquetas
+            if (isPinsVisible) {
+                pinElements.forEach(item => {
+                    const screenPos = BABYLON.Vector3.Project(
+                        item.pos,
+                        BABYLON.Matrix.Identity(),
+                        scene.getTransformMatrix(),
+                        camera.viewport.toGlobal(engine.getRenderWidth(), engine.getRenderHeight())
+                    );
+
+                    // Verificar visibilidad (cara orientada hacia la cámara)
+                    const camDir = camera.position.clone().subtract(item.pos);
+                    const normal = item.pos.clone().normalize();
+                    const dot = BABYLON.Vector3.Dot(camDir, normal);
+
+                    if (dot > 0.1 && screenPos.z > 0 && screenPos.z < 1) {
+                        const scaleX = canvas.clientWidth / engine.getRenderWidth();
+                        const scaleY = canvas.clientHeight / engine.getRenderHeight();
+                        item.el.style.display = "block";
+                        item.el.style.left = (screenPos.x * scaleX) + "px";
+                        item.el.style.top = (screenPos.y * scaleY) + "px";
+                        item.el.style.opacity = Math.min(1, Math.max(0, (dot - 0.1) * 3));
+                    } else {
+                        item.el.style.display = "none";
+                    }
+                });
+            }
+        });
+
+        window.addEventListener("resize", () => {
+            engine.resize();
+        });
+
+    </script>
+</body>
+</html>
