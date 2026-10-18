@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sesión 08 • Simulador 3D: Motor Térmico de 4 Tiempos [COD-008]</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-base: #060911;
+            --bg-panel: rgba(15, 23, 42, 0.92);
+            --flame: #ef4444;
+            --intake: #38bdf8;
+            --compress: #f59e0b;
+            --power: #fbbf24;
+            --exhaust: #a855f7;
+            --metal: #cbd5e1;
+            --font-sans: 'Inter', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background-color: var(--bg-base);
+            color: #f8fafc;
+            font-family: var(--font-sans);
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            user-select: none;
+        }
+
+        header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 20;
+            padding: 14px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: linear-gradient(180deg, rgba(6, 9, 17, 0.96) 0%, rgba(6, 9, 17, 0.6) 80%, transparent 100%);
+            border-bottom: 1px solid rgba(245, 158, 11, 0.25);
+            backdrop-filter: blur(10px);
+        }
+
+        .brand-box {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .brand-badge {
+            background: rgba(245, 158, 11, 0.15);
+            border: 1px solid #f59e0b;
+            color: #f59e0b;
+            font-family: var(--font-mono);
+            font-weight: 800;
+            font-size: 1rem;
+            padding: 5px 12px;
+            border-radius: 8px;
+            letter-spacing: 0.5px;
+        }
+
+        .brand-title {
+            font-size: 1.3rem;
+            font-weight: 900;
+            color: #ffffff;
+            letter-spacing: -0.01em;
+        }
+
+        .brand-sub {
+            font-size: 0.78rem;
+            color: #94a3b8;
+            font-weight: 500;
+        }
+
+        .btn-action {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #f1f5f9;
+            padding: 8px 16px;
+            border-radius: 9999px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-action:hover {
+            background: rgba(245, 158, 11, 0.2);
+            border-color: #f59e0b;
+            color: #f59e0b;
+        }
+
+        #engineStage {
+            flex: 1;
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        /* PANEL DIDÁCTICO */
+        .info-card {
+            position: absolute;
+            top: 80px;
+            right: 24px;
+            width: 395px;
+            background: var(--bg-panel);
+            border: 1.5px solid #f59e0b;
+            border-radius: 20px;
+            padding: 22px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9), 0 0 25px rgba(245, 158, 11, 0.25);
+            backdrop-filter: blur(20px);
+            z-index: 15;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .cycle-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            font-weight: 800;
+            padding: 6px 14px;
+            border-radius: 9999px;
+            background: rgba(56, 189, 248, 0.15);
+            color: #38bdf8;
+            border: 1px solid rgba(56, 189, 248, 0.4);
+            width: fit-content;
+        }
+
+        .info-title {
+            font-size: 1.35rem;
+            font-weight: 900;
+            color: #ffffff;
+            line-height: 1.25;
+        }
+
+        .info-summary {
+            background: rgba(255, 255, 255, 0.05);
+            border-left: 3.5px solid #f59e0b;
+            padding: 10px 14px;
+            border-radius: 0 10px 10px 0;
+            font-size: 0.92rem;
+            color: #f1f5f9;
+            line-height: 1.45;
+            font-weight: 600;
+        }
+
+        .info-detail {
+            font-size: 0.85rem;
+            color: #cbd5e1;
+            line-height: 1.6;
+            max-height: 240px;
+            overflow-y: auto;
+            padding-right: 6px;
+        }
+
+        .info-detail strong {
+            color: #f59e0b;
+            display: block;
+            margin-top: 6px;
+            margin-bottom: 2px;
+            font-size: 0.78rem;
+            text-transform: uppercase;
+        }
+
+        .info-facts {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .fact-box {
+            background: rgba(0, 0, 0, 0.45);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            padding: 8px 10px;
+            text-align: center;
+        }
+
+        .fact-val {
+            font-family: var(--font-mono);
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: #f59e0b;
+        }
+
+        .fact-lbl {
+            font-size: 0.68rem;
+            color: #94a3b8;
+            text-transform: uppercase;
+            margin-top: 2px;
+        }
+
+        /* BARRA INFERIOR DE CONTROLES */
+        .bottom-dock {
+            position: absolute;
+            bottom: 16px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            background: rgba(15, 23, 42, 0.95);
+            border: 1px solid rgba(245, 158, 11, 0.35);
+            box-shadow: 0 10px 35px rgba(0,0,0,0.85);
+            backdrop-filter: blur(16px);
+            padding: 10px 24px;
+            border-radius: 9999px;
+            z-index: 15;
+            max-width: 94%;
+        }
+
+        .slider-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .dock-label {
+            font-size: 0.8rem;
+            font-weight: 800;
+            color: #f59e0b;
+            font-family: var(--font-mono);
+            white-space: nowrap;
+        }
+
+        .dock-slider {
+            width: 170px;
+            accent-color: #f59e0b;
+            cursor: pointer;
+        }
+
+        .rpm-badge {
+            font-family: var(--font-mono);
+            font-size: 0.88rem;
+            font-weight: 800;
+            color: #ffffff;
+            background: rgba(0,0,0,0.5);
+            padding: 3px 8px;
+            border-radius: 6px;
+            min-width: 72px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .divider {
+            width: 1px;
+            height: 22px;
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .dock-btn {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #ffffff;
+            padding: 8px 14px;
+            border-radius: 9999px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .dock-btn:hover {
+            background: rgba(245, 158, 11, 0.2);
+            border-color: #f59e0b;
+            color: #f59e0b;
+        }
+
+        .dock-btn.active {
+            background: #f59e0b;
+            color: #060911;
+            font-weight: 800;
+        }
+
+        @media (max-width: 950px) {
+            .info-card {
+                top: auto;
+                bottom: 85px;
+                right: 12px;
+                left: 12px;
+                width: auto;
+                max-height: 38vh;
+            }
+            .bottom-dock {
+                bottom: 8px;
+                padding: 6px 14px;
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="brand-box">
+            <div class="brand-badge">[COD-008]</div>
+            <div>
+                <h1 class="brand-title">Motor de 4 Tiempos en Sección</h1>
+                <p class="brand-sub">MECÁNICA Y AUTOMOCIÓN • CICLO OTTO: ADMISIÓN, COMPRESIÓN, EXPLOSIÓN Y ESCAPE</p>
+            </div>
+        </div>
+        <div>
+            <button class="btn-action" onclick="toggleFullScreen()">⛶ Pantalla Completa</button>
+        </div>
+    </header>
+
+    <canvas id="engineStage"></canvas>
+
+    <div class="info-card" id="infoCard">
+        <div class="cycle-badge" id="strokeBadge">TIEMPO 1 • ADMISIÓN</div>
+        <h2 class="info-title" id="strokeTitle">Aspiración de Aire y Gasolina</h2>
+        <div class="info-summary" id="strokeSummary">
+            La válvula de admisión se abre. El pistón desciende creando un vacío que aspira la mezcla fresca de aire y combustible.
+        </div>
+        <div class="info-detail" id="strokeDetail">
+            <strong>¿Cómo funciona el ciclo de 4 tiempos?</strong>
+            Por cada 2 vueltas completas del cigüeñal (720°), el motor realiza 4 movimientos del pistón:
+            1. <strong>Admisión:</strong> Entra aire fresco y gasolina.<br>
+            2. <strong>Compresión:</strong> Se cierran las dos válvulas y el pistón aprieta la mezcla.<br>
+            3. <strong>Explosión:</strong> Salta la chispa en la bujía y el fuego empuja el pistón con enorme fuerza.<br>
+            4. <strong>Escape:</strong> Se abre la válvula de escape para expulsar los gases quemados.
+        </div>
+        <div class="info-facts">
+            <div class="fact-box">
+                <div class="fact-val" id="factRpm">1.200 RPM</div>
+                <div class="fact-lbl">Régimen de Giro</div>
+            </div>
+            <div class="fact-box">
+                <div class="fact-val" id="factAngle">0° TDC</div>
+                <div class="fact-lbl">Ángulo Cigüeñal</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="bottom-dock">
+        <!-- Control de velocidad RPM -->
+        <div class="slider-group">
+            <span class="dock-label">VELOCIDAD:</span>
+            <input type="range" id="rpmSlider" class="dock-slider" min="0" max="3000" step="50" value="900">
+            <span class="rpm-badge" id="rpmBadge">900 RPM</span>
+        </div>
+
+        <div class="divider"></div>
+
+        <button class="dock-btn active" id="btnPlayPause" onclick="togglePlayPause()">⏸ Pausar</button>
+        <button class="dock-btn" id="btnAudio" onclick="toggleEngineSound()">🔊 Sonido Motor</button>
+        <button class="dock-btn" onclick="stepSlow()">🔄 Paso a Paso</button>
+    </div>
+
+    <script>
+        const canvas = document.getElementById("engineStage");
+        const ctx = canvas.getContext("2d");
+
+        let rpm = 900;
+        let isRunning = true;
+        let crankAngle = 0; // 0 a 4*PI (720 grados = 4 tiempos)
+        let audioActive = false;
+        let audioCtx = null;
+        let oscNode = null;
+        let gainNode = null;
+
+        const STROKES = [
+            {
+                name: "TIEMPO 1 • ADMISIÓN (0° - 180°)",
+                color: "#38bdf8",
+                title: "Aspiración de Aire y Combustible",
+                summary: "La válvula izquierda (admisión) se abre. El pistón baja y chupa la mezcla fría de gasolina y aire.",
+                f1: "Válvula Admisión ABIERTA",
+                f2: "Pistón BAJANDO"
+            },
+            {
+                name: "TIEMPO 2 • COMPRESIÓN (180° - 360°)",
+                color: "#f59e0b",
+                title: "Compresión de la Mezcla",
+                summary: "Ambas válvulas cerradas herméticamente. El pistón sube comprimiendo la mezcla a alta presión y temperatura.",
+                f1: "Válvulas CERRADAS",
+                f2: "Pistón SUBIENDO"
+            },
+            {
+                name: "TIEMPO 3 • COMBUSTIÓN Y FUERZA (360° - 540°)",
+                color: "#ef4444",
+                title: "¡Explosión de Potencia!",
+                summary: "Salta la chispa eléctrica de la bujía. La violenta deflagración empuja con toneladas de fuerza el pistón hacia abajo.",
+                f1: "Chispa en BUJÍA",
+                f2: "Genera TRACCIÓN"
+            },
+            {
+                name: "TIEMPO 4 • ESCAPE (540° - 720°)",
+                color: "#a855f7",
+                title: "Expulsión de Gases Quemados",
+                summary: "La válvula derecha (escape) se abre. El pistón sube barriendo los gases hacia el tubo de escape y catalizador.",
+                f1: "Válvula Escape ABIERTA",
+                f2: "Evacua HUMO"
+            }
+        ];
+
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener("resize", resize);
+
+        // Control RPM
+        const rpmSlider = document.getElementById("rpmSlider");
+        const rpmBadge = document.getElementById("rpmBadge");
+        rpmSlider.addEventListener("input", (e) => {
+            rpm = parseInt(e.target.value);
+            rpmBadge.innerText = `${rpm} RPM`;
+            document.getElementById("factRpm").innerText = `${rpm} RPM`;
+            if (audioCtx && oscNode) {
+                oscNode.frequency.setValueAtTime(Math.max(20, (rpm / 60) * 2), audioCtx.currentTime);
+            }
+        });
+
+        function togglePlayPause() {
+            isRunning = !isRunning;
+            const btn = document.getElementById("btnPlayPause");
+            btn.innerText = isRunning ? "⏸ Pausar" : "▶ Reanudar";
+            btn.classList.toggle("active", isRunning);
+        }
+
+        function stepSlow() {
+            isRunning = false;
+            document.getElementById("btnPlayPause").innerText = "▶ Reanudar";
+            document.getElementById("btnPlayPause").classList.remove("active");
+            crankAngle = (crankAngle + Math.PI / 8) % (Math.PI * 4);
+        }
+
+        function toggleEngineSound() {
+            audioActive = !audioActive;
+            const btn = document.getElementById("btnAudio");
+            btn.classList.toggle("active", audioActive);
+
+            if (audioActive) {
+                if (!audioCtx) {
+                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                    oscNode = audioCtx.createOscillator();
+                    gainNode = audioCtx.createGain();
+                    oscNode.type = "sawtooth";
+                    oscNode.frequency.setValueAtTime((rpm / 60) * 2, audioCtx.currentTime);
+                    gainNode.gain.setValueAtTime(0.08, audioCtx.currentTime);
+                    oscNode.connect(gainNode);
+                    gainNode.connect(audioCtx.destination);
+                    oscNode.start();
+                } else if (audioCtx.state === "suspended") {
+                    audioCtx.resume();
+                }
+            } else if (audioCtx) {
+                audioCtx.suspend();
+            }
+        }
+
+        // =========================================================================
+        // MOTOR DE DIBUJO CINEMÁTICO REAL
+        // =========================================================================
+        function render() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Avance de ángulo según RPM
+            if (isRunning && rpm > 0) {
+                const dAngle = (rpm / 60) * (Math.PI * 2) * (1 / 60);
+                crankAngle = (crankAngle + dAngle) % (Math.PI * 4);
+            }
+
+            // Identificar en qué tiempo del ciclo de 4 tiempos estamos (0 a 3)
+            const strokeIdx = Math.floor(crankAngle / Math.PI);
+            const currentStroke = STROKES[strokeIdx % 4];
+
+            // Actualizar panel didáctico
+            const sBadge = document.getElementById("strokeBadge");
+            sBadge.innerText = currentStroke.name;
+            sBadge.style.color = currentStroke.color;
+            sBadge.style.borderColor = currentStroke.color;
+            document.getElementById("strokeTitle").innerText = currentStroke.title;
+            document.getElementById("strokeSummary").innerText = currentStroke.summary;
+            document.getElementById("factAngle").innerText = `${Math.floor((crankAngle * 180 / Math.PI) % 720)}°`;
+
+            // Dimensiones cinemáticas del motor
+            const cx = canvas.width / 2 - 140;
+            const cy = canvas.height / 2 + 130; // Centro del cigüeñal
+            const crankR = 65; // Radio del cigüeñal
+            const rodL = 190; // Longitud de la biela
+            const cylW = 150; // Anchura del cilindro
+            const cylTopY = cy - rodL - crankR - 100; // Culata del motor
+            const cylBotY = cy - 20;
+
+            // Posición cinemática del cigüeñal y pistón
+            // theta: ángulo de giro del cigüeñal
+            const theta = crankAngle % (Math.PI * 2);
+            const crankPinX = cx + Math.sin(theta) * crankR;
+            const crankPinY = cy - Math.cos(theta) * crankR;
+
+            // Altura del pistón (mecanismo biela-manivela)
+            const pistonPinY = cy - (Math.cos(theta) * crankR + Math.sqrt(rodL * rodL - Math.pow(Math.sin(theta) * crankR, 2)));
+            const pistonH = 75;
+
+            // 1. Cárter de aceite y bloque del motor
+            ctx.save();
+            ctx.fillStyle = "#1e293b";
+            ctx.strokeStyle = "#475569";
+            ctx.lineWidth = 4;
+
+            // Paredes exteriores del cilindro
+            ctx.beginPath();
+            ctx.rect(cx - cylW / 2 - 25, cylTopY, 25, cylBotY - cylTopY);
+            ctx.rect(cx + cylW / 2, cylTopY, 25, cylBotY - cylTopY);
+            ctx.fill();
+            ctx.stroke();
+
+            // Conductos de agua de refrigeración
+            ctx.fillStyle = "rgba(56, 189, 248, 0.4)";
+            ctx.fillRect(cx - cylW / 2 - 20, cylTopY + 50, 15, 120);
+            ctx.fillRect(cx + cylW / 2 + 5, cylTopY + 50, 15, 120);
+
+            // 2. Gas en la cámara de combustión (cambia según el tiempo del motor)
+            const chamberTopY = cylTopY + 20;
+            const chamberH = Math.max(10, pistonPinY - chamberTopY);
+            let gasGrad = ctx.createLinearGradient(cx, chamberTopY, cx, pistonPinY);
+
+            if (strokeIdx === 0) {
+                // Admisión: mezcla fresca azul
+                gasGrad.addColorStop(0, "rgba(56, 189, 248, 0.8)");
+                gasGrad.addColorStop(1, "rgba(56, 189, 248, 0.2)");
+            } else if (strokeIdx === 1) {
+                // Compresión: naranja denso
+                gasGrad.addColorStop(0, "rgba(245, 158, 11, 0.9)");
+                gasGrad.addColorStop(1, "rgba(234, 88, 12, 0.5)");
+            } else if (strokeIdx === 2) {
+                // Explosión: llamarada incandescente amarilla/roja
+                gasGrad.addColorStop(0, "#fef08a");
+                gasGrad.addColorStop(0.3, "#f97316");
+                gasGrad.addColorStop(1, "#ef4444");
+            } else {
+                // Escape: humo morado/gris
+                gasGrad.addColorStop(0, "rgba(168, 85, 247, 0.7)");
+                gasGrad.addColorStop(1, "rgba(100, 116, 139, 0.3)");
+            }
+
+            ctx.fillStyle = gasGrad;
+            ctx.fillRect(cx - cylW / 2, chamberTopY, cylW, chamberH);
+
+            // 3. Culata y válvulas de admisión y escape
+            drawCylinderHead(cx, cylTopY, cylW, strokeIdx);
+
+            // 4. Pistón y aros de compresión
+            ctx.fillStyle = "#94a3b8";
+            ctx.strokeStyle = "#e2e8f0";
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.rect(cx - cylW / 2 + 3, pistonPinY, cylW - 6, pistonH);
+            ctx.fill();
+            ctx.stroke();
+
+            // Aros de pistón (segmentos)
+            ctx.strokeStyle = "#475569";
+            ctx.lineWidth = 2;
+            for (let r = 8; r < 24; r += 7) {
+                ctx.beginPath();
+                ctx.moveTo(cx - cylW / 2 + 3, pistonPinY + r);
+                ctx.lineTo(cx + cylW / 2 - 3, pistonPinY + r);
+                ctx.stroke();
+            }
+
+            // Pasador del pistón (bulón)
+            ctx.beginPath();
+            ctx.arc(cx, pistonPinY + pistonH / 2, 12, 0, Math.PI * 2);
+            ctx.fillStyle = "#334155";
+            ctx.fill();
+            ctx.stroke();
+
+            // 5. Biela (Connecting Rod)
+            ctx.beginPath();
+            ctx.moveTo(cx, pistonPinY + pistonH / 2);
+            ctx.lineTo(crankPinX, crankPinY);
+            ctx.lineWidth = 22;
+            ctx.strokeStyle = "#64748b";
+            ctx.lineCap = "round";
+            ctx.stroke();
+
+            ctx.lineWidth = 14;
+            ctx.strokeStyle = "#cbd5e1";
+            ctx.stroke();
+
+            // 6. Cigüeñal y contrapeso (Crankshaft)
+            ctx.beginPath();
+            ctx.arc(cx, cy, crankR + 25, theta - 1.2, theta + 1.2);
+            ctx.lineTo(cx, cy);
+            ctx.closePath();
+            ctx.fillStyle = "#475569";
+            ctx.fill();
+            ctx.stroke();
+
+            // Muñón del cigüeñal
+            ctx.beginPath();
+            ctx.arc(crankPinX, crankPinY, 14, 0, Math.PI * 2);
+            ctx.fillStyle = "#f59e0b";
+            ctx.fill();
+            ctx.stroke();
+
+            // Eje central de rotación
+            ctx.beginPath();
+            ctx.arc(cx, cy, 18, 0, Math.PI * 2);
+            ctx.fillStyle = "#0f172a";
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.restore();
+
+            requestAnimationFrame(render);
+        }
+
+        // Culata, bujía y válvulas
+        function drawCylinderHead(cx, topY, w, strokeIdx) {
+            ctx.save();
+            ctx.fillStyle = "#334155";
+            ctx.fillRect(cx - w / 2 - 25, topY - 50, w + 50, 70);
+
+            // Bujía central
+            ctx.fillStyle = "#e2e8f0";
+            ctx.fillRect(cx - 7, topY - 45, 14, 45);
+            ctx.fillStyle = "#f59e0b";
+            ctx.fillRect(cx - 3, topY - 55, 6, 10);
+
+            // Electrodo y chispa
+            const isSparking = strokeIdx === 2 && (crankAngle % Math.PI < 0.6);
+            if (isSparking) {
+                ctx.beginPath();
+                ctx.arc(cx, topY + 22, 14, 0, Math.PI * 2);
+                ctx.fillStyle = "#fef08a";
+                ctx.shadowColor = "#fef08a";
+                ctx.shadowBlur = 25;
+                ctx.fill();
+            }
+
+            // Válvula de admisión (izquierda) - Se abre en Tiempo 1
+            const intakeOpen = strokeIdx === 0;
+            const valveDropIn = intakeOpen ? 18 : 0;
+            ctx.fillStyle = intakeOpen ? "#38bdf8" : "#94a3b8";
+            // Vástago
+            ctx.fillRect(cx - 42, topY - 35, 8, 45 + valveDropIn);
+            // Plato de válvula
+            ctx.beginPath();
+            ctx.ellipse(cx - 38, topY + 12 + valveDropIn, 22, 5, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Válvula de escape (derecha) - Se abre en Tiempo 4
+            const exhaustOpen = strokeIdx === 3;
+            const valveDropEx = exhaustOpen ? 18 : 0;
+            ctx.fillStyle = exhaustOpen ? "#a855f7" : "#94a3b8";
+            // Vástago
+            ctx.fillRect(cx + 34, topY - 35, 8, 45 + valveDropEx);
+            // Plato de válvula
+            ctx.beginPath();
+            ctx.ellipse(cx + 38, topY + 12 + valveDropEx, 22, 5, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.restore();
+        }
+
+        function toggleFullScreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(() => {});
+            } else {
+                document.exitFullscreen().catch(() => {});
+            }
+        }
+
+        window.addEventListener("DOMContentLoaded", () => {
+            resize();
+            render();
+        });
+    </script>
+</body>
+</html>
+

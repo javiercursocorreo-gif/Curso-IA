@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sesión 09 • Simulador 3D: Cráneo Fósil de Tiranosaurio Rex [COD-009]</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;800;900&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-base: #07090e;
+            --bg-panel: rgba(18, 22, 34, 0.92);
+            --amber: #f59e0b;
+            --amber-glow: rgba(245, 158, 11, 0.4);
+            --fossil: #e2d9cc;
+            --bone: #a89f91;
+            --danger: #ef4444;
+            --font-title: 'Cinzel', serif;
+            --font-sans: 'Inter', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background-color: var(--bg-base);
+            color: #f8fafc;
+            font-family: var(--font-sans);
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            user-select: none;
+        }
+
+        header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 20;
+            padding: 14px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: linear-gradient(180deg, rgba(7, 9, 14, 0.96) 0%, rgba(7, 9, 14, 0.6) 80%, transparent 100%);
+            border-bottom: 1px solid rgba(245, 158, 11, 0.25);
+            backdrop-filter: blur(10px);
+        }
+
+        .brand-box {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .brand-badge {
+            background: rgba(245, 158, 11, 0.15);
+            border: 1px solid var(--amber);
+            color: var(--amber);
+            font-family: var(--font-mono);
+            font-weight: 800;
+            font-size: 1rem;
+            padding: 5px 12px;
+            border-radius: 8px;
+        }
+
+        .brand-title {
+            font-family: var(--font-title);
+            font-size: 1.35rem;
+            font-weight: 900;
+            color: #ffffff;
+            letter-spacing: 0.5px;
+        }
+
+        .brand-sub {
+            font-size: 0.78rem;
+            color: #94a3b8;
+        }
+
+        .btn-action {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #f1f5f9;
+            padding: 8px 16px;
+            border-radius: 9999px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-action:hover {
+            background: rgba(245, 158, 11, 0.2);
+            border-color: var(--amber);
+            color: var(--amber);
+        }
+
+        #fossilStage {
+            flex: 1;
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        /* PANEL DIDÁCTICO DERECHO */
+        .info-card {
+            position: absolute;
+            top: 80px;
+            right: 24px;
+            width: 400px;
+            background: var(--bg-panel);
+            border: 1.5px solid var(--amber);
+            border-radius: 20px;
+            padding: 22px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9), 0 0 25px var(--amber-glow);
+            backdrop-filter: blur(20px);
+            z-index: 15;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .fossil-tag {
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            font-weight: 800;
+            padding: 5px 12px;
+            border-radius: 9999px;
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--amber);
+            border: 1px solid rgba(245, 158, 11, 0.35);
+            width: fit-content;
+        }
+
+        .info-title {
+            font-family: var(--font-title);
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: #ffffff;
+            line-height: 1.25;
+        }
+
+        .info-summary {
+            background: rgba(255, 255, 255, 0.05);
+            border-left: 3.5px solid var(--amber);
+            padding: 10px 14px;
+            border-radius: 0 10px 10px 0;
+            font-size: 0.9rem;
+            color: #f1f5f9;
+            line-height: 1.45;
+            font-weight: 500;
+        }
+
+        .info-detail {
+            font-size: 0.84rem;
+            color: #cbd5e1;
+            line-height: 1.6;
+            max-height: 230px;
+            overflow-y: auto;
+            padding-right: 6px;
+        }
+
+        .info-detail strong {
+            color: var(--amber);
+            display: block;
+            margin-top: 6px;
+            margin-bottom: 2px;
+            font-size: 0.78rem;
+            text-transform: uppercase;
+        }
+
+        .info-facts {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .fact-box {
+            background: rgba(0, 0, 0, 0.45);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            padding: 8px 10px;
+            text-align: center;
+        }
+
+        .fact-val {
+            font-family: var(--font-mono);
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--amber);
+        }
+
+        .fact-lbl {
+            font-size: 0.68rem;
+            color: #94a3b8;
+            text-transform: uppercase;
+            margin-top: 2px;
+        }
+
+        /* BARRA INFERIOR DE CONTROLES */
+        .bottom-dock {
+            position: absolute;
+            bottom: 16px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            background: rgba(18, 22, 34, 0.95);
+            border: 1px solid rgba(245, 158, 11, 0.35);
+            box-shadow: 0 10px 35px rgba(0,0,0,0.85);
+            backdrop-filter: blur(16px);
+            padding: 10px 24px;
+            border-radius: 9999px;
+            z-index: 15;
+            max-width: 94%;
+        }
+
+        .slider-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .dock-label {
+            font-size: 0.8rem;
+            font-weight: 800;
+            color: var(--amber);
+            font-family: var(--font-mono);
+            white-space: nowrap;
+        }
+
+        .dock-slider {
+            width: 170px;
+            accent-color: var(--amber);
+            cursor: pointer;
+        }
+
+        .force-badge {
+            font-family: var(--font-mono);
+            font-size: 0.88rem;
+            font-weight: 800;
+            color: #ef4444;
+            background: rgba(0,0,0,0.5);
+            padding: 3px 8px;
+            border-radius: 6px;
+            min-width: 95px;
+            text-align: center;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .divider {
+            width: 1px;
+            height: 22px;
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .dock-btn {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #ffffff;
+            padding: 8px 14px;
+            border-radius: 9999px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .dock-btn:hover {
+            background: rgba(245, 158, 11, 0.2);
+            border-color: var(--amber);
+            color: var(--amber);
+        }
+
+        .dock-btn.active {
+            background: var(--amber);
+            color: #07090e;
+            font-weight: 800;
+        }
+
+        @media (max-width: 950px) {
+            .info-card {
+                top: auto;
+                bottom: 85px;
+                right: 12px;
+                left: 12px;
+                width: auto;
+                max-height: 38vh;
+            }
+            .bottom-dock {
+                bottom: 8px;
+                padding: 6px 14px;
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="brand-box">
+            <div class="brand-badge">[COD-009]</div>
+            <div>
+                <h1 class="brand-title">Cráneo Fósil de Tiranosaurio Rex</h1>
+                <p class="brand-sub">PALEONTOLOGÍA Y EVOLUCIÓN • BIOMECÁNICA DE MORDIDA Y FOTOGRAMETRÍA ÓSEA 4K</p>
+            </div>
+        </div>
+        <div>
+            <button class="btn-action" onclick="toggleFullScreen()">⛶ Pantalla Completa</button>
+        </div>
+    </header>
+
+    <canvas id="fossilStage"></canvas>
+
+    <div class="info-card" id="infoCard">
+        <div class="fossil-tag" id="partTag">BIOMECÁNICA LETAL</div>
+        <h2 class="info-title" id="partTitle">La Mordida más Fuerte de la Historia</h2>
+        <div class="info-summary" id="partSummary">
+            El cráneo medía 1,5 metros de longitud y era capaz de ejercer hasta 60.000 Newtons de fuerza, triturando huesos de Triceratops como ramas secas.
+        </div>
+        <div class="info-detail" id="partDetail">
+            <strong>Dientes como plátanos de sierra:</strong>
+            Tenía hasta 60 dientes de hasta 30 cm con bordes aserrados que cortaban carne y pulverizaban hueso sin romperse gracias a raíces profundas de 20 cm.
+            <strong>Cráneo cinético rígido:</strong>
+            A diferencia de otros reptiles, los huesos del hocico del T-Rex estaban fusionados para que el cráneo no colapsara bajo su propia y descomunal presión mandibular.
+        </div>
+        <div class="info-facts">
+            <div class="fact-box">
+                <div class="fact-val" id="factBite">57.000 N</div>
+                <div class="fact-lbl">Fuerza de Mordida</div>
+            </div>
+            <div class="fact-box">
+                <div class="fact-val" id="factLen">1,52 m</div>
+                <div class="fact-lbl">Longitud del Cráneo</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="bottom-dock">
+        <!-- Control de apertura de fauces -->
+        <div class="slider-group">
+            <span class="dock-label">APERTURA FAUCES:</span>
+            <input type="range" id="jawSlider" class="dock-slider" min="0" max="45" step="1" value="15">
+            <span class="force-badge" id="forceBadge">35.000 N</span>
+        </div>
+
+        <div class="divider"></div>
+
+        <button class="dock-btn active" id="btnInspectTeeth" onclick="inspect('teeth')">🦷 Dientes Aserrados</button>
+        <button class="dock-btn" id="btnInspectFenestra" onclick="inspect('fenestra')">🕳️ Fenestras Óseas</button>
+        <button class="dock-btn" id="btnInspectOlfactory" onclick="inspect('olfactory')">👃 Bulbo Olfativo</button>
+        <button class="dock-btn" id="btnXray" onclick="toggleXray()">⚡ Rayos X</button>
+    </div>
+
+    <script>
+        const canvas = document.getElementById("fossilStage");
+        const ctx = canvas.getContext("2d");
+
+        let jawAngle = 15; // Grados de apertura mandibular (0 a 45)
+        let isXray = false;
+        let currentFocus = "teeth";
+
+        const ANATOMY = {
+            teeth: {
+                tag: "DIENTES TRITURADORES",
+                title: "Dientes de 30 cm Aserrados",
+                summary: "No masticaba: arrancaba y trituraba bloques de 50 kg de carne y hueso de un solo bocado.",
+                detail: "<strong>Reemplazo continuo:</strong> Si un diente se partía atacando a un Ankylosaurio, un nuevo diente brotaba de la encía como una cinta transportadora dental inagotable.<br><br><strong>Esmalte grueso:</strong> Diseñado para golpear hueso macizo sin astillarse.",
+                bite: "60 dientes",
+                len: "Hasta 30 cm"
+            },
+            fenestra: {
+                tag: "ALIVIO DE PESO",
+                title: "Grandes Fenestras Anteorbitales",
+                summary: "Enormes cavidades vacías en el cráneo que aligeraban cientos de kilos sin perder resistencia estructural.",
+                detail: "<strong>Anclaje muscular:</strong> Estas ventanas óseas servían como alojamiento para los maseteros colosales que cerraban las mandíbulas a gran velocidad.<br><br><strong>Bolsas de aire:</strong> Al igual que las aves actuales, el cráneo tenía cavidades neumáticas conectadas al sistema respiratorio.",
+                bite: "Peso cráneo 500 kg",
+                len: "3 grandes ventanas"
+            },
+            olfactory: {
+                tag: "SENTIDO SUPREMO",
+                title: "Bulbo Olfativo Gigante",
+                summary: "Los nervios olfativos del T-Rex ocupaban un espacio mayor que todo el resto de su cerebro.",
+                detail: "<strong>El mejor olfato de la historia:</strong> Podía detectar carroña o manadas de hadrosaurios a más de 10 kilómetros de distancia con el viento a favor.<br><br><strong>Visión binocular 3D:</strong> Sus ojos apuntaban al frente con un campo de visión estereoscópico superior al de un halcón moderno.",
+                bite: "10 km alcance",
+                len: "Visión binocular"
+            }
+        };
+
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener("resize", resize);
+
+        const jawSlider = document.getElementById("jawSlider");
+        const forceBadge = document.getElementById("forceBadge");
+        jawSlider.addEventListener("input", (e) => {
+            jawAngle = parseInt(e.target.value);
+            // Fuerza proporcional: a menor apertura, mayor fuerza máxima de oclusión
+            const newtons = Math.floor(60000 - (jawAngle / 45) * 35000);
+            forceBadge.innerText = `${newtons.toLocaleString()} N`;
+            document.getElementById("factBite").innerText = `${newtons.toLocaleString()} N`;
+        });
+
+        function inspect(key) {
+            currentFocus = key;
+            document.querySelectorAll(".dock-btn").forEach(b => b.classList.remove("active"));
+            if (key === "teeth") document.getElementById("btnInspectTeeth").classList.add("active");
+            if (key === "fenestra") document.getElementById("btnInspectFenestra").classList.add("active");
+            if (key === "olfactory") document.getElementById("btnInspectOlfactory").classList.add("active");
+
+            const d = ANATOMY[key];
+            document.getElementById("partTag").innerText = d.tag;
+            document.getElementById("partTitle").innerText = d.title;
+            document.getElementById("partSummary").innerText = d.summary;
+            document.getElementById("partDetail").innerHTML = d.detail;
+            document.getElementById("factBite").innerText = d.bite;
+            document.getElementById("factLen").innerText = d.len;
+        }
+
+        function toggleXray() {
+            isXray = !isXray;
+            document.getElementById("btnXray").classList.toggle("active", isXray);
+        }
+
+        // =========================================================================
+        // MOTOR DE DIBUJO DEL CRÁNEO FÓSIL
+        // =========================================================================
+        function render() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const cx = canvas.width / 2 - 130;
+            const cy = canvas.height / 2 - 10;
+            const scale = Math.min(canvas.width, canvas.height) / 780;
+
+            ctx.save();
+            ctx.translate(cx, cy);
+            ctx.scale(scale, scale);
+
+            // 1. Mandíbula Superior y Bóveda Craneal (Fija)
+            drawUpperSkull();
+
+            // 2. Mandíbula Inferior (Dentario) articulada con ángulo
+            drawLowerJaw(jawAngle * (Math.PI / 180));
+
+            // 3. Focos de atención anatómica
+            if (currentFocus === "olfactory") {
+                drawBrainAndOlfactory();
+            }
+
+            ctx.restore();
+
+            requestAnimationFrame(render);
+        }
+
+        // Cráneo superior
+        function drawUpperSkull() {
+            ctx.save();
+            ctx.fillStyle = isXray ? "rgba(56, 189, 248, 0.2)" : "#a89f91";
+            ctx.strokeStyle = isXray ? "#38bdf8" : "#f59e0b";
+            ctx.lineWidth = 3;
+
+            // Silueta del cráneo macizo
+            ctx.beginPath();
+            ctx.moveTo(-220, 20); // Extremo posterior occipital
+            ctx.quadraticCurveTo(-180, -110, -80, -130); // Bóveda craneal
+            ctx.lineTo(80, -100); // Puente nasal
+            ctx.quadraticCurveTo(180, -80, 220, -10); // Punta del hocico
+            ctx.lineTo(210, 30); // Premaxilar inferior
+            ctx.lineTo(-40, 25); // Paladar
+            ctx.quadraticCurveTo(-140, 50, -220, 20);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+
+            // Fenestra Anteorbital (Gran hueco en el hocico)
+            ctx.fillStyle = "#07090e";
+            ctx.beginPath();
+            ctx.ellipse(60, -30, 48, 28, 0.15, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.strokeStyle = currentFocus === "fenestra" ? "#ef4444" : "#475569";
+            ctx.lineWidth = currentFocus === "fenestra" ? 3.5 : 2;
+            ctx.stroke();
+
+            // Órbita ocular (Ojo con visión binocular)
+            ctx.beginPath();
+            ctx.arc(-50, -45, 24, 0, Math.PI * 2);
+            ctx.fillStyle = "#07090e";
+            ctx.fill();
+            ctx.strokeStyle = "#f59e0b";
+            ctx.stroke();
+
+            // Fosa Temporal (Inserción muscular)
+            ctx.beginPath();
+            ctx.ellipse(-140, -40, 32, 22, -0.2, 0, Math.PI * 2);
+            ctx.fillStyle = "#07090e";
+            ctx.fill();
+            ctx.strokeStyle = "#475569";
+            ctx.stroke();
+
+            // Dientes superiores (Maxilar)
+            ctx.fillStyle = "#f8fafc";
+            ctx.strokeStyle = currentFocus === "teeth" ? "#ef4444" : "#cbd5e1";
+            ctx.lineWidth = 1.5;
+
+            for (let x = -20; x <= 200; x += 22) {
+                const toothLen = Math.sin((x + 20) / 220 * Math.PI) * 45 + 18;
+                ctx.beginPath();
+                ctx.moveTo(x, 26);
+                ctx.lineTo(x + 7, 26 + toothLen);
+                ctx.lineTo(x + 14, 26);
+                ctx.closePath();
+                ctx.fill();
+                ctx.stroke();
+            }
+
+            ctx.restore();
+        }
+
+        // Mandíbula inferior articulada
+        function drawLowerJaw(rad) {
+            ctx.save();
+            const pivotX = -200;
+            const pivotY = 25;
+
+            ctx.translate(pivotX, pivotY);
+            ctx.rotate(rad);
+            ctx.translate(-pivotX, -pivotY);
+
+            ctx.fillStyle = isXray ? "rgba(56, 189, 248, 0.25)" : "#8c8275";
+            ctx.strokeStyle = isXray ? "#38bdf8" : "#f59e0b";
+            ctx.lineWidth = 3;
+
+            // Hueso Dentario inferior
+            ctx.beginPath();
+            ctx.moveTo(pivotX, pivotY);
+            ctx.lineTo(pivotX + 60, pivotY + 45);
+            ctx.lineTo(190, 75);
+            ctx.quadraticCurveTo(210, 50, 200, 35);
+            ctx.lineTo(pivotX + 80, 22);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+
+            // Dientes inferiores
+            ctx.fillStyle = "#f8fafc";
+            ctx.strokeStyle = currentFocus === "teeth" ? "#ef4444" : "#cbd5e1";
+            ctx.lineWidth = 1.5;
+
+            for (let x = -10; x <= 180; x += 22) {
+                const toothLen = Math.sin((x + 10) / 190 * Math.PI) * 38 + 15;
+                ctx.beginPath();
+                ctx.moveTo(x, 34);
+                ctx.lineTo(x + 7, 34 - toothLen);
+                ctx.lineTo(x + 14, 34);
+                ctx.closePath();
+                ctx.fill();
+                ctx.stroke();
+            }
+
+            ctx.restore();
+        }
+
+        // Radiografía del bulbo olfativo y cerebro
+        function drawBrainAndOlfactory() {
+            ctx.save();
+            ctx.fillStyle = "#38bdf8";
+            ctx.shadowColor = "#38bdf8";
+            ctx.shadowBlur = 18;
+
+            // Cerebro diminuto
+            ctx.beginPath();
+            ctx.ellipse(-75, -50, 22, 14, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Bulbo olfativo masivo que avanza hacia el hocico
+            ctx.beginPath();
+            ctx.moveTo(-55, -50);
+            ctx.lineTo(40, -42);
+            ctx.lineTo(75, -45);
+            ctx.lineWidth = 8;
+            ctx.strokeStyle = "#38bdf8";
+            ctx.stroke();
+
+            ctx.fillStyle = "#fef08a";
+            ctx.font = "800 12px 'JetBrains Mono'";
+            ctx.fillText("BULBO OLFATIVO GIGANTE", 0, -65);
+            ctx.restore();
+        }
+
+        function toggleFullScreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(() => {});
+            } else {
+                document.exitFullscreen().catch(() => {});
+            }
+        }
+
+        window.addEventListener("DOMContentLoaded", () => {
+            resize();
+            inspect("teeth");
+            render();
+        });
+    </script>
+</body>
+</html>
+

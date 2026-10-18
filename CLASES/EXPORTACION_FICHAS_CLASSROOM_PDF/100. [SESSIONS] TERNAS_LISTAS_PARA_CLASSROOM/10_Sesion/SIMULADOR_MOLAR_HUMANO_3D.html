@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sesión 10 • Simulador 3D: Molar Humano en Sección Anatómica [COD-010]</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-base: #060911;
+            --bg-panel: rgba(15, 23, 42, 0.92);
+            --enamel: #ffffff;
+            --dentin: #fde047;
+            --pulp: #ef4444;
+            --nerve: #38bdf8;
+            --gum: #fb7185;
+            --bone: #94a3b8;
+            --font-sans: 'Inter', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background-color: var(--bg-base);
+            color: #f8fafc;
+            font-family: var(--font-sans);
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            user-select: none;
+        }
+
+        header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 20;
+            padding: 14px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: linear-gradient(180deg, rgba(6, 9, 17, 0.96) 0%, rgba(6, 9, 17, 0.6) 80%, transparent 100%);
+            border-bottom: 1px solid rgba(56, 189, 248, 0.25);
+            backdrop-filter: blur(10px);
+        }
+
+        .brand-box {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .brand-badge {
+            background: rgba(56, 189, 248, 0.15);
+            border: 1px solid #38bdf8;
+            color: #38bdf8;
+            font-family: var(--font-mono);
+            font-weight: 800;
+            font-size: 1rem;
+            padding: 5px 12px;
+            border-radius: 8px;
+        }
+
+        .brand-title {
+            font-size: 1.35rem;
+            font-weight: 900;
+            color: #ffffff;
+            letter-spacing: -0.01em;
+        }
+
+        .brand-sub {
+            font-size: 0.78rem;
+            color: #94a3b8;
+        }
+
+        .btn-action {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #f1f5f9;
+            padding: 8px 16px;
+            border-radius: 9999px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-action:hover {
+            background: rgba(56, 189, 248, 0.2);
+            border-color: #38bdf8;
+            color: #38bdf8;
+        }
+
+        #molarStage {
+            flex: 1;
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        /* PANEL DIDÁCTICO DERECHO */
+        .info-card {
+            position: absolute;
+            top: 80px;
+            right: 24px;
+            width: 400px;
+            background: var(--bg-panel);
+            border: 1.5px solid #38bdf8;
+            border-radius: 20px;
+            padding: 22px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9), 0 0 25px rgba(56, 189, 248, 0.25);
+            backdrop-filter: blur(20px);
+            z-index: 15;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .layer-badge {
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            font-weight: 800;
+            padding: 5px 12px;
+            border-radius: 9999px;
+            background: rgba(56, 189, 248, 0.15);
+            color: #38bdf8;
+            border: 1px solid rgba(56, 189, 248, 0.35);
+            width: fit-content;
+        }
+
+        .info-title {
+            font-size: 1.3rem;
+            font-weight: 900;
+            color: #ffffff;
+            line-height: 1.25;
+        }
+
+        .info-summary {
+            background: rgba(255, 255, 255, 0.05);
+            border-left: 3.5px solid #38bdf8;
+            padding: 10px 14px;
+            border-radius: 0 10px 10px 0;
+            font-size: 0.9rem;
+            color: #f1f5f9;
+            line-height: 1.45;
+            font-weight: 500;
+        }
+
+        .info-detail {
+            font-size: 0.84rem;
+            color: #cbd5e1;
+            line-height: 1.6;
+            max-height: 230px;
+            overflow-y: auto;
+            padding-right: 6px;
+        }
+
+        .info-detail strong {
+            color: #38bdf8;
+            display: block;
+            margin-top: 6px;
+            margin-bottom: 2px;
+            font-size: 0.78rem;
+            text-transform: uppercase;
+        }
+
+        .info-facts {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .fact-box {
+            background: rgba(0, 0, 0, 0.45);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            padding: 8px 10px;
+            text-align: center;
+        }
+
+        .fact-val {
+            font-family: var(--font-mono);
+            font-size: 1.05rem;
+            font-weight: 800;
+            color: #38bdf8;
+        }
+
+        .fact-lbl {
+            font-size: 0.68rem;
+            color: #94a3b8;
+            text-transform: uppercase;
+            margin-top: 2px;
+        }
+
+        /* BARRA INFERIOR DE CONTROLES */
+        .bottom-dock {
+            position: absolute;
+            bottom: 16px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            background: rgba(15, 23, 42, 0.95);
+            border: 1px solid rgba(56, 189, 248, 0.35);
+            box-shadow: 0 10px 35px rgba(0,0,0,0.85);
+            backdrop-filter: blur(16px);
+            padding: 10px 24px;
+            border-radius: 9999px;
+            z-index: 15;
+            max-width: 94%;
+        }
+
+        .slider-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .dock-label {
+            font-size: 0.8rem;
+            font-weight: 800;
+            color: #38bdf8;
+            font-family: var(--font-mono);
+            white-space: nowrap;
+        }
+
+        .dock-slider {
+            width: 140px;
+            accent-color: #ef4444;
+            cursor: pointer;
+        }
+
+        .caries-badge {
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            font-weight: 800;
+            color: #22c55e;
+            background: rgba(0,0,0,0.5);
+            padding: 3px 8px;
+            border-radius: 6px;
+            min-width: 110px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .divider {
+            width: 1px;
+            height: 22px;
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .dock-btn {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #ffffff;
+            padding: 8px 14px;
+            border-radius: 9999px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .dock-btn:hover {
+            background: rgba(56, 189, 248, 0.2);
+            border-color: #38bdf8;
+            color: #38bdf8;
+        }
+
+        .dock-btn.active {
+            background: #38bdf8;
+            color: #060911;
+            font-weight: 800;
+        }
+
+        @media (max-width: 950px) {
+            .info-card {
+                top: auto;
+                bottom: 85px;
+                right: 12px;
+                left: 12px;
+                width: auto;
+                max-height: 38vh;
+            }
+            .bottom-dock {
+                bottom: 8px;
+                padding: 6px 14px;
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="brand-box">
+            <div class="brand-badge">[COD-010]</div>
+            <div>
+                <h1 class="brand-title">Molar Humano en Sección Anatómica</h1>
+                <p class="brand-sub">SALUD Y ODONTOLOGÍA • ESMALTE, DENTINA, PULPA DENTAL VASCULARIZADA Y CARIES</p>
+            </div>
+        </div>
+        <div>
+            <button class="btn-action" onclick="toggleFullScreen()">⛶ Pantalla Completa</button>
+        </div>
+    </header>
+
+    <canvas id="molarStage"></canvas>
+
+    <div class="info-card" id="infoCard">
+        <div class="layer-badge" id="partBadge">CAPA PROTECTORA SUPREMA</div>
+        <h2 class="info-title" id="partTitle">El Esmalte Dental (96% Mineral)</h2>
+        <div class="info-summary" id="partSummary">
+            Es la sustancia más dura del cuerpo humano, incluso más resistente que el titanio o los huesos, pero no puede autoregenerarse si se pierde.
+        </div>
+        <div class="info-detail" id="partDetail">
+            <strong>Estructura interna del molar:</strong>
+            1. <strong>Esmalte:</strong> Escudo exterior translúcido que soporta hasta 120 kg de fuerza por mordisco.<br>
+            2. <strong>Dentina:</strong> Capa amarillenta atravesada por 30.000 túbulos microscópicos llenos de líquido.<br>
+            3. <strong>Pulpa viva:</strong> La cámara que contiene arterias, venas y las ramificaciones del nervio trigémino.<br>
+            4. <strong>Ligamento periodontal:</strong> Fibras elásticas que unen la raíz al hueso maxilar y amortiguan la masticación.
+        </div>
+        <div class="info-facts">
+            <div class="fact-box">
+                <div class="fact-val" id="fact1">5 Dureza Mohs</div>
+                <div class="fact-lbl">Dureza de Esmalte</div>
+            </div>
+            <div class="fact-box">
+                <div class="fact-val" id="fact2">30.000/mm²</div>
+                <div class="fact-lbl">Túbulos en Dentina</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="bottom-dock">
+        <!-- Selector de capas anatómicas -->
+        <button class="dock-btn active" id="btnEnamel" onclick="selectLayer('enamel')">✨ Esmalte</button>
+        <button class="dock-btn" id="btnDentin" onclick="selectLayer('dentin')">🟡 Dentina</button>
+        <button class="dock-btn" id="btnPulp" onclick="selectLayer('pulp')">🩸 Pulpa y Nervio</button>
+        <button class="dock-btn" id="btnBone" onclick="selectLayer('bone')">🦴 Hueso y Encía</button>
+
+        <div class="divider"></div>
+
+        <!-- Simulación de Caries -->
+        <div class="slider-group">
+            <span class="dock-label">PROGRESIÓN CARIES:</span>
+            <input type="range" id="cariesSlider" class="dock-slider" min="0" max="4" step="1" value="0">
+            <span class="caries-badge" id="cariesBadge">0 • Diente Sano</span>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById("molarStage");
+        const ctx = canvas.getContext("2d");
+
+        let currentLayer = "enamel";
+        let cariesLevel = 0; // 0: Sano, 1: Esmalte, 2: Dentina, 3: Pulpa, 4: Absceso
+
+        const TOOTH_DATA = {
+            enamel: {
+                badge: "ESCUDO EXTERNO MINERAL",
+                title: "El Esmalte Dental (96% Mineral)",
+                summary: "La sustancia más dura del cuerpo humano. No tiene células vivas, por lo que no puede autorepararse sin ayuda del dentista.",
+                detail: "<strong>¿Por qué se desgasta en mayores de 60 años?</strong> El paso de los años, el bruxismo nocturno y los alimentos ácidos erosionan el esmalte, dejando al descubierto la dentina sensible amarilla.<br><br><strong>Consejo de oro:</strong> Usar pastas fluoradas remineralizantes y cepillo de cerdas suaves.",
+                f1: "96% Mineral",
+                f2: "Hasta 120 kg mordida"
+            },
+            dentin: {
+                badge: "TEJIDO VIBRATORIO SENSIBLE",
+                title: "La Dentina y los Túbulos Microscópicos",
+                summary: "Una capa elástica y amarillenta que actúa como amortiguador para que el esmalte no se fracture con la masticación.",
+                detail: "<strong>¿Por qué duele el frío o el calor?</strong> La dentina está perforada por millones de microtúbulos. Cuando el esmalte se desgasta o la encía se retrae, el líquido del túbulo se mueve y estimula el nervio provocando hipersensibilidad.",
+                f1: "70% Hidroxiapatita",
+                f2: "30.000 túbulos/mm²"
+            },
+            pulp: {
+                badge: "CORAZÓN VIVO DEL DIENTE",
+                title: "Cámara Pulpar y Nervio Trigémino",
+                summary: "El tejido blando vivo que nutre al diente con vasos sanguíneos y detecta presión, frío y dolor agudo.",
+                detail: "<strong>Pulpitis y Endodoncia:</strong> Cuando una caries atraviesa el esmalte y la dentina, las bacterias infectan la pulpa. Como está atrapada dentro de un espacio cerrado de hueso, la inflamación comprime el nervio causando el típico e insoportable 'dolor de muelas'.",
+                f1: "Arteria + Vena",
+                f2: "Nervio Sensitivo"
+            },
+            bone: {
+                badge: "SOPORTE PERIODONTAL",
+                title: "Hueso Alveolar y Encía Protectora",
+                summary: "El diente no está pegado rígidamente al hueso: flota sobre millones de ligamentos periodontales microscópicos.",
+                detail: "<strong>Salud de encías en adultos mayores:</strong> La periodontitis es la pérdida de hueso de soporte provocada por sarro acumulado. Mantener la encía sana y rosa es la clave número uno para no perder piezas dentales con la edad.",
+                f1: "Ligamento periodontal",
+                f2: "Amortiguador elástico"
+            }
+        };
+
+        const CARIES_TEXTS = [
+            { text: "0 • Diente Sano", color: "#22c55e", desc: "Esmalte intacto, sin dolor ni bacterias." },
+            { text: "1 • Mancha Blanca", color: "#eab308", desc: "Desmineralización leve en la superficie del esmalte. Asintomático y reversible con flúor." },
+            { text: "2 • Caries en Dentina", color: "#f97316", desc: "La bacteria ha penetrado. Sensibilidad al tomar agua fría, café caliente o dulces." },
+            { text: "3 • Infección en Pulpa", color: "#ef4444", desc: "Pulpitis aguda. Dolor punzante continuo. Requiere tratamiento de conducto (endodoncia)." },
+            { text: "4 • Absceso en Raíz", color: "#dc2626", desc: "Infección bacteriana en el hueso maxilar. Inflamación de mejilla ('flemón')." }
+        ];
+
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener("resize", resize);
+
+        function selectLayer(layer) {
+            currentLayer = layer;
+            document.querySelectorAll(".dock-btn").forEach(b => b.classList.remove("active"));
+            const map = { enamel: "btnEnamel", dentin: "btnDentin", pulp: "btnPulp", bone: "btnBone" };
+            if (map[layer]) document.getElementById(map[layer]).classList.add("active");
+
+            const d = TOOTH_DATA[layer];
+            document.getElementById("partBadge").innerText = d.badge;
+            document.getElementById("partTitle").innerText = d.title;
+            document.getElementById("partSummary").innerText = d.summary;
+            document.getElementById("partDetail").innerHTML = d.detail;
+            document.getElementById("fact1").innerText = d.f1;
+            document.getElementById("fact2").innerText = d.f2;
+        }
+
+        const cariesSlider = document.getElementById("cariesSlider");
+        const cariesBadge = document.getElementById("cariesBadge");
+        cariesSlider.addEventListener("input", (e) => {
+            cariesLevel = parseInt(e.target.value);
+            const info = CARIES_TEXTS[cariesLevel];
+            cariesBadge.innerText = info.text;
+            cariesBadge.style.color = info.color;
+            cariesBadge.style.borderColor = info.color;
+            document.getElementById("partSummary").innerText = info.desc;
+        });
+
+        // =========================================================================
+        // MOTOR DE DIBUJO DEL MOLAR
+        // =========================================================================
+        function render() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const cx = canvas.width / 2 - 140;
+            const cy = canvas.height / 2 + 10;
+            const scale = Math.min(canvas.width, canvas.height) / 780;
+
+            ctx.save();
+            ctx.translate(cx, cy);
+            ctx.scale(scale, scale);
+
+            // 1. Hueso Alveolar y Encía Rosa de Fondo
+            drawBoneAndGum();
+
+            // 2. Capa Exterior: Corona de Esmalte Blanco
+            drawEnamelLayer();
+
+            // 3. Capa Media: Dentina Amarillenta
+            drawDentinLayer();
+
+            // 4. Capa Central: Cámara Pulpar y Raíces (Arterias, Venas y Nervios)
+            drawPulpAndNerves();
+
+            // 5. Simulación visual de la Caries activa
+            if (cariesLevel > 0) {
+                drawCariesEffect();
+            }
+
+            ctx.restore();
+
+            requestAnimationFrame(render);
+        }
+
+        function drawBoneAndGum() {
+            ctx.save();
+            // Hueso maxilar esponjoso
+            ctx.fillStyle = currentLayer === "bone" ? "#475569" : "#1e293b";
+            ctx.fillRect(-220, 30, 440, 260);
+
+            // Textura trabecular del hueso
+            ctx.fillStyle = "rgba(255, 255, 255, 0.05)";
+            for (let bx = -200; bx < 200; bx += 25) {
+                for (let by = 50; by < 270; by += 25) {
+                    ctx.beginPath();
+                    ctx.arc(bx + (by % 20), by, 3, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+
+            // Encía rosada gingival
+            ctx.fillStyle = currentLayer === "bone" ? "#fb7185" : "#be185d";
+            ctx.beginPath();
+            ctx.moveTo(-220, 30);
+            ctx.quadraticCurveTo(-90, 15, -70, 30);
+            ctx.quadraticCurveTo(0, 5, 70, 30);
+            ctx.quadraticCurveTo(90, 15, 220, 30);
+            ctx.lineTo(220, 75);
+            ctx.lineTo(-220, 75);
+            ctx.closePath();
+            ctx.fill();
+            ctx.restore();
+        }
+
+        function drawEnamelLayer() {
+            ctx.save();
+            ctx.fillStyle = currentLayer === "enamel" ? "#ffffff" : "#cbd5e1";
+            ctx.strokeStyle = currentLayer === "enamel" ? "#38bdf8" : "#94a3b8";
+            ctx.lineWidth = currentLayer === "enamel" ? 4 : 2;
+
+            // Corona del molar con 4 cúspides masticatorias
+            ctx.beginPath();
+            ctx.moveTo(-110, 30);
+            ctx.quadraticCurveTo(-115, -80, -80, -110); // Cúspide 1
+            ctx.quadraticCurveTo(-45, -95, -25, -120); // Cúspide 2
+            ctx.quadraticCurveTo(0, -100, 25, -120);   // Cúspide 3
+            ctx.quadraticCurveTo(45, -95, 80, -110);   // Cúspide 4
+            ctx.quadraticCurveTo(115, -80, 110, 30);
+            ctx.lineTo(-110, 30);
+            ctx.closePath();
+            ctx.shadowColor = currentLayer === "enamel" ? "#38bdf8" : "transparent";
+            ctx.shadowBlur = currentLayer === "enamel" ? 20 : 0;
+            ctx.fill();
+            ctx.stroke();
+            ctx.restore();
+        }
+
+        function drawDentinLayer() {
+            ctx.save();
+            ctx.fillStyle = currentLayer === "dentin" ? "#fde047" : "#eab308";
+            ctx.strokeStyle = currentLayer === "dentin" ? "#ea580c" : "#ca8a04";
+            ctx.lineWidth = 3;
+
+            // Dentina que ocupa el cuerpo y las dos raíces
+            ctx.beginPath();
+            // Corona interna
+            ctx.moveTo(-85, 25);
+            ctx.quadraticCurveTo(-90, -60, -60, -85);
+            ctx.quadraticCurveTo(-20, -75, 0, -85);
+            ctx.quadraticCurveTo(20, -75, 60, -85);
+            ctx.quadraticCurveTo(90, -60, 85, 25);
+            // Raíz derecha
+            ctx.quadraticCurveTo(80, 140, 50, 230);
+            ctx.quadraticCurveTo(35, 240, 25, 220);
+            ctx.quadraticCurveTo(20, 130, 0, 80); // Bifurcación entre raíces
+            // Raíz izquierda
+            ctx.quadraticCurveTo(-20, 130, -25, 220);
+            ctx.quadraticCurveTo(-35, 240, -50, 230);
+            ctx.quadraticCurveTo(-80, 140, -85, 25);
+            ctx.closePath();
+            ctx.shadowColor = currentLayer === "dentin" ? "#fde047" : "transparent";
+            ctx.shadowBlur = currentLayer === "dentin" ? 18 : 0;
+            ctx.fill();
+            ctx.stroke();
+            ctx.restore();
+        }
+
+        function drawPulpAndNerves() {
+            ctx.save();
+            ctx.fillStyle = currentLayer === "pulp" ? "#ef4444" : "#b91c1c";
+            ctx.strokeStyle = currentLayer === "pulp" ? "#38bdf8" : "#991b1b";
+            ctx.lineWidth = 2.5;
+
+            // Cámara pulpar central
+            ctx.beginPath();
+            ctx.moveTo(-35, 10);
+            ctx.quadraticCurveTo(-40, -35, -20, -50); // Cuerno pulpar 1
+            ctx.quadraticCurveTo(0, -38, 20, -50);   // Cuerno pulpar 2
+            ctx.quadraticCurveTo(40, -35, 35, 10);
+            // Conducto radicular derecho
+            ctx.quadraticCurveTo(32, 100, 38, 225);
+            ctx.lineTo(28, 225);
+            ctx.quadraticCurveTo(20, 100, 0, 45); // Bifurcación
+            // Conducto radicular izquierdo
+            ctx.quadraticCurveTo(-20, 100, -28, 225);
+            ctx.lineTo(-38, 225);
+            ctx.quadraticCurveTo(-32, 100, -35, 10);
+            ctx.closePath();
+            ctx.shadowColor = currentLayer === "pulp" ? "#ef4444" : "transparent";
+            ctx.shadowBlur = currentLayer === "pulp" ? 22 : 0;
+            ctx.fill();
+            ctx.stroke();
+
+            // Nervios y vasos sanguíneos (filamentos)
+            ctx.strokeStyle = "#38bdf8";
+            ctx.lineWidth = 2;
+            // Nervio izquierdo
+            ctx.beginPath();
+            ctx.moveTo(0, -25);
+            ctx.quadraticCurveTo(-15, 80, -33, 235);
+            ctx.stroke();
+            // Nervio derecho
+            ctx.beginPath();
+            ctx.moveTo(0, -25);
+            ctx.quadraticCurveTo(15, 80, 33, 235);
+            ctx.stroke();
+
+            ctx.restore();
+        }
+
+        // Efecto visual de caries según nivel (0 a 4)
+        function drawCariesEffect() {
+            ctx.save();
+            const cariesX = -25;
+            const cariesY = -120;
+
+            if (cariesLevel >= 1) {
+                // Etapa 1: Mancha en el esmalte
+                ctx.beginPath();
+                ctx.arc(cariesX, cariesY + 8, 8, 0, Math.PI * 2);
+                ctx.fillStyle = "#78350f";
+                ctx.fill();
+            }
+            if (cariesLevel >= 2) {
+                // Etapa 2: Cráter que penetra en la dentina
+                ctx.beginPath();
+                ctx.ellipse(cariesX, cariesY + 28, 16, 20, 0, 0, Math.PI * 2);
+                ctx.fillStyle = "#451a03";
+                ctx.fill();
+            }
+            if (cariesLevel >= 3) {
+                // Etapa 3: Infección bacteriana en la pulpa (Pulpitis roja activa)
+                ctx.beginPath();
+                ctx.arc(-20, -50, 18, 0, Math.PI * 2);
+                ctx.fillStyle = "#dc2626";
+                ctx.shadowColor = "#ef4444";
+                ctx.shadowBlur = 25;
+                ctx.fill();
+            }
+            if (cariesLevel >= 4) {
+                // Etapa 4: Absceso / Infección en la punta de la raíz
+                ctx.beginPath();
+                ctx.arc(-33, 240, 24, 0, Math.PI * 2);
+                ctx.fillStyle = "rgba(220, 38, 38, 0.75)";
+                ctx.shadowColor = "#dc2626";
+                ctx.shadowBlur = 30;
+                ctx.fill();
+                ctx.fillStyle = "#ffffff";
+                ctx.font = "800 11px 'JetBrains Mono'";
+                ctx.fillText("¡ABSCESO APICAL!", -90, 280);
+            }
+            ctx.restore();
+        }
+
+        function toggleFullScreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(() => {});
+            } else {
+                document.exitFullscreen().catch(() => {});
+            }
+        }
+
+        window.addEventListener("DOMContentLoaded", () => {
+            resize();
+            selectLayer("enamel");
+            render();
+        });
+    </script>
+</body>
+</html>
+

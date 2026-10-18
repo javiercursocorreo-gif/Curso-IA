@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sesión 15 • Simulador 3D: El Partenón & Proporción Áurea [COD-015]</title>
+    <!-- Babylon.js CDN Oficial -->
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;800;900&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-base: #06070a;
+            --bg-panel: rgba(18, 16, 22, 0.94);
+            --marble: #e2d9cc;
+            --gold: #fbbf24;
+            --gold-glow: rgba(251, 191, 36, 0.4);
+            --phi-blue: #38bdf8;
+            --font-title: 'Cinzel', serif;
+            --font-sans: 'Inter', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background-color: var(--bg-base);
+            color: #f8fafc;
+            font-family: var(--font-sans);
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            user-select: none;
+        }
+
+        header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 20;
+            padding: 14px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: linear-gradient(180deg, rgba(8, 7, 10, 0.96) 0%, rgba(8, 7, 10, 0.6) 80%, transparent 100%);
+            border-bottom: 1px solid rgba(251, 191, 36, 0.25);
+            backdrop-filter: blur(10px);
+        }
+
+        .brand-box {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .brand-badge {
+            background: rgba(251, 191, 36, 0.15);
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            font-family: var(--font-mono);
+            font-weight: 800;
+            font-size: 1rem;
+            padding: 5px 12px;
+            border-radius: 8px;
+        }
+
+        .brand-title {
+            font-family: var(--font-title);
+            font-size: 1.35rem;
+            font-weight: 900;
+            color: #ffffff;
+            letter-spacing: 0.5px;
+        }
+
+        .brand-sub {
+            font-size: 0.78rem;
+            color: #94a3b8;
+        }
+
+        .btn-action {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #f1f5f9;
+            padding: 8px 16px;
+            border-radius: 9999px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-action:hover {
+            background: rgba(251, 191, 36, 0.2);
+            border-color: var(--gold);
+            color: var(--gold);
+        }
+
+        #parthenonStage {
+            flex: 1;
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        /* PANEL DIDÁCTICO DERECHO */
+        .info-card {
+            position: absolute;
+            top: 80px;
+            right: 24px;
+            width: 415px;
+            background: var(--bg-panel);
+            border: 1.5px solid var(--gold);
+            border-radius: 20px;
+            padding: 22px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9), 0 0 25px var(--gold-glow);
+            backdrop-filter: blur(20px);
+            z-index: 15;
+            display: flex;
+            flex-direction: column;
+            gap: 13px;
+        }
+
+        .arch-tag {
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            font-weight: 800;
+            padding: 5px 12px;
+            border-radius: 9999px;
+            background: rgba(251, 191, 36, 0.15);
+            color: var(--gold);
+            border: 1px solid rgba(251, 191, 36, 0.35);
+            width: fit-content;
+        }
+
+        .info-title {
+            font-family: var(--font-title);
+            font-size: 1.3rem;
+            font-weight: 900;
+            color: #ffffff;
+            line-height: 1.25;
+        }
+
+        .info-summary {
+            background: rgba(255, 255, 255, 0.05);
+            border-left: 3.5px solid var(--gold);
+            padding: 10px 14px;
+            border-radius: 0 10px 10px 0;
+            font-size: 0.9rem;
+            color: #f1f5f9;
+            line-height: 1.45;
+        }
+
+        .data-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .data-cell {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            border-radius: 10px;
+            padding: 8px 12px;
+        }
+
+        .data-label {
+            font-size: 0.72rem;
+            color: #94a3b8;
+            text-transform: uppercase;
+            font-family: var(--font-mono);
+            font-weight: 700;
+        }
+
+        .data-val {
+            font-size: 1rem;
+            color: var(--gold);
+            font-weight: 800;
+            margin-top: 2px;
+        }
+
+        .tabs-header {
+            font-size: 0.76rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #94a3b8;
+            margin-top: 4px;
+        }
+
+        .layers-btn-group {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+        }
+
+        .layer-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: #cbd5e1;
+            padding: 9px 8px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+        }
+
+        .layer-btn.active {
+            background: linear-gradient(135deg, rgba(251, 191, 36, 0.35), rgba(217, 119, 6, 0.35));
+            border-color: #fbbf24;
+            color: #ffffff;
+            box-shadow: 0 0 12px rgba(251, 191, 36, 0.35);
+        }
+
+        .slider-box {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            background: rgba(0, 0, 0, 0.35);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            border-radius: 10px;
+            padding: 10px 12px;
+        }
+
+        .slider-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.78rem;
+            color: #94a3b8;
+            font-weight: 600;
+        }
+
+        .slider-box input[type="range"] {
+            width: 100%;
+            accent-color: #fbbf24;
+            cursor: pointer;
+        }
+
+        /* GUÍA DIDÁCTICA INFERIOR */
+        .bottom-guide {
+            position: absolute;
+            bottom: 20px;
+            left: 24px;
+            background: rgba(18, 16, 22, 0.92);
+            border: 1px solid rgba(251, 191, 36, 0.3);
+            border-radius: 14px;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            z-index: 15;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(12px);
+            font-size: 0.85rem;
+            color: #94a3b8;
+        }
+        .bottom-guide strong {
+            color: #fff;
+        }
+        .guide-tag {
+            background: rgba(251, 191, 36, 0.15);
+            color: var(--gold);
+            border: 1px solid rgba(251, 191, 36, 0.3);
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            font-weight: 800;
+            padding: 4px 10px;
+            border-radius: 6px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="brand-box">
+            <span class="brand-badge">[COD-015]</span>
+            <div>
+                <h1 class="brand-title">El Partenón de Atenas & Proporción Áurea</h1>
+                <p class="brand-sub">Ictino, Calícrates y Fidias (438 a.C.) • Geometría Sagrada Phi (1.618) en Babylon.js 3D</p>
+            </div>
+        </div>
+        <div style="display: flex; gap: 10px;">
+            <button class="btn-action" id="btnToggleSpin">⏸ Pausar Giro</button>
+            <button class="btn-action" id="btnFrontView">🏛️ Fachada Frontal (Phi)</button>
+            <button class="btn-action" id="btnResetView">🔄 Perspectiva 3D</button>
+        </div>
+    </header>
+
+    <canvas id="parthenonStage"></canvas>
+
+    <div class="info-card">
+        <div class="arch-tag">🏛️ ACROPOLIS DE ATENAS • ARQUITECTURA CLÁSICA</div>
+        <h2 class="info-title" id="infoTitle">Geometría Áurea & Rectángulos Phi</h2>
+        <div class="info-summary" id="infoDesc">
+            El Partenón no tiene prácticamente ninguna línea completamente recta. Los arquitectos griegos aplicaron correcciones ópticas sutiles (éntasis en columnas y curvatura en el suelo) combinadas con el número áureo Phi (1.618033...).
+        </div>
+
+        <div class="data-grid">
+            <div class="data-cell">
+                <div class="data-label">Número Áureo (Φ)</div>
+                <div class="data-val">1.618033...</div>
+            </div>
+            <div class="data-cell">
+                <div class="data-label">Columnas Frontales</div>
+                <div class="data-val">8 (Octástilo)</div>
+            </div>
+            <div class="data-cell">
+                <div class="data-label">Éntasis Máximo</div>
+                <div class="data-val">+1.75 cm (Abombado)</div>
+            </div>
+            <div class="data-cell">
+                <div class="data-label">Curvatura Estilóbato</div>
+                <div class="data-val">+6.5 cm al Centro</div>
+            </div>
+        </div>
+
+        <div class="tabs-header">Análisis de Arquitectura & Matemáticas:</div>
+        <div class="layers-btn-group">
+            <button class="layer-btn active" id="btnModePhi" onclick="setParthenonMode('phi')">📐 Espiral & Rectángulo Áureo</button>
+            <button class="layer-btn" id="btnModeEntasis" onclick="setParthenonMode('entasis')">🏛️ Éntasis en Columnas</button>
+            <button class="layer-btn" id="btnModeCurvature" onclick="setParthenonMode('curvature')">👁️ Corrección Óptica Estilóbato</button>
+            <button class="layer-btn" id="btnModePediment" onclick="setParthenonMode('pediment')">⚔️ Frontón & Entablamento</button>
+        </div>
+
+        <div class="slider-box">
+            <div class="slider-row">
+                <span>Visibilidad Guías Doradas (Phi):</span>
+                <span id="txtPhiAlpha" style="color:#fbbf24; font-weight:800;">100%</span>
+            </div>
+            <input type="range" id="phiAlphaRange" min="0" max="100" step="5" value="100" oninput="updatePhiVisibility(this.value)">
+        </div>
+
+        <div class="slider-box">
+            <div class="slider-row">
+                <span>Luz Solar Ateniense:</span>
+                <span id="txtSunLight" style="color:#f8fafc; font-weight:800;">Mediodía</span>
+            </div>
+            <input type="range" id="sunAngleRange" min="0" max="180" step="5" value="60" oninput="updateSunAngle(this.value)">
+        </div>
+    </div>
+
+    <div class="bottom-guide">
+        <span class="guide-tag">LA IDEA FÁCIL SENIOR</span>
+        <span>👉 Haz clic en <strong>"Fachada Frontal (Phi)"</strong> para comprobar cómo la anchura y la altura de la fachada encajan milimétricamente en la divina proporción.</span>
+    </div>
+
+    <script>
+        const canvas = document.getElementById("parthenonStage");
+        const engine = new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true });
+        
+        let scene, camera, sunLight;
+        let templeRoot, columns = [], stylobate, architrave, frieze, pediment;
+        let goldenRectangles = [], goldenSpiral;
+        let isSpinning = true;
+        let phiVisibility = 1.0;
+
+        function createScene() {
+            scene = new BABYLON.Scene(engine);
+            scene.clearColor = new BABYLON.Color4(0.02, 0.02, 0.035, 1.0);
+
+            camera = new BABYLON.ArcRotateCamera("Cam", -Math.PI / 2, Math.PI / 2.3, 46, new BABYLON.Vector3(0, 3, 0), scene);
+            camera.attachControl(canvas, true);
+            camera.lowerRadiusLimit = 15;
+            camera.upperRadiusLimit = 95;
+            camera.wheelPrecision = 40;
+
+            const hemi = new BABYLON.HemisphericLight("hemi", new BABYLON.Vector3(0, 1, 0), scene);
+            hemi.intensity = 0.55;
+            hemi.diffuse = new BABYLON.Color3(0.9, 0.88, 0.8);
+
+            sunLight = new BABYLON.DirectionalLight("sunLight", new BABYLON.Vector3(-1, -1.2, 0.8), scene);
+            sunLight.intensity = 1.4;
+            sunLight.diffuse = new BABYLON.Color3(1.0, 0.95, 0.85);
+
+            templeRoot = new BABYLON.TransformNode("templeRoot", scene);
+
+            // Materiales de Mármol Pentélico
+            const marbleMat = new BABYLON.StandardMaterial("marbleMat", scene);
+            marbleMat.diffuseColor = new BABYLON.Color3(0.92, 0.87, 0.8);
+            marbleMat.specularColor = new BABYLON.Color3(0.2, 0.2, 0.2);
+
+            const goldMat = new BABYLON.StandardMaterial("goldMat", scene);
+            goldMat.emissiveColor = new BABYLON.Color3(0.98, 0.75, 0.14);
+            goldMat.diffuseColor = new BABYLON.Color3(1, 0.85, 0.3);
+
+            // 1. Estilóbato (Base escalonada de 3 niveles)
+            const baseW = 30.8;
+            const baseL = 69.5 * 0.45; // Escala proporcional compacta didáctica
+            for (let step = 0; step < 3; step++) {
+                const sW = baseW + (2 - step) * 0.8;
+                const sL = baseL + (2 - step) * 0.8;
+                const stepMesh = BABYLON.MeshBuilder.CreateBox("step_" + step, {
+                    width: sW,
+                    height: 0.65,
+                    depth: sL
+                }, scene);
+                stepMesh.position.y = step * 0.65;
+                stepMesh.material = marbleMat;
+                stepMesh.parent = templeRoot;
+                if (step === 2) stylobate = stepMesh;
+            }
+
+            // 2. Columnata Dórica (8 frontales x 17 laterales)
+            const colH = 10.4;
+            const colRadiusBottom = 0.95;
+            const colRadiusTop = 0.78; // Éntasis y reducción cónica
+
+            // Frontal (8 columnas)
+            const colSpacingX = (baseW - 3.2) / 7;
+            for (let c = 0; c < 8; c++) {
+                const x = - (baseW - 3.2) / 2 + c * colSpacingX;
+                // Columna frontal z = baseL / 2 - 1.2
+                createDoricColumn(x, 1.95, (baseL / 2 - 1.2), colRadiusBottom, colRadiusTop, colH, marbleMat);
+                // Columna trasera z = - (baseL / 2 - 1.2)
+                createDoricColumn(x, 1.95, - (baseL / 2 - 1.2), colRadiusBottom, colRadiusTop, colH, marbleMat);
+            }
+
+            // Laterales (filas interiores)
+            const colSpacingZ = (baseL - 2.4) / 10;
+            for (let r = 1; r < 10; r++) {
+                const z = - (baseL - 2.4) / 2 + r * colSpacingZ;
+                createDoricColumn(- (baseW - 3.2) / 2, 1.95, z, colRadiusBottom, colRadiusTop, colH, marbleMat);
+                createDoricColumn((baseW - 3.2) / 2, 1.95, z, colRadiusBottom, colRadiusTop, colH, marbleMat);
+            }
+
+            // Cella interior (Muros del sanctasanctórum donde estaba la estatua de Atenea Pártenos)
+            const cella = BABYLON.MeshBuilder.CreateBox("cella", {
+                width: baseW - 8.5,
+                height: colH,
+                depth: baseL - 7.5
+            }, scene);
+            cella.position = new BABYLON.Vector3(0, 1.95 + colH / 2, 0);
+            const cellaMat = new BABYLON.StandardMaterial("cellaMat", scene);
+            cellaMat.diffuseColor = new BABYLON.Color3(0.85, 0.8, 0.73);
+            cella.material = cellaMat;
+            cella.parent = templeRoot;
+
+            // 3. Entablamento (Arquitrabe + Friso con Metopas y Triglifos)
+            architrave = BABYLON.MeshBuilder.CreateBox("architrave", {
+                width: baseW - 2.0,
+                height: 1.4,
+                depth: baseL - 0.8
+            }, scene);
+            architrave.position.y = 1.95 + colH + 0.7;
+            architrave.material = marbleMat;
+            architrave.parent = templeRoot;
+
+            frieze = BABYLON.MeshBuilder.CreateBox("frieze", {
+                width: baseW - 2.0,
+                height: 1.4,
+                depth: baseL - 0.8
+            }, scene);
+            frieze.position.y = 1.95 + colH + 1.4 + 0.7;
+            frieze.material = marbleMat;
+            frieze.parent = templeRoot;
+
+            // 4. Frontón Triangular Áureo (Frontal y Trasero)
+            const pedimentW = baseW - 1.8;
+            const pedimentH = 3.8;
+            pediment = BABYLON.MeshBuilder.CreateCylinder("pedimentFront", {
+                diameter: pedimentW,
+                height: 1.2,
+                tessellation: 3
+            }, scene);
+            pediment.rotation.z = Math.PI;
+            pediment.rotation.x = Math.PI / 2;
+            pediment.position = new BABYLON.Vector3(0, 1.95 + colH + 2.8 + pedimentH * 0.45, (baseL - 1.2) / 2);
+            pediment.scaling = new BABYLON.Vector3(1, 0.25, 0.1);
+            pediment.material = marbleMat;
+            pediment.parent = templeRoot;
+
+            // 5. Trazado 3D de Rectángulos Áureos y Espiral de Fibonacci (Geometría Sagrada Phi)
+            createGoldenOverlays(baseW - 2.0, 1.95 + colH + 2.8 + pedimentH);
+
+            // Rotación suave del templo
+            scene.registerBeforeRender(() => {
+                if (isSpinning) {
+                    templeRoot.rotation.y += 0.0025;
+                }
+            });
+
+            return scene;
+        }
+
+        function createDoricColumn(x, yBase, z, rBottom, rTop, h, mat) {
+            // Fuste de la columna con éntasis (ligero abombamiento a 1/3 de la altura)
+            const col = BABYLON.MeshBuilder.CreateCylinder("col", {
+                diameterBottom: rBottom * 2,
+                diameterTop: rTop * 2,
+                height: h,
+                tessellation: 20
+            }, scene);
+            col.position = new BABYLON.Vector3(x, yBase + h / 2, z);
+            col.material = mat;
+            col.parent = templeRoot;
+
+            // Capitel Dórico (Equino y Ábaco)
+            const abacus = BABYLON.MeshBuilder.CreateBox("abacus", {
+                width: rTop * 2.3,
+                height: 0.45,
+                depth: rTop * 2.3
+            }, scene);
+            abacus.position = new BABYLON.Vector3(x, yBase + h + 0.22, z);
+            abacus.material = mat;
+            abacus.parent = templeRoot;
+
+            columns.push(col);
+        }
+
+        function createGoldenOverlays(w, totalH) {
+            // Marco del Rectángulo Áureo Principal (Anchura / Altura = 1.618)
+            const hPhi = w / 1.618;
+            const pts = [
+                new BABYLON.Vector3(-w/2, 1.95, (baseL_approx() / 2) + 0.1),
+                new BABYLON.Vector3(w/2, 1.95, (baseL_approx() / 2) + 0.1),
+                new BABYLON.Vector3(w/2, 1.95 + hPhi, (baseL_approx() / 2) + 0.1),
+                new BABYLON.Vector3(-w/2, 1.95 + hPhi, (baseL_approx() / 2) + 0.1),
+                new BABYLON.Vector3(-w/2, 1.95, (baseL_approx() / 2) + 0.1)
+            ];
+            const mainRect = BABYLON.MeshBuilder.CreateLines("goldenMainRect", { points: pts }, scene);
+            mainRect.color = new BABYLON.Color3(0.98, 0.75, 0.14);
+            mainRect.parent = templeRoot;
+            goldenRectangles.push(mainRect);
+
+            // Subdivisión áurea (Cuadrado 1x1 + Rectángulo recíproco 0.618)
+            const splitX = w/2 - (hPhi);
+            const lineSplit = BABYLON.MeshBuilder.CreateLines("phiSplit", {
+                points: [
+                    new BABYLON.Vector3(splitX, 1.95, (baseL_approx() / 2) + 0.1),
+                    new BABYLON.Vector3(splitX, 1.95 + hPhi, (baseL_approx() / 2) + 0.1)
+                ]
+            }, scene);
+            lineSplit.color = new BABYLON.Color3(0.22, 0.74, 0.97);
+            lineSplit.parent = templeRoot;
+            goldenRectangles.push(lineSplit);
+
+            // Espiral Áurea de Fibonacci
+            const spiralPts = [];
+            const spiralTurns = 18;
+            let currentR = 0.2;
+            const cx = splitX;
+            const cy = 1.95 + hPhi * 0.4;
+            for (let i = 0; i <= 60; i++) {
+                const theta = i * 0.1;
+                const r = 0.2 * Math.exp(0.306 * theta);
+                spiralPts.push(new BABYLON.Vector3(cx - Math.cos(theta) * r, cy + Math.sin(theta) * r, (baseL_approx() / 2) + 0.12));
+            }
+            goldenSpiral = BABYLON.MeshBuilder.CreateLines("goldenSpiral", { points: spiralPts }, scene);
+            goldenSpiral.color = new BABYLON.Color3(0.98, 0.75, 0.14);
+            goldenSpiral.parent = templeRoot;
+            goldenRectangles.push(goldenSpiral);
+        }
+
+        function baseL_approx() {
+            return 69.5 * 0.45;
+        }
+
+        scene = createScene();
+
+        // Control de Modos Didácticos
+        function setParthenonMode(mode) {
+            document.querySelectorAll('.layer-btn').forEach(b => b.classList.remove('active'));
+            const t = document.getElementById("infoTitle");
+            const d = document.getElementById("infoDesc");
+
+            if (mode === 'phi') {
+                document.getElementById("btnModePhi").classList.add('active');
+                goldenRectangles.forEach(r => r.setEnabled(true));
+                t.textContent = "Proporción Áurea (Phi = 1.618)";
+                d.textContent = "La fachada frontal encaja con absoluta precisión en un rectángulo de proporción 1:1.618. El escultor Fidias diseñó las esculturas y relieves siguiendo este mismo canon de belleza y equilibrio visual.";
+            } else if (mode === 'entasis') {
+                document.getElementById("btnModeEntasis").classList.add('active');
+                goldenRectangles.forEach(r => r.setEnabled(false));
+                t.textContent = "Éntasis en las Columnas Dóricas";
+                d.textContent = "Si las columnas fuesen cilindros perfectamente rectos, el ojo humano las percibiría cóncavas y frágiles en el centro. Por eso se tallaron con un abombamiento de 1.75 cm hacia la mitad de su altura.";
+            } else if (mode === 'curvature') {
+                document.getElementById("btnModeCurvature").classList.add('active');
+                goldenRectangles.forEach(r => r.setEnabled(false));
+                t.textContent = "Curvatura del Estilóbato (El Suelo Curvo)";
+                d.textContent = "El suelo del templo se eleva 6.5 cm en el centro de la fachada. Si fuese horizontal plano, a distancia parecería hundirse por el peso del edificio. Además facilitaba el drenaje del agua de lluvia.";
+            } else if (mode === 'pediment') {
+                document.getElementById("btnModePediment").classList.add('active');
+                goldenRectangles.forEach(r => r.setEnabled(false));
+                t.textContent = "Frontón y Friso de las Panateneas";
+                d.textContent = "El triángulo superior albergaba las esculturas de la disputa entre Atenea y Poseidón. Coronaba un arquitrabe monumental de 220 toneladas de mármol blanco de las canteras del monte Pentélico.";
+            }
+        }
+
+        function updatePhiVisibility(val) {
+            const alpha = parseInt(val) / 100.0;
+            document.getElementById("txtPhiAlpha").textContent = val + "%";
+            goldenRectangles.forEach(r => {
+                r.alpha = alpha;
+                r.setEnabled(alpha > 0.05);
+            });
+        }
+
+        function updateSunAngle(val) {
+            const deg = parseInt(val);
+            const rad = (deg * Math.PI) / 180;
+            sunLight.direction = new BABYLON.Vector3(-Math.cos(rad), -1.1, Math.sin(rad));
+            const txt = (deg < 45) ? "Amanecer Ático" : (deg < 120 ? "Mediodía Radiante" : "Atardecer Egeo");
+            document.getElementById("txtSunLight").textContent = txt;
+        }
+
+        document.getElementById("btnToggleSpin").addEventListener("click", () => {
+            isSpinning = !isSpinning;
+            document.getElementById("btnToggleSpin").textContent = isSpinning ? "⏸ Pausar Giro" : "▶ Reanudar Giro";
+        });
+
+        document.getElementById("btnFrontView").addEventListener("click", () => {
+            isSpinning = false;
+            document.getElementById("btnToggleSpin").textContent = "▶ Reanudar Giro";
+            templeRoot.rotation.y = 0;
+            camera.alpha = -Math.PI / 2;
+            camera.beta = Math.PI / 2.05;
+            camera.radius = 42;
+            camera.target = new BABYLON.Vector3(0, 8, baseL_approx() / 2);
+            setParthenonMode('phi');
+        });
+
+        document.getElementById("btnResetView").addEventListener("click", () => {
+            camera.alpha = -Math.PI / 2.5;
+            camera.beta = Math.PI / 2.3;
+            camera.radius = 46;
+            camera.target = new BABYLON.Vector3(0, 3, 0);
+        });
+
+        window.addEventListener("resize", () => {
+            engine.resize();
+        });
+
+        engine.runRenderLoop(() => {
+            scene.render();
+        });
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sesión 11 • Simulador 3D: Violín Stradivarius & Resonancia Acústica [COD-011]</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;800;900&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-base: #080608;
+            --bg-panel: rgba(22, 17, 20, 0.94);
+            --varnish: #ea580c;
+            --gold: #f59e0b;
+            --gold-glow: rgba(245, 158, 11, 0.4);
+            --sound: #38bdf8;
+            --maple: #c2410c;
+            --font-title: 'Cinzel', serif;
+            --font-sans: 'Inter', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background-color: var(--bg-base);
+            color: #f8fafc;
+            font-family: var(--font-sans);
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            user-select: none;
+        }
+
+        header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 20;
+            padding: 14px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: linear-gradient(180deg, rgba(8, 6, 8, 0.96) 0%, rgba(8, 6, 8, 0.6) 80%, transparent 100%);
+            border-bottom: 1px solid rgba(245, 158, 11, 0.25);
+            backdrop-filter: blur(10px);
+        }
+
+        .brand-box {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .brand-badge {
+            background: rgba(245, 158, 11, 0.15);
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            font-family: var(--font-mono);
+            font-weight: 800;
+            font-size: 1rem;
+            padding: 5px 12px;
+            border-radius: 8px;
+        }
+
+        .brand-title {
+            font-family: var(--font-title);
+            font-size: 1.35rem;
+            font-weight: 900;
+            color: #ffffff;
+            letter-spacing: 0.5px;
+        }
+
+        .brand-sub {
+            font-size: 0.78rem;
+            color: #94a3b8;
+        }
+
+        .btn-action {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #f1f5f9;
+            padding: 8px 16px;
+            border-radius: 9999px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-action:hover {
+            background: rgba(245, 158, 11, 0.2);
+            border-color: var(--gold);
+            color: var(--gold);
+        }
+
+        #violinStage {
+            flex: 1;
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        /* PANEL DIDÁCTICO DERECHO */
+        .info-card {
+            position: absolute;
+            top: 80px;
+            right: 24px;
+            width: 400px;
+            background: var(--bg-panel);
+            border: 1.5px solid var(--gold);
+            border-radius: 20px;
+            padding: 22px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9), 0 0 25px var(--gold-glow);
+            backdrop-filter: blur(20px);
+            z-index: 15;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .luthier-tag {
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            font-weight: 800;
+            padding: 5px 12px;
+            border-radius: 9999px;
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--gold);
+            border: 1px solid rgba(245, 158, 11, 0.35);
+            width: fit-content;
+        }
+
+        .info-title {
+            font-family: var(--font-title);
+            font-size: 1.3rem;
+            font-weight: 900;
+            color: #ffffff;
+            line-height: 1.25;
+        }
+
+        .info-summary {
+            background: rgba(255, 255, 255, 0.05);
+            border-left: 3.5px solid var(--gold);
+            padding: 10px 14px;
+            border-radius: 0 10px 10px 0;
+            font-size: 0.9rem;
+            color: #f1f5f9;
+            line-height: 1.45;
+            font-weight: 500;
+        }
+
+        .info-detail {
+            font-size: 0.84rem;
+            color: #cbd5e1;
+            line-height: 1.6;
+            max-height: 230px;
+            overflow-y: auto;
+            padding-right: 6px;
+        }
+
+        .info-detail strong {
+            color: var(--gold);
+            display: block;
+            margin-top: 6px;
+            margin-bottom: 2px;
+            font-size: 0.78rem;
+            text-transform: uppercase;
+        }
+
+        .info-facts {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .fact-box {
+            background: rgba(0, 0, 0, 0.45);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            padding: 8px 10px;
+            text-align: center;
+        }
+
+        .fact-val {
+            font-family: var(--font-mono);
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--gold);
+        }
+
+        .fact-lbl {
+            font-size: 0.68rem;
+            color: #94a3b8;
+            text-transform: uppercase;
+            margin-top: 2px;
+        }
+
+        /* BARRA INFERIOR DE CUERDAS Y CONTROLES */
+        .bottom-dock {
+            position: absolute;
+            bottom: 16px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            background: rgba(22, 17, 20, 0.95);
+            border: 1px solid rgba(245, 158, 11, 0.35);
+            box-shadow: 0 10px 35px rgba(0,0,0,0.85);
+            backdrop-filter: blur(16px);
+            padding: 10px 24px;
+            border-radius: 9999px;
+            z-index: 15;
+            max-width: 94%;
+        }
+
+        .dock-btn {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #ffffff;
+            padding: 8px 16px;
+            border-radius: 9999px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .dock-btn:hover {
+            background: rgba(245, 158, 11, 0.25);
+            border-color: var(--gold);
+            color: var(--gold);
+            transform: translateY(-2px);
+        }
+
+        .dock-btn.active {
+            background: var(--gold);
+            color: #080608;
+            font-weight: 800;
+            box-shadow: 0 0 15px var(--gold-glow);
+        }
+
+        .divider {
+            width: 1px;
+            height: 22px;
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        @media (max-width: 950px) {
+            .info-card {
+                top: auto;
+                bottom: 85px;
+                right: 12px;
+                left: 12px;
+                width: auto;
+                max-height: 38vh;
+            }
+            .bottom-dock {
+                bottom: 8px;
+                padding: 6px 14px;
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="brand-box">
+            <div class="brand-badge">[COD-011]</div>
+            <div>
+                <h1 class="brand-title">Violín Stradivarius & Resonancia Acústica</h1>
+                <p class="brand-sub">ACÚSTICA Y ARTE MUSICAL • CREMONA 1715 • FÍSICA DE CUERDAS Y EL ALMA DEL VIOLÍN</p>
+            </div>
+        </div>
+        <div>
+            <button class="btn-action" onclick="toggleFullScreen()">⛶ Pantalla Completa</button>
+        </div>
+    </header>
+
+    <canvas id="violinStage"></canvas>
+
+    <div class="info-card" id="infoCard">
+        <div class="luthier-tag" id="partBadge">EDAD DE ORO DE CREMONA</div>
+        <h2 class="info-title" id="partTitle">Antonio Stradivari (1715)</h2>
+        <div class="info-summary" id="partSummary">
+            Toca cualquiera de las 4 cuerdas abajo para escuchar su tono armónico puro y ver las ondas sonoras viajar por la madera.
+        </div>
+        <div class="info-detail" id="partDetail">
+            <strong>El alma del violín (L'anima):</strong>
+            En el interior del cuerpo, bajo el puente, se oculta un cilindro de pino de apenas 6 mm de grosor. Se llama 'el alma' porque transmite la vibración de las cuerdas desde la tapa superior hasta el fondo en milisegundos. Sin él, el violín sonaría completamente mudo y hueco.
+            <strong>El secreto de la madera:</strong>
+            Los árboles talados en 1700 crecieron durante la 'Pequeña Edad de Hielo', con inviernos tan fríos que crearon anillos de madera microscópicamente densos y perfectos para proyectar el sonido.
+        </div>
+        <div class="info-facts">
+            <div class="fact-box">
+                <div class="fact-val" id="factNote">La (A4)</div>
+                <div class="fact-lbl">Nota seleccionada</div>
+            </div>
+            <div class="fact-box">
+                <div class="fact-val" id="factHz">440 Hz</div>
+                <div class="fact-lbl">Frecuencia Sonora</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- BOTONERA DE CUERDAS AFINADAS EN QUINTAS -->
+    <div class="bottom-dock">
+        <button class="dock-btn" onclick="playString(0)">🎻 Cuerda 1: SOL (196 Hz)</button>
+        <button class="dock-btn" onclick="playString(1)">🎻 Cuerda 2: RE (293 Hz)</button>
+        <button class="dock-btn active" onclick="playString(2)">🎻 Cuerda 3: LA (440 Hz)</button>
+        <button class="dock-btn" onclick="playString(3)">🎻 Cuerda 4: MI (659 Hz)</button>
+
+        <div class="divider"></div>
+
+        <button class="dock-btn" id="btnXray" onclick="toggleXray()">⚡ El Alma & Barra Armónica</button>
+    </div>
+
+    <script>
+        const canvas = document.getElementById("violinStage");
+        const ctx = canvas.getContext("2d");
+
+        let activeString = 2; // Cuerda 3 (La 440)
+        let stringVibrations = [0, 0, 0, 0];
+        let soundWaves = [];
+        let isXray = false;
+
+        let audioCtx = null;
+
+        const STRINGS_INFO = [
+            { note: "Sol (G3)", hz: "196 Hz", desc: "La cuerda más grave. Entorchada en hilo de plata puro, emite un sonido profundo, cálido y aterciopelado." },
+            { note: "Re (D4)", hz: "293 Hz", desc: "Cuerda intermedia con sonido dulce y nostálgico, perfecta para pasajes cantables y románticos." },
+            { note: "La (A4)", hz: "440 Hz", desc: "La frecuencia de afinación universal. Con esta nota afinan todos los instrumentos de una orquesta sinfónica." },
+            { note: "Mi (E5)", hz: "659 Hz", desc: "La cuerda más aguda de acero templado. Brillante, cristalina y capaz de proyectarse por encima de 100 músicos." }
+        ];
+
+        const FREQS = [196, 293.66, 440, 659.25];
+
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener("resize", resize);
+
+        function playString(idx) {
+            activeString = idx;
+            stringVibrations[idx] = 1.0;
+
+            document.querySelectorAll(".bottom-dock .dock-btn").forEach((b, i) => {
+                if (i < 4) b.classList.toggle("active", i === idx);
+            });
+
+            const d = STRINGS_INFO[idx];
+            document.getElementById("factNote").innerText = d.note;
+            document.getElementById("factHz").innerText = d.hz;
+            document.getElementById("partSummary").innerText = d.desc;
+
+            // Ondas sonoras visuales
+            for (let i = 0; i < 3; i++) {
+                soundWaves.push({
+                    r: 20 + i * 15,
+                    alpha: 1.0,
+                    speed: 2.5 + i * 0.5
+                });
+            }
+
+            // Reproducir sonido físico Web Audio
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if (audioCtx.state === "suspended") audioCtx.resume();
+
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+
+            osc.type = "triangle";
+            osc.frequency.setValueAtTime(FREQS[idx], audioCtx.currentTime);
+
+            gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 1.6);
+
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            osc.start();
+            osc.stop(audioCtx.currentTime + 1.7);
+        }
+
+        function toggleXray() {
+            isXray = !isXray;
+            document.getElementById("btnXray").classList.toggle("active", isXray);
+        }
+
+        // =========================================================================
+        // MOTOR DE DIBUJO DEL STRADIVARIUS
+        // =========================================================================
+        function render() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const cx = canvas.width / 2 - 130;
+            const cy = canvas.height / 2;
+            const scale = Math.min(canvas.width, canvas.height) / 780;
+
+            ctx.save();
+            ctx.translate(cx, cy);
+            ctx.scale(scale, scale);
+
+            // 1. Cuerpo del Violín en Silueta Clásica
+            drawViolinBody();
+
+            // 2. Efes Acústicas (f-holes)
+            drawFHoles();
+
+            // 3. Batidor y Mástil de Ébano
+            drawFingerboard();
+
+            // 4. Puente de Madera (Bridge)
+            drawBridge();
+
+            // 5. Las 4 Cuerdas con Vibración Física Activa
+            drawStrings();
+
+            // 6. Si modo radiografía: mostrar el Alma y la Barra Armónica
+            if (isXray) {
+                drawSoundpostAndBassBar();
+            }
+
+            // 7. Ondas Acústicas Flotantes
+            drawAcousticWaves();
+
+            ctx.restore();
+
+            requestAnimationFrame(render);
+        }
+
+        function drawViolinBody() {
+            ctx.save();
+            // Barniz cálido de arce flameado de Cremona
+            const bodyGrad = ctx.createRadialGradient(0, 40, 20, 0, 40, 220);
+            bodyGrad.addColorStop(0, "#f97316");
+            bodyGrad.addColorStop(0.5, "#c2410c");
+            bodyGrad.addColorStop(1, "#7c2d12");
+
+            ctx.fillStyle = isXray ? "rgba(124, 45, 18, 0.4)" : bodyGrad;
+            ctx.strokeStyle = "#f59e0b";
+            ctx.lineWidth = 3;
+
+            // Curvas de la caja de resonancia clásica (lóbulo superior, cintura C, lóbulo inferior)
+            ctx.beginPath();
+            ctx.moveTo(0, -180);
+            // Lado derecho
+            ctx.bezierCurveTo(75, -180, 115, -130, 115, -70); // Bóveda superior
+            ctx.bezierCurveTo(115, -30, 75, -10, 65, 20);      // Cintura C superior
+            ctx.bezierCurveTo(55, 45, 75, 75, 85, 95);        // Esquina inferior
+            ctx.bezierCurveTo(135, 135, 145, 210, 85, 265);   // Lóbulo inferior
+            ctx.bezierCurveTo(45, 290, -45, 290, -85, 265);   // Botón base
+            // Lado izquierdo (simétrico)
+            ctx.bezierCurveTo(-145, 210, -135, 135, -85, 95);
+            ctx.bezierCurveTo(-75, 75, -55, 45, -65, 20);
+            ctx.bezierCurveTo(-75, -10, -115, -30, -115, -70);
+            ctx.bezierCurveTo(-115, -130, -75, -180, 0, -180);
+            ctx.closePath();
+
+            ctx.shadowColor = "#f59e0b";
+            ctx.shadowBlur = 20;
+            ctx.fill();
+            ctx.stroke();
+
+            // Fileteado (purfling) decorativo interior
+            ctx.strokeStyle = "rgba(0, 0, 0, 0.45)";
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            ctx.restore();
+        }
+
+        function drawFHoles() {
+            ctx.save();
+            ctx.fillStyle = "#080608";
+            ctx.strokeStyle = "#f59e0b";
+            ctx.lineWidth = 1.5;
+
+            // Efe derecha
+            drawSingleF(45, 60, false);
+            // Efe izquierda
+            drawSingleF(-45, 60, true);
+
+            ctx.restore();
+        }
+
+        function drawSingleF(x, y, mirror) {
+            ctx.save();
+            ctx.translate(x, y);
+            if (mirror) ctx.scale(-1, 1);
+
+            ctx.beginPath();
+            ctx.arc(8, -45, 5, 0, Math.PI * 2); // Ojo superior
+            ctx.bezierCurveTo(18, -25, 0, 15, -10, 45); // Tallo curvado
+            ctx.arc(-8, 55, 6, 0, Math.PI * 2); // Ojo inferior
+            ctx.bezierCurveTo(4, 25, 16, -15, 8, -45);
+            ctx.fill();
+            ctx.stroke();
+
+            // Muesca central
+            ctx.beginPath();
+            ctx.moveTo(-5, 8);
+            ctx.lineTo(-12, 10);
+            ctx.lineTo(-6, 14);
+            ctx.stroke();
+
+            ctx.restore();
+        }
+
+        function drawFingerboard() {
+            ctx.save();
+            // Batidor negro de ébano africano
+            ctx.fillStyle = "#0f172a";
+            ctx.fillRect(-18, -260, 36, 210);
+            ctx.strokeStyle = "#334155";
+            ctx.lineWidth = 2;
+            ctx.strokeRect(-18, -260, 36, 210);
+
+            // Cejuela superior
+            ctx.fillStyle = "#e2e8f0";
+            ctx.fillRect(-18, -265, 36, 6);
+
+            // Cordal inferior
+            ctx.beginPath();
+            ctx.moveTo(-16, 160);
+            ctx.lineTo(16, 160);
+            ctx.lineTo(8, 270);
+            ctx.lineTo(-8, 270);
+            ctx.closePath();
+            ctx.fillStyle = "#0f172a";
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.restore();
+        }
+
+        function drawBridge() {
+            ctx.save();
+            // Puente de arce rizado
+            ctx.fillStyle = "#fef08a";
+            ctx.strokeStyle = "#ca8a04";
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.rect(-24, 75, 48, 12);
+            ctx.fill();
+            ctx.stroke();
+            ctx.restore();
+        }
+
+        function drawStrings() {
+            ctx.save();
+            const stringX = [-9, -3, 3, 9];
+            const colors = ["#cbd5e1", "#e2e8f0", "#38bdf8", "#f8fafc"];
+            const widths = [3.2, 2.5, 1.8, 1.2];
+
+            for (let i = 0; i < 4; i++) {
+                const sx = stringX[i];
+                const vib = stringVibrations[i];
+
+                ctx.beginPath();
+                ctx.moveTo(sx, -265);
+
+                // Si está vibrando, dibujar onda sinusoidal
+                if (vib > 0.05) {
+                    const waveAmp = Math.sin(Date.now() * 0.05) * (vib * 6);
+                    ctx.quadraticCurveTo(sx + waveAmp, -70, sx, 160);
+                    stringVibrations[i] *= 0.98; // Atenuación progresiva
+                } else {
+                    ctx.lineTo(sx, 160);
+                }
+
+                ctx.strokeStyle = i === activeString ? "#38bdf8" : colors[i];
+                ctx.lineWidth = widths[i];
+                if (i === activeString) {
+                    ctx.shadowColor = "#38bdf8";
+                    ctx.shadowBlur = 10;
+                }
+                ctx.stroke();
+            }
+            ctx.restore();
+        }
+
+        function drawSoundpostAndBassBar() {
+            ctx.save();
+            // El Alma (Soundpost) bajo la cuerda agudo/derecha
+            ctx.beginPath();
+            ctx.arc(15, 95, 7, 0, Math.PI * 2);
+            ctx.fillStyle = "#f59e0b";
+            ctx.shadowColor = "#f59e0b";
+            ctx.shadowBlur = 15;
+            ctx.fill();
+            ctx.fillStyle = "#ffffff";
+            ctx.font = "800 11px 'JetBrains Mono'";
+            ctx.fillText("EL ALMA (6 mm)", 28, 100);
+
+            // Barra armónica (Bass bar) longitudinal bajo las cuerdas graves
+            ctx.strokeStyle = "#38bdf8";
+            ctx.lineWidth = 5;
+            ctx.setLineDash([6, 4]);
+            ctx.beginPath();
+            ctx.moveTo(-22, -100);
+            ctx.lineTo(-22, 190);
+            ctx.stroke();
+            ctx.fillText("BARRA ARMÓNICA", -135, 190);
+            ctx.restore();
+        }
+
+        function drawAcousticWaves() {
+            ctx.save();
+            soundWaves.forEach((w, idx) => {
+                ctx.beginPath();
+                ctx.arc(0, 60, w.r, 0, Math.PI * 2);
+                ctx.strokeStyle = `rgba(56, 189, 248, ${w.alpha})`;
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                w.r += w.speed;
+                w.alpha -= 0.015;
+            });
+            soundWaves = soundWaves.filter(w => w.alpha > 0);
+            ctx.restore();
+        }
+
+        function toggleFullScreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(() => {});
+            } else {
+                document.exitFullscreen().catch(() => {});
+            }
+        }
+
+        window.addEventListener("DOMContentLoaded", () => {
+            resize();
+            playString(2);
+            render();
+        });
+    </script>
+</body>
+</html>
+
