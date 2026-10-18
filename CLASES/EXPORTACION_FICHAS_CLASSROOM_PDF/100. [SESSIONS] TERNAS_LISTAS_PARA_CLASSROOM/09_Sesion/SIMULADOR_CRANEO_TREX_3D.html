@@ -654,16 +654,74 @@
             ctx.scale(scale, scale);
             ctx.translate(-canvas.width / 2, -canvas.height / 2);
 
-            // Dibujar la Fotografía Real del Cráneo Fósil
+            // PIVOTE ANATÓMICO DE LA ARTICULACIÓN CUADRADO-MANDIBULAR
+            const pivotX = canvas.width * 0.76;
+            const pivotY = canvas.height * 0.58;
+            const radAngle = (jawAngle * Math.PI) / 180;
+
+            // 1. DIBUJAR CAVIDAD ORAL OSCURA INTERIOR CUANDO LA BOCA SE ABRE
+            if (jawAngle > 1) {
+                ctx.fillStyle = '#0a0d14';
+                ctx.beginPath();
+                ctx.moveTo(canvas.width * 0.28, canvas.height * 0.55);
+                ctx.lineTo(pivotX, pivotY);
+                // Punto inferior rotado de la mandíbula
+                const chinX = canvas.width * 0.28;
+                const chinY = canvas.height * 0.65;
+                const rotChinX = pivotX + (chinX - pivotX) * Math.cos(radAngle) - (chinY - pivotY) * Math.sin(radAngle);
+                const rotChinY = pivotY + (chinX - pivotX) * Math.sin(radAngle) + (chinY - pivotY) * Math.cos(radAngle);
+                ctx.lineTo(rotChinX, rotChinY);
+                ctx.closePath();
+                ctx.fill();
+
+                // Detalle de fauces y garganta cavernosa
+                const gradGape = ctx.createRadialGradient(pivotX - 80, pivotY, 10, pivotX - 80, pivotY, 200);
+                gradGape.addColorStop(0, 'rgba(120, 20, 20, 0.6)');
+                gradGape.addColorStop(1, 'rgba(0, 0, 0, 0.95)');
+                ctx.fillStyle = gradGape;
+                ctx.fill();
+            }
+
+            // 2. DIBUJAR CRÁNEO SUPERIOR FIJO (MAXILAR, ÓRBITAS, FENESTRAS)
+            ctx.save();
+            ctx.beginPath();
+            ctx.rect(0, 0, canvas.width, canvas.height * 0.56);
+            // Extender en la parte posterior donde el cráneo desciende
+            ctx.rect(canvas.width * 0.72, canvas.height * 0.56, canvas.width * 0.28, canvas.height * 0.44);
+            ctx.clip();
+
             if (visualMode === 'photo') {
                 ctx.filter = 'none';
-                ctx.drawImage(fossilImg, 0, 0, canvas.width, canvas.height);
             } else if (visualMode === 'xray') {
-                // Simulación de Tomografía Computarizada / Rayos X
                 ctx.filter = 'invert(1) contrast(1.8) hue-rotate(180deg) brightness(0.9)';
-                ctx.drawImage(fossilImg, 0, 0, canvas.width, canvas.height);
-                ctx.filter = 'none';
+            } else if (visualMode === 'biomech') {
+                ctx.filter = 'brightness(0.7) contrast(1.2)';
+            }
+            ctx.drawImage(fossilImg, 0, 0, canvas.width, canvas.height);
+            ctx.restore();
 
+            // 3. DIBUJAR MANDÍBULA INFERIOR ARTICULADA QUE ROTA FÍSICAMENTE
+            ctx.save();
+            // Trasladar al punto articular del hueso cuadrado y rotar
+            ctx.translate(pivotX, pivotY);
+            ctx.rotate(radAngle);
+            ctx.translate(-pivotX, -pivotY);
+
+            // Recortar únicamente la mandíbula inferior
+            ctx.beginPath();
+            ctx.rect(0, canvas.height * 0.55, canvas.width * 0.78, canvas.height * 0.45);
+            ctx.clip();
+
+            if (visualMode === 'photo') {
+                ctx.filter = 'none';
+            } else if (visualMode === 'xray') {
+                ctx.filter = 'invert(1) contrast(1.8) hue-rotate(180deg) brightness(0.9)';
+            }
+            ctx.drawImage(fossilImg, 0, 0, canvas.width, canvas.height);
+            ctx.restore();
+
+            // CAPAS ESPECÍFICAS DE MODOS DE VISUALIZACIÓN
+            if (visualMode === 'xray') {
                 // Capa de fosforescencia de cavidad cerebral y raíces dentales
                 ctx.strokeStyle = 'rgba(56, 189, 248, 0.7)';
                 ctx.lineWidth = 4;
@@ -681,10 +739,6 @@
                 ctx.fillText('TOMOGRAFÍA CT: CAVIDAD ENDOCRANEAL (CEREBRO)', canvas.width * 0.45, canvas.height * 0.30);
 
             } else if (visualMode === 'biomech') {
-                // Modo Biomecánico: Vectores de Fuerza de Cierre Mandibular
-                ctx.filter = 'brightness(0.6) contrast(1.2)';
-                ctx.drawImage(fossilImg, 0, 0, canvas.width, canvas.height);
-                ctx.filter = 'none';
 
                 // Vectores de fuerza muscular (Musculus Adductor Mandibulae)
                 const startX = canvas.width * 0.75;

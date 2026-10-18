@@ -50,6 +50,19 @@
   - En cada turno donde se cree, ajuste, corrija o modifique cualquier simulador, probador de código o mapa interactivo, el asistente DEBE lanzar/abrir siempre automáticamente dicho archivo HTML en **Google Chrome** en local (ej. `open -a "Google Chrome" "/ruta/al/archivo.html"`).
   - Esto permite al usuario inspeccionar, interactuar y validar visualmente el resultado de inmediato en su pantalla en 2 segundos, sin demoras y sin tener que esperar los minutos que toma la subida pesada y despliegue en Google Classroom / GitHub Pages.
 
+## Estándar de Activos Visuales: Prohibición Total de Imágenes Generadas por IA (GenAI) y Búsqueda Exclusiva en Repositorios Científicos Oficiales
+- **PROHIBICIÓN TOTAL DE IMÁGENES GENERADAS POR IA:**
+  - Queda TERMINANTEMENTE PROHIBIDO utilizar modelos generadores de imágenes por IA (Midjourney, DALL-E, Imagen, subagentes `image-generator`, etc.) para crear o inventar fotografías científicas.
+  - Ninguna simulación ni recurso didáctico puede contener fotografías sintéticas o generadas por IA.
+- **BÚSQUEDA EXCLUSIVA EN REPOSITORIOS CIENTÍFICOS OFICIALES Y DATOS REALES:**
+  - Todas las fotografías, tomografías, fotogrametrías, cortes histológicos y mapas de textura deben ser **AUTÉNTICOS DATOS CIENTÍFICOS REALES** procedentes de fuentes institucionales y académicas oficiales:
+    - **NASA / JPL / LRO / ESA:** Fotografía satelital astronómica real, mapas altimétricos láser LOLA, misiones espaciales.
+    - **NIH (National Institutes of Health) / U.S. National Library of Medicine:** Escaneos médicos y anatómicos reales, tomografías axiales computarizadas (TC/TAC), resonancias magnéticas (RM), microtomografías y cortes histológicos de tejido humano real (como los usados para corazón, pulmones y anatomía médica).
+    - **Museos Científicos y Repositorios Paleontológicos (AMNH, FMNH Chicago, Smithsonian, Natural History Museum):** Fotogrametrías y fotografías de archivo de fósiles y especímenes de colección reales.
+    - **Sociedades de Ingeniería Mecánica y Archivos Técnicos (SAE, ISO, esquemas de corte fidedignos de automoción):** Fotografía y planos de sección real de ingeniería mecánica.
+  - Los activos obtenidos de estas fuentes deben respaldarse en Base64 en `03_ASSETS_3D_Y_DATOS/` para garantizar funcionamiento autónomo y 100% offline sin dependencias externas.
+
+
 
 
 
