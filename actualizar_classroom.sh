@@ -8,7 +8,7 @@ cp "/Users/externo/.gemini/antigravity/brain/cbfe82a5-4265-4c02-9b6a-03745e40357
 
 echo "=== 2. Guardando cambios y sincronizando con GitHub... ==="
 git add -A
-git commit -m "feat(s24): integrar ilustraciones oficiales del cartel de las 11 dimensiones [COD-024]" || true
+git commit -m "fix(s24): retirar pie de cita de Mister Cosmo de la ficha didactica [COD-024]" || true
 git push origin main
 
 echo "=== 3. Replicando en carpeta de Sesion 24... ==="
