@@ -339,16 +339,45 @@
             background: #020904;
             border: 2px solid #15803d;
             border-radius: 8px;
-            padding: 16px 14px;
+            padding: 14px 12px;
             font-family: 'JetBrains Mono', monospace;
-            font-size: 0.96rem;
-            line-height: 1.38;
+            font-size: clamp(0.72rem, 0.90vw, 0.84rem);
+            line-height: 1.4;
             color: #34d399;
             min-height: 380px;
             position: relative;
             overflow: hidden;
             box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.9);
-            letter-spacing: 0.02em;
+            letter-spacing: 0.01em;
+        }
+
+        .crt-keys-bar {
+            font-size: 0.74rem;
+            color: var(--crt-green-dim);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px dashed rgba(52, 211, 153, 0.3);
+            padding-top: 6px;
+            margin-top: 8px;
+            user-select: none;
+        }
+
+        .clickable-key {
+            cursor: pointer;
+            padding: 2px 6px;
+            border-radius: 4px;
+            background: rgba(52, 211, 153, 0.08);
+            border: 1px solid rgba(52, 211, 153, 0.2);
+            transition: all 0.2s;
+            font-weight: 600;
+        }
+
+        .clickable-key:hover {
+            color: var(--crt-white);
+            background: rgba(52, 211, 153, 0.25);
+            border-color: rgba(52, 211, 153, 0.5);
+            text-shadow: 0 0 6px var(--crt-green);
         }
 
         /* Eliminamos cualquier filtro que distorsione o emborrone los laterales */
@@ -876,6 +905,29 @@
             transform: translateY(-1px);
         }
 
+        .btn-autofix {
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+            border: 1px solid #34d399;
+            color: #ffffff;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.82rem;
+            font-weight: 800;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
+            transition: all 0.2s;
+        }
+
+        .btn-autofix:hover {
+            box-shadow: 0 0 20px rgba(52, 211, 153, 0.7);
+            transform: translateY(-1px);
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+
         /* MODAL DE PROMPT MAESTRO */
         .modal-overlay {
             position: fixed;
@@ -1007,11 +1059,11 @@
 
             <div class="crt-bezel">
                 <div class="crt-screen" id="crtDisplay">
-                    <!-- Cabecera del terminal -->
-                    <div class="crt-line crt-title">===================================================</div>
-                    <div class="crt-line crt-title">BANCO CENTRAL CORPORATIVO • CICS TS z/OS v6.1</div>
-                    <div class="crt-line crt-title">TRANSACCION: CONS  •  MAPSET: BANCSET  •  TERM: T327</div>
-                    <div class="crt-line crt-title">===================================================</div>
+                    <!-- Cabecera del terminal (36 caracteres max para evitar desborde) -->
+                    <div class="crt-line crt-title">====================================</div>
+                    <div class="crt-line crt-title">BANCO CENTRAL • CICS z/OS v6.1</div>
+                    <div class="crt-line crt-title">TRAN: CONS • MAP: BANCSET • T327</div>
+                    <div class="crt-line crt-title">====================================</div>
                     <div class="crt-line"> </div>
 
                     <!-- Campos BMS -->
@@ -1024,7 +1076,7 @@
 
                     <div class="crt-line">
                         <span class="crt-field-label">TITULAR     : </span>
-                        <span class="crt-field-white" id="outTitular">D. CARLOS SANTOS VEGA</span>
+                        <span class="crt-field-white" id="outTitular">---</span>
                     </div>
 
                     <div class="crt-line">
@@ -1034,30 +1086,31 @@
 
                     <div class="crt-line">
                         <span class="crt-field-label">SALDO CONT. : </span>
-                        <span class="crt-field-val" id="outSaldo">14.850,75 EUR</span>
+                        <span class="crt-field-val" id="outSaldo">---</span>
                     </div>
 
                     <div class="crt-line">
                         <span class="crt-field-label">DISPONIBLE  : </span>
-                        <span class="crt-field-white" id="outDisponible">14.850,75 EUR</span>
+                        <span class="crt-field-white" id="outDisponible">---</span>
                     </div>
 
                     <div class="crt-line">
                         <span class="crt-field-label">ESTADO CTA. : </span>
-                        <span class="crt-field-val" id="outEstado">ACTIVA (NORMAL)</span>
+                        <span class="crt-field-val" id="outEstado">ESPERANDO TRANSMISIÓN</span>
                     </div>
 
                     <div class="crt-line"> </div>
                     <div class="crt-line">
                         <span class="crt-field-label">MENSAJE CICS: </span>
-                        <span class="crt-field-amber" id="outMensaje">CONSULTA COMPLETADA EXITOSAMENTE</span>
+                        <span class="crt-field-amber" id="outMensaje">PULSA «ENTER» O «PASO A PASO»</span>
                     </div>
 
                     <div class="crt-line"> </div>
-                    <div class="crt-line" style="font-size: 0.95rem; color: var(--crt-green-dim); justify-content: space-between;">
-                        <span>ENTER=TRANSMITIR</span>
-                        <span>PF3=SALIR</span>
-                        <span>PF5=LIMPIAR</span>
+                    <!-- Pie de terminal con teclas de función 3270 -->
+                    <div class="crt-line crt-keys-bar">
+                        <span class="clickable-key" onclick="executeTransaction(false)" title="Tecla Enter: Transmitir pantalla al host">ENTER: TRANSMITIR</span>
+                        <span class="clickable-key" onclick="resetForm(true)" title="Tecla PF3: Salir / Reset terminal">PF3: RESET</span>
+                        <span class="clickable-key" onclick="clearTerminalOutputs()" title="Tecla PF5: Limpiar pantalla">PF5: BORRAR</span>
                     </div>
                 </div>
             </div>
@@ -1204,6 +1257,7 @@
                 <button class="btn-preset" onclick="loadPreset('overdraft')">2. Alerta Descubierto</button>
                 <button class="btn-preset" onclick="loadPreset('blocked')">3. Bloqueo Fraude</button>
                 <button class="btn-preset" onclick="loadPreset('abend')">4. Provocar ABEND (ASRA)</button>
+                <button class="btn-preset" style="border-color: rgba(52, 211, 153, 0.6); color: #34d399; font-weight: 700;" onclick="autoFixCobolCode()" title="Soluciona y repara automáticamente el error de COBOL">✨ Solución Automática</button>
             </div>
 
             <!-- Editor de Texto de Código COBOL -->
@@ -1214,11 +1268,16 @@
             <!-- Pie de compilación -->
             <div class="editor-footer">
                 <div class="editor-tip">
-                    <span>💡</span> Modifica cualquier texto, condición `IF` o variable y pulsa compilar para ver el resultado en la 3270.
+                    <span>💡</span> Modifica cualquier línea o pulsa <strong>«Solución»</strong> para que el sistema repare el código automáticamente.
                 </div>
-                <button class="btn-compile" onclick="compileAndRun()">
-                    <span>⚙️</span> Compilar & Transmitir a CICS
-                </button>
+                <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                    <button class="btn-autofix" id="btnAutoFix" onclick="autoFixCobolCode()" title="Aplica automáticamente la solución al código COBOL">
+                        <span>✨</span> Solución (Auto-Reparar)
+                    </button>
+                    <button class="btn-compile" onclick="compileAndRun()">
+                        <span>⚙️</span> Compilar & Transmitir a CICS
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -1404,7 +1463,7 @@ Genera una solución bancaria completa para la transacción de consulta de saldo
            EXEC CICS SEND MAP('BANCSET') ERASE END-EXEC.
            EXEC CICS RETURN END-EXEC.`,
 
-            overdraft: `      ******************************************************************
+             overdraft: `      ******************************************************************
       * PRESET 2: CONTROL Y ALERTA DE DESCUBIERTO BANCARIO EN COBOL    *
       ******************************************************************
        IDENTIFICATION DIVISION.
@@ -1415,8 +1474,7 @@ Genera una solución bancaria completa para la transacción de consulta de saldo
        01  WS-CONTROL.
            05  WS-CUENTA-IN            PIC X(14).
            05  WS-SALDO-OUT            PIC S9(9)V99 COMP-3.
-           05  WS-MENSAJE-RESPUESTA    PIC X(45) 
-               VALUE 'ALERTA: CLIENTE EN POSICION DEUDORA'.
+           05  WS-MENSAJE-RESPUESTA    PIC X(32).
                
        EXEC SQL INCLUDE SQLCA END-EXEC.
        
@@ -1424,17 +1482,19 @@ Genera una solución bancaria completa para la transacción de consulta de saldo
        0000-CONTROL-DESCUBIERTO.
            EXEC CICS RECEIVE MAP('BANCSET') INTO(WS-CUENTA-IN) END-EXEC.
            
+           * EVALUACION DE CONDICION DE RIESGO
            IF WS-SALDO-OUT < 0
-               MOVE 'AVISO: CUENTA EN DESCUBIERTO AUTORIZADO' 
+               MOVE 'ALERTA: DESCUBIERTO ACTIVO' 
                    TO WS-MENSAJE-RESPUESTA
            ELSE
-               MOVE 'ESTADO FINANCIERO POSITIVO' TO WS-MENSAJE-RESPUESTA
+               MOVE 'POSICION SOLVENTE (RIESGO 0)' 
+                   TO WS-MENSAJE-RESPUESTA
            END-IF.
            
            EXEC CICS SEND MAP('BANCSET') ERASE END-EXEC.
            EXEC CICS RETURN END-EXEC.`,
 
-            blocked: `      ******************************************************************
+             blocked: `      ******************************************************************
       * PRESET 3: DETECCION DE FRAUDE Y EMBARGO JUDICIAL EN CICS       *
       ******************************************************************
        IDENTIFICATION DIVISION.
@@ -1445,21 +1505,34 @@ Genera una solución bancaria completa para la transacción de consulta de saldo
        01  WS-FRAUDE.
            05  WS-CUENTA-IN            PIC X(14).
            05  WS-ESTADO-CTA           PIC X(20).
-           05  WS-MENSAJE-RESPUESTA    PIC X(45) 
-               VALUE 'BLOQUEO: OPERACION RETENIDA POR COMPLIANCE'.
+           05  WS-BLOQUEO              PIC X(01) VALUE 'N'.
+           05  WS-MENSAJE-RESPUESTA    PIC X(32).
                
        PROCEDURE DIVISION.
        0000-EVALUAR-ESTADO.
            EXEC CICS RECEIVE MAP('BANCSET') INTO(WS-CUENTA-IN) END-EXEC.
            
-           MOVE 'ALERTA DE SEGURIDAD: CUENTA BLOQUEADA' 
-               TO WS-MENSAJE-RESPUESTA.
+           * EVALUACION DE CUMPLIMIENTO / COMPLIANCE
+           IF WS-BLOQUEO = 'S'
+               MOVE 'BLOQUEO JUDICIAL / EMBARGO' 
+                   TO WS-MENSAJE-RESPUESTA
+           ELSE
+               MOVE 'COMPLIANCE OK: SIN RETENCION' 
+                   TO WS-MENSAJE-RESPUESTA
+           END-IF.
                
            EXEC CICS SEND MAP('BANCSET') ERASE END-EXEC.
            EXEC CICS RETURN END-EXEC.`,
 
-            abend: `      ******************************************************************
-      * PRESET 4: PROVOCAR EXCEPCION CICS "ABEND ASRA" (DATA EXCEPTION) *
+             abend: `      ******************************************************************
+      * PRESET 4: EJERCICIO COBOL - DEPURAR EXCEPCION CICS "ABEND ASRA" *
+      * ---------------------------------------------------------------*
+      * RETO: Un error de tipos en COMP-3 provoca ABEND ASRA en CICS.   *
+      * SOLUCION (Elige una para depurar el programa):                 *
+      *  1. Cambia 'ERROR' por un valor numerico valido (ej. VALUE 0). *
+      *  2. O comenta la linea del ABEND poniendo un asterisco (*)     *
+      *     delante de: * EXEC CICS ABEND ABCODE('ASRA') ...           *
+      * Pulsa «Compilar y Ejecutar en CICS» para probar tu solucion!    *
       ******************************************************************
        IDENTIFICATION DIVISION.
        PROGRAM-ID. INQBAL01.
@@ -1472,10 +1545,10 @@ Genera una solución bancaria completa para la transacción de consulta de saldo
            
        PROCEDURE DIVISION.
        0000-PROVOCAR-ABEND.
-           * Se intenta mover texto a un campo decimal empaquetado
+           * BUG: Mover texto a campo decimal empaquetado causa ASRA
            MOVE WS-TEXTO-BASURA TO WS-CAMPO-PACKED.
            
-           * CICS aborta la transacción inmediatamente con código ASRA
+           * CICS aborta con ASRA si esta linea se ejecuta activa:
            EXEC CICS ABEND ABCODE('ASRA') NODUMP END-EXEC.`
         };
 
@@ -1490,6 +1563,53 @@ Genera una solución bancaria completa para la transacción de consulta de saldo
             blocked: "ES760182998811",   // Bloqueada (Inversiones)
             abend: "ES912100041845"      // Provocar error CICS
         };
+
+        // CÓDIGO CORREGIDO AUTOMÁTICAMENTE (SOLUCIÓN DEL RETO)
+        const CLEAN_FIXED_COBOL = `      ******************************************************************
+      * PROGRAMA CORREGIDO: EXCEPCION "ABEND ASRA" REPARADA CON EXITO  *
+      * ---------------------------------------------------------------*
+      * SOLUCION AUTOMATICA APLICADA:                                  *
+      * 1. Se sustituyo 'ERROR' por el valor numerico valido 100.      *
+      * 2. Se comento la llamada de aborto EXEC CICS ABEND.            *
+      * 3. Se asigna mensaje de exito a WS-MENSAJE-RESPUESTA.          *
+      ******************************************************************
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. INQBAL01.
+       
+       DATA DIVISION.
+       WORKING-STORAGE SECTION.
+       01  WS-DATOS-NUMERICOS.
+           05  WS-CAMPO-PACKED         PIC S9(7) COMP-3 VALUE ZERO.
+           05  WS-NUMERO-VALIDO        PIC 9(05) VALUE 00100.
+           05  WS-MENSAJE-RESPUESTA    PIC X(32) 
+               VALUE 'EXCEPCION ASRA RESUELTA (OK)'.
+           
+       PROCEDURE DIVISION.
+       0000-PROVOCAR-ABEND.
+           * CORRECCION: Mover dato numerico valido a campo packed decimal
+           MOVE WS-NUMERO-VALIDO TO WS-CAMPO-PACKED.
+           
+           * LA SENTENCIA ABEND HA SIDO COMENTADA (DESACTIVADA):
+      *    EXEC CICS ABEND ABCODE('ASRA') NODUMP END-EXEC.
+           
+           MOVE 'EXCEPCION ASRA RESUELTA (OK)' TO WS-MENSAJE-RESPUESTA.
+           EXEC CICS SEND MAP('BANCSET') ERASE END-EXEC.
+           EXEC CICS RETURN END-EXEC.`;
+
+        function autoFixCobolCode() {
+            editor.value = CLEAN_FIXED_COBOL;
+            document.querySelectorAll('.btn-preset').forEach(b => b.classList.remove('active'));
+            const allPresets = document.querySelectorAll('.btn-preset');
+            if (allPresets.length >= 5) {
+                allPresets[4].classList.add('active');
+            }
+
+            setNarrator("SOLUCIÓN APLICADA", "✨ Código corregido automáticamente por el sistema. Compilando y transmitiendo a CICS...", 50);
+
+            setTimeout(() => {
+                executeTransaction(false);
+            }, 300);
+        }
 
         function setNarrator(badge, text, progressPercent) {
             const b = document.getElementById('narratorBadge');
@@ -1544,7 +1664,7 @@ Genera una solución bancaria completa para la transacción de consulta de saldo
             } else if (key === 'blocked') {
                 setNarrator("LISTO", "Escenario de cuenta bloqueada preparado en buffer. Pulsa «Siguiente Paso ⏩» o «ENTER (Auto)» para iniciar.", 0);
             } else if (key === 'abend') {
-                setNarrator("LISTO", "Código defectuoso (ASRA) cargado. Pulsa «Siguiente Paso ⏩» o «ENTER (Auto)» para ver el ABEND en CICS.", 0);
+                setNarrator("LISTO", "Código con bug (ASRA) cargado. Pulsa «ENTER» para ver el fallo o «✨ Solución Automática» para repararlo.", 0);
             } else {
                 setNarrator("LISTO", "Consulta estándar preparada en buffer. Pulsa «Siguiente Paso ⏩» o «ENTER (Auto)» para iniciar.", 0);
             }
@@ -1617,12 +1737,39 @@ Genera una solución bancaria completa para la transacción de consulta de saldo
             if (cap) cap.classList.add('active-up');
         }
 
+        // DETECCIÓN DE DEPURACIÓN EN EJERCICIO COBOL (PRESET 4)
+        function isAbendActive(code) {
+            const lines = code.split('\n');
+            let hasActiveAbendLine = false;
+            let hasActiveErrorMove = false;
+
+            for (let line of lines) {
+                const trimmed = line.trim();
+                const isComment = trimmed.startsWith('*') || trimmed.startsWith('*>');
+                if (!isComment) {
+                    if (trimmed.includes("ABCODE('ASRA')") || (trimmed.includes("ABEND") && trimmed.includes("ASRA"))) {
+                        hasActiveAbendLine = true;
+                    }
+                    if (trimmed.includes("MOVE WS-TEXTO-BASURA") || (trimmed.includes("VALUE 'ERROR'") && trimmed.includes("WS-CAMPO-PACKED"))) {
+                        hasActiveErrorMove = true;
+                    }
+                }
+            }
+            return hasActiveAbendLine || hasActiveErrorMove;
+        }
+
+        function isAbendExercise(code) {
+            return code.includes("PRESET 4") || code.includes("PROVOCAR-ABEND") || code.includes("WS-CAMPO-PACKED") || code.includes("ASRA");
+        }
+
         // CONTROL PASO A PASO (STEP-BY-STEP)
         function advanceStep() {
             if (isTransacting) return;
             const iban = document.getElementById('inputIban').value.trim();
             const code = editor.value;
-            const isAbend = code.includes("ABCODE('ASRA')") || code.includes("ASRA");
+            const isAbendEx = isAbendExercise(code);
+            const isAbend = isAbendEx && isAbendActive(code);
+            const isRepaired = isAbendEx && !isAbendActive(code);
             const btnNext = document.getElementById('btnNextStep');
 
             if (currentStep === 0) {
@@ -1682,10 +1829,14 @@ Genera una solución bancaria completa para la transacción de consulta de saldo
                 setTimeout(() => showCapsuleUp('cap1', 'line1'), 500);
                 setTimeout(() => {
                     highlightNode('nodeTerm');
-                    handleNormalCase(iban, code);
+                    handleNormalCase(iban, code, isRepaired);
                     document.querySelectorAll('.packet-capsule').forEach(p => p.classList.remove('active-down', 'active-up'));
                     document.querySelectorAll('.connector-line').forEach(l => l.classList.remove('active-down', 'active-up'));
-                    setNarrator("COMPLETADO", "✅ Ciclo completado. El Terminal 3270 ahora muestra los datos recibidos de DB2.", 100);
+                    if (isRepaired) {
+                        setNarrator("EJERCICIO RESUELTO", "🎉 ¡ENHORABUENA! Has depurado el código COBOL resolviendo el error ASRA. Transacción completada con éxito.", 100);
+                    } else {
+                        setNarrator("COMPLETADO", "✅ Ciclo completado en 0.012s. El Terminal 3270 muestra los datos recibidos de DB2.", 100);
+                    }
                     currentStep = 0;
                     if (btnNext) btnNext.textContent = "⏩ Siguiente Paso";
                 }, 800);
@@ -1700,7 +1851,9 @@ Genera una solución bancaria completa para la transacción de consulta de saldo
 
             const iban = document.getElementById('inputIban').value.trim();
             const code = editor.value;
-            const isAbend = code.includes("ABCODE('ASRA')") || code.includes("ASRA");
+            const isAbendEx = isAbendExercise(code);
+            const isAbend = isAbendEx && isAbendActive(code);
+            const isRepaired = isAbendEx && !isAbendActive(code);
 
             resetPipeline();
             document.getElementById('pipeStatusTag').textContent = "TRANSMITIENDO...";
@@ -1745,10 +1898,14 @@ Genera una solución bancaria completa para la transacción de consulta de saldo
 
                         setTimeout(() => {
                             highlightNode('nodeTerm');
-                            handleNormalCase(iban, code);
+                            handleNormalCase(iban, code, isRepaired);
                             document.querySelectorAll('.packet-capsule').forEach(p => p.classList.remove('active-down', 'active-up'));
                             document.querySelectorAll('.connector-line').forEach(l => l.classList.remove('active-down', 'active-up'));
-                            setNarrator("COMPLETADO", "✅ Transacción completada en 0.012s. Datos reflejados en el Terminal 3270.", 100);
+                            if (isRepaired) {
+                                setNarrator("EJERCICIO RESUELTO", "🎉 ¡ENHORABUENA! Has depurado el código COBOL resolviendo el error ASRA. Transacción completada con éxito.", 100);
+                            } else {
+                                setNarrator("COMPLETADO", "✅ Transacción completada en 0.012s. Datos reflejados en el Terminal 3270.", 100);
+                            }
                             isTransacting = false;
                         }, 800);
                     }, 600);
@@ -1769,58 +1926,23 @@ Genera una solución bancaria completa para la transacción de consulta de saldo
             document.getElementById('outTitular').textContent = "TERMINATION ERROR";
             document.getElementById('outSaldo').textContent = "0,00 EUR";
             document.getElementById('outDisponible').textContent = "0,00 EUR";
-            document.getElementById('outEstado').textContent = "TAREA INTERRUMPIDA POR CICS";
+            document.getElementById('outEstado').textContent = "TAREA ABORTADA POR CICS";
             document.getElementById('outEstado').className = "crt-field-red";
-            document.getElementById('outMensaje').textContent = "ABEND ASRA: DATA EXCEPTION (ERROR NUMÉRICO COMP-3)";
+            document.getElementById('outMensaje').textContent = "ABEND ASRA: ERROR COMP-3";
             document.getElementById('outMensaje').className = "crt-field-red";
 
-            setNarrator("ABEND ASRA", "🚨 CICS interceptó un error fatal de formato numérico y abortó la tarea de forma segura.", 100);
+            setNarrator("ABEND ASRA", "🚨 Error COMP-3. 💡 Pulsa «✨ Solución (Auto-Reparar)» o «Solución Automática» para corregir el COBOL al instante.", 100);
         }
 
-        function handleNormalCase(iban, code) {
-            document.getElementById('pipeStatusTag').textContent = "COMPLETED";
+        function handleNormalCase(iban, code, isRepaired = false) {
+            document.getElementById('pipeStatusTag').textContent = isRepaired ? "DEBUGGED • OK" : "COMPLETED";
             document.getElementById('pipeStatusTag').className = "panel-tag panel-tag-green";
             document.getElementById('metricAbend').textContent = "NONE";
             document.getElementById('metricAbend').style.color = "#4ade80";
 
             const record = DB2_DATABASE[iban];
 
-            if (record) {
-                document.getElementById('metricSql').textContent = "000";
-                document.getElementById('sqlcaMeta').textContent = "SQLCODE: +000 (EXITO)";
-                document.getElementById('outTitular').textContent = record.titular;
-                document.getElementById('outDivisa').textContent = record.divisa;
-                document.getElementById('outSaldo').textContent = record.saldo.toLocaleString('es-ES', { minimumFractionDigits: 2 }) + " " + record.divisa;
-                document.getElementById('outDisponible').textContent = record.saldo < 0 ? "0,00 EUR" : (record.saldo.toLocaleString('es-ES', { minimumFractionDigits: 2 }) + " " + record.divisa);
-                document.getElementById('outEstado').textContent = record.estado;
-
-                // Extraer mensaje personalizado si el usuario editó WS-MENSAJE-RESPUESTA en el editor
-                let customMsg = "CONSULTA COMPLETADA EXITOSAMENTE";
-                const matchMsg = code.match(/VALUE\s+'([^']+)'/i);
-                if (matchMsg && matchMsg[1]) {
-                    customMsg = matchMsg[1];
-                }
-
-                if (record.saldo < 0) {
-                    document.getElementById('outSaldo').className = "crt-field-amber";
-                    document.getElementById('outDisponible').className = "crt-field-amber";
-                    document.getElementById('outEstado').className = "crt-field-amber";
-                    document.getElementById('outMensaje').textContent = customMsg.includes('DESCUBIERTO') || customMsg.includes('DEUDOR') ? customMsg : "ALERTA: CLIENTE EN POSICION DEUDORA";
-                    document.getElementById('outMensaje').className = "crt-field-amber";
-                } else if (record.bloqueada) {
-                    document.getElementById('outSaldo').className = "crt-field-red";
-                    document.getElementById('outDisponible').className = "crt-field-red";
-                    document.getElementById('outEstado').className = "crt-field-red";
-                    document.getElementById('outMensaje').textContent = customMsg.includes('BLOQUE') ? customMsg : "CUENTA RETENIDA POR MEDIDA JUDICIAL";
-                    document.getElementById('outMensaje').className = "crt-field-red";
-                } else {
-                    document.getElementById('outSaldo').className = "crt-field-val";
-                    document.getElementById('outDisponible').className = "crt-field-white";
-                    document.getElementById('outEstado').className = "crt-field-val";
-                    document.getElementById('outMensaje').textContent = customMsg;
-                    document.getElementById('outMensaje').className = "crt-field-val";
-                }
-            } else {
+            if (!record) {
                 // Cuenta no encontrada en DB2
                 document.getElementById('metricSql').textContent = "+100";
                 document.getElementById('sqlcaMeta').textContent = "SQLCODE: +100 (ROW NOT FOUND)";
@@ -1829,8 +1951,94 @@ Genera una solución bancaria completa para la transacción de consulta de saldo
                 document.getElementById('outDisponible').textContent = "0,00 EUR";
                 document.getElementById('outEstado').textContent = "INEXISTENTE EN DB2";
                 document.getElementById('outEstado').className = "crt-field-amber";
-                document.getElementById('outMensaje').textContent = "SQLCODE +100: CUENTA NO REGISTRADA EN TABLA";
+                document.getElementById('outMensaje').textContent = "SQLCODE +100: NO ENCONTRADA";
                 document.getElementById('outMensaje').className = "crt-field-amber";
+            } else {
+                document.getElementById('metricSql').textContent = "000";
+                document.getElementById('sqlcaMeta').textContent = isRepaired ? "SQLCODE: +000 (DEPURADO)" : "SQLCODE: +000 (EXITO)";
+                document.getElementById('outTitular').textContent = record.titular;
+                document.getElementById('outDivisa').textContent = record.divisa;
+                document.getElementById('outSaldo').textContent = record.saldo.toLocaleString('es-ES', { minimumFractionDigits: 2 }) + " " + record.divisa;
+                document.getElementById('outDisponible').textContent = record.saldo < 0 ? "0,00 EUR" : (record.saldo.toLocaleString('es-ES', { minimumFractionDigits: 2 }) + " " + record.divisa);
+
+                // Detectar si el usuario escribió un MOVE literal personalizado para el mensaje
+                let customMsg = "";
+                const matchMsg = code.match(/MOVE\s+'([^']+)'\s+TO\s+WS-MENSAJE-RESPUESTA/i);
+                if (matchMsg && matchMsg[1] && !matchMsg[1].includes('ALERTA: DESCUBIERTO') && !matchMsg[1].includes('POSICION SOLVENTE') && !matchMsg[1].includes('BLOQUEO JUDICIAL') && !matchMsg[1].includes('COMPLIANCE OK') && !matchMsg[1].includes('CONSULTA DE SALDO')) {
+                    customMsg = matchMsg[1].substring(0, 30);
+                }
+
+                const isPreset2 = code.includes("CONTROL-DESCUBIERTO") || code.includes("WS-SALDO-OUT < 0");
+                const isPreset3 = code.includes("WS-FRAUDE") || code.includes("WS-BLOQUEO");
+
+                if (isRepaired) {
+                    document.getElementById('outEstado').textContent = "REPARADO POR ALUMNO (OK)";
+                    document.getElementById('outEstado').className = "crt-field-val";
+                    document.getElementById('outMensaje').textContent = customMsg || "EXCEPCION ASRA RESUELTA (OK)";
+                    document.getElementById('outMensaje').className = "crt-field-val";
+                } else if (isPreset2) {
+                    if (record.saldo < 0) {
+                        document.getElementById('outSaldo').className = "crt-field-amber";
+                        document.getElementById('outDisponible').className = "crt-field-amber";
+                        document.getElementById('outEstado').textContent = "DESCUBIERTO ACTIVO";
+                        document.getElementById('outEstado').className = "crt-field-amber";
+                        document.getElementById('outMensaje').textContent = customMsg || "ALERTA: DESCUBIERTO ACTIVO";
+                        document.getElementById('outMensaje').className = "crt-field-amber";
+                    } else if (record.bloqueada) {
+                        document.getElementById('outSaldo').className = "crt-field-red";
+                        document.getElementById('outDisponible').className = "crt-field-red";
+                        document.getElementById('outEstado').textContent = "RETENCION JUDICIAL";
+                        document.getElementById('outEstado').className = "crt-field-red";
+                        document.getElementById('outMensaje').textContent = customMsg || "RIESGO ALTO: FONDOS CONGELADOS";
+                        document.getElementById('outMensaje').className = "crt-field-red";
+                    } else {
+                        document.getElementById('outSaldo').className = "crt-field-val";
+                        document.getElementById('outDisponible').className = "crt-field-white";
+                        document.getElementById('outEstado').textContent = "ACTIVA (SOLVENTE)";
+                        document.getElementById('outEstado').className = "crt-field-val";
+                        document.getElementById('outMensaje').textContent = customMsg || "POSICION SOLVENTE (RIESGO 0)";
+                        document.getElementById('outMensaje').className = "crt-field-val";
+                    }
+                } else if (isPreset3) {
+                    if (record.bloqueada) {
+                        document.getElementById('outSaldo').className = "crt-field-red";
+                        document.getElementById('outDisponible').className = "crt-field-red";
+                        document.getElementById('outEstado').textContent = "BLOQUEADA POR EMBARGO";
+                        document.getElementById('outEstado').className = "crt-field-red";
+                        document.getElementById('outMensaje').textContent = customMsg || "BLOQUEO JUDICIAL / EMBARGO";
+                        document.getElementById('outMensaje').className = "crt-field-red";
+                    } else {
+                        document.getElementById('outSaldo').className = "crt-field-val";
+                        document.getElementById('outDisponible').className = "crt-field-white";
+                        document.getElementById('outEstado').textContent = "ACTIVA (CONFORME)";
+                        document.getElementById('outEstado').className = "crt-field-val";
+                        document.getElementById('outMensaje').textContent = customMsg || "COMPLIANCE OK: SIN RETENCION";
+                        document.getElementById('outMensaje').className = "crt-field-val";
+                    }
+                } else {
+                    if (record.saldo < 0) {
+                        document.getElementById('outSaldo').className = "crt-field-amber";
+                        document.getElementById('outDisponible').className = "crt-field-amber";
+                        document.getElementById('outEstado').textContent = record.estado;
+                        document.getElementById('outEstado').className = "crt-field-amber";
+                        document.getElementById('outMensaje').textContent = customMsg || "SALDO DEUDOR: REVISAR LIMITES";
+                        document.getElementById('outMensaje').className = "crt-field-amber";
+                    } else if (record.bloqueada) {
+                        document.getElementById('outSaldo').className = "crt-field-red";
+                        document.getElementById('outDisponible').className = "crt-field-red";
+                        document.getElementById('outEstado').textContent = record.estado;
+                        document.getElementById('outEstado').className = "crt-field-red";
+                        document.getElementById('outMensaje').textContent = customMsg || "AVISO: CUENTA CON RETENCIONES";
+                        document.getElementById('outMensaje').className = "crt-field-red";
+                    } else {
+                        document.getElementById('outSaldo').className = "crt-field-val";
+                        document.getElementById('outDisponible').className = "crt-field-white";
+                        document.getElementById('outEstado').textContent = record.estado;
+                        document.getElementById('outEstado').className = "crt-field-val";
+                        document.getElementById('outMensaje').textContent = customMsg || "CONSULTA DE SALDO REALIZADA";
+                        document.getElementById('outMensaje').className = "crt-field-val";
+                    }
+                }
             }
 
             const randCpu = (0.0010 + Math.random() * 0.0006).toFixed(4);

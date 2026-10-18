@@ -123,7 +123,7 @@ def build_cod_002_taller_3d_pdf(output_path=PDF_PATH):
         "&lt;script src=&quot;https://cdn.babylonjs.com/babylon.js&quot;&gt;&lt;/script&gt;<br/>"
         "&lt;script src=&quot;https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js&quot;&gt;&lt;/script&gt;<br/>"
         "&lt;script src=&quot;https://javiercursocorreo-gif.github.io/Curso-IA/SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/heart_b64.js&quot;&gt;&lt;/script&gt;<br/>"
-        "3. Carga el modelo 3D con SceneLoader.AppendUsingAsync(window.HEART_GLB_B64, ...) y céntralo con cámara orbital 360° e iluminación sobre fondo azul oscuro (#070b14).<br/>"
+        "3. Carga el modelo 3D anatómico real con SceneLoader.ImportMesh('', '', window.HEART_GLB_B64, scene, ...) y céntralo con cámara orbital 360° e iluminación sobre fondo azul oscuro (#070b14).<br/>"
         "4. En el bucle de animación antes de renderizar la escena, programa el latido cardíaco aplicando un escalado suave que simule la contracción de la sístole y la relajación de la diástole.<br/>"
         "5. Escribe exclusivamente el bloque de código para que al copiarlo a mi simulador genere el corazón latiendo.\"</i>"
     )

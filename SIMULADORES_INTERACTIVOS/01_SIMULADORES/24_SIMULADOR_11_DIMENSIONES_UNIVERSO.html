@@ -1,0 +1,1873 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laboratorio Cosmológico 3D • Las 11 Dimensiones del Universo (Teoría M)</title>
+    <!-- Tipografías de alta legibilidad -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+    <!-- Three.js + OrbitControls -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
+    <style>
+        :root {
+            --bg-deep: #030611;
+            --panel-bg: rgba(7, 13, 27, 0.88);
+            --panel-border: rgba(56, 189, 248, 0.25);
+            --primary: #38bdf8;
+            --primary-glow: rgba(56, 189, 248, 0.4);
+            --gold: #fbbf24;
+            --purple: #c084fc;
+            --emerald: #34d399;
+            --rose: #fb7185;
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+        }
+
+        body {
+            background-color: var(--bg-deep);
+            color: var(--text-main);
+            font-family: 'Inter', -apple-system, sans-serif;
+            overflow: hidden;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        #webgl-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        /* CABECERA SUPERIOR FLOTANTE */
+        header {
+            position: absolute;
+            top: 16px;
+            left: 20px;
+            right: 20px;
+            z-index: 10;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            pointer-events: none;
+        }
+
+        .header-title-box {
+            background: var(--panel-bg);
+            border: 1px solid var(--panel-border);
+            backdrop-filter: blur(14px);
+            padding: 10px 18px;
+            border-radius: 14px;
+            pointer-events: auto;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .badge-s24 {
+            background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+            border: 1px solid #38bdf8;
+            color: #ffffff;
+            font-size: 0.75rem;
+            font-weight: 900;
+            padding: 4px 10px;
+            border-radius: 8px;
+            letter-spacing: 0.05em;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .header-h1 {
+            font-size: 1.12rem;
+            font-weight: 800;
+            letter-spacing: -0.01em;
+            background: linear-gradient(135deg, #ffffff 40%, #94a3b8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header-sub {
+            font-size: 0.76rem;
+            color: var(--text-dim);
+            margin-top: 1px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+            pointer-events: auto;
+        }
+
+        .btn-top {
+            background: var(--panel-bg);
+            border: 1px solid var(--panel-border);
+            color: #e2e8f0;
+            backdrop-filter: blur(14px);
+            font-size: 0.8rem;
+            font-weight: 700;
+            padding: 9px 15px;
+            border-radius: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+        }
+
+        .btn-top:hover {
+            border-color: var(--primary);
+            color: #ffffff;
+            transform: translateY(-2px);
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.35);
+        }
+
+        .btn-tour {
+            background: linear-gradient(135deg, #7e22ce 0%, #6b21a8 100%);
+            border-color: var(--purple);
+            color: #ffffff;
+        }
+
+        .btn-tour:hover {
+            box-shadow: 0 0 20px rgba(192, 132, 252, 0.5);
+            border-color: #d8b4fe;
+        }
+
+        /* SELECTOR INFERIOR DE 11 DIMENSIONES */
+        .bottom-bar {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--panel-bg);
+            border: 1px solid var(--panel-border);
+            backdrop-filter: blur(16px);
+            padding: 8px 12px;
+            border-radius: 18px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.7);
+            max-width: 95vw;
+            overflow-x: auto;
+        }
+
+        .dim-pill {
+            background: rgba(15, 23, 42, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: #cbd5e1;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.78rem;
+            font-weight: 700;
+            padding: 8px 14px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            white-space: nowrap;
+        }
+
+        .dim-pill span.sub {
+            font-size: 0.62rem;
+            color: #64748b;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .dim-pill:hover {
+            border-color: var(--primary);
+            color: #ffffff;
+            transform: translateY(-2px);
+        }
+
+        .dim-pill.active {
+            background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+            border-color: var(--primary);
+            color: #ffffff;
+            box-shadow: 0 0 16px rgba(56, 189, 248, 0.5);
+        }
+
+        .dim-pill.active span.sub {
+            color: #e0f2fe;
+        }
+
+        /* TARJETA NARRATIVA LATERAL DERECHA */
+        .narrative-card {
+            position: absolute;
+            top: 85px;
+            right: 20px;
+            width: 380px;
+            max-height: calc(100vh - 180px);
+            background: var(--panel-bg);
+            border: 1px solid var(--panel-border);
+            backdrop-filter: blur(16px);
+            border-radius: 18px;
+            padding: 20px;
+            z-index: 10;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65);
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            overflow-y: auto;
+            transition: transform 0.3s ease;
+        }
+
+        .dim-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding-bottom: 12px;
+        }
+
+        .dim-badge-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .dim-tag {
+            background: rgba(56, 189, 248, 0.15);
+            border: 1px solid rgba(56, 189, 248, 0.35);
+            color: var(--primary);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.76rem;
+            font-weight: 800;
+            padding: 3px 8px;
+            border-radius: 6px;
+        }
+
+        .dim-phase {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .dim-title {
+            font-size: 1.25rem;
+            font-weight: 900;
+            color: #ffffff;
+            line-height: 1.25;
+            letter-spacing: -0.01em;
+        }
+
+        .info-box {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 12px;
+            padding: 12px 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .info-box-title {
+            font-size: 0.72rem;
+            font-weight: 800;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .info-box-desc {
+            font-size: 0.84rem;
+            color: #cbd5e1;
+            line-height: 1.5;
+        }
+
+        .info-box-desc strong {
+            color: #ffffff;
+        }
+
+        /* CONTROLES ESPECÍFICOS DE LA DIMENSIÓN ACTIVA */
+        .dim-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            background: rgba(11, 18, 33, 0.8);
+            border: 1px solid rgba(56, 189, 248, 0.2);
+            border-radius: 12px;
+            padding: 12px 14px;
+        }
+
+        .control-row {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .control-label-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: #94a3b8;
+        }
+
+        .control-label-row span.val {
+            color: var(--primary);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .slider-custom {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #1e293b;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .slider-custom::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+            box-shadow: 0 0 10px var(--primary);
+        }
+
+        .btn-action-dim {
+            background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+            border: 1px solid var(--primary);
+            color: #ffffff;
+            font-weight: 800;
+            font-size: 0.8rem;
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-action-dim:hover {
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.5);
+            transform: translateY(-1px);
+        }
+
+        /* BRÚJULA Y ESTADO 3D (ESQUINA INFERIOR IZQUIERDA) */
+        .hud-status {
+            position: absolute;
+            bottom: 24px;
+            left: 20px;
+            z-index: 10;
+            background: var(--panel-bg);
+            border: 1px solid var(--panel-border);
+            backdrop-filter: blur(14px);
+            padding: 10px 16px;
+            border-radius: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            pointer-events: none;
+        }
+
+        .hud-coords {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.72rem;
+            color: var(--primary);
+            display: flex;
+            gap: 12px;
+        }
+
+        .hud-tip {
+            font-size: 0.7rem;
+            color: #64748b;
+        }
+
+        /* MODAL EXPLICATIVO COMPLETO (GLOSARIO) */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(3, 6, 17, 0.85);
+            backdrop-filter: blur(12px);
+            z-index: 100;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+
+        .modal-overlay.open {
+            display: flex;
+        }
+
+        .modal-box {
+            background: #0b1324;
+            border: 1px solid var(--panel-border);
+            border-radius: 20px;
+            max-width: 780px;
+            width: 100%;
+            max-height: 85vh;
+            overflow-y: auto;
+            padding: 26px 30px;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.85);
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 14px;
+        }
+
+        .modal-h2 {
+            font-size: 1.3rem;
+            font-weight: 900;
+            color: #ffffff;
+        }
+
+        .modal-close {
+            background: transparent;
+            border: none;
+            color: #94a3b8;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .modal-body {
+            font-size: 0.88rem;
+            line-height: 1.6;
+            color: #cbd5e1;
+        }
+
+        .modal-body h3 {
+            color: var(--primary);
+            font-size: 1rem;
+            margin: 16px 0 6px;
+        }
+
+        .modal-body p {
+            margin-bottom: 10px;
+        }
+
+        .modal-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            font-size: 0.8rem;
+        }
+
+        .modal-table th, .modal-table td {
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 8px 10px;
+            text-align: left;
+        }
+
+        .modal-table th {
+            background: rgba(56, 189, 248, 0.12);
+            color: #ffffff;
+        }
+
+        /* ANIMACIÓN DE RESPLANDOR */
+        @keyframes pulse-cyan {
+            0%, 100% { box-shadow: 0 0 15px rgba(56, 189, 248, 0.4); }
+            50% { box-shadow: 0 0 30px rgba(56, 189, 248, 0.8); }
+        }
+
+        @media (max-width: 900px) {
+            .narrative-card {
+                width: calc(100vw - 40px);
+                max-height: 38vh;
+                top: auto;
+                bottom: 80px;
+                right: 20px;
+            }
+            .bottom-bar {
+                bottom: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- LIENZO THREE.JS -->
+    <canvas id="webgl-canvas"></canvas>
+
+    <!-- CABECERA FLOTANTE -->
+    <header>
+        <div class="header-title-box">
+            <span class="badge-s24">SESIÓN 24 • COD-024</span>
+            <div>
+                <h1 class="header-h1">Las 11 Dimensiones del Universo • Teoría M</h1>
+                <p class="header-sub">Simulador Cosmológico Interactivo • Desde el Punto 0D hasta las Branas de Calabi-Yau</p>
+            </div>
+        </div>
+        <div class="header-actions">
+            <button class="btn-top btn-tour" id="btnTourToggle" onclick="toggleTour()">
+                <span id="tourIcon">▶</span> <span id="tourText">Iniciar Viaje Guiado</span>
+            </button>
+            <button class="btn-top" onclick="openModal()">📖 Mapa Completo 11D</button>
+            <a href="../02_INDICES_Y_CATALOGOS/INDICE_10_SIMULACIONES_INTERACTIVAS_3D.html" class="btn-top">⬅ Catálogo 3D</a>
+        </div>
+    </header>
+
+    <!-- TARJETA NARRATIVA DINÁMICA (DERECHA) -->
+    <div class="narrative-card" id="narrativeCard">
+        <div class="dim-header">
+            <div class="dim-badge-row">
+                <span class="dim-tag" id="dimTag">0D</span>
+                <span class="dim-phase" id="dimPhase">GEOMETRÍA PURA</span>
+            </div>
+            <span style="font-size: 1.2rem;" id="dimIcon">✨</span>
+        </div>
+
+        <h2 class="dim-title" id="dimTitle">La Dimensión Cero: El Punto</h2>
+
+        <div class="info-box">
+            <span class="info-box-title">🎯 ¿Qué estás viendo?</span>
+            <p class="info-box-desc" id="dimWhat">
+                Una mota de luz en el vacío absoluto. <strong>No tiene longitud, anchura ni altura.</strong> Carece de dimensiones; es pura posición en el cosmos antes del Big Bang.
+            </p>
+        </div>
+
+        <div class="info-box">
+            <span class="info-box-title">🔬 ¿Qué dice la física?</span>
+            <p class="info-box-desc" id="dimWhy">
+                En física cuántica, una partícula elemental puntual o la singularidad inicial del universo se modelan matemáticamente como un objeto 0D con densidad infinita.
+            </p>
+        </div>
+
+        <!-- Panel de controles específicos de la dimensión -->
+        <div class="dim-controls" id="dimControlsArea">
+            <!-- Los controles dinámicos se inyectan por JS según la dimensión -->
+        </div>
+    </div>
+
+    <!-- HUD INFERIOR IZQUIERDA -->
+    <div class="hud-status">
+        <div class="hud-coords">
+            <span>ROTACIÓN: <strong id="hudRot">0°</strong></span>
+            <span>ZOOM: <strong id="hudZoom">1.0x</strong></span>
+            <span>ESTADO: <strong id="hudStatus" style="color:#34d399;">RENDER 60 FPS</strong></span>
+        </div>
+        <span class="hud-tip">Arrastra con el ratón para orbitar • Rueda para zoom • Doble clic para centrar</span>
+    </div>
+
+    <!-- SELECTOR DE DIMENSIONES INFERIOR (0D A 11D) -->
+    <div class="bottom-bar">
+        <div class="dim-pill active" onclick="switchDimension(0)">
+            <strong>0D</strong><span class="sub">Punto</span>
+        </div>
+        <div class="dim-pill" onclick="switchDimension(1)">
+            <strong>1D</strong><span class="sub">Línea</span>
+        </div>
+        <div class="dim-pill" onclick="switchDimension(2)">
+            <strong>2D</strong><span class="sub">Plano</span>
+        </div>
+        <div class="dim-pill" onclick="switchDimension(3)">
+            <strong>3D</strong><span class="sub">Volumen</span>
+        </div>
+        <div class="dim-pill" onclick="switchDimension(4)">
+            <strong>4D</strong><span class="sub">Teseracto</span>
+        </div>
+        <div class="dim-pill" onclick="switchDimension(5)">
+            <strong>5D</strong><span class="sub">Decisiones</span>
+        </div>
+        <div class="dim-pill" onclick="switchDimension(6)">
+            <strong>6D</strong><span class="sub">Paralelos</span>
+        </div>
+        <div class="dim-pill" onclick="switchDimension(7)">
+            <strong>7D</strong><span class="sub">Leyes Físicas</span>
+        </div>
+        <div class="dim-pill" onclick="switchDimension(8)">
+            <strong>8D</strong><span class="sub">Multiverso</span>
+        </div>
+        <div class="dim-pill" onclick="switchDimension(9)">
+            <strong>9D</strong><span class="sub">Plegado Total</span>
+        </div>
+        <div class="dim-pill" onclick="switchDimension(10)">
+            <strong>10D</strong><span class="sub">El Aleph</span>
+        </div>
+        <div class="dim-pill" onclick="switchDimension(11)">
+            <strong>11D</strong><span class="sub">Teoría M</span>
+        </div>
+    </div>
+
+    <!-- MODAL INFORMATIVO COMPLETO -->
+    <div class="modal-overlay" id="infoModal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h2 class="modal-h2">🌌 Guía Maestra de las 11 Dimensiones del Universo</h2>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>La física teórica moderna y la <strong>Teoría de Cuerdas (Teoría M)</strong> demuestran que las 3 dimensiones del espacio cotidiano y el tiempo son solo una pequeña parte de una realidad multidimensional mucho más vasta.</p>
+                
+                <table class="modal-table">
+                    <thead>
+                        <tr>
+                            <th>Dimensión</th>
+                            <th>Nombre Clave</th>
+                            <th>Concepto Físico</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><strong>0D</strong></td><td>El Punto</td><td>Singularidad sin tamaño ni volumen; pura posición.</td></tr>
+                        <tr><td><strong>1D</strong></td><td>La Línea</td><td>Un grado de libertad: adelante o atrás ($X$).</td></tr>
+                        <tr><td><strong>2D</strong></td><td>El Plano (Planilandia)</td><td>Superficie bidimensional: largo y ancho ($X, Y$).</td></tr>
+                        <tr><td><strong>3D</strong></td><td>El Volumen</td><td>Nuestro espacio físico observable con profundidad ($X, Y, Z$).</td></tr>
+                        <tr><td><strong>4D</strong></td><td>El Espacio-Tiempo</td><td>El tiempo como cuarta coordenada unificada con el espacio (Teseracto).</td></tr>
+                        <tr><td><strong>5D</strong></td><td>El Abanico de Posibilidades</td><td>Bifurcaciones de líneas temporales de todas las decisiones que no tomaste.</td></tr>
+                        <tr><td><strong>6D</strong></td><td>Universos Paralelos</td><td>Espacio donde se curvan las ramas para saltar entre líneas temporales del mismo Big Bang.</td></tr>
+                        <tr><td><strong>7D</strong></td><td>Otras Leyes de la Física</td><td>Mundos donde la gravedad, la luz o la carga electromagnética tienen otros valores.</td></tr>
+                        <tr><td><strong>8D</strong></td><td>El Hiperespacio Multiverso</td><td>Plano infinito que agrupa todas las historias y todos los orígenes posibles.</td></tr>
+                        <tr><td><strong>9D</strong></td><td>El Hiper-Plegado</td><td>Espacio que permite atajos instantáneos entre universos con leyes completamente distintas.</td></tr>
+                        <tr><td><strong>10D</strong></td><td>El Aleph Cuántico</td><td>El punto infinito donde toda realidad concebible e inconcebible colapsa en uno.</td></tr>
+                        <tr><td><strong>11D</strong></td><td>La Teoría M (Supercuerdas)</td><td>La undécima dimensión de Edward Witten: las membranas flotantes y la Variedad de Calabi-Yau.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- MOTOR 3D Y LÓGICA DE LAS 11 DIMENSIONES -->
+    <script>
+        // CONFIGURACIÓN DE LA ESCENA THREE.JS
+        const canvas = document.getElementById('webgl-canvas');
+        const scene = new THREE.Scene();
+        scene.fog = new THREE.FogExp2(0x030611, 0.012);
+
+        const camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(0, 5, 22);
+
+        const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+        const controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+        controls.maxDistance = 60;
+        controls.minDistance = 3;
+
+        // ILUMINACIÓN CÓSMICA
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
+        scene.add(ambientLight);
+
+        const dirLight1 = new THREE.DirectionalLight(0x38bdf8, 1.2);
+        dirLight1.position.set(10, 20, 15);
+        scene.add(dirLight1);
+
+        const dirLight2 = new THREE.DirectionalLight(0xc084fc, 0.8);
+        dirLight2.position.set(-15, -10, -10);
+        scene.add(dirLight2);
+
+        // FONDO DE ESTRELLAS HIPERDETALLADO
+        const starCount = 3000;
+        const starGeometry = new THREE.BufferGeometry();
+        const starPositions = new Float32Array(starCount * 3);
+        const starColors = new Float32Array(starCount * 3);
+
+        for (let i = 0; i < starCount * 3; i += 3) {
+            starPositions[i] = (Math.random() - 0.5) * 300;
+            starPositions[i + 1] = (Math.random() - 0.5) * 300;
+            starPositions[i + 2] = (Math.random() - 0.5) * 300;
+
+            const isCyan = Math.random() > 0.5;
+            starColors[i] = isCyan ? 0.2 : 0.8;
+            starColors[i + 1] = isCyan ? 0.7 : 0.4;
+            starColors[i + 2] = 1.0;
+        }
+
+        starGeometry.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
+        starGeometry.setAttribute('color', new THREE.BufferAttribute(starColors, 3));
+
+        const starMaterial = new THREE.PointsMaterial({
+            size: 0.8,
+            vertexColors: true,
+            transparent: true,
+            opacity: 0.75
+        });
+        const starField = new THREE.Points(starGeometry, starMaterial);
+        scene.add(starField);
+
+        // CONTENEDOR DE LA DIMENSIÓN ACTIVA
+        const dimensionGroup = new THREE.Group();
+        scene.add(dimensionGroup);
+
+        // DATOS NARRATIVOS DE CADA DIMENSIÓN
+        const DIMENSIONS_DATA = [
+            {
+                dim: "0D",
+                phase: "GEOMETRÍA PURA",
+                icon: "✨",
+                title: "Dimensión Cero: El Punto",
+                what: "Una mota de luz en la oscuridad infinita. <strong>No tiene longitud, anchura ni altura.</strong> Es una posición matemática sin extensión espacial.",
+                why: "En cosmología representa el estado del universo antes del Big Bang: toda la energía y el espacio-tiempo comprimidos en una singularidad de volumen cero.",
+                controlsHtml: `
+                    <button class="btn-action-dim" onclick="pulseSingularity()">💥 Provocar Pulso de Singularidad</button>
+                `
+            },
+            {
+                dim: "1D",
+                phase: "GEOMETRÍA LINEAL",
+                icon: "📏",
+                title: "Primera Dimensión: La Línea",
+                what: "El punto se desplaza y dibuja un <strong>haz láser unidimensional</strong>. Los seres en 1D solo pueden moverse hacia adelante o hacia atrás a lo largo del eje $X$.",
+                why: "Es el fundamento del concepto de trayectoria. Las supercuerdas fundamentales de la física cuántica son objetos unidimensionales que vibran en frecuencias específicas.",
+                controlsHtml: `
+                    <div class="control-row">
+                        <div class="control-label-row"><span>Velocidad de Flujo Fotónico</span><span class="val" id="valSpeed1D">1.0x</span></div>
+                        <input type="range" min="0.2" max="3.0" step="0.1" value="1.0" class="slider-custom" oninput="setSpeed1D(this.value)">
+                    </div>
+                `
+            },
+            {
+                dim: "2D",
+                phase: "SUPERFICIE PLANA",
+                icon: "🗺️",
+                title: "Segunda Dimensión: El Plano (Planilandia)",
+                what: "La línea se extiende hacia los lados creando una <strong>superficie plana</strong> con largo y ancho ($X, Y$). Un habitante bidimensional no puede mirar hacia arriba ni hacia abajo.",
+                why: "Representa el concepto de 'Planilandia' popularizado por Edwin Abbott. En física moderna, el Principio Holográfico propone que nuestro universo 3D podría ser la proyección de datos codificados en una superficie 2D lejana.",
+                controlsHtml: `
+                    <div class="control-row">
+                        <div class="control-label-row"><span>Ondulación del Espacio 2D</span><span class="val" id="valWave2D">1.0</span></div>
+                        <input type="range" min="0" max="2.5" step="0.1" value="1.0" class="slider-custom" oninput="setWave2D(this.value)">
+                    </div>
+                `
+            },
+            {
+                dim: "3D",
+                phase: "ESPACIO VIVIDO",
+                icon: "📦",
+                title: "Tercera Dimensión: El Volumen Cósmico",
+                what: "Al apilar infinitos planos 2D emerge la <strong>profundidad ($Z$)</strong>. Este es nuestro mundo físico cotidiano: podemos movernos arriba/abajo, izquierda/derecha y adelante/atrás.",
+                why: "El espacio 3D permite la existencia de materia compleja, órganos biológicos, átomos estables y órbitas planetarias cerradas de gravitación newtoniana.",
+                controlsHtml: `
+                    <button class="btn-action-dim" onclick="toggleCubeWire()">💎 Alternar Cristal y Nebulosa</button>
+                `
+            },
+            {
+                dim: "4D",
+                phase: "ESPACIO-TIEMPO",
+                icon: "⏳",
+                title: "Cuarta Dimensión: El Teseracto en Rotación 4D",
+                what: "Einstein unió el espacio 3D con el <strong>Tiempo</strong> como cuarta coordenada ($W$). En pantalla observas la proyección tridimensional de un <strong>Hipercubo o Teseracto</strong> de 8 cubos que rota sobre sí mismo.",
+                why: "Como nuestros ojos solo ven 3D, vemos al cubo interior crecer y salir hacia afuera mientras el exterior se contrae hacia adentro, exactamente como un habitante de Planilandia vería una esfera 3D atravesar su hoja de papel.",
+                controlsHtml: `
+                    <div class="control-row">
+                        <div class="control-label-row"><span>Velocidad de Rotación Hiperdimensional</span><span class="val" id="valSpeed4D">1.0x</span></div>
+                        <input type="range" min="0.2" max="3.0" step="0.1" value="1.0" class="slider-custom" oninput="setSpeed4D(this.value)">
+                    </div>
+                    <button class="btn-action-dim" onclick="invertTesseract()">🔄 Invertir Rotación 4D</button>
+                `
+            },
+            {
+                dim: "5D",
+                phase: "MULTIVERSO CUÁNTICO",
+                icon: "🌿",
+                title: "Quinta Dimensión: El Árbol de Decisiones",
+                what: "Un árbol de relámpagos cuánticos que se ramifica constantemente. Si pudieras ver la quinta dimensión, <strong>verías todas las vidas alternativas</strong> que no viviste.",
+                why: "Basado en la interpretación de los 'Muchos Mundos' de Hugh Everett: cada vez que ocurre un evento cuántico, el universo se divide en ramas paralelas simultáneas.",
+                controlsHtml: `
+                    <button class="btn-action-dim" onclick="spawnNewBranch()">⚡ Bifurcar Nueva Realidad</button>
+                `
+            },
+            {
+                dim: "6D",
+                phase: "PLIEGUE TEMPORAL",
+                icon: "🌀",
+                title: "Sexta Dimensión: Agujero de Gusano entre Realidades",
+                what: "El abanico de líneas temporales de la 5D se dobla sobre sí mismo en el hiperespacio, abriendo un <strong>Puente de Einstein-Rosen</strong> para viajar entre dos universos paralelos del mismo Big Bang.",
+                why: "Permite atajos entre realidades alternativas sin tener que viajar hacia atrás en el tiempo hasta el punto de origen de la decisión.",
+                controlsHtml: `
+                    <div class="control-row">
+                        <div class="control-label-row"><span>Intensidad del Vórtice Gravitacional</span><span class="val" id="valWormhole">1.0x</span></div>
+                        <input type="range" min="0.5" max="2.5" step="0.1" value="1.0" class="slider-custom" oninput="setWormholeIntensity(this.value)">
+                    </div>
+                `
+            },
+            {
+                dim: "7D",
+                phase: "LEYES FÍSICAS MUTABLES",
+                icon: "🔮",
+                title: "Séptima Dimensión: Universos con Otras Físicas",
+                what: "Un reino de realidades nacidas de Big Bangs con <strong>leyes físicas completamente distintas</strong>: la velocidad de la luz, la fuerza de la gravedad o el electromagnetismo tienen otros valores.",
+                why: "En cosmología inflacionaria de cuerdas, el vacío cuántico decayó con diferentes constantes fundamentales en cada burbuja cosmológica.",
+                controlsHtml: `
+                    <div class="control-row">
+                        <div class="control-label-row"><span>Constante Cosmológica</span><span class="val" id="valConst7D">1.0</span></div>
+                        <input type="range" min="0.2" max="2.5" step="0.1" value="1.0" class="slider-custom" oninput="setPhysicsConstant(this.value)">
+                    </div>
+                `
+            },
+            {
+                dim: "8D",
+                phase: "RED DEL MULTIVERSO",
+                icon: "🕸️",
+                title: "Octava Dimensión: El Hiperespacio Multiverso",
+                what: "Una inmensa <strong>red cósmica de energía oscura</strong> donde cada nodo brillante es un universo completo con sus propias leyes, historias pasadas y futuros posibles.",
+                why: "Visualiza la teoría del Multiverso en su máxima escala: miles de millones de universos burbuja interconectados por filamentos de inflación eterna.",
+                controlsHtml: `
+                    <button class="btn-action-dim" onclick="pulseMultiverse()">✨ Emitir Onda de Inflación Cósmica</button>
+                `
+            },
+            {
+                dim: "9D",
+                phase: "HIPER-PLEGADO TOTAL",
+                icon: "🌌",
+                title: "Novena Dimensión: El Hiperplegado Total",
+                what: "El tejido cósmico donde se pliegan todas las leyes físicas y todos los orígenes imaginables, permitiendo atajos directos entre cualquier universo concebible.",
+                why: "Las geometrías hiperbólicas cuatridimensionales y los espacios Anti-de Sitter (AdS/CFT) describen cómo la gravedad cuántica pliega la dimensionalidad del espacio.",
+                controlsHtml: `
+                    <div class="control-row">
+                        <div class="control-label-row"><span>Curvatura Hiperbólica</span><span class="val" id="valCurv9D">1.0</span></div>
+                        <input type="range" min="0.2" max="2.5" step="0.1" value="1.0" class="slider-custom" oninput="setHyperbolicCurvature(this.value)">
+                    </div>
+                `
+            },
+            {
+                dim: "10D",
+                phase: "TOTALIDAD ABSOLUTA",
+                icon: "☀️",
+                title: "Décima Dimensión: El Aleph Cuántico",
+                what: "El punto final del modelo: <strong>todo lo imaginable, todas las leyes, todos los pasados y todos los futuros</strong> colapsan en una sola singularidad infinita e indivisible.",
+                why: "Al igual que el 0D era un punto para una dimensión, el 10D es el punto absoluto que contiene la totalidad de todos los multiversos posibles.",
+                controlsHtml: `
+                    <button class="btn-action-dim" onclick="pulseAleph()">🌟 Colapso y Resonancia Cósmica</button>
+                `
+            },
+            {
+                dim: "11D",
+                phase: "TEORÍA M & SUPERCUERDAS",
+                icon: "🎻",
+                title: "Undécima Dimensión: La Teoría M y Calabi-Yau",
+                what: "La cumbre de la física teórica de Edward Witten: <strong>La Variedad de Calabi-Yau</strong> (dimensiones extras compactadas a escala de Planck) y las <strong>Membranas Cósmicas (Branas)</strong> flotando en el hiperespacio.",
+                why: "Explica por qué la gravedad es tan débil: las fuerzas electromagnéticas están atrapadas en nuestra membrana 3D mediante cuerdas abiertas, mientras los gravitones (cuerdas cerradas) flotan libremente hacia la 11ª dimensión.",
+                controlsHtml: `
+                    <div class="control-row">
+                        <div class="control-label-row"><span>Tensión de las Supercuerdas</span><span class="val" id="valStringTension">1.0x</span></div>
+                        <input type="range" min="0.5" max="3.0" step="0.1" value="1.0" class="slider-custom" oninput="setStringTension(this.value)">
+                    </div>
+                    <button class="btn-action-dim" onclick="vibrateStrings()">🎶 Hacer Vibrar Armónicos de Calabi-Yau</button>
+                `
+            }
+        ];
+
+        let currentDimension = 0;
+        let animSpeed = 1.0;
+        let waveIntensity = 1.0;
+        let tesseractRotSpeed = 1.0;
+        let tesseractDirection = 1;
+        let wormholePower = 1.0;
+        let physicsConst = 1.0;
+        let hyperCurvature = 1.0;
+        let stringTension = 1.0;
+        let isTourRunning = false;
+        let tourTimer = null;
+
+        // CONSTRUCCIÓN VISUAL DE CADA UNA DE LAS 11 DIMENSIONES
+        function buildDimension(dimIndex) {
+            // Limpiar escena activa
+            while (dimensionGroup.children.length > 0) {
+                const obj = dimensionGroup.children[0];
+                dimensionGroup.remove(obj);
+                if (obj.geometry) obj.geometry.dispose();
+                if (obj.material) {
+                    if (Array.isArray(obj.material)) obj.material.forEach(m => m.dispose());
+                    else obj.material.dispose();
+                }
+            }
+
+            switch(dimIndex) {
+                case 0: build0D_Singularity(); break;
+                case 1: build1D_Line(); break;
+                case 2: build2D_Flatland(); break;
+                case 3: build3D_Volume(); break;
+                case 4: build4D_Tesseract(); break;
+                case 5: build5D_QuantumTree(); break;
+                case 6: build6D_Wormhole(); break;
+                case 7: build7D_MutatingPhysics(); break;
+                case 8: build8D_MultiverseWeb(); break;
+                case 9: build9D_HyperFold(); break;
+                case 10: build10D_Aleph(); break;
+                case 11: build11D_MTheory(); break;
+            }
+        }
+
+        // GENERADOR DE GEOMETRÍA PARAMÉTRICA NATIVA (COMPATIBLE CON CUALQUIER VERSIÓN DE THREE.JS)
+        function createParametricGeometry(func, slices, stacks) {
+            const indices = [];
+            const vertices = [];
+            const uvs = [];
+            const sliceCount = slices + 1;
+
+            for (let i = 0; i <= stacks; i++) {
+                const v = i / stacks;
+                for (let j = 0; j <= slices; j++) {
+                    const u = j / slices;
+                    const p = new THREE.Vector3();
+                    func(u, v, p);
+                    vertices.push(p.x, p.y, p.z);
+                    uvs.push(u, v);
+                }
+            }
+
+            for (let i = 0; i < stacks; i++) {
+                for (let j = 0; j < slices; j++) {
+                    const a = i * sliceCount + j;
+                    const b = i * sliceCount + j + 1;
+                    const c = (i + 1) * sliceCount + j;
+                    const d = (i + 1) * sliceCount + j + 1;
+
+                    indices.push(a, b, d);
+                    indices.push(a, d, c);
+                }
+            }
+
+            const geo = new THREE.BufferGeometry();
+            geo.setIndex(indices);
+            geo.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+            geo.setAttribute('uv', new THREE.Float32BufferAttribute(uvs, 2));
+            geo.computeVertexNormals();
+            return geo;
+        }
+
+        // ==========================================
+        // 0D: LA SINGULARIDAD PUNTUAL
+        // ==========================================
+        let singularityMesh, auraRings = [];
+        function build0D_Singularity() {
+            camera.position.set(0, 2, 14);
+            controls.target.set(0, 0, 0);
+
+            // Núcleo hiperbrillante
+            const coreGeo = new THREE.SphereGeometry(0.5, 32, 32);
+            const coreMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+            singularityMesh = new THREE.Mesh(coreGeo, coreMat);
+            dimensionGroup.add(singularityMesh);
+
+            // Anillos de difracción y lentes
+            auraRings = [];
+            for (let i = 1; i <= 4; i++) {
+                const ringGeo = new THREE.RingGeometry(i * 1.2, i * 1.25, 64);
+                const ringMat = new THREE.MeshBasicMaterial({
+                    color: i % 2 === 0 ? 0x38bdf8 : 0xc084fc,
+                    side: THREE.DoubleSide,
+                    transparent: true,
+                    opacity: 0.6 - i * 0.12
+                });
+                const ring = new THREE.Mesh(ringGeo, ringMat);
+                auraRings.push(ring);
+                dimensionGroup.add(ring);
+            }
+
+            // Nube de micropartículas en espiral de succión
+            const pGeo = new THREE.BufferGeometry();
+            const pCount = 800;
+            const pPos = new Float32Array(pCount * 3);
+            for (let i = 0; i < pCount * 3; i += 3) {
+                const r = 1.5 + Math.random() * 8;
+                const theta = Math.random() * Math.PI * 2;
+                pPos[i] = Math.cos(theta) * r;
+                pPos[i + 1] = (Math.random() - 0.5) * 1.5;
+                pPos[i + 2] = Math.sin(theta) * r;
+            }
+            pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
+            const pMat = new THREE.PointsMaterial({ color: 0x38bdf8, size: 0.25, transparent: true, opacity: 0.7 });
+            const pPoints = new THREE.Points(pGeo, pMat);
+            pPoints.name = "singularityParticles";
+            dimensionGroup.add(pPoints);
+        }
+
+        // ==========================================
+        // 1D: LA LÍNEA CUÁNTICA UNIDIMENSIONAL
+        // ==========================================
+        let laserLine, linePhotons;
+        function build1D_Line() {
+            camera.position.set(0, 3, 16);
+            controls.target.set(0, 0, 0);
+
+            // Rayo central
+            const lineGeo = new THREE.CylinderGeometry(0.08, 0.08, 30, 16);
+            lineGeo.rotateZ(Math.PI / 2);
+            const lineMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8 });
+            laserLine = new THREE.Mesh(lineGeo, lineMat);
+            dimensionGroup.add(laserLine);
+
+            // Resplandor exterior de fibra
+            const glowGeo = new THREE.CylinderGeometry(0.35, 0.35, 30, 16);
+            glowGeo.rotateZ(Math.PI / 2);
+            const glowMat = new THREE.MeshBasicMaterial({ color: 0x0284c7, transparent: true, opacity: 0.3 });
+            const glowCyl = new THREE.Mesh(glowGeo, glowMat);
+            dimensionGroup.add(glowCyl);
+
+            // Fotones viajando a lo largo del eje X
+            const photonCount = 120;
+            const photonGeo = new THREE.BufferGeometry();
+            const photonPos = new Float32Array(photonCount * 3);
+            for (let i = 0; i < photonCount * 3; i += 3) {
+                photonPos[i] = (Math.random() - 0.5) * 28;
+                photonPos[i + 1] = 0;
+                photonPos[i + 2] = 0;
+            }
+            photonGeo.setAttribute('position', new THREE.BufferAttribute(photonPos, 3));
+            const photonMat = new THREE.PointsMaterial({ color: 0xffffff, size: 0.55 });
+            linePhotons = new THREE.Points(photonGeo, photonMat);
+            dimensionGroup.add(linePhotons);
+
+            // Flechas de dirección en los extremos
+            const arrowL = new THREE.ConeGeometry(0.4, 1.2, 16);
+            arrowL.rotateZ(Math.PI / 2);
+            arrowL.position.set(-15, 0, 0);
+            const arrowR = arrowL.clone();
+            arrowR.rotateZ(Math.PI);
+            arrowR.position.set(15, 0, 0);
+            dimensionGroup.add(arrowL, arrowR);
+        }
+
+        // ==========================================
+        // 2D: EL PLANO ONDULANTE (PLANILANDIA)
+        // ==========================================
+        let planeMesh;
+        function build2D_Flatland() {
+            camera.position.set(0, 8, 16);
+            controls.target.set(0, 0, 0);
+
+            const planeGeo = new THREE.PlaneGeometry(24, 24, 48, 48);
+            planeGeo.rotateX(-Math.PI / 2);
+
+            const planeMat = new THREE.MeshStandardMaterial({
+                color: 0x0284c7,
+                emissive: 0x0c4a6e,
+                wireframe: true,
+                roughness: 0.2
+            });
+            planeMesh = new THREE.Mesh(planeGeo, planeMat);
+            dimensionGroup.add(planeMesh);
+
+            // Criaturas 2D poligonales planas que caminan sobre el plano
+            for (let i = 0; i < 5; i++) {
+                const polyGeo = new THREE.CircleGeometry(0.8 + Math.random() * 0.4, i + 3);
+                polyGeo.rotateX(-Math.PI / 2);
+                const polyMat = new THREE.MeshBasicMaterial({
+                    color: i % 2 === 0 ? 0x34d399 : 0xfbbf24,
+                    wireframe: false,
+                    side: THREE.DoubleSide
+                });
+                const poly = new THREE.Mesh(polyGeo, polyMat);
+                poly.position.set((Math.random() - 0.5) * 16, 0.05, (Math.random() - 0.5) * 16);
+                poly.name = `flatlander_${i}`;
+                dimensionGroup.add(poly);
+            }
+        }
+
+        // ==========================================
+        // 3D: EL VOLUMEN TRIDIMENSIONAL
+        // ==========================================
+        let cubeFrame, nebulaParticles;
+        function build3D_Volume() {
+            camera.position.set(8, 8, 14);
+            controls.target.set(0, 0, 0);
+
+            // Prisma de cristal de cuarzo transparente
+            const boxGeo = new THREE.BoxGeometry(8, 8, 8);
+            const boxMat = new THREE.MeshPhysicalMaterial({
+                color: 0x38bdf8,
+                transparent: true,
+                opacity: 0.15,
+                roughness: 0.1,
+                transmission: 0.9,
+                thickness: 2.0
+            });
+            const cubeGlass = new THREE.Mesh(boxGeo, boxMat);
+            dimensionGroup.add(cubeGlass);
+
+            // Aristas de neón del cubo
+            const edges = new THREE.EdgesGeometry(boxGeo);
+            cubeFrame = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ color: 0x38bdf8, linewidth: 2 }));
+            dimensionGroup.add(cubeFrame);
+
+            // Ejes 3D elegantes (X: Rojo, Y: Verde, Z: Azul)
+            const axes = new THREE.AxesHelper(6);
+            dimensionGroup.add(axes);
+
+            // Nebulosa estelar volumétrica interna
+            const nebGeo = new THREE.BufferGeometry();
+            const nCount = 1500;
+            const nPos = new Float32Array(nCount * 3);
+            const nCol = new Float32Array(nCount * 3);
+            for (let i = 0; i < nCount * 3; i += 3) {
+                nPos[i] = (Math.random() - 0.5) * 7.2;
+                nPos[i + 1] = (Math.random() - 0.5) * 7.2;
+                nPos[i + 2] = (Math.random() - 0.5) * 7.2;
+                nCol[i] = 0.9;
+                nCol[i + 1] = 0.4 + Math.random() * 0.4;
+                nCol[i + 2] = 1.0;
+            }
+            nebGeo.setAttribute('position', new THREE.BufferAttribute(nPos, 3));
+            nebGeo.setAttribute('color', new THREE.BufferAttribute(nCol, 3));
+            nebulaParticles = new THREE.Points(nebGeo, new THREE.PointsMaterial({ size: 0.25, vertexColors: true, transparent: true, opacity: 0.85 }));
+            dimensionGroup.add(nebulaParticles);
+        }
+
+        // ==========================================
+        // 4D: EL TESERACTO EN ROTACIÓN 4D REAL
+        // ==========================================
+        // 16 vértices de un hipercubo 4D (±1, ±1, ±1, ±1)
+        const TESSERACT_VERTS_4D = [];
+        for (let x = -1; x <= 1; x += 2) {
+            for (let y = -1; y <= 1; y += 2) {
+                for (let z = -1; z <= 1; z += 2) {
+                    for (let w = -1; w <= 1; w += 2) {
+                        TESSERACT_VERTS_4D.push([x, y, z, w]);
+                    }
+                }
+            }
+        }
+
+        // 32 aristas conectando vértices que difieren en una sola coordenada
+        const TESSERACT_EDGES = [];
+        for (let i = 0; i < 16; i++) {
+            for (let j = i + 1; j < 16; j++) {
+                let diff = 0;
+                for (let k = 0; k < 4; k++) {
+                    if (TESSERACT_VERTS_4D[i][k] !== TESSERACT_VERTS_4D[j][k]) diff++;
+                }
+                if (diff === 1) TESSERACT_EDGES.push([i, j]);
+            }
+        }
+
+        let tesseractLines, tesseractNodes;
+        let angle4D = 0;
+
+        function build4D_Tesseract() {
+            camera.position.set(0, 4, 18);
+            controls.target.set(0, 0, 0);
+
+            const lineGeo = new THREE.BufferGeometry();
+            const positions = new Float32Array(TESSERACT_EDGES.length * 2 * 3);
+            lineGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+
+            const lineMat = new THREE.LineBasicMaterial({
+                color: 0x38bdf8,
+                linewidth: 2,
+                transparent: true,
+                opacity: 0.9
+            });
+            tesseractLines = new THREE.LineSegments(lineGeo, lineMat);
+            dimensionGroup.add(tesseractLines);
+
+            // Esferas radiantes en los 16 vértices
+            const nodeGeo = new THREE.SphereGeometry(0.2, 16, 16);
+            const nodeMat = new THREE.MeshBasicMaterial({ color: 0xfbbf24 });
+            tesseractNodes = [];
+            for (let i = 0; i < 16; i++) {
+                const node = new THREE.Mesh(nodeGeo, nodeMat);
+                tesseractNodes.push(node);
+                dimensionGroup.add(node);
+            }
+        }
+
+        // Proyección 4D -> 3D mediante rotación en el plano XW / YW
+        function updateTesseract(delta) {
+            angle4D += delta * 0.8 * tesseractRotSpeed * tesseractDirection;
+
+            const cosA = Math.cos(angle4D);
+            const sinA = Math.sin(angle4D);
+            const cosB = Math.cos(angle4D * 0.7);
+            const sinB = Math.sin(angle4D * 0.7);
+
+            const projected3D = [];
+            const distance4D = 2.4;
+
+            for (let i = 0; i < 16; i++) {
+                let [x, y, z, w] = TESSERACT_VERTS_4D[i];
+
+                // Rotación en plano XW
+                let x1 = x * cosA - w * sinA;
+                let w1 = x * sinA + w * cosA;
+
+                // Rotación en plano YW
+                let y1 = y * cosB - w1 * sinB;
+                let w2 = y * sinB + w1 * cosB;
+
+                // Proyección estereográfica 4D -> 3D
+                const factor = distance4D / (distance4D - w2 * 0.6);
+                const scale = 3.6;
+                const pX = x1 * factor * scale;
+                const pY = y1 * factor * scale;
+                const pZ = z * factor * scale;
+
+                projected3D.push(new THREE.Vector3(pX, pY, pZ));
+                if (tesseractNodes && tesseractNodes[i]) {
+                    tesseractNodes[i].position.set(pX, pY, pZ);
+                }
+            }
+
+            if (tesseractLines) {
+                const posAttr = tesseractLines.geometry.attributes.position;
+                let idx = 0;
+                for (let e = 0; e < TESSERACT_EDGES.length; e++) {
+                    const [iA, iB] = TESSERACT_EDGES[e];
+                    const vA = projected3D[iA];
+                    const vB = projected3D[iB];
+
+                    posAttr.setXYZ(idx++, vA.x, vA.y, vA.z);
+                    posAttr.setXYZ(idx++, vB.x, vB.y, vB.z);
+                }
+                posAttr.needsUpdate = true;
+            }
+        }
+
+        // ==========================================
+        // 5D: EL ÁRBOL CUÁNTICO DE DECISIONES
+        // ==========================================
+        let treeGroup;
+        function build5D_QuantumTree() {
+            camera.position.set(0, 2, 20);
+            controls.target.set(0, 0, 0);
+
+            treeGroup = new THREE.Group();
+            dimensionGroup.add(treeGroup);
+
+            // Generar árbol fractal orgánico de decisiones
+            generateBranches(new THREE.Vector3(0, -9, 0), new THREE.Vector3(0, 1, 0), 6.5, 0, 5);
+        }
+
+        function generateBranches(startPos, direction, length, depth, maxDepth) {
+            if (depth > maxDepth) return;
+
+            const endPos = startPos.clone().add(direction.clone().multiplyScalar(length));
+
+            const curve = new THREE.LineCurve3(startPos, endPos);
+            const tubeGeo = new THREE.TubeGeometry(curve, 8, 0.28 * Math.pow(0.72, depth), 8, false);
+            const tubeMat = new THREE.MeshBasicMaterial({
+                color: depth % 2 === 0 ? 0xfbbf24 : 0x38bdf8,
+                transparent: true,
+                opacity: 0.85
+            });
+            const branch = new THREE.Mesh(tubeGeo, tubeMat);
+            treeGroup.add(branch);
+
+            // Nodo de decisión brillante
+            const sphereGeo = new THREE.SphereGeometry(0.35 * Math.pow(0.75, depth), 16, 16);
+            const sphereMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+            const node = new THREE.Mesh(sphereGeo, sphereMat);
+            node.position.copy(endPos);
+            treeGroup.add(node);
+
+            // Bifurcar en dos caminos temporales alternativos
+            const angleBranch = 0.55 + Math.random() * 0.15;
+            const dirLeft = direction.clone().applyAxisAngle(new THREE.Vector3(0, 0, 1), angleBranch);
+            const dirRight = direction.clone().applyAxisAngle(new THREE.Vector3(0, 0, 1), -angleBranch);
+
+            generateBranches(endPos, dirLeft, length * 0.72, depth + 1, maxDepth);
+            generateBranches(endPos, dirRight, length * 0.72, depth + 1, maxDepth);
+        }
+
+        // ==========================================
+        // 6D: AGUJERO DE GUSANO ENTRE UNIVERSOS PARALELOS
+        // ==========================================
+        let wormholeMesh, planeA, planeB;
+        function build6D_Wormhole() {
+            camera.position.set(0, 6, 20);
+            controls.target.set(0, 0, 0);
+
+            // Universo A (Plano superior)
+            const pGeoA = new THREE.PlaneGeometry(20, 14, 24, 24);
+            pGeoA.rotateX(-Math.PI / 2);
+            pGeoA.translate(0, 4, 0);
+            planeA = new THREE.Mesh(pGeoA, new THREE.MeshBasicMaterial({ color: 0x0284c7, wireframe: true }));
+            dimensionGroup.add(planeA);
+
+            // Universo B (Plano inferior)
+            const pGeoB = new THREE.PlaneGeometry(20, 14, 24, 24);
+            pGeoB.rotateX(-Math.PI / 2);
+            pGeoB.translate(0, -4, 0);
+            planeB = new THREE.Mesh(pGeoB, new THREE.MeshBasicMaterial({ color: 0xc084fc, wireframe: true }));
+            dimensionGroup.add(planeB);
+
+            // Embudo de garganta gravitacional de Einstein-Rosen
+            const throatGeo = new THREE.CylinderGeometry(1.2, 1.2, 8, 32, 16, true);
+            const throatMat = new THREE.MeshBasicMaterial({
+                color: 0xffffff,
+                wireframe: true,
+                transparent: true,
+                opacity: 0.75
+            });
+            wormholeMesh = new THREE.Mesh(throatGeo, throatMat);
+            dimensionGroup.add(wormholeMesh);
+        }
+
+        // ==========================================
+        // 7D: UNIVERSOS CON OTRAS LEYES FÍSICAS
+        // ==========================================
+        let fractalTorusGroup;
+        function build7D_MutatingPhysics() {
+            camera.position.set(0, 5, 18);
+            controls.target.set(0, 0, 0);
+
+            fractalTorusGroup = new THREE.Group();
+            dimensionGroup.add(fractalTorusGroup);
+
+            for (let i = 0; i < 4; i++) {
+                const torusGeo = new THREE.TorusKnotGeometry(3.5 - i * 0.7, 0.4 + i * 0.1, 100, 16, 2 + i, 3);
+                const torusMat = new THREE.MeshStandardMaterial({
+                    color: i % 2 === 0 ? 0xec4899 : 0x06b6d4,
+                    roughness: 0.2,
+                    metalness: 0.8,
+                    wireframe: i === 1
+                });
+                const torus = new THREE.Mesh(torusGeo, torusMat);
+                torus.rotation.set(i * 0.4, i * 0.6, 0);
+                fractalTorusGroup.add(torus);
+            }
+        }
+
+        // ==========================================
+        // 8D: LA RED NEURONAL DEL MULTIVERSO
+        // ==========================================
+        let multiverseNodes = [], multiverseFilaments;
+        function build8D_MultiverseWeb() {
+            camera.position.set(0, 6, 22);
+            controls.target.set(0, 0, 0);
+
+            multiverseNodes = [];
+            const nodeCount = 36;
+            const positions = [];
+
+            for (let i = 0; i < nodeCount; i++) {
+                const pos = new THREE.Vector3(
+                    (Math.random() - 0.5) * 26,
+                    (Math.random() - 0.5) * 16,
+                    (Math.random() - 0.5) * 26
+                );
+                positions.push(pos);
+
+                // Cada nodo es una burbuja de universo completa con un halo
+                const uGeo = new THREE.SphereGeometry(0.7 + Math.random() * 0.5, 16, 16);
+                const uMat = new THREE.MeshStandardMaterial({
+                    color: Math.random() > 0.5 ? 0x38bdf8 : 0xfbbf24,
+                    emissive: 0x0284c7,
+                    roughness: 0.3
+                });
+                const uMesh = new THREE.Mesh(uGeo, uMat);
+                uMesh.position.copy(pos);
+                dimensionGroup.add(uMesh);
+                multiverseNodes.push(uMesh);
+            }
+
+            // Filamentos sinápticos que conectan universos cercanos
+            const filGeo = new THREE.BufferGeometry();
+            const filPositions = [];
+
+            for (let i = 0; i < nodeCount; i++) {
+                for (let j = i + 1; j < nodeCount; j++) {
+                    const dist = positions[i].distanceTo(positions[j]);
+                    if (dist < 9.0) {
+                        filPositions.push(positions[i].x, positions[i].y, positions[i].z);
+                        filPositions.push(positions[j].x, positions[j].y, positions[j].z);
+                    }
+                }
+            }
+
+            filGeo.setAttribute('position', new THREE.Float32BufferAttribute(filPositions, 3));
+            multiverseFilaments = new THREE.LineSegments(filGeo, new THREE.LineBasicMaterial({
+                color: 0xc084fc,
+                transparent: true,
+                opacity: 0.4
+            }));
+            dimensionGroup.add(multiverseFilaments);
+        }
+
+        // ==========================================
+        // 9D: EL HIPER-PLEGADO TOTAL (ADS / POINCARÉ)
+        // ==========================================
+        let hyperFoldGroup;
+        function build9D_HyperFold() {
+            camera.position.set(0, 6, 18);
+            controls.target.set(0, 0, 0);
+
+            hyperFoldGroup = new THREE.Group();
+            dimensionGroup.add(hyperFoldGroup);
+
+            // Superficie hiperbólica cuádruple en origami cósmico
+            for (let i = 0; i < 6; i++) {
+                const foldGeo = createParametricGeometry((u, v, target) => {
+                    u = (u - 0.5) * Math.PI * 2;
+                    v = (v - 0.5) * Math.PI * 2;
+                    const r = 4.5 + Math.sin(u * 3) * Math.cos(v * 3) * hyperCurvature;
+                    const x = r * Math.sin(u) * Math.cos(v);
+                    const y = r * Math.sin(u) * Math.sin(v);
+                    const z = r * Math.cos(u);
+                    target.set(x, y, z);
+                }, 32, 32);
+
+                const foldMat = new THREE.MeshStandardMaterial({
+                    color: i % 2 === 0 ? 0x06b6d4 : 0xec4899,
+                    wireframe: true,
+                    transparent: true,
+                    opacity: 0.6
+                });
+                const mesh = new THREE.Mesh(foldGeo, foldMat);
+                mesh.rotation.set(i * 0.5, i * 0.3, 0);
+                hyperFoldGroup.add(mesh);
+            }
+        }
+
+        // ==========================================
+        // 10D: EL ALEPH CUÁNTICO (LA TOTALIDAD)
+        // ==========================================
+        let alephCore, alephRays = [];
+        function build10D_Aleph() {
+            camera.position.set(0, 2, 16);
+            controls.target.set(0, 0, 0);
+
+            // Gema nuclear de refracción multidimensional
+            const alephGeo = new THREE.IcosahedronGeometry(2.5, 3);
+            const alephMat = new THREE.MeshPhysicalMaterial({
+                color: 0xffffff,
+                emissive: 0x38bdf8,
+                emissiveIntensity: 0.6,
+                roughness: 0.1,
+                transmission: 0.95,
+                thickness: 3.0
+            });
+            alephCore = new THREE.Mesh(alephGeo, alephMat);
+            dimensionGroup.add(alephCore);
+
+            // Anillos holográficos concéntricos de totalidad
+            alephRays = [];
+            for (let i = 1; i <= 6; i++) {
+                const ringGeo = new THREE.TorusGeometry(3.0 + i * 1.1, 0.08, 16, 100);
+                const ringMat = new THREE.MeshBasicMaterial({
+                    color: i % 2 === 0 ? 0xfbbf24 : 0xc084fc,
+                    transparent: true,
+                    opacity: 0.75 - i * 0.1
+                });
+                const ring = new THREE.Mesh(ringGeo, ringMat);
+                ring.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, 0);
+                alephRays.push(ring);
+                dimensionGroup.add(ring);
+            }
+        }
+
+        // ==========================================
+        // 11D: TEORÍA M, VARIEDAD DE CALABI-YAU Y BRANAS
+        // ==========================================
+        let calabiYauMesh, branesGroup, superstringsGroup;
+        function build11D_MTheory() {
+            camera.position.set(0, 5, 20);
+            controls.target.set(0, 0, 0);
+
+            // 1. VARIEDAD DE CALABI-YAU 6D COMPACTADA
+            // Superficie algebraica paramétrica compleja que reproduce los túneles y torsión de Calabi-Yau
+            const cyGeo = createParametricGeometry((u, v, target) => {
+                u = u * Math.PI * 2;
+                v = v * Math.PI * 2;
+                const n = 5; // Simetría quíntica de Calabi-Yau
+                const r = 3.6 + 1.2 * Math.cos(n * u) * Math.sin(v);
+                const x = r * Math.sin(u) * Math.cos(v);
+                const y = r * Math.sin(u) * Math.sin(v);
+                const z = r * Math.cos(u) + Math.sin(3 * v);
+                target.set(x, y, z);
+            }, 50, 50);
+
+            const cyMat = new THREE.MeshPhysicalMaterial({
+                color: 0x38bdf8,
+                emissive: 0x0369a1,
+                emissiveIntensity: 0.3,
+                roughness: 0.15,
+                metalness: 0.85,
+                wireframe: true
+            });
+            calabiYauMesh = new THREE.Mesh(cyGeo, cyMat);
+            dimensionGroup.add(calabiYauMesh);
+
+            // 2. MEMBRANAS (BRANAS DE LA TEORÍA M) FLOTANDO EN EL BULK
+            branesGroup = new THREE.Group();
+            dimensionGroup.add(branesGroup);
+
+            const braneGeo = new THREE.PlaneGeometry(16, 12, 16, 16);
+            braneGeo.rotateX(-Math.PI / 2);
+            
+            const braneMatA = new THREE.MeshStandardMaterial({
+                color: 0xc084fc,
+                transparent: true,
+                opacity: 0.25,
+                side: THREE.DoubleSide
+            });
+            const braneA = new THREE.Mesh(braneGeo, braneMatA);
+            braneA.position.y = 5.5;
+            branesGroup.add(braneA);
+
+            const braneB = braneA.clone();
+            braneB.material = new THREE.MeshStandardMaterial({
+                color: 0x34d399,
+                transparent: true,
+                opacity: 0.25,
+                side: THREE.DoubleSide
+            });
+            braneB.position.y = -5.5;
+            branesGroup.add(braneB);
+
+            // 3. SUPERCUERDAS VIBRANTES (Abiertas pegadas a la brana y cerradas flotantes / Gravitones)
+            superstringsGroup = new THREE.Group();
+            dimensionGroup.add(superstringsGroup);
+
+            // Cuerda cerrada (Gravitón) flotando libremente en la 11ª dimensión
+            const gravGeo = new THREE.TorusGeometry(1.0, 0.06, 16, 64);
+            const gravMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+            const graviton = new THREE.Mesh(gravGeo, gravMat);
+            graviton.position.set(0, 0, 4.5);
+            graviton.name = "gravitonRing";
+            superstringsGroup.add(graviton);
+        }
+
+        // CAMBIO DE DIMENSIÓN Y ACTUALIZACIÓN DE UI
+        function switchDimension(index) {
+            currentDimension = index;
+
+            // Actualizar pastillas inferiores
+            document.querySelectorAll('.dim-pill').forEach((pill, idx) => {
+                pill.classList.toggle('active', idx === index);
+            });
+
+            // Actualizar tarjeta narrativa
+            const data = DIMENSIONS_DATA[index];
+            document.getElementById('dimTag').textContent = data.dim;
+            document.getElementById('dimPhase').textContent = data.phase;
+            document.getElementById('dimIcon').textContent = data.icon;
+            document.getElementById('dimTitle').textContent = data.title;
+            document.getElementById('dimWhat').innerHTML = data.what;
+            document.getElementById('dimWhy').innerHTML = data.why;
+            document.getElementById('dimControlsArea').innerHTML = data.controlsHtml;
+
+            // Construir nueva geometría 3D
+            buildDimension(index);
+        }
+
+        // BUCLE DE ANIMACIÓN CONTINUA
+        const clock = new THREE.Clock();
+        function animate() {
+            requestAnimationFrame(animate);
+
+            const delta = clock.getDelta();
+            const time = clock.getElapsedTime();
+
+            // Rotación suave del fondo de estrellas
+            starField.rotation.y = time * 0.02;
+
+            // Animaciones específicas de cada dimensión
+            switch(currentDimension) {
+                case 0: // 0D: Pulsación de la singularidad
+                    if (singularityMesh) {
+                        const s = 1.0 + Math.sin(time * 6) * 0.15;
+                        singularityMesh.scale.set(s, s, s);
+                    }
+                    if (auraRings) {
+                        auraRings.forEach((ring, idx) => {
+                            ring.rotation.z = time * (0.2 + idx * 0.1);
+                        });
+                    }
+                    const sPart = dimensionGroup.getObjectByName("singularityParticles");
+                    if (sPart) sPart.rotation.y = time * 0.5;
+                    break;
+
+                case 1: // 1D: Flujo de fotones en la línea
+                    if (linePhotons) {
+                        const pos = linePhotons.geometry.attributes.position;
+                        for (let i = 0; i < pos.count; i++) {
+                            let x = pos.getX(i);
+                            x += delta * 12 * animSpeed;
+                            if (x > 14) x = -14;
+                            pos.setX(i, x);
+                        }
+                        pos.needsUpdate = true;
+                    }
+                    break;
+
+                case 2: // 2D: Ondulación del plano
+                    if (planeMesh) {
+                        const pos = planeMesh.geometry.attributes.position;
+                        for (let i = 0; i < pos.count; i++) {
+                            const u = pos.getX(i);
+                            const w = pos.getZ(i);
+                            const y = Math.sin(u * 0.5 + time * 2) * Math.cos(w * 0.5 + time * 2) * 0.8 * waveIntensity;
+                            pos.setY(i, y);
+                        }
+                        pos.needsUpdate = true;
+                    }
+                    break;
+
+                case 3: // 3D: Rotación del prisma y nebulosa
+                    if (cubeFrame) {
+                        cubeFrame.rotation.x = time * 0.2;
+                        cubeFrame.rotation.y = time * 0.3;
+                    }
+                    if (nebulaParticles) {
+                        nebulaParticles.rotation.y = -time * 0.25;
+                    }
+                    break;
+
+                case 4: // 4D: Rotación cuatridimensional del teseracto
+                    updateTesseract(delta);
+                    break;
+
+                case 5: // 5D: Brillo armónico del árbol cuántico
+                    if (treeGroup) {
+                        treeGroup.rotation.y = time * 0.15;
+                    }
+                    break;
+
+                case 6: // 6D: Torsión del agujero de gusano
+                    if (wormholeMesh) {
+                        wormholeMesh.rotation.y = time * 0.8 * wormholePower;
+                    }
+                    if (planeA && planeB) {
+                        planeA.rotation.z = Math.sin(time) * 0.05;
+                        planeB.rotation.z = -Math.sin(time) * 0.05;
+                    }
+                    break;
+
+                case 7: // 7D: Rotación de los nudos fractales
+                    if (fractalTorusGroup) {
+                        fractalTorusGroup.children.forEach((torus, idx) => {
+                            torus.rotation.x = time * (0.3 + idx * 0.1) * physicsConst;
+                            torus.rotation.y = time * (0.2 + idx * 0.15) * physicsConst;
+                        });
+                    }
+                    break;
+
+                case 8: // 8D: Movimiento estocástico de burbujas del multiverso
+                    if (multiverseNodes) {
+                        multiverseNodes.forEach((node, idx) => {
+                            node.position.y += Math.sin(time * 2 + idx) * 0.008;
+                        });
+                    }
+                    if (multiverseFilaments) {
+                        multiverseFilaments.rotation.y = time * 0.05;
+                    }
+                    break;
+
+                case 9: // 9D: Torsión de la variedad hiperbólica
+                    if (hyperFoldGroup) {
+                        hyperFoldGroup.rotation.y = time * 0.25;
+                        hyperFoldGroup.rotation.x = Math.sin(time * 0.5) * 0.2;
+                    }
+                    break;
+
+                case 10: // 10D: Resplandor del Aleph
+                    if (alephCore) {
+                        alephCore.rotation.x = time * 0.4;
+                        alephCore.rotation.y = time * 0.6;
+                    }
+                    if (alephRays) {
+                        alephRays.forEach((ring, idx) => {
+                            ring.rotation.x += delta * (0.3 + idx * 0.1);
+                            ring.rotation.y += delta * (0.2 + idx * 0.08);
+                        });
+                    }
+                    break;
+
+                case 11: // 11D: Vibración armónica de Calabi-Yau y supercuerdas
+                    if (calabiYauMesh) {
+                        calabiYauMesh.rotation.y = time * 0.3 * stringTension;
+                        calabiYauMesh.rotation.z = Math.sin(time * 0.8) * 0.2;
+                    }
+                    if (branesGroup) {
+                        branesGroup.children[0].position.y = 5.5 + Math.sin(time * 1.5) * 0.4;
+                        branesGroup.children[1].position.y = -5.5 - Math.sin(time * 1.5) * 0.4;
+                    }
+                    const grav = dimensionGroup.getObjectByName("gravitonRing");
+                    if (grav) {
+                        grav.position.y = Math.sin(time * 2) * 4.0;
+                        grav.rotation.x = time * 3;
+                        grav.rotation.y = time * 2;
+                    }
+                    break;
+            }
+
+            // Actualizar HUD
+            controls.update();
+            document.getElementById('hudRot').textContent = `${Math.round(controls.getAzimuthalAngle() * (180 / Math.PI))}°`;
+            document.getElementById('hudZoom').textContent = `${(22 / camera.position.length()).toFixed(1)}x`;
+
+            renderer.render(scene, camera);
+        }
+
+        // INTERACCIONES Y MODAL
+        function pulseSingularity() {
+            if (singularityMesh) {
+                let count = 0;
+                const interval = setInterval(() => {
+                    count++;
+                    const s = 1.0 + Math.sin(count * 0.5) * 1.2;
+                    singularityMesh.scale.set(s, s, s);
+                    if (count > 20) {
+                        clearInterval(interval);
+                        singularityMesh.scale.set(1, 1, 1);
+                    }
+                }, 30);
+            }
+        }
+
+        function setSpeed1D(val) {
+            animSpeed = parseFloat(val);
+            document.getElementById('valSpeed1D').textContent = `${animSpeed.toFixed(1)}x`;
+        }
+
+        function setWave2D(val) {
+            waveIntensity = parseFloat(val);
+            document.getElementById('valWave2D').textContent = waveIntensity.toFixed(1);
+        }
+
+        function toggleCubeWire() {
+            if (cubeFrame) {
+                cubeFrame.visible = !cubeFrame.visible;
+            }
+        }
+
+        function setSpeed4D(val) {
+            tesseractRotSpeed = parseFloat(val);
+            document.getElementById('valSpeed4D').textContent = `${tesseractRotSpeed.toFixed(1)}x`;
+        }
+
+        function invertTesseract() {
+            tesseractDirection *= -1;
+        }
+
+        function spawnNewBranch() {
+            if (treeGroup) {
+                const rndDir = new THREE.Vector3((Math.random() - 0.5) * 2, 1, (Math.random() - 0.5) * 2).normalize();
+                generateBranches(new THREE.Vector3(0, 0, 0), rndDir, 4.0, 0, 3);
+            }
+        }
+
+        function setWormholeIntensity(val) {
+            wormholePower = parseFloat(val);
+            document.getElementById('valWormhole').textContent = `${wormholePower.toFixed(1)}x`;
+        }
+
+        function setPhysicsConstant(val) {
+            physicsConst = parseFloat(val);
+            document.getElementById('valConst7D').textContent = physicsConst.toFixed(1);
+        }
+
+        function pulseMultiverse() {
+            if (multiverseNodes) {
+                multiverseNodes.forEach(node => {
+                    node.scale.set(1.8, 1.8, 1.8);
+                    setTimeout(() => node.scale.set(1, 1, 1), 600);
+                });
+            }
+        }
+
+        function setHyperbolicCurvature(val) {
+            hyperCurvature = parseFloat(val);
+            document.getElementById('valCurv9D').textContent = hyperCurvature.toFixed(1);
+            buildDimension(9);
+        }
+
+        function pulseAleph() {
+            if (alephCore) {
+                alephCore.scale.set(1.6, 1.6, 1.6);
+                setTimeout(() => alephCore.scale.set(1, 1, 1), 500);
+            }
+        }
+
+        function setStringTension(val) {
+            stringTension = parseFloat(val);
+            document.getElementById('valStringTension').textContent = `${stringTension.toFixed(1)}x`;
+        }
+
+        function vibrateStrings() {
+            if (calabiYauMesh) {
+                let step = 0;
+                const vInt = setInterval(() => {
+                    step++;
+                    calabiYauMesh.scale.set(1 + Math.sin(step) * 0.15, 1 + Math.cos(step) * 0.15, 1);
+                    if (step > 25) {
+                        clearInterval(vInt);
+                        calabiYauMesh.scale.set(1, 1, 1);
+                    }
+                }, 40);
+            }
+        }
+
+        // MODO TOUR GUIADO AUTOMÁTICO
+        function toggleTour() {
+            isTourRunning = !isTourRunning;
+            const btn = document.getElementById('btnTourToggle');
+            const icon = document.getElementById('tourIcon');
+            const txt = document.getElementById('tourText');
+
+            if (isTourRunning) {
+                icon.textContent = "⏸";
+                txt.textContent = "Pausar Viaje";
+                btn.style.background = "linear-gradient(135deg, #059669 0%, #047857 100%)";
+                btn.style.borderColor = "#34d399";
+                runTourStep();
+            } else {
+                icon.textContent = "▶";
+                txt.textContent = "Iniciar Viaje Guiado";
+                btn.style.background = "linear-gradient(135deg, #7e22ce 0%, #6b21a8 100%)";
+                btn.style.borderColor = "var(--purple)";
+                clearTimeout(tourTimer);
+            }
+        }
+
+        function runTourStep() {
+            if (!isTourRunning) return;
+            switchDimension((currentDimension + 1) % 12);
+            tourTimer = setTimeout(runTourStep, 10000); // 10 segundos por dimensión
+        }
+
+        // MODAL
+        function openModal() {
+            document.getElementById('infoModal').classList.add('open');
+        }
+
+        function closeModal() {
+            document.getElementById('infoModal').classList.remove('open');
+        }
+
+        // AJUSTE DE VENTANA RESIZE
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // INICIALIZACIÓN
+        switchDimension(0);
+        animate();
+    </script>
+</body>
+</html>

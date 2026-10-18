@@ -7,10 +7,14 @@
     <!-- Babylon.js CDN Oficial -->
     <script src="https://cdn.babylonjs.com/babylon.js"></script>
     <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+    <script src="heart_b64.js"></script>
+    <script src="../../../../SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/heart_b64.js"></script>
     <script src="../03_ASSETS_3D_Y_DATOS/heart_b64.js"></script>
-    <script src="https://javiercursocorreo-gif.github.io/Curso-IA/SIMULADORES_INTERACTIVOS/heart_b64.js"></script>
+    <script src="https://javiercursocorreo-gif.github.io/Curso-IA/SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/heart_b64.js"></script>
+    <script src="heartbeat_audio_b64.js"></script>
+    <script src="../../../../SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/heartbeat_audio_b64.js"></script>
     <script src="../03_ASSETS_3D_Y_DATOS/heartbeat_audio_b64.js"></script>
-    <script src="https://javiercursocorreo-gif.github.io/Curso-IA/SIMULADORES_INTERACTIVOS/heartbeat_audio_b64.js"></script>
+    <script src="https://javiercursocorreo-gif.github.io/Curso-IA/SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/heartbeat_audio_b64.js"></script>
     <style>
         :root {
             --bg: #07090e;
@@ -507,39 +511,56 @@
             const gl = new BABYLON.GlowLayer("glow", scene);
             gl.intensity = 0.3;
 
-            // CARGA DEL MODELO ANATÓMICO REAL .GLB (Data URI embebido o local)
-            const modelSource = (window.HEART_GLB_B64) ? window.HEART_GLB_B64 : "https://javiercursocorreo-gif.github.io/Curso-IA/SIMULADORES_INTERACTIVOS/heart.glb";
-            BABYLON.SceneLoader.ImportMesh("", "", modelSource, scene, function (meshes) {
-                loadingOverlay.style.opacity = "0";
-                setTimeout(() => loadingOverlay.style.display = "none", 500);
+            // CARGA ROBUSTA DEL MODELO ANATÓMICO (Base64 offline -> local -> GitHub CDN)
+            const candidateSources = [
+                (window.HEART_GLB_B64 && window.HEART_GLB_B64.length > 1000) ? window.HEART_GLB_B64 : null,
+                "heart.glb",
+                "../../../../SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/heart.glb",
+                "../03_ASSETS_3D_Y_DATOS/heart.glb",
+                "https://javiercursocorreo-gif.github.io/Curso-IA/SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/heart.glb"
+            ].filter(Boolean);
 
-                heartMeshRoot = new BABYLON.TransformNode("heartRoot", scene);
-
-                meshes.forEach(m => {
-                    if (m.parent === null) {
-                        m.parent = heartMeshRoot;
-                    }
-                });
-
-                // Calcular caja envolvente y escala fija EXACTA UNA SOLA VEZ
-                const hierarchy = heartMeshRoot.getHierarchyBoundingVectors();
-                const center = hierarchy.max.add(hierarchy.min).scale(0.5);
-                const size = hierarchy.max.subtract(hierarchy.min);
-                const maxDim = Math.max(size.x, size.y, size.z);
-
-                if (maxDim > 0) {
-                    fixedBaseScale = 2.6 / maxDim;
-                    heartMeshRoot.scaling = new BABYLON.Vector3(fixedBaseScale, fixedBaseScale, fixedBaseScale);
-                    heartMeshRoot.position = center.scale(-fixedBaseScale);
+            let currentSrcIdx = 0;
+            function loadHeartMesh() {
+                if (currentSrcIdx >= candidateSources.length) {
+                    loadingOverlay.innerHTML = '<div style="color:#ef4444;font-weight:700;">Error al cargar el archivo 3D</div>';
+                    return;
                 }
+                const modelSource = candidateSources[currentSrcIdx];
+                BABYLON.SceneLoader.ImportMesh("", "", modelSource, scene, function (meshes) {
+                    loadingOverlay.style.opacity = "0";
+                    setTimeout(() => loadingOverlay.style.display = "none", 500);
 
-                camera.radius = 5.8;
-                camera.target = new BABYLON.Vector3(0, 0, 0);
-                isModelLoaded = true;
-            }, null, function (scene, message) {
-                console.error("Error loading heart.glb:", message);
-                loadingOverlay.innerHTML = '<div style="color:#ef4444;font-weight:700;">Error al cargar el archivo 3D</div>';
-            });
+                    heartMeshRoot = new BABYLON.TransformNode("heartRoot", scene);
+
+                    meshes.forEach(m => {
+                        if (m.parent === null) {
+                            m.parent = heartMeshRoot;
+                        }
+                    });
+
+                    // Calcular caja envolvente y escala fija EXACTA UNA SOLA VEZ
+                    const hierarchy = heartMeshRoot.getHierarchyBoundingVectors();
+                    const center = hierarchy.max.add(hierarchy.min).scale(0.5);
+                    const size = hierarchy.max.subtract(hierarchy.min);
+                    const maxDim = Math.max(size.x, size.y, size.z);
+
+                    if (maxDim > 0) {
+                        fixedBaseScale = 2.6 / maxDim;
+                        heartMeshRoot.scaling = new BABYLON.Vector3(fixedBaseScale, fixedBaseScale, fixedBaseScale);
+                        heartMeshRoot.position = center.scale(-fixedBaseScale);
+                    }
+
+                    camera.radius = 5.8;
+                    camera.target = new BABYLON.Vector3(0, 0, 0);
+                    isModelLoaded = true;
+                }, null, function (scene, message) {
+                    console.warn("⚠️ Falló fuente:", modelSource, message);
+                    currentSrcIdx++;
+                    loadHeartMesh();
+                }, ".glb");
+            }
+            loadHeartMesh();
 
             return scene;
         };
@@ -719,7 +740,7 @@
                 }
             }
             
-            fetch("https://javiercursocorreo-gif.github.io/Curso-IA/SIMULADORES_INTERACTIVOS/heartbeat.mp3")
+            fetch("https://javiercursocorreo-gif.github.io/Curso-IA/SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/heartbeat.mp3")
                 .then(r => r.arrayBuffer())
                 .then(buf => audioCtx.decodeAudioData(buf))
                 .then(dec => { heartbeatBuffer = dec; })
