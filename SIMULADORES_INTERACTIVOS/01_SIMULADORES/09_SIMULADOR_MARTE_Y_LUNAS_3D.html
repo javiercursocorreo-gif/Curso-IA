@@ -1,0 +1,1160 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sesión 09 • Simulador 3D: Marte y sus Lunas Fobos & Deimos (NASA Viking / MGS / Perseverance) [COD-009]</title>
+    <!-- Babylon.js CDN Oficial -->
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-base: #060408;
+            --bg-panel: rgba(18, 12, 16, 0.94);
+            --border-glow: rgba(248, 113, 113, 0.35);
+            --primary: #f87171;
+            --primary-glow: rgba(248, 113, 113, 0.25);
+            --gold: #fbbf24;
+            --emerald: #34d399;
+            --cyan: #38bdf8;
+            --text-main: #f8fafc;
+            --text-sub: #cbd5e1;
+            --font-sans: 'Inter', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+        html, body {
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            font-family: var(--font-sans);
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            font-size: 16px;
+        }
+
+        /* HEADER SUPERIOR */
+        header {
+            background: linear-gradient(180deg, rgba(24, 14, 20, 0.98) 0%, rgba(18, 12, 16, 0.88) 100%);
+            backdrop-filter: blur(14px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+            padding: 10px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+            z-index: 50;
+        }
+        .header-title-box {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+        .badge-code {
+            background: rgba(248, 113, 113, 0.15);
+            color: var(--primary);
+            border: 1px solid rgba(248, 113, 113, 0.45);
+            font-family: var(--font-mono);
+            font-size: 0.88rem;
+            font-weight: 800;
+            padding: 4px 10px;
+            border-radius: 8px;
+            letter-spacing: 0.05em;
+        }
+        h1 {
+            font-size: 1.22rem;
+            font-weight: 800;
+            letter-spacing: -0.01em;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .pill-status {
+            background: rgba(16, 185, 129, 0.15);
+            color: #34d399;
+            border: 1px solid rgba(16, 185, 129, 0.4);
+            font-size: 0.85rem;
+            font-weight: 700;
+            padding: 5px 13px;
+            border-radius: 9999px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* GRID PRINCIPAL */
+        .workspace-grid {
+            flex: 1;
+            min-height: 0;
+            display: grid;
+            grid-template-columns: 420px 1fr;
+            gap: 14px;
+            padding: 14px 20px;
+            background: radial-gradient(circle at 75% 45%, #180b12 0%, #060408 100%);
+        }
+
+        /* PANEL IZQUIERDO */
+        .sidebar-panel {
+            background: var(--bg-panel);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 16px;
+            padding: 18px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            overflow-y: auto;
+            box-shadow: 0 16px 36px rgba(0, 0, 0, 0.55);
+        }
+
+        .sidebar-panel::-webkit-scrollbar { width: 6px; }
+        .sidebar-panel::-webkit-scrollbar-thumb {
+            background: rgba(248, 113, 113, 0.35);
+            border-radius: 3px;
+        }
+
+        .section-title {
+            font-size: 0.82rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 6px;
+        }
+
+        /* TARJETA LA IDEA FÁCIL */
+        .card-easy-idea {
+            background: linear-gradient(135deg, rgba(248, 113, 113, 0.14), rgba(24, 14, 20, 0.65));
+            border: 1.5px solid rgba(248, 113, 113, 0.4);
+            border-radius: 14px;
+            padding: 14px;
+            box-shadow: 0 4px 18px rgba(248, 113, 113, 0.1);
+        }
+        .easy-idea-title {
+            font-size: 0.95rem;
+            font-weight: 900;
+            color: #fecaca;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 6px;
+        }
+        .easy-idea-text {
+            font-size: 0.90rem;
+            color: #f1f5f9;
+            line-height: 1.5;
+        }
+        .easy-idea-text strong { color: var(--gold); }
+
+        /* MODO DE TEXTURA */
+        .btn-group-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+        .btn-toggle {
+            background: rgba(24, 14, 20, 0.9);
+            border: 1.5px solid rgba(255, 255, 255, 0.12);
+            color: #cbd5e1;
+            padding: 9px 12px;
+            border-radius: 10px;
+            font-size: 0.86rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        .btn-toggle.active {
+            background: rgba(248, 113, 113, 0.22);
+            border-color: var(--primary);
+            color: #ffffff;
+            box-shadow: 0 0 14px rgba(248, 113, 113, 0.25);
+        }
+
+        /* LISTA DE PUNTOS CLAVE Y LUNAS */
+        .poi-list {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+        .poi-item {
+            background: rgba(24, 14, 20, 0.85);
+            border: 1.5px solid rgba(255, 255, 255, 0.1);
+            border-radius: 11px;
+            padding: 9px 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        .poi-item:hover {
+            border-color: var(--primary);
+            background: rgba(248, 113, 113, 0.14);
+            transform: translateX(4px);
+        }
+        .poi-item.active {
+            border-color: var(--gold);
+            background: rgba(251, 191, 36, 0.18);
+            box-shadow: 0 0 14px rgba(251, 191, 36, 0.22);
+        }
+        .poi-item-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .poi-item-name {
+            font-size: 0.92rem;
+            font-weight: 800;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
+        .poi-item-badge {
+            font-size: 0.74rem;
+            font-family: var(--font-mono);
+            font-weight: 700;
+            padding: 2px 7px;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.08);
+            color: #cbd5e1;
+        }
+        .poi-item-sub {
+            font-size: 0.80rem;
+            color: #94a3b8;
+            line-height: 1.3;
+        }
+
+        /* FICHA DETALLADA */
+        .detail-card {
+            background: rgba(24, 14, 20, 0.94);
+            border: 1.5px solid rgba(248, 113, 113, 0.35);
+            border-radius: 14px;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .detail-badge {
+            font-size: 0.74rem;
+            font-family: var(--font-mono);
+            font-weight: 800;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+        .detail-title {
+            font-size: 1.05rem;
+            font-weight: 900;
+            color: #ffffff;
+        }
+        .detail-stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin: 3px 0;
+        }
+        .stat-box {
+            background: rgba(0, 0, 0, 0.35);
+            padding: 6px 10px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.07);
+        }
+        .stat-label { font-size: 0.70rem; color: #94a3b8; text-transform: uppercase; font-weight: 700; }
+        .stat-val { font-size: 0.85rem; color: #f8fafc; font-weight: 800; margin-top: 1px; }
+        .detail-body {
+            font-size: 0.88rem;
+            color: #cbd5e1;
+            line-height: 1.48;
+        }
+
+        /* CONTROLES DE VELOCIDAD */
+        .controls-box {
+            background: rgba(24, 14, 20, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 12px 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .slider-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #cbd5e1;
+        }
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            background: #1e141a;
+            border-radius: 4px;
+            outline: none;
+            -webkit-appearance: none;
+            cursor: pointer;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--primary);
+            box-shadow: 0 0 10px rgba(248, 113, 113, 0.7);
+            cursor: pointer;
+        }
+
+        /* VISOR 3D CENTRAL */
+        .viewport-3d {
+            position: relative;
+            background: #020104;
+            border: 1.5px solid rgba(248, 113, 113, 0.3);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.75);
+        }
+        #renderCanvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+            outline: none;
+        }
+
+        /* HUD SUPERIOR */
+        .hud-overlay-top {
+            position: absolute;
+            top: 16px;
+            left: 18px;
+            right: 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            pointer-events: none;
+            z-index: 10;
+        }
+        .hud-group {
+            display: flex;
+            gap: 8px;
+            pointer-events: auto;
+        }
+        .btn-hud {
+            background: rgba(24, 14, 20, 0.88);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            color: #e2e8f0;
+            padding: 8px 14px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            transition: all 0.2s;
+        }
+        .btn-hud:hover, .btn-hud.active {
+            background: rgba(248, 113, 113, 0.25);
+            border-color: var(--primary);
+            color: #ffffff;
+            box-shadow: 0 0 14px rgba(248, 113, 113, 0.3);
+        }
+
+        /* HUD INFERIOR */
+        .hud-overlay-bottom {
+            position: absolute;
+            bottom: 16px;
+            left: 18px;
+            right: 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            pointer-events: none;
+            z-index: 10;
+        }
+        .hud-legend {
+            background: rgba(24, 14, 20, 0.9);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-size: 0.84rem;
+            color: #94a3b8;
+            pointer-events: auto;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .hud-legend strong { color: #ffffff; }
+
+        /* PINES Y ETIQUETAS 3D FLOTANTES */
+        .labels-container {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 5;
+        }
+        .pin-label {
+            position: absolute;
+            transform: translate(-50%, -100%);
+            background: rgba(24, 14, 20, 0.94);
+            border: 1.5px solid var(--primary);
+            color: #ffffff;
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 0.80rem;
+            font-weight: 800;
+            pointer-events: auto;
+            cursor: pointer;
+            white-space: nowrap;
+            box-shadow: 0 0 14px rgba(248, 113, 113, 0.5);
+            margin-top: -10px;
+            transition: opacity 0.2s, transform 0.18s;
+        }
+        .pin-label:hover {
+            transform: translate(-50%, -110%) scale(1.08);
+            border-color: var(--gold);
+        }
+        .pin-label::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 6px;
+            border-style: solid;
+            border-color: var(--primary) transparent transparent transparent;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- CABECERA -->
+    <header>
+        <div class="header-title-box">
+            <span class="badge-code">COD-009</span>
+            <h1>🔴 Marte y sus Lunas Fobos & Deimos en 3D • NASA Viking / MGS / Perseverance</h1>
+        </div>
+        <div class="header-right">
+            <span class="pill-status">🔭 Textura Satelital NASA 2K & Fobos/Deimos en Órbita Real</span>
+            <span class="pill-status" style="background: rgba(248, 113, 113, 0.15); color: #f87171; border-color: rgba(248, 113, 113, 0.4);">
+                S09 • Geología Planetaria & Exploración
+            </span>
+        </div>
+    </header>
+
+    <!-- WORKSPACE -->
+    <main class="workspace-grid">
+        
+        <!-- PANEL IZQUIERDO -->
+        <aside class="sidebar-panel">
+
+            <!-- TARJETA LA IDEA FÁCIL -->
+            <div class="card-easy-idea">
+                <div class="easy-idea-title">
+                    <span>💡 La Idea Fácil para Seniors (+65)</span>
+                </div>
+                <div class="easy-idea-text">
+                    ¿Por qué Marte es el <strong>"Planeta Rojo"</strong>? Porque su suelo está cubierto de polvo fino de óxido de hierro (<strong>herrumbre pura</strong>). En el pasado fue un mundo templado con ríos caudalosos y lagos gigantescos. Hoy es el único planeta del cosmos habitado exclusivamente por <strong>robots de exploración terrestre</strong> como Curiosity y Perseverance, que analizan sus rocas en busca de microorganismos fósiles.
+                </div>
+            </div>
+
+            <!-- SOBRE FOBOS Y LA COLISIÓN FUTURA -->
+            <div style="background: rgba(248, 113, 113, 0.12); border: 1.5px solid rgba(248, 113, 113, 0.4); border-radius: 12px; padding: 12px 14px;">
+                <div style="font-size: 0.82rem; font-weight: 800; color: #f87171; text-transform: uppercase; letter-spacing: 0.05em; display:flex; align-items:center; gap:6px; margin-bottom:4px;">
+                    <span>⚠️ Fobos: La Luna Condenada a Colisionar</span>
+                </div>
+                <p style="font-size: 0.87rem; color: #cbd5e1; line-height: 1.45; margin:0;">
+                    Fobos orbita tan cerca de Marte (a solo 6.000 km) que tarda <strong>7 h 39 min</strong> en dar una vuelta completa. ¡Gira más rápido de lo que dura el día en Marte! Por eso, para un explorador allí, Fobos <strong>sale por el Oeste y se pone por el Este dos veces al día</strong>. La gravedad de Marte la acerca 2 cm al año: en 40 millones de años se desintegrará formando un <strong>anillo de rocas</strong> similar al de Saturno.
+                </p>
+            </div>
+
+            <!-- MODO DE TEXTURA SATELITAL -->
+            <div>
+                <div class="section-title">
+                    <span>Capa Satelital de Marte</span>
+                </div>
+                <div class="btn-group-2">
+                    <button class="btn-toggle active" id="btnModeNatural" onclick="setTextureMode('natural')">
+                        🌍 Fotográfico Real
+                    </button>
+                    <button class="btn-toggle" id="btnModeTopo" onclick="setTextureMode('topo')">
+                        📊 Relieve MOLA (NASA)
+                    </button>
+                </div>
+            </div>
+
+            <!-- CONTROL DE VELOCIDAD ORBITAL -->
+            <div class="controls-box">
+                <div class="section-title" style="margin-bottom:0;">
+                    <span>Velocidad de Fobos & Deimos</span>
+                    <span id="speedDisplay" style="color:var(--primary); font-family:var(--font-mono);">1.0x (Sincronizado)</span>
+                </div>
+                <input type="range" id="speedSlider" min="0" max="4" step="0.2" value="1.0" oninput="updateOrbitSpeed(this.value)">
+                <div class="slider-row" style="font-size:0.75rem; color:#94a3b8;">
+                    <span>⏸️ Pausar (0x)</span>
+                    <span>1.0x Normal</span>
+                    <span>🚀 4.0x Rápido</span>
+                </div>
+            </div>
+
+            <!-- SELECCIÓN DE HITOS Y LUNAS -->
+            <div>
+                <div class="section-title">
+                    <span>Enfoque Científico • Haz clic para volar</span>
+                </div>
+                <div class="poi-list" id="poiList">
+                    <!-- Dinámico con JS -->
+                </div>
+            </div>
+
+            <!-- FICHA DETALLADA DEL PUNTO SELECCIONADO -->
+            <div class="detail-card" id="detailCard">
+                <div class="detail-badge" id="detailBadge">VOLCÁN MÁS ALTO DEL SISTEMA SOLAR</div>
+                <div class="detail-title" id="detailTitle">Monte Olimpo (Olympus Mons)</div>
+                <div class="detail-stats-grid">
+                    <div class="stat-box">
+                        <div class="stat-label">Altura de la Cumbre</div>
+                        <div class="stat-val" id="statHeight">21,9 km (3x el Everest)</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">Diámetro Base</div>
+                        <div class="stat-val" id="statBase">600 km (toda España)</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">Caldera Central</div>
+                        <div class="stat-val" id="statCaldera">80 km de ancho • 3 km caída</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">Morfología</div>
+                        <div class="stat-val" id="statType">Volcán en escudo basáltico</div>
+                    </div>
+                </div>
+                <div class="detail-body" id="detailDesc">
+                    El Monte Olimpo es tan colosal que sobresale por encima de la delgada atmósfera marciana: en su cima reina prácticamente el vacío espacial. Como en Marte no existe tectónica de placas, la corteza permaneció fija sobre un punto caliente magmático durante millones de años, acumulando lava colosalmente sin desplazarse.
+                </div>
+            </div>
+
+        </aside>
+
+        <!-- VISOR BABYLON.JS 3D -->
+        <div class="viewport-3d" id="viewport3D">
+            <canvas id="renderCanvas"></canvas>
+            
+            <!-- CONTENEDOR DE PINES Y ETIQUETAS -->
+            <div class="labels-container" id="labelsContainer"></div>
+
+            <!-- CONTROLES FLOTANTES HUD SUPERIORES -->
+            <div class="hud-overlay-top">
+                <div class="hud-group">
+                    <button class="btn-hud active" id="btnToggleOrbits" onclick="toggleOrbits()">
+                        ⭕ Órbitas 3D
+                    </button>
+                    <button class="btn-hud active" id="btnTogglePins" onclick="togglePins()">
+                        🏷️ Pines Geológicos
+                    </button>
+                    <button class="btn-hud" id="btnToggleSun" onclick="toggleSunDirection()">
+                        ☀️ Luz Solar / Sombras
+                    </button>
+                </div>
+                <div class="hud-group">
+                    <button class="btn-hud" onclick="focusTarget('mars')">
+                        🎯 Centrar Marte
+                    </button>
+                    <button class="btn-hud" onclick="resetOverview()">
+                        🌌 Vista General
+                    </button>
+                </div>
+            </div>
+
+            <!-- LEYENDA HUD INFERIOR -->
+            <div class="hud-overlay-bottom">
+                <div class="hud-legend">
+                    <span>🖱️ <strong>Arrastrar:</strong> Rotar en 3D</span>
+                    <span>🔍 <strong>Rueda:</strong> Zoom</span>
+                    <span>🔴 <strong>Rotación:</strong> Sol marciano (24 h 37 min) con Fobos y Deimos en órbita física</span>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        // ============================================================================
+        // 1. HITOS GEOLÓGICOS, ROVERS Y LUNAS DE MARTE (NASA MGS / VIKING / PERSEVERANCE)
+        // ============================================================================
+        const MARS_DATA = {
+            mars: {
+                id: "mars",
+                name: "Marte (Globo Completo)",
+                type: "PLANETA ROCOSO • EL MUNDO ROJO",
+                badge: "Rotación en 24h 37m",
+                icon: "🔴",
+                isMoon: false,
+                lat: 0, lon: 0,
+                stat1Label: "Diámetro", stat1Val: "6.779 km (mitad de la Tierra)",
+                stat2Label: "Día (Sol)", stat2Val: "24 h 37 min (casi como la Tierra)",
+                stat3Label: "Gravedad", stat3Val: "38% de la Tierra (saltas el triple)",
+                stat4Label: "Temperatura", stat4Val: "-63 °C de media (-125 °C en polos)",
+                desc: "Marte posee la mitad del tamaño de la Tierra pero la misma cantidad de tierra firme emergida, al carecer de océanos actuales. Su atmósfera está compuesta en un 95% de dióxido de carbono y es 100 veces menos densa que la nuestra. Cuenta con dos casquetes polares de hielo de agua y dióxido de carbono congelado ('hielo seco')."
+            },
+            olympus: {
+                id: "olympus",
+                name: "Monte Olimpo (Olympus Mons)",
+                type: "VOLCÁN MÁS ALTO DEL SISTEMA SOLAR",
+                badge: "21,9 km de altura • 600 km de base",
+                icon: "🌋",
+                isMoon: false,
+                lat: 18.65, lon: -133.8,
+                stat1Label: "Altura de Cumbre", stat1Val: "21,9 km (3x el Everest)",
+                stat2Label: "Diámetro Base", stat2Val: "600 km (toda la Península Ibérica)",
+                stat3Label: "Caldera Central", stat3Val: "80 km de ancho • 3 km caída",
+                stat4Label: "Morfología", stat4Val: "Volcán en escudo basáltico",
+                desc: "El Monte Olimpo es tan colosal que sobresale por encima de la delgada atmósfera marciana: en su cima reina prácticamente el vacío espacial. Como en Marte no existe tectónica de placas, la corteza permaneció fija sobre un punto caliente magmático durante millones de años, acumulando lava colosalmente sin desplazarse."
+            },
+            valles: {
+                id: "valles",
+                name: "Valles Marineris",
+                type: "EL GRAN CAÑÓN DE MARTE",
+                badge: "4.000 km de largo • 7 km de profundidad",
+                icon: "🏜️",
+                isMoon: false,
+                lat: -14.0, lon: -59.2,
+                stat1Label: "Longitud", stat1Val: "4.000 km (cruzaría toda Europa)",
+                stat2Label: "Profundidad", stat2Val: "Hasta 7 km (4x el Gran Cañón Colorado)",
+                stat3Label: "Anchura", stat3Val: "Hasta 200 km de borde a borde",
+                stat4Label: "Descubrimiento", stat4Val: "Sonda Mariner 9 (1971)",
+                desc: "Es la mayor hendidura geológica de todo el Sistema Solar rocoso. No fue excavado por un río, sino que es una gigantesca falla tectónica abierta cuando la vecina meseta volcánica de Tharsis se hinchó de magma, desgarrando la corteza marciana en abismos verticales de más de siete kilómetros de caída libre."
+            },
+            jezero: {
+                id: "jezero",
+                name: "Cráter Jezero (Rover Perseverance)",
+                type: "MISIÓN NASA MARS 2020 & INGENUITY",
+                badge: "Antiguo Delta Fluvial • Búsqueda de Biofirmas",
+                icon: "🤖",
+                isMoon: false,
+                lat: 18.38, lon: 77.58,
+                stat1Label: "Aterrizaje", stat1Val: "18 de febrero de 2021",
+                stat2Label: "Robots", stat2Val: "Rover Perseverance + Helicóptero Ingenuity",
+                stat3Label: "Ambiente Antiguo", stat3Val: "Lago de agua dulce y delta de sedimentos",
+                stat4Label: "Misión Principal", stat4Val: "Recoger tubos de roca para traer a la Tierra",
+                desc: "Hace 3.500 millones de años, un río caudaloso desembocaba en este cráter de 45 km, depositando capas de lodo y arcillas donde quedaron atrapadas posibles moléculas orgánicas. Perseverance perfora núcleos cilíndricos de roca que almacena en tubos de titanio para que una futura misión espacial los traiga de vuelta a los laboratorios terrestres."
+            },
+            gale: {
+                id: "gale",
+                name: "Cráter Gale (Rover Curiosity)",
+                type: "MISIÓN NASA MSL • MONTE SHARP",
+                badge: "12 Años Explorando Rocas Sedimentarias",
+                icon: "🔬",
+                isMoon: false,
+                lat: -5.37, lon: 137.44,
+                stat1Label: "Aterrizaje", stat1Val: "6 de agosto de 2012 (Sky Crane)",
+                stat2Label: "Vehículo", stat2Val: "Rover Curiosity (900 kg • Motor nuclear)",
+                stat3Label: "Monte Sharp", stat3Val: "Montaña central de 5.500 m de sedimentos",
+                stat4Label: "Descubrimiento Clave", stat4Val: "Sulfuros, nitrógeno y carbono orgánico",
+                desc: "Curiosity confirmó que el Cráter Gale albergó un lago de agua potable con pH neutro apto para la vida microbiana durante millones de años. Escalando las laderas del Monte Sharp, ha leído las capas geológicas de Marte como si fueran las páginas de un libro de historia cósmica, detectando emanaciones cíclicas de gas metano."
+            },
+            phobos: {
+                id: "phobos",
+                name: "Fobos (Phobos)",
+                type: "LUNA MARCIANA INTERIOR",
+                badge: "Órbita a solo 6.000 km • 7h 39m",
+                icon: "🪨",
+                isMoon: true,
+                orbitRadius: 3.2,
+                orbitSpeed: 0.045, // Muy rápida
+                radius: 0.22,
+                color: "#a8a29e",
+                stat1Label: "Dimensiones", stat1Val: "27 × 22 × 18 km (roca irregular)",
+                stat2Label: "Periodo Orbital", stat2Val: "7 h 39 min (¡3 vueltas al día!)",
+                stat3Label: "Distancia Superficie", stat3Val: "6.000 km (la luna más cercana)",
+                stat4Label: "Cráter Clave", stat4Val: "Stickney (9 km • Casi la destruye)",
+                desc: "Fobos parece una patata espacial acribillada por impactos. Su cráter Stickney es tan enorme que el choque casi parte la luna en pedazos, dejando fracturas lineales llamadas estrías. Debido a su proximidad extrema, experimenta una marea que la acerca 2 metros cada siglo: su destino es estrellarse contra Marte o pulverizarse formando un anillo planetario."
+            },
+            deimos: {
+                id: "deimos",
+                name: "Deimos",
+                type: "LUNA MARCIANA EXTERIOR",
+                badge: "Órbita a 23.460 km • 30,3 horas",
+                icon: "🥔",
+                isMoon: true,
+                orbitRadius: 5.4,
+                orbitSpeed: 0.012,
+                radius: 0.16,
+                color: "#78716c",
+                stat1Label: "Dimensiones", stat1Val: "15 × 12 × 11 km (muy diminuta)",
+                stat2Label: "Periodo Orbital", stat2Val: "30,3 horas terrestres",
+                stat3Label: "Distancia Órbita", stat3Val: "23.460 km de Marte",
+                stat4Label: "Superficie", stat4Val: "Manto de regolito liso de 100 m",
+                desc: "Deimos es mucho más suave a la vista que Fobos porque está cubierta por una densa capa de polvo y fragmentos rocosos (regolito) que suaviza todos sus cráteres. Su gravedad es tan ridículamente diminuta (0,003 m/s²) que si un astronauta diera un salto a la carrera saldría disparado al espacio exterior sin poder regresar."
+            }
+        };
+
+        // Renderizar lista en panel lateral
+        const poiListEl = document.getElementById("poiList");
+        Object.keys(MARS_DATA).forEach(key => {
+            const item = MARS_DATA[key];
+            const div = document.createElement("div");
+            div.className = "poi-item" + (key === "olympus" ? " active" : "");
+            div.id = "btn_nav_" + key;
+            div.onclick = () => focusTarget(key);
+            div.innerHTML = `
+                <div class="poi-item-header">
+                    <span class="poi-item-name">${item.icon} ${item.name}</span>
+                    <span class="poi-item-badge">${item.isMoon ? 'Luna' : 'Superficie'}</span>
+                </div>
+                <div class="poi-item-sub">${item.badge}</div>
+            `;
+            poiListEl.appendChild(div);
+        });
+
+        // ============================================================================
+        // 2. INICIALIZACIÓN DE BABYLON.JS
+        // ============================================================================
+        const canvas = document.getElementById("renderCanvas");
+        const engine = new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true });
+        const scene = new BABYLON.Scene(engine);
+        scene.clearColor = new BABYLON.Color4(0.018, 0.012, 0.022, 1.0);
+
+        // Cámara ArcRotate
+        const camera = new BABYLON.ArcRotateCamera("Camera", -Math.PI / 2.2, Math.PI / 2.3, 11.0, BABYLON.Vector3.Zero(), scene);
+        camera.attachControl(canvas, true);
+        camera.wheelPrecision = 35;
+        camera.lowerRadiusLimit = 2.2;
+        camera.upperRadiusLimit = 24.0;
+        camera.inertia = 0.85;
+
+        // Iluminación
+        const hemiLight = new BABYLON.HemisphericLight("hemiLight", new BABYLON.Vector3(0, 1, 0), scene);
+        hemiLight.intensity = 0.38;
+        hemiLight.groundColor = new BABYLON.Color3(0.08, 0.04, 0.06);
+
+        const sunLight = new BABYLON.DirectionalLight("sunLight", new BABYLON.Vector3(-1, -0.25, 0.4), scene);
+        sunLight.intensity = 2.5;
+        sunLight.diffuse = new BABYLON.Color3(1.0, 0.95, 0.88);
+
+        // ============================================================================
+        // 3. TEXTURAS PROCEDURALES CANVAS HD (FOTOGRÁFICA Y ALTIMETRÍA MOLA)
+        // ============================================================================
+        function createMarsProceduralTexture(isTopo = false) {
+            const w = 2048, h = 1024;
+            const dynamicTex = new BABYLON.DynamicTexture(isTopo ? "marsTopo" : "marsPhoto", { width: w, height: h }, scene, false);
+            const ctx = dynamicTex.getContext();
+
+            if (!isTopo) {
+                // Tonalidad ocre-rojiza base del regolito marciano
+                ctx.fillStyle = "#c15c3d";
+                ctx.fillRect(0, 0, w, h);
+
+                // Variaciones de albedo oscuro (tierras bajas y mesetas)
+                ctx.fillStyle = "#8d3f2b";
+                ctx.beginPath();
+                ctx.ellipse(w * 0.35, h * 0.65, 320, 180, 0.2, 0, Math.PI * 2); // Meseta de Tharsis
+                ctx.fill();
+
+                ctx.fillStyle = "#692e1e";
+                ctx.beginPath();
+                ctx.ellipse(w * 0.68, h * 0.55, 380, 190, -0.1, 0, Math.PI * 2); // Acidalia / Syrtis Major
+                ctx.fill();
+
+                // Casquete Polar Norte (Planum Boreale)
+                ctx.fillStyle = "#ffffff";
+                ctx.beginPath();
+                ctx.ellipse(w * 0.5, 35, 260, 40, 0, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Casquete Polar Sur (Planum Australe)
+                ctx.beginPath();
+                ctx.ellipse(w * 0.5, h - 30, 200, 35, 0, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Valles Marineris (cicatriz oscura alargada)
+                ctx.strokeStyle = "#40170e";
+                ctx.lineWidth = 14;
+                ctx.lineCap = "round";
+                ctx.beginPath();
+                ctx.moveTo(w * 0.28, h * 0.58);
+                ctx.quadraticCurveTo(w * 0.38, h * 0.60, w * 0.46, h * 0.55);
+                ctx.stroke();
+
+                // Monte Olimpo (aureola circular clara con caldera central)
+                const ox = w * 0.18, oy = h * 0.42;
+                ctx.fillStyle = "#d97757";
+                ctx.beginPath();
+                ctx.arc(ox, oy, 45, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillStyle = "#4a1c12";
+                ctx.beginPath();
+                ctx.arc(ox, oy, 12, 0, Math.PI * 2);
+                ctx.fill();
+
+            } else {
+                // Altimetría MOLA (Falso color hipsométrico NASA)
+                const grad = ctx.createLinearGradient(0, 0, 0, h);
+                grad.addColorStop(0, "#ffffff"); // Hielo polar blanco
+                grad.addColorStop(0.25, "#38bdf8"); // Tierras bajas norte (azul profundo)
+                grad.addColorStop(0.50, "#34d399"); // Nivel medio (verde)
+                grad.addColorStop(0.70, "#fbbf24"); // Tierras altas sur (amarillo-naranja)
+                grad.addColorStop(0.85, "#ef4444"); // Meseta Tharsis (rojo intenso)
+                grad.addColorStop(1.0, "#ffffff"); // Casquete polar sur
+                ctx.fillStyle = grad;
+                ctx.fillRect(0, 0, w, h);
+
+                // Resaltar Monte Olimpo en blanco de cumbre extrema
+                ctx.fillStyle = "#ffffff";
+                ctx.beginPath();
+                ctx.arc(w * 0.18, h * 0.42, 45, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillStyle = "#be123c";
+                ctx.beginPath();
+                ctx.arc(w * 0.18, h * 0.42, 14, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Resaltar Valles Marineris en azul abisal profundo
+                ctx.strokeStyle = "#1e3a8a";
+                ctx.lineWidth = 16;
+                ctx.beginPath();
+                ctx.moveTo(w * 0.28, h * 0.58);
+                ctx.quadraticCurveTo(w * 0.38, h * 0.60, w * 0.46, h * 0.55);
+                ctx.stroke();
+            }
+
+            dynamicTex.update();
+            return dynamicTex;
+        }
+
+        // ============================================================================
+        // 4. CREACIÓN DE LA MALLA DE MARTE
+        // ============================================================================
+        const marsRadius = 1.8;
+        const marsMesh = BABYLON.MeshBuilder.CreateSphere("marsMesh", { diameter: marsRadius * 2, segments: 64 }, scene);
+
+        const naturalTex = createMarsProceduralTexture(false);
+        const topoTex = createMarsProceduralTexture(true);
+
+        const marsMat = new BABYLON.StandardMaterial("marsMat", scene);
+        marsMat.diffuseTexture = naturalTex;
+        marsMat.specularColor = new BABYLON.Color3(0.04, 0.04, 0.04);
+        marsMat.roughness = 0.95;
+        marsMesh.material = marsMat;
+
+        // Cargar mapa satelital NASA MGS real con fallback automático
+        const nasaMarsUrl = "https://cdn.jsdelivr.net/gh/zhangwenqiang0214/solar-system-3d@main/assets/2k_mars.jpg";
+        const realNasaTex = new BABYLON.Texture(nasaMarsUrl, scene, false, false, BABYLON.Texture.TRILINEAR_SAMPLINGMODE, () => {
+            if (activeTextureMode === "natural") {
+                marsMat.diffuseTexture = realNasaTex;
+            }
+            console.log("✅ Textura Satelital NASA 2K de Marte cargada con éxito");
+        }, () => {
+            console.log("Usando textura marciana procedural HD Babylon.js");
+        });
+
+        // ============================================================================
+        // 5. CREACIÓN DE LAS LUNAS FOBOS Y DEIMOS EN ÓRBITA 3D
+        // ============================================================================
+        const sharedMoonTex = new BABYLON.Texture("https://cdn.jsdelivr.net/gh/zhangwenqiang0214/solar-system-3d@main/assets/2k_moon.jpg", scene, false, false);
+
+        // Fobos (malla irregular asimétrica)
+        const phobosMesh = BABYLON.MeshBuilder.CreateSphere("phobos", { diameterX: 0.44, diameterY: 0.36, diameterZ: 0.30, segments: 24 }, scene);
+        const phobosMat = new BABYLON.StandardMaterial("phobosMat", scene);
+        phobosMat.diffuseColor = BABYLON.Color3.FromHexString(MARS_DATA.phobos.color);
+        phobosMat.diffuseTexture = sharedMoonTex;
+        phobosMesh.material = phobosMat;
+
+        // Deimos (malla irregular más pequeña)
+        const deimosMesh = BABYLON.MeshBuilder.CreateSphere("deimos", { diameterX: 0.30, diameterY: 0.24, diameterZ: 0.22, segments: 24 }, scene);
+        const deimosMat = new BABYLON.StandardMaterial("deimosMat", scene);
+        deimosMat.diffuseColor = BABYLON.Color3.FromHexString(MARS_DATA.deimos.color);
+        deimosMat.diffuseTexture = sharedMoonTex;
+        deimosMesh.material = deimosMat;
+
+        // Trayectorias orbitales 3D
+        function createOrbitLine(radius, colorHex) {
+            const points = [];
+            const segments = 80;
+            for (let i = 0; i <= segments; i++) {
+                const theta = (i / segments) * Math.PI * 2;
+                points.push(new BABYLON.Vector3(Math.cos(theta) * radius, 0, Math.sin(theta) * radius));
+            }
+            const line = BABYLON.MeshBuilder.CreateLines("orbit_" + radius, { points }, scene);
+            line.color = BABYLON.Color3.FromHexString(colorHex);
+            line.alpha = 0.45;
+            return line;
+        }
+
+        const phobosOrbitLine = createOrbitLine(MARS_DATA.phobos.orbitRadius, "#f87171");
+        const deimosOrbitLine = createOrbitLine(MARS_DATA.deimos.orbitRadius, "#fbbf24");
+
+        // Ángulos de rotación orbital
+        let phobosAngle = 0.0;
+        let deimosAngle = 2.4;
+        let orbitSpeedMultiplier = 1.0;
+        let showOrbits = true;
+        let showPins = true;
+        let isSunDirect = true;
+        let activeTextureMode = "natural";
+
+        // ============================================================================
+        // 6. PINES GEOLÓGICOS Y LUNAS 3D EN BABYLON.JS
+        // ============================================================================
+        function latLonToBabylon(lat, lon, radius) {
+            const phi = (90 - lat) * (Math.PI / 180);
+            const theta = (lon + 180) * (Math.PI / 180);
+            const x = -(radius * Math.sin(phi) * Math.cos(theta));
+            const z = (radius * Math.sin(phi) * Math.sin(theta));
+            const y = (radius * Math.cos(phi));
+            return new BABYLON.Vector3(x, y, z);
+        }
+
+        const pinMeshes = {};
+        const pinElements = {};
+        const labelsContainer = document.getElementById("labelsContainer");
+
+        const pinMat = new BABYLON.StandardMaterial("pinMat", scene);
+        pinMat.emissiveColor = new BABYLON.Color3(0.97, 0.44, 0.44);
+
+        // Crear pines en superficie de Marte
+        ["olympus", "valles", "jezero", "gale"].forEach(key => {
+            const poi = MARS_DATA[key];
+            const pos = latLonToBabylon(poi.lat, poi.lon, marsRadius * 1.015);
+
+            const pinSphere = BABYLON.MeshBuilder.CreateSphere("pin_" + key, { diameter: 0.06, segments: 16 }, scene);
+            pinSphere.position = pos;
+            pinSphere.parent = marsMesh; // Gira rígidamente con Marte
+            pinSphere.material = pinMat;
+            pinMeshes[key] = pinSphere;
+
+            // Elemento HTML 2D
+            const el = document.createElement("div");
+            el.className = "pin-label";
+            el.innerHTML = `<span>${poi.icon} ${poi.name.split('(')[0].trim()}</span>`;
+            el.onclick = (e) => {
+                e.stopPropagation();
+                focusTarget(key);
+            };
+            labelsContainer.appendChild(el);
+            pinElements[key] = el;
+        });
+
+        // Crear pines para Fobos y Deimos
+        function createMoonLabel(key, icon, label) {
+            const el = document.createElement("div");
+            el.className = "pin-label";
+            el.style.borderColor = key === "phobos" ? "#f87171" : "#fbbf24";
+            el.innerHTML = `<span>${icon} ${label}</span>`;
+            el.onclick = (e) => {
+                e.stopPropagation();
+                focusTarget(key);
+            };
+            labelsContainer.appendChild(el);
+            pinElements[key] = el;
+        }
+        createMoonLabel("phobos", "🪨", "Fobos (7h 39m)");
+        createMoonLabel("deimos", "🥔", "Deimos (30h)");
+
+        // Proyectar coordenadas en cada frame
+        scene.onAfterRenderObservable.add(() => {
+            if (!showPins) {
+                labelsContainer.style.display = "none";
+                return;
+            }
+            labelsContainer.style.display = "block";
+
+            // Pines de superficie
+            ["olympus", "valles", "jezero", "gale"].forEach(key => {
+                const mesh = pinMeshes[key];
+                if (mesh) {
+                    const worldPos = mesh.getAbsolutePosition();
+                    updateDomPin(key, worldPos);
+                }
+            });
+
+            // Pines de Fobos y Deimos
+            const phobosPos = phobosMesh.getAbsolutePosition().clone();
+            phobosPos.y += 0.28;
+            updateDomPin("phobos", phobosPos);
+
+            const deimosPos = deimosMesh.getAbsolutePosition().clone();
+            deimosPos.y += 0.22;
+            updateDomPin("deimos", deimosPos);
+        });
+
+        function updateDomPin(key, worldPos) {
+            const el = pinElements[key];
+            if (!el) return;
+
+            const screenPos = BABYLON.Vector3.Project(
+                worldPos,
+                BABYLON.Matrix.Identity(),
+                scene.getTransformMatrix(),
+                camera.viewport.toGlobal(engine.getRenderWidth(), engine.getRenderHeight())
+            );
+
+            if (screenPos.z > 0 && screenPos.z < 1.0) {
+                el.style.left = screenPos.x + "px";
+                el.style.top = screenPos.y + "px";
+                el.style.display = "block";
+                el.style.opacity = "1";
+            } else {
+                el.style.display = "none";
+            }
+        }
+
+        // ============================================================================
+        // 7. BUCLE DE RENDERIZADO Y FÍSICA
+        // ============================================================================
+        let activeTarget = "olympus";
+        let targetCamRadius = 5.2;
+
+        engine.runRenderLoop(() => {
+            // Rotación natural de Marte sobre su eje
+            marsMesh.rotation.y += 0.003 * orbitSpeedMultiplier;
+
+            // Órbita de Fobos (muy rápida)
+            phobosAngle += MARS_DATA.phobos.orbitSpeed * orbitSpeedMultiplier;
+            phobosMesh.position.set(
+                Math.cos(phobosAngle) * MARS_DATA.phobos.orbitRadius,
+                Math.sin(phobosAngle * 0.5) * 0.25, // Ligera inclinación orbital
+                Math.sin(phobosAngle) * MARS_DATA.phobos.orbitRadius
+            );
+            phobosMesh.rotation.y += 0.02;
+
+            // Órbita de Deimos
+            deimosAngle += MARS_DATA.deimos.orbitSpeed * orbitSpeedMultiplier;
+            deimosMesh.position.set(
+                Math.cos(deimosAngle) * MARS_DATA.deimos.orbitRadius,
+                Math.cos(deimosAngle * 0.4) * 0.35,
+                Math.sin(deimosAngle) * MARS_DATA.deimos.orbitRadius
+            );
+            deimosMesh.rotation.y += 0.01;
+
+            // Enfoque dinámico
+            if (activeTarget === "phobos") {
+                camera.target = BABYLON.Vector3.Lerp(camera.target, phobosMesh.position, 0.08);
+            } else if (activeTarget === "deimos") {
+                camera.target = BABYLON.Vector3.Lerp(camera.target, deimosMesh.position, 0.08);
+            } else if (activeTarget === "mars") {
+                camera.target = BABYLON.Vector3.Lerp(camera.target, BABYLON.Vector3.Zero(), 0.08);
+            }
+
+            camera.radius = BABYLON.Scalar.Lerp(camera.radius, targetCamRadius, 0.05);
+
+            scene.render();
+        });
+
+        window.addEventListener("resize", () => engine.resize());
+
+        // ============================================================================
+        // 8. INTERACTIVIDAD Y SELECCIÓN PEDAGÓGICA
+        // ============================================================================
+        function focusTarget(key) {
+            activeTarget = key;
+            const data = MARS_DATA[key];
+
+            document.querySelectorAll(".poi-item").forEach(item => item.classList.remove("active"));
+            const btn = document.getElementById("btn_nav_" + key);
+            if (btn) btn.classList.add("active");
+
+            // Actualizar tarjeta pedagógica
+            document.getElementById("detailBadge").textContent = data.type;
+            document.getElementById("detailTitle").textContent = data.name;
+            document.getElementById("statHeight").parentNode.querySelector(".stat-label").textContent = data.stat1Label;
+            document.getElementById("statHeight").textContent = data.stat1Val;
+            document.getElementById("statBase").parentNode.querySelector(".stat-label").textContent = data.stat2Label;
+            document.getElementById("statBase").textContent = data.stat2Val;
+            document.getElementById("statCaldera").parentNode.querySelector(".stat-label").textContent = data.stat3Label;
+            document.getElementById("statCaldera").textContent = data.stat3Val;
+            document.getElementById("statType").parentNode.querySelector(".stat-label").textContent = data.stat4Label;
+            document.getElementById("statType").textContent = data.stat4Val;
+            document.getElementById("detailDesc").textContent = data.desc;
+
+            if (data.isMoon) {
+                targetCamRadius = 2.4;
+            } else if (key === "mars") {
+                targetCamRadius = 7.0;
+                camera.target = BABYLON.Vector3.Zero();
+            } else {
+                targetCamRadius = 3.8;
+                // Rotar cámara para encarar el punto geográfico
+                const targetPos = pinMeshes[key].getAbsolutePosition();
+                camera.target = BABYLON.Vector3.Lerp(camera.target, BABYLON.Vector3.Zero(), 0.2);
+                camera.alpha = -Math.atan2(targetPos.z, targetPos.x) - Math.PI / 2;
+                camera.beta = Math.acos(targetPos.y / (marsRadius * 1.015));
+            }
+        }
+
+        function resetOverview() {
+            focusTarget("mars");
+            targetCamRadius = 12.0;
+        }
+
+        function setTextureMode(mode) {
+            activeTextureMode = mode;
+            document.getElementById("btnModeNatural").classList.toggle("active", mode === "natural");
+            document.getElementById("btnModeTopo").classList.toggle("active", mode === "topo");
+
+            if (mode === "natural") {
+                marsMat.diffuseTexture = realNasaTex.isReady() ? realNasaTex : naturalTex;
+            } else {
+                marsMat.diffuseTexture = topoTex;
+            }
+        }
+
+        function updateOrbitSpeed(val) {
+            orbitSpeedMultiplier = parseFloat(val);
+            const badge = document.getElementById("speedDisplay");
+            if (orbitSpeedMultiplier === 0) {
+                badge.textContent = "⏸️ Pausado";
+            } else {
+                badge.textContent = orbitSpeedMultiplier.toFixed(1) + "x (Sincronizado)";
+            }
+        }
+
+        function toggleOrbits() {
+            showOrbits = !showOrbits;
+            phobosOrbitLine.setEnabled(showOrbits);
+            deimosOrbitLine.setEnabled(showOrbits);
+            document.getElementById("btnToggleOrbits").classList.toggle("active", showOrbits);
+        }
+
+        function togglePins() {
+            showPins = !showPins;
+            document.getElementById("btnTogglePins").classList.toggle("active", showPins);
+        }
+
+        function toggleSunDirection() {
+            isSunDirect = !isSunDirect;
+            if (isSunDirect) {
+                sunLight.intensity = 2.5;
+                hemiLight.intensity = 0.38;
+            } else {
+                sunLight.intensity = 0.8;
+                hemiLight.intensity = 0.85; // Luz uniforme difusa
+            }
+            document.getElementById("btnToggleSun").classList.toggle("active", isSunDirect);
+        }
+
+        // Selección inicial en Monte Olimpo
+        focusTarget("olympus");
+    </script>
+</body>
+</html>
+

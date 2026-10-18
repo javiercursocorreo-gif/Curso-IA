@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sesión 08 • Simulador 3D: Júpiter y el Sistema de las 4 Lunas Galileanas (NASA Cassini / Juno) [COD-008]</title>
+    <!-- Babylon.js CDN Oficial -->
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-base: #03060f;
+            --bg-panel: rgba(11, 17, 32, 0.94);
+            --border-glow: rgba(251, 146, 60, 0.35);
+            --primary: #fb923c;
+            --primary-glow: rgba(251, 146, 60, 0.25);
+            --gold: #fbbf24;
+            --emerald: #34d399;
+            --cyan: #38bdf8;
+            --rose: #fb7185;
+            --text-main: #f8fafc;
+            --text-sub: #cbd5e1;
+            --font-sans: 'Inter', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+        html, body {
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            font-family: var(--font-sans);
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            font-size: 16px;
+        }
+
+        /* HEADER SUPERIOR */
+        header {
+            background: linear-gradient(180deg, rgba(15, 23, 42, 0.98) 0%, rgba(15, 23, 42, 0.88) 100%);
+            backdrop-filter: blur(14px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+            padding: 10px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+            z-index: 50;
+        }
+        .header-title-box {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+        .badge-code {
+            background: rgba(251, 146, 60, 0.15);
+            color: var(--primary);
+            border: 1px solid rgba(251, 146, 60, 0.45);
+            font-family: var(--font-mono);
+            font-size: 0.88rem;
+            font-weight: 800;
+            padding: 4px 10px;
+            border-radius: 8px;
+            letter-spacing: 0.05em;
+        }
+        h1 {
+            font-size: 1.22rem;
+            font-weight: 800;
+            letter-spacing: -0.01em;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .pill-status {
+            background: rgba(16, 185, 129, 0.15);
+            color: #34d399;
+            border: 1px solid rgba(16, 185, 129, 0.4);
+            font-size: 0.85rem;
+            font-weight: 700;
+            padding: 5px 13px;
+            border-radius: 9999px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* GRID PRINCIPAL */
+        .workspace-grid {
+            flex: 1;
+            min-height: 0;
+            display: grid;
+            grid-template-columns: 420px 1fr;
+            gap: 14px;
+            padding: 14px 20px;
+            background: radial-gradient(circle at 75% 45%, #0d1527 0%, #03060f 100%);
+        }
+
+        /* PANEL IZQUIERDO */
+        .sidebar-panel {
+            background: var(--bg-panel);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 16px;
+            padding: 18px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            overflow-y: auto;
+            box-shadow: 0 16px 36px rgba(0, 0, 0, 0.55);
+        }
+
+        .sidebar-panel::-webkit-scrollbar { width: 6px; }
+        .sidebar-panel::-webkit-scrollbar-thumb {
+            background: rgba(251, 146, 60, 0.35);
+            border-radius: 3px;
+        }
+
+        .section-title {
+            font-size: 0.82rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 6px;
+        }
+
+        /* TARJETA LA IDEA FÁCIL */
+        .card-easy-idea {
+            background: linear-gradient(135deg, rgba(251, 146, 60, 0.12), rgba(15, 23, 42, 0.65));
+            border: 1.5px solid rgba(251, 146, 60, 0.4);
+            border-radius: 14px;
+            padding: 14px;
+            box-shadow: 0 4px 18px rgba(251, 146, 60, 0.1);
+        }
+        .easy-idea-title {
+            font-size: 0.95rem;
+            font-weight: 900;
+            color: #fed7aa;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 6px;
+        }
+        .easy-idea-text {
+            font-size: 0.90rem;
+            color: #f1f5f9;
+            line-height: 1.5;
+        }
+        .easy-idea-text strong { color: var(--gold); }
+
+        /* LISTA DE LUNAS GALILEANAS */
+        .moon-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .moon-item {
+            background: rgba(15, 23, 42, 0.8);
+            border: 1.5px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 10px 14px;
+            cursor: pointer;
+            transition: all 0.22s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+        .moon-item:hover {
+            border-color: var(--primary);
+            background: rgba(251, 146, 60, 0.15);
+            transform: translateX(4px);
+        }
+        .moon-item.active {
+            border-color: var(--gold);
+            background: rgba(251, 191, 36, 0.18);
+            box-shadow: 0 0 16px rgba(251, 191, 36, 0.25);
+        }
+        .moon-item-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .moon-item-name {
+            font-size: 0.96rem;
+            font-weight: 800;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .moon-item-badge {
+            font-size: 0.76rem;
+            font-family: var(--font-mono);
+            font-weight: 700;
+            padding: 2px 7px;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.08);
+            color: #cbd5e1;
+        }
+        .moon-item-sub {
+            font-size: 0.82rem;
+            color: #94a3b8;
+            line-height: 1.35;
+        }
+
+        /* FICHA DE TELEMETRÍA Y DETALLES */
+        .detail-card {
+            background: rgba(15, 23, 42, 0.92);
+            border: 1.5px solid rgba(251, 146, 60, 0.35);
+            border-radius: 14px;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .detail-badge {
+            font-size: 0.74rem;
+            font-family: var(--font-mono);
+            font-weight: 800;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+        .detail-title {
+            font-size: 1.08rem;
+            font-weight: 900;
+            color: #ffffff;
+        }
+        .detail-stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin: 4px 0;
+        }
+        .stat-box {
+            background: rgba(0, 0, 0, 0.35);
+            padding: 6px 10px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.07);
+        }
+        .stat-label { font-size: 0.72rem; color: #94a3b8; text-transform: uppercase; font-weight: 700; }
+        .stat-val { font-size: 0.86rem; color: #f8fafc; font-weight: 800; margin-top: 1px; }
+        .detail-body {
+            font-size: 0.88rem;
+            color: #cbd5e1;
+            line-height: 1.48;
+        }
+
+        /* CONTROLES DE VELOCIDAD */
+        .controls-box {
+            background: rgba(15, 23, 42, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 12px 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .slider-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #cbd5e1;
+        }
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            background: #1e293b;
+            border-radius: 4px;
+            outline: none;
+            -webkit-appearance: none;
+            cursor: pointer;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--primary);
+            box-shadow: 0 0 10px rgba(251, 146, 60, 0.7);
+            cursor: pointer;
+        }
+
+        /* VISOR 3D CENTRAL */
+        .viewport-3d {
+            position: relative;
+            background: #020409;
+            border: 1.5px solid rgba(251, 146, 60, 0.3);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.75);
+        }
+        #renderCanvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+            outline: none;
+        }
+
+        /* HUD SUPERIOR */
+        .hud-overlay-top {
+            position: absolute;
+            top: 16px;
+            left: 18px;
+            right: 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            pointer-events: none;
+            z-index: 10;
+        }
+        .hud-group {
+            display: flex;
+            gap: 8px;
+            pointer-events: auto;
+        }
+        .btn-hud {
+            background: rgba(15, 23, 42, 0.88);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            color: #e2e8f0;
+            padding: 8px 14px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            transition: all 0.2s;
+        }
+        .btn-hud:hover, .btn-hud.active {
+            background: rgba(251, 146, 60, 0.25);
+            border-color: var(--primary);
+            color: #ffffff;
+            box-shadow: 0 0 14px rgba(251, 146, 60, 0.3);
+        }
+
+        /* HUD INFERIOR */
+        .hud-overlay-bottom {
+            position: absolute;
+            bottom: 16px;
+            left: 18px;
+            right: 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            pointer-events: none;
+            z-index: 10;
+        }
+        .hud-legend {
+            background: rgba(15, 23, 42, 0.9);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-size: 0.84rem;
+            color: #94a3b8;
+            pointer-events: auto;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .hud-legend strong { color: #ffffff; }
+
+        /* PINES Y ETIQUETAS 3D FLOTANTES */
+        .labels-container {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 5;
+        }
+        .pin-label {
+            position: absolute;
+            transform: translate(-50%, -100%);
+            background: rgba(15, 23, 42, 0.94);
+            border: 1.5px solid var(--primary);
+            color: #ffffff;
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 0.80rem;
+            font-weight: 800;
+            pointer-events: auto;
+            cursor: pointer;
+            white-space: nowrap;
+            box-shadow: 0 0 14px rgba(251, 146, 60, 0.5);
+            margin-top: -10px;
+            transition: opacity 0.2s, transform 0.18s;
+        }
+        .pin-label:hover {
+            transform: translate(-50%, -110%) scale(1.08);
+            border-color: var(--gold);
+        }
+        .pin-label::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 6px;
+            border-style: solid;
+            border-color: var(--primary) transparent transparent transparent;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- CABECERA -->
+    <header>
+        <div class="header-title-box">
+            <span class="badge-code">COD-008</span>
+            <h1>🟠 Júpiter y sus 4 Lunas Galileanas en 3D • NASA Cassini / Juno</h1>
+        </div>
+        <div class="header-right">
+            <span class="pill-status">🔭 Textura Satelital NASA 2K & Órbitas Keplerianas Reales</span>
+            <span class="pill-status" style="background: rgba(251, 146, 60, 0.15); color: #fb923c; border-color: rgba(251, 146, 60, 0.4);">
+                S08 • Espacio & Mecánica Celeste
+            </span>
+        </div>
+    </header>
+
+    <!-- WORKSPACE -->
+    <main class="workspace-grid">
+        
+        <!-- PANEL IZQUIERDO -->
+        <aside class="sidebar-panel">
+
+            <!-- TARJETA LA IDEA FÁCIL -->
+            <div class="card-easy-idea">
+                <div class="easy-idea-title">
+                    <span>💡 La Idea Fácil para Seniors (+65)</span>
+                </div>
+                <div class="easy-idea-text">
+                    En 1610, <strong>Galileo Galilei</strong> apuntó su rudimentario telescopio hacia Júpiter y vio cuatro diminutas "estrellas" que cambiaban de posición cada noche. Descubrió que eran lunas girando en torno al planeta gigante. <strong>Ese simple hallazgo cambió la historia humana para siempre</strong>: demostró que la Tierra no era el centro del Universo, pues había otros mundos que tenían sus propios satélites.
+                </div>
+            </div>
+
+            <!-- RESONANCIA ORBITAL 1:2:4 DE LAPLACE -->
+            <div style="background: rgba(14, 165, 233, 0.12); border: 1.5px solid rgba(56, 189, 248, 0.4); border-radius: 12px; padding: 12px 14px;">
+                <div style="font-size: 0.82rem; font-weight: 800; color: #38bdf8; text-transform: uppercase; letter-spacing: 0.05em; display:flex; align-items:center; gap:6px; margin-bottom:4px;">
+                    <span>📐 Resonancia Orbital de Laplace (4 : 2 : 1)</span>
+                </div>
+                <p style="font-size: 0.87rem; color: #cbd5e1; line-height: 1.45; margin:0;">
+                    Por cada <strong>4 vueltas</strong> que da Ío a Júpiter (1,77 días), Europa da exactamente <strong>2 vueltas</strong> (3,55 días) y Ganímedes da <strong>1 vuelta</strong> (7,15 días). Este compás gravitatorio perfecto estira y deforma sus núcleos como si fueran plastilina, generando calor interno para volcanes y océanos subterráneos.
+                </p>
+            </div>
+
+            <!-- CONTROLES DE SIMULACIÓN -->
+            <div class="controls-box">
+                <div class="section-title" style="margin-bottom:0;">
+                    <span>Control de Velocidad Orbital</span>
+                    <span id="speedDisplay" style="color:var(--primary); font-family:var(--font-mono);">1.0x (Tiempo Real Acelerado)</span>
+                </div>
+                <input type="range" id="speedSlider" min="0" max="4" step="0.2" value="1.0" oninput="updateOrbitSpeed(this.value)">
+                <div class="slider-row" style="font-size:0.75rem; color:#94a3b8;">
+                    <span>⏸️ Pausa (0x)</span>
+                    <span>1.0x Normal</span>
+                    <span>🚀 4.0x Rápido</span>
+                </div>
+            </div>
+
+            <!-- SELECCIÓN DE CUERPOS CELESTES -->
+            <div>
+                <div class="section-title">
+                    <span>Enfoque Orbital • Haz clic para volar</span>
+                </div>
+                <div class="moon-list" id="moonList">
+                    <!-- Dinámico con JS -->
+                </div>
+            </div>
+
+            <!-- FICHA DETALLADA DEL CUERPO ACTIVO -->
+            <div class="detail-card" id="detailCard">
+                <div class="detail-badge" id="detailBadge">GIGANTE GASEOSO PRINCIPAL</div>
+                <div class="detail-title" id="detailTitle">Júpiter y la Gran Mancha Roja</div>
+                <div class="detail-stats-grid">
+                    <div class="stat-box">
+                        <div class="stat-label">Diámetro</div>
+                        <div class="stat-val" id="statDiameter">139.820 km (11 Tierras)</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">Día Joviano</div>
+                        <div class="stat-val" id="statPeriod">9 h 55 min (el más rápido)</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">Masa</div>
+                        <div class="stat-val" id="statMass">318 veces la Tierra</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">Lunas Totales</div>
+                        <div class="stat-val" id="statMoons">95 lunas descubiertas</div>
+                    </div>
+                </div>
+                <div class="detail-body" id="detailDesc">
+                    Júpiter es tan inmenso que en su interior cabrían más de 1.300 planetas Tierra. Su atmósfera exhibe bandas nubosas de amoníaco e hidrógeno impulsadas por vientos de 540 km/h, coronadas por la <em>Gran Mancha Roja</em>, un anticiclón titánico que lleva girando más de 300 años y en el que cabe un planeta Tierra entero.
+                </div>
+            </div>
+
+        </aside>
+
+        <!-- VISOR BABYLON.JS 3D -->
+        <div class="viewport-3d" id="viewport3D">
+            <canvas id="renderCanvas"></canvas>
+            
+            <!-- CONTENEDOR DE PINES Y ETIQUETAS -->
+            <div class="labels-container" id="labelsContainer"></div>
+
+            <!-- CONTROLES FLOTANTES HUD SUPERIORES -->
+            <div class="hud-overlay-top">
+                <div class="hud-group">
+                    <button class="btn-hud active" id="btnToggleOrbits" onclick="toggleOrbits()">
+                        ⭕ Órbitas 3D
+                    </button>
+                    <button class="btn-hud active" id="btnTogglePins" onclick="togglePins()">
+                        🏷️ Etiquetas
+                    </button>
+                    <button class="btn-hud" id="btnToggleLight" onclick="toggleSunLight()">
+                        ☀️ Día / Noche
+                    </button>
+                </div>
+                <div class="hud-group">
+                    <button class="btn-hud" onclick="focusBody('jupiter')">
+                        🎯 Centrar Júpiter
+                    </button>
+                    <button class="btn-hud" onclick="resetOverview()">
+                        🌌 Vista General
+                    </button>
+                </div>
+            </div>
+
+            <!-- LEYENDA HUD INFERIOR -->
+            <div class="hud-overlay-bottom">
+                <div class="hud-legend">
+                    <span>🖱️ <strong>Arrastrar:</strong> Rotar en 3D</span>
+                    <span>🔍 <strong>Rueda:</strong> Zoom</span>
+                    <span>🪐 <strong>Movimiento:</strong> Lunas orbitando con velocidad real sincronizada</span>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        // ============================================================================
+        // 1. DATOS CIENTÍFICOS DE JÚPITER Y LAS 4 LUNAS GALILEANAS (NASA CASSINI / JUNO)
+        // ============================================================================
+        const CELESTIAL_DATA = {
+            jupiter: {
+                id: "jupiter",
+                name: "Júpiter",
+                type: "GIGANTE GASEOSO PRINCIPAL",
+                badge: "Planeta Maestro del Sistema Solar",
+                icon: "🟠",
+                radius: 2.4,
+                orbitRadius: 0,
+                orbitSpeed: 0,
+                rotSpeed: 0.008,
+                color: "#e28743",
+                diameter: "139.820 km (11 Tierras)",
+                period: "9 h 55 min (rotación veloz)",
+                mass: "318 veces la Tierra",
+                moons: "95 lunas descubiertas",
+                desc: "Júpiter es tan inmenso que en su interior cabrían más de 1.300 planetas Tierra. Su atmósfera exhibe bandas nubosas de amoníaco e hidrógeno impulsadas por vientos de 540 km/h, coronadas por la Gran Mancha Roja, un anticiclón titánico que lleva girando más de 300 años y en el que cabe la Tierra entera."
+            },
+            io: {
+                id: "io",
+                name: "Ío",
+                type: "LUNA GALILEANA I",
+                badge: "El Mundo Más Volcánico del Cosmos",
+                icon: "🟡",
+                radius: 0.36,
+                orbitRadius: 4.5,
+                orbitSpeed: 0.040,
+                rotSpeed: 0.012,
+                color: "#facc15",
+                diameter: "3.643 km (similar a nuestra Luna)",
+                period: "1,77 días terrestres (órbita muy veloz)",
+                mass: "1,2 veces nuestra Luna",
+                moons: "Más de 400 volcanes activos",
+                desc: "Ío sufre una marea gravitatoria brutal entre la masa de Júpiter y las lunas vecinas. La roca sólida de su corteza sube y baja hasta 100 metros cada día, derritiendo su manto y provocando columnas eruptivas de azufre incandescente de 500 km de altura que tiñen su superficie de amarillo y naranja."
+            },
+            europa: {
+                id: "europa",
+                name: "Europa",
+                type: "LUNA GALILEANA II",
+                badge: "Océano Oculto de Agua Líquida",
+                icon: "⚪",
+                radius: 0.32,
+                orbitRadius: 6.2,
+                orbitSpeed: 0.020, // Exactamente la mitad que Ío (2:1)
+                rotSpeed: 0.010,
+                color: "#93c5fd",
+                diameter: "3.122 km",
+                period: "3,55 días terrestres (órbita 2:1)",
+                mass: "0,65 veces nuestra Luna",
+                moons: "Océano global de 100 km de espesor",
+                desc: "Bajo su brillante corteza de hielo surcada por grietas rojizas llamadas 'lineae', Europa oculta un océano de agua líquida salada con el doble de agua que todos los océanos de la Tierra juntos. Calentado por fuentes hidrotermales en el lecho marino, es el candidato número uno para albergar vida extraterrestre."
+            },
+            ganymede: {
+                id: "ganymede",
+                name: "Ganímedes",
+                type: "LUNA GALILEANA III",
+                badge: "La Mayor Luna de Todo el Sistema Solar",
+                icon: "🟤",
+                radius: 0.52,
+                orbitRadius: 8.4,
+                orbitSpeed: 0.010, // Exactamente un cuarto que Ío (4:1)
+                rotSpeed: 0.008,
+                color: "#a8a29e",
+                diameter: "5.268 km (¡mayor que el planeta Mercurio!)",
+                period: "7,15 días terrestres (órbita 4:1)",
+                mass: "2,0 veces nuestra Luna",
+                moons: "Única luna con campo magnético propio",
+                desc: "Ganímedes es colosal: supera en tamaño al planeta Mercurio y a Plutón. Si orbitara directamente al Sol sería clasificada como planeta de pleno derecho. Posee su propio núcleo de hierro fundido generador de auroras boreales y magnetosfera, y un sándwich de capas de hielo con agua líquida entre ellas."
+            },
+            callisto: {
+                id: "callisto",
+                name: "Calisto",
+                type: "LUNA GALILEANA IV",
+                badge: "El Paisaje de Cráteres Más Antiguo",
+                icon: "🌑",
+                radius: 0.48,
+                orbitRadius: 11.2,
+                orbitSpeed: 0.0042, // Periodo 16,69 días
+                rotSpeed: 0.006,
+                color: "#64748b",
+                diameter: "4.821 km (casi igual a Mercurio)",
+                period: "16,69 días terrestres",
+                mass: "1,5 veces nuestra Luna",
+                moons: "La superficie más craterizada del cosmos",
+                desc: "Calisto no participa en la resonancia de marea interna, por lo que su superficie de hielo sucio y roca ha permanecido inalterada durante 4.000 millones de años. Es el cuerpo celeste con más cráteres por metro cuadrado de todo el Sistema Solar, destacando la inmensa cuenca concéntrica de Valhalla (3.800 km)."
+            }
+        };
+
+        // Renderizar lista en la barra lateral
+        const moonListEl = document.getElementById("moonList");
+        Object.keys(CELESTIAL_DATA).forEach(key => {
+            const item = CELESTIAL_DATA[key];
+            const div = document.createElement("div");
+            div.className = "moon-item" + (key === "jupiter" ? " active" : "");
+            div.id = "btn_nav_" + key;
+            div.onclick = () => focusBody(key);
+            div.innerHTML = `
+                <div class="moon-item-header">
+                    <span class="moon-item-name">${item.icon} ${item.name}</span>
+                    <span class="moon-item-badge">${key === 'jupiter' ? 'Planeta' : item.period.split(' ')[0]}</span>
+                </div>
+                <div class="moon-item-sub">${item.badge}</div>
+            `;
+            moonListEl.appendChild(div);
+        });
+
+        // ============================================================================
+        // 2. INICIALIZACIÓN DE BABYLON.JS
+        // ============================================================================
+        const canvas = document.getElementById("renderCanvas");
+        const engine = new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true });
+        const scene = new BABYLON.Scene(engine);
+        scene.clearColor = new BABYLON.Color4(0.012, 0.018, 0.035, 1.0);
+
+        // Cámara ArcRotate
+        const camera = new BABYLON.ArcRotateCamera("Camera", -Math.PI / 2.3, Math.PI / 2.4, 22.0, BABYLON.Vector3.Zero(), scene);
+        camera.attachControl(canvas, true);
+        camera.wheelPrecision = 35;
+        camera.lowerRadiusLimit = 3.2;
+        camera.upperRadiusLimit = 36.0;
+        camera.inertia = 0.85;
+
+        // Iluminación
+        const hemiLight = new BABYLON.HemisphericLight("hemiLight", new BABYLON.Vector3(0, 1, 0), scene);
+        hemiLight.intensity = 0.35;
+        hemiLight.groundColor = new BABYLON.Color3(0.06, 0.08, 0.14);
+
+        const sunLight = new BABYLON.DirectionalLight("sunLight", new BABYLON.Vector3(-1, -0.2, 0.3), scene);
+        sunLight.intensity = 2.4;
+        sunLight.diffuse = new BABYLON.Color3(1.0, 0.96, 0.90);
+
+        // ============================================================================
+        // 3. GENERADOR DE TEXTURAS PROCEDURALES CANVAS HD (AUTONOMÍA 100% OFFLINE)
+        // ============================================================================
+        function createJupiterProceduralTexture() {
+            const w = 2048, h = 1024;
+            const dynamicTex = new BABYLON.DynamicTexture("jupTex", { width: w, height: h }, scene, false);
+            const ctx = dynamicTex.getContext();
+
+            // Bandas atmosféricas de Júpiter en tonos ocre, crema, terracota y blanco
+            const bands = [
+                { y: 0.00, color: "#7c5335" }, // Casquete polar norte
+                { y: 0.15, color: "#a5724a" },
+                { y: 0.28, color: "#e2b68c" }, // Zona templada
+                { y: 0.38, color: "#874423" }, // Cinturón Ecuatorial Norte
+                { y: 0.50, color: "#d9a56e" }, // Zona Ecuatorial brillante
+                { y: 0.62, color: "#7a371c" }, // Cinturón Ecuatorial Sur
+                { y: 0.72, color: "#cf9b6b" },
+                { y: 0.85, color: "#9c6742" },
+                { y: 1.00, color: "#6a432b" }  // Casquete polar sur
+            ];
+
+            const grad = ctx.createLinearGradient(0, 0, 0, h);
+            bands.forEach(b => grad.addColorStop(b.y, b.color));
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, w, h);
+
+            // Turbulencias y festones ondulados
+            ctx.strokeStyle = "rgba(255, 230, 200, 0.18)";
+            ctx.lineWidth = 12;
+            for (let y = 100; y < h - 100; y += 45) {
+                ctx.beginPath();
+                for (let x = 0; x <= w; x += 30) {
+                    const wave = Math.sin(x * 0.02) * 14 + Math.cos(x * 0.05) * 6;
+                    if (x === 0) ctx.moveTo(x, y + wave);
+                    else ctx.lineTo(x, y + wave);
+                }
+                ctx.stroke();
+            }
+
+            // Gran Mancha Roja (Great Red Spot)
+            const grsX = w * 0.65;
+            const grsY = h * 0.64;
+            const spotGrad = ctx.createRadialGradient(grsX, grsY, 10, grsX, grsY, 90);
+            spotGrad.addColorStop(0.0, "#be2617");
+            spotGrad.addColorStop(0.5, "#d64528");
+            spotGrad.addColorStop(0.85, "#9e3019");
+            spotGrad.addColorStop(1.0, "rgba(158, 48, 25, 0)");
+            ctx.fillStyle = spotGrad;
+            ctx.beginPath();
+            ctx.ellipse(grsX, grsY, 95, 60, -0.08, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Ojo interior blanco de la Mancha Roja
+            ctx.fillStyle = "rgba(255, 235, 220, 0.4)";
+            ctx.beginPath();
+            ctx.ellipse(grsX + 8, grsY - 4, 30, 16, 0.1, 0, Math.PI * 2);
+            ctx.fill();
+
+            dynamicTex.update();
+            return dynamicTex;
+        }
+
+        // ============================================================================
+        // 4. CREACIÓN DE JÚPITER (MALLA + TEXTURA NASA REAL)
+        // ============================================================================
+        const jupiterMesh = BABYLON.MeshBuilder.CreateSphere("jupiterMesh", { diameter: CELESTIAL_DATA.jupiter.radius * 2, segments: 64 }, scene);
+        const jupiterMat = new BABYLON.StandardMaterial("jupMat", scene);
+        jupiterMat.diffuseTexture = createJupiterProceduralTexture();
+        jupiterMat.specularColor = new BABYLON.Color3(0.05, 0.05, 0.05);
+        jupiterMesh.material = jupiterMat;
+
+        // Cargar mapa satelital NASA Cassini real con fallback automático
+        const nasaJupiterUrl = "https://cdn.jsdelivr.net/gh/zhangwenqiang0214/solar-system-3d@main/assets/2k_jupiter.jpg";
+        const realNasaTex = new BABYLON.Texture(nasaJupiterUrl, scene, false, false, BABYLON.Texture.TRILINEAR_SAMPLINGMODE, () => {
+            jupiterMat.diffuseTexture = realNasaTex;
+            console.log("✅ Textura Satelital NASA 2K de Júpiter cargada con éxito");
+        }, () => {
+            console.log("Usando textura atmosférica de alta resolución de Babylon.js");
+        });
+
+        // ============================================================================
+        // 5. CREACIÓN DE LAS 4 LUNAS GALILEANAS Y SUS ÓRBITAS
+        // ============================================================================
+        const moonMeshes = {};
+        const orbitLines = {};
+        const moonAngles = { io: 0.5, europa: 2.1, ganymede: 4.2, callisto: 1.0 };
+        let orbitSpeedMultiplier = 1.0;
+        let showOrbits = true;
+        let showPins = true;
+        let isLightDay = true;
+
+        const sharedMoonTex = new BABYLON.Texture("https://cdn.jsdelivr.net/gh/zhangwenqiang0214/solar-system-3d@main/assets/2k_moon.jpg", scene, false, false);
+
+        ["io", "europa", "ganymede", "callisto"].forEach(key => {
+            const data = CELESTIAL_DATA[key];
+
+            // Malla de la Luna
+            const mesh = BABYLON.MeshBuilder.CreateSphere("moon_" + key, { diameter: data.radius * 2, segments: 32 }, scene);
+            const mat = new BABYLON.StandardMaterial("mat_" + key, scene);
+            mat.diffuseColor = BABYLON.Color3.FromHexString(data.color);
+            mat.diffuseTexture = sharedMoonTex;
+            mat.specularColor = new BABYLON.Color3(0.1, 0.1, 0.1);
+            mesh.material = mat;
+            moonMeshes[key] = mesh;
+
+            // Línea de la trayectoria orbital 3D
+            const orbitPoints = [];
+            const segments = 90;
+            for (let i = 0; i <= segments; i++) {
+                const theta = (i / segments) * Math.PI * 2;
+                orbitPoints.push(new BABYLON.Vector3(Math.cos(theta) * data.orbitRadius, 0, Math.sin(theta) * data.orbitRadius));
+            }
+            const orbitLine = BABYLON.MeshBuilder.CreateLines("orbit_" + key, { points: orbitPoints }, scene);
+            orbitLine.color = BABYLON.Color3.FromHexString(data.color);
+            orbitLine.alpha = 0.45;
+            orbitLines[key] = orbitLine;
+        });
+
+        // ============================================================================
+        // 6. ETIQUETAS Y PINES 3D (PROYECCIÓN BABYLON.JS A DOM)
+        // ============================================================================
+        const labelsContainer = document.getElementById("labelsContainer");
+        const pinElements = {};
+
+        function createPinLabel(key, name, icon) {
+            const pin = document.createElement("div");
+            pin.className = "pin-label";
+            pin.innerHTML = `<span>${icon} ${name}</span>`;
+            pin.onclick = (e) => {
+                e.stopPropagation();
+                focusBody(key);
+            };
+            labelsContainer.appendChild(pin);
+            pinElements[key] = pin;
+        }
+
+        createPinLabel("jupiter", "Júpiter & Gran Mancha Roja", "🟠");
+        createPinLabel("io", "Ío (Volcanes)", "🟡");
+        createPinLabel("europa", "Europa (Océano)", "⚪");
+        createPinLabel("ganymede", "Ganímedes (Mayor Luna)", "🟤");
+        createPinLabel("callisto", "Calisto (Cráteres)", "🌑");
+
+        // Actualizar posiciones de los pines en cada frame
+        scene.onAfterRenderObservable.add(() => {
+            if (!showPins) {
+                labelsContainer.style.display = "none";
+                return;
+            }
+            labelsContainer.style.display = "block";
+
+            // Pin de Júpiter
+            const jupWorldPos = jupiterMesh.getAbsolutePosition().clone();
+            jupWorldPos.y += CELESTIAL_DATA.jupiter.radius * 1.15;
+            updateDomPin("jupiter", jupWorldPos);
+
+            // Pines de las lunas
+            ["io", "europa", "ganymede", "callisto"].forEach(key => {
+                const mesh = moonMeshes[key];
+                if (mesh) {
+                    const worldPos = mesh.getAbsolutePosition().clone();
+                    worldPos.y += CELESTIAL_DATA[key].radius * 1.35;
+                    updateDomPin(key, worldPos);
+                }
+            });
+        });
+
+        function updateDomPin(key, worldPos) {
+            const el = pinElements[key];
+            if (!el) return;
+
+            const screenPos = BABYLON.Vector3.Project(
+                worldPos,
+                BABYLON.Matrix.Identity(),
+                scene.getTransformMatrix(),
+                camera.viewport.toGlobal(engine.getRenderWidth(), engine.getRenderHeight())
+            );
+
+            // Comprobar si está delante de la cámara
+            if (screenPos.z > 0 && screenPos.z < 1.0) {
+                el.style.left = screenPos.x + "px";
+                el.style.top = screenPos.y + "px";
+                el.style.display = "block";
+                el.style.opacity = "1";
+            } else {
+                el.style.display = "none";
+            }
+        }
+
+        // ============================================================================
+        // 7. BUCLE DE ANIMACIÓN Y FÍSICA ORBITAL
+        // ============================================================================
+        let activeFocus = "overview";
+        let targetCamRadius = 22.0;
+
+        engine.runRenderLoop(() => {
+            // Rotación axial de Júpiter
+            jupiterMesh.rotation.y += CELESTIAL_DATA.jupiter.rotSpeed * orbitSpeedMultiplier;
+
+            // Movimiento orbital de las 4 lunas
+            ["io", "europa", "ganymede", "callisto"].forEach(key => {
+                const data = CELESTIAL_DATA[key];
+                moonAngles[key] += data.orbitSpeed * orbitSpeedMultiplier * 0.5;
+
+                const x = Math.cos(moonAngles[key]) * data.orbitRadius;
+                const z = Math.sin(moonAngles[key]) * data.orbitRadius;
+
+                if (moonMeshes[key]) {
+                    moonMeshes[key].position.set(x, 0, z);
+                    moonMeshes[key].rotation.y += data.rotSpeed;
+                }
+            });
+
+            // Si hay una luna enfocada, seguir suavemente su posición con la cámara
+            if (activeFocus !== "overview" && activeFocus !== "jupiter") {
+                const targetMesh = moonMeshes[activeFocus];
+                if (targetMesh) {
+                    camera.target = BABYLON.Vector3.Lerp(camera.target, targetMesh.position, 0.08);
+                }
+            } else if (activeFocus === "jupiter") {
+                camera.target = BABYLON.Vector3.Lerp(camera.target, BABYLON.Vector3.Zero(), 0.08);
+            }
+
+            // Suavizado del radio de zoom
+            camera.radius = BABYLON.Scalar.Lerp(camera.radius, targetCamRadius, 0.05);
+
+            scene.render();
+        });
+
+        window.addEventListener("resize", () => engine.resize());
+
+        // ============================================================================
+        // 8. INTERACTIVIDAD Y SELECCIÓN PEDAGÓGICA
+        // ============================================================================
+        function focusBody(key) {
+            activeFocus = key;
+            const data = CELESTIAL_DATA[key];
+
+            // Actualizar botones de navegación lateral
+            document.querySelectorAll(".moon-item").forEach(item => item.classList.remove("active"));
+            const btn = document.getElementById("btn_nav_" + key);
+            if (btn) btn.classList.add("active");
+
+            // Actualizar ficha didáctica
+            document.getElementById("detailBadge").textContent = data.type;
+            document.getElementById("detailTitle").textContent = data.name + " • " + data.badge;
+            document.getElementById("statDiameter").textContent = data.diameter;
+            document.getElementById("statPeriod").textContent = data.period;
+            document.getElementById("statMass").textContent = data.mass;
+            document.getElementById("statMoons").textContent = data.moons;
+            document.getElementById("detailDesc").textContent = data.desc;
+
+            // Ajustar cámara para encuadre óptimo
+            if (key === "jupiter") {
+                targetCamRadius = 7.5;
+            } else {
+                targetCamRadius = Math.max(2.8, data.radius * 6.5);
+            }
+        }
+
+        function resetOverview() {
+            activeFocus = "overview";
+            targetCamRadius = 24.0;
+            camera.target = BABYLON.Vector3.Zero();
+            document.querySelectorAll(".moon-item").forEach(item => item.classList.remove("active"));
+            focusBody("jupiter");
+        }
+
+        function updateOrbitSpeed(val) {
+            orbitSpeedMultiplier = parseFloat(val);
+            const badge = document.getElementById("speedDisplay");
+            if (orbitSpeedMultiplier === 0) {
+                badge.textContent = "⏸️ Pausado";
+            } else {
+                badge.textContent = orbitSpeedMultiplier.toFixed(1) + "x (Sincronizado)";
+            }
+        }
+
+        function toggleOrbits() {
+            showOrbits = !showOrbits;
+            Object.values(orbitLines).forEach(line => line.setEnabled(showOrbits));
+            document.getElementById("btnToggleOrbits").classList.toggle("active", showOrbits);
+        }
+
+        function togglePins() {
+            showPins = !showPins;
+            document.getElementById("btnTogglePins").classList.toggle("active", showPins);
+        }
+
+        function toggleSunLight() {
+            isLightDay = !isLightDay;
+            if (isLightDay) {
+                sunLight.intensity = 2.4;
+                hemiLight.intensity = 0.35;
+            } else {
+                sunLight.intensity = 0.6;
+                hemiLight.intensity = 0.85; // Luz global uniforme
+            }
+            document.getElementById("btnToggleLight").classList.toggle("active", isLightDay);
+        }
+    </script>
+</body>
+</html>
+

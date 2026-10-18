@@ -11,7 +11,7 @@
 - **PROHIBICIÓN TOTAL DE SUBMITS Y RÁFAGAS DE COMANDOS EN EL CHAT:**
   - El asistente tiene **TERMINANTEMENTE PROHIBIDO** encadenar comandos de terminal de prueba, inspección o scripts pesados en el chat que provoquen solicitudes de Submit / Aprobación en la pantalla del usuario.
   - Cuando se requiera procesar, inspeccionar o extraer información de archivos pesados (como PDFs, scripts complejos o tareas de sistema), el asistente NUNCA intentará ejecutar scripts exploratorios en bucle.
-  - El asistente debe generar directamente el bloque de comando terminal limpio para que el usuario lo ejecute en su propia terminal externa sin ninguna interrupción en la interfaz.
+  - El asistente debe trabajar 100% en modo estándar sandbox sin provocar submits, y al final de la intervención entregar directamente un único bloque de comando de terminal limpio y numerado para que el usuario lo ejecute en su propia terminal externa.
 
 ## Regla de Oro: Sincronización Inmediata Simulador 3D ⟷ Prompt de Gemini en Ficha [COD]
 - **Sincronización Biunívoca en Tiempo Real:**
