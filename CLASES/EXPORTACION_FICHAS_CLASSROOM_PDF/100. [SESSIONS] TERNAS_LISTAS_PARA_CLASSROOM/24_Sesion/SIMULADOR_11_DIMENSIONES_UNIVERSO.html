@@ -1,0 +1,1322 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Las 11 Dimensiones del Universo • Simulador Hiperdimensional 3D (Teoría M)</title>
+    <!-- Babylon.js Motor 3D Oficial CDN -->
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-base: #030611;
+            --bg-panel: rgba(10, 16, 32, 0.88);
+            --border: rgba(56, 189, 248, 0.28);
+            --border-glow: rgba(56, 189, 248, 0.55);
+            --primary: #38bdf8;
+            --accent: #c084fc;
+            --gold: #fbbf24;
+            --emerald: #34d399;
+            --rose: #fb7185;
+            --text-main: #f8fafc;
+            --text-sub: #94a3b8;
+            --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+
+        body {
+            font-family: var(--font-sans);
+            background: radial-gradient(circle at 50% 30%, #0d172e 0%, #050914 70%, #020308 100%);
+            color: var(--text-main);
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 3D CANVAS FULLSCREEN */
+        #renderCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            outline: none;
+            display: block;
+            z-index: 1;
+        }
+
+        /* CABECERA HUD */
+        header {
+            position: absolute;
+            top: 18px;
+            left: 22px;
+            right: 22px;
+            z-index: 10;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            pointer-events: none;
+        }
+
+        .brand-card {
+            background: var(--bg-panel);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 12px 22px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            box-shadow: 0 16px 36px rgba(0, 0, 0, 0.65), 0 0 20px rgba(56, 189, 248, 0.15);
+            pointer-events: auto;
+        }
+
+        .brand-icon {
+            font-size: 2.2rem;
+            animation: pulse-icon 2s infinite ease-in-out;
+        }
+
+        @keyframes pulse-icon {
+            0%, 100% { transform: scale(1); filter: drop-shadow(0 0 8px #38bdf8); }
+            50% { transform: scale(1.12); filter: drop-shadow(0 0 18px #c084fc); }
+        }
+
+        .brand-title {
+            font-size: 1.18rem;
+            font-weight: 800;
+            letter-spacing: -0.01em;
+            background: linear-gradient(135deg, #ffffff 40%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .brand-sub {
+            font-size: 0.76rem;
+            color: var(--text-sub);
+            margin-top: 3px;
+            font-family: var(--font-mono);
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            pointer-events: auto;
+        }
+
+        .pill-badge {
+            background: rgba(192, 132, 252, 0.15);
+            border: 1px solid rgba(192, 132, 252, 0.45);
+            color: #e9d5ff;
+            padding: 7px 16px;
+            border-radius: 9999px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(192, 132, 252, 0.2);
+            font-family: var(--font-mono);
+        }
+
+        .pulse-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--accent);
+            box-shadow: 0 0 10px var(--accent);
+            animation: blink 1.2s infinite;
+        }
+
+        @keyframes blink { 50% { opacity: 0.25; } }
+
+        .btn-fullscreen {
+            background: rgba(15, 23, 42, 0.85);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            padding: 8px 14px;
+            border-radius: 12px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            backdrop-filter: blur(12px);
+            transition: all 0.2s ease;
+        }
+
+        .btn-fullscreen:hover {
+            border-color: var(--primary);
+            color: #fff;
+            box-shadow: 0 0 14px rgba(56, 189, 248, 0.35);
+        }
+
+        /* TARJETA DE INFORMACIÓN DE LA DIMENSIÓN (LATERAL DERECHO) */
+        .dim-card {
+            position: absolute;
+            top: 90px;
+            right: 22px;
+            width: 380px;
+            max-width: calc(100vw - 44px);
+            background: var(--bg-panel);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-glow);
+            border-radius: 18px;
+            padding: 20px 22px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.75), inset 0 0 15px rgba(56, 189, 248, 0.1);
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            transition: transform 0.35s ease, opacity 0.35s ease;
+        }
+
+        .dim-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding-bottom: 10px;
+        }
+
+        .dim-tag {
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            font-weight: 800;
+            padding: 3px 10px;
+            border-radius: 6px;
+            background: rgba(56, 189, 248, 0.15);
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            letter-spacing: 0.05em;
+        }
+
+        .dim-category {
+            font-size: 0.75rem;
+            color: var(--text-sub);
+            font-weight: 600;
+        }
+
+        .dim-name {
+            font-size: 1.25rem;
+            font-weight: 800;
+            letter-spacing: -0.01em;
+            color: #ffffff;
+            line-height: 1.25;
+        }
+
+        .dim-quote {
+            font-size: 0.82rem;
+            color: #cbd5e1;
+            font-style: italic;
+            border-left: 2px solid var(--accent);
+            padding-left: 10px;
+            line-height: 1.45;
+        }
+
+        .dim-desc-box {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 12px;
+            padding: 12px 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .dim-desc-item {
+            font-size: 0.78rem;
+            line-height: 1.45;
+            color: #e2e8f0;
+        }
+
+        .dim-desc-item strong {
+            color: var(--primary);
+        }
+
+        .dim-controls-box {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            padding-top: 4px;
+        }
+
+        .dim-slider-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.74rem;
+            color: var(--text-sub);
+            font-family: var(--font-mono);
+        }
+
+        .dim-slider {
+            width: 100%;
+            height: 5px;
+            border-radius: 5px;
+            background: #1e293b;
+            outline: none;
+            accent-color: var(--primary);
+            cursor: pointer;
+        }
+
+        /* NAVEGADOR INFERIOR DE 11 DIMENSIONES */
+        .bottom-bar {
+            position: absolute;
+            bottom: 20px;
+            left: 22px;
+            right: 22px;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            pointer-events: none;
+        }
+
+        .controls-toolbar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--bg-panel);
+            backdrop-filter: blur(18px);
+            border: 1px solid var(--border);
+            border-radius: 50px;
+            padding: 6px 14px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+            pointer-events: auto;
+        }
+
+        .btn-tool {
+            background: transparent;
+            border: none;
+            color: var(--text-sub);
+            font-size: 0.8rem;
+            font-weight: 700;
+            padding: 6px 14px;
+            border-radius: 9999px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-tool:hover {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .btn-tour {
+            background: linear-gradient(135deg, #0284c7, #7c3aed);
+            color: #fff !important;
+            box-shadow: 0 0 16px rgba(124, 58, 237, 0.45);
+        }
+
+        .btn-tour:hover {
+            transform: scale(1.04);
+            box-shadow: 0 0 24px rgba(124, 58, 237, 0.7);
+        }
+
+        .dim-selector-dock {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--bg-panel);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-glow);
+            border-radius: 22px;
+            padding: 8px 14px;
+            box-shadow: 0 20px 45px rgba(0, 0, 0, 0.75);
+            pointer-events: auto;
+            max-width: 100%;
+            overflow-x: auto;
+        }
+
+        .dim-btn {
+            background: rgba(15, 23, 42, 0.75);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: var(--text-sub);
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            flex-shrink: 0;
+        }
+
+        .dim-btn-num {
+            font-family: var(--font-mono);
+            font-size: 0.88rem;
+            font-weight: 800;
+            line-height: 1;
+        }
+
+        .dim-btn-label {
+            font-size: 0.58rem;
+            text-transform: uppercase;
+            font-weight: 700;
+            margin-top: 2px;
+            opacity: 0.75;
+        }
+
+        .dim-btn:hover {
+            border-color: var(--primary);
+            color: #fff;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(56, 189, 248, 0.25);
+        }
+
+        .dim-btn.active {
+            background: linear-gradient(135deg, rgba(56, 189, 248, 0.25), rgba(192, 132, 252, 0.25));
+            border-color: var(--primary);
+            color: #ffffff;
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.45);
+            transform: translateY(-5px) scale(1.08);
+        }
+
+        .dim-btn.active .dim-btn-num {
+            color: var(--primary);
+        }
+
+        /* OVERLAY DE CARGA */
+        #loaderOverlay {
+            position: absolute;
+            inset: 0;
+            z-index: 100;
+            background: var(--bg-base);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 18px;
+            transition: opacity 0.6s ease;
+        }
+
+        .atom-spinner {
+            width: 60px;
+            height: 60px;
+            border: 3px solid rgba(56, 189, 248, 0.2);
+            border-top: 3px solid var(--primary);
+            border-right: 3px solid var(--accent);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            box-shadow: 0 0 25px rgba(56, 189, 248, 0.3);
+        }
+
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        .loader-text {
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            color: var(--text-sub);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        @media (max-width: 860px) {
+            .dim-card {
+                top: auto;
+                bottom: 120px;
+                right: 14px;
+                left: 14px;
+                width: auto;
+                max-height: 38vh;
+                overflow-y: auto;
+            }
+            .dim-btn {
+                width: 40px;
+                height: 40px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- OVERLAY DE CARGA -->
+    <div id="loaderOverlay">
+        <div class="atom-spinner"></div>
+        <div class="loader-text">Inicializando Motor Hiperdimensional...</div>
+    </div>
+
+    <!-- CANVAS 3D BABYLON.JS -->
+    <canvas id="renderCanvas"></canvas>
+
+    <!-- CABECERA DE CONTROL -->
+    <header>
+        <div class="brand-card">
+            <div class="brand-icon">🌌</div>
+            <div>
+                <h1 class="brand-title">Las 11 Dimensiones del Universo</h1>
+                <p class="brand-sub">SIMULADOR 3D INTERACTIVO • DE LA RELATIVIDAD A LA TEORÍA M</p>
+            </div>
+        </div>
+
+        <div class="header-actions">
+            <div class="pill-badge">
+                <span class="pulse-dot"></span>
+                <span>TEORÍA DE CUERDAS</span>
+            </div>
+            <button class="btn-fullscreen" onclick="toggleFullScreen()">⛶ Pantalla Completa</button>
+        </div>
+    </header>
+
+    <!-- TARJETA LATERAL DE INFORMACIÓN DE LA DIMENSIÓN -->
+    <div class="dim-card" id="dimCard">
+        <div class="dim-header">
+            <span class="dim-tag" id="dimBadge">0D • SINGULARIDAD</span>
+            <span class="dim-category" id="dimCategory">GEOMETRÍA BASE</span>
+        </div>
+        <h2 class="dim-name" id="dimTitle">El Punto Sin Dimensiones</h2>
+        <p class="dim-quote" id="dimQuote">«No tiene longitud, anchura ni profundidad. Es pura coordenada de existencia.»</p>
+        
+        <div class="dim-desc-box">
+            <div class="dim-desc-item" id="dimVisualDesc">
+                <strong>¿Qué estás viendo?</strong> Una mota de energía hiperconcentrada en la nada absoluta antes de cualquier expansión.
+            </div>
+            <div class="dim-desc-item" id="dimPhysicsDesc">
+                <strong>En la Física Teórica:</strong> Todo el universo observable estuvo comprimido en un punto de volumen cero en el Big Bang.
+            </div>
+        </div>
+
+        <!-- Controles específicos dinámicos -->
+        <div class="dim-controls-box">
+            <div class="dim-slider-row">
+                <span id="sliderLabel">Parámetro Cuántico</span>
+                <span id="sliderValue">50%</span>
+            </div>
+            <input type="range" class="dim-slider" id="dimSlider" min="1" max="100" value="50" oninput="onParamChange(this.value)">
+        </div>
+    </div>
+
+    <!-- DOCK INFERIOR DE NAVEGACIÓN (0D a 11D) -->
+    <div class="bottom-bar">
+        <div class="controls-toolbar">
+            <button class="btn-tool" onclick="prevDim()">⬅ Anterior</button>
+            <button class="btn-tool btn-tour" id="btnTour" onclick="toggleTour()">▶ Viaje Cósmico Guiado</button>
+            <button class="btn-tool" onclick="resetCam()">🔄 Reset Cámara</button>
+            <button class="btn-tool" onclick="nextDim()">Siguiente ➡</button>
+        </div>
+
+        <div class="dim-selector-dock" id="dimDock">
+            <!-- 12 Botones de dimensiones generados por JS -->
+        </div>
+    </div>
+
+    <script>
+        // =========================================================================
+        // 1. BASE DE DATOS DIDÁCTICA DE LAS 11 DIMENSIONES
+        // =========================================================================
+        const DIMENSIONS_DATA = [
+            {
+                dim: 0,
+                badge: "0D • PUNTO CERO",
+                category: "ORIGEN GEOMÉTRICO",
+                title: "El Punto / La Singularidad",
+                quote: "«Sin longitud, anchura ni altura. Un punto matemático puro.»",
+                visual: "Una mota cuántica de energía radiante en la oscuridad absoluta, pulsando y concentrando el potencial de todo lo que existirá.",
+                physics: "Representa el estado del cosmos previo a la inflación: densidad infinita y volumen nulo.",
+                sliderLabel: "Intensidad de Pulsación Cuántica",
+                camRadius: 12
+            },
+            {
+                dim: 1,
+                badge: "1D • PRIMERA DIMENSIÓN",
+                category: "GEOMETRÍA CLÁSICA",
+                title: "La Línea / Longitud Infinita",
+                quote: "«Un punto en movimiento engendra una línea. Solo existe adelante o atrás.»",
+                visual: "Un haz de luz láser coherente de fibra óptica que viaja por el eje X con paquetes de fotones a velocidad hiperlumínica.",
+                physics: "En la teoría de cuerdas, las partículas fundamentales no son puntos sino filamentos unidimensionales (cuerdas) que vibran.",
+                sliderLabel: "Velocidad de Flujo Fotónico",
+                camRadius: 16
+            },
+            {
+                dim: 2,
+                badge: "2D • SEGUNDA DIMENSIÓN",
+                category: "PLANILANDIA",
+                title: "El Plano / Superficie Bidimensional",
+                quote: "«Largo y ancho sin grosor. El universo de las sombras planas.»",
+                visual: "Un tapiz holográfico ondulante de seda cuántica cian cuadriculada, que se dobla en olas armónicas bidimensionales (X, Y).",
+                physics: "El principio holográfico sugiere que toda la información 3D de nuestro universo podría estar codificada en una frontera 2D.",
+                sliderLabel: "Frecuencia de Ondulación del Tejido",
+                camRadius: 20
+            },
+            {
+                dim: 3,
+                badge: "3D • TERCERA DIMENSIÓN",
+                category: "NUESTRO MUNDO FÍSICO",
+                title: "El Volumen / Espacio Tridimensional",
+                quote: "«Largo, ancho y profundidad. El teatro donde transcurre la vida cotidiana.»",
+                visual: "Un prisma de cristal de cuarzo facetado que contiene una nebulosa viva de cúmulos estelares orbitando en 360 grados.",
+                physics: "El espacio físico macroscópico que percibimos. Las 3 dimensiones espaciales donde rige la gravedad newtoniana.",
+                sliderLabel: "Dispersión de Polvo Nebular",
+                camRadius: 24
+            },
+            {
+                dim: 4,
+                badge: "4D • CUARTA DIMENSIÓN",
+                category: "ESPACIO-TIEMPO",
+                title: "El Teseracto / Hipercubo 4D",
+                quote: "«El tiempo unido al espacio, o la cuarta dirección espacial perpendicular a las 3 nuestras.»",
+                visual: "La proyección tridimensional de un Teseracto hiperdimensional rotando sobre planos 4D (X-W), auto-intersectándose de dentro a fuera.",
+                physics: "Albert Einstein demostró que el tiempo es la cuarta coordenada. Matemáticamente, un hipercubo tiene 16 vértices y 8 hipercaras cúbicas.",
+                sliderLabel: "Velocidad de Rotación Cuatridimensional",
+                camRadius: 28
+            },
+            {
+                dim: 5,
+                badge: "5D • QUINTA DIMENSIÓN",
+                category: "MULTIVERSO DE DECISIONES",
+                title: "El Abanico de Líneas Temporales",
+                quote: "«Cada decisión bifurca la historia en un nuevo universo paralelo.»",
+                visual: "Un árbol fractal de relámpagos dorados que se ramifica continuamente: cada rama es un destino alternativo surgido del mismo pasado.",
+                physics: "En la interpretación de los Muchos Mundos de Everett, cada colapso de función de onda cuántica crea ramas paralelas en 5D.",
+                sliderLabel: "Densidad de Ramas Temporales",
+                camRadius: 30
+            },
+            {
+                dim: 6,
+                badge: "6D • SEXTA DIMENSIÓN",
+                category: "PUENTES HIPERESPACIALES",
+                title: "El Plegado del Multiverso",
+                quote: "«Doblar el plano 5D para saltar entre historias alternativas sin viajar por el tiempo.»",
+                visual: "Un vórtice gravitacional tipo Agujero de Gusano (Puente Einstein-Rosen) que conecta dos hojas de realidades paralelas distantes.",
+                physics: "Permite atajos topológicos entre todas las historias cuánticas posibles originadas en el mismo Big Bang inicial.",
+                sliderLabel: "Curvatura del Agujero de Gusano",
+                camRadius: 32
+            },
+            {
+                dim: 7,
+                badge: "7D • SÉPTIMA DIMENSIÓN",
+                category: "OTRAS LEYES FÍSICAS",
+                title: "Universos con Distinta Física",
+                quote: "«Mundos nacidos de Big Bangs diferentes con constantes físicas distintas.»",
+                visual: "Una galaxia caleidoscópica toroidal en constante transmutación, donde la gravedad y la luz adoptan naturalezas exóticas.",
+                physics: "Aquí residen universos donde la velocidad de la luz o la fuerza nuclear fuerte tienen valores numéricos radicalmente diferentes.",
+                sliderLabel: "Constante Cosmológica Exótica",
+                camRadius: 34
+            },
+            {
+                dim: 8,
+                badge: "8D • OCTAVA DIMENSIÓN",
+                category: "HIPERESPACIO TOTAL",
+                title: "La Red Neuronal del Multiverso",
+                quote: "«El espacio que contiene todos los universos posibles con todas las leyes físicas.»",
+                visual: "Una vasta red sináptica cósmica de energía oscura, donde cada nodo brillante es un universo completo expandiéndose.",
+                physics: "El plano infinito de todas las historias posibles con todas las condiciones iniciales imaginables en la física teórica.",
+                sliderLabel: "Interconexión Sináptica Universal",
+                camRadius: 36
+            },
+            {
+                dim: 9,
+                badge: "9D • NOVENA DIMENSIÓN",
+                category: "TOPOLOGÍA HIPERBÓLICA",
+                title: "El Hiperplegado Universal",
+                quote: "«El tejido geométrico que pliega todas las leyes y dimensiones inferiores.»",
+                visual: "Una superficie hiperbólica no-euclidiana con complejas curvaturas de Poincaré en tonos púrpuras y cian ultra-brillantes.",
+                physics: "Permite comparar y conectar instantáneamente cualquier universo de leyes físicas distintas mediante rotación tensorial.",
+                sliderLabel: "Torsión Topológica de Poincaré",
+                camRadius: 38
+            },
+            {
+                dim: 10,
+                badge: "10D • DÉCIMA DIMENSIÓN",
+                category: "EL LÍMITE DE SUPERCUERDAS",
+                title: "El Punto Absoluto (El Aleph Cósmico)",
+                quote: "«Todo lo concebible colapsado de nuevo en una sola totalidad indivisible.»",
+                visual: "Una gema estelar radiante hiperlumínica rodeada de anillos cuánticos de resonancia armónica en expansión continua.",
+                physics: "En la teoría de supercuerdas clásica, la décima dimensión unifica todas las partículas y fuerzas en un único punto matemático.",
+                sliderLabel: "Frecuencia Armónica de Unificación",
+                camRadius: 40
+            },
+            {
+                dim: 11,
+                badge: "11D • TEORÍA M",
+                category: "VARIEDAD DE CALABI-YAU & BRANAS",
+                title: "El Espacio de Calabi-Yau & Branas",
+                quote: "«La teoría definitiva de Edward Witten: 11 dimensiones donde vibran membranas cósmicas.»",
+                visual: "La fascinante Variedad de Calabi-Yau: una escultura algebraica de titanio y plasma que se pliega en 6 dimensiones compactadas, envuelta en superbranas cuánticas.",
+                physics: "La Teoría M unifica las 5 teorías de cuerdas añadiendo una 11ª dimensión: las cuerdas se convierten en membranas flotando en un hiper-espacio maestro (Bulk).",
+                sliderLabel: "Tensión de Supercuerdas & Membranas",
+                camRadius: 42
+            }
+        ];
+
+        // =========================================================================
+        // 2. INICIALIZACIÓN DE BABYLON.JS
+        // =========================================================================
+        const canvas = document.getElementById("renderCanvas");
+        const engine = new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true });
+        let scene, camera, glowLayer;
+        let currentDimIndex = 0;
+        let dimRootNodes = [];
+        let tourActive = false;
+        let tourTimer = null;
+        let userParam = 0.5;
+
+        // Variables de animación de mallas dinámicas
+        let tesseractLines = null;
+        let tesseractVertices4D = [];
+        let tesseractEdges = [];
+        let calabiMesh = null;
+        let wavePlane = null;
+        let particleSystems = [];
+
+        function createScene() {
+            scene = new BABYLON.Scene(engine);
+            scene.clearColor = new BABYLON.Color4(0.015, 0.025, 0.05, 1.0);
+
+            // Cámara orbital suave de cine
+            camera = new BABYLON.ArcRotateCamera("CosmicCamera", -Math.PI / 2.5, Math.PI / 2.7, 18, BABYLON.Vector3.Zero(), scene);
+            camera.attachControl(canvas, true);
+            camera.lowerRadiusLimit = 5;
+            camera.upperRadiusLimit = 90;
+            camera.wheelPrecision = 40;
+            camera.inertia = 0.85;
+
+            // Iluminación ambiental y puntual estelar
+            const hemiLight = new BABYLON.HemisphericLight("hemiLight", new BABYLON.Vector3(0, 1, 0), scene);
+            hemiLight.intensity = 0.35;
+            hemiLight.groundColor = new BABYLON.Color3(0.05, 0.08, 0.15);
+
+            const pointLight1 = new BABYLON.PointLight("starLight1", new BABYLON.Vector3(20, 25, 20), scene);
+            pointLight1.diffuse = new BABYLON.Color3(0.2, 0.8, 1.0);
+            pointLight1.intensity = 1.2;
+
+            const pointLight2 = new BABYLON.PointLight("starLight2", new BABYLON.Vector3(-25, -15, -20), scene);
+            pointLight2.diffuse = new BABYLON.Color3(0.8, 0.4, 1.0);
+            pointLight2.intensity = 0.9;
+
+            // Capa de Resplandor Neón (Glow Layer cinematográfica)
+            glowLayer = new BABYLON.GlowLayer("glow", scene);
+            glowLayer.intensity = 1.35;
+
+            // Crear el campo estelar infinito de fondo
+            createStarfield();
+
+            // Construir los 12 mundos dimensionales (0D al 11D)
+            buildAllDimensions();
+
+            // Mostrar la dimensión 0D al inicio
+            showDimension(0);
+
+            return scene;
+        }
+
+        // =========================================================================
+        // 3. CAMPO ESTELAR DE FONDO
+        // =========================================================================
+        function createStarfield() {
+            const starsCount = 1800;
+            const points = [];
+            const colors = [];
+
+            for (let i = 0; i < starsCount; i++) {
+                const radius = 90 + Math.random() * 80;
+                const theta = Math.random() * Math.PI * 2;
+                const phi = Math.acos((Math.random() * 2) - 1);
+
+                points.push(new BABYLON.Vector3(
+                    radius * Math.sin(phi) * Math.cos(theta),
+                    radius * Math.sin(phi) * Math.sin(theta),
+                    radius * Math.cos(phi)
+                ));
+
+                const colorShift = Math.random();
+                if (colorShift > 0.7) {
+                    colors.push(new BABYLON.Color4(0.4, 0.8, 1.0, 0.85)); // Azul neón
+                } else if (colorShift > 0.4) {
+                    colors.push(new BABYLON.Color4(0.85, 0.6, 1.0, 0.85)); // Violeta
+                } else {
+                    colors.push(new BABYLON.Color4(1.0, 1.0, 1.0, 0.7)); // Blanco puro
+                }
+            }
+
+            const starSystem = new BABYLON.PointsCloudSystem("starfield", 1, scene);
+            starSystem.addPoints(starsCount, (particle, i) => {
+                particle.position = points[i];
+                particle.color = colors[i];
+            });
+            starSystem.buildMeshAsync();
+        }
+
+        // =========================================================================
+        // 4. CONSTRUCCIÓN DE LAS 11 DIMENSIONES
+        // =========================================================================
+        function buildAllDimensions() {
+            for (let d = 0; d <= 11; d++) {
+                const root = new BABYLON.TransformNode("DimRoot_" + d, scene);
+                root.setEnabled(false);
+                dimRootNodes.push(root);
+            }
+
+            // -------------------------------------------------------------
+            // DIM 0: EL PUNTO CUÁNTICO (SINGULARIDAD)
+            // -------------------------------------------------------------
+            const root0 = dimRootNodes[0];
+            const coreMat = new BABYLON.StandardMaterial("coreMat0", scene);
+            coreMat.emissiveColor = new BABYLON.Color3(1, 1, 1);
+            coreMat.diffuseColor = new BABYLON.Color3(0.5, 0.9, 1);
+
+            const coreSphere = BABYLON.MeshBuilder.CreateSphere("core0", { diameter: 0.7, segments: 32 }, scene);
+            coreSphere.material = coreMat;
+            coreSphere.parent = root0;
+
+            // Anillos de pulso concéntricos
+            for (let i = 1; i <= 3; i++) {
+                const ring = BABYLON.MeshBuilder.CreateTorus("ring0_" + i, { diameter: i * 2.2, thickness: 0.04, tessellation: 64 }, scene);
+                const ringMat = new BABYLON.StandardMaterial("ringMat0_" + i, scene);
+                ringMat.emissiveColor = new BABYLON.Color3(0.2, 0.7, 1);
+                ringMat.alpha = 0.6 / i;
+                ring.material = ringMat;
+                ring.parent = root0;
+                ring.rotation.x = Math.PI / (i * 1.5);
+                ring.rotation.y = Math.PI / i;
+            }
+
+            // -------------------------------------------------------------
+            // DIM 1: LA LÍNEA LÁSER COHERENTE
+            // -------------------------------------------------------------
+            const root1 = dimRootNodes[1];
+            const linePoints = [];
+            for (let x = -14; x <= 14; x += 0.5) {
+                linePoints.push(new BABYLON.Vector3(x, 0, 0));
+            }
+            const laserTube = BABYLON.MeshBuilder.CreateTube("laserTube", {
+                path: linePoints,
+                radius: 0.12,
+                tessellation: 32
+            }, scene);
+            const laserMat = new BABYLON.StandardMaterial("laserMat", scene);
+            laserMat.emissiveColor = new BABYLON.Color3(0.2, 0.9, 1.0);
+            laserTube.material = laserMat;
+            laserTube.parent = root1;
+
+            // Pulso de partículas corriendo a lo largo de la línea
+            for (let p = 0; p < 8; p++) {
+                const photon = BABYLON.MeshBuilder.CreateSphere("photon_" + p, { diameter: 0.4 }, scene);
+                const photMat = new BABYLON.StandardMaterial("photMat_" + p, scene);
+                photMat.emissiveColor = new BABYLON.Color3(1, 1, 1);
+                photon.material = photMat;
+                photon.parent = root1;
+                photon.position.x = -12 + (p * 3.4);
+            }
+
+            // -------------------------------------------------------------
+            // DIM 2: EL PLANO CUÁNTICO ONDULANTE (PLANILANDIA)
+            // -------------------------------------------------------------
+            const root2 = dimRootNodes[2];
+            wavePlane = BABYLON.MeshBuilder.CreateGround("wavePlane", { width: 16, height: 16, subdivisions: 45, updatable: true }, scene);
+            const planeMat = new BABYLON.StandardMaterial("planeMat", scene);
+            planeMat.wireframe = true;
+            planeMat.emissiveColor = new BABYLON.Color3(0.1, 0.85, 0.7);
+            wavePlane.material = planeMat;
+            wavePlane.parent = root2;
+
+            // -------------------------------------------------------------
+            // DIM 3: EL VOLUMEN (PRISMA Y NEBULOSA INTERIOR)
+            // -------------------------------------------------------------
+            const root3 = dimRootNodes[3];
+            const crystalBox = BABYLON.MeshBuilder.CreateBox("crystalBox", { size: 7.5 }, scene);
+            const crystalMat = new BABYLON.PBRMaterial("crystalMat", scene);
+            crystalMat.metallic = 0.1;
+            crystalMat.roughness = 0.05;
+            crystalMat.alpha = 0.35;
+            crystalMat.transparencyMode = BABYLON.PBRMaterial.PBRMATERIAL_ALPHABLEND;
+            crystalMat.emissiveColor = new BABYLON.Color3(0.1, 0.3, 0.6);
+            crystalBox.material = crystalMat;
+            crystalBox.parent = root3;
+
+            // Enjambre de estrellas volumétricas interiores
+            for (let s = 0; s < 45; s++) {
+                const star = BABYLON.MeshBuilder.CreateSphere("volStar_" + s, { diameter: 0.22 }, scene);
+                const sMat = new BABYLON.StandardMaterial("sMat_" + s, scene);
+                sMat.emissiveColor = new BABYLON.Color3(Math.random(), 0.7 + Math.random() * 0.3, 1);
+                star.material = sMat;
+                star.parent = root3;
+                star.position = new BABYLON.Vector3(
+                    (Math.random() - 0.5) * 6,
+                    (Math.random() - 0.5) * 6,
+                    (Math.random() - 0.5) * 6
+                );
+            }
+
+            // -------------------------------------------------------------
+            // DIM 4: EL TESERACTO (HIPERCUBO 4D EN ROTACIÓN)
+            // -------------------------------------------------------------
+            const root4 = dimRootNodes[4];
+            buildTesseract4D(root4);
+
+            // -------------------------------------------------------------
+            // DIM 5: ARBORESCENCIA DE LÍNEAS TEMPORALES BIFURCADAS
+            // -------------------------------------------------------------
+            const root5 = dimRootNodes[5];
+            buildTimelineTree(root5);
+
+            // -------------------------------------------------------------
+            // DIM 6: AGUJERO DE GUSANO (PUENTE DE EINSTEIN-ROSEN)
+            // -------------------------------------------------------------
+            const root6 = dimRootNodes[6];
+            buildWormhole(root6);
+
+            // -------------------------------------------------------------
+            // DIM 7: CALEIDOSCOPIO TOROIDAL DE LEYES EXÓTICAS
+            // -------------------------------------------------------------
+            const root7 = dimRootNodes[7];
+            buildToroidalUniverse(root7);
+
+            // -------------------------------------------------------------
+            // DIM 8: RED NEURONAL DEL MULTIVERSO
+            // -------------------------------------------------------------
+            const root8 = dimRootNodes[8];
+            buildCosmicWeb(root8);
+
+            // -------------------------------------------------------------
+            // DIM 9: HIPERPLEGADO DE POINCARÉ
+            // -------------------------------------------------------------
+            const root9 = dimRootNodes[9];
+            buildPoincareHyperbolic(root9);
+
+            // -------------------------------------------------------------
+            // DIM 10: EL ALEPH (CONVERGENCIA TOTAL)
+            // -------------------------------------------------------------
+            const root10 = dimRootNodes[10];
+            buildAlephSingularity(root10);
+
+            // -------------------------------------------------------------
+            // DIM 11: TEORÍA M (VARIEDAD CALABI-YAU Y SUPERBRANAS)
+            // -------------------------------------------------------------
+            const root11 = dimRootNodes[11];
+            buildCalabiYauManifold(root11);
+        }
+
+        // =========================================================================
+        // 5. CONSTRUCTORES DE MODELOS HIPERDIMENSIONALES
+        // =========================================================================
+
+        // 4D: Generador de vértices y aristas del Teseracto
+        function buildTesseract4D(parent) {
+            tesseractVertices4D = [];
+            for (let i = 0; i < 16; i++) {
+                tesseractVertices4D.push([
+                    (i & 1) ? 1 : -1,
+                    (i & 2) ? 1 : -1,
+                    (i & 4) ? 1 : -1,
+                    (i & 8) ? 1 : -1
+                ]);
+            }
+
+            tesseractEdges = [];
+            for (let i = 0; i < 16; i++) {
+                for (let j = i + 1; j < 16; j++) {
+                    let diff = 0;
+                    for (let k = 0; k < 4; k++) {
+                        if (tesseractVertices4D[i][k] !== tesseractVertices4D[j][k]) diff++;
+                    }
+                    if (diff === 1) {
+                        tesseractEdges.push([i, j]);
+                    }
+                }
+            }
+
+            // Nodos esféricos en los vértices proyectados
+            for (let v = 0; v < 16; v++) {
+                const node = BABYLON.MeshBuilder.CreateSphere("tessNode_" + v, { diameter: 0.35 }, scene);
+                const nMat = new BABYLON.StandardMaterial("tessNodeMat_" + v, scene);
+                nMat.emissiveColor = (v < 8) ? new BABYLON.Color3(0.3, 0.8, 1) : new BABYLON.Color3(1, 0.4, 0.8);
+                node.material = nMat;
+                node.parent = parent;
+            }
+        }
+
+        // 5D: Árbol fractal de líneas temporales
+        function buildTimelineTree(parent) {
+            function branch(start, dir, length, depth) {
+                if (depth <= 0) return;
+                const end = start.add(dir.scale(length));
+                const line = BABYLON.MeshBuilder.CreateLines("treeLine", { points: [start, end] }, scene);
+                line.color = (depth % 2 === 0) ? new BABYLON.Color3(1, 0.8, 0.2) : new BABYLON.Color3(0.8, 0.4, 1);
+                line.parent = parent;
+
+                // Dos bifurcaciones divergentes
+                const rotA = new BABYLON.Vector3(dir.x + 0.45, dir.y + 0.5, dir.z + (Math.random() - 0.5)).normalize();
+                const rotB = new BABYLON.Vector3(dir.x - 0.45, dir.y + 0.5, dir.z + (Math.random() - 0.5)).normalize();
+                branch(end, rotA, length * 0.72, depth - 1);
+                branch(end, rotB, length * 0.72, depth - 1);
+            }
+
+            branch(new BABYLON.Vector3(0, -6, 0), new BABYLON.Vector3(0, 1, 0), 4.2, 5);
+        }
+
+        // 6D: Agujero de Gusano
+        function buildWormhole(parent) {
+            const path = [];
+            for (let y = -7; y <= 7; y += 0.4) {
+                path.push(new BABYLON.Vector3(0, y, 0));
+            }
+            const worm = BABYLON.MeshBuilder.CreateTube("wormholeTube", {
+                path: path,
+                radiusFunction: (i, distance) => {
+                    const normY = (i / path.length) - 0.5;
+                    return 1.2 + (normY * normY * 14);
+                },
+                sideOrientation: BABYLON.Mesh.DOUBLESIDE,
+                tessellation: 36
+            }, scene);
+            const wMat = new BABYLON.StandardMaterial("wormMat", scene);
+            wMat.wireframe = true;
+            wMat.emissiveColor = new BABYLON.Color3(0.3, 0.6, 1.0);
+            worm.material = wMat;
+            worm.parent = parent;
+        }
+
+        // 7D: Nudo Toroidal Caleidoscópico
+        function buildToroidalUniverse(parent) {
+            const knot = BABYLON.MeshBuilder.CreateTorusKnot("torusKnot7", {
+                radius: 3.8,
+                tube: 0.65,
+                radialSegments: 128,
+                tubularSegments: 64,
+                p: 3,
+                q: 5
+            }, scene);
+            const kMat = new BABYLON.StandardMaterial("kMat", scene);
+            kMat.emissiveColor = new BABYLON.Color3(0.9, 0.2, 0.7);
+            kMat.wireframe = false;
+            knot.material = kMat;
+            knot.parent = parent;
+        }
+
+        // 8D: Red Neuronal del Multiverso
+        function buildCosmicWeb(parent) {
+            const universesCount = 18;
+            const nodes = [];
+
+            for (let u = 0; u < universesCount; u++) {
+                const pos = new BABYLON.Vector3(
+                    (Math.random() - 0.5) * 16,
+                    (Math.random() - 0.5) * 14,
+                    (Math.random() - 0.5) * 16
+                );
+                nodes.push(pos);
+
+                const uMesh = BABYLON.MeshBuilder.CreateSphere("univNode_" + u, { diameter: 0.85 + Math.random() * 0.7 }, scene);
+                const uMat = new BABYLON.StandardMaterial("uMat_" + u, scene);
+                uMat.emissiveColor = new BABYLON.Color3(0.2, 0.8 + Math.random() * 0.2, 1);
+                uMesh.material = uMat;
+                uMesh.position = pos;
+                uMesh.parent = parent;
+            }
+
+            // Filamentos conectores de energía oscura
+            for (let i = 0; i < nodes.length; i++) {
+                for (let j = i + 1; j < nodes.length; j++) {
+                    if (BABYLON.Vector3.Distance(nodes[i], nodes[j]) < 9.5) {
+                        const line = BABYLON.MeshBuilder.CreateLines("darkFilament", { points: [nodes[i], nodes[j]] }, scene);
+                        line.color = new BABYLON.Color3(0.4, 0.2, 0.8);
+                        line.parent = parent;
+                    }
+                }
+            }
+        }
+
+        // 9D: Superficie Hiperbólica de Poincaré
+        function buildPoincareHyperbolic(parent) {
+            const hyperbolic = BABYLON.MeshBuilder.CreateTorusKnot("poincareKnot", {
+                radius: 4.5,
+                tube: 0.8,
+                p: 4,
+                q: 7,
+                radialSegments: 96
+            }, scene);
+            const pMat = new BABYLON.StandardMaterial("poincareMat", scene);
+            pMat.wireframe = true;
+            pMat.emissiveColor = new BABYLON.Color3(0.8, 0.3, 1.0);
+            hyperbolic.material = pMat;
+            hyperbolic.parent = parent;
+        }
+
+        // 10D: El Aleph (Singularidad Total)
+        function buildAlephSingularity(parent) {
+            const alephCore = BABYLON.MeshBuilder.CreatePolyhedron("alephPoly", { type: 3, size: 2.5 }, scene);
+            const aMat = new BABYLON.StandardMaterial("alephMat", scene);
+            aMat.emissiveColor = new BABYLON.Color3(1, 1, 0.9);
+            alephCore.material = aMat;
+            alephCore.parent = parent;
+
+            for (let r = 1; r <= 4; r++) {
+                const ring = BABYLON.MeshBuilder.CreateTorus("alephRing_" + r, { diameter: r * 2.8, thickness: 0.05, tessellation: 64 }, scene);
+                const rMat = new BABYLON.StandardMaterial("rMat_" + r, scene);
+                rMat.emissiveColor = new BABYLON.Color3(1, 0.7, 0.2);
+                ring.material = rMat;
+                ring.parent = parent;
+                ring.rotation.x = r * 0.8;
+                ring.rotation.z = r * 0.5;
+            }
+        }
+
+        // 11D: Variedad de Calabi-Yau en la Teoría M
+        function buildCalabiYauManifold(parent) {
+            // Superficie paramétrica de torsión 6D
+            const paths = [];
+            const stepsU = 48;
+            const stepsV = 48;
+
+            for (let u = 0; u <= stepsU; u++) {
+                const uAngle = (u / stepsU) * Math.PI * 2;
+                const path = [];
+                for (let v = 0; v <= stepsV; v++) {
+                    const vAngle = (v / stepsV) * Math.PI * 2;
+                    
+                    // Ecuación armónica de curvatura de Calabi-Yau en 3D
+                    const r = 3.6 + Math.sin(uAngle * 3) * Math.cos(vAngle * 2) * 1.5;
+                    const x = r * Math.sin(uAngle) * Math.cos(vAngle);
+                    const y = r * Math.sin(vAngle) + Math.cos(uAngle * 2) * 1.2;
+                    const z = r * Math.cos(uAngle) * Math.cos(vAngle);
+
+                    path.push(new BABYLON.Vector3(x, y, z));
+                }
+                paths.push(path);
+            }
+
+            calabiMesh = BABYLON.MeshBuilder.CreateRibbon("calabiYau", {
+                pathArray: paths,
+                closeArray: true,
+                closePath: true,
+                sideOrientation: BABYLON.Mesh.DOUBLESIDE
+            }, scene);
+
+            const calMat = new BABYLON.PBRMaterial("calabiMat", scene);
+            calMat.metallic = 0.9;
+            calMat.roughness = 0.15;
+            calMat.albedoColor = new BABYLON.Color3(0.1, 0.6, 0.9);
+            calMat.emissiveColor = new BABYLON.Color3(0.2, 0.4, 0.8);
+            calabiMesh.material = calMat;
+            calabiMesh.parent = parent;
+
+            // Membranas p-branes orbitales
+            for (let b = 0; b < 2; b++) {
+                const brane = BABYLON.MeshBuilder.CreateDisc("brane_" + b, { radius: 7.5, tessellation: 48 }, scene);
+                const bMat = new BABYLON.StandardMaterial("bMat_" + b, scene);
+                bMat.emissiveColor = (b === 0) ? new BABYLON.Color3(0.8, 0.2, 0.9) : new BABYLON.Color3(0.2, 0.9, 0.8);
+                bMat.alpha = 0.25;
+                bMat.backFaceCulling = false;
+                brane.material = bMat;
+                brane.parent = parent;
+                brane.rotation.x = Math.PI / 2;
+                brane.position.y = (b === 0) ? 3.5 : -3.5;
+            }
+        }
+
+        // =========================================================================
+        // 6. BUCLE DE ANIMACIÓN Y RENDERIZADO
+        // =========================================================================
+        let animClock = 0;
+        let angle4D = 0;
+
+        engine.runRenderLoop(() => {
+            animClock += 0.015;
+
+            // Rotación general suave del universo activo
+            const activeRoot = dimRootNodes[currentDimIndex];
+            if (activeRoot) {
+                activeRoot.rotation.y += 0.003;
+            }
+
+            // Animación según la dimensión activa
+            if (currentDimIndex === 0) {
+                // Pulso de la singularidad
+                const s = 1.0 + Math.sin(animClock * 4) * 0.25 * (userParam * 1.5);
+                const core = scene.getMeshByName("core0");
+                if (core) core.scaling.set(s, s, s);
+            } else if (currentDimIndex === 2 && wavePlane) {
+                // Ondas en Planilandia 2D
+                const positions = wavePlane.getVerticesData(BABYLON.VertexBuffer.PositionKind);
+                const numVerts = positions.length / 3;
+                const freq = 1.0 + userParam * 2.0;
+
+                for (let i = 0; i < numVerts; i++) {
+                    const x = positions[i * 3];
+                    const z = positions[i * 3 + 2];
+                    positions[i * 3 + 1] = Math.sin(x * 0.6 * freq + animClock * 3) * Math.cos(z * 0.6 * freq + animClock * 2) * 1.2;
+                }
+                wavePlane.updateVerticesData(BABYLON.VertexBuffer.PositionKind, positions);
+            } else if (currentDimIndex === 4) {
+                // Rotación del Teseracto 4D (Matriz de Rotación 4D en planos X-W)
+                angle4D += 0.02 * (0.5 + userParam * 1.2);
+                const cosA = Math.cos(angle4D);
+                const sinA = Math.sin(angle4D);
+                const distance4D = 3.2;
+
+                const projected3D = [];
+                for (let i = 0; i < 16; i++) {
+                    const v = tesseractVertices4D[i];
+                    // Rotar en el plano X-W
+                    const x = v[0] * cosA - v[3] * sinA;
+                    const y = v[1];
+                    const z = v[2];
+                    const w = v[0] * sinA + v[3] * cosA;
+
+                    // Proyección perspectiva estereográfica 4D a 3D
+                    const scale = 3.6 / (distance4D - (w * 0.45));
+                    projected3D.push(new BABYLON.Vector3(x * scale, y * scale, z * scale));
+
+                    const node = scene.getMeshByName("tessNode_" + i);
+                    if (node) node.position = projected3D[i];
+                }
+
+                // Reconstruir aristas de alambre del teseracto
+                if (tesseractLines) tesseractLines.dispose();
+                const lineSegments = [];
+                for (let e = 0; e < tesseractEdges.length; e++) {
+                    const p1 = projected3D[tesseractEdges[e][0]];
+                    const p2 = projected3D[tesseractEdges[e][1]];
+                    lineSegments.push([p1, p2]);
+                }
+                tesseractLines = BABYLON.MeshBuilder.CreateLineSystem("tessLines", { lines: lineSegments, updatable: true }, scene);
+                tesseractLines.color = new BABYLON.Color3(0.3, 0.85, 1.0);
+                tesseractLines.parent = dimRootNodes[4];
+            } else if (currentDimIndex === 11 && calabiMesh) {
+                // Vibración armónica de la Variedad de Calabi-Yau
+                calabiMesh.rotation.x = Math.sin(animClock * 0.5) * 0.3;
+                calabiMesh.rotation.z = Math.cos(animClock * 0.4) * 0.3;
+            }
+
+            scene.render();
+        });
+
+        window.addEventListener("resize", () => {
+            engine.resize();
+        });
+
+        // =========================================================================
+        // 7. CONTROL DE INTERFAZ Y NAVEGACIÓN
+        // =========================================================================
+        function initInterface() {
+            const dock = document.getElementById("dimDock");
+            dock.innerHTML = "";
+
+            DIMENSIONS_DATA.forEach((data, index) => {
+                const btn = document.createElement("button");
+                btn.className = "dim-btn" + (index === 0 ? " active" : "");
+                btn.id = "btnDim_" + index;
+                btn.onclick = () => showDimension(index);
+
+                btn.innerHTML = `
+                    <span class="dim-btn-num">${data.dim}D</span>
+                    <span class="dim-btn-label">${data.badge.split('•')[1] ? data.badge.split('•')[1].trim().slice(0, 5) : 'DIM'}</span>
+                `;
+                dock.appendChild(btn);
+            });
+
+            // Ocultar overlay al terminar de cargar
+            setTimeout(() => {
+                const overlay = document.getElementById("loaderOverlay");
+                if (overlay) {
+                    overlay.style.opacity = "0";
+                    setTimeout(() => overlay.style.display = "none", 600);
+                }
+            }, 600);
+        }
+
+        function showDimension(index) {
+            if (index < 0 || index >= DIMENSIONS_DATA.length) return;
+            currentDimIndex = index;
+            const data = DIMENSIONS_DATA[index];
+
+            // Ocultar todas las dimensiones y activar la elegida
+            dimRootNodes.forEach((node, i) => {
+                node.setEnabled(i === index);
+            });
+
+            // Actualizar botones del dock
+            document.querySelectorAll(".dim-btn").forEach((btn, i) => {
+                btn.classList.toggle("active", i === index);
+            });
+
+            // Actualizar tarjeta didáctica
+            document.getElementById("dimBadge").textContent = data.badge;
+            document.getElementById("dimCategory").textContent = data.category;
+            document.getElementById("dimTitle").textContent = data.title;
+            document.getElementById("dimQuote").textContent = data.quote;
+            document.getElementById("dimVisualDesc").innerHTML = "<strong>¿Qué estás viendo?</strong> " + data.visual;
+            document.getElementById("dimPhysicsDesc").innerHTML = "<strong>En la Física Teórica:</strong> " + data.physics;
+            document.getElementById("sliderLabel").textContent = data.sliderLabel;
+
+            // Animación cinematográfica de cámara hacia el nuevo radio óptimo
+            animateCameraRadius(data.camRadius);
+        }
+
+        function animateCameraRadius(targetRadius) {
+            const anim = new BABYLON.Animation("camRadAnim", "radius", 30, BABYLON.Animation.ANIMATIONTYPE_FLOAT, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
+            const keys = [
+                { frame: 0, value: camera.radius },
+                { frame: 25, value: targetRadius }
+            ];
+            anim.setKeys(keys);
+            camera.animations = [anim];
+            scene.beginAnimation(camera, 0, 25, false);
+        }
+
+        function nextDim() {
+            showDimension((currentDimIndex + 1) % DIMENSIONS_DATA.length);
+        }
+
+        function prevDim() {
+            showDimension((currentDimIndex - 1 + DIMENSIONS_DATA.length) % DIMENSIONS_DATA.length);
+        }
+
+        function resetCam() {
+            camera.alpha = -Math.PI / 2.5;
+            camera.beta = Math.PI / 2.7;
+            camera.radius = DIMENSIONS_DATA[currentDimIndex].camRadius;
+            camera.target = BABYLON.Vector3.Zero();
+        }
+
+        function onParamChange(val) {
+            userParam = val / 100.0;
+            document.getElementById("sliderValue").textContent = val + "%";
+        }
+
+        function toggleTour() {
+            tourActive = !tourActive;
+            const btn = document.getElementById("btnTour");
+
+            if (tourActive) {
+                btn.textContent = "⏸ Pausar Viaje Guiado";
+                btn.style.background = "linear-gradient(135deg, #e11d48, #9333ea)";
+
+                tourTimer = setInterval(() => {
+                    nextDim();
+                }, 5500); // 5.5 segundos por dimensión
+            } else {
+                btn.textContent = "▶ Viaje Cósmico Guiado";
+                btn.style.background = "linear-gradient(135deg, #0284c7, #7c3aed)";
+                clearInterval(tourTimer);
+            }
+        }
+
+        function toggleFullScreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(() => {});
+            } else {
+                if (document.exitFullscreen) document.exitFullscreen();
+            }
+        }
+
+        // Iniciar escena y UI
+        createScene();
+        initInterface();
+    </script>
+</body>
+</html>
