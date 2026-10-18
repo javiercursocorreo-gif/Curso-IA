@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sesión 08 • Simulador 3D: El Panteón de Roma por Dentro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800;900&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-base: #060911;
+            --bg-panel: rgba(15, 23, 42, 0.90);
+            --gold: #f59e0b;
+            --gold-glow: rgba(245, 158, 11, 0.4);
+            --marble: #e2e8f0;
+            --terracotta: #ea580c;
+            --sky-sun: #fef08a;
+            --font-roman: 'Cinzel', serif;
+            --font-sans: 'Inter', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background-color: var(--bg-base);
+            color: #f8fafc;
+            font-family: var(--font-sans);
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            user-select: none;
+        }
+
+        /* CABECERA CLÁSICA */
+        header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 20;
+            padding: 14px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: linear-gradient(180deg, rgba(6, 9, 17, 0.95) 0%, rgba(6, 9, 17, 0.6) 80%, transparent 100%);
+            border-bottom: 1px solid rgba(245, 158, 11, 0.2);
+            backdrop-filter: blur(8px);
+        }
+
+        .brand-box {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .brand-badge {
+            background: rgba(245, 158, 11, 0.15);
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            font-family: var(--font-roman);
+            font-weight: 900;
+            font-size: 1.1rem;
+            padding: 6px 12px;
+            border-radius: 8px;
+            letter-spacing: 1px;
+            box-shadow: 0 0 15px rgba(245, 158, 11, 0.2);
+        }
+
+        .brand-title {
+            font-family: var(--font-roman);
+            font-size: 1.35rem;
+            font-weight: 800;
+            color: #ffffff;
+            letter-spacing: 0.5px;
+        }
+
+        .brand-sub {
+            font-size: 0.78rem;
+            color: #94a3b8;
+            font-family: var(--font-sans);
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-action {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #f1f5f9;
+            padding: 8px 16px;
+            border-radius: 9999px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-action:hover {
+            background: rgba(245, 158, 11, 0.2);
+            border-color: var(--gold);
+            color: var(--gold);
+        }
+
+        /* LIENZO PRINCIPAL */
+        #pantheonStage {
+            flex: 1;
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        /* PANEL DIDÁCTICO LATERAL DERECHO */
+        .info-card {
+            position: absolute;
+            top: 80px;
+            right: 24px;
+            width: 390px;
+            background: var(--bg-panel);
+            border: 1.5px solid var(--gold);
+            border-radius: 20px;
+            padding: 22px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.85), 0 0 25px rgba(245, 158, 11, 0.25);
+            backdrop-filter: blur(20px);
+            z-index: 15;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .info-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .info-tag {
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--gold);
+            font-family: var(--font-roman);
+            font-size: 0.75rem;
+            font-weight: 800;
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            text-transform: uppercase;
+        }
+
+        .info-title {
+            font-family: var(--font-roman);
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: #ffffff;
+            line-height: 1.25;
+        }
+
+        .info-summary {
+            background: rgba(255, 255, 255, 0.05);
+            border-left: 3.5px solid var(--gold);
+            padding: 10px 14px;
+            border-radius: 0 10px 10px 0;
+            font-size: 0.9rem;
+            color: #f1f5f9;
+            line-height: 1.45;
+            font-weight: 500;
+        }
+
+        .info-detail {
+            font-size: 0.84rem;
+            color: #cbd5e1;
+            line-height: 1.6;
+            max-height: 240px;
+            overflow-y: auto;
+            padding-right: 6px;
+        }
+
+        .info-detail strong {
+            color: var(--gold);
+            display: block;
+            margin-top: 6px;
+            margin-bottom: 2px;
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .info-facts {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-top: 4px;
+        }
+
+        .fact-box {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            padding: 8px 10px;
+            text-align: center;
+        }
+
+        .fact-val {
+            font-family: var(--font-mono);
+            font-size: 1.05rem;
+            font-weight: 800;
+            color: var(--gold);
+        }
+
+        .fact-lbl {
+            font-size: 0.68rem;
+            color: #94a3b8;
+            text-transform: uppercase;
+            margin-top: 2px;
+        }
+
+        /* BARRA INFERIOR DE CONTROLES DIDÁCTICOS */
+        .bottom-dock {
+            position: absolute;
+            bottom: 16px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            background: rgba(15, 23, 42, 0.92);
+            border: 1px solid rgba(245, 158, 11, 0.35);
+            box-shadow: 0 10px 35px rgba(0,0,0,0.85);
+            backdrop-filter: blur(16px);
+            padding: 12px 24px;
+            border-radius: 9999px;
+            z-index: 15;
+            max-width: 92%;
+        }
+
+        .dock-control-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .dock-label {
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: var(--gold);
+            font-family: var(--font-roman);
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+        }
+
+        .sun-slider {
+            width: 170px;
+            accent-color: var(--gold);
+            cursor: pointer;
+        }
+
+        .time-badge {
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            font-weight: 800;
+            color: #ffffff;
+            background: rgba(0,0,0,0.5);
+            padding: 3px 8px;
+            border-radius: 6px;
+            min-width: 58px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .divider {
+            width: 1px;
+            height: 24px;
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .dock-btn {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #ffffff;
+            padding: 8px 14px;
+            border-radius: 9999px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .dock-btn:hover {
+            background: rgba(245, 158, 11, 0.2);
+            border-color: var(--gold);
+            color: var(--gold);
+        }
+
+        .dock-btn.active {
+            background: var(--gold);
+            color: #060911;
+            border-color: var(--gold);
+            font-weight: 800;
+            box-shadow: 0 0 15px var(--gold-glow);
+        }
+
+        /* PUNTOS DE INSPECCIÓN FLOTANTES EN EL DIBUJO */
+        .hotspot-label {
+            position: absolute;
+            background: rgba(15, 23, 42, 0.92);
+            border: 1px solid var(--gold);
+            color: #ffffff;
+            font-size: 0.76rem;
+            font-weight: 700;
+            padding: 5px 12px;
+            border-radius: 9999px;
+            cursor: pointer;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.6);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+            z-index: 10;
+        }
+
+        .hotspot-label:hover {
+            transform: scale(1.08);
+            background: var(--gold);
+            color: #04060b;
+        }
+
+        .hotspot-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--gold);
+            box-shadow: 0 0 8px var(--gold);
+        }
+
+        @media (max-width: 950px) {
+            .info-card {
+                top: auto;
+                bottom: 90px;
+                right: 12px;
+                left: 12px;
+                width: auto;
+                max-height: 40vh;
+            }
+            .bottom-dock {
+                bottom: 8px;
+                padding: 8px 16px;
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- CABECERA -->
+    <header>
+        <div class="brand-box">
+            <div class="brand-badge">ROMA 125 d.C.</div>
+            <div>
+                <h1 class="brand-title">El Panteón de Agripa y Adriano</h1>
+                <p class="brand-sub">SIMULADOR ARQUITECTÓNICO INTERACTIVO • CÚPULA DE HORMIGÓN Y ÓCULO SOLAR</p>
+            </div>
+        </div>
+        <div class="header-actions">
+            <button class="btn-action" onclick="toggleFullScreen()">⛶ Pantalla Completa</button>
+        </div>
+    </header>
+
+    <!-- LIENZO INTERACTIVO CON EL CORTE DEL PANTEÓN Y EL HAZ SOLAR -->
+    <canvas id="pantheonStage"></canvas>
+
+    <!-- TARJETA DIDÁCTICA LATERAL DERECHA -->
+    <div class="info-card" id="infoCard">
+        <div class="info-header">
+            <span class="info-tag" id="partTag">LA CÚPULA PERFECTA</span>
+            <span style="font-size: 0.8rem; color: #94a3b8;">43,30 m × 43,30 m</span>
+        </div>
+        <h2 class="info-title" id="partTitle">El Óculo y la Esfera Sagrada</h2>
+        <div class="info-summary" id="partSummary">
+            Una esfera perfecta de 43,3 metros cabe exactamente en su interior. La cúpula no tiene vigas de hierro: se sostiene sola desde hace 1.900 años.
+        </div>
+        <div class="info-detail" id="partDetail">
+            <strong>¿Por qué no se cae?</strong>
+            Los romanos inventaron el <em>opus caementicium</em> (hormigón puzolánico). Hicieron la cúpula gruesa y pesada abajo con travertino (6 metros), y ligerísima arriba con piedra pómez volcánica (1,5 metros en la cima).
+            <strong>El reloj solar cósmico:</strong>
+            El agujero superior (el Óculo) mide 9 metros de diámetro y está completamente abierto al cielo. A lo largo del día, el haz de sol barre los 28 casetones como las manecillas de un reloj cósmico.
+        </div>
+        <div class="info-facts">
+            <div class="fact-box">
+                <div class="fact-val">4.535 t</div>
+                <div class="fact-lbl">Peso de la Cúpula</div>
+            </div>
+            <div class="fact-box">
+                <div class="fact-val">9,0 m</div>
+                <div class="fact-lbl">Diámetro del Óculo</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- BARRA INFERIOR DE CONTROLES -->
+    <div class="bottom-dock">
+        <!-- Control solar -->
+        <div class="dock-control-group">
+            <span class="dock-label">☀️ HORA SOLAR:</span>
+            <input type="range" id="sunSlider" class="sun-slider" min="7" max="18" step="0.1" value="12">
+            <span class="time-badge" id="timeBadge">12:00</span>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- Modos de vista didáctica -->
+        <div class="dock-control-group">
+            <button class="dock-btn active" id="btnModeCut" onclick="setViewMode('cut')">🏛️ Corte Transversal</button>
+            <button class="dock-btn" id="btnModeXray" onclick="setViewMode('xray')">⚡ Rayos X (Fuerzas)</button>
+            <button class="dock-btn" id="btnModeSphere" onclick="setViewMode('sphere')">🔮 Esfera Oculta</button>
+            <button class="dock-btn" id="btnModeRain" onclick="toggleRain()">🌧️ Simular Lluvia</button>
+        </div>
+    </div>
+
+    <script>
+        // =========================================================================
+        // ESTADO GLOBAL Y DATOS DIDÁCTICOS
+        // =========================================================================
+        const canvas = document.getElementById("pantheonStage");
+        const ctx = canvas.getContext("2d");
+
+        let timeOfDay = 12.0; // De 7.0 a 18.0
+        let currentMode = "cut"; // 'cut', 'xray', 'sphere'
+        let isRaining = false;
+        let rainDrops = [];
+
+        const PANTHEON_PARTS = {
+            oculus: {
+                tag: "VENTANA AL COSMOS",
+                title: "El Gran Óculo (9 metros)",
+                summary: "La única fuente de luz del templo. Un cilindro abierto al cielo que aligera el peso justo en el punto más crítico de la cúpula.",
+                detail: "<strong>¿Qué pasa cuando llueve?</strong> El agua entra libremente, pero el suelo esférico ligeramente convexo tiene 22 pequeños orificios de desagüe que evacuan el agua al alcantarillado romano subterráneo sin inundarse jamás.",
+                weight: "0 toneladas",
+                measure: "9,0 m diámetro"
+            },
+            dome: {
+                tag: "INGENIERÍA ESTRUCTURAL",
+                title: "Cúpula de Hormigón Puzolánico",
+                summary: "Sigue siendo hoy la mayor cúpula de hormigón en masa (sin armadura de hierro) del mundo. 1.900 años después, sigue en pie intacta.",
+                detail: "<strong>Gradiente de densidad:</strong> En la base usaron roca densa (travertino); a media altura, toba volcánica; y en la cúspide, piedra pómez que casi flota en el agua. Así redujeron el peso vertical drásticamente.",
+                weight: "4.535 t",
+                measure: "43,30 m luz"
+            },
+            coffers: {
+                tag: "ASTRONOMÍA Y CALENDARIO",
+                title: "Los 28 Casetones",
+                summary: "5 anillos de 28 casetones rectangulares esculpidos en el techo. No solo ahorran miles de toneladas de peso, sino que simbolizan el mes lunar.",
+                detail: "<strong>Perspectiva forzada:</strong> Los casetones están diseñados con una leve inclinación hacia abajo para que un visitante de pie en el centro los vea perfectamente regulares y majestuosos.",
+                weight: "5 niveles",
+                measure: "28 divisiones"
+            },
+            walls: {
+                tag: "MURO DE CONTENCIÓN",
+                title: "Muro Cilíndrico de 6 Metros",
+                summary: "El tambor circular que soporta el empuje lateral. Contiene arcos de descarga de ladrillo ocultos que reparten el peso hacia 8 pilares macizos.",
+                detail: "<strong>Arcos invisibles:</strong> Dentro del muro macizo de ladrillo y hormigón, los arquitectos construyeron arcos ciegos que desvían las toneladas hacia los puntos más fuertes, dejando nichos vacíos para estatuas de dioses.",
+                weight: "Grosor 6,2 m",
+                measure: "8 pilares"
+            },
+            sphere: {
+                tag: "GEOMETRÍA SAGRADA",
+                title: "La Esfera Cósmica Inscrita",
+                summary: "El diámetro interior (43,30 m) es exactamente igual a la altura total desde el suelo hasta el óculo (43,30 m).",
+                detail: "<strong>Simbolismo del Universo:</strong> Para los romanos, el suelo representaba la Tierra (cuadrada y plana) y la cúpula representaba la bóveda celeste giratoria de los dioses.",
+                weight: "Armonía 1:1",
+                measure: "R = 21,65 m"
+            }
+        };
+
+        function setInspectorInfo(key) {
+            const data = PANTHEON_PARTS[key];
+            if (!data) return;
+            document.getElementById("partTag").innerText = data.tag;
+            document.getElementById("partTitle").innerText = data.title;
+            document.getElementById("partSummary").innerText = data.summary;
+            document.getElementById("partDetail").innerHTML = data.detail;
+            document.querySelectorAll(".fact-val")[0].innerText = data.weight;
+            document.querySelectorAll(".fact-val")[1].innerText = data.measure;
+        }
+
+        // =========================================================================
+        // MOTOR DE DIBUJO Y RENDERIZADO VISUAL
+        // =========================================================================
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            initRain();
+        }
+        window.addEventListener("resize", resize);
+
+        function initRain() {
+            rainDrops = [];
+            for (let i = 0; i < 90; i++) {
+                rainDrops.push({
+                    x: (Math.random() - 0.5) * 60,
+                    y: Math.random() * 300,
+                    len: Math.random() * 12 + 6,
+                    speed: Math.random() * 5 + 6
+                });
+            }
+        }
+
+        function setViewMode(mode) {
+            currentMode = mode;
+            document.querySelectorAll(".dock-btn").forEach(b => b.classList.remove("active"));
+            if (mode === "cut") {
+                document.getElementById("btnModeCut").classList.add("active");
+                setInspectorInfo("dome");
+            } else if (mode === "xray") {
+                document.getElementById("btnModeXray").classList.add("active");
+                setInspectorInfo("walls");
+            } else if (mode === "sphere") {
+                document.getElementById("btnModeSphere").classList.add("active");
+                setInspectorInfo("sphere");
+            }
+        }
+
+        function toggleRain() {
+            isRaining = !isRaining;
+            const btn = document.getElementById("btnModeRain");
+            if (isRaining) {
+                btn.classList.add("active");
+                setInspectorInfo("oculus");
+            } else {
+                btn.classList.remove("active");
+            }
+        }
+
+        // Control solar
+        const sunSlider = document.getElementById("sunSlider");
+        const timeBadge = document.getElementById("timeBadge");
+        sunSlider.addEventListener("input", (e) => {
+            timeOfDay = parseFloat(e.target.value);
+            const hours = Math.floor(timeOfDay);
+            const minutes = Math.floor((timeOfDay - hours) * 60);
+            timeBadge.innerText = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+        });
+
+        // =========================================================================
+        // DIBUJO EN CANVAS 2D
+        // =========================================================================
+        function render() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const cx = canvas.width / 2 - 120; // Dejar espacio a la tarjeta derecha
+            const cy = canvas.height / 2 + 30;
+            const radius = Math.min(canvas.width, canvas.height) * 0.32; // Radio de la cúpula interior
+
+            // 1. Fondo cielo exterior según la hora
+            const sunProgress = (timeOfDay - 7) / 11; // 0 a 1
+            const skyAlpha = Math.sin(sunProgress * Math.PI);
+            
+            // Halo de cielo visto a través del óculo
+            const oculusX = cx;
+            const oculusY = cy - radius;
+            const oculusR = radius * 0.21;
+
+            // 2. Haz de luz solar oblicuo desde el óculo
+            // Ángulo solar según la hora
+            const sunAngle = (timeOfDay - 12) * 0.16; // Radianes de inclinación (-0.8 a +0.8)
+            const beamEndX1 = oculusX + Math.tan(sunAngle) * (radius * 2) - oculusR * 0.8;
+            const beamEndX2 = oculusX + Math.tan(sunAngle) * (radius * 2) + oculusR * 0.8;
+            const floorY = cy + radius;
+
+            // Dibujar el chorro de luz dorada volumétrica
+            const beamGrad = ctx.createLinearGradient(oculusX, oculusY, (beamEndX1 + beamEndX2) / 2, floorY);
+            beamGrad.addColorStop(0, "rgba(254, 240, 138, 0.75)");
+            beamGrad.addColorStop(0.3, "rgba(245, 158, 11, 0.40)");
+            beamGrad.addColorStop(1, "rgba(245, 158, 11, 0.10)");
+
+            ctx.save();
+            ctx.beginPath();
+            ctx.moveTo(oculusX - oculusR, oculusY);
+            ctx.lineTo(oculusX + oculusR, oculusY);
+            ctx.lineTo(beamEndX2, floorY);
+            ctx.lineTo(beamEndX1, floorY);
+            ctx.closePath();
+            ctx.fillStyle = beamGrad;
+            ctx.fill();
+
+            // Punto de impacto del sol en el suelo / pared
+            ctx.beginPath();
+            const spotX = (beamEndX1 + beamEndX2) / 2;
+            ctx.ellipse(spotX, floorY - 6, oculusR * 1.2, oculusR * 0.35, 0, 0, Math.PI * 2);
+            ctx.fillStyle = "rgba(254, 240, 138, 0.85)";
+            ctx.shadowColor = "#fde047";
+            ctx.shadowBlur = 30;
+            ctx.fill();
+            ctx.restore();
+
+            // 3. Estructura del Panteón (Corte Transversal)
+            // Pared cilíndrica exterior (muros de 6 metros)
+            const wallThick = radius * 0.28;
+
+            // Fondo interior de la cúpula (sombra monumental)
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(cx, cy, radius, Math.PI, 0, false);
+            ctx.lineTo(cx + radius, cy + radius);
+            ctx.lineTo(cx - radius, cy + radius);
+            ctx.closePath();
+            const interiorGrad = ctx.createRadialGradient(cx, cy - radius * 0.4, radius * 0.1, cx, cy, radius * 1.1);
+            interiorGrad.addColorStop(0, "#1f293d");
+            interiorGrad.addColorStop(0.7, "#0f172a");
+            interiorGrad.addColorStop(1, "#070b14");
+            ctx.fillStyle = interiorGrad;
+            ctx.fill();
+            ctx.restore();
+
+            // Casetones esculpidos en la bóveda
+            drawCoffers(cx, cy, radius);
+
+            // 4. Muros y corte de sección
+            ctx.save();
+            ctx.lineWidth = 3;
+            ctx.strokeStyle = currentMode === "xray" ? "#38bdf8" : "#f59e0b";
+
+            // Pared izquierda
+            ctx.beginPath();
+            ctx.rect(cx - radius - wallThick, cy, wallThick, radius);
+            ctx.fillStyle = currentMode === "xray" ? "rgba(56, 189, 248, 0.15)" : "#221c17";
+            ctx.fill();
+            ctx.stroke();
+
+            // Pared derecha
+            ctx.beginPath();
+            ctx.rect(cx + radius, cy, wallThick, radius);
+            ctx.fillStyle = currentMode === "xray" ? "rgba(56, 189, 248, 0.15)" : "#221c17";
+            ctx.fill();
+            ctx.stroke();
+
+            // Espesor de la cúpula (de 6 metros en la base a 1,5 metros arriba)
+            ctx.beginPath();
+            ctx.arc(cx, cy, radius + wallThick, Math.PI, 0, false);
+            ctx.arc(cx, cy, radius, 0, Math.PI, true);
+            ctx.closePath();
+            ctx.fillStyle = currentMode === "xray" ? "rgba(56, 189, 248, 0.20)" : "#29211c";
+            ctx.fill();
+            ctx.stroke();
+
+            // Si modo Rayos X: dibujar arcos de descarga ocultos
+            if (currentMode === "xray") {
+                drawRelievingArches(cx, cy, radius, wallThick);
+            }
+
+            // Si modo Esfera: dibujar la esfera sagrada perfecta de 43,30m inscrita
+            if (currentMode === "sphere") {
+                ctx.save();
+                ctx.beginPath();
+                ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+                ctx.strokeStyle = "#c084fc";
+                ctx.lineWidth = 3;
+                ctx.setLineDash([8, 8]);
+                ctx.stroke();
+                ctx.fillStyle = "rgba(192, 132, 252, 0.08)";
+                ctx.fill();
+
+                // Ejes de simetría
+                ctx.beginPath();
+                ctx.moveTo(cx - radius, cy);
+                ctx.lineTo(cx + radius, cy);
+                ctx.moveTo(cx, cy - radius);
+                ctx.lineTo(cx, cy + radius);
+                ctx.strokeStyle = "rgba(192, 132, 252, 0.5)";
+                ctx.lineWidth = 1.5;
+                ctx.stroke();
+                ctx.restore();
+            }
+
+            // Suelo con pendiente y orificios de desagüe
+            ctx.beginPath();
+            ctx.moveTo(cx - radius, cy + radius);
+            ctx.quadraticCurveTo(cx, cy + radius - 4, cx + radius, cy + radius);
+            ctx.lineTo(cx + radius + wallThick, cy + radius);
+            ctx.lineTo(cx - radius - wallThick, cy + radius);
+            ctx.closePath();
+            ctx.fillStyle = "#1e293b";
+            ctx.fill();
+            ctx.stroke();
+
+            // Orificios de drenaje
+            for (let dx = -radius * 0.7; dx <= radius * 0.7; dx += radius * 0.25) {
+                ctx.beginPath();
+                ctx.arc(cx + dx, cy + radius - 1, 3.5, 0, Math.PI * 2);
+                ctx.fillStyle = "#0f172a";
+                ctx.fill();
+            }
+
+            // Anillo del Óculo (Círculo abierto)
+            ctx.beginPath();
+            ctx.ellipse(oculusX, oculusY, oculusR, oculusR * 0.35, 0, 0, Math.PI * 2);
+            ctx.fillStyle = skyAlpha > 0.3 ? "#7dd3fc" : "#0f172a";
+            ctx.shadowColor = "#38bdf8";
+            ctx.shadowBlur = 15;
+            ctx.fill();
+            ctx.lineWidth = 4;
+            ctx.strokeStyle = "#fef08a";
+            ctx.stroke();
+            ctx.restore();
+
+            // 5. Animación de lluvia vertical a través del óculo
+            if (isRaining) {
+                ctx.save();
+                ctx.strokeStyle = "rgba(147, 197, 253, 0.65)";
+                ctx.lineWidth = 1.6;
+                rainDrops.forEach(d => {
+                    ctx.beginPath();
+                    ctx.moveTo(oculusX + d.x, oculusY + d.y);
+                    ctx.lineTo(oculusX + d.x, oculusY + d.y + d.len);
+                    ctx.stroke();
+                    d.y += d.speed;
+                    if (d.y > radius * 2) {
+                        d.y = 0;
+                        d.x = (Math.random() - 0.5) * (oculusR * 1.8);
+                    }
+                });
+                ctx.restore();
+            }
+
+            requestAnimationFrame(render);
+        }
+
+        // Casetones en perspectiva
+        function drawCoffers(cx, cy, r) {
+            ctx.save();
+            ctx.strokeStyle = "rgba(245, 158, 11, 0.35)";
+            ctx.lineWidth = 1.2;
+
+            for (let ring = 1; ring <= 5; ring++) {
+                const ringR = r * (0.35 + ring * 0.12);
+                const ringY = cy - Math.cos((ring / 6) * (Math.PI / 2)) * r;
+                const ringW = Math.sin((ring / 6) * (Math.PI / 2)) * r;
+
+                // Anillo horizontal
+                ctx.beginPath();
+                ctx.ellipse(cx, ringY, ringW, ringW * 0.22, 0, 0, Math.PI);
+                ctx.stroke();
+
+                // Cuadrículas escalonadas
+                const steps = 14;
+                for (let i = 1; i < steps; i++) {
+                    const angle = (i / steps) * Math.PI;
+                    const cofferX = cx - Math.cos(angle) * ringW;
+                    const cofferY = ringY + Math.sin(angle) * (ringW * 0.18);
+                    
+                    ctx.beginPath();
+                    ctx.rect(cofferX - 6, cofferY - 5, 12, 10);
+                    ctx.fillStyle = "rgba(0, 0, 0, 0.4)";
+                    ctx.fill();
+                    ctx.stroke();
+                }
+            }
+            ctx.restore();
+        }
+
+        // Arcos de descarga en modo rayos X
+        function drawRelievingArches(cx, cy, r, thick) {
+            ctx.save();
+            ctx.strokeStyle = "#38bdf8";
+            ctx.lineWidth = 2.5;
+            ctx.setLineDash([5, 5]);
+
+            // Arcos en la pared izquierda
+            for (let y = cy + 40; y < cy + r; y += 60) {
+                ctx.beginPath();
+                ctx.arc(cx - r - thick / 2, y, thick * 0.4, Math.PI, 0);
+                ctx.stroke();
+            }
+
+            // Arcos en la pared derecha
+            for (let y = cy + 40; y < cy + r; y += 60) {
+                ctx.beginPath();
+                ctx.arc(cx + r + thick / 2, y, thick * 0.4, Math.PI, 0);
+                ctx.stroke();
+            }
+
+            // Vectores de fuerza descendente
+            ctx.strokeStyle = "#ef4444";
+            ctx.setLineDash([]);
+            ctx.lineWidth = 2;
+            
+            // Flecha izquierda
+            ctx.beginPath();
+            ctx.moveTo(cx - r - thick / 2, cy + 20);
+            ctx.lineTo(cx - r - thick / 2, cy + r - 20);
+            ctx.stroke();
+
+            // Flecha derecha
+            ctx.beginPath();
+            ctx.moveTo(cx + r + thick / 2, cy + 20);
+            ctx.lineTo(cx + r + thick / 2, cy + r - 20);
+            ctx.stroke();
+
+            ctx.restore();
+        }
+
+        function toggleFullScreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(() => {});
+            } else {
+                document.exitFullscreen().catch(() => {});
+            }
+        }
+
+        window.addEventListener("DOMContentLoaded", () => {
+            resize();
+            setViewMode("cut");
+            render();
+        });
+    </script>
+</body>
+</html>
+

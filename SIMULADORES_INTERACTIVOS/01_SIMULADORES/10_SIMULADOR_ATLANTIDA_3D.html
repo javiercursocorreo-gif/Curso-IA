@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sesión 10 • Simulador 3D: La Mítica Atlántida de Platón</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800;900&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-base: #030814;
+            --bg-panel: rgba(10, 20, 38, 0.92);
+            --orichalcum: #f97316;
+            --orichalcum-glow: rgba(249, 115, 22, 0.5);
+            --gold: #fbbf24;
+            --sea-cyan: #06b6d4;
+            --sea-deep: #0284c7;
+            --tin: #e2e8f0;
+            --bronze: #d97706;
+            --font-roman: 'Cinzel', serif;
+            --font-sans: 'Inter', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background-color: var(--bg-base);
+            color: #f8fafc;
+            font-family: var(--font-sans);
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            user-select: none;
+        }
+
+        /* CABECERA */
+        header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 20;
+            padding: 14px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: linear-gradient(180deg, rgba(3, 8, 20, 0.95) 0%, rgba(3, 8, 20, 0.6) 80%, transparent 100%);
+            border-bottom: 1px solid rgba(6, 182, 212, 0.25);
+            backdrop-filter: blur(8px);
+        }
+
+        .brand-box {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .brand-badge {
+            background: rgba(6, 182, 212, 0.15);
+            border: 1px solid var(--sea-cyan);
+            color: var(--sea-cyan);
+            font-family: var(--font-roman);
+            font-weight: 900;
+            font-size: 1.1rem;
+            padding: 6px 12px;
+            border-radius: 8px;
+            letter-spacing: 1px;
+            box-shadow: 0 0 15px rgba(6, 182, 212, 0.3);
+        }
+
+        .brand-title {
+            font-family: var(--font-roman);
+            font-size: 1.35rem;
+            font-weight: 800;
+            color: #ffffff;
+            letter-spacing: 0.5px;
+        }
+
+        .brand-sub {
+            font-size: 0.78rem;
+            color: #94a3b8;
+        }
+
+        .btn-action {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #f1f5f9;
+            padding: 8px 16px;
+            border-radius: 9999px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-action:hover {
+            background: rgba(6, 182, 212, 0.2);
+            border-color: var(--sea-cyan);
+            color: var(--sea-cyan);
+        }
+
+        /* LIENZO DE LA ATLÁNTIDA */
+        #atlantisStage {
+            flex: 1;
+            width: 100%;
+            height: 100%;
+            display: block;
+            cursor: grab;
+        }
+
+        #atlantisStage:active {
+            cursor: grabbing;
+        }
+
+        /* PANEL DIDÁCTICO DERECHO */
+        .info-card {
+            position: absolute;
+            top: 80px;
+            right: 24px;
+            width: 400px;
+            background: var(--bg-panel);
+            border: 1.5px solid var(--orichalcum);
+            border-radius: 20px;
+            padding: 22px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9), 0 0 25px var(--orichalcum-glow);
+            backdrop-filter: blur(20px);
+            z-index: 15;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .info-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .info-tag {
+            background: rgba(249, 115, 22, 0.15);
+            color: var(--orichalcum);
+            font-family: var(--font-roman);
+            font-size: 0.75rem;
+            font-weight: 800;
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px solid rgba(249, 115, 22, 0.35);
+            text-transform: uppercase;
+        }
+
+        .info-title {
+            font-family: var(--font-roman);
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: #ffffff;
+            line-height: 1.25;
+        }
+
+        .info-summary {
+            background: rgba(255, 255, 255, 0.05);
+            border-left: 3.5px solid var(--orichalcum);
+            padding: 10px 14px;
+            border-radius: 0 10px 10px 0;
+            font-size: 0.9rem;
+            color: #f1f5f9;
+            line-height: 1.45;
+            font-weight: 500;
+        }
+
+        .info-detail {
+            font-size: 0.84rem;
+            color: #cbd5e1;
+            line-height: 1.6;
+            max-height: 230px;
+            overflow-y: auto;
+            padding-right: 6px;
+        }
+
+        .info-detail strong {
+            color: var(--gold);
+            display: block;
+            margin-top: 6px;
+            margin-bottom: 2px;
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .info-facts {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-top: 4px;
+        }
+
+        .fact-box {
+            background: rgba(0, 0, 0, 0.45);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            padding: 8px 10px;
+            text-align: center;
+        }
+
+        .fact-val {
+            font-family: var(--font-mono);
+            font-size: 1.05rem;
+            font-weight: 800;
+            color: var(--orichalcum);
+        }
+
+        .fact-lbl {
+            font-size: 0.68rem;
+            color: #94a3b8;
+            text-transform: uppercase;
+            margin-top: 2px;
+        }
+
+        /* BARRA INFERIOR DE CONTROLES */
+        .bottom-dock {
+            position: absolute;
+            bottom: 16px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            background: rgba(10, 20, 38, 0.94);
+            border: 1px solid rgba(6, 182, 212, 0.35);
+            box-shadow: 0 10px 35px rgba(0,0,0,0.85);
+            backdrop-filter: blur(16px);
+            padding: 10px 22px;
+            border-radius: 9999px;
+            z-index: 15;
+            max-width: 94%;
+        }
+
+        .dock-btn {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #ffffff;
+            padding: 8px 14px;
+            border-radius: 9999px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .dock-btn:hover {
+            background: rgba(249, 115, 22, 0.2);
+            border-color: var(--orichalcum);
+            color: var(--orichalcum);
+        }
+
+        .dock-btn.active {
+            background: var(--orichalcum);
+            color: #030814;
+            border-color: var(--orichalcum);
+            font-weight: 800;
+            box-shadow: 0 0 15px var(--orichalcum-glow);
+        }
+
+        .divider {
+            width: 1px;
+            height: 22px;
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        @media (max-width: 950px) {
+            .info-card {
+                top: auto;
+                bottom: 85px;
+                right: 12px;
+                left: 12px;
+                width: auto;
+                max-height: 38vh;
+            }
+            .bottom-dock {
+                bottom: 8px;
+                padding: 6px 14px;
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- CABECERA -->
+    <header>
+        <div class="brand-box">
+            <div class="brand-badge">CRITIAS & TIMEO</div>
+            <div>
+                <h1 class="brand-title">La Mítica Atlántida de Platón</h1>
+                <p class="brand-sub">SIMULADOR GEOMÉTRICO 3D • LOS ANILLOS CONCÉNTRICOS Y EL TEMPLO DE ORICALCO</p>
+            </div>
+        </div>
+        <div>
+            <button class="btn-action" onclick="toggleFullScreen()">⛶ Pantalla Completa</button>
+        </div>
+    </header>
+
+    <!-- LIENZO -->
+    <canvas id="atlantisStage"></canvas>
+
+    <!-- PANEL DIDÁCTICO -->
+    <div class="info-card" id="infoCard">
+        <div class="info-header">
+            <span class="info-tag" id="atlantisTag">ACRÓPOLIS CENTRAL</span>
+            <span style="font-size:0.8rem; color:#94a3b8;">5 estadios (925 m)</span>
+        </div>
+        <h2 class="info-title" id="atlantisTitle">El Templo de Poseidón y Clito</h2>
+        <div class="info-summary" id="atlantisSummary">
+            En la isla central se erigía el colosal santuario recubierto de plata y oro, rodeado de murallas de oricalco con destellos ígneos.
+        </div>
+        <div class="info-detail" id="atlantisDetail">
+            <strong>¿Qué era el Oricalco?</strong>
+            Platón escribió que era el segundo metal más valioso después del oro: «brillaba con resplandor de fuego». Probablemente una aleación mítica rica en cobre y zinc (latón dorado refinado).
+            <strong>La geometría sagrada de Poseidón:</strong>
+            El dios del mar trazó tres anillos concéntricos de agua y dos de tierra fértil, haciéndola inexpugnable por los ejércitos humanos.
+        </div>
+        <div class="info-facts">
+            <div class="fact-box">
+                <div class="fact-val" id="fact1">3 Anillos</div>
+                <div class="fact-lbl">Canales de agua</div>
+            </div>
+            <div class="fact-box">
+                <div class="fact-val" id="fact2">50 estadios</div>
+                <div class="fact-lbl">Canal al océano (~9 km)</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CONTROLES -->
+    <div class="bottom-dock">
+        <button class="dock-btn active" id="btnAcropolis" onclick="focusElement('temple')">🏛️ Templo & Oricalco</button>
+        <button class="dock-btn" id="btnRings" onclick="focusElement('rings')">🌀 Los 3 Anillos de Agua</button>
+        <button class="dock-btn" id="btnWalls" onclick="focusElement('walls')">🛡️ Murallas (Bronce, Estaño)</button>
+        <button class="dock-btn" id="btnCanal" onclick="focusElement('canal')">🚢 Gran Canal al Mar</button>
+
+        <div class="divider"></div>
+
+        <button class="dock-btn" id="btnSpin" onclick="toggleSpin()">🔄 Rotación Automática</button>
+    </div>
+
+    <script>
+        const canvas = document.getElementById("atlantisStage");
+        const ctx = canvas.getContext("2d");
+
+        let angle = 0.45;
+        let isSpinning = true;
+        let isDragging = false;
+        let lastMouseX = 0;
+        let currentFocus = "temple";
+
+        const ATLANTIS_DATA = {
+            temple: {
+                tag: "ACRÓPOLIS CENTRAL",
+                measure: "5 estadios (925 m)",
+                title: "El Templo de Poseidón y Clito",
+                summary: "En la isla central se erigía el santuario supremo con tejados de oro y plata y estatuas de corceles alados.",
+                detail: "<strong>Estatua de oro colosal:</strong> En su interior se encontraba Poseidón de pie sobre un carro de seis caballos alados de oro macizo que rozaba el techo del templo.<br><br><strong>Manantiales duales:</strong> El dios hizo brotar dos fuentes en el centro: una de agua fría pura y otra de agua caliente termal.",
+                f1: "1 estadio largo",
+                lbl1: "Longitud templo (185 m)",
+                f2: "Oricalco",
+                lbl2: "Metal de fuego sagrado"
+            },
+            rings: {
+                tag: "GEOMETRÍA HIDRÁULICA",
+                measure: "3 estadios el mayor",
+                title: "Los 3 Anillos de Agua Concéntricos",
+                summary: "Canales de navegación circulares perfectamente concéntricos por donde circulaban las trirremes de guerra y el comercio.",
+                detail: "<strong>Anchuras matemáticas:</strong> El primer anillo de agua medía 1 estadio; el segundo, 2 estadios; y el exterior, 3 estadios (~550 metros). Entre ellos se extendían dos anillos de tierra fértil.<br><br><strong>Astilleros excavados:</strong> Los anillos de roca contenían diques secos techados para albergar cientos de navíos de guerra.",
+                f1: "3 canales",
+                lbl1: "Agua de mar navegable",
+                f2: "1.200 naves",
+                lbl2: "Flota naval imperial"
+            },
+            walls: {
+                tag: "DEFENSA METÁLICA",
+                measure: "3 Murallas",
+                title: "Murallas de Bronce, Estaño y Oricalco",
+                summary: "Platón describe cómo los atlantes recubrieron cada una de las tres murallas con placas de un metal distinto.",
+                detail: "<strong>La muralla exterior:</strong> Recubierta de bronce brillante como el cobre pulido.<br><br><strong>La muralla intermedia:</strong> Fondeada en estaño blanco reluciente.<br><br><strong>La muralla de la Acrópolis:</strong> Blindada completamente en oricalco rojo, emitiendo destellos como el fuego al atardecer.",
+                f1: "3 Metales",
+                lbl1: "Bronce, Estaño, Oricalco",
+                f2: "Puentes techados",
+                lbl2: "Con torres de guardia"
+            },
+            canal: {
+                tag: "CONEXIÓN OCEÁNICA",
+                measure: "50 estadios (~9,2 km)",
+                title: "El Gran Canal Rectilíneo al Mar",
+                summary: "Una garganta artificial navegable de 100 metros de ancho y 30 metros de profundidad que abría la capital al Océano Atlántico.",
+                detail: "<strong>Túneles bajo tierra:</strong> Para que los barcos pudieran navegar de un anillo a otro sin romper las murallas de tierra, excavaron canales techados bajo la roca para que las trirremes pasaran por debajo.<br><br><strong>Comercio global:</strong> El puerto exterior bullía día y noche con mercaderes de todos los rincones del mundo conocido.",
+                f1: "100 m ancho",
+                lbl1: "Paso de trirremes triples",
+                f2: "30 m fondo",
+                lbl2: "Calado colosal"
+            }
+        };
+
+        function focusElement(elem) {
+            currentFocus = elem;
+            document.querySelectorAll(".dock-btn").forEach(b => b.classList.remove("active"));
+            const map = { temple: "btnAcropolis", rings: "btnRings", walls: "btnWalls", canal: "btnCanal" };
+            if (map[elem]) document.getElementById(map[elem]).classList.add("active");
+
+            const d = ATLANTIS_DATA[elem];
+            document.getElementById("atlantisTag").innerText = d.tag;
+            document.getElementById("atlantisTitle").innerText = d.title;
+            document.getElementById("atlantisSummary").innerText = d.summary;
+            document.getElementById("atlantisDetail").innerHTML = d.detail;
+            document.getElementById("fact1").innerText = d.f1;
+            document.getElementById("fact2").innerText = d.f2;
+        }
+
+        function toggleSpin() {
+            isSpinning = !isSpinning;
+            document.getElementById("btnSpin").classList.toggle("active", isSpinning);
+        }
+
+        // Control ratón para orbitar
+        canvas.addEventListener("mousedown", (e) => {
+            isDragging = true;
+            lastMouseX = e.clientX;
+        });
+
+        window.addEventListener("mouseup", () => isDragging = false);
+
+        canvas.addEventListener("mousemove", (e) => {
+            if (isDragging) {
+                const delta = e.clientX - lastMouseX;
+                angle += delta * 0.008;
+                lastMouseX = e.clientX;
+            }
+        });
+
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener("resize", resize);
+
+        // =========================================================================
+        // MOTOR DE DIBUJO ISOMÉTRICO 3D
+        // =========================================================================
+        function render() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            if (isSpinning && !isDragging) {
+                angle += 0.003;
+            }
+
+            const cx = canvas.width / 2 - 130;
+            const cy = canvas.height / 2 + 10;
+            const baseR = Math.min(canvas.width, canvas.height) * 0.38;
+            const tilt = 0.42; // Efecto perspectiva elíptica
+
+            ctx.save();
+            ctx.translate(cx, cy);
+
+            // 1. Océano circundante exterior infinito
+            ctx.beginPath();
+            ctx.ellipse(0, 0, baseR * 1.35, baseR * 1.35 * tilt, angle, 0, Math.PI * 2);
+            const oceanGrad = ctx.createRadialGradient(0, 0, baseR * 0.5, 0, 0, baseR * 1.4);
+            oceanGrad.addColorStop(0, "#083344");
+            oceanGrad.addColorStop(0.7, "#0c4a6e");
+            oceanGrad.addColorStop(1, "#030814");
+            ctx.fillStyle = oceanGrad;
+            ctx.fill();
+
+            // 2. Anillo de Tierra Exterior (Llanura fértil)
+            drawRing(baseR * 1.15, tilt, "#15803d", "#14532d", 14);
+
+            // 3. Muralla Exterior de Bronce
+            drawWall(baseR * 1.15, tilt, "#d97706", 18, currentFocus === "walls");
+
+            // 4. Anillo de Agua Exterior (3 estadios)
+            drawWaterRing(baseR * 0.95, baseR * 1.14, tilt);
+
+            // 5. Anillo de Tierra Intermedio
+            drawRing(baseR * 0.78, tilt, "#166534", "#052e16", 18);
+
+            // 6. Muralla Intermedia de Estaño
+            drawWall(baseR * 0.78, tilt, "#e2e8f0", 22, currentFocus === "walls");
+
+            // 7. Anillo de Agua Intermedio (2 estadios)
+            drawWaterRing(baseR * 0.62, baseR * 0.77, tilt);
+
+            // 8. Anillo de Tierra Interior
+            drawRing(baseR * 0.46, tilt, "#15803d", "#14532d", 22);
+
+            // 9. Anillo de Agua Interior (1 estadio)
+            drawWaterRing(baseR * 0.32, baseR * 0.45, tilt);
+
+            // 10. Gran Canal hacia el Mar
+            drawCanal(baseR * 1.35, tilt, angle);
+
+            // 11. Isla Central / Acrópolis (5 estadios)
+            drawAcropolis(baseR * 0.31, tilt);
+
+            // 12. Muralla Interior de Oricalco Ígneo
+            drawWall(baseR * 0.31, tilt, "#f97316", 26, true);
+
+            // 13. Templo Sagrado de Poseidón en la Cúspide
+            drawPoseidonTemple(tilt);
+
+            ctx.restore();
+
+            requestAnimationFrame(render);
+        }
+
+        // Anillo de tierra
+        function drawRing(r, tilt, topColor, sideColor, depth) {
+            ctx.beginPath();
+            ctx.ellipse(0, 0, r, r * tilt, angle, 0, Math.PI * 2);
+            ctx.fillStyle = topColor;
+            ctx.fill();
+            ctx.strokeStyle = sideColor;
+            ctx.lineWidth = 3;
+            ctx.stroke();
+        }
+
+        // Anillo de agua azul turquesa brillante
+        function drawWaterRing(rInner, rOuter, tilt) {
+            ctx.beginPath();
+            ctx.ellipse(0, 0, rOuter, rOuter * tilt, angle, 0, Math.PI * 2);
+            ctx.ellipse(0, 0, rInner, rInner * tilt, angle, 0, Math.PI * 2, true);
+            ctx.fillStyle = currentFocus === "rings" ? "rgba(6, 182, 212, 0.85)" : "rgba(6, 182, 212, 0.45)";
+            ctx.shadowColor = "#38bdf8";
+            ctx.shadowBlur = currentFocus === "rings" ? 25 : 8;
+            ctx.fill();
+            ctx.shadowBlur = 0;
+        }
+
+        // Muralla metálica
+        function drawWall(r, tilt, color, height, highlight) {
+            ctx.save();
+            ctx.beginPath();
+            ctx.ellipse(0, -height * 0.3, r, r * tilt, angle, 0, Math.PI * 2);
+            ctx.strokeStyle = color;
+            ctx.lineWidth = highlight ? 4.5 : 2.5;
+            if (highlight) {
+                ctx.shadowColor = color;
+                ctx.shadowBlur = 18;
+            }
+            ctx.stroke();
+            ctx.restore();
+        }
+
+        // Canal rectilíneo de 50 estadios al océano
+        function drawCanal(maxR, tilt, currentAngle) {
+            ctx.save();
+            const canalAngle = currentAngle + Math.PI / 4;
+            const w = 24;
+
+            ctx.beginPath();
+            ctx.moveTo(Math.cos(canalAngle) * (maxR * 0.31) - w / 2, Math.sin(canalAngle) * (maxR * 0.31) * tilt);
+            ctx.lineTo(Math.cos(canalAngle) * maxR - w / 2, Math.sin(canalAngle) * maxR * tilt);
+            ctx.lineTo(Math.cos(canalAngle) * maxR + w / 2, Math.sin(canalAngle) * maxR * tilt);
+            ctx.lineTo(Math.cos(canalAngle) * (maxR * 0.31) + w / 2, Math.sin(canalAngle) * (maxR * 0.31) * tilt);
+            ctx.closePath();
+            ctx.fillStyle = "rgba(6, 182, 212, 0.75)";
+            ctx.fill();
+            ctx.strokeStyle = "#fbbf24";
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            ctx.restore();
+        }
+
+        // Acrópolis central elevada
+        function drawAcropolis(r, tilt) {
+            ctx.beginPath();
+            ctx.ellipse(0, -18, r, r * tilt, angle, 0, Math.PI * 2);
+            ctx.fillStyle = "#1e293b";
+            ctx.fill();
+            ctx.strokeStyle = "#ea580c";
+            ctx.lineWidth = 3;
+            ctx.stroke();
+        }
+
+        // Templo de Poseidón en la cima
+        function drawPoseidonTemple(tilt) {
+            ctx.save();
+            const tx = 0;
+            const ty = -35;
+            const tw = 48;
+            const th = 26;
+
+            // Fachada del templo dorado con oricalco
+            ctx.fillStyle = "#fbbf24";
+            ctx.fillRect(tx - tw / 2, ty - th / 2, tw, th);
+            ctx.strokeStyle = "#f97316";
+            ctx.lineWidth = 2.5;
+            ctx.strokeRect(tx - tw / 2, ty - th / 2, tw, th);
+
+            // Columnas doradas
+            ctx.fillStyle = "#fef08a";
+            for (let c = -tw / 2 + 5; c < tw / 2; c += 10) {
+                ctx.fillRect(tx + c, ty - th / 2, 4, th);
+            }
+
+            // Tejado triangular recubierto de plata y oro
+            ctx.beginPath();
+            ctx.moveTo(tx - tw / 2 - 4, ty - th / 2);
+            ctx.lineTo(tx, ty - th / 2 - 18);
+            ctx.lineTo(tx + tw / 2 + 4, ty - th / 2);
+            ctx.closePath();
+            ctx.fillStyle = "#f8fafc";
+            ctx.shadowColor = "#f59e0b";
+            ctx.shadowBlur = 20;
+            ctx.fill();
+            ctx.strokeStyle = "#f59e0b";
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            // Estatua de Poseidón con tridente
+            ctx.fillStyle = "#f97316";
+            ctx.fillRect(tx - 3, ty - th / 2 - 28, 6, 10);
+            ctx.beginPath();
+            ctx.moveTo(tx, ty - th / 2 - 32);
+            ctx.lineTo(tx, ty - th / 2 - 18);
+            ctx.strokeStyle = "#fbbf24";
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            ctx.restore();
+        }
+
+        function toggleFullScreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(() => {});
+            } else {
+                document.exitFullscreen().catch(() => {});
+            }
+        }
+
+        window.addEventListener("DOMContentLoaded", () => {
+            resize();
+            focusElement("temple");
+            render();
+        });
+    </script>
+</body>
+</html>
+
