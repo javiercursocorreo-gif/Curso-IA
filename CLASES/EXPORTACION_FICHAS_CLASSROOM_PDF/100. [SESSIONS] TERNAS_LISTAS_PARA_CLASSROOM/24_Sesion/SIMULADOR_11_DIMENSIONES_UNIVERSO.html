@@ -299,15 +299,6 @@
             margin-bottom: 2px;
         }
 
-        .dim-quote-author {
-            font-size: 0.75rem;
-            font-style: italic;
-            color: #94a3b8;
-            border-top: 1px solid rgba(255, 255, 255, 0.08);
-            padding-top: 8px;
-            margin-top: 4px;
-        }
-
         /* BANNER INFERIOR DE FILOSOFÍA CÓSMICA */
         .bottom-quote-bar {
             position: absolute;
@@ -615,9 +606,6 @@
         <div class="dim-explanation-box">
             <div id="dimDetail">
                 <strong>La idea fácil:</strong> Un punto es una posición sin tamaño alguno. No mide nada; solo indica una posición matemática en la nada absoluta.
-            </div>
-            <div class="dim-quote-author">
-                🎙️ <em>«Una explicación sencilla de las 11 dimensiones de la realidad» — Mister Cosmo</em>
             </div>
         </div>
     </div>
@@ -1124,6 +1112,7 @@
             document.getElementById("holoCard").style.boxShadow = `0 25px 60px rgba(0, 0, 0, 0.95), 0 0 35px ${data.color}`;
 
             renderDock();
+            resetCardTilt();
         }
 
         function renderDock() {
@@ -1183,36 +1172,34 @@
         }
 
         // =========================================================================
-        // 3. EFECTO 3D TILT AL MOVER EL RATÓN
+        // 3. EFECTO 3D TILT EXCLUSIVAMENTE AL PASAR POR ENCIMA DE LA TARJETA
         // =========================================================================
         const wrapper = document.getElementById("holoCardWrapper");
-        let bounds;
 
-        function refreshBounds() {
-            bounds = wrapper.getBoundingClientRect();
-        }
-        window.addEventListener("resize", refreshBounds);
-        window.addEventListener("scroll", refreshBounds);
+        wrapper.addEventListener("mousemove", (e) => {
+            const rect = wrapper.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
 
-        document.addEventListener("mousemove", (e) => {
-            if (!bounds) refreshBounds();
-            const mouseX = e.clientX;
-            const mouseY = e.clientY;
-            const leftX = mouseX - bounds.x;
-            const topY = mouseY - bounds.y;
-            const center = {
-                x: leftX - bounds.width / 2,
-                y: topY - bounds.height / 2
-            };
+            // Inclinación máxima de 10 grados muy suave
+            const rotY = Math.max(-10, Math.min(10, (x - centerX) / 20));
+            const rotX = Math.max(-10, Math.min(10, -(y - centerY) / 20));
 
-            const rotY = (center.x / 14);
-            const rotX = -(center.y / 14);
-
+            wrapper.style.transition = "transform 0.08s ease-out";
             wrapper.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg)`;
         });
 
+        wrapper.addEventListener("mouseleave", () => {
+            // Regreso suave y centrado al salir el ratón
+            wrapper.style.transition = "transform 0.4s cubic-bezier(0.16, 1, 0.3, 1)";
+            wrapper.style.transform = "rotateX(0deg) rotateY(0deg)";
+        });
+
         function resetCardTilt() {
-            wrapper.style.transform = `rotateX(0deg) rotateY(0deg)`;
+            wrapper.style.transition = "transform 0.4s cubic-bezier(0.16, 1, 0.3, 1)";
+            wrapper.style.transform = "rotateX(0deg) rotateY(0deg)";
         }
 
         // =========================================================================
