@@ -2,7 +2,7 @@
 > **Proyecto:** Sistema de Atril Digital, Control Web MIDI y Repertorio Pedagógico Interactivo  
 > **Ubicación:** `CURSO_MUSICA/` · **Repositorio:** `CURSO-IA`  
 > **Dispositivo Principal:** Teclado Korg EK-50 Entertainer Keyboard conectado a iPad / Mac  
-> **Versión del Sistema:** v74 (Actualizado y Sincronizado)
+> **Versión del Sistema:** v75 (Botonera Flotante HUD + Estilo 042 / STS Armónica)
 
 ---
 
@@ -117,6 +117,20 @@ Safari en iPadOS almacena intensamente en memoria los archivos HTML de las aplic
 
 ### 4.2. Iconografía Retina PWA
 Inclusión de generación de iconos táctiles en alta resolución (192x192 px) generados dinámicamente mediante `<canvas>` e incrustados como Data URIs SVG para que al añadir el Repertorio a la pantalla de inicio del iPad luzca como una aplicación nativa de Apple.
+
+### 4.3. Modo Escenario: Botonera Flotante (HUD) sobre Partituras vs SongBook
+Uno de los grandes desafíos de la interpretación en directo es leer la partitura oficial en PDF sin perder el control de los cambios de sonido ni los ritmos del teclado:
+* **El Problema en Visores Tradicionales:** Al abrir un PDF estándar en Safari o hacer scroll hacia abajo, los botones de instrumentos quedan fuera de la pantalla.
+* **La Solución en SongBook / ForScore:** Aplicaciones comerciales de atril utilizan barras de herramientas flotantes que envían eventos MIDI preconfigurados. Sin embargo, SongBook requiere pago, configuración manual de textos complejos (MSB/LSB/PC) y no soporta comandos exclusivos de Korg (reloj en tiempo real `0xF8` o SysEx).
+* **Nuestra Solución (Botonera Flotante HUD Nativa):**
+  1. **Dock Escénico Fijo (`position: fixed` + Glassmorphism):** Se mantiene anclado en la parte inferior de la pantalla por encima de la zona segura de iPadOS, flotando sutilmente sobre la partitura.
+  2. **Controles 1-Tap Ininterrumpidos:** Mientras el músico sigue compás a compás la partitura oficial ampliada, puede alternar instantáneamente con un toque de pulgar entre:
+     * `[🎵 STS Armónica]` (Voz melódica solista).
+     * `[🎹 Armónica & Piano]` (Capa dual).
+     * `[▶️ Start / ⏹️ Stop Korg]` (Disparador del ritmo del EK-50).
+     * `[🥁 Estilo 042]` (Fijación de tempo y estilo a 56 BPM).
+  3. **Minimización Táctil:** Dispone de un botón `➖ Minimizar` / `➕ Controles` para replegarse y liberar el 100% del área de lectura si la partitura lo requiere.
+  4. **Modo Atril Expandido:** Visor con botón `🔍 Expandir a Pantalla Completa` (88vh) que convierte el iPad en un atril digital profesional completo sin necesidad de apps de terceros.
 
 ---
 

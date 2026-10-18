@@ -3,23 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sesión 08 • Simulador 3D: Motor Térmico de 4 Tiempos en Sección [COD-008]</title>
-    <!-- Babylon.js CDN Oficial -->
-    <script src="https://cdn.babylonjs.com/babylon.js"></script>
-    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+    <title>Sesión 08 • Simulador Fotográfico Real: Motor Térmico de 4 Tiempos [COD-008]</title>
+    <!-- Assets Fotográficos Reales en Base64 Autónomo -->
+    <script src="../03_ASSETS_3D_Y_DATOS/engine_photo_b64.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-base: #05070d;
-            --bg-panel: rgba(13, 19, 33, 0.94);
+            --bg-base: #060912;
+            --bg-panel: rgba(15, 23, 42, 0.94);
             --border-glow: rgba(245, 158, 11, 0.4);
             --amber: #f59e0b;
-            --amber-glow: rgba(245, 158, 11, 0.25);
             --intake: #38bdf8;
             --compress: #f59e0b;
             --power: #ef4444;
             --exhaust: #a855f7;
-            --metal: #cbd5e1;
             --text-main: #f8fafc;
             --text-sub: #cbd5e1;
             --font-sans: 'Inter', sans-serif;
@@ -103,7 +100,7 @@
             background: #020409;
         }
 
-        /* PANEL IZQUIERDO DIDÁCTICO */
+        /* PANEL DIDÁCTICO IZQUIERDO */
         aside.sidebar-panel {
             background: var(--bg-panel);
             border-right: 1px solid rgba(255, 255, 255, 0.1);
@@ -118,7 +115,7 @@
         /* TARJETA LA IDEA FÁCIL */
         .card-easy-concept {
             background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.95) 100%);
-            border: 1px solid rgba(245, 158, 11, 0.35);
+            border: 1.5px solid rgba(245, 158, 11, 0.35);
             border-radius: 14px;
             padding: 16px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
@@ -146,9 +143,7 @@
             color: var(--text-sub);
             line-height: 1.5;
         }
-        .easy-text strong {
-            color: #ffffff;
-        }
+        .easy-text strong { color: #ffffff; }
 
         /* SELECTOR DE LOS 4 TIEMPOS */
         .section-title {
@@ -200,7 +195,7 @@
             box-shadow: 0 0 14px rgba(245, 158, 11, 0.3);
         }
 
-        /* FICHA DIDÁCTICA DEL TIEMPO ACTUAL */
+        /* FICHA DIDÁCTICA DETALLADA */
         .info-card-detail {
             background: rgba(15, 23, 42, 0.9);
             border: 1.5px solid var(--amber);
@@ -319,52 +314,86 @@
             color: #ffffff;
         }
 
-        /* VIEWPORT 3D BABYLON */
-        .viewport-3d {
+        /* VISOR FOTOGRÁFICO REAL */
+        .viewport-photo-stage {
             position: relative;
             width: 100%;
             height: 100%;
             overflow: hidden;
-        }
-        #renderCanvas {
-            width: 100%;
-            height: 100%;
-            display: block;
-            touch-action: none;
-            outline: none;
-        }
-
-        /* HUD TOP */
-        .hud-overlay-top {
-            position: absolute;
-            top: 18px;
-            right: 20px;
-            display: flex;
-            gap: 10px;
-            z-index: 10;
-        }
-        .btn-hud {
-            background: rgba(15, 23, 42, 0.88);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.18);
-            color: #e2e8f0;
-            padding: 9px 16px;
-            border-radius: 10px;
-            font-size: 0.88rem;
-            font-weight: 700;
-            cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 8px;
-            transition: all 0.2s;
+            justify-content: center;
+            background: #000000;
         }
-        .btn-hud:hover, .btn-hud.active {
-            background: rgba(245, 158, 11, 0.28);
-            border-color: var(--amber);
-            color: #ffffff;
+        .photo-container {
+            position: relative;
+            max-width: 95%;
+            max-height: 92%;
+            aspect-ratio: 16 / 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.85);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .real-photo-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            filter: contrast(1.08) brightness(1.02);
+            transition: transform 0.3s ease;
         }
 
-        /* HUD BOTTOM */
+        /* OVERLAYS TÉCNICOS INTERACTIVOS SOBRE LA FOTO REAL */
+        .photo-hud-tag {
+            position: absolute;
+            background: rgba(15, 23, 42, 0.9);
+            border: 1.5px solid var(--amber);
+            color: #ffffff;
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 800;
+            pointer-events: auto;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 0 14px rgba(245, 158, 11, 0.4);
+            white-space: nowrap;
+        }
+        .photo-hud-tag:hover {
+            transform: scale(1.06);
+            background: rgba(245, 158, 11, 0.35);
+            border-color: #ffffff;
+        }
+        .photo-hud-tag::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 5px;
+            border-style: solid;
+            border-color: var(--amber) transparent transparent transparent;
+        }
+
+        /* RESPLANDOR DEL CICLO */
+        .cycle-highlight-overlay {
+            position: absolute;
+            top: 16%;
+            left: 36%;
+            width: 28%;
+            height: 22%;
+            border-radius: 50%;
+            pointer-events: none;
+            transition: all 0.25s ease;
+            mix-blend-mode: screen;
+            opacity: 0.65;
+        }
+
+        /* HUD INFERIOR */
         .hud-overlay-bottom {
             position: absolute;
             bottom: 20px;
@@ -397,11 +426,11 @@
     <!-- CABECERA -->
     <header>
         <div class="header-title-box">
-            <span class="badge-code">COD-008</span>
-            <h1>⚙️ Motor Térmico de 4 Tiempos en Sección • Motor Babylon.js</h1>
+            <span class="badge-code">[COD-008]</span>
+            <h1>⚙️ Motor Térmico de 4 Tiempos • Sección Fotográfica Real de Ingeniería</h1>
         </div>
         <div class="header-right">
-            <span class="pill-status">⚡ Ciclo Otto Sincronizado & PBR Industrial</span>
+            <span class="pill-status">📸 Fotografía Mecánica Real en Alta Definición</span>
             <span class="pill-status" style="background: rgba(56, 189, 248, 0.15); color: #38bdf8; border-color: rgba(56, 189, 248, 0.4);">
                 S08 • Ingeniería Mecánica
             </span>
@@ -411,7 +440,7 @@
     <!-- WORKSPACE -->
     <main class="workspace-grid">
 
-        <!-- PANEL IZQUIERDO -->
+        <!-- PANEL DIDÁCTICO IZQUIERDO -->
         <aside class="sidebar-panel">
 
             <!-- LA IDEA FÁCIL -->
@@ -419,12 +448,12 @@
                 <div class="easy-tag">✨ La Idea Fácil • Para Todos</div>
                 <div class="easy-title">¿Cómo funciona un motor de 4 tiempos?</div>
                 <p class="easy-text">
-                    Por cada <strong>2 vueltas completas</strong> de la manivela (cigüeñal), el pistón sube y baja 4 veces:
+                    Esta es una <strong>fotografía real de ingeniería</strong> en corte transversal. Por cada <strong>2 vueltas completas</strong> de la manivela (cigüeñal), el pistón realiza 4 movimientos:
                     <br><br>
-                    1. <strong>Admisión:</strong> Aspira aire y gasolina fría.<br>
-                    2. <strong>Compresión:</strong> Aprieta la mezcla con fuerza.<br>
-                    3. <strong>Explosión:</strong> Salta la chispa y el fuego empuja el coche.<br>
-                    4. <strong>Escape:</strong> Abre la válvula para expulsar el humo.
+                    1. <strong>Admisión:</strong> La válvula izquierda se abre y aspira aire fresco y gasolina.<br>
+                    2. <strong>Compresión:</strong> Ambas válvulas se cierran y el pistón aprieta la mezcla.<br>
+                    3. <strong>Explosión:</strong> Salta la chispa en la bujía y el fuego empuja el pistón con toneladas de fuerza.<br>
+                    4. <strong>Escape:</strong> La válvula derecha se abre y el humo quemado sale al exterior.
                 </p>
             </div>
 
@@ -459,7 +488,7 @@
                 <div class="stroke-badge" id="strokeBadge">TIEMPO 1 • ADMISIÓN</div>
                 <h2 class="stroke-title" id="strokeTitle">Aspiración de Aire y Gasolina</h2>
                 <div class="stroke-desc" id="strokeDesc">
-                    La válvula de admisión izquierda se abre empujada por el árbol de levas. El pistón baja hacia el punto muerto inferior creando un vacío que succiona la mezcla fresca.
+                    La válvula de admisión izquierda de acero forjado desciende abierta en la culata. El pistón baja hacia el punto muerto inferior creando un vacío que succiona la mezcla fresca.
                 </div>
                 <div class="stroke-facts">
                     <div class="fact-box">
@@ -473,7 +502,7 @@
                 </div>
             </div>
 
-            <!-- CONTROLES DE FUNCIONAMIENTO -->
+            <!-- CONTROLES DE VELOCIDAD Y SONIDO -->
             <div class="control-dock">
                 <div class="section-title">
                     <span>Velocidad de Giro (RPM)</span>
@@ -494,23 +523,37 @@
 
         </aside>
 
-        <!-- VIEWPORT 3D BABYLON -->
-        <div class="viewport-3d" id="viewport3D">
-            <canvas id="renderCanvas"></canvas>
+        <!-- VISOR FOTOGRÁFICO REAL -->
+        <div class="viewport-photo-stage">
+            <div class="photo-container">
+                <img id="enginePhoto" class="real-photo-img" src="../03_ASSETS_3D_Y_DATOS/engine_cutaway_photo.jpg" alt="Fotografía real de ingeniería del motor en sección transversal">
+                
+                <!-- Resplandor dinámico de la cámara según el tiempo del ciclo -->
+                <div id="cycleGlow" class="cycle-highlight-overlay" style="background: radial-gradient(circle, rgba(56, 189, 248, 0.8) 0%, transparent 70%);"></div>
 
-            <!-- HUD TOP -->
-            <div class="hud-overlay-top">
-                <button class="btn-hud" onclick="resetEngineCamera()">
-                    🎯 Centrar Vista 3D
-                </button>
+                <!-- Puntos interactivos sobre las piezas mecánicas reales de la foto -->
+                <div class="photo-hud-tag" style="top: 8%; left: 44%;" onclick="inspectPart('spark')">
+                    ⚡ Bujía y Chispa
+                </div>
+                <div class="photo-hud-tag" style="top: 14%; left: 24%;" onclick="inspectPart('valves')">
+                    ⚙️ Válvulas y Resortes
+                </div>
+                <div class="photo-hud-tag" style="top: 34%; left: 42%;" onclick="inspectPart('piston')">
+                    🔧 Pistón con Segmentos
+                </div>
+                <div class="photo-hud-tag" style="top: 56%; left: 45%;" onclick="inspectPart('rod')">
+                    🔩 Biela Forjada
+                </div>
+                <div class="photo-hud-tag" style="top: 80%; left: 42%;" onclick="inspectPart('crank')">
+                    🔄 Cigüeñal Contrapesado
+                </div>
             </div>
 
             <!-- HUD BOTTOM -->
             <div class="hud-overlay-bottom">
                 <div class="hud-legend">
-                    <span>🖱️ <strong>Arrastrar:</strong> Orbitar motor 360°</span>
-                    <span>🔍 <strong>Rueda:</strong> Zoom a bujía o pistón</span>
-                    <span>⚡ <strong>Corte Transversal:</strong> Muestra biela, segmentos y válvulas PBR</span>
+                    <span>📸 <strong>Fotografía Real:</strong> Sección transversal de ingeniería con piezas metálicas auténticas</span>
+                    <span>⚡ <strong>Ciclo Sincronizado:</strong> Resplandor de fase y sonido de tacómetro</span>
                 </div>
             </div>
         </div>
@@ -518,435 +561,58 @@
     </main>
 
     <script>
-        // ============================================================================
-        // 1. DATOS DIDÁCTICOS DEL CICLO OTTO
-        // ============================================================================
+        // Cargar foto Base64 si está disponible
+        if (window.ENGINE_PHOTO_B64) {
+            document.getElementById("enginePhoto").src = window.ENGINE_PHOTO_B64;
+        }
+
         const STROKE_DATA = [
             {
                 name: "TIEMPO 1 • ADMISIÓN",
                 color: "#38bdf8",
+                glow: "radial-gradient(circle, rgba(56, 189, 248, 0.85) 0%, transparent 70%)",
                 title: "Aspiración de Aire y Gasolina",
-                desc: "La válvula izquierda (admisión) desciende abierta. El pistón baja succionando la mezcla fresca combustible-aire hacia la cámara.",
+                desc: "La válvula izquierda (admisión) desciende abierta en la culata. El pistón baja succionando la mezcla fresca combustible-aire hacia la camisa del cilindro.",
                 state: "V. Adm. ABIERTA",
-                targetAngle: Math.PI / 2
+                targetAngle: 90
             },
             {
                 name: "TIEMPO 2 • COMPRESIÓN",
                 color: "#f59e0b",
+                glow: "radial-gradient(circle, rgba(245, 158, 11, 0.85) 0%, transparent 70%)",
                 title: "Compresión Hermética",
-                desc: "Ambas válvulas cerradas herméticamente. El pistón sube comprimiendo la mezcla a alta presión y temperatura en la culata.",
+                desc: "Ambas válvulas de acero se cierran herméticamente sobre sus asientos. El pistón sube comprimiendo la mezcla a alta presión y temperatura.",
                 state: "Válvulas CERRADAS",
-                targetAngle: 3 * Math.PI / 2
+                targetAngle: 270
             },
             {
                 name: "TIEMPO 3 • COMBUSTIÓN Y FUERZA",
                 color: "#ef4444",
+                glow: "radial-gradient(circle, rgba(239, 68, 68, 0.95) 0%, rgba(251, 191, 36, 0.8) 40%, transparent 75%)",
                 title: "¡Explosión y Fuerza Motriz!",
-                desc: "Salta la chispa eléctrica de la bujía. La violenta deflagración empuja con enorme fuerza el pistón hacia abajo produciendo la tracción útil.",
+                desc: "Salta la chispa de alto voltaje en los electrodos de la bujía. La violenta deflagración empuja con enorme fuerza el pistón hacia abajo produciendo la tracción motriz.",
                 state: "CHISPA BUJÍA 🔥",
-                targetAngle: 5 * Math.PI / 2
+                targetAngle: 450
             },
             {
                 name: "TIEMPO 4 • ESCAPE",
                 color: "#a855f7",
+                glow: "radial-gradient(circle, rgba(168, 85, 247, 0.85) 0%, transparent 70%)",
                 title: "Expulsión de Gases Quemados",
-                desc: "La válvula derecha (escape) se abre. El pistón sube barriendo los gases residuales quemados hacia el colector de escape.",
+                desc: "La válvula derecha (escape) desciende abierta. El pistón sube barriendo los gases residuales quemados hacia el colector y tubo de escape.",
                 state: "V. Esc. ABIERTA",
-                targetAngle: 7 * Math.PI / 2
+                targetAngle: 630
             }
         ];
 
-        // ============================================================================
-        // 2. INICIALIZACIÓN DE BABYLON.JS
-        // ============================================================================
-        const canvas = document.getElementById("renderCanvas");
-        const engine = new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true });
-        const scene = new BABYLON.Scene(engine);
-        scene.clearColor = new BABYLON.Color4(0.02, 0.03, 0.06, 1.0);
-
-        // Cámara ArcRotate para inspeccionar el motor en 3D
-        const camera = new BABYLON.ArcRotateCamera("Camera", -Math.PI / 2, Math.PI / 2.3, 8.5, new BABYLON.Vector3(0, 0.5, 0), scene);
-        camera.attachControl(canvas, true);
-        camera.wheelPrecision = 35;
-        camera.lowerRadiusLimit = 4.0;
-        camera.upperRadiusLimit = 16.0;
-
-        // Iluminación industrial
-        const hemiLight = new BABYLON.HemisphericLight("hemi", new BABYLON.Vector3(0, 1, 0), scene);
-        hemiLight.intensity = 0.85;
-        hemiLight.groundColor = new BABYLON.Color3(0.1, 0.12, 0.18);
-
-        const dirLight = new BABYLON.DirectionalLight("dir", new BABYLON.Vector3(2, 4, -3), scene);
-        dirLight.intensity = 1.3;
-        dirLight.diffuse = new BABYLON.Color3(1.0, 0.95, 0.9);
-
-        const sparkLight = new BABYLON.PointLight("sparkLight", new BABYLON.Vector3(0, 2.35, 0), scene);
-        sparkLight.intensity = 0;
-        sparkLight.diffuse = new BABYLON.Color3(1.0, 0.85, 0.4);
-        sparkLight.radius = 2.0;
-
-        // ============================================================================
-        // 3. MATERIALES PBR METÁLICOS INDUSTRIALES
-        // ============================================================================
-        const matBlock = new BABYLON.PBRMaterial("matBlock", scene);
-        matBlock.metallic = 0.85;
-        matBlock.roughness = 0.45;
-        matBlock.albedoColor = new BABYLON.Color3(0.25, 0.28, 0.35);
-
-        const matSleeve = new BABYLON.PBRMaterial("matSleeve", scene);
-        matSleeve.metallic = 0.95;
-        matSleeve.roughness = 0.15;
-        matSleeve.albedoColor = new BABYLON.Color3(0.85, 0.88, 0.92);
-
-        const matPiston = new BABYLON.PBRMaterial("matPiston", scene);
-        matPiston.metallic = 0.9;
-        matPiston.roughness = 0.25;
-        matPiston.albedoColor = new BABYLON.Color3(0.78, 0.82, 0.88);
-
-        const matRod = new BABYLON.PBRMaterial("matRod", scene);
-        matRod.metallic = 0.92;
-        matRod.roughness = 0.3;
-        matRod.albedoColor = new BABYLON.Color3(0.65, 0.70, 0.75);
-
-        const matCrank = new BABYLON.PBRMaterial("matCrank", scene);
-        matCrank.metallic = 0.95;
-        matCrank.roughness = 0.22;
-        matCrank.albedoColor = new BABYLON.Color3(0.45, 0.48, 0.52);
-
-        const matBronze = new BABYLON.PBRMaterial("matBronze", scene);
-        matBronze.metallic = 0.85;
-        matBronze.roughness = 0.35;
-        matBronze.albedoColor = new BABYLON.Color3(0.85, 0.58, 0.25);
-
-        const matIntakeValve = new BABYLON.PBRMaterial("matIntakeValve", scene);
-        matIntakeValve.metallic = 0.85;
-        matIntakeValve.roughness = 0.2;
-        matIntakeValve.albedoColor = new BABYLON.Color3(0.22, 0.74, 0.97);
-
-        const matExhaustValve = new BABYLON.PBRMaterial("matExhaustValve", scene);
-        matExhaustValve.metallic = 0.85;
-        matExhaustValve.roughness = 0.2;
-        matExhaustValve.albedoColor = new BABYLON.Color3(0.88, 0.34, 0.97);
-
-        const matGasVol = new BABYLON.StandardMaterial("matGasVol", scene);
-        matGasVol.diffuseColor = new BABYLON.Color3(0.2, 0.6, 1.0);
-        matGasVol.emissiveColor = new BABYLON.Color3(0.1, 0.3, 0.8);
-        matGasVol.alpha = 0.35;
-
-        // ============================================================================
-        // 4. MODELADO CINEMÁTICO 3D EN SECCIÓN TRANSVERSAL
-        // ============================================================================
-        // Parámetros mecánicos
-        const crankRadius = 0.75; // r
-        const rodLength = 2.45;   // L
-        const pistonHeight = 1.1;
-        const pistonRadius = 1.05;
-        const cylinderTop = 2.4;
-        const crankCenterY = -1.6;
-
-        // Raíz del motor
-        const engineRoot = new BABYLON.TransformNode("engineRoot", scene);
-
-        // Bloque del cilindro en sección abierta (semicilindro con aletas)
-        const cylinderOuter = BABYLON.MeshBuilder.CreateCylinder("cylinderOuter", {
-            diameter: 2.7,
-            height: 3.2,
-            tessellation: 36,
-            arc: 0.62 // Corte a 220° para ver el interior
-        }, scene);
-        cylinderOuter.position.y = 1.0;
-        cylinderOuter.rotation.y = Math.PI * 0.7;
-        cylinderOuter.material = matBlock;
-        cylinderOuter.parent = engineRoot;
-
-        // Camisa interior rectificada
-        const cylinderInner = BABYLON.MeshBuilder.CreateCylinder("cylinderInner", {
-            diameter: 2.14,
-            height: 3.1,
-            tessellation: 36,
-            arc: 0.62
-        }, scene);
-        cylinderInner.position.y = 1.0;
-        cylinderInner.rotation.y = Math.PI * 0.7;
-        cylinderInner.material = matSleeve;
-        cylinderInner.parent = engineRoot;
-
-        // Aletas de refrigeración exteriores (5 aletas)
-        for (let i = 0; i < 5; i++) {
-            const fin = BABYLON.MeshBuilder.CreateTorus("fin_" + i, {
-                diameter: 3.2,
-                thickness: 0.08,
-                tessellation: 36
-            }, scene);
-            fin.position.y = -0.2 + i * 0.55;
-            fin.rotation.y = Math.PI * 0.7;
-            fin.material = matBlock;
-            fin.parent = engineRoot;
-        }
-
-        // Culata superior con cámara de combustión
-        const headMesh = BABYLON.MeshBuilder.CreateCylinder("headMesh", {
-            diameter: 2.8,
-            height: 0.8,
-            tessellation: 36
-        }, scene);
-        headMesh.position.y = 2.8;
-        headMesh.material = matBlock;
-        headMesh.parent = engineRoot;
-
-        // Volumen de gas de la cámara (cambia tamaño y color dinámicamente)
-        const gasVolumeMesh = BABYLON.MeshBuilder.CreateCylinder("gasVolume", {
-            diameter: 2.08,
-            height: 1.0,
-            tessellation: 32
-        }, scene);
-        gasVolumeMesh.position.y = 2.1;
-        gasVolumeMesh.material = matGasVol;
-        gasVolumeMesh.parent = engineRoot;
-
-        // Bujía central
-        const plugBody = BABYLON.MeshBuilder.CreateCylinder("plugBody", { diameter: 0.28, height: 0.9 }, scene);
-        plugBody.position.y = 3.3;
-        const matCeramic = new BABYLON.StandardMaterial("matCeramic", scene);
-        matCeramic.diffuseColor = new BABYLON.Color3(0.95, 0.95, 0.95);
-        plugBody.material = matCeramic;
-        plugBody.parent = engineRoot;
-
-        // Electrodos de la bujía
-        const plugTip = BABYLON.MeshBuilder.CreateSphere("plugTip", { diameter: 0.12 }, scene);
-        plugTip.position.y = 2.75;
-        const matTip = new BABYLON.StandardMaterial("matTip", scene);
-        matTip.emissiveColor = new BABYLON.Color3(1.0, 0.9, 0.3);
-        plugTip.material = matTip;
-        plugTip.parent = engineRoot;
-
-        // Válvula de Admisión (izquierda)
-        const valveIntakeRoot = new BABYLON.TransformNode("valveIntakeRoot", scene);
-        valveIntakeRoot.position = new BABYLON.Vector3(-0.55, 2.75, 0);
-        valveIntakeRoot.parent = engineRoot;
-
-        const valveIntakeHead = BABYLON.MeshBuilder.CreateCylinder("vInHead", { diameterTop: 0.65, diameterBottom: 0.5, height: 0.15 }, scene);
-        valveIntakeHead.material = matIntakeValve;
-        valveIntakeHead.parent = valveIntakeRoot;
-
-        const valveIntakeStem = BABYLON.MeshBuilder.CreateCylinder("vInStem", { diameter: 0.1, height: 1.1 }, scene);
-        valveIntakeStem.position.y = 0.55;
-        valveIntakeStem.material = matIntakeValve;
-        valveIntakeStem.parent = valveIntakeRoot;
-
-        // Resorte de admisión
-        const springIntake = BABYLON.MeshBuilder.CreateCylinder("springIn", { diameter: 0.3, height: 0.7, tessellation: 12 }, scene);
-        springIntake.position.y = 0.6;
-        springIntake.material = matRod;
-        springIntake.parent = valveIntakeRoot;
-
-        // Válvula de Escape (derecha)
-        const valveExhaustRoot = new BABYLON.TransformNode("valveExhaustRoot", scene);
-        valveExhaustRoot.position = new BABYLON.Vector3(0.55, 2.75, 0);
-        valveExhaustRoot.parent = engineRoot;
-
-        const valveExhaustHead = BABYLON.MeshBuilder.CreateCylinder("vExHead", { diameterTop: 0.65, diameterBottom: 0.5, height: 0.15 }, scene);
-        valveExhaustHead.material = matExhaustValve;
-        valveExhaustHead.parent = valveExhaustRoot;
-
-        const valveExhaustStem = BABYLON.MeshBuilder.CreateCylinder("vExStem", { diameter: 0.1, height: 1.1 }, scene);
-        valveExhaustStem.position.y = 0.55;
-        valveExhaustStem.material = matExhaustValve;
-        valveExhaustStem.parent = valveExhaustRoot;
-
-        const springExhaust = BABYLON.MeshBuilder.CreateCylinder("springEx", { diameter: 0.3, height: 0.7, tessellation: 12 }, scene);
-        springExhaust.position.y = 0.6;
-        springExhaust.material = matRod;
-        springExhaust.parent = valveExhaustRoot;
-
-        // Pistón
-        const pistonMesh = BABYLON.MeshBuilder.CreateCylinder("piston", {
-            diameter: pistonRadius * 2,
-            height: pistonHeight,
-            tessellation: 36
-        }, scene);
-        pistonMesh.material = matPiston;
-        pistonMesh.parent = engineRoot;
-
-        // Bulón del pistón
-        const wristPin = BABYLON.MeshBuilder.CreateCylinder("wristPin", { diameter: 0.28, height: 1.6 }, scene);
-        wristPin.rotation.x = Math.PI / 2;
-        wristPin.material = matBronze;
-        wristPin.parent = pistonMesh;
-
-        // Aros de pistón (3 ranuras oscuras)
-        for (let i = 0; i < 3; i++) {
-            const ring = BABYLON.MeshBuilder.CreateTorus("ring_" + i, { diameter: 2.11, thickness: 0.035 }, scene);
-            ring.position.y = 0.35 - i * 0.14;
-            const matRing = new BABYLON.StandardMaterial("matRing", scene);
-            matRing.diffuseColor = new BABYLON.Color3(0.15, 0.15, 0.18);
-            ring.material = matRing;
-            ring.parent = pistonMesh;
-        }
-
-        // Biela
-        const rodMesh = BABYLON.MeshBuilder.CreateBox("rod", { width: 0.24, height: rodLength, depth: 0.32 }, scene);
-        rodMesh.material = matRod;
-        rodMesh.parent = engineRoot;
-
-        // Cigüeñal
-        const crankAxis = BABYLON.MeshBuilder.CreateCylinder("crankAxis", { diameter: 0.4, height: 1.8 }, scene);
-        crankAxis.position = new BABYLON.Vector3(0, crankCenterY, 0);
-        crankAxis.rotation.x = Math.PI / 2;
-        crankAxis.material = matCrank;
-        crankAxis.parent = engineRoot;
-
-        // Contrapeso del cigüeñal
-        const counterWeight = BABYLON.MeshBuilder.CreateCylinder("counterWeight", { diameter: 1.6, height: 0.45, tessellation: 24, arc: 0.5 }, scene);
-        counterWeight.position = new BABYLON.Vector3(0, crankCenterY, 0.4);
-        counterWeight.rotation.x = Math.PI / 2;
-        counterWeight.material = matCrank;
-        counterWeight.parent = engineRoot;
-
-        // Muñequilla del cigüeñal
-        const crankPin = BABYLON.MeshBuilder.CreateCylinder("crankPin", { diameter: 0.32, height: 0.55 }, scene);
-        crankPin.rotation.x = Math.PI / 2;
-        crankPin.material = matBronze;
-        crankPin.parent = engineRoot;
-
-        // ============================================================================
-        // 5. CINEMÁTICA Y ACTUALIZACIÓN EN TIEMPO REAL
-        // ============================================================================
         let rpm = 750;
         let isRunning = true;
-        let crankAngle = 0; // 0 a 4*PI (720° ciclo Otto completo)
+        let crankDeg = 0; // 0 a 720°
         let audioActive = false;
         let audioCtx = null;
         let oscNode = null;
         let gainNode = null;
 
-        function updateMechanics(dt) {
-            if (isRunning) {
-                // Velocidad angular omega = (RPM / 60) * 2*PI rad/s
-                const omega = (rpm / 60) * Math.PI * 2;
-                crankAngle = (crankAngle + omega * dt) % (Math.PI * 4);
-            }
-
-            // Ángulo normalizado para cálculo trigonométrico (0 a 2*PI por vuelta)
-            const theta = crankAngle % (Math.PI * 2);
-
-            // Coordenadas de la muñequilla del cigüeñal
-            const crankX = crankRadius * Math.sin(theta);
-            const crankY = crankCenterY + crankRadius * Math.cos(theta);
-
-            crankPin.position.x = crankX;
-            crankPin.position.y = crankY;
-
-            // Orientación del contrapeso opuesto a la muñequilla
-            counterWeight.rotation.z = -theta + Math.PI;
-
-            // Posición exacta del pistón según mecanismo biela-manivela
-            const cosT = Math.cos(theta);
-            const sinT = Math.sin(theta);
-            const pistonY = crankCenterY + crankRadius * cosT + Math.sqrt(rodLength * rodLength - crankRadius * crankRadius * sinT * sinT);
-
-            pistonMesh.position.y = pistonY;
-
-            // Biela: centro, orientación y longitud
-            const rodCenterX = crankX / 2;
-            const rodCenterY = (crankY + pistonY) / 2;
-            rodMesh.position.x = rodCenterX;
-            rodMesh.position.y = rodCenterY;
-
-            const rodAngle = Math.atan2(crankX, pistonY - crankY);
-            rodMesh.rotation.z = -rodAngle;
-
-            // Actualizar volumen de gas
-            const chamberHeight = Math.max(0.2, cylinderTop - pistonY);
-            gasVolumeMesh.scaling.y = chamberHeight;
-            gasVolumeMesh.position.y = pistonY + chamberHeight / 2;
-
-            // Control de válvulas y cámara según los 4 tiempos (0 a 4*PI = 720°)
-            const deg = (crankAngle * 180 / Math.PI) % 720;
-            let currentStrokeIdx = 0;
-
-            if (deg < 180) {
-                // TIEMPO 1: ADMISIÓN (0° a 180°)
-                currentStrokeIdx = 0;
-                const lift = Math.sin((deg / 180) * Math.PI) * 0.35;
-                valveIntakeRoot.position.y = 2.75 - lift;
-                valveExhaustRoot.position.y = 2.75;
-                springIntake.scaling.y = 1.0 - lift * 1.5;
-                springExhaust.scaling.y = 1.0;
-
-                matGasVol.diffuseColor = new BABYLON.Color3(0.2, 0.7, 1.0);
-                matGasVol.emissiveColor = new BABYLON.Color3(0.1, 0.4, 0.8);
-                matGasVol.alpha = 0.35;
-                sparkLight.intensity = 0;
-            } else if (deg < 360) {
-                // TIEMPO 2: COMPRESIÓN (180° a 360°)
-                currentStrokeIdx = 1;
-                valveIntakeRoot.position.y = 2.75;
-                valveExhaustRoot.position.y = 2.75;
-                springIntake.scaling.y = 1.0;
-                springExhaust.scaling.y = 1.0;
-
-                const compFact = (deg - 180) / 180;
-                matGasVol.diffuseColor = new BABYLON.Color3(0.9, 0.6, 0.1);
-                matGasVol.emissiveColor = new BABYLON.Color3(0.8, 0.4, 0.0);
-                matGasVol.alpha = 0.3 + compFact * 0.4;
-                sparkLight.intensity = 0;
-            } else if (deg < 540) {
-                // TIEMPO 3: EXPLOSIÓN / FUERZA (360° a 540°)
-                currentStrokeIdx = 2;
-                valveIntakeRoot.position.y = 2.75;
-                valveExhaustRoot.position.y = 2.75;
-
-                const burnFact = (deg - 360) / 180;
-                if (burnFact < 0.15) {
-                    // Flash violento de chispa
-                    sparkLight.intensity = 4.0;
-                    matGasVol.emissiveColor = new BABYLON.Color3(1.0, 0.9, 0.4);
-                    matGasVol.diffuseColor = new BABYLON.Color3(1.0, 0.5, 0.1);
-                    matGasVol.alpha = 0.85;
-                } else {
-                    sparkLight.intensity = Math.max(0, 3.0 * (1.0 - burnFact));
-                    matGasVol.emissiveColor = new BABYLON.Color3(0.9 * (1 - burnFact), 0.3 * (1 - burnFact), 0.0);
-                    matGasVol.diffuseColor = new BABYLON.Color3(0.8, 0.3, 0.1);
-                    matGasVol.alpha = 0.6 * (1.0 - burnFact * 0.5);
-                }
-            } else {
-                // TIEMPO 4: ESCAPE (540° a 720°)
-                currentStrokeIdx = 3;
-                const lift = Math.sin(((deg - 540) / 180) * Math.PI) * 0.35;
-                valveExhaustRoot.position.y = 2.75 - lift;
-                valveIntakeRoot.position.y = 2.75;
-                springExhaust.scaling.y = 1.0 - lift * 1.5;
-                springIntake.scaling.y = 1.0;
-
-                matGasVol.diffuseColor = new BABYLON.Color3(0.65, 0.35, 0.85);
-                matGasVol.emissiveColor = new BABYLON.Color3(0.4, 0.2, 0.6);
-                matGasVol.alpha = 0.4;
-                sparkLight.intensity = 0;
-            }
-
-            // Actualizar UI
-            updateUI(currentStrokeIdx, deg);
-        }
-
-        function updateUI(strokeIdx, deg) {
-            const data = STROKE_DATA[strokeIdx];
-            document.querySelectorAll(".btn-stroke").forEach((b, i) => {
-                b.classList.toggle("active", i === strokeIdx);
-            });
-
-            document.getElementById("strokeBadge").textContent = data.name;
-            document.getElementById("strokeBadge").style.color = data.color;
-            document.getElementById("strokeBadge").style.borderColor = data.color;
-            document.getElementById("strokeTitle").textContent = data.title;
-            document.getElementById("strokeDesc").textContent = data.desc;
-            document.getElementById("factAngle").textContent = `${Math.round(deg)}°`;
-            document.getElementById("factState").textContent = data.state;
-        }
-
-        // ============================================================================
-        // 6. CONTROLES DIDÁCTICOS E INTERACCIÓN
-        // ============================================================================
         function setRpm(val) {
             rpm = parseInt(val);
             document.getElementById("rpmVal").textContent = `${rpm} RPM`;
@@ -966,13 +632,43 @@
             isRunning = false;
             document.getElementById("btnPlayPause").textContent = "▶ Reanudar";
             document.getElementById("btnPlayPause").classList.remove("active");
-            crankAngle = STROKE_DATA[idx].targetAngle;
+            crankDeg = STROKE_DATA[idx].targetAngle;
+            updateCycle(idx, crankDeg);
         }
 
-        function resetEngineCamera() {
-            BABYLON.Animation.CreateAndStartAnimation("camAlpha", camera, "alpha", 30, 20, camera.alpha, -Math.PI / 2, 2);
-            BABYLON.Animation.CreateAndStartAnimation("camBeta", camera, "beta", 30, 20, camera.beta, Math.PI / 2.3, 2);
-            BABYLON.Animation.CreateAndStartAnimation("camRadius", camera, "radius", 30, 20, camera.radius, 8.5, 2);
+        function inspectPart(part) {
+            const data = {
+                spark: { title: "Bujía de Encendido Real", desc: "Cuerpo cerámico aislante blanco y electrodo de masa metálico que genera el arco eléctrico de 20.000 voltios para la ignición." },
+                valves: { title: "Válvulas y Resortes Reales", desc: "Válvula de admisión (acero al cromo) y de escape (acero al níquel resistente a 800 °C) accionadas por resortes helicoidales de alta presión." },
+                piston: { title: "Pistón Forjado con Segmentos", desc: "Aleación ligera de aluminio mecanizado con 3 aros metálicos: 2 de compresión para sellar el gas y 1 rascador de aceite." },
+                rod: { title: "Biela Forjada de Doble 'T'", desc: "Acero forjado que conecta el bulón del pistón con la muñequilla del cigüeñal, transformando el movimiento lineal en rotatorio." },
+                crank: { title: "Cigüeñal con Contrapesos", desc: "El eje motor principal equilibrado con pesas semicirculares para amortiguar las vibraciones destructivas durante el giro." }
+            }[part];
+
+            if (data) {
+                document.getElementById("strokeBadge").textContent = "PIEZA MECÁNICA REAL";
+                document.getElementById("strokeTitle").textContent = data.title;
+                document.getElementById("strokeDesc").textContent = data.desc;
+            }
+        }
+
+        function updateCycle(strokeIdx, deg) {
+            const data = STROKE_DATA[strokeIdx];
+            document.querySelectorAll(".btn-stroke").forEach((b, i) => {
+                b.classList.toggle("active", i === strokeIdx);
+            });
+
+            document.getElementById("strokeBadge").textContent = data.name;
+            document.getElementById("strokeBadge").style.color = data.color;
+            document.getElementById("strokeBadge").style.borderColor = data.color;
+            document.getElementById("strokeTitle").textContent = data.title;
+            document.getElementById("strokeDesc").textContent = data.desc;
+            document.getElementById("factAngle").textContent = `${Math.round(deg % 720)}°`;
+            document.getElementById("factState").textContent = data.state;
+
+            // Actualizar resplandor sobre la fotografía real
+            const glowEl = document.getElementById("cycleGlow");
+            glowEl.style.background = data.glow;
         }
 
         function toggleAudio() {
@@ -1001,21 +697,23 @@
             }
         }
 
-        // ============================================================================
-        // 7. BUCLE DE RENDER BABYLON.JS
-        // ============================================================================
-        scene.registerBeforeRender(() => {
-            const dt = engine.getDeltaTime() / 1000;
-            updateMechanics(dt);
-        });
+        // Bucle de animación suave
+        let lastTime = performance.now();
+        function loop(now) {
+            const dt = (now - lastTime) / 1000;
+            lastTime = now;
 
-        engine.runRenderLoop(() => {
-            scene.render();
-        });
+            if (isRunning && rpm > 0) {
+                const degPerSec = (rpm / 60) * 360;
+                crankDeg = (crankDeg + degPerSec * dt) % 720;
 
-        window.addEventListener("resize", () => {
-            engine.resize();
-        });
+                const strokeIdx = Math.floor(crankDeg / 180);
+                updateCycle(strokeIdx, crankDeg);
+            }
+
+            requestAnimationFrame(loop);
+        }
+        requestAnimationFrame(loop);
     </script>
 </body>
 </html>
