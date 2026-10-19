@@ -3,21 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sesión 09 • Simulador Fotográfico Real: Célula Eucariota en Micrografía Electrónica (TEM) [COD-009]</title>
-    <!-- Asset Fotográfico Real en Base64 Autónomo (Múltiples rutas de compatibilidad) -->
-    <script src="../03_ASSETS_3D_Y_DATOS/cell_photo_b64.js"></script>
-    <script src="../../../../SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/cell_photo_b64.js"></script>
+    <title>Sesión 09 • Simulador 3D Real: Tiranosaurio Rex de Museo [COD-009]</title>
+    <!-- Babylon.js CDN Oficial y Loaders para GLTF/GLB -->
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+    <!-- Respaldo Base64 Autónomo para funcionamiento local y offline -->
+    <script src="../03_ASSETS_3D_Y_DATOS/trex_3d_b64.js"></script>
+    <script src="../../../../SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/trex_3d_b64.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-base: #06080f;
-            --bg-panel: rgba(13, 20, 36, 0.94);
-            --emerald: #10b981;
-            --emerald-glow: rgba(16, 185, 129, 0.35);
-            --cyan: #38bdf8;
+            --bg-base: #07090e;
+            --bg-panel: rgba(15, 20, 32, 0.94);
             --amber: #f59e0b;
-            --purple: #c084fc;
+            --amber-glow: rgba(245, 158, 11, 0.35);
+            --gold: #fbbf24;
+            --cyan: #38bdf8;
+            --emerald: #10b981;
             --rose: #fb7185;
+            --bone: #e2e8f0;
             --text-main: #f8fafc;
             --text-sub: #cbd5e1;
             --font-sans: 'Inter', sans-serif;
@@ -39,9 +43,9 @@
 
         /* HEADER */
         header {
-            background: linear-gradient(180deg, rgba(13, 20, 36, 0.98) 0%, rgba(13, 20, 36, 0.88) 100%);
+            background: linear-gradient(180deg, rgba(15, 20, 32, 0.98) 0%, rgba(15, 20, 32, 0.88) 100%);
             backdrop-filter: blur(14px);
-            border-bottom: 1px solid rgba(16, 185, 129, 0.25);
+            border-bottom: 1px solid rgba(245, 158, 11, 0.25);
             padding: 10px 24px;
             display: flex;
             align-items: center;
@@ -55,9 +59,9 @@
             gap: 14px;
         }
         .badge-code {
-            background: rgba(16, 185, 129, 0.15);
-            color: var(--emerald);
-            border: 1px solid rgba(16, 185, 129, 0.45);
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--amber);
+            border: 1px solid rgba(245, 158, 11, 0.45);
             font-family: var(--font-mono);
             font-size: 0.88rem;
             font-weight: 800;
@@ -74,15 +78,10 @@
             align-items: center;
             gap: 10px;
         }
-        .header-right {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
         .pill-status {
-            background: rgba(16, 185, 129, 0.15);
-            color: var(--emerald);
-            border: 1px solid rgba(16, 185, 129, 0.4);
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--gold);
+            border: 1px solid rgba(245, 158, 11, 0.4);
             font-size: 0.85rem;
             font-weight: 700;
             padding: 5px 13px;
@@ -92,7 +91,7 @@
             gap: 6px;
         }
 
-        /* GRID PRINCIPAL */
+        /* WORKSPACE GRID */
         .workspace-grid {
             flex: 1;
             min-height: 0;
@@ -101,7 +100,7 @@
             background: #020409;
         }
 
-        /* PANEL DIDÁCTICO IZQUIERDO */
+        /* SIDEBAR PANEL */
         aside.sidebar-panel {
             background: var(--bg-panel);
             border-right: 1px solid rgba(255, 255, 255, 0.1);
@@ -115,8 +114,8 @@
 
         /* TARJETA LA IDEA FÁCIL */
         .card-easy-concept {
-            background: linear-gradient(135deg, rgba(6, 78, 59, 0.4) 0%, rgba(15, 23, 42, 0.95) 100%);
-            border: 1.5px solid rgba(16, 185, 129, 0.35);
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.95) 100%);
+            border: 1.5px solid rgba(245, 158, 11, 0.35);
             border-radius: 14px;
             padding: 16px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
@@ -124,7 +123,7 @@
         .easy-tag {
             font-size: 0.78rem;
             font-weight: 800;
-            color: var(--emerald);
+            color: var(--gold);
             text-transform: uppercase;
             letter-spacing: 0.08em;
             margin-bottom: 6px;
@@ -146,710 +145,494 @@
         }
         .easy-text strong { color: #ffffff; }
 
-        /* MODOS DE MICROSCOPÍA */
+        /* CONTROLES 3D */
+        .control-box {
+            background: rgba(15, 23, 42, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
         .section-title {
             font-size: 0.88rem;
             font-weight: 800;
             color: #94a3b8;
             text-transform: uppercase;
             letter-spacing: 0.06em;
-            margin-bottom: 8px;
             display: flex;
             align-items: center;
             justify-content: space-between;
         }
-        .mode-selector {
+        .btn-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+        .btn-action {
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            color: #ffffff;
+            font-weight: 700;
+            font-size: 0.85rem;
+            padding: 10px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        .btn-action:hover {
+            background: rgba(245, 158, 11, 0.2);
+            border-color: var(--amber);
+        }
+        .btn-action.active {
+            background: rgba(245, 158, 11, 0.35);
+            border-color: var(--amber);
+            box-shadow: 0 0 12px var(--amber-glow);
+        }
+
+        /* MODOS DE ILUMINACIÓN */
+        .mode-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 8px;
         }
         .mode-btn {
             background: rgba(30, 41, 59, 0.6);
-            border: 1.5px solid rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             color: var(--text-sub);
-            padding: 10px 8px;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 0.82rem;
+            padding: 8px;
+            border-radius: 8px;
+            font-size: 0.8rem;
             font-weight: 700;
+            cursor: pointer;
             text-align: center;
-            transition: all 0.25s ease;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 5px;
-        }
-        .mode-btn:hover {
-            border-color: var(--emerald);
-            background: rgba(16, 185, 129, 0.1);
-            color: #ffffff;
+            transition: all 0.2s;
         }
         .mode-btn.active {
-            border-color: var(--emerald);
-            background: rgba(16, 185, 129, 0.2);
-            color: var(--emerald);
-            box-shadow: 0 0 14px rgba(16, 185, 129, 0.25);
+            border-color: var(--amber);
+            background: rgba(245, 158, 11, 0.2);
+            color: var(--gold);
         }
 
-        /* CONTROL DE METABOLISMO Y ACTIVIDAD CELULAR */
-        .control-box {
-            background: rgba(15, 23, 42, 0.7);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            padding: 14px;
-        }
-        .slider-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 8px;
-        }
-        .slider-label {
-            font-size: 0.9rem;
-            font-weight: 700;
-            color: #ffffff;
-        }
-        .slider-val {
-            font-family: var(--font-mono);
-            font-size: 0.95rem;
-            font-weight: 800;
-            color: var(--emerald);
-        }
-        input[type="range"] {
-            width: 100%;
-            height: 8px;
-            border-radius: 4px;
-            background: #334155;
-            outline: none;
-            -webkit-appearance: none;
-            accent-color: var(--emerald);
-            cursor: pointer;
-        }
-
-        /* TARJETA DINÁMICA DE ESTADO METABÓLICO */
-        .cell-info-box {
-            background: rgba(0, 0, 0, 0.45);
-            border-radius: 8px;
-            padding: 12px 14px;
-            margin-top: 10px;
-            border-left: 4px solid var(--emerald);
-        }
-        .cell-phase-title {
-            font-size: 0.98rem;
-            font-weight: 800;
-            color: #ffffff;
-            margin-bottom: 4px;
-        }
-        .cell-phase-desc {
-            font-size: 0.88rem;
-            color: #cbd5e1;
-            line-height: 1.45;
-        }
-        .cell-telemetry {
+        /* TELEMETRÍA BIOMECÁNICA */
+        .telemetry-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 8px;
-            margin-top: 8px;
-            padding-top: 8px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            font-family: var(--font-mono);
-            font-size: 0.78rem;
-            color: #94a3b8;
         }
-        .cell-telemetry strong { color: var(--emerald); }
+        .tele-card {
+            background: rgba(2, 6, 23, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+            padding: 8px 10px;
+        }
+        .tele-label {
+            font-size: 0.72rem;
+            color: #94a3b8;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .tele-val {
+            font-family: var(--font-mono);
+            font-size: 1.05rem;
+            font-weight: 800;
+            color: #ffffff;
+            margin-top: 2px;
+        }
 
-        /* LISTA DE ORGANELAS */
-        .parts-list {
+        /* PUNTOS ANATÓMICOS */
+        .part-list {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 8px;
         }
-        .part-card {
-            background: rgba(30, 41, 59, 0.5);
+        .part-item {
+            background: rgba(15, 23, 42, 0.6);
             border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 10px;
+            border-radius: 8px;
             padding: 10px 12px;
             cursor: pointer;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            gap: 12px;
+            transition: all 0.2s;
         }
-        .part-card:hover {
-            border-color: var(--emerald);
-            background: rgba(16, 185, 129, 0.08);
-            transform: translateX(4px);
+        .part-item:hover, .part-item.active {
+            border-color: var(--amber);
+            background: rgba(245, 158, 11, 0.1);
         }
-        .part-card.active {
-            border-color: var(--emerald);
-            background: rgba(16, 185, 129, 0.15);
-            box-shadow: 0 0 15px rgba(16, 185, 129, 0.2);
-        }
-        .part-num {
-            width: 26px;
-            height: 26px;
-            border-radius: 50%;
-            background: rgba(16, 185, 129, 0.2);
-            color: var(--emerald);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: var(--font-mono);
-            font-weight: 800;
-            font-size: 0.82rem;
-            flex-shrink: 0;
-            border: 1px solid rgba(16, 185, 129, 0.4);
-        }
-        .part-card.active .part-num {
-            background: var(--emerald);
-            color: #000000;
-            border-color: #ffffff;
-        }
-        .part-info { flex: 1; min-width: 0; }
-        .part-title {
-            font-size: 0.92rem;
+        .part-item-title {
+            font-size: 0.88rem;
             font-weight: 700;
             color: #ffffff;
+            display: flex;
+            justify-content: space-between;
         }
-        .part-subtitle {
-            font-size: 0.78rem;
+        .part-item-desc {
+            font-size: 0.8rem;
             color: #94a3b8;
+            margin-top: 4px;
+            line-height: 1.35;
         }
 
-        /* VIEWPORT CANVAS FOTOGRÁFICO REAL */
+        /* 3D VIEWPORT */
         .viewport-container {
             position: relative;
             width: 100%;
             height: 100%;
             overflow: hidden;
-            background: radial-gradient(circle at center, #0a1120 0%, #03060c 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            background: radial-gradient(circle at 50% 50%, #171c26 0%, #030509 100%);
         }
-        #photoCanvas {
+        canvas#renderCanvas {
+            width: 100%;
+            height: 100%;
             display: block;
-            cursor: grab;
+            outline: none;
         }
-        #photoCanvas:active { cursor: grabbing; }
 
-        /* OVERLAY HUD */
-        .photo-overlay-badge {
+        /* OVERLAYS VIEWPORT */
+        .overlay-badge {
             position: absolute;
-            top: 20px;
+            top: 18px;
             left: 20px;
-            background: rgba(14, 20, 32, 0.88);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(12px);
-            padding: 8px 16px;
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(245, 158, 11, 0.35);
+            padding: 8px 14px;
             border-radius: 10px;
-            color: #e2e8f0;
-            font-size: 0.85rem;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            z-index: 40;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
-        }
-        .photo-overlay-badge .dot-live {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background: #10b981;
-            box-shadow: 0 0 8px #10b981;
-            animation: pulse-dot 1.5s infinite;
-        }
-        @keyframes pulse-dot { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
-
-        /* PINS INTERACTIVOS */
-        .hotspot-pin {
-            position: absolute;
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background: rgba(16, 185, 129, 0.9);
-            border: 2px solid #ffffff;
-            box-shadow: 0 0 20px rgba(16, 185, 129, 0.9), 0 0 0 4px rgba(16, 185, 129, 0.3);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #000000;
-            font-weight: 900;
             font-size: 0.82rem;
-            cursor: pointer;
-            transform: translate(-50%, -50%);
-            transition: transform 0.2s ease;
-            z-index: 30;
+            font-weight: 700;
+            color: #f8fafc;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            pointer-events: none;
+            z-index: 10;
         }
-        .hotspot-pin:hover, .hotspot-pin.active {
-            transform: translate(-50%, -50%) scale(1.3);
-            background: #ffffff;
-            color: #000000;
-            border-color: var(--emerald);
-            box-shadow: 0 0 25px rgba(255, 255, 255, 1), 0 0 0 8px rgba(16, 185, 129, 0.4);
-        }
-
-        /* BARRA INFERIOR DE CONTROLES */
-        .bottom-controls-bar {
+        .overlay-hint {
             position: absolute;
-            bottom: 24px;
+            bottom: 18px;
             left: 50%;
             transform: translateX(-50%);
-            background: rgba(14, 20, 32, 0.9);
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(14px);
-            padding: 8px 16px;
+            padding: 6px 16px;
             border-radius: 9999px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #94a3b8;
+            pointer-events: none;
+            z-index: 10;
+        }
+        .loading-cover {
+            position: absolute;
+            inset: 0;
+            background: #030509;
             display: flex;
+            flex-direction: column;
             align-items: center;
-            gap: 12px;
-            z-index: 40;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+            justify-content: center;
+            gap: 16px;
+            z-index: 100;
+            transition: opacity 0.5s ease;
         }
-        .btn-tool {
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            color: #ffffff;
-            padding: 7px 14px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 700;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            transition: all 0.2s ease;
+        .spinner {
+            width: 48px;
+            height: 48px;
+            border: 4px solid rgba(245, 158, 11, 0.2);
+            border-top-color: var(--amber);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
         }
-        .btn-tool:hover {
-            background: rgba(16, 185, 129, 0.2);
-            border-color: var(--emerald);
-            color: #34d399;
-        }
+        @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
-
-    <!-- HEADER SUPERIOR -->
     <header>
         <div class="header-title-box">
-            <span class="badge-code">COD-009</span>
-            <h1>🧬 Célula Eucariota • Micrografía Electrónica de Transmisión (TEM) Real</h1>
+            <span class="badge-code">[COD-009]</span>
+            <h1>🦖 Simulador 3D Real: Tiranosaurio Rex de Museo</h1>
         </div>
-        <div class="header-right">
-            <div class="pill-status">
-                <span>🔬</span>
-                <span>Ultraestructura Biológica Científica 50.000x</span>
-            </div>
+        <div class="pill-status">
+            <span>●</span>
+            <span id="txtStatus">Modelo 3D Oficial de Museo • Babylon.js</span>
         </div>
     </header>
 
-    <!-- ÁREA DE TRABAJO -->
     <div class="workspace-grid">
-        
-        <!-- SIDEBAR DIDÁCTICO -->
         <aside class="sidebar-panel">
-            
             <!-- TARJETA LA IDEA FÁCIL -->
             <div class="card-easy-concept">
-                <div class="easy-tag">
-                    <span>💡</span>
-                    <span>La Idea Fácil • Explicación Intuitiva</span>
-                </div>
-                <div class="easy-title">La Ciudad Microscópica de la Vida</div>
-                <div class="easy-text">
-                    Estás viendo una <strong>fotografía real tomada con un microscopio electrónico</strong> a más de 50.000 aumentos:
-                    <br><br>
-                    1. <strong>El Núcleo (Ayuntamiento):</strong> La gran esfera central donde se guarda el ADN con los planos maestros de todo tu cuerpo.<br>
-                    2. <strong>Las Mitocondrias (Centrales Eléctricas):</strong> Cuerpos ovalados con crestas que queman glucosa para generar la energía (ATP).<br>
-                    3. <strong>Retículo y Golgi (Fábricas y Correos):</strong> Pliegues donde se fabrican las proteínas y se empaquetan en burbujitas para enviarlas al exterior.
-                </div>
+                <div class="easy-tag">💡 La Idea Fácil</div>
+                <div class="easy-title">El Depredador Definitivo</div>
+                <p class="easy-text">
+                    El T-Rex no cazaba a ciegas. Sus ojos miraban al frente con <strong>visión 3D estereoscópica</strong> (calculaba distancias exactas como un halcón), sus fosas nasales olían rastros a kilómetros y sus mandíbulas trituraban huesos de dinosaurios acorazados con <strong>6 toneladas de presión</strong>, haciendo añicos fémures enteros de un solo bocado.
+                </p>
             </div>
 
-            <!-- MODOS DE MICROSCOPÍA -->
-            <div>
-                <div class="section-title">
-                    <span>Técnicas de Visualización Citoquímica</span>
-                </div>
-                <div class="mode-selector">
-                    <button class="mode-btn active" id="btnModeTEM" onclick="setVisualMode('tem')">
-                        <span>🔬</span>
-                        <span>TEM Real</span>
-                    </button>
-                    <button class="mode-btn" id="btnModeContrast" onclick="setVisualMode('contrast')">
-                        <span>🧪</span>
-                        <span>Osmio/Uranilo</span>
-                    </button>
-                    <button class="mode-btn" id="btnModeFluo" onclick="setVisualMode('fluo')">
-                        <span>✨</span>
-                        <span>Fluorescencia</span>
-                    </button>
-                </div>
-            </div>
-
-            <!-- CONTROL DE METABOLISMO CELULAR -->
+            <!-- CONTROLES 3D -->
             <div class="control-box">
-                <div class="slider-row">
-                    <span class="slider-label">Fase Metabólica y Actividad</span>
-                    <span class="slider-val" id="cellPhaseVal">Fase 0: Reposo Basal</span>
-                </div>
-                <input type="range" id="cellSlider" min="0" max="4" step="1" value="0" oninput="setCellPhase(this.value)">
-                
-                <div class="cell-info-box" id="cellInfoCard">
-                    <div class="cell-phase-title" id="phaseTitle">Fase 0: Estado Basal en Reposo</div>
-                    <div class="cell-phase-desc" id="phaseDesc">
-                        Mantenimiento homeostático de gradientes iónicos en la membrana plasmática. Síntesis constitutiva mínima.
-                    </div>
-                    <div class="cell-telemetry">
-                        <span>ATP Celular: <strong id="statATP">1.2 fmol</strong></span>
-                        <span>Potencial Membrana: <strong id="statVolt">-70 mV</strong></span>
-                        <span>Actividad Ribosomal: <strong id="statRibos">20%</strong></span>
-                        <span>Tráfico Vesicular: <strong id="statVesic">Estable</strong></span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- ORGANELAS EN LA MICROGRAFÍA -->
-            <div>
                 <div class="section-title">
-                    <span>Organelas Identificadas en el TEM Real</span>
+                    <span>Exhibición de Galería 3D</span>
+                    <span id="lblTurntableState" style="color:var(--amber); font-family:var(--font-mono);">ROTACIÓN ACTIVA</span>
                 </div>
-                <div class="parts-list">
-                    <div class="part-card active" id="card-0" onclick="selectHotspot(0)">
-                        <div class="part-num">1</div>
-                        <div class="part-info">
-                            <div class="part-title">Núcleo Celular y Cromatina Densa</div>
-                            <div class="part-subtitle">Envoltura nuclear de doble membrana y poros</div>
-                        </div>
+                <div class="btn-group">
+                    <button class="btn-action active" id="btnTurntable" onclick="toggleTurntable()">⏸ Pausar Giro</button>
+                    <button class="btn-action" onclick="resetCamera()">🎯 Centrar 3D</button>
+                </div>
+            </div>
+
+            <!-- MODOS DE ILUMINACIÓN DE MUSEO -->
+            <div class="control-box">
+                <div class="section-title">Iluminación Paleontológica</div>
+                <div class="mode-grid">
+                    <button class="mode-btn active" id="btnModeMuseum" onclick="setLighting('museum')">Galería Museo</button>
+                    <button class="mode-btn" id="btnModeRaking" onclick="setLighting('raking')">Luz Rasante</button>
+                    <button class="mode-btn" id="btnModeUV" onclick="setLighting('uv')">Escáner UV</button>
+                </div>
+            </div>
+
+            <!-- TELEMETRÍA BIOMECÁNICA -->
+            <div class="control-box">
+                <div class="section-title">Telemetría Anatómica</div>
+                <div class="telemetry-grid">
+                    <div class="tele-card">
+                        <div class="tele-label">Fuerza de Mordida</div>
+                        <div class="tele-val" style="color:var(--rose);">60.000 N</div>
                     </div>
-                    <div class="part-card" id="card-1" onclick="selectHotspot(1)">
-                        <div class="part-num">2</div>
-                        <div class="part-info">
-                            <div class="part-title">Mitocondrias con Crestas Internas</div>
-                            <div class="part-subtitle">Fosforilación oxidativa y síntesis de ATP</div>
-                        </div>
+                    <div class="tele-card">
+                        <div class="tele-label">Presión Maxilar</div>
+                        <div class="tele-val">6.000 kg/cm²</div>
                     </div>
-                    <div class="part-card" id="card-2" onclick="selectHotspot(2)">
-                        <div class="part-num">3</div>
-                        <div class="part-info">
-                            <div class="part-title">Retículo Endoplásmico Rugoso (RER)</div>
-                            <div class="part-subtitle">Cisternas aplanadas cubiertas de ribosomas</div>
-                        </div>
+                    <div class="tele-card">
+                        <div class="tele-label">Longitud Dental</div>
+                        <div class="tele-val">30 cm (Plátano)</div>
                     </div>
-                    <div class="part-card" id="card-3" onclick="selectHotspot(3)">
-                        <div class="part-num">4</div>
-                        <div class="part-info">
-                            <div class="part-title">Aparato de Golgi y Vesículas</div>
-                            <div class="part-subtitle">Modificación postraduccional y secreción</div>
-                        </div>
-                    </div>
-                    <div class="part-card" id="card-4" onclick="selectHotspot(4)">
-                        <div class="part-num">5</div>
-                        <div class="part-info">
-                            <div class="part-title">Membrana Plasmática y Citoplasma</div>
-                            <div class="part-subtitle">Bicapa lipídica con transporte transmembrana</div>
-                        </div>
+                    <div class="tele-card">
+                        <div class="tele-label">Visión Binocular</div>
+                        <div class="tele-val" style="color:var(--cyan);">55° (3D Real)</div>
                     </div>
                 </div>
             </div>
 
+            <!-- PUNTOS ANATÓMICOS CLAVE -->
+            <div class="control-box">
+                <div class="section-title">Puntos Anatómicos de Inspección</div>
+                <div class="part-list">
+                    <div class="part-item active" onclick="focusSpot('head')">
+                        <div class="part-item-title">
+                            <span>1. Mandíbula y Dientes Aserrados</span>
+                            <span style="color:var(--amber);">Esmalte Fósil</span>
+                        </div>
+                        <div class="part-item-desc">Dientes cónicos reforzados con filos de sierra microdentados, diseñados para penetrar carne y quebrar hueso macizo.</div>
+                    </div>
+                    <div class="part-item" onclick="focusSpot('eyes')">
+                        <div class="part-item-title">
+                            <span>2. Cuencas Oculares & Visión</span>
+                            <span style="color:var(--cyan);">Órbita Frontal</span>
+                        </div>
+                        <div class="part-item-desc">Hocico estrechado que permitía superposición de ambos ojos, otorgando percepción de profundidad milimétrica para emboscadas.</div>
+                    </div>
+                    <div class="part-item" onclick="focusSpot('neck')">
+                        <div class="part-item-title">
+                            <span>3. Vértebras Cervicales en 'S'</span>
+                            <span style="color:var(--emerald);">Masa Muscular</span>
+                        </div>
+                        <div class="part-item-desc">Cuello corto y grueso con enorme musculatura para sacudir con violencia presas de varias toneladas de peso.</div>
+                    </div>
+                    <div class="part-item" onclick="focusSpot('body')">
+                        <div class="part-item-title">
+                            <span>4. Postura Bípeda y Equilibrio</span>
+                            <span style="color:var(--gold);">Cola Contrapeso</span>
+                        </div>
+                        <div class="part-item-desc">Columna vertebral horizontal contrapesada por una cola musculosa y maciza para giros rápidos de caza.</div>
+                    </div>
+                </div>
+            </div>
         </aside>
 
-        <!-- VIEWPORT DE LA MICROGRAFÍA ELECTRÓNICA REAL -->
-        <main class="viewport-container" id="viewportArea">
-            
-            <div class="photo-overlay-badge">
-                <span class="dot-live"></span>
-                <span id="badgeInfoText">Micrografía Electrónica de Transmisión (TEM) • Muestra Ultradelgada 50.000x</span>
+        <!-- VIEWPORT 3D -->
+        <main class="viewport-container">
+            <div class="overlay-badge">
+                <span>🦖</span>
+                <span id="badgeInfo">Tyrannosaurus Rex • Espécimen Fósil 3D de Museo</span>
             </div>
-
-            <canvas id="photoCanvas"></canvas>
-
-            <!-- PINES INTERACTIVOS (Ubicados con coordenadas relativas exactas) -->
-            <div class="hotspot-pin active" id="pin-0" onclick="selectHotspot(0)" title="1. Núcleo Celular">1</div>
-            <div class="hotspot-pin" id="pin-1" onclick="selectHotspot(1)" title="2. Mitocondrias">2</div>
-            <div class="hotspot-pin" id="pin-2" onclick="selectHotspot(2)" title="3. Retículo Rugoso">3</div>
-            <div class="hotspot-pin" id="pin-3" onclick="selectHotspot(3)" title="4. Aparato de Golgi">4</div>
-            <div class="hotspot-pin" id="pin-4" onclick="selectHotspot(4)" title="5. Membrana Plasmática">5</div>
-
-            <!-- CONTROLES FLOTANTES -->
-            <div class="bottom-controls-bar">
-                <button class="btn-tool" onclick="zoomIn()"><span>🔍+</span><span>Zoom</span></button>
-                <button class="btn-tool" onclick="zoomOut()"><span>🔍-</span><span>Alejar</span></button>
-                <button class="btn-tool" onclick="resetView()"><span>🎯</span><span>Centrar</span></button>
+            <div class="overlay-hint">🖱️ Arrastra para orbitar 360° • Rueda para zoom • Clic derecho para desplazar</div>
+            <div class="loading-cover" id="loadingCover">
+                <div class="spinner"></div>
+                <div style="font-weight: 700; color: var(--amber); letter-spacing: 0.05em;">CARGANDO MODELO 3D REAL (BABYLON.JS)...</div>
             </div>
-
+            <canvas id="renderCanvas"></canvas>
         </main>
     </div>
 
     <script>
-        // CONFIGURACIÓN GLOBAL
-        const canvas = document.getElementById('photoCanvas');
-        const ctx = canvas.getContext('2d');
-        const cellImg = new Image();
-        let isLoaded = false;
+        const canvas = document.getElementById("renderCanvas");
+        const engine = new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true });
+        let scene, camera, rootNode = null;
+        let isTurntable = true;
+        let hemiLight, dirLight1, dirLight2;
 
-        let visualMode = 'tem'; // 'tem', 'contrast', 'fluo'
-        let currentPhase = 0;   // 0 a 4
-        let scale = 1.0;
-        let panX = 0;
-        let panY = 0;
-        let isDragging = false;
-        let startX, startY;
+        // Fuentes del modelo 3D (Base64 local autónomo + CDN Fallback)
+        const MODEL_URL_RAW = "https://raw.githubusercontent.com/code4fukui/vr-dinosaur-museum/main/dinosaur-trex.glb";
+        const MODEL_LOCAL = "../03_ASSETS_3D_Y_DATOS/trex_3d.glb";
 
-        // UI references
-        const cellSlider = document.getElementById('cellSlider');
-        const cellPhaseVal = document.getElementById('cellPhaseVal');
-        const phaseTitle = document.getElementById('phaseTitle');
-        const phaseDesc = document.getElementById('phaseDesc');
-        const statATP = document.getElementById('statATP');
-        const statVolt = document.getElementById('statVolt');
-        const statRibos = document.getElementById('statRibos');
-        const statVesic = document.getElementById('statVesic');
-        const cellInfoCard = document.getElementById('cellInfoCard');
-        const badgeInfoText = document.getElementById('badgeInfoText');
+        function createScene() {
+            const sc = new BABYLON.Scene(engine);
+            sc.clearColor = new BABYLON.Color4(0.02, 0.03, 0.06, 1.0);
 
-        // Puntos de organelas en coordenadas relativas sobre la micrografía TEM real
-        const hotspots = [
-            { id: 0, x: 0.50, y: 0.44, name: "Núcleo y Cromatina Densa", focusScale: 1.8, focusX: 0, focusY: 40 },
-            { id: 1, x: 0.28, y: 0.62, name: "Mitocondria y Crestas de ATP", focusScale: 2.2, focusX: 240, focusY: -120 },
-            { id: 2, x: 0.68, y: 0.52, name: "Retículo Endoplásmico Rugoso (RER)", focusScale: 2.0, focusX: -200, focusY: -40 },
-            { id: 3, x: 0.38, y: 0.25, name: "Aparato de Golgi y Dictiosomas", focusScale: 2.1, focusX: 140, focusY: 220 },
-            { id: 4, x: 0.82, y: 0.32, name: "Membrana Plasmática Externa", focusScale: 1.7, focusX: -320, focusY: 160 }
-        ];
+            // Cámara orbital suave 360°
+            camera = new BABYLON.ArcRotateCamera("Camera", -Math.PI / 2.2, Math.PI / 2.6, 12, new BABYLON.Vector3(0, 1.5, 0), sc);
+            camera.attachControl(canvas, true);
+            camera.wheelPrecision = 25;
+            camera.minZ = 0.1;
+            camera.maxZ = 500;
+            camera.lowerRadiusLimit = 2;
+            camera.upperRadiusLimit = 40;
 
-        // 1. Carga de la Micrografía TEM Real
-        function loadCellPhoto() {
-            cellImg.onload = function() {
-                isLoaded = true;
-                canvas.width = cellImg.naturalWidth || 1200;
-                canvas.height = cellImg.naturalHeight || 900;
-                render();
+            // Iluminación dramática de sala de museo
+            hemiLight = new BABYLON.HemisphericLight("hemiLight", new BABYLON.Vector3(0, 1, 0), sc);
+            hemiLight.intensity = 0.75;
+            hemiLight.groundColor = new BABYLON.Color3(0.05, 0.08, 0.12);
+
+            dirLight1 = new BABYLON.DirectionalLight("dir1", new BABYLON.Vector3(-1, -2, -1), sc);
+            dirLight1.intensity = 1.3;
+            dirLight1.diffuse = new BABYLON.Color3(1.0, 0.95, 0.85);
+
+            dirLight2 = new BABYLON.DirectionalLight("dir2", new BABYLON.Vector3(1, -1, 1), sc);
+            dirLight2.intensity = 0.6;
+            dirLight2.diffuse = new BABYLON.Color3(0.5, 0.7, 0.9);
+
+            // Pedestal sutil de exposición
+            const ground = BABYLON.MeshBuilder.CreateCylinder("pedestal", { diameter: 14, height: 0.15 }, sc);
+            ground.position.y = -0.08;
+            const groundMat = new BABYLON.PBRMaterial("groundMat", sc);
+            groundMat.albedoColor = new BABYLON.Color3(0.08, 0.1, 0.15);
+            groundMat.roughness = 0.8;
+            groundMat.metallic = 0.1;
+            ground.material = groundMat;
+
+            loadModel(sc);
+            return sc;
+        }
+
+        function loadModel(sc) {
+            let modelSource = "";
+            if (window.TREX_3D_GLB_B64 && window.TREX_3D_GLB_B64.length > 100) {
+                modelSource = window.TREX_3D_GLB_B64;
+            } else {
+                modelSource = MODEL_LOCAL;
+            }
+
+            const tryLoad = (src, isFallback = false) => {
+                BABYLON.SceneLoader.ImportMesh("", "", src, sc, function (meshes) {
+                    const cover = document.getElementById("loadingCover");
+                    if (cover) {
+                        cover.style.opacity = "0";
+                        setTimeout(() => cover.style.display = "none", 500);
+                    }
+
+                    rootNode = new BABYLON.TransformNode("trexRoot", sc);
+                    meshes.forEach(m => {
+                        if (m.parent === null) m.parent = rootNode;
+                    });
+
+                    // Normalizar escala y centrado en el pedestal
+                    rootNode.position.y = 0;
+
+                }, null, function (scene, message, exception) {
+                    if (!isFallback) {
+                        console.warn("Cargando modelo T-Rex desde CDN oficial de respaldo...");
+                        tryLoad(MODEL_URL_RAW, true);
+                    } else {
+                        console.error("Error cargando modelo T-Rex 3D:", message);
+                    }
+                });
             };
 
-            if (window.CELL_PHOTO_B64 && window.CELL_PHOTO_B64.length > 50) {
-                cellImg.src = window.CELL_PHOTO_B64;
+            tryLoad(modelSource, false);
+        }
+
+        function toggleTurntable() {
+            isTurntable = !isTurntable;
+            const btn = document.getElementById("btnTurntable");
+            const lbl = document.getElementById("lblTurntableState");
+
+            if (isTurntable) {
+                btn.innerHTML = "⏸ Pausar Giro";
+                btn.classList.add("active");
+                lbl.innerText = "ROTACIÓN ACTIVA";
+                lbl.style.color = "var(--amber)";
             } else {
-                cellImg.onerror = function() {
-                    cellImg.onerror = null;
-                    cellImg.src = "../03_ASSETS_3D_Y_DATOS/eukaryotic_cell_tem.jpg";
-                };
-                cellImg.src = "../03_ASSETS_3D_Y_DATOS/eukaryotic_cell_tem.jpg";
+                btn.innerHTML = "▶ Reanudar Giro";
+                btn.classList.remove("active");
+                lbl.innerText = "PAUSADO";
+                lbl.style.color = "#94a3b8";
             }
         }
 
-        // 2. Renderizado del Canvas Fotográfico
-        function render() {
-            if (!isLoaded) return;
-
-            ctx.save();
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            // Aplicar Zoom y Pan
-            ctx.translate(canvas.width / 2 + panX, canvas.height / 2 + panY);
-            ctx.scale(scale, scale);
-            ctx.translate(-canvas.width / 2, -canvas.height / 2);
-
-            // A. DIBUJAR LA FOTOGRAFÍA TEM REAL
-            if (visualMode === 'tem') {
-                ctx.filter = 'none';
-                ctx.drawImage(cellImg, 0, 0, canvas.width, canvas.height);
-            } else if (visualMode === 'contrast') {
-                // Tinción Citoquímica de Osmio / Uranilo
-                ctx.filter = 'contrast(1.6) brightness(0.9) sepia(0.35)';
-                ctx.drawImage(cellImg, 0, 0, canvas.width, canvas.height);
-                ctx.filter = 'none';
-
-                ctx.fillStyle = '#10b981';
-                ctx.font = 'bold 22px monospace';
-                ctx.fillText('CONTRASTE CITOQUÍMICO: TETRÓXIDO DE OSMIO Y URANILO', canvas.width * 0.18, canvas.height * 0.08);
-
-            } else if (visualMode === 'fluo') {
-                // Fluorescencia Confocal
-                ctx.filter = 'contrast(1.5) brightness(0.85) invert(0.15) hue-rotate(120deg)';
-                ctx.drawImage(cellImg, 0, 0, canvas.width, canvas.height);
-                ctx.filter = 'none';
-
-                // Núcleo DAPI azul
-                ctx.fillStyle = "rgba(56, 189, 248, 0.35)";
-                ctx.beginPath();
-                ctx.arc(canvas.width * 0.50, canvas.height * 0.44, 180, 0, Math.PI * 2);
-                ctx.fill();
-
-                // Mitocondrias MitoTracker rojo
-                ctx.fillStyle = "rgba(239, 68, 68, 0.45)";
-                ctx.beginPath();
-                ctx.ellipse(canvas.width * 0.28, canvas.height * 0.62, 55, 30, 0.4, 0, Math.PI * 2);
-                ctx.fill();
-
-                // Golgi GFP verde
-                ctx.fillStyle = "rgba(16, 185, 129, 0.45)";
-                ctx.beginPath();
-                ctx.ellipse(canvas.width * 0.38, canvas.height * 0.25, 45, 20, -0.3, 0, Math.PI * 2);
-                ctx.fill();
-
-                ctx.fillStyle = '#38bdf8';
-                ctx.font = 'bold 22px monospace';
-                ctx.fillText('FLUORESCENCIA: AZUL DAPI (ADN) • VERDE GFP (GOLGI) • ROJO MITO (ATP)', canvas.width * 0.12, canvas.height * 0.08);
-            }
-
-            ctx.restore();
-
-            // B. ACTUALIZAR PINES ULTRAESTRUCTURALES
-            updatePins();
-        }
-
-        function updatePins() {
-            const rect = canvas.getBoundingClientRect();
-            hotspots.forEach(hp => {
-                const pin = document.getElementById(`pin-${hp.id}`);
-                if (!pin) return;
-
-                const localX = hp.x * canvas.width;
-                const localY = hp.y * canvas.height;
-
-                const screenX = rect.left + rect.width / 2 + (localX - canvas.width / 2) * scale * (rect.width / canvas.width) + panX;
-                const screenY = rect.top + rect.height / 2 + (localY - canvas.height / 2) * scale * (rect.height / canvas.height) + panY;
-
-                pin.style.left = `${screenX}px`;
-                pin.style.top = `${screenY}px`;
-            });
-        }
-
-        const phaseData = [
-            {
-                title: "Fase 0: Estado Basal en Reposo",
-                desc: "Mantenimiento homeostático de gradientes iónicos en la membrana plasmática. Síntesis constitutiva mínima.",
-                atp: "1.2 fmol",
-                volt: "-70 mV",
-                ribos: "20%",
-                vesic: "Estable",
-                badge: "Fase 0: Reposo Basal"
-            },
-            {
-                title: "Fase 1: Síntesis Energética Mitocondrial",
-                desc: "Activación del ciclo de Krebs y cadena respiratoria. La ATP sintasa bombea protones generando energía masiva.",
-                atp: "8.5 fmol",
-                volt: "-75 mV",
-                ribos: "35%",
-                vesic: "Activo",
-                badge: "Fase 1: Producción de ATP"
-            },
-            {
-                title: "Fase 2: Transcripción Genética en Núcleo",
-                desc: "La ARN polimerasa II abre la doble hélice de ADN. Síntesis de ARN mensajero y exportación nuclear por poros.",
-                atp: "7.8 fmol",
-                volt: "-70 mV",
-                ribos: "60%",
-                vesic: "Moderado",
-                badge: "Fase 2: Transcripción ADN"
-            },
-            {
-                title: "Fase 3: Traducción en Retículo Rugoso",
-                desc: "Los ribosomas ensamblados leen el ARNm y polimerizan cadenas polipeptídicas hacia el lumen de las cisternas del RER.",
-                atp: "6.5 fmol",
-                volt: "-68 mV",
-                ribos: "95%",
-                vesic: "Intenso",
-                badge: "Fase 3: Traducción RER"
-            },
-            {
-                title: "Fase 4: Empaquetamiento y Secreción en Golgi",
-                desc: "Glicosilación terminal en cisternas trans-Golgi. Gemación de vesículas de secreción hacia la membrana plasmática.",
-                atp: "5.9 fmol",
-                volt: "-65 mV",
-                ribos: "50%",
-                vesic: "Exocitosis",
-                badge: "Fase 4: Secreción Golgi"
-            }
-        ];
-
-        function setCellPhase(phase) {
-            currentPhase = parseInt(phase);
-            cellSlider.value = currentPhase;
-
-            const d = phaseData[currentPhase];
-            cellPhaseVal.innerText = d.badge;
-            phaseTitle.innerText = d.title;
-            phaseDesc.innerText = d.desc;
-            statATP.innerText = d.atp;
-            statVolt.innerText = d.volt;
-            statRibos.innerText = d.ribos;
-            statVesic.innerText = d.vesic;
-
-            // Resaltar pin del orgánulo activo según la fase metabólica
-            // Fase 0: General, Fase 1: Mitocondrias (pin 1), Fase 2: Núcleo (pin 0), Fase 3: RER (pin 2), Fase 4: Golgi (pin 3)
-            const phasePinMap = [4, 1, 0, 2, 3];
-            const targetPinIdx = phasePinMap[currentPhase];
-            document.querySelectorAll('.hotspot-pin').forEach(p => p.classList.remove('active'));
-            const pElem = document.getElementById(`pin-${targetPinIdx}`);
-            if (pElem) pElem.classList.add('active');
-
-            render();
-        }
-
-        function setVisualMode(mode) {
-            visualMode = mode;
+        function setLighting(mode) {
             document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(`btnMode${mode.charAt(0).toUpperCase() + mode.slice(1)}`).classList.add('active');
 
-            if (mode === 'tem') {
-                document.getElementById('btnModeTEM').classList.add('active');
-                badgeInfoText.innerText = "Micrografía Electrónica de Transmisión (TEM) • Muestra Ultradelgada 50.000x";
-            } else if (mode === 'contrast') {
-                document.getElementById('btnModeContrast').classList.add('active');
-                badgeInfoText.innerText = "Tinción Citoquímica • Tetróxido de Osmio y Acetato de Uranilo";
-            } else if (mode === 'fluo') {
-                document.getElementById('btnModeFluo').classList.add('active');
-                badgeInfoText.innerText = "Fluorescencia Biológica Confocal • Marcadores DAPI, GFP y MitoTracker";
+            if (mode === 'museum') {
+                hemiLight.intensity = 0.75;
+                hemiLight.diffuse = new BABYLON.Color3(1.0, 1.0, 1.0);
+                dirLight1.intensity = 1.3;
+                dirLight1.diffuse = new BABYLON.Color3(1.0, 0.95, 0.85);
+            } else if (mode === 'raking') {
+                // Luz rasante para resaltar fósil
+                hemiLight.intensity = 0.35;
+                dirLight1.intensity = 2.0;
+                dirLight1.diffuse = new BABYLON.Color3(1.0, 0.9, 0.7);
+            } else if (mode === 'uv') {
+                // Escáner UV
+                hemiLight.intensity = 0.4;
+                hemiLight.diffuse = new BABYLON.Color3(0.3, 0.1, 0.8);
+                dirLight1.intensity = 1.5;
+                dirLight1.diffuse = new BABYLON.Color3(0.4, 0.6, 1.0);
             }
-            render();
         }
 
-        function selectHotspot(index) {
-            document.querySelectorAll('.part-card').forEach(c => c.classList.remove('active'));
-            document.querySelectorAll('.hotspot-pin').forEach(p => p.classList.remove('active'));
+        function focusSpot(spot) {
+            document.querySelectorAll('.part-item').forEach(i => i.classList.remove('active'));
+            if (event && event.currentTarget) event.currentTarget.classList.add('active');
 
-            const card = document.getElementById(`card-${index}`);
-            const pin = document.getElementById(`pin-${index}`);
-            if (card) card.classList.add('active');
-            if (pin) pin.classList.add('active');
-
-            const hp = hotspots[index];
-            scale = hp.focusScale;
-            panX = hp.focusX;
-            panY = hp.focusY;
-            render();
+            if (spot === 'head') {
+                camera.setTarget(new BABYLON.Vector3(0, 2.2, 2.5));
+                camera.radius = 5.5;
+            } else if (spot === 'eyes') {
+                camera.setTarget(new BABYLON.Vector3(0, 2.4, 2.2));
+                camera.radius = 4.2;
+            } else if (spot === 'neck') {
+                camera.setTarget(new BABYLON.Vector3(0, 2.0, 1.2));
+                camera.radius = 6.0;
+            } else if (spot === 'body') {
+                camera.setTarget(new BABYLON.Vector3(0, 1.5, 0));
+                camera.radius = 12.0;
+            }
         }
 
-        function zoomIn() { scale = Math.min(3.5, scale * 1.25); render(); }
-        function zoomOut() { scale = Math.max(0.6, scale / 1.25); render(); }
-        function resetView() { scale = 1.0; panX = 0; panY = 0; render(); }
+        function resetCamera() {
+            camera.alpha = -Math.PI / 2.2;
+            camera.beta = Math.PI / 2.6;
+            camera.radius = 12;
+            camera.setTarget(new BABYLON.Vector3(0, 1.5, 0));
+        }
 
-        // Interacción de Arrastre
-        canvas.addEventListener('mousedown', e => {
-            isDragging = true;
-            startX = e.clientX - panX;
-            startY = e.clientY - panY;
+        scene = createScene();
+        engine.runRenderLoop(() => {
+            if (scene) {
+                if (isTurntable && rootNode) {
+                    rootNode.rotation.y += 0.004;
+                }
+                scene.render();
+            }
         });
-        window.addEventListener('mousemove', e => {
-            if (!isDragging) return;
-            panX = e.clientX - startX;
-            panY = e.clientY - startY;
-            render();
-        });
-        window.addEventListener('mouseup', () => { isDragging = false; });
-        canvas.addEventListener('wheel', e => {
-            e.preventDefault();
-            if (e.deltaY < 0) zoomIn();
-            else zoomOut();
-        });
-
-        window.addEventListener('resize', () => {
-            if (isLoaded) render();
-        });
-
-        // Iniciar carga
-        loadCellPhoto();
+        window.addEventListener("resize", () => { engine.resize(); });
     </script>
 </body>
 </html>
