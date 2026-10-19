@@ -527,7 +527,7 @@
                 : MODEL_URL_RAW;
 
             const tryLoad = (src, isFallback = false) => {
-                BABYLON.SceneLoader.ImportMesh("", "", src, sc, function (meshes) {
+                BABYLON.SceneLoader.ImportMesh("", "", src, sc, function (meshes, particleSystems, skeletons, animationGroups, transformNodes) {
                     const cover = document.getElementById("loadingCover");
                     if (cover) {
                         cover.style.opacity = "0";
@@ -535,22 +535,38 @@
                     }
 
                     rootNode = new BABYLON.TransformNode("trexRoot", sc);
+                    const gltfRoot = sc.getNodeByName("__root__");
+                    if (gltfRoot) {
+                        gltfRoot.parent = rootNode;
+                    } else {
+                        meshes.forEach(m => { if (!m.parent) m.parent = rootNode; });
+                        if (transformNodes) transformNodes.forEach(t => { if (!t.parent) t.parent = rootNode; });
+                    }
+
+                    // Forzar cálculo de matrices para bounding box real del espécimen
+                    sc.render();
+                    let min = new BABYLON.Vector3(Infinity, Infinity, Infinity);
+                    let max = new BABYLON.Vector3(-Infinity, -Infinity, -Infinity);
                     meshes.forEach(m => {
-                        if (m.parent === null) m.parent = rootNode;
+                        if (m.getBoundingInfo) {
+                            const b = m.getBoundingInfo().boundingBox;
+                            min = BABYLON.Vector3.Minimize(min, b.minimumWorld);
+                            max = BABYLON.Vector3.Maximize(max, b.maximumWorld);
+                        }
                     });
 
-                    // Normalizar escala y centrado en el pedestal:
-                    // El modelo original mide solo 0.768m de largo (bounds [-0.25, 0.014, -0.21] a [0.52, 0.358, 0.11])
-                    // Para que se vea majestuoso e imponente en el viewport (5.5m), escalamos por (5.5 / 0.768 = ~7.16)
-                    const targetLength = 5.5;
-                    const scaleFactor = targetLength / 0.768;
+                    const size = max.subtract(min);
+                    const maxDim = Math.max(size.x, size.y, size.z);
+                    // Escala monumental de museo para llenar majestuosamente el viewport
+                    const scaleFactor = (maxDim > 0.001) ? (5.5 / maxDim) : 7.2;
                     rootNode.scaling = new BABYLON.Vector3(scaleFactor, scaleFactor, scaleFactor);
 
-                    // Centrar modelo en el pedestal (offset X y Z, pies en el suelo Y=0)
-                    rootNode.position = new BABYLON.Vector3(-0.134 * scaleFactor, -0.014 * scaleFactor, 0.05 * scaleFactor);
+                    // Centrar sobre el pedestal de exposición con patas apoyadas en Y=0
+                    const center = min.add(size.scale(0.5));
+                    rootNode.position = new BABYLON.Vector3(-center.x * scaleFactor, -min.y * scaleFactor, -center.z * scaleFactor);
 
-                    // Asegurar encuadre majestuoso de la cámara
-                    camera.setTarget(new BABYLON.Vector3(0, 1.2, 0));
+                    // Encuadre majestuoso y detallado de la cámara
+                    camera.setTarget(new BABYLON.Vector3(0, 1.4, 0));
                     camera.radius = 5.8;
 
                 }, null, function (scene, message, exception) {

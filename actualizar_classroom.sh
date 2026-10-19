@@ -99,7 +99,7 @@ cp -r "SIMULADORES_INTERACTIVOS/01_SIMULADORES/cards_11d" "CLASES/EXPORTACION_FI
 
 echo "=== 3. Guardando cambios y sincronizando con GitHub... ==="
 git add -A
-git commit -m "feat(sim): simuladores 3D reales oficiales con Babylon.js para S08 (Motor CAD animado) y S09 (T-Rex Museo 360)" || true
+git commit -m "fix(sim): cinematica hiperrealista de pistones alternativos para S08 y escala monumental de museo T-Rex S09" || true
 git push origin main
 
 echo "=== 4. Abriendo simuladores oficiales en Google Chrome... ==="
