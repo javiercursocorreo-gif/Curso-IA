@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sesión 12 • Simulador 3D: Nebulosa Helix (El Ojo de Dios) [COD-012]</title>
+    <!-- Babylon.js CDN Oficial -->
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;800;900&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-base: #030206;
+            --bg-panel: rgba(14, 10, 24, 0.94);
+            --nebula-core: #38bdf8;
+            --nebula-mid: #a855f7;
+            --nebula-outer: #f43f5e;
+            --gold: #fbbf24;
+            --font-title: 'Cinzel', serif;
+            --font-sans: 'Inter', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background-color: var(--bg-base);
+            color: #f8fafc;
+            font-family: var(--font-sans);
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            user-select: none;
+        }
+
+        header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 20;
+            padding: 14px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: linear-gradient(180deg, rgba(7, 4, 15, 0.96) 0%, rgba(7, 4, 15, 0.6) 80%, transparent 100%);
+            border-bottom: 1px solid rgba(168, 85, 247, 0.25);
+            backdrop-filter: blur(10px);
+        }
+
+        .brand-box {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .brand-badge {
+            background: rgba(168, 85, 247, 0.2);
+            border: 1px solid var(--nebula-mid);
+            color: #c084fc;
+            font-family: var(--font-mono);
+            font-weight: 800;
+            font-size: 1rem;
+            padding: 5px 12px;
+            border-radius: 8px;
+        }
+
+        .brand-title {
+            font-family: var(--font-title);
+            font-size: 1.35rem;
+            font-weight: 900;
+            color: #ffffff;
+            letter-spacing: 0.5px;
+        }
+
+        .brand-sub {
+            font-size: 0.78rem;
+            color: #94a3b8;
+        }
+
+        .btn-action {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #f1f5f9;
+            padding: 8px 16px;
+            border-radius: 9999px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-action:hover {
+            background: rgba(168, 85, 247, 0.25);
+            border-color: var(--nebula-mid);
+            color: #d8b4fe;
+        }
+
+        #helixStage {
+            flex: 1;
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        /* PANEL DIDÁCTICO DERECHO */
+        .info-card {
+            position: absolute;
+            top: 80px;
+            right: 24px;
+            width: 410px;
+            background: var(--bg-panel);
+            border: 1.5px solid var(--nebula-mid);
+            border-radius: 20px;
+            padding: 22px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9), 0 0 25px rgba(168, 85, 247, 0.3);
+            backdrop-filter: blur(20px);
+            z-index: 15;
+            display: flex;
+            flex-direction: column;
+            gap: 13px;
+        }
+
+        .spitzer-tag {
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            font-weight: 800;
+            padding: 5px 12px;
+            border-radius: 9999px;
+            background: rgba(56, 189, 248, 0.15);
+            color: #38bdf8;
+            border: 1px solid rgba(56, 189, 248, 0.35);
+            width: fit-content;
+        }
+
+        .info-title {
+            font-family: var(--font-title);
+            font-size: 1.3rem;
+            font-weight: 900;
+            color: #ffffff;
+            line-height: 1.25;
+        }
+
+        .info-summary {
+            background: rgba(255, 255, 255, 0.05);
+            border-left: 3.5px solid var(--nebula-mid);
+            padding: 10px 14px;
+            border-radius: 0 10px 10px 0;
+            font-size: 0.9rem;
+            color: #f1f5f9;
+            line-height: 1.45;
+        }
+
+        .data-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .data-cell {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            border-radius: 10px;
+            padding: 8px 12px;
+        }
+
+        .data-label {
+            font-size: 0.72rem;
+            color: #94a3b8;
+            text-transform: uppercase;
+            font-family: var(--font-mono);
+            font-weight: 700;
+        }
+
+        .data-val {
+            font-size: 1rem;
+            color: #38bdf8;
+            font-weight: 800;
+            margin-top: 2px;
+        }
+
+        /* MODOS DE VISIÓN Y CAPAS ESPECTRALES */
+        .tabs-header {
+            font-size: 0.76rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #94a3b8;
+            margin-top: 4px;
+        }
+
+        .layers-btn-group {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+        }
+
+        .layer-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: #cbd5e1;
+            padding: 9px 10px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+        }
+
+        .layer-btn.active {
+            background: linear-gradient(135deg, rgba(168, 85, 247, 0.4), rgba(56, 189, 248, 0.4));
+            border-color: #c084fc;
+            color: #ffffff;
+            box-shadow: 0 0 12px rgba(168, 85, 247, 0.4);
+        }
+
+        .slider-box {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            background: rgba(0, 0, 0, 0.35);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            border-radius: 10px;
+            padding: 10px 12px;
+        }
+
+        .slider-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.78rem;
+            color: #94a3b8;
+            font-weight: 600;
+        }
+
+        .slider-box input[type="range"] {
+            width: 100%;
+            accent-color: #a855f7;
+            cursor: pointer;
+        }
+
+        /* GUÍA DIDÁCTICA INFERIOR */
+        .bottom-guide {
+            position: absolute;
+            bottom: 20px;
+            left: 24px;
+            background: rgba(14, 10, 24, 0.92);
+            border: 1px solid rgba(168, 85, 247, 0.3);
+            border-radius: 14px;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            z-index: 15;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(12px);
+            font-size: 0.85rem;
+            color: #94a3b8;
+        }
+        .bottom-guide strong {
+            color: #fff;
+        }
+        .guide-tag {
+            background: rgba(56, 189, 248, 0.15);
+            color: #38bdf8;
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            font-weight: 800;
+            padding: 4px 10px;
+            border-radius: 6px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="brand-box">
+            <span class="brand-badge">[COD-012]</span>
+            <div>
+                <h1 class="brand-title">Nebulosa Helix • El Ojo de Dios (NGC 7293)</h1>
+                <p class="brand-sub">Astronomía Infrarroja con Telescopio Espacial Spitzer & Babylon.js 3D</p>
+            </div>
+        </div>
+        <div style="display: flex; gap: 10px;">
+            <button class="btn-action" id="btnToggleSpin">⏸ Pausar Giro</button>
+            <button class="btn-action" id="btnResetView">🔄 Vista Frontal</button>
+        </div>
+    </header>
+
+    <canvas id="helixStage"></canvas>
+
+    <div class="info-card">
+        <div class="spitzer-tag">🔭 SPITZER + HUBBLE INFRARED DATA</div>
+        <h2 class="info-title" id="infoTitle">Estructura Volumétrica del Disco</h2>
+        <div class="info-summary" id="infoDesc">
+            La Nebulosa Helix es una nebulosa planetaria situada a 655 años luz en Acuario. Revela cómo morirá nuestro Sol dentro de 5.000 millones de años, expulsando sus capas externas de gas y dejando expuesto su núcleo ardiente.
+        </div>
+
+        <div class="data-grid">
+            <div class="data-cell">
+                <div class="data-label">Distancia</div>
+                <div class="data-val">655 años luz</div>
+            </div>
+            <div class="data-cell">
+                <div class="data-label">Diámetro Real</div>
+                <div class="data-val">2.87 años luz</div>
+            </div>
+            <div class="data-cell">
+                <div class="data-label">Temperatura Núcleo</div>
+                <div class="data-val">120.000 K</div>
+            </div>
+            <div class="data-cell">
+                <div class="data-label">Expansión</div>
+                <div class="data-val">40 km/s</div>
+            </div>
+        </div>
+
+        <div class="tabs-header">Capas Espectrales & Observación:</div>
+        <div class="layers-btn-group">
+            <button class="layer-btn active" id="btnModeAll" onclick="setSpectraMode('all')">🌌 Espectro Completo</button>
+            <button class="layer-btn" id="btnModeCore" onclick="setSpectraMode('core')">⚪ Enana Blanca</button>
+            <button class="layer-btn" id="btnModeInfra" onclick="setSpectraMode('infra')">🔴 Polvo Infrarrojo (24µm)</button>
+            <button class="layer-btn" id="btnModeKnots" onclick="setSpectraMode('knots')">☄️ Filamentos / Cometas</button>
+        </div>
+
+        <div class="slider-box">
+            <div class="slider-row">
+                <span>Velocidad de Expansión Gas:</span>
+                <span id="txtExpSpeed" style="color:#a855f7; font-weight:800;">1.0x</span>
+            </div>
+            <input type="range" id="expRange" min="0" max="3" step="0.1" value="1.0" oninput="updateExpSpeed(this.value)">
+        </div>
+
+        <div class="slider-box">
+            <div class="slider-row">
+                <span>Densidad de Polvo Cósmico:</span>
+                <span id="txtDustDense" style="color:#38bdf8; font-weight:800;">100%</span>
+            </div>
+            <input type="range" id="dustRange" min="20" max="200" step="10" value="100" oninput="updateDustDensity(this.value)">
+        </div>
+    </div>
+
+    <div class="bottom-guide">
+        <span class="guide-tag">LA IDEA FÁCIL SENIOR</span>
+        <span>👉 <strong>Arrastra con el ratón</strong> para girar la nebulosa en 3D. <strong>Rueda del ratón</strong> para hacer zoom y entrar en el centro del ojo cósmico.</span>
+    </div>
+
+    <script>
+        const canvas = document.getElementById("helixStage");
+        const engine = new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true });
+        
+        let scene, camera;
+        let whiteDwarf, innerGlow, mainTorus, outerRing, cometKnots = [];
+        let dustParticleSystem;
+        let isSpinning = true;
+        let expansionFactor = 1.0;
+
+        function createScene() {
+            scene = new BABYLON.Scene(engine);
+            scene.clearColor = new BABYLON.Color4(0.015, 0.01, 0.025, 1.0);
+
+            // Cámara orbital
+            camera = new BABYLON.ArcRotateCamera("Cam", -Math.PI / 2, Math.PI / 2.3, 38, new BABYLON.Vector3(0, 0, 0), scene);
+            camera.attachControl(canvas, true);
+            camera.lowerRadiusLimit = 8;
+            camera.upperRadiusLimit = 90;
+            camera.wheelPrecision = 40;
+
+            // Iluminación cósmica
+            const light = new BABYLON.HemisphericLight("hemi", new BABYLON.Vector3(0, 1, 0), scene);
+            light.intensity = 0.4;
+            light.diffuse = new BABYLON.Color3(0.5, 0.4, 0.8);
+
+            const pointLight = new BABYLON.PointLight("dwarfLight", new BABYLON.Vector3(0, 0, 0), scene);
+            pointLight.diffuse = new BABYLON.Color3(0.7, 0.9, 1.0);
+            pointLight.specular = new BABYLON.Color3(1, 1, 1);
+            pointLight.intensity = 2.5;
+
+            // 1. Enana Blanca Central (Estrella moribunda)
+            whiteDwarf = BABYLON.MeshBuilder.CreateSphere("whiteDwarf", { diameter: 0.9, segments: 32 }, scene);
+            const dwarfMat = new BABYLON.StandardMaterial("dwarfMat", scene);
+            dwarfMat.emissiveColor = new BABYLON.Color3(0.9, 0.95, 1.0);
+            dwarfMat.diffuseColor = new BABYLON.Color3(1, 1, 1);
+            whiteDwarf.material = dwarfMat;
+
+            // Resplandor del núcleo (Inner Glow)
+            innerGlow = BABYLON.MeshBuilder.CreateSphere("innerGlow", { diameter: 3.2, segments: 24 }, scene);
+            const glowMat = new BABYLON.StandardMaterial("glowMat", scene);
+            glowMat.emissiveColor = new BABYLON.Color3(0.2, 0.65, 0.95);
+            glowMat.alpha = 0.35;
+            glowMat.backFaceCulling = false;
+            innerGlow.material = glowMat;
+
+            // 2. Toroide Principal (El "Iris" brillante en luz ultravioleta y óptica)
+            mainTorus = BABYLON.MeshBuilder.CreateTorus("mainTorus", {
+                diameter: 14.5,
+                thickness: 4.8,
+                tessellation: 64
+            }, scene);
+            mainTorus.rotation.x = Math.PI * 0.22;
+            const torusMat = new BABYLON.StandardMaterial("torusMat", scene);
+            torusMat.diffuseColor = new BABYLON.Color3(0.3, 0.1, 0.5);
+            torusMat.emissiveColor = new BABYLON.Color3(0.55, 0.15, 0.65);
+            torusMat.alpha = 0.65;
+            torusMat.backFaceCulling = false;
+            mainTorus.material = torusMat;
+
+            // 3. Anillo Exterior de Polvo Infrarrojo Spitzer (Rojo/Naranja 24 micras)
+            outerRing = BABYLON.MeshBuilder.CreateTorus("outerRing", {
+                diameter: 22.0,
+                thickness: 3.5,
+                tessellation: 64
+            }, scene);
+            outerRing.rotation.x = Math.PI * 0.18;
+            outerRing.rotation.y = Math.PI * 0.08;
+            const outerMat = new BABYLON.StandardMaterial("outerMat", scene);
+            outerMat.diffuseColor = new BABYLON.Color3(0.7, 0.1, 0.2);
+            outerMat.emissiveColor = new BABYLON.Color3(0.85, 0.2, 0.25);
+            outerMat.alpha = 0.42;
+            outerMat.backFaceCulling = false;
+            outerRing.material = outerMat;
+
+            // 4. Filamentos Radiales / Nudos Comentarios (Cometary Knots - Más de 20.000 en la realidad)
+            const knotCount = 36;
+            for (let i = 0; i < knotCount; i++) {
+                const angle = (i / knotCount) * Math.PI * 2;
+                const dist = 6.8 + Math.random() * 2.5;
+                const knot = BABYLON.MeshBuilder.CreateCylinder("knot_" + i, {
+                    diameterTop: 0.15,
+                    diameterBottom: 0.55,
+                    height: 2.4,
+                    tessellation: 8
+                }, scene);
+
+                knot.position = new BABYLON.Vector3(Math.cos(angle) * dist, (Math.random() - 0.5) * 1.5, Math.sin(angle) * dist);
+                knot.rotation.z = Math.PI / 2;
+                knot.rotation.y = -angle;
+
+                const knotMat = new BABYLON.StandardMaterial("knotMat_" + i, scene);
+                knotMat.emissiveColor = new BABYLON.Color3(0.9, 0.45, 0.2);
+                knotMat.diffuseColor = new BABYLON.Color3(0.8, 0.3, 0.1);
+                knotMat.alpha = 0.7;
+                knot.material = knotMat;
+                cometKnots.push(knot);
+            }
+
+            // 5. Sistema de Partículas: Polvo Cósmico Spitzer
+            dustParticleSystem = new BABYLON.ParticleSystem("dustParticles", 1800, scene);
+            
+            // Textura procedural de partícula suave
+            const pTexture = new BABYLON.DynamicTexture("pTex", { width: 64, height: 64 }, scene);
+            const pCtx = pTexture.getContext();
+            const radGrad = pCtx.createRadialGradient(32, 32, 2, 32, 32, 30);
+            radGrad.addColorStop(0, "rgba(255, 255, 255, 1)");
+            radGrad.addColorStop(0.3, "rgba(168, 85, 247, 0.8)");
+            radGrad.addColorStop(0.8, "rgba(56, 189, 248, 0.3)");
+            radGrad.addColorStop(1, "rgba(0, 0, 0, 0)");
+            pCtx.fillStyle = radGrad;
+            pCtx.fillRect(0, 0, 64, 64);
+            pTexture.update();
+
+            dustParticleSystem.particleTexture = pTexture;
+            dustParticleSystem.emitter = new BABYLON.Vector3(0, 0, 0);
+            dustParticleSystem.minEmitBox = new BABYLON.Vector3(-8, -2, -8);
+            dustParticleSystem.maxEmitBox = new BABYLON.Vector3(8, 2, 8);
+
+            dustParticleSystem.color1 = new BABYLON.Color4(0.3, 0.8, 1.0, 0.6);
+            dustParticleSystem.color2 = new BABYLON.Color4(0.9, 0.2, 0.5, 0.5);
+            dustParticleSystem.colorDead = new BABYLON.Color4(0.1, 0.05, 0.2, 0.0);
+
+            dustParticleSystem.minSize = 0.3;
+            dustParticleSystem.maxSize = 1.1;
+            dustParticleSystem.minLifeTime = 4;
+            dustParticleSystem.maxLifeTime = 8;
+            dustParticleSystem.emitRate = 350;
+            dustParticleSystem.blendMode = BABYLON.ParticleSystem.BLENDMODE_ADD;
+            dustParticleSystem.gravity = new BABYLON.Vector3(0, 0, 0);
+
+            dustParticleSystem.direction1 = new BABYLON.Vector3(-1.5, -0.4, -1.5);
+            dustParticleSystem.direction2 = new BABYLON.Vector3(1.5, 0.4, 1.5);
+            dustParticleSystem.minEmitPower = 0.4;
+            dustParticleSystem.maxEmitPower = 1.6;
+            dustParticleSystem.updateSpeed = 0.008;
+            dustParticleSystem.start();
+
+            // Fondo de Estrellas Lejanas
+            const starField = BABYLON.MeshBuilder.CreateBox("starField", { size: 180 }, scene);
+            const starMat = new BABYLON.StandardMaterial("starMat", scene);
+            starMat.backFaceCulling = false;
+            starMat.emissiveColor = new BABYLON.Color3(0.01, 0.015, 0.03);
+            starField.material = starMat;
+
+            // Bucle de Animación continua
+            let t = 0;
+            scene.registerBeforeRender(() => {
+                if (isSpinning) {
+                    const rotSpeed = 0.002 * expansionFactor;
+                    mainTorus.rotation.y += rotSpeed;
+                    outerRing.rotation.y += rotSpeed * 0.75;
+                    whiteDwarf.rotation.y += 0.005;
+                    cometKnots.forEach((k, idx) => {
+                        k.rotation.y += rotSpeed;
+                    });
+                }
+
+                t += 0.02 * expansionFactor;
+                // Efecto de latido / respiración de ionización cósmica
+                const pulse = 1 + Math.sin(t) * 0.03;
+                innerGlow.scaling.set(pulse, pulse, pulse);
+            });
+
+            return scene;
+        }
+
+        scene = createScene();
+
+        // Control de Modos Didácticos
+        function setSpectraMode(mode) {
+            document.querySelectorAll('.layer-btn').forEach(b => b.classList.remove('active'));
+            const t = document.getElementById("infoTitle");
+            const d = document.getElementById("infoDesc");
+
+            if (mode === 'all') {
+                document.getElementById("btnModeAll").classList.add('active');
+                whiteDwarf.setEnabled(true);
+                innerGlow.setEnabled(true);
+                mainTorus.setEnabled(true);
+                outerRing.setEnabled(true);
+                cometKnots.forEach(k => k.setEnabled(true));
+                dustParticleSystem.start();
+                t.textContent = "Espectro Completo: Óptico + Infrarrojo Spitzer";
+                d.textContent = "La imagen icónica combina la luz visible de Hubble (anillo azul/verde de oxígeno y nitrógeno ionizado) con la visión infrarroja de Spitzer (rojo brillante de polvo de carbono cálido).";
+            } else if (mode === 'core') {
+                document.getElementById("btnModeCore").classList.add('active');
+                whiteDwarf.setEnabled(true);
+                innerGlow.setEnabled(true);
+                mainTorus.setEnabled(false);
+                outerRing.setEnabled(false);
+                cometKnots.forEach(k => k.setEnabled(false));
+                dustParticleSystem.stop();
+                t.textContent = "La Enana Blanca Central (120.000 ºC)";
+                d.textContent = "Es el cadáver estelar de la gigante roja original. Aunque tiene un tamaño similar a la Tierra, contiene la mitad de la masa del Sol y emite una radiación ultravioleta descomunal que ioniza todo a su alrededor.";
+            } else if (mode === 'infra') {
+                document.getElementById("btnModeInfra").classList.add('active');
+                whiteDwarf.setEnabled(false);
+                innerGlow.setEnabled(false);
+                mainTorus.setEnabled(false);
+                outerRing.setEnabled(true);
+                cometKnots.forEach(k => k.setEnabled(false));
+                dustParticleSystem.start();
+                t.textContent = "Visión Infrarroja Spitzer (24 Micrómetros)";
+                d.textContent = "El Telescopio Espacial Spitzer reveló el polvo cósmico caliente que permanecía invisible a los telescopios tradicionales de luz visible, formando el halo exterior rojo del ojo.";
+            } else if (mode === 'knots') {
+                document.getElementById("btnModeKnots").classList.add('active');
+                whiteDwarf.setEnabled(true);
+                innerGlow.setEnabled(false);
+                mainTorus.setEnabled(true);
+                outerRing.setEnabled(false);
+                cometKnots.forEach(k => k.setEnabled(true));
+                dustParticleSystem.stop();
+                t.textContent = "Nudos Comentarios ('Cometary Knots')";
+                d.textContent = "Miles de cúmulos de gas denso con colas que apuntan en dirección contraria a la enana blanca. Cada nudo mide más que nuestro Sistema Solar completo y es una cápsula fósil molecular.";
+            }
+        }
+
+        function updateExpSpeed(val) {
+            expansionFactor = parseFloat(val);
+            document.getElementById("txtExpSpeed").textContent = val + "x";
+        }
+
+        function updateDustDensity(val) {
+            const density = parseInt(val);
+            document.getElementById("txtDustDense").textContent = density + "%";
+            dustParticleSystem.emitRate = 3.5 * density;
+        }
+
+        document.getElementById("btnToggleSpin").addEventListener("click", () => {
+            isSpinning = !isSpinning;
+            document.getElementById("btnToggleSpin").textContent = isSpinning ? "⏸ Pausar Giro" : "▶ Reanudar Giro";
+        });
+
+        document.getElementById("btnResetView").addEventListener("click", () => {
+            camera.alpha = -Math.PI / 2;
+            camera.beta = Math.PI / 2.3;
+            camera.radius = 38;
+            camera.target = new BABYLON.Vector3(0, 0, 0);
+        });
+
+        window.addEventListener("resize", () => {
+            engine.resize();
+        });
+
+        engine.runRenderLoop(() => {
+            scene.render();
+        });
+    </script>
+</body>
+</html>
+

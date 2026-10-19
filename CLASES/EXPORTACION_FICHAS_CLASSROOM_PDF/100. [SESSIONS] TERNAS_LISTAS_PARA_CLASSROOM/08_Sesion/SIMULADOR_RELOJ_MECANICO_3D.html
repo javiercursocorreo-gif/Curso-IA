@@ -3,25 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sesión 08 • Simulador 3D: Reloj Mecánico de Precisión • Escape de Áncora y Engranajes [COD-008]</title>
-    <!-- Motor 3D Three.js + OrbitControls (El mismo estándar orbital interactivo del Sistema Solar) -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;800;900&family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+    <title>Sesión 08 • Simulador Fotográfico Real: Motor Térmico de Combustión Interna [COD-008]</title>
+    <!-- Asset Fotográfico Real en Base64 Autónomo (Múltiples rutas de compatibilidad) -->
+    <script src="../03_ASSETS_3D_Y_DATOS/engine_photo_b64.js"></script>
+    <script src="../../../../SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/engine_photo_b64.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg-base: #060912;
             --bg-panel: rgba(14, 20, 32, 0.94);
-            --amber: #f59e0b;
-            --amber-glow: rgba(245, 158, 11, 0.35);
-            --gold: #fbbf24;
-            --brass: #d97706;
-            --steel: #94a3b8;
-            --ruby: #ef4444;
             --cyan: #38bdf8;
+            --cyan-glow: rgba(56, 189, 248, 0.35);
+            --amber: #f59e0b;
+            --fire: #ef4444;
+            --intake: #06b6d4;
+            --exhaust: #a855f7;
+            --metal: #cbd5e1;
             --text-main: #f8fafc;
             --text-sub: #cbd5e1;
-            --font-title: 'Cinzel', serif;
             --font-sans: 'Inter', sans-serif;
             --font-mono: 'JetBrains Mono', monospace;
         }
@@ -43,7 +42,7 @@
         header {
             background: linear-gradient(180deg, rgba(14, 20, 32, 0.98) 0%, rgba(14, 20, 32, 0.88) 100%);
             backdrop-filter: blur(14px);
-            border-bottom: 1px solid rgba(245, 158, 11, 0.25);
+            border-bottom: 1px solid rgba(56, 189, 248, 0.25);
             padding: 10px 24px;
             display: flex;
             align-items: center;
@@ -57,9 +56,9 @@
             gap: 14px;
         }
         .badge-code {
-            background: rgba(245, 158, 11, 0.15);
-            color: var(--amber);
-            border: 1px solid rgba(245, 158, 11, 0.45);
+            background: rgba(56, 189, 248, 0.15);
+            color: var(--cyan);
+            border: 1px solid rgba(56, 189, 248, 0.45);
             font-family: var(--font-mono);
             font-size: 0.88rem;
             font-weight: 800;
@@ -68,7 +67,7 @@
             letter-spacing: 0.05em;
         }
         h1 {
-            font-size: 1.25rem;
+            font-size: 1.22rem;
             font-weight: 800;
             letter-spacing: -0.01em;
             color: #ffffff;
@@ -83,7 +82,7 @@
         }
         .pill-status {
             background: rgba(245, 158, 11, 0.15);
-            color: #fbbf24;
+            color: var(--amber);
             border: 1px solid rgba(245, 158, 11, 0.4);
             font-size: 0.85rem;
             font-weight: 700;
@@ -118,7 +117,7 @@
         /* TARJETA LA IDEA FÁCIL */
         .card-easy-concept {
             background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.95) 100%);
-            border: 1.5px solid rgba(245, 158, 11, 0.35);
+            border: 1.5px solid rgba(56, 189, 248, 0.35);
             border-radius: 14px;
             padding: 16px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
@@ -126,7 +125,7 @@
         .easy-tag {
             font-size: 0.78rem;
             font-weight: 800;
-            color: var(--amber);
+            color: var(--cyan);
             text-transform: uppercase;
             letter-spacing: 0.08em;
             margin-bottom: 6px;
@@ -148,21 +147,63 @@
         }
         .easy-text strong { color: #ffffff; }
 
-        /* CONTROLES DE MECANISMO */
+        /* MODOS DE INSPECCIÓN TÉCNICA */
+        .section-title {
+            font-size: 0.88rem;
+            font-weight: 800;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .mode-selector {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+        .mode-btn {
+            background: rgba(30, 41, 59, 0.6);
+            border: 1.5px solid rgba(255, 255, 255, 0.12);
+            color: var(--text-sub);
+            padding: 10px 8px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 0.82rem;
+            font-weight: 700;
+            text-align: center;
+            transition: all 0.25s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+        .mode-btn:hover {
+            border-color: var(--cyan);
+            background: rgba(56, 189, 248, 0.1);
+            color: #ffffff;
+        }
+        .mode-btn.active {
+            border-color: var(--amber);
+            background: rgba(245, 158, 11, 0.2);
+            color: var(--amber);
+            box-shadow: 0 0 14px rgba(245, 158, 11, 0.25);
+        }
+
+        /* CONTROL DE CICLO OTTO (4 TIEMPOS) */
         .control-box {
             background: rgba(15, 23, 42, 0.7);
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 12px;
             padding: 14px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
         }
         .slider-row {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 10px;
+            margin-bottom: 8px;
         }
         .slider-label {
             font-size: 0.9rem;
@@ -185,111 +226,143 @@
             accent-color: var(--amber);
             cursor: pointer;
         }
-        .action-buttons {
+
+        .strokes-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 6px;
+            margin-top: 10px;
+        }
+        .stroke-btn {
+            background: rgba(30, 41, 59, 0.6);
+            border: 1.5px solid rgba(255, 255, 255, 0.12);
+            color: var(--text-sub);
+            padding: 8px 4px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.76rem;
+            font-weight: 800;
+            text-align: center;
+            transition: all 0.25s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+        .stroke-btn.active {
+            border-color: var(--cyan);
+            background: rgba(56, 189, 248, 0.2);
+            color: #38bdf8;
+            box-shadow: 0 0 12px rgba(56, 189, 248, 0.25);
+        }
+
+        /* TARJETA DINÁMICA DE TELEMETRÍA */
+        .phase-info-box {
+            background: rgba(0, 0, 0, 0.45);
+            border-radius: 8px;
+            padding: 12px 14px;
+            margin-top: 10px;
+            border-left: 4px solid var(--cyan);
+        }
+        .phase-name {
+            font-size: 0.98rem;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 4px;
+        }
+        .phase-desc {
+            font-size: 0.88rem;
+            color: #cbd5e1;
+            line-height: 1.45;
+        }
+        .phase-stats {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 8px;
-        }
-        .btn-action {
-            background: rgba(30, 41, 59, 0.7);
-            border: 1px solid rgba(255, 255, 255, 0.14);
-            color: #f1f5f9;
-            padding: 9px 12px;
-            border-radius: 8px;
-            font-size: 0.85rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-        }
-        .btn-action:hover, .btn-action.active {
-            background: rgba(245, 158, 11, 0.25);
-            border-color: var(--amber);
-            color: #ffffff;
-        }
-
-        /* LISTA DE PIEZAS MECÁNICAS */
-        .section-title {
-            font-size: 0.88rem;
-            font-weight: 800;
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-family: var(--font-mono);
+            font-size: 0.78rem;
             color: #94a3b8;
-            text-transform: uppercase;
-            letter-spacing: 0.06em;
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
         }
+        .phase-stats strong { color: #f59e0b; }
+
+        /* LISTA DE PUNTOS TÉCNICOS */
         .parts-list {
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 10px;
         }
         .part-card {
-            background: rgba(20, 27, 45, 0.6);
+            background: rgba(30, 41, 59, 0.5);
             border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 10px;
-            padding: 12px 14px;
+            padding: 10px 12px;
             cursor: pointer;
             transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
         .part-card:hover {
-            border-color: var(--amber);
-            background: rgba(245, 158, 11, 0.08);
+            border-color: var(--cyan);
+            background: rgba(56, 189, 248, 0.08);
             transform: translateX(4px);
         }
         .part-card.active {
             border-color: var(--amber);
-            background: rgba(245, 158, 11, 0.16);
+            background: rgba(245, 158, 11, 0.15);
             box-shadow: 0 0 15px rgba(245, 158, 11, 0.2);
         }
-        .part-card-header {
+        .part-num {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            background: rgba(56, 189, 248, 0.2);
+            color: var(--cyan);
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            margin-bottom: 4px;
-        }
-        .part-name {
-            font-size: 0.95rem;
-            font-weight: 800;
-            color: #ffffff;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .part-pill {
+            justify-content: center;
             font-family: var(--font-mono);
-            font-size: 0.72rem;
             font-weight: 800;
-            padding: 2px 7px;
-            border-radius: 6px;
-            background: rgba(245, 158, 11, 0.2);
-            color: var(--amber);
+            font-size: 0.82rem;
+            flex-shrink: 0;
+            border: 1px solid rgba(56, 189, 248, 0.4);
         }
-        .part-desc {
-            font-size: 0.86rem;
-            color: var(--text-sub);
-            line-height: 1.45;
+        .part-card.active .part-num {
+            background: var(--amber);
+            color: #000000;
+            border-color: #ffffff;
+        }
+        .part-info { flex: 1; min-width: 0; }
+        .part-title {
+            font-size: 0.92rem;
+            font-weight: 700;
+            color: #ffffff;
+        }
+        .part-subtitle {
+            font-size: 0.78rem;
+            color: #94a3b8;
         }
 
-        /* ÁREA CENTRAL DE VISUALIZACIÓN 3D */
-        .stage-container {
+        /* VIEWPORT CANVAS FOTOGRÁFICO REAL */
+        .viewport-container {
             position: relative;
             width: 100%;
             height: 100%;
             overflow: hidden;
-            background: radial-gradient(circle at center, #111827 0%, #030712 75%, #000000 100%);
+            background: radial-gradient(circle at center, #0d1527 0%, #030712 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-        #webglCanvas {
-            width: 100%;
-            height: 100%;
+        #photoCanvas {
             display: block;
+            cursor: grab;
         }
+        #photoCanvas:active { cursor: grabbing; }
 
-        /* BADGE OVERLAY */
+        /* OVERLAY HUD */
         .photo-overlay-badge {
             position: absolute;
             top: 20px;
@@ -314,9 +387,39 @@
             border-radius: 50%;
             background: #10b981;
             box-shadow: 0 0 8px #10b981;
+            animation: pulse-dot 1.5s infinite;
+        }
+        @keyframes pulse-dot { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+        /* PINS INTERACTIVOS */
+        .hotspot-pin {
+            position: absolute;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: rgba(245, 158, 11, 0.9);
+            border: 2px solid #ffffff;
+            box-shadow: 0 0 20px rgba(245, 158, 11, 0.9), 0 0 0 4px rgba(245, 158, 11, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #000000;
+            font-weight: 900;
+            font-size: 0.82rem;
+            cursor: pointer;
+            transform: translate(-50%, -50%);
+            transition: transform 0.2s ease;
+            z-index: 30;
+        }
+        .hotspot-pin:hover, .hotspot-pin.active {
+            transform: translate(-50%, -50%) scale(1.3);
+            background: #ffffff;
+            color: #000000;
+            border-color: var(--cyan);
+            box-shadow: 0 0 25px rgba(255, 255, 255, 1), 0 0 0 8px rgba(56, 189, 248, 0.4);
         }
 
-        /* BARRA INFERIOR */
+        /* BARRA INFERIOR DE CONTROLES */
         .bottom-controls-bar {
             position: absolute;
             bottom: 24px;
@@ -347,552 +450,451 @@
             gap: 6px;
             transition: all 0.2s ease;
         }
-        .btn-tool:hover, .btn-tool.active {
-            background: rgba(245, 158, 11, 0.25);
-            border-color: var(--amber);
-            color: #fbbf24;
+        .btn-tool:hover {
+            background: rgba(56, 189, 248, 0.2);
+            border-color: var(--cyan);
+            color: #38bdf8;
         }
     </style>
 </head>
 <body>
 
-    <!-- CABECERA -->
+    <!-- HEADER SUPERIOR -->
     <header>
         <div class="header-title-box">
             <span class="badge-code">COD-008</span>
-            <h1>⏱️ Reloj Mecánico de Precisión • Escape de Áncora y Engranajes 3D</h1>
+            <h1>⚙️ Motor Térmico de Combustión • Corte Técnico Longitudinal Real</h1>
         </div>
         <div class="header-right">
             <div class="pill-status">
-                <span>⚙️</span>
-                <span>Mecánica Clásica PBR • Oscilación Armónica Continua a 4 Hz</span>
+                <span>🔬</span>
+                <span>Fotografía de Ingeniería Seccional HD</span>
             </div>
         </div>
     </header>
 
-    <!-- WORKSPACE -->
+    <!-- ÁREA DE TRABAJO -->
     <div class="workspace-grid">
-
-        <!-- PANEL DIDÁCTICO IZQUIERDO -->
+        
+        <!-- SIDEBAR DIDÁCTICO -->
         <aside class="sidebar-panel">
-
-            <!-- LA IDEA FÁCIL -->
+            
+            <!-- TARJETA LA IDEA FÁCIL -->
             <div class="card-easy-concept">
-                <div class="easy-tag">💡 La Idea Fácil para Todos</div>
-                <div class="easy-title">¿Cómo mide el tiempo un reloj sin pilas?</div>
+                <div class="easy-tag">
+                    <span>💡</span>
+                    <span>La Idea Fácil • Explicación Intuitiva</span>
+                </div>
+                <div class="easy-title">El Corazón Mecánico de un Coche</div>
                 <div class="easy-text">
-                    Un reloj mecánico no tiene electricidad. Obtiene su energía de un <strong>muelle enrollado (resorte)</strong>.
-                    Para evitar que el muelle se desenrolle de golpe en un segundo, los relojeros inventaron el <strong>Escape de Áncora</strong>: una pequeña palanca con dos rubíes que frena y suelta los dientes de un engranaje especial a un ritmo exacto de <strong>4 veces por segundo</strong>. Ese "freno y suelta" rítmico es el famoso sonido <strong>TIC... TAC...</strong>.
+                    Estás observando una <strong>fotografía real en corte longitudinal</strong> de un motor de combustión interna:
+                    <br><br>
+                    1. <strong>Arriba del todo (Culata):</strong> Las válvulas de acero se abren para dejar entrar aire con gasolina y sacar el humo quemado.<br>
+                    2. <strong>En el centro (Cilindro):</strong> El <strong>pistón de aluminio</strong> sube y baja dentro de la camisa de fundición.<br>
+                    3. <strong>La biela y el cigüeñal:</strong> La biela conecta el pistón al cigüeñal, transformando la fuerza de la explosión en <strong>giro circular</strong> para las ruedas del vehículo.
                 </div>
             </div>
 
-            <!-- CONTROLES DEL MECANISMO -->
-            <div class="control-box">
-                <div class="slider-row">
-                    <span class="slider-label">Velocidad del Mecanismo</span>
-                    <span class="slider-val" id="speedVal">1.0x (Tiempo Real)</span>
-                </div>
-                <input type="range" id="speedSlider" min="0.1" max="2.0" step="0.1" value="1.0" oninput="updateSpeed(this.value)">
-                
-                <div class="action-buttons">
-                    <button class="btn-action active" id="btnPlayPause" onclick="togglePlay()">
-                        ⏸ Pausar
-                    </button>
-                    <button class="btn-action" id="btnSound" onclick="toggleSound()">
-                        🔊 Sonido Tic-Tac
-                    </button>
-                </div>
-            </div>
-
-            <!-- COMPONENTES MECÁNICOS DESTACADOS -->
+            <!-- MODOS DE INSPECCIÓN -->
             <div>
                 <div class="section-title">
-                    <span>Componentes de la Máquina</span>
-                    <span>🔍 Clic para enfocar en 3D</span>
+                    <span>Modos de Inspección Visual</span>
+                </div>
+                <div class="mode-selector">
+                    <button class="mode-btn active" id="btnModePhoto" onclick="setVisualMode('photo')">
+                        <span>📸</span>
+                        <span>Corte Real</span>
+                    </button>
+                    <button class="mode-btn" id="btnModeThermal" onclick="setVisualMode('thermal')">
+                        <span>🔥</span>
+                        <span>Termografía</span>
+                    </button>
+                    <button class="mode-btn" id="btnModeStress" onclick="setVisualMode('stress')">
+                        <span>⚡</span>
+                        <span>Esfuerzos</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- CONTROL DEL CICLO OTTO -->
+            <div class="control-box">
+                <div class="slider-row">
+                    <span class="slider-label">Fase del Ciclo Otto</span>
+                    <span class="slider-val" id="strokePhaseVal">1. Admisión (0° - 180°)</span>
+                </div>
+                <input type="range" id="cycleSlider" min="0" max="3" step="1" value="0" oninput="setCyclePhase(this.value)">
+                
+                <div class="strokes-grid">
+                    <button class="stroke-btn active" id="btnStroke0" onclick="setCyclePhase(0)">
+                        <span>0° - 180°</span>
+                        <span>1. Admisión</span>
+                    </button>
+                    <button class="stroke-btn" id="btnStroke1" onclick="setCyclePhase(1)">
+                        <span>180° - 360°</span>
+                        <span>2. Compresión</span>
+                    </button>
+                    <button class="stroke-btn" id="btnStroke2" onclick="setCyclePhase(2)">
+                        <span>360° - 540°</span>
+                        <span>3. Explosión</span>
+                    </button>
+                    <button class="stroke-btn" id="btnStroke3" onclick="setCyclePhase(3)">
+                        <span>540° - 720°</span>
+                        <span>4. Escape</span>
+                    </button>
+                </div>
+
+                <div class="phase-info-box" id="phaseCard">
+                    <div class="phase-name" id="phaseTitle">Tiempo 1: Admisión (Aspiración)</div>
+                    <div class="phase-desc" id="phaseDesc">
+                        La válvula de admisión izquierda baja abierta. El pistón desciende succionando la mezcla fresca de aire y gasolina pulverizada.
+                    </div>
+                    <div class="phase-stats">
+                        <span>Presión: <strong id="statPress">0.9 bar</strong></span>
+                        <span>Temperatura: <strong id="statTemp">25 °C</strong></span>
+                        <span>Giro Cigüeñal: <strong id="statDeg">0° a 180°</strong></span>
+                        <span>Fuerza en Biela: <strong id="statForce">1.2 kN</strong></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- COMPONENTES MECÁNICOS CLAVE -->
+            <div>
+                <div class="section-title">
+                    <span>Componentes de Ingeniería en el Corte Real</span>
                 </div>
                 <div class="parts-list">
-                    <div class="part-card active" id="card-0" onclick="focusPart(0)">
-                        <div class="part-card-header">
-                            <span class="part-name"><span>⚖️</span> Volante de Inercia y Espiral</span>
-                            <span class="part-pill">Corazón a 4 Hz</span>
+                    <div class="part-card active" id="card-0" onclick="selectHotspot(0)">
+                        <div class="part-num">1</div>
+                        <div class="part-info">
+                            <div class="part-title">Árbol de Levas DOHC y Válvulas</div>
+                            <div class="part-subtitle">Distribución variable con muelles de alta resistencia</div>
                         </div>
-                        <p class="part-desc">Rueda dorada equilibrada con tornillos de masa que oscila adelante y atrás gracias a un fino muelle espiral de aleación Elinvar.</p>
                     </div>
-
-                    <div class="part-card" id="card-1" onclick="focusPart(1)">
-                        <div class="part-card-header">
-                            <span class="part-name"><span>⚓</span> Áncora Suiza con Rubíes</span>
-                            <span class="part-pill">Freno de Precisión</span>
+                    <div class="part-card" id="card-1" onclick="selectHotspot(1)">
+                        <div class="part-num">2</div>
+                        <div class="part-info">
+                            <div class="part-title">Bujía de Iridio y Cámara de Combustión</div>
+                            <div class="part-subtitle">Chispa eléctrica sincronizada a 25.000 voltios</div>
                         </div>
-                        <p class="part-desc">Palanca basculante con dos piedras preciosas sintéticas (paletas de rubí) que abrazan alternativamente la rueda de escape.</p>
                     </div>
-
-                    <div class="part-card" id="card-2" onclick="focusPart(2)">
-                        <div class="part-card-header">
-                            <span class="part-name"><span>☸️</span> Rueda de Escape Dentada</span>
-                            <span class="part-pill">Dientes de Trinquete</span>
+                    <div class="part-card" id="card-2" onclick="selectHotspot(2)">
+                        <div class="part-num">3</div>
+                        <div class="part-info">
+                            <div class="part-title">Cilindro y Camisa con Bruñido Cruzado</div>
+                            <div class="part-subtitle">Galerías perimetrales de refrigeración líquida</div>
                         </div>
-                        <p class="part-desc">Engranaje especial de 15 dientes angulados que transmite diminutos impulsos al áncora para mantener el volante en marcha sin detenerse.</p>
                     </div>
-
-                    <div class="part-card" id="card-3" onclick="focusPart(3)">
-                        <div class="part-card-header">
-                            <span class="part-name"><span>⚙️</span> Tren de Engranajes Multiplicador</span>
-                            <span class="part-pill">Relación 60:1</span>
+                    <div class="part-card" id="card-3" onclick="selectHotspot(3)">
+                        <div class="part-num">4</div>
+                        <div class="part-info">
+                            <div class="part-title">Pistón Forjado con Segmentos</div>
+                            <div class="part-subtitle">Aros de compresión y rascador de aceite</div>
                         </div>
-                        <p class="part-desc">Ruedas dentadas de latón que reducen la velocidad del muelle y la transforman en los giros exactos de segundero, minutero y horaria.</p>
                     </div>
-
-                    <div class="part-card" id="card-4" onclick="focusPart(4)">
-                        <div class="part-card-header">
-                            <span class="part-name"><span>🌀</span> Tambor del Muelle Real</span>
-                            <span class="part-pill">Reserva de Marcha</span>
+                    <div class="part-card" id="card-4" onclick="selectHotspot(4)">
+                        <div class="part-num">5</div>
+                        <div class="part-info">
+                            <div class="part-title">Biela Forjada y Cigüeñal Equilibrado</div>
+                            <div class="part-subtitle">Viga en H y contrapesos giratorios de bancada</div>
                         </div>
-                        <p class="part-desc">Caja cerrada que contiene la cinta de acero templado enrollada al darle cuerda, almacenando la energía motriz para 48 horas.</p>
                     </div>
                 </div>
             </div>
 
         </aside>
 
-        <!-- ÁREA CENTRAL DE VISUALIZACIÓN 3D -->
-        <main class="stage-container" id="stageContainer">
-
+        <!-- VIEWPORT DE LA FOTOGRAFÍA CIENTÍFICA -->
+        <main class="viewport-container" id="viewportArea">
+            
             <div class="photo-overlay-badge">
-                <div class="dot-live"></div>
-                <span id="badgeInfoText">Mundo 3D Interactivo • Arrastra el ratón para rotar 360°, rueda para zoom</span>
+                <span class="dot-live"></span>
+                <span id="badgeInfoText">Fotografía Técnica Real • Corte de Ingeniería Automotriz HD</span>
             </div>
 
-            <canvas id="webglCanvas"></canvas>
+            <canvas id="photoCanvas"></canvas>
 
-            <!-- BARRA DE CONTROLES INFERIOR -->
+            <!-- PINES INTERACTIVOS (Ubicados con coordenadas relativas exactas) -->
+            <div class="hotspot-pin active" id="pin-0" onclick="selectHotspot(0)" title="1. Árbol de Levas y Válvulas">1</div>
+            <div class="hotspot-pin" id="pin-1" onclick="selectHotspot(1)" title="2. Bujía y Cámara">2</div>
+            <div class="hotspot-pin" id="pin-2" onclick="selectHotspot(2)" title="3. Cilindro y Camisa">3</div>
+            <div class="hotspot-pin" id="pin-3" onclick="selectHotspot(3)" title="4. Pistón Forjado">4</div>
+            <div class="hotspot-pin" id="pin-4" onclick="selectHotspot(4)" title="5. Biela y Cigüeñal">5</div>
+
+            <!-- CONTROLES FLOTANTES -->
             <div class="bottom-controls-bar">
-                <button class="btn-tool" onclick="setCameraView('front')"><span>👁️</span> Vista Frontal</button>
-                <button class="btn-tool" onclick="setCameraView('iso')"><span>📐</span> Vista Isométrica</button>
-                <button class="btn-tool" onclick="setCameraView('top')"><span>🔝</span> Vista Superior</button>
-                <button class="btn-tool" id="btnSlowMo" onclick="toggleSlowMo()"><span>🐢</span> Cámara Lenta</button>
-                <div style="width: 1px; height: 18px; background: rgba(255,255,255,0.2);"></div>
-                <button class="btn-tool" onclick="resetCamera()"><span>↺</span> Recentrar</button>
+                <button class="btn-tool" onclick="zoomIn()"><span>🔍+</span><span>Zoom</span></button>
+                <button class="btn-tool" onclick="zoomOut()"><span>🔍-</span><span>Alejar</span></button>
+                <button class="btn-tool" onclick="resetView()"><span>🎯</span><span>Centrar</span></button>
+                <button class="btn-tool" onclick="toggleSimSound()"><span>🔊</span><span>Audio Motor</span></button>
             </div>
 
         </main>
-
     </div>
 
-    <!-- MOTOR 3D Y ANIMACIÓN FÍSICA -->
     <script>
-        // CONFIGURACIÓN THREE.JS
-        const container = document.getElementById('stageContainer');
-        const canvas = document.getElementById('webglCanvas');
-        let scene, camera, renderer, controls;
-        let isRunning = true;
-        let speedMult = 1.0;
-        let isSlowMo = false;
-        let soundEnabled = false;
-        let audioCtx = null;
+        // CONFIGURACIÓN GLOBAL
+        const canvas = document.getElementById('photoCanvas');
+        const ctx = canvas.getContext('2d');
+        const engineImg = new Image();
+        let isLoaded = false;
 
-        // PIEZAS 3D MÓVILES
-        let balanceWheelGroup, anchorGroup, escapeWheel, gearTrain = [], mainBarrel;
-        let springMesh;
-        let time = 0;
-        let lastBeat = 0;
+        let visualMode = 'photo'; // 'photo', 'thermal', 'stress'
+        let currentCycle = 0;    // 0: Admisión, 1: Compresión, 2: Explosión, 3: Escape
+        let scale = 1.0;
+        let panX = 0;
+        let panY = 0;
+        let isDragging = false;
+        let startX, startY;
 
-        // MATERIALES PBR REALISTAS
-        let matGold, matBrass, matSteel, matRuby, matDarkPlate, matBluedSteel;
+        // UI references
+        const cycleSlider = document.getElementById('cycleSlider');
+        const strokePhaseVal = document.getElementById('strokePhaseVal');
+        const phaseTitle = document.getElementById('phaseTitle');
+        const phaseDesc = document.getElementById('phaseDesc');
+        const statPress = document.getElementById('statPress');
+        const statTemp = document.getElementById('statTemp');
+        const statDeg = document.getElementById('statDeg');
+        const statForce = document.getElementById('statForce');
+        const phaseCard = document.getElementById('phaseCard');
+        const badgeInfoText = document.getElementById('badgeInfoText');
 
-        function initScene() {
-            scene = new THREE.Scene();
-            scene.background = new THREE.Color(0x060912);
+        // Puntos de inspección en coordenadas relativas sobre la foto técnica
+        const hotspots = [
+            { id: 0, x: 0.50, y: 0.16, name: "Árbol de Levas DOHC y Válvulas", focusScale: 1.8, focusX: 0, focusY: 260 },
+            { id: 1, x: 0.50, y: 0.28, name: "Bujía y Cámara de Combustión", focusScale: 1.9, focusX: 0, focusY: 150 },
+            { id: 2, x: 0.35, y: 0.44, name: "Cilindro y Camisa Bruñida", focusScale: 1.7, focusX: 130, focusY: 20 },
+            { id: 3, x: 0.50, y: 0.46, name: "Pistón Forjado de Aluminio", focusScale: 1.8, focusX: 0, focusY: 0 },
+            { id: 4, x: 0.50, y: 0.76, name: "Biela Forjada y Cigüeñal", focusScale: 1.6, focusX: 0, focusY: -220 }
+        ];
 
-            // CÁMARA
-            camera = new THREE.PerspectiveCamera(40, container.clientWidth / container.clientHeight, 0.1, 1000);
-            camera.position.set(0, 0, 48);
-
-            // RENDERER
-            renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
-            renderer.setSize(container.clientWidth, container.clientHeight);
-            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-            renderer.toneMapping = THREE.ACESFilmicToneMapping;
-            renderer.toneMappingExposure = 1.15;
-            renderer.shadowMap.enabled = true;
-
-            // CONTROLES DE ÓRBITA 3D
-            controls = new THREE.OrbitControls(camera, renderer.domElement);
-            controls.enableDamping = true;
-            controls.dampingFactor = 0.05;
-            controls.maxDistance = 120;
-            controls.minDistance = 10;
-
-            // ILUMINACIÓN DE ESTUDIO DE INGENIERÍA
-            const ambLight = new THREE.AmbientLight(0xffffff, 0.7);
-            scene.add(ambLight);
-
-            const keyLight = new THREE.DirectionalLight(0xffffff, 1.4);
-            keyLight.position.set(30, 40, 50);
-            scene.add(keyLight);
-
-            const rimLight = new THREE.DirectionalLight(0x38bdf8, 0.8);
-            rimLight.position.set(-40, -20, 20);
-            scene.add(rimLight);
-
-            const warmLight = new THREE.PointLight(0xf59e0b, 1.2, 80);
-            warmLight.position.set(0, 10, 20);
-            scene.add(warmLight);
-
-            initMaterials();
-            createWatchMovement();
-
-            window.addEventListener('resize', onWindowResize);
-            animate();
-        }
-
-        function initMaterials() {
-            matGold = new THREE.MeshStandardMaterial({
-                color: 0xf59e0b,
-                metalness: 0.85,
-                roughness: 0.25
-            });
-
-            matBrass = new THREE.MeshStandardMaterial({
-                color: 0xd97706,
-                metalness: 0.80,
-                roughness: 0.35
-            });
-
-            matSteel = new THREE.MeshStandardMaterial({
-                color: 0xcfd8dc,
-                metalness: 0.95,
-                roughness: 0.20
-            });
-
-            matBluedSteel = new THREE.MeshStandardMaterial({
-                color: 0x2563eb,
-                metalness: 0.85,
-                roughness: 0.3
-            });
-
-            matRuby = new THREE.MeshPhysicalMaterial({
-                color: 0xef4444,
-                metalness: 0.1,
-                roughness: 0.1,
-                transmission: 0.85,
-                thickness: 1.2
-            });
-
-            matDarkPlate = new THREE.MeshStandardMaterial({
-                color: 0x1e293b,
-                metalness: 0.5,
-                roughness: 0.6
-            });
-        }
-
-        // GENERADOR PROCEDURAL DE RUEDA DENTADA MECÁNICA REAL
-        function createGear(radius, teeth, thickness, material, axleRadius) {
-            const group = new THREE.Group();
-
-            // Cuerpo del engranaje con borde y dientes
-            const shape = new THREE.Shape();
-            const toothHeight = radius * 0.16;
-            const innerR = radius - toothHeight;
-            const outerR = radius + toothHeight * 0.4;
-            const totalPoints = teeth * 4;
-
-            for (let i = 0; i < totalPoints; i++) {
-                const angle = (i / totalPoints) * Math.PI * 2;
-                const step = i % 4;
-                let r = innerR;
-                if (step === 1 || step === 2) r = outerR;
-
-                const x = Math.cos(angle) * r;
-                const y = Math.sin(angle) * r;
-                if (i === 0) shape.moveTo(x, y);
-                else shape.lineTo(x, y);
-            }
-            shape.closePath();
-
-            // Orificio central
-            const holePath = new THREE.Path();
-            holePath.absarc(0, 0, axleRadius || radius * 0.18, 0, Math.PI * 2, true);
-            shape.holes.push(holePath);
-
-            // Aligeramiento de radios decorativos clásicos
-            if (radius > 4) {
-                const spokeHoles = 4;
-                for (let s = 0; s < spokeHoles; s++) {
-                    const spokeAngle = (s / spokeHoles) * Math.PI * 2;
-                    const rMid = radius * 0.55;
-                    const sHole = new THREE.Path();
-                    sHole.absarc(Math.cos(spokeAngle) * rMid, Math.sin(spokeAngle) * rMid, radius * 0.18, 0, Math.PI * 2, true);
-                    shape.holes.push(sHole);
-                }
-            }
-
-            const extrudeSettings = {
-                steps: 1,
-                depth: thickness || 0.6,
-                bevelEnabled: true,
-                bevelThickness: 0.08,
-                bevelSize: 0.08,
-                bevelSegments: 2
+        // 1. Carga del activo fotográfico real
+        function loadEnginePhoto() {
+            engineImg.onload = function() {
+                isLoaded = true;
+                canvas.width = engineImg.naturalWidth || 1200;
+                canvas.height = engineImg.naturalHeight || 900;
+                render();
             };
 
-            const geom = new THREE.ExtrudeGeometry(shape, extrudeSettings);
-            geom.center();
-            const mesh = new THREE.Mesh(geom, material);
-            group.add(mesh);
-
-            // Eje central de acero pulido
-            const axleGeom = new THREE.CylinderGeometry(axleRadius || radius * 0.14, axleRadius || radius * 0.14, (thickness || 0.6) * 2.2, 16);
-            const axleMesh = new THREE.Mesh(axleGeom, matSteel);
-            axleMesh.rotation.x = Math.PI / 2;
-            group.add(axleMesh);
-
-            return group;
+            if (window.ENGINE_PHOTO_B64 && window.ENGINE_PHOTO_B64.length > 50) {
+                engineImg.src = window.ENGINE_PHOTO_B64;
+            } else {
+                engineImg.onerror = function() {
+                    engineImg.onerror = null;
+                    engineImg.src = "../03_ASSETS_3D_Y_DATOS/four_stroke_engine_cutaway.jpg";
+                };
+                engineImg.src = "../03_ASSETS_3D_Y_DATOS/four_stroke_engine_cutaway.jpg";
+            }
         }
 
-        function createWatchMovement() {
-            // PLATINA BASE CIRCULAR DE RELOJERÍA (MAINPLATE)
-            const plateGeom = new THREE.CylinderGeometry(18, 18, 0.8, 48);
-            const basePlate = new THREE.Mesh(plateGeom, matDarkPlate);
-            basePlate.rotation.x = Math.PI / 2;
-            basePlate.position.z = -2;
-            scene.add(basePlate);
+        // 2. Renderizado del Canvas Fotográfico
+        function render() {
+            if (!isLoaded) return;
 
-            // 1. TAMBOR DE CUERDA (BARREL)
-            mainBarrel = createGear(5.5, 32, 1.4, matBrass, 1.0);
-            mainBarrel.position.set(-8, -4, 0);
-            scene.add(mainBarrel);
+            ctx.save();
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            // 2. TREN DE ENGRANAJES (CENTRAL, TERCERA Y CUARTA RUEDA)
-            const wheelCenter = createGear(4.2, 28, 0.7, matGold, 0.7);
-            wheelCenter.position.set(0, -3, 0.3);
-            scene.add(wheelCenter);
-            gearTrain.push({ mesh: wheelCenter, ratio: -1.8 });
+            // Aplicar transformaciones de Zoom y Pan
+            ctx.translate(canvas.width / 2 + panX, canvas.height / 2 + panY);
+            ctx.scale(scale, scale);
+            ctx.translate(-canvas.width / 2, -canvas.height / 2);
 
-            const wheelThird = createGear(3.4, 22, 0.6, matGold, 0.6);
-            wheelThird.position.set(5.5, -2, 0.6);
-            scene.add(wheelThird);
-            gearTrain.push({ mesh: wheelThird, ratio: 3.5 });
-
-            // 3. RUEDA DE ESCAPE (ESCAPE WHEEL CON DIENTES DE TRINQUETE)
-            escapeWheel = createGear(2.6, 15, 0.45, matSteel, 0.4);
-            escapeWheel.position.set(6.5, 3.5, 0.9);
-            scene.add(escapeWheel);
-
-            // 4. ÁNCORA SUIZA OSCILANTE (ANCHOR LEVER CON 2 RUBÍES)
-            anchorGroup = new THREE.Group();
-            anchorGroup.position.set(3.2, 5.2, 1.2);
-
-            // Cuerpo del áncora de acero
-            const leverBodyGeom = new THREE.BoxGeometry(3.6, 0.6, 0.4);
-            const leverMesh = new THREE.Mesh(leverBodyGeom, matSteel);
-            anchorGroup.add(leverMesh);
-
-            // Horquilla (fork) que conecta con el volante
-            const forkGeom = new THREE.BoxGeometry(0.5, 2.2, 0.3);
-            const forkMesh = new THREE.Mesh(forkGeom, matSteel);
-            forkMesh.position.set(-1.2, 0.9, 0);
-            anchorGroup.add(forkMesh);
-
-            // Rubí de entrada
-            const rubyGeom = new THREE.BoxGeometry(0.4, 0.7, 0.5);
-            const rubyEntry = new THREE.Mesh(rubyGeom, matRuby);
-            rubyEntry.position.set(1.4, -0.4, 0.1);
-            rubyEntry.rotation.z = 0.4;
-            anchorGroup.add(rubyEntry);
-
-            // Rubí de salida
-            const rubyExit = new THREE.Mesh(rubyGeom, matRuby);
-            rubyExit.position.set(0.1, -0.6, 0.1);
-            rubyExit.rotation.z = -0.4;
-            anchorGroup.add(rubyExit);
-
-            scene.add(anchorGroup);
-
-            // 5. VOLANTE DE INERCIA CON ESPIRAL (BALANCE WHEEL)
-            balanceWheelGroup = new THREE.Group();
-            balanceWheelGroup.position.set(0, 8.5, 1.8);
-
-            // Aro perimetral dorado
-            const ringGeom = new THREE.TorusGeometry(4.8, 0.45, 16, 48);
-            const ringMesh = new THREE.Mesh(ringGeom, matGold);
-            balanceWheelGroup.add(ringMesh);
-
-            // Dos radios en cruz
-            const spokeGeom = new THREE.BoxGeometry(9.6, 0.35, 0.3);
-            const spoke1 = new THREE.Mesh(spokeGeom, matGold);
-            balanceWheelGroup.add(spoke1);
-
-            // Tornillos de compensación perimetrales de oro
-            for (let i = 0; i < 12; i++) {
-                const sAngle = (i / 12) * Math.PI * 2;
-                const screwGeom = new THREE.CylinderGeometry(0.2, 0.2, 0.5, 8);
-                const screw = new THREE.Mesh(screwGeom, matBluedSteel);
-                screw.position.set(Math.cos(sAngle) * 5.0, Math.sin(sAngle) * 5.0, 0);
-                screw.rotation.z = sAngle;
-                balanceWheelGroup.add(screw);
+            // A. DIBUJAR LA FOTOGRAFÍA REAL
+            if (visualMode === 'photo') {
+                ctx.filter = 'none';
+                ctx.drawImage(engineImg, 0, 0, canvas.width, canvas.height);
+            } else if (visualMode === 'thermal') {
+                // Termografía Infrarroja de Alta Definición
+                ctx.filter = 'contrast(1.6) saturate(2.2) hue-rotate(180deg)';
+                ctx.drawImage(engineImg, 0, 0, canvas.width, canvas.height);
+                ctx.filter = 'none';
+            } else if (visualMode === 'stress') {
+                // Espectroscopía de Esfuerzos Mecánicos
+                ctx.filter = 'contrast(1.5) brightness(0.9) hue-rotate(270deg)';
+                ctx.drawImage(engineImg, 0, 0, canvas.width, canvas.height);
+                ctx.filter = 'none';
             }
 
-            // Muelle espiral (hairspring) modelado en 3D
-            const spiralCurve = [];
-            const coils = 5;
-            for (let t = 0; t <= Math.PI * 2 * coils; t += 0.15) {
-                const r = 0.4 + (t / (Math.PI * 2 * coils)) * 2.2;
-                spiralCurve.push(new THREE.Vector3(Math.cos(t) * r, Math.sin(t) * r, 0.1));
-            }
-            const curvePath = new THREE.CatmullRomCurve3(spiralCurve);
-            const springGeom = new THREE.TubeGeometry(curvePath, 140, 0.06, 6, false);
-            springMesh = new THREE.Mesh(springGeom, matBluedSteel);
-            balanceWheelGroup.add(springMesh);
+            ctx.restore();
 
-            // Rubí central del eje (pivote incabloc)
-            const capRubyGeom = new THREE.CylinderGeometry(0.5, 0.5, 0.4, 16);
-            const capRuby = new THREE.Mesh(capRubyGeom, matRuby);
-            capRuby.rotation.x = Math.PI / 2;
-            capRuby.position.z = 0.25;
-            balanceWheelGroup.add(capRuby);
-
-            scene.add(balanceWheelGroup);
+            // B. ACTUALIZAR POSICIÓN DE PINES ANATÓMICOS
+            updatePins();
         }
 
-        // SONIDO ACÚSTICO MECÁNICO (TIC... TAC...) CON WEB AUDIO API
-        function playTicTac(isTick) {
-            if (!soundEnabled) return;
-            try {
-                if (!audioCtx) {
-                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                }
-                if (audioCtx.state === 'suspended') {
-                    audioCtx.resume();
-                }
+        // Posiciona los pines flotantes en pantalla según el canvas transformado
+        function updatePins() {
+            const rect = canvas.getBoundingClientRect();
+            hotspots.forEach(hp => {
+                const pin = document.getElementById(`pin-${hp.id}`);
+                if (!pin) return;
 
+                // Coordenadas locales en imagen
+                const localX = hp.x * canvas.width;
+                const localY = hp.y * canvas.height;
+
+                // Transformar por escala y pan
+                const screenX = rect.left + rect.width / 2 + (localX - canvas.width / 2) * scale * (rect.width / canvas.width) + panX;
+                const screenY = rect.top + rect.height / 2 + (localY - canvas.height / 2) * scale * (rect.height / canvas.height) + panY;
+
+                pin.style.left = `${screenX}px`;
+                pin.style.top = `${screenY}px`;
+            });
+        }
+
+        // Telemetría del ciclo Otto
+        const telemetryData = [
+            {
+                name: "Tiempo 1: Admisión (Aspiración)",
+                desc: "La válvula de admisión izquierda baja abierta. El pistón desciende succionando la mezcla fresca de aire y gasolina pulverizada.",
+                press: "0.9 bar",
+                temp: "25 °C",
+                deg: "0° a 180°",
+                force: "1.2 kN",
+                border: "#06b6d4",
+                badge: "1. Admisión (0° - 180°)"
+            },
+            {
+                name: "Tiempo 2: Compresión Hermética",
+                desc: "Ambas válvulas de acero se cierran herméticamente. El pistón asciende comprimiendo la mezcla a una relación de 10:1 elevando la energía térmica.",
+                press: "16.5 bar",
+                temp: "440 °C",
+                deg: "180° a 360°",
+                force: "8.5 kN",
+                border: "#f59e0b",
+                badge: "2. Compresión (180° - 360°)"
+            },
+            {
+                name: "Tiempo 3: ¡Combustión y Fuerza Motriz!",
+                desc: "La bujía de iridio salta a 25.000 V. La violenta deflagración a 2.100 °C empuja el pistón con toneladas de fuerza útil que hacen girar el cigüeñal.",
+                press: "72.0 bar",
+                temp: "2.100 °C",
+                deg: "360° a 540°",
+                force: "32.0 kN",
+                border: "#ef4444",
+                badge: "3. Explosión (360° - 540°)"
+            },
+            {
+                name: "Tiempo 4: Escape de Gases Quemados",
+                desc: "La válvula de escape derecha se abre. El pistón asciende barriendo con fuerza el humo residual hacia el colector exterior.",
+                press: "3.8 bar",
+                temp: "680 °C",
+                deg: "540° a 720°",
+                force: "2.8 kN",
+                border: "#a855f7",
+                badge: "4. Escape (540° - 720°)"
+            }
+        ];
+
+        function setCyclePhase(phase) {
+            currentCycle = parseInt(phase);
+            cycleSlider.value = currentCycle;
+
+            const d = telemetryData[currentCycle];
+            strokePhaseVal.innerText = d.badge;
+            phaseTitle.innerText = d.name;
+            phaseDesc.innerText = d.desc;
+            statPress.innerText = d.press;
+            statTemp.innerText = d.temp;
+            statDeg.innerText = d.deg;
+            statForce.innerText = d.force;
+            phaseCard.style.borderLeftColor = d.border;
+
+            for (let i = 0; i < 4; i++) {
+                const btn = document.getElementById(`btnStroke${i}`);
+                if (btn) btn.classList.toggle('active', i === currentCycle);
+            }
+
+            // Resaltar pin fotográfico del componente activo en este tiempo
+            const cyclePinMap = [0, 2, 1, 0];
+            const targetPinIdx = cyclePinMap[currentCycle];
+            document.querySelectorAll('.hotspot-pin').forEach(p => p.classList.remove('active'));
+            const pElem = document.getElementById(`pin-${targetPinIdx}`);
+            if (pElem) pElem.classList.add('active');
+
+            render();
+        }
+
+        function setVisualMode(mode) {
+            visualMode = mode;
+            document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+
+            if (mode === 'photo') {
+                document.getElementById('btnModePhoto').classList.add('active');
+                badgeInfoText.innerText = "Fotografía Técnica Real • Corte de Ingeniería Automotriz HD";
+            } else if (mode === 'thermal') {
+                document.getElementById('btnModeThermal').classList.add('active');
+                badgeInfoText.innerText = "Inspección Termográfica • Gradientes de Combustión Infrarroja";
+            } else if (mode === 'stress') {
+                document.getElementById('btnModeStress').classList.add('active');
+                badgeInfoText.innerText = "Análisis de Esfuerzos Mecánicos • Distribución de Carga en Biela";
+            }
+            render();
+        }
+
+        function selectHotspot(index) {
+            document.querySelectorAll('.part-card').forEach(c => c.classList.remove('active'));
+            document.querySelectorAll('.hotspot-pin').forEach(p => p.classList.remove('active'));
+
+            const card = document.getElementById(`card-${index}`);
+            const pin = document.getElementById(`pin-${index}`);
+            if (card) card.classList.add('active');
+            if (pin) pin.classList.add('active');
+
+            const hp = hotspots[index];
+            scale = hp.focusScale;
+            panX = hp.focusX;
+            panY = hp.focusY;
+            render();
+        }
+
+        function zoomIn() { scale = Math.min(3.0, scale * 1.25); render(); }
+        function zoomOut() { scale = Math.max(0.6, scale / 1.25); render(); }
+        function resetView() { scale = 1.0; panX = 0; panY = 0; render(); }
+
+        // Audio sintetizado opcional
+        let audioCtx = null;
+        let isAudioOn = false;
+        function toggleSimSound() {
+            isAudioOn = !isAudioOn;
+            if (isAudioOn) {
+                if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
                 const osc = audioCtx.createOscillator();
                 const gain = audioCtx.createGain();
-                const now = audioCtx.currentTime;
-
-                // Frecuencia acústica de choque entre rubí y diente de acero
-                osc.type = 'triangle';
-                osc.frequency.setValueAtTime(isTick ? 3400 : 2800, now);
-                osc.frequency.exponentialRampToValueAtTime(800, now + 0.025);
-
-                gain.gain.setValueAtTime(0.08, now);
-                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.028);
-
+                osc.type = 'sawtooth';
+                osc.frequency.value = 55;
+                gain.gain.setValueAtTime(0.06, audioCtx.currentTime);
                 osc.connect(gain);
                 gain.connect(audioCtx.destination);
-
-                osc.start(now);
-                osc.stop(now + 0.03);
-            } catch(e) {}
-        }
-
-        // BUCLE PRINCIPAL DE ANIMACIÓN FÍSICA
-        function animate() {
-            requestAnimationFrame(animate);
-
-            if (isRunning) {
-                const dt = 0.016 * speedMult * (isSlowMo ? 0.2 : 1.0);
-                time += dt;
-
-                // 1. Oscilación armónica senoidal del volante (Frecuencia 4 Hz = 28.800 A/h)
-                const freq = 4.0;
-                const amplitude = 1.35; // Amplitud angular de giro
-                const balanceAngle = Math.sin(time * Math.PI * 2 * freq) * amplitude;
-                balanceWheelGroup.rotation.z = balanceAngle;
-
-                // Deformación del espiral
-                springMesh.rotation.z = balanceAngle * 0.35;
-
-                // 2. Basculación del áncora suiza sincronizada con los pasos por cero
-                const anchorAngle = Math.sign(Math.cos(time * Math.PI * 2 * freq)) * 0.16;
-                anchorGroup.rotation.z = anchorAngle;
-
-                // 3. Avance paso a paso de la rueda de escape
-                const step = Math.floor(time * freq * 2);
-                if (step !== lastBeat) {
-                    lastBeat = step;
-                    playTicTac(step % 2 === 0);
-                }
-                escapeWheel.rotation.z = (step * (Math.PI * 2 / 15) * 0.5) + (time * 0.1);
-
-                // 4. Rotación continua del tren de engranajes y tambor
-                gearTrain.forEach(item => {
-                    item.mesh.rotation.z = time * item.ratio * 0.4;
-                });
-                mainBarrel.rotation.z = time * 0.04;
-            }
-
-            controls.update();
-            renderer.render(scene, camera);
-        }
-
-        // CONTROLES DE INTERACCIÓN
-        function updateSpeed(val) {
-            speedMult = parseFloat(val);
-            document.getElementById('speedVal').innerText = `${speedMult.toFixed(1)}x ${speedMult === 1 ? '(Tiempo Real)' : ''}`;
-        }
-
-        function togglePlay() {
-            isRunning = !isRunning;
-            const btn = document.getElementById('btnPlayPause');
-            btn.innerText = isRunning ? "⏸ Pausar" : "▶ Reanudar";
-            btn.classList.toggle('active', isRunning);
-        }
-
-        function toggleSlowMo() {
-            isSlowMo = !isSlowMo;
-            const btn = document.getElementById('btnSlowMo');
-            btn.classList.toggle('active', isSlowMo);
-            btn.innerText = isSlowMo ? "⚡ Normal" : "🐢 Cámara Lenta";
-        }
-
-        function toggleSound() {
-            soundEnabled = !soundEnabled;
-            const btn = document.getElementById('btnSound');
-            btn.classList.toggle('active', soundEnabled);
-            btn.innerText = soundEnabled ? "🔇 Silenciar" : "🔊 Sonido Tic-Tac";
-        }
-
-        function setCameraView(view) {
-            if (view === 'front') {
-                gsapCamera(0, 0, 48, 0, 0, 0);
-            } else if (view === 'iso') {
-                gsapCamera(25, -20, 36, 0, 2, 0);
-            } else if (view === 'top') {
-                gsapCamera(0, -35, 25, 0, 0, 0);
+                osc.start();
+                setTimeout(() => { osc.stop(); isAudioOn = false; }, 800);
             }
         }
 
-        function resetCamera() {
-            gsapCamera(0, 0, 48, 0, 0, 0);
-        }
+        // Interacción de Pan y Arrastre
+        canvas.addEventListener('mousedown', e => {
+            isDragging = true;
+            startX = e.clientX - panX;
+            startY = e.clientY - panY;
+        });
+        window.addEventListener('mousemove', e => {
+            if (!isDragging) return;
+            panX = e.clientX - startX;
+            panY = e.clientY - startY;
+            render();
+        });
+        window.addEventListener('mouseup', () => { isDragging = false; });
+        canvas.addEventListener('wheel', e => {
+            e.preventDefault();
+            if (e.deltaY < 0) zoomIn();
+            else zoomOut();
+        });
 
-        function focusPart(idx) {
-            document.querySelectorAll('.part-card').forEach((c, i) => c.classList.toggle('active', i === idx));
-            const targets = [
-                { pos: [0, 8.5, 22], look: [0, 8.5, 0] },     // Volante
-                { pos: [3.2, 5.2, 14], look: [3.2, 5.2, 0] },   // Áncora
-                { pos: [6.5, 3.5, 12], look: [6.5, 3.5, 0] },   // Rueda de escape
-                { pos: [2.5, -2.5, 20], look: [2.5, -2.5, 0] }, // Tren de engranajes
-                { pos: [-8, -4, 18], look: [-8, -4, 0] }        // Tambor de cuerda
-            ];
-            const t = targets[idx];
-            gsapCamera(t.pos[0], t.pos[1], t.pos[2], t.look[0], t.look[1], t.look[2]);
-        }
+        window.addEventListener('resize', () => {
+            if (isLoaded) render();
+        });
 
-        function gsapCamera(x, y, z, lx, ly, lz) {
-            camera.position.set(x, y, z);
-            controls.target.set(lx, ly, lz);
-            controls.update();
-        }
-
-        function onWindowResize() {
-            camera.aspect = container.clientWidth / container.clientHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(container.clientWidth, container.clientHeight);
-        }
-
-        window.addEventListener('DOMContentLoaded', initScene);
+        // Iniciar carga
+        loadEnginePhoto();
     </script>
 </body>
 </html>
