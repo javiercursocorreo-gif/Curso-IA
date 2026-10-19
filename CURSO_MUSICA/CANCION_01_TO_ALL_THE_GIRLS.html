@@ -331,11 +331,11 @@
     
     <!-- BARRA DE NAVEGACIÓN -->
     <div class="nav-bar">
-        <a class="btn-back" href="REPERTORIO_KORG_EK50.html?v=81">
+        <a class="btn-back" href="REPERTORIO_KORG_EK50.html?v=82">
             ⬅ Volver a la Lista de Canciones
         </a>
         <div style="display:flex; align-items:center; gap:8px;">
-            <button onclick="window.location.href='CANCION_01_TO_ALL_THE_GIRLS.html?t='+Date.now()" style="background:#0284c7; color:#fff; border:none; padding:6px 12px; border-radius:8px; font-size:0.8rem; font-weight:800; cursor:pointer;" title="Pulsa aquí en el iPad para limpiar la caché y ver la última versión">🔄 Recargar v81</button>
+            <button onclick="window.location.href='CANCION_01_TO_ALL_THE_GIRLS.html?t='+Date.now()" style="background:#0284c7; color:#fff; border:none; padding:6px 12px; border-radius:8px; font-size:0.8rem; font-weight:800; cursor:pointer;" title="Pulsa aquí en el iPad para limpiar la caché y ver la última versión">🔄 Recargar v82</button>
             <div class="midi-bar">
                 <span id="midi-dot" class="status-dot"></span>
                 <span id="midi-label">Iniciando MIDI...</span>
@@ -687,6 +687,7 @@
 <script>
     let midiOutput = null;
     let midiAccessInstance = null;
+    let midiClockTimer = null;
 
     function extraerPuertos(coleccion) {
         const res = [];
@@ -719,6 +720,40 @@
         return res;
     }
 
+    function obtenerSalidasDisponibles() {
+        if (!midiAccessInstance) return [];
+        return extraerPuertos(midiAccessInstance.outputs);
+    }
+
+    function enviarMidiGlobal(bytes) {
+        let salidas = obtenerSalidasDisponibles();
+        if (salidas.length === 0 && midiOutput) salidas = [midiOutput];
+        if (salidas.length === 0) return 0;
+        let count = 0;
+        salidas.forEach(port => {
+            try {
+                if (port && typeof port.send === 'function') {
+                    port.send(bytes);
+                    count++;
+                }
+            } catch(e) {
+                console.warn("Error enviando MIDI a:", port ? port.name : 'desconocido', e);
+            }
+        });
+        return count;
+    }
+
+    function fijarTempoMIDI100BPM() {
+        if (midiClockTimer) clearInterval(midiClockTimer);
+        const salidas = obtenerSalidasDisponibles();
+        if (salidas.length === 0 && !midiOutput) return;
+
+        // Estándar MIDI Clock a 100 BPM: 25 ms por tick 0xF8
+        midiClockTimer = setInterval(() => {
+            enviarMidiGlobal([0xF8]);
+        }, 25);
+    }
+
     let intentosConexion = 0;
 
     async function conectarMIDI(forzar = false) {
@@ -727,11 +762,12 @@
         const log = document.getElementById("log-1");
         if (!dot || !text) return null;
 
-        // Si ya está conectado y no se fuerza el reescaneo, reutilizarlo
-        if (!forzar && midiOutput) {
+        // Si ya está conectado con salidas activas y no se fuerza, reutilizarlo
+        if (!forzar && midiOutput && obtenerSalidasDisponibles().length > 0) {
             dot.style.background = "#10b981";
             dot.classList.add("connected");
-            text.innerHTML = `🟢 Conectado: <b>${midiOutput.name || 'Korg EK-50'}</b>`;
+            const names = obtenerSalidasDisponibles().map(o => o.name || 'MIDI Out').join(', ');
+            text.innerHTML = `🟢 Conectado: <b>${names}</b>`;
             return midiOutput;
         }
 
@@ -742,9 +778,10 @@
                 midiOutput = korg || outputs[0];
                 dot.style.background = "#10b981";
                 dot.classList.add("connected");
-                text.innerHTML = `🟢 Conectado: <b>${midiOutput.name}</b>`;
+                const names = outputs.map(o => o.name || 'MIDI Out').join(', ');
+                text.innerHTML = `🟢 Conectado: <b>${names}</b>`;
                 if (log && log.innerHTML.includes('Listo para')) {
-                    log.innerHTML = `✅ Korg EK-50 detectado: <b>${midiOutput.name}</b> listo.`;
+                    log.innerHTML = `✅ Salida MIDI USB lista: <b>${names}</b>.`;
                 }
                 return midiOutput;
             }
@@ -755,7 +792,7 @@
             dot.style.background = "#38bdf8";
             dot.classList.remove("connected");
             if (isIOS) {
-                text.innerHTML = '📱 <b>iPad (Modo Atril):</b> Para control MIDI en iPad abre esta web en la app <i>Web MIDI Browser</i>.';
+                text.innerHTML = '📱 <b>iPad (Modo Atril):</b> Abre esta web en la app <i>Web MIDI Browser</i>.';
             } else {
                 text.innerHTML = '💻 <b>Modo Consulta:</b> Para enviar MIDI por cable USB abre esta web en <b>Google Chrome</b>.';
             }
@@ -766,7 +803,6 @@
         text.innerHTML = '🟡 Conectando CoreMIDI...';
 
         try {
-            // Envolver la petición en un Promise seguro con timeout
             const midiAccess = await new Promise((resolve, reject) => {
                 let timer = setTimeout(() => {
                     reject(new Error("Esperando CoreMIDI..."));
@@ -805,15 +841,19 @@
                     midiOutput = korg || outputs[0];
                     dot.style.background = "#10b981";
                     dot.classList.add("connected");
-                    text.innerHTML = `🟢 Conectado: <b>${midiOutput.name}</b>`;
-                    if (log && log.innerHTML.includes('Listo para')) {
-                        log.innerHTML = `✅ Korg EK-50 detectado vía USB: <b>${midiOutput.name}</b> listo.`;
+                    const names = outputs.map(o => o.name || 'MIDI Out').join(', ');
+                    text.innerHTML = `🟢 Conectado: <b>${names}</b>`;
+                    if (log && (log.innerHTML.includes('Listo para') || log.innerHTML.includes('buscando') || log.innerHTML.includes('Esperando'))) {
+                        log.innerHTML = `✅ Puerto de salida USB listo: <b>${names}</b>.`;
                     }
                     return midiOutput;
                 } else if (inputs.length > 0) {
-                    dot.style.background = "#10b981";
-                    dot.classList.add("connected");
-                    text.innerHTML = `🟢 Conectado: <b>${inputs[0].name}</b>`;
+                    midiOutput = null;
+                    dot.style.background = "#d29922";
+                    dot.classList.remove("connected");
+                    const inNames = inputs.map(i => i.name || 'MIDI In').join(', ');
+                    text.innerHTML = `🟡 Entrada: <b>${inNames}</b> (sin salida USB) <span style="font-size:0.75rem; text-decoration:underline; cursor:pointer;" onclick="conectarMIDI(true)">🔄 Re-escanear</span>`;
+                    if (log) log.innerHTML = `⚠️ Detectada entrada (<b>${inNames}</b>), pero CoreMIDI aún no abre la salida hacia el teclado. Vuelve a enchufar el adaptador USB.`;
                     return null;
                 } else {
                     midiOutput = null;
@@ -824,18 +864,8 @@
                 }
             }
 
-            // Escuchar cambios de estado (si el usuario enchufa o enciende el Korg en caliente)
+            // Escuchar cambios de estado en caliente
             midiAccessInstance.onstatechange = (e) => {
-                if (e && e.port) {
-                    if (e.port.type === 'output' && (e.port.state === 'connected' || e.port.connection === 'open')) {
-                        midiOutput = e.port;
-                        dot.style.background = "#10b981";
-                        dot.classList.add("connected");
-                        text.innerHTML = `🟢 Conectado: <b>${midiOutput.name}</b>`;
-                        if (log) log.innerHTML = `✅ Korg detectado en tiempo real: <b>${midiOutput.name}</b> listo.`;
-                        return;
-                    }
-                }
                 bindPorts();
             };
 
@@ -855,7 +885,6 @@
             dot.classList.remove("connected");
             text.innerHTML = `🟡 ${msg} <span style="font-size:0.75rem; text-decoration:underline; cursor:pointer;" onclick="conectarMIDI(true)">🔄 Detectar</span>`;
 
-            // Reintento silencioso en caso de inicialización diferida de CoreMIDI en iPad
             if (intentosConexion < 3) {
                 setTimeout(() => conectarMIDI(true), 800 * intentosConexion);
             }
@@ -865,20 +894,40 @@
 
     function probarNotaKorg() {
         const log = document.getElementById('log-1');
-        if (!midiOutput && midiAccessInstance) {
-            const outputs = extraerPuertos(midiAccessInstance.outputs);
-            if (outputs.length > 0) midiOutput = outputs[0];
-        }
-        if (!midiOutput) {
-            alert('⚠️ No se detecta el Korg EK-50 por USB.\n\nComprueba:\n1. Que el Korg EK-50 esté encendido.\n2. Que el cable USB esté conectado al iPad.\n3. Pulsa "Detectar" arriba.');
+        const salidas = obtenerSalidasDisponibles();
+        if (salidas.length === 0 && !midiOutput) {
+            alert('⚠️ No se detecta ninguna salida MIDI hacia el Korg EK-50.\n\nPor favor comprueba:\n1. Que el Korg EK-50 esté encendido (pantalla iluminada).\n2. Que el cable USB esté conectado firmemente al iPad.\n3. Si sigue sin verse, desconecta y vuelve a conectar el cable USB del iPad y pulsa Detectar.');
             return;
         }
         try {
-            midiOutput.send([0x90, 60, 100]);
+            // 1. Asegurar volumen y expresión al máximo en canales 1, 2, 4 y 10 (batería)
+            [0, 1, 3, 9].forEach(ch => {
+                enviarMidiGlobal([0xB0 | ch, 0x07, 127]); // Volumen CC7 = 127
+                enviarMidiGlobal([0xB0 | ch, 0x0B, 127]); // Expresión CC11 = 127
+            });
+
+            // 2. Enviar nota de prueba Do central (60) en Canal 1 (Upper 1), Canal 2 (Upper 2) y Canal 4 (Lower)
+            enviarMidiGlobal([0x90 | 0, 60, 115]);
+            enviarMidiGlobal([0x90 | 1, 60, 115]);
+            enviarMidiGlobal([0x90 | 3, 60, 115]);
+
+            // 3. Enviar golpe de caja y bombo en Canal 10 (Drums - nunca silenciado en teclados de acompañamiento)
+            enviarMidiGlobal([0x90 | 9, 38, 120]); // Snare 1
+            enviarMidiGlobal([0x90 | 9, 36, 120]); // Bass Drum 1
+
+            // 4. Apagar notas tras 800 ms
             setTimeout(() => {
-                try { midiOutput.send([0x80, 60, 0]); } catch(e){}
-            }, 500);
-            if (log) log.innerHTML = `🔊 <b>Nota de prueba Do3 enviada</b> a <b>${midiOutput.name}</b>.`;
+                try {
+                    enviarMidiGlobal([0x80 | 0, 60, 0]);
+                    enviarMidiGlobal([0x80 | 1, 60, 0]);
+                    enviarMidiGlobal([0x80 | 3, 60, 0]);
+                    enviarMidiGlobal([0x80 | 9, 38, 0]);
+                    enviarMidiGlobal([0x80 | 9, 36, 0]);
+                } catch(e){}
+            }, 800);
+
+            const outNames = salidas.map(o => o.name || 'MIDI Out').join(', ') || (midiOutput ? midiOutput.name : 'USB');
+            if (log) log.innerHTML = `🔊 <b>Señal de prueba enviada</b> a <b>${outNames}</b> (Do3 melódico + Percusión Ch.10). Comprueba el volumen físico del Korg.`;
         } catch(e) {
             if (log) log.innerHTML = `⚠️ Error enviando nota: ${e.message}`;
         }
@@ -886,91 +935,85 @@
 
     function resetAPianoLimpio() {
         const log = document.getElementById('log-1');
-        if (!midiOutput && midiAccessInstance) {
-            const outputs = Array.from(midiAccessInstance.outputs.values());
-            if (outputs.length > 0) midiOutput = outputs[0];
-        }
-        if (!midiOutput) {
-            if (log) log.textContent = '⚠️ Conecta el Korg y pulsa Conectar arriba.';
+        const salidas = obtenerSalidasDisponibles();
+        if (salidas.length === 0 && !midiOutput) {
+            if (log) log.textContent = '⚠️ Conecta el Korg y pulsa Detectar arriba.';
             return;
         }
 
         // Reset total: Grand Piano puro (Banco 0, PC 0) en Upper 1, apagando Upper 2 y 3 (elimina el acordeón)
-        midiOutput.send([0xB0 | 0, 0x00, 0]); // CC0 = 0 (Banco estándar)
-        midiOutput.send([0xB0 | 0, 0x20, 0]); // CC32 = 0
-        midiOutput.send([0xC0 | 0, 0]);       // PC 0 -> Grand Piano de Cola
+        enviarMidiGlobal([0xB0 | 0, 0x00, 0]); // CC0 = 0 (Banco estándar)
+        enviarMidiGlobal([0xB0 | 0, 0x20, 0]); // CC32 = 0
+        enviarMidiGlobal([0xC0 | 0, 0]);       // PC 0 -> Grand Piano de Cola
 
-        midiOutput.send([0xB0 | 0, 0x07, 127]); // Upper 1 al 100%
-        midiOutput.send([0xB0 | 1, 0x07, 0]);   // Upper 2 al 0% (SILENCIA EL ACORDEÓN)
-        midiOutput.send([0xB0 | 2, 0x07, 0]);   // Upper 3 al 0%
+        enviarMidiGlobal([0xB0 | 0, 0x07, 127]); // Upper 1 al 100%
+        enviarMidiGlobal([0xB0 | 0, 0x0B, 127]);
+        enviarMidiGlobal([0xB0 | 1, 0x07, 0]);   // Upper 2 al 0%
+        enviarMidiGlobal([0xB0 | 2, 0x07, 0]);   // Upper 3 al 0%
 
-        if (log) log.textContent = `🎹 ¡Acordeón eliminado! -> Restaurado Grand Piano de Cola limpio en ${midiOutput.name}.`;
-    }
-
-    let midiClockTimer = null;
-
-    function fijarTempoMIDI100BPM() {
-        if (midiClockTimer) clearInterval(midiClockTimer);
-        if (!midiOutput) return;
-
-        // Estándar MIDI Clock a 100 BPM:
-        // 24 ticks por negra * 100 BPM = 2.400 pulsos/minuto = 40 pulsos/segundo = exactamente 25 ms por pulso (0xF8).
-        midiClockTimer = setInterval(() => {
-            if (midiOutput) {
-                try {
-                    midiOutput.send([0xF8]); // MIDI Timing Clock
-                } catch(e) {}
-            }
-        }, 25);
+        const nombres = salidas.map(o=>o.name).join(', ') || (midiOutput ? midiOutput.name : 'USB');
+        if (log) log.textContent = `🎹 ¡Acordeón eliminado! -> Restaurado Grand Piano de Cola limpio en ${nombres}.`;
     }
 
     async function cargarStringsSuaves() {
         const log = document.getElementById('log-1');
-        if (!midiOutput) {
+        if (!midiOutput && (!midiAccessInstance || obtenerSalidasDisponibles().length === 0)) {
             await conectarMIDI();
         }
-        if (!midiOutput && midiAccessInstance) {
-            const outputs = Array.from(midiAccessInstance.outputs.values());
-            if (outputs.length > 0) midiOutput = outputs[0];
-        }
-        if (!midiOutput) {
-            if (log) log.innerHTML = '⚠️ No se detecta el Korg EK-50. Comprueba el cable USB y pulsa "Detectar" arriba.';
+        const salidas = obtenerSalidasDisponibles();
+        if (salidas.length === 0 && !midiOutput) {
+            if (log) log.innerHTML = '⚠️ No se detecta salida MIDI hacia el Korg EK-50. Comprueba el cable USB y pulsa "Detectar" arriba.';
             return;
         }
 
         try {
             // 1. Cargar Estilo 041 Love Ballad (Canal 16)
-            midiOutput.send([0xB0 | 15, 0x00, 32]);
-            midiOutput.send([0xB0 | 15, 0x20, 2]);
-            midiOutput.send([0xC0 | 15, 8]);
+            enviarMidiGlobal([0xB0 | 15, 0x00, 32]);
+            enviarMidiGlobal([0xB0 | 15, 0x20, 2]);
+            enviarMidiGlobal([0xC0 | 15, 8]);
 
             // 2. Cargar en pantalla del Korg el Keyboard Set No. 61: "The Strings" (Banco 33, LSB 6, PC 0)
-            midiOutput.send([0xB0 | 0, 0x00, 33]);
-            midiOutput.send([0xB0 | 0, 0x20, 6]);
-            midiOutput.send([0xC0 | 0, 0]);
+            enviarMidiGlobal([0xB0 | 0, 0x00, 33]);
+            enviarMidiGlobal([0xB0 | 0, 0x20, 6]);
+            enviarMidiGlobal([0xC0 | 0, 0]);
 
-            midiOutput.send([0xB0 | 15, 0x00, 33]);
-            midiOutput.send([0xB0 | 15, 0x20, 6]);
-            midiOutput.send([0xC0 | 15, 0]);
+            enviarMidiGlobal([0xB0 | 15, 0x00, 33]);
+            enviarMidiGlobal([0xB0 | 15, 0x20, 6]);
+            enviarMidiGlobal([0xC0 | 15, 0]);
 
             // 3. Voces suaves sin piano: St. Strings (Upper 1) + String Quartet sutil (Upper 2)
-            midiOutput.send([0xB0 | 0, 0x00, 121]);
-            midiOutput.send([0xB0 | 0, 0x20, 3]);
-            midiOutput.send([0xC0 | 0, 48]); // St. Strings
-            midiOutput.send([0xB0 | 0, 0x07, 105]);
+            enviarMidiGlobal([0xB0 | 0, 0x00, 121]);
+            enviarMidiGlobal([0xB0 | 0, 0x20, 3]);
+            enviarMidiGlobal([0xC0 | 0, 48]); // St. Strings
+            enviarMidiGlobal([0xB0 | 0, 0x07, 115]);
+            enviarMidiGlobal([0xB0 | 0, 0x0B, 127]);
 
-            midiOutput.send([0xB0 | 1, 0x00, 121]);
-            midiOutput.send([0xB0 | 1, 0x20, 9]);
-            midiOutput.send([0xC0 | 1, 48]); // StringQuart
-            midiOutput.send([0xB0 | 1, 0x07, 60]);
+            enviarMidiGlobal([0xB0 | 1, 0x00, 121]);
+            enviarMidiGlobal([0xB0 | 1, 0x20, 9]);
+            enviarMidiGlobal([0xC0 | 1, 48]); // StringQuart
+            enviarMidiGlobal([0xB0 | 1, 0x07, 75]);
+            enviarMidiGlobal([0xB0 | 1, 0x0B, 127]);
 
             // Upper 3 apagado (sin octavas bajas ni acordeón)
-            midiOutput.send([0xB0 | 2, 0x07, 0]);
+            enviarMidiGlobal([0xB0 | 2, 0x07, 0]);
 
             // 4. Emitir reloj MIDI a 100 BPM
             fijarTempoMIDI100BPM();
 
-            if (log) log.innerHTML = `🎻 <b>1. Strings Suaves</b> activado en ${midiOutput.name} (Línea 1: 041 Love Ballad · Línea 2: <b>The Strings</b> · Sin piano).`;
+            // 5. PREVIEW SONORO INMEDIATO: Acorde Fa Mayor en Cuerdas (Fa4: 65, La4: 69, Do5: 72)
+            enviarMidiGlobal([0x90 | 0, 65, 105]);
+            enviarMidiGlobal([0x90 | 0, 69, 105]);
+            enviarMidiGlobal([0x90 | 0, 72, 105]);
+            setTimeout(() => {
+                try {
+                    enviarMidiGlobal([0x80 | 0, 65, 0]);
+                    enviarMidiGlobal([0x80 | 0, 69, 0]);
+                    enviarMidiGlobal([0x80 | 0, 72, 0]);
+                } catch(e){}
+            }, 800);
+
+            const nombres = salidas.map(o=>o.name).join(', ') || (midiOutput ? midiOutput.name : 'USB');
+            if (log) log.innerHTML = `🎻 <b>1. Strings Suaves</b> activado en <b>${nombres}</b> (Línea 1: 041 Love Ballad · Línea 2: <b>The Strings</b> · 🔊 <i>Acorde Fa Mayor emitido</i>).`;
         } catch(e) {
             if (log) log.innerHTML = `⚠️ Error enviando al Korg: ${e.message}`;
         }
@@ -979,42 +1022,53 @@
 
     async function cargarViolinesAgudos() {
         const log = document.getElementById('log-1');
-        if (!midiOutput) {
+        if (!midiOutput && (!midiAccessInstance || obtenerSalidasDisponibles().length === 0)) {
             await conectarMIDI();
         }
-        if (!midiOutput && midiAccessInstance) {
-            const outputs = Array.from(midiAccessInstance.outputs.values());
-            if (outputs.length > 0) midiOutput = outputs[0];
-        }
-        if (!midiOutput) {
+        const salidas = obtenerSalidasDisponibles();
+        if (salidas.length === 0 && !midiOutput) {
             if (log) log.innerHTML = '⚠️ No se detecta el Korg EK-50. Comprueba el cable USB y pulsa "Detectar" arriba.';
             return;
         }
 
         try {
             // 1. Cargar en pantalla del Korg el Keyboard Set No. 62: "Bow Strings" (Banco 33, LSB 6, PC 1)
-            midiOutput.send([0xB0 | 0, 0x00, 33]);
-            midiOutput.send([0xB0 | 0, 0x20, 6]);
-            midiOutput.send([0xC0 | 0, 1]);
+            enviarMidiGlobal([0xB0 | 0, 0x00, 33]);
+            enviarMidiGlobal([0xB0 | 0, 0x20, 6]);
+            enviarMidiGlobal([0xC0 | 0, 1]);
 
-            midiOutput.send([0xB0 | 15, 0x00, 33]);
-            midiOutput.send([0xB0 | 15, 0x20, 6]);
-            midiOutput.send([0xC0 | 15, 1]);
+            enviarMidiGlobal([0xB0 | 15, 0x00, 33]);
+            enviarMidiGlobal([0xB0 | 15, 0x20, 6]);
+            enviarMidiGlobal([0xC0 | 15, 1]);
 
             // 2. Upper 1 = Solo Strings finas y brillantes
-            midiOutput.send([0xB0 | 0, 0x00, 121]);
-            midiOutput.send([0xB0 | 0, 0x20, 3]);
-            midiOutput.send([0xC0 | 0, 48]);
-            midiOutput.send([0xB0 | 0, 0x07, 127]);
+            enviarMidiGlobal([0xB0 | 0, 0x00, 121]);
+            enviarMidiGlobal([0xB0 | 0, 0x20, 3]);
+            enviarMidiGlobal([0xC0 | 0, 48]);
+            enviarMidiGlobal([0xB0 | 0, 0x07, 127]);
+            enviarMidiGlobal([0xB0 | 0, 0x0B, 127]);
 
-            // Silenciar Upper 2 y 3 al 0% (elimina el acordeón y los graves)
-            midiOutput.send([0xB0 | 1, 0x07, 0]);
-            midiOutput.send([0xB0 | 2, 0x07, 0]);
+            // Silenciar Upper 2 y 3 al 0%
+            enviarMidiGlobal([0xB0 | 1, 0x07, 0]);
+            enviarMidiGlobal([0xB0 | 2, 0x07, 0]);
 
             // 3. Emitir reloj MIDI a 100 BPM
             fijarTempoMIDI100BPM();
 
-            if (log) log.innerHTML = `🎻 <b>2. Violines Agudos</b> activado en ${midiOutput.name} (Línea 1: 041 Love Ballad · Línea 2: <b>Bow Strings</b> · Solistas).`;
+            // 4. PREVIEW SONORO INMEDIATO: Violines agudos (Fa5: 77, La5: 81, Do6: 84)
+            enviarMidiGlobal([0x90 | 0, 77, 110]);
+            enviarMidiGlobal([0x90 | 0, 81, 110]);
+            enviarMidiGlobal([0x90 | 0, 84, 110]);
+            setTimeout(() => {
+                try {
+                    enviarMidiGlobal([0x80 | 0, 77, 0]);
+                    enviarMidiGlobal([0x80 | 0, 81, 0]);
+                    enviarMidiGlobal([0x80 | 0, 84, 0]);
+                } catch(e){}
+            }, 800);
+
+            const nombres = salidas.map(o=>o.name).join(', ') || (midiOutput ? midiOutput.name : 'USB');
+            if (log) log.innerHTML = `🎻 <b>2. Violines Agudos</b> activado en <b>${nombres}</b> (Línea 1: 041 Love Ballad · Línea 2: <b>Bow Strings</b> · 🔊 <i>Acorde agudo emitido</i>).`;
         } catch(e) {
             if (log) log.innerHTML = `⚠️ Error enviando al Korg: ${e.message}`;
         }
@@ -1022,44 +1076,40 @@
 
     function enviarSoloEstilo(msb, lsb, stylePC) {
         const log = document.getElementById('log-1');
-        if (!midiOutput && midiAccessInstance) {
-            const outputs = Array.from(midiAccessInstance.outputs.values());
-            if (outputs.length > 0) midiOutput = outputs[0];
-        }
-        if (!midiOutput) return;
+        const salidas = obtenerSalidasDisponibles();
+        if (salidas.length === 0 && !midiOutput) return;
 
-        midiOutput.send([0xB0 | 15, 0x00, msb]);
-        midiOutput.send([0xB0 | 15, 0x20, lsb]);
-        midiOutput.send([0xC0 | 15, stylePC]);
-        log.textContent = `✅ ¡Estilo ${stylePC} enviado a ${midiOutput.name}!`;
+        enviarMidiGlobal([0xB0 | 15, 0x00, msb]);
+        enviarMidiGlobal([0xB0 | 15, 0x20, lsb]);
+        enviarMidiGlobal([0xC0 | 15, stylePC]);
+        const nombres = salidas.map(o=>o.name).join(', ') || (midiOutput ? midiOutput.name : 'USB');
+        if (log) log.textContent = `✅ ¡Estilo ${stylePC} enviado a ${nombres}!`;
     }
 
     function transportarWillieNelson() {
         const log = document.getElementById('log-transpose');
-        if (!midiOutput && midiAccessInstance) {
-            const outputs = Array.from(midiAccessInstance.outputs.values());
-            if (outputs.length > 0) midiOutput = outputs[0];
+        const salidas = obtenerSalidasDisponibles();
+        if (salidas.length === 0 && !midiOutput) {
+            if (log) log.innerHTML = `⚠️ MIDI no detectado. En el Korg pulsa el botón <b>TRANSPOSE b</b> hasta marcar <b>-4</b>.`;
+            return;
         }
 
         try {
-            if (midiOutput) {
-                // 1. SysEx Universal Real-Time Master Coarse Tuning (MMA MIDI Standard)
-                // mm = 60 (0x3C = -4 semitonos respecto a 64 centro)
-                midiOutput.send([0xF0, 0x7F, 0x7F, 0x04, 0x04, 0x00, 60, 0xF7]);
+            // 1. SysEx Universal Real-Time Master Coarse Tuning (MMA MIDI Standard)
+            // mm = 60 (0x3C = -4 semitonos respecto a 64 centro)
+            enviarMidiGlobal([0xF0, 0x7F, 0x7F, 0x04, 0x04, 0x00, 60, 0xF7]);
 
-                // 2. RPN 0,2 (Master Coarse Tuning) en los 16 canales MIDI
-                for (let ch = 0; ch < 16; ch++) {
-                    midiOutput.send([0xB0 | ch, 101, 0]);   // RPN MSB = 0
-                    midiOutput.send([0xB0 | ch, 100, 2]);   // RPN LSB = 2 (Coarse Tuning)
-                    midiOutput.send([0xB0 | ch, 6, 60]);    // Data Entry MSB = 60 (-4 st)
-                    midiOutput.send([0xB0 | ch, 38, 0]);    // Data Entry LSB = 0
-                    midiOutput.send([0xB0 | ch, 101, 127]); // RPN Reset
-                    midiOutput.send([0xB0 | ch, 100, 127]);
-                }
-                if (log) log.innerHTML = `✅ <b>Korg transportado a -4 semitonos (${midiOutput.name})</b>. ¡Toca Sol (G) y sonará Mi♭ (Eb)!`;
-            } else {
-                if (log) log.innerHTML = `⚠️ MIDI no detectado. En el Korg pulsa el botón <b>TRANSPOSE b</b> hasta marcar <b>-4</b>.`;
+            // 2. RPN 0,2 (Master Coarse Tuning) en los 16 canales MIDI
+            for (let ch = 0; ch < 16; ch++) {
+                enviarMidiGlobal([0xB0 | ch, 101, 0]);   // RPN MSB = 0
+                enviarMidiGlobal([0xB0 | ch, 100, 2]);   // RPN LSB = 2 (Coarse Tuning)
+                enviarMidiGlobal([0xB0 | ch, 6, 60]);    // Data Entry MSB = 60 (-4 st)
+                enviarMidiGlobal([0xB0 | ch, 38, 0]);    // Data Entry LSB = 0
+                enviarMidiGlobal([0xB0 | ch, 101, 127]); // RPN Reset
+                enviarMidiGlobal([0xB0 | ch, 100, 127]);
             }
+            const nombres = salidas.map(o=>o.name).join(', ') || (midiOutput ? midiOutput.name : 'USB');
+            if (log) log.innerHTML = `✅ <b>Korg transportado a -4 semitonos (${nombres})</b>. ¡Toca Sol (G) y sonará Mi♭ (Eb)!`;
         } catch(e) {
             if (log) log.innerHTML = `⚠️ Transposición enviada: ${e.message}`;
         }
@@ -1067,29 +1117,27 @@
 
     function resetTonoOriginal() {
         const log = document.getElementById('log-transpose');
-        if (!midiOutput && midiAccessInstance) {
-            const outputs = Array.from(midiAccessInstance.outputs.values());
-            if (outputs.length > 0) midiOutput = outputs[0];
+        const salidas = obtenerSalidasDisponibles();
+        if (salidas.length === 0 && !midiOutput) {
+            if (log) log.innerHTML = `⚠️ Pulsa en el Korg <b>TRANSPOSE b y # a la vez</b> para volver a 0.`;
+            return;
         }
 
         try {
-            if (midiOutput) {
-                // 1. SysEx Universal Real-Time Master Coarse Tuning (mm = 64 = 0 semitonos)
-                midiOutput.send([0xF0, 0x7F, 0x7F, 0x04, 0x04, 0x00, 64, 0xF7]);
+            // 1. SysEx Universal Real-Time Master Coarse Tuning (mm = 64 = 0 semitonos)
+            enviarMidiGlobal([0xF0, 0x7F, 0x7F, 0x04, 0x04, 0x00, 64, 0xF7]);
 
-                // 2. RPN 0,2 (Master Coarse Tuning) en los 16 canales MIDI
-                for (let ch = 0; ch < 16; ch++) {
-                    midiOutput.send([0xB0 | ch, 101, 0]);
-                    midiOutput.send([0xB0 | ch, 100, 2]);
-                    midiOutput.send([0xB0 | ch, 6, 64]);    // 64 = 0 st centro
-                    midiOutput.send([0xB0 | ch, 38, 0]);
-                    midiOutput.send([0xB0 | ch, 101, 127]);
-                    midiOutput.send([0xB0 | ch, 100, 127]);
-                }
-                if (log) log.innerHTML = `🔄 <b>Tono original restaurado (0 semitonos)</b>. Vuelves a Sol Mayor normal en ${midiOutput.name}.`;
-            } else {
-                if (log) log.innerHTML = `⚠️ Pulsa en el Korg <b>TRANSPOSE b y # a la vez</b> para volver a 0.`;
+            // 2. RPN 0,2 (Master Coarse Tuning) en los 16 canales MIDI
+            for (let ch = 0; ch < 16; ch++) {
+                enviarMidiGlobal([0xB0 | ch, 101, 0]);
+                enviarMidiGlobal([0xB0 | ch, 100, 2]);
+                enviarMidiGlobal([0xB0 | ch, 6, 64]);    // 64 = 0 st centro
+                enviarMidiGlobal([0xB0 | ch, 38, 0]);
+                enviarMidiGlobal([0xB0 | ch, 101, 127]);
+                enviarMidiGlobal([0xB0 | ch, 100, 127]);
             }
+            const nombres = salidas.map(o=>o.name).join(', ') || (midiOutput ? midiOutput.name : 'USB');
+            if (log) log.innerHTML = `🔄 <b>Tono original restaurado (0 semitonos)</b>. Vuelves a Sol Mayor normal en ${nombres}.`;
         } catch(e) {
             if (log) log.innerHTML = `⚠️ Reset tono: ${e.message}`;
         }

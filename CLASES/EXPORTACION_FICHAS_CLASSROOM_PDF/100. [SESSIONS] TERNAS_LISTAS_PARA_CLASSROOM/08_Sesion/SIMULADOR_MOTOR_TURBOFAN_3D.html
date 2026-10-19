@@ -9,6 +9,7 @@
     <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
     <!-- Respaldo Base64 Autónomo para funcionamiento local y offline -->
     <script src="../03_ASSETS_3D_Y_DATOS/engine_3d_b64.js"></script>
+    <script src="../../SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/engine_3d_b64.js"></script>
     <script src="../../../../SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/engine_3d_b64.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
     <style>
@@ -519,49 +520,65 @@
             const sc = new BABYLON.Scene(engine);
             sc.clearColor = new BABYLON.Color4(0.02, 0.04, 0.08, 1.0);
 
-            // Cámara orbital suave 360°
-            camera = new BABYLON.ArcRotateCamera("Camera", -Math.PI / 2.5, Math.PI / 2.8, 140, new BABYLON.Vector3(0, 15, 0), sc);
+            // Cámara orbital suave 360° centrada en el origen
+            camera = new BABYLON.ArcRotateCamera("Camera", -Math.PI / 2.5, Math.PI / 2.8, 8.5, new BABYLON.Vector3(0, 0, 0), sc);
             camera.attachControl(canvas, true);
             camera.wheelPrecision = 20;
-            camera.minZ = 0.5;
-            camera.maxZ = 2000;
-            camera.lowerRadiusLimit = 25;
-            camera.upperRadiusLimit = 350;
+            camera.minZ = 0.05;
+            camera.maxZ = 100;
+            camera.lowerRadiusLimit = 2.0;
+            camera.upperRadiusLimit = 22.0;
 
             // Iluminación de estudio mecánico
             const hemiLight = new BABYLON.HemisphericLight("hemiLight", new BABYLON.Vector3(0, 1, 0), sc);
-            hemiLight.intensity = 0.85;
-            hemiLight.groundColor = new BABYLON.Color3(0.08, 0.12, 0.2);
+            hemiLight.intensity = 0.95;
+            hemiLight.groundColor = new BABYLON.Color3(0.12, 0.16, 0.25);
 
             const dirLight1 = new BABYLON.DirectionalLight("dir1", new BABYLON.Vector3(-1, -2, -1), sc);
-            dirLight1.intensity = 1.2;
+            dirLight1.intensity = 1.4;
             dirLight1.diffuse = new BABYLON.Color3(0.95, 0.98, 1.0);
 
             const dirLight2 = new BABYLON.DirectionalLight("dir2", new BABYLON.Vector3(1, -1, 1), sc);
-            dirLight2.intensity = 0.75;
-            dirLight2.diffuse = new BABYLON.Color3(0.9, 0.7, 0.5);
+            dirLight2.intensity = 0.85;
+            dirLight2.diffuse = new BABYLON.Color3(0.9, 0.75, 0.55);
 
             loadModel(sc);
             return sc;
         }
 
         function loadModel(sc) {
-            let modelSource = "";
-            if (window.ENGINE_3D_GLB_B64 && window.ENGINE_3D_GLB_B64.length > 100) {
-                modelSource = window.ENGINE_3D_GLB_B64;
-            } else {
-                modelSource = MODEL_LOCAL;
-            }
+            // Si el Base64 está disponible se usa de inmediato, si no se carga del CDN oficial
+            let initialSource = (window.ENGINE_3D_GLB_B64 && window.ENGINE_3D_GLB_B64.length > 100) 
+                ? window.ENGINE_3D_GLB_B64 
+                : MODEL_URL_RAW;
 
             const tryLoad = (src, isFallback = false) => {
                 BABYLON.SceneLoader.ImportMesh("", "", src, sc, function (meshes, particleSystems, skeletons, animationGroups) {
                     const cover = document.getElementById("loadingCover");
                     if (cover) {
                         cover.style.opacity = "0";
-                        setTimeout(() => cover.style.display = "none", 500);
+                        setTimeout(() => cover.style.display = "none", 400);
                     }
 
-                    // Guardar y configurar animación si existe
+                    // Contenedor raíz para centrado y escalado de precisión
+                    const engineRoot = new BABYLON.TransformNode("engineRoot", sc);
+                    meshes.forEach(m => {
+                        if (m.parent === null) m.parent = engineRoot;
+                    });
+
+                    // El modelo CAD original tiene 668 unidades de altura con centro en Y = 135.2
+                    // Lo escalamos a 5.0 unidades y lo centramos exactamente en el origen (0, 0, 0)
+                    const center = new BABYLON.Vector3(-59.6, 135.2, -41.2);
+                    const scale = 5.0 / 668.8;
+
+                    engineRoot.scaling = new BABYLON.Vector3(scale, scale, scale);
+                    engineRoot.position = new BABYLON.Vector3(-center.x * scale, -center.y * scale, -center.z * scale);
+
+                    // Ajustar cámara para encuadre majestuoso del motor
+                    camera.setTarget(new BABYLON.Vector3(0, 0, 0));
+                    camera.radius = 8.5;
+
+                    // Guardar y configurar animación cinemática sincronizada
                     if (animationGroups && animationGroups.length > 0) {
                         animGroup = animationGroups[0];
                         animGroup.play(true);
@@ -573,23 +590,23 @@
                         if (m.material) {
                             originalMaterials.set(m, m.material);
                             if (m.material instanceof BABYLON.PBRMaterial) {
-                                m.material.metallic = 0.85;
-                                m.material.roughness = 0.35;
+                                m.material.metallic = 0.88;
+                                m.material.roughness = 0.32;
                             }
                         }
                     });
 
                 }, null, function (scene, message, exception) {
                     if (!isFallback) {
-                        console.warn("Cargando desde CDN oficial de respaldo...");
-                        tryLoad(MODEL_URL_RAW, true);
+                        console.warn("Intentando ruta local alternativa...");
+                        tryLoad(MODEL_LOCAL, true);
                     } else {
-                        console.error("Error cargando modelo 3D:", message);
+                        console.error("Error cargando modelo 3D del motor:", message);
                     }
                 });
             };
 
-            tryLoad(modelSource, false);
+            tryLoad(initialSource, false);
         }
 
         function togglePlay() {
@@ -666,25 +683,25 @@
             if (event && event.currentTarget) event.currentTarget.classList.add('active');
 
             if (name === 'piston') {
-                camera.setTarget(new BABYLON.Vector3(0, 25, 0));
-                camera.radius = 90;
+                camera.setTarget(new BABYLON.Vector3(0, 1.2, 0));
+                camera.radius = 4.5;
             } else if (name === 'rod') {
-                camera.setTarget(new BABYLON.Vector3(0, 15, 0));
-                camera.radius = 110;
+                camera.setTarget(new BABYLON.Vector3(0, 0, 0));
+                camera.radius = 5.5;
             } else if (name === 'crank') {
-                camera.setTarget(new BABYLON.Vector3(0, -10, 0));
-                camera.radius = 110;
+                camera.setTarget(new BABYLON.Vector3(0, -1.2, 0));
+                camera.radius = 5.0;
             } else if (name === 'block') {
-                camera.setTarget(new BABYLON.Vector3(0, 15, 0));
-                camera.radius = 160;
+                camera.setTarget(new BABYLON.Vector3(0, 0, 0));
+                camera.radius = 8.5;
             }
         }
 
         function resetCamera() {
             camera.alpha = -Math.PI / 2.5;
             camera.beta = Math.PI / 2.8;
-            camera.radius = 140;
-            camera.setTarget(new BABYLON.Vector3(0, 15, 0));
+            camera.radius = 8.5;
+            camera.setTarget(new BABYLON.Vector3(0, 0, 0));
         }
 
         scene = createScene();

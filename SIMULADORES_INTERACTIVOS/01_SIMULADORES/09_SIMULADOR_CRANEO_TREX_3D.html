@@ -9,6 +9,7 @@
     <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
     <!-- Respaldo Base64 Autónomo para funcionamiento local y offline -->
     <script src="../03_ASSETS_3D_Y_DATOS/trex_3d_b64.js"></script>
+    <script src="../../SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/trex_3d_b64.js"></script>
     <script src="../../../../SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/trex_3d_b64.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
     <style>
@@ -484,30 +485,8 @@
             const sc = new BABYLON.Scene(engine);
             sc.clearColor = new BABYLON.Color4(0.02, 0.03, 0.06, 1.0);
 
-            // Cámara orbital suave 360°
-            camera = new BABYLON.ArcRotateCamera("Camera", -Math.PI / 2.2, Math.PI / 2.6, 12, new BABYLON.Vector3(0, 1.5, 0), sc);
-            camera.attachControl(canvas, true);
-            camera.wheelPrecision = 25;
-            camera.minZ = 0.1;
-            camera.maxZ = 500;
-            camera.lowerRadiusLimit = 2;
-            camera.upperRadiusLimit = 40;
-
-            // Iluminación dramática de sala de museo
-            hemiLight = new BABYLON.HemisphericLight("hemiLight", new BABYLON.Vector3(0, 1, 0), sc);
-            hemiLight.intensity = 0.75;
-            hemiLight.groundColor = new BABYLON.Color3(0.05, 0.08, 0.12);
-
-            dirLight1 = new BABYLON.DirectionalLight("dir1", new BABYLON.Vector3(-1, -2, -1), sc);
-            dirLight1.intensity = 1.3;
-            dirLight1.diffuse = new BABYLON.Color3(1.0, 0.95, 0.85);
-
-            dirLight2 = new BABYLON.DirectionalLight("dir2", new BABYLON.Vector3(1, -1, 1), sc);
-            dirLight2.intensity = 0.6;
-            dirLight2.diffuse = new BABYLON.Color3(0.5, 0.7, 0.9);
-
-            // Pedestal sutil de exposición
-            const ground = BABYLON.MeshBuilder.CreateCylinder("pedestal", { diameter: 14, height: 0.15 }, sc);
+            // Pedestal sutil de exposición de museo
+            const ground = BABYLON.MeshBuilder.CreateCylinder("pedestal", { diameter: 7.0, height: 0.15 }, sc);
             ground.position.y = -0.08;
             const groundMat = new BABYLON.PBRMaterial("groundMat", sc);
             groundMat.albedoColor = new BABYLON.Color3(0.08, 0.1, 0.15);
@@ -515,24 +494,44 @@
             groundMat.metallic = 0.1;
             ground.material = groundMat;
 
+            // Cámara orbital suave 360° enfocada en el centro anatómico del dinosaurio
+            camera = new BABYLON.ArcRotateCamera("Camera", -Math.PI / 2.2, Math.PI / 2.6, 5.8, new BABYLON.Vector3(0, 1.2, 0), sc);
+            camera.attachControl(canvas, true);
+            camera.wheelPrecision = 20;
+            camera.minZ = 0.05;
+            camera.maxZ = 100;
+            camera.lowerRadiusLimit = 2.0;
+            camera.upperRadiusLimit = 25.0;
+
+            // Iluminación dramática de sala de museo
+            hemiLight = new BABYLON.HemisphericLight("hemiLight", new BABYLON.Vector3(0, 1, 0), sc);
+            hemiLight.intensity = 0.85;
+            hemiLight.groundColor = new BABYLON.Color3(0.05, 0.08, 0.12);
+
+            dirLight1 = new BABYLON.DirectionalLight("dir1", new BABYLON.Vector3(-1, -2, -1), sc);
+            dirLight1.intensity = 1.4;
+            dirLight1.diffuse = new BABYLON.Color3(1.0, 0.95, 0.85);
+
+            dirLight2 = new BABYLON.DirectionalLight("dir2", new BABYLON.Vector3(1, -1, 1), sc);
+            dirLight2.intensity = 0.7;
+            dirLight2.diffuse = new BABYLON.Color3(0.5, 0.7, 0.9);
+
             loadModel(sc);
             return sc;
         }
 
         function loadModel(sc) {
-            let modelSource = "";
-            if (window.TREX_3D_GLB_B64 && window.TREX_3D_GLB_B64.length > 100) {
-                modelSource = window.TREX_3D_GLB_B64;
-            } else {
-                modelSource = MODEL_LOCAL;
-            }
+            // Cargar Base64 si existe; si no, ir directamente al CDN oficial para evitar bloqueo CORS local
+            let modelSource = (window.TREX_3D_GLB_B64 && window.TREX_3D_GLB_B64.length > 100)
+                ? window.TREX_3D_GLB_B64
+                : MODEL_URL_RAW;
 
             const tryLoad = (src, isFallback = false) => {
                 BABYLON.SceneLoader.ImportMesh("", "", src, sc, function (meshes) {
                     const cover = document.getElementById("loadingCover");
                     if (cover) {
                         cover.style.opacity = "0";
-                        setTimeout(() => cover.style.display = "none", 500);
+                        setTimeout(() => cover.style.display = "none", 400);
                     }
 
                     rootNode = new BABYLON.TransformNode("trexRoot", sc);
@@ -540,8 +539,19 @@
                         if (m.parent === null) m.parent = rootNode;
                     });
 
-                    // Normalizar escala y centrado en el pedestal
-                    rootNode.position.y = 0;
+                    // Normalizar escala y centrado en el pedestal:
+                    // El modelo original mide solo 0.768m de largo (bounds [-0.25, 0.014, -0.21] a [0.52, 0.358, 0.11])
+                    // Para que se vea majestuoso e imponente en el viewport (5.5m), escalamos por (5.5 / 0.768 = ~7.16)
+                    const targetLength = 5.5;
+                    const scaleFactor = targetLength / 0.768;
+                    rootNode.scaling = new BABYLON.Vector3(scaleFactor, scaleFactor, scaleFactor);
+
+                    // Centrar modelo en el pedestal (offset X y Z, pies en el suelo Y=0)
+                    rootNode.position = new BABYLON.Vector3(-0.134 * scaleFactor, -0.014 * scaleFactor, 0.05 * scaleFactor);
+
+                    // Asegurar encuadre majestuoso de la cámara
+                    camera.setTarget(new BABYLON.Vector3(0, 1.2, 0));
+                    camera.radius = 5.8;
 
                 }, null, function (scene, message, exception) {
                     if (!isFallback) {
@@ -602,25 +612,25 @@
             if (event && event.currentTarget) event.currentTarget.classList.add('active');
 
             if (spot === 'head') {
-                camera.setTarget(new BABYLON.Vector3(0, 2.2, 2.5));
-                camera.radius = 5.5;
+                camera.setTarget(new BABYLON.Vector3(0, 1.8, 1.8));
+                camera.radius = 3.2;
             } else if (spot === 'eyes') {
-                camera.setTarget(new BABYLON.Vector3(0, 2.4, 2.2));
-                camera.radius = 4.2;
+                camera.setTarget(new BABYLON.Vector3(0, 2.0, 1.8));
+                camera.radius = 2.5;
             } else if (spot === 'neck') {
-                camera.setTarget(new BABYLON.Vector3(0, 2.0, 1.2));
-                camera.radius = 6.0;
+                camera.setTarget(new BABYLON.Vector3(0, 1.6, 0.8));
+                camera.radius = 3.5;
             } else if (spot === 'body') {
-                camera.setTarget(new BABYLON.Vector3(0, 1.5, 0));
-                camera.radius = 12.0;
+                camera.setTarget(new BABYLON.Vector3(0, 1.2, 0));
+                camera.radius = 5.8;
             }
         }
 
         function resetCamera() {
             camera.alpha = -Math.PI / 2.2;
             camera.beta = Math.PI / 2.6;
-            camera.radius = 12;
-            camera.setTarget(new BABYLON.Vector3(0, 1.5, 0));
+            camera.radius = 5.8;
+            camera.setTarget(new BABYLON.Vector3(0, 1.2, 0));
         }
 
         scene = createScene();
