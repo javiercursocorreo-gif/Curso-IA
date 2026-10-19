@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sesión 09 • Simulador Fotográfico Real: Célula Viva Eucariota en Micrografía Electrónica [COD-009]</title>
+    <!-- Assets Fotográficos Reales en Base64 Autónomo (Rutas de compatibilidad local y de sistema) -->
+    <script src="file:///Users/externo/.gemini/antigravity/brain/b1f82f14-3bac-48ff-ba1b-df7a3ce35aae/cell_photo_b64.js"></script>
+    <script src="../03_ASSETS_3D_Y_DATOS/cell_photo_b64.js"></script>
+    <script src="../../../../SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/cell_photo_b64.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-base: #04090e;
+            --bg-panel: rgba(10, 20, 30, 0.94);
+            --emerald: #10b981;
+            --emerald-glow: rgba(16, 185, 129, 0.35);
+            --cyan: #38bdf8;
+            --purple: #c084fc;
+            --amber: #f59e0b;
+            --text-main: #f8fafc;
+            --text-sub: #cbd5e1;
+            --font-sans: 'Inter', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+        html, body {
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            font-family: var(--font-sans);
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            font-size: 16px;
+        }
+
+        /* HEADER */
+        header {
+            background: linear-gradient(180deg, rgba(10, 24, 32, 0.98) 0%, rgba(10, 24, 32, 0.88) 100%);
+            backdrop-filter: blur(14px);
+            border-bottom: 1px solid rgba(16, 185, 129, 0.25);
+            padding: 10px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+            z-index: 50;
+        }
+        .header-title-box {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+        .badge-code {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--emerald);
+            border: 1px solid rgba(16, 185, 129, 0.45);
+            font-family: var(--font-mono);
+            font-size: 0.88rem;
+            font-weight: 800;
+            padding: 4px 10px;
+            border-radius: 8px;
+            letter-spacing: 0.05em;
+        }
+        h1 {
+            font-size: 1.22rem;
+            font-weight: 800;
+            letter-spacing: -0.01em;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .pill-status {
+            background: rgba(16, 185, 129, 0.15);
+            color: #34d399;
+            border: 1px solid rgba(16, 185, 129, 0.4);
+            font-size: 0.85rem;
+            font-weight: 700;
+            padding: 5px 13px;
+            border-radius: 9999px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* GRID PRINCIPAL */
+        .workspace-grid {
+            flex: 1;
+            min-height: 0;
+            display: grid;
+            grid-template-columns: 440px 1fr;
+            background: #020409;
+        }
+
+        /* PANEL DIDÁCTICO IZQUIERDO */
+        aside.sidebar-panel {
+            background: var(--bg-panel);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            padding: 20px;
+            gap: 18px;
+            z-index: 20;
+        }
+
+        /* TARJETA LA IDEA FÁCIL */
+        .card-easy-concept {
+            background: linear-gradient(135deg, rgba(6, 78, 59, 0.3) 0%, rgba(15, 23, 42, 0.95) 100%);
+            border: 1.5px solid rgba(16, 185, 129, 0.35);
+            border-radius: 14px;
+            padding: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+        }
+        .easy-tag {
+            font-size: 0.78rem;
+            font-weight: 800;
+            color: var(--emerald);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .easy-title {
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: #ffffff;
+            line-height: 1.3;
+            margin-bottom: 8px;
+        }
+        .easy-text {
+            font-size: 0.95rem;
+            color: var(--text-sub);
+            line-height: 1.55;
+        }
+        .easy-text strong { color: #ffffff; }
+
+        /* MODOS DE INSPECCIÓN MICROSCRÓPICA */
+        .section-title {
+            font-size: 0.88rem;
+            font-weight: 800;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .mode-selector {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+        .mode-btn {
+            background: rgba(30, 41, 59, 0.6);
+            border: 1.5px solid rgba(255, 255, 255, 0.12);
+            color: var(--text-sub);
+            padding: 10px 8px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 0.82rem;
+            font-weight: 700;
+            text-align: center;
+            transition: all 0.25s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+        .mode-btn:hover {
+            border-color: var(--emerald);
+            background: rgba(16, 185, 129, 0.1);
+            color: #ffffff;
+        }
+        .mode-btn.active {
+            border-color: var(--emerald);
+            background: rgba(16, 185, 129, 0.2);
+            color: #34d399;
+            box-shadow: 0 0 14px rgba(16, 185, 129, 0.25);
+        }
+
+        /* CONTROL DE METABOLISMO Y ACTIVIDAD CELULAR */
+        .control-box {
+            background: rgba(15, 23, 42, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 14px;
+        }
+        .slider-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+        .slider-label {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: #ffffff;
+        }
+        .slider-val {
+            font-family: var(--font-mono);
+            font-size: 0.92rem;
+            font-weight: 800;
+            color: var(--emerald);
+        }
+        input[type="range"] {
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: #334155;
+            outline: none;
+            -webkit-appearance: none;
+            accent-color: var(--emerald);
+            cursor: pointer;
+        }
+
+        /* TARJETA DINÁMICA DE ESTADO BIOLÓGICO */
+        .phase-info-box {
+            background: rgba(0, 0, 0, 0.45);
+            border-radius: 8px;
+            padding: 12px 14px;
+            margin-top: 10px;
+            border-left: 4px solid var(--emerald);
+        }
+        .phase-name {
+            font-size: 0.98rem;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 4px;
+        }
+        .phase-desc {
+            font-size: 0.88rem;
+            color: #cbd5e1;
+            line-height: 1.45;
+        }
+        .phase-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-family: var(--font-mono);
+            font-size: 0.78rem;
+            color: #94a3b8;
+        }
+        .phase-stats strong { color: #34d399; }
+
+        /* LISTA DE ORGÁNULOS CLAVE */
+        .parts-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .part-card {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            padding: 12px 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .part-card:hover {
+            border-color: var(--emerald);
+            background: rgba(16, 185, 129, 0.08);
+            transform: translateX(4px);
+        }
+        .part-card.active {
+            border-color: var(--emerald);
+            background: rgba(16, 185, 129, 0.15);
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.2);
+        }
+        .part-num {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--emerald);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-mono);
+            font-weight: 800;
+            font-size: 0.85rem;
+            flex-shrink: 0;
+            border: 1px solid rgba(16, 185, 129, 0.4);
+        }
+        .part-card.active .part-num {
+            background: var(--emerald);
+            color: #000000;
+            border-color: #ffffff;
+        }
+        .part-info { flex: 1; min-width: 0; }
+        .part-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 2px;
+        }
+        .part-subtitle {
+            font-size: 0.8rem;
+            color: #94a3b8;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* VIEWPORT FOTOGRÁFICO DERECHO */
+        .viewport-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: radial-gradient(circle at center, #07151a 0%, #020409 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .viewport-wrapper {
+            position: relative;
+            max-width: 95%;
+            max-height: 90%;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+        }
+        #photoCanvas {
+            display: block;
+            max-width: 100%;
+            max-height: 85vh;
+            object-fit: contain;
+            cursor: grab;
+            transition: filter 0.4s ease;
+        }
+        #photoCanvas:active { cursor: grabbing; }
+
+        /* PINS INTERACTIVOS SOBRE LA FOTO */
+        .hotspot-pin {
+            position: absolute;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: rgba(16, 185, 129, 0.9);
+            border: 2px solid #ffffff;
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.9), 0 0 0 4px rgba(16, 185, 129, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #000000;
+            font-weight: 900;
+            font-size: 0.82rem;
+            cursor: pointer;
+            transform: translate(-50%, -50%);
+            transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 30;
+            animation: pulse-pin 2s infinite ease-in-out;
+        }
+        .hotspot-pin:hover, .hotspot-pin.active {
+            transform: translate(-50%, -50%) scale(1.3);
+            background: #ffffff;
+            color: #000000;
+            border-color: var(--emerald);
+            box-shadow: 0 0 25px rgba(255, 255, 255, 1), 0 0 0 8px rgba(16, 185, 129, 0.4);
+        }
+        @keyframes pulse-pin {
+            0%, 100% { box-shadow: 0 0 15px rgba(16, 185, 129, 0.8), 0 0 0 3px rgba(16, 185, 129, 0.25); }
+            50% { box-shadow: 0 0 25px rgba(16, 185, 129, 1), 0 0 0 8px rgba(16, 185, 129, 0.45); }
+        }
+
+        /* OVERLAY DE INFORMACIÓN EN PANTALLA */
+        .photo-overlay-badge {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(10, 24, 32, 0.88);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(12px);
+            padding: 8px 16px;
+            border-radius: 10px;
+            color: #e2e8f0;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 40;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+        }
+        .photo-overlay-badge .dot-live {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #10b981;
+            box-shadow: 0 0 8px #10b981;
+        }
+
+        /* BARRA DE CONTROLES INFERIOR */
+        .bottom-controls-bar {
+            position: absolute;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(10, 24, 32, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(14px);
+            padding: 8px 16px;
+            border-radius: 9999px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 40;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+        }
+        .btn-tool {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #ffffff;
+            padding: 7px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+        }
+        .btn-tool:hover {
+            background: rgba(16, 185, 129, 0.2);
+            border-color: var(--emerald);
+            color: #34d399;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- HEADER SUPERIOR -->
+    <header>
+        <div class="header-title-box">
+            <span class="badge-code">COD-009</span>
+            <h1>🧬 Célula Viva Eucariota • Micrografía Electrónica de Transmisión Real (TEM)</h1>
+        </div>
+        <div class="header-right">
+            <div class="pill-status">
+                <span>🔬</span>
+                <span>Resolución Ultraestructural 1 µm</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- ÁREA DE TRABAJO -->
+    <div class="workspace-grid">
+        
+        <!-- SIDEBAR DIDÁCTICO -->
+        <aside class="sidebar-panel">
+            
+            <!-- TARJETA LA IDEA FÁCIL -->
+            <div class="card-easy-concept">
+                <div class="easy-tag">
+                    <span>💡</span>
+                    <span>La Idea Fácil • Explicación Intuitiva</span>
+                </div>
+                <div class="easy-title">La Fábrica Viva de la Célula</div>
+                <div class="easy-text">
+                    Cada célula viva es como una <strong>ciudad diminuta autosuficiente</strong>: (1) El <strong>Núcleo</strong> es el Ayuntamiento con los planos maestros de ADN; (2) Las <strong>Mitocondrias</strong> son las centrales energéticas que queman azúcar para fabricar baterías químicas (ATP); (3) El <strong>Retículo Rugoso</strong> es la cadena de montaje llena de obreros (ribosomas) que ensamblan proteínas; (4) El <strong>Aparato de Golgi</strong> es el centro logístico que empaqueta y envía productos; (5) La <strong>Membrana</strong> es la muralla protectora con aduanas moleculares.
+                </div>
+            </div>
+
+            <!-- MODOS DE INSPECCIÓN MICROSCRÓPICA -->
+            <div>
+                <div class="section-title">
+                    <span>Modo de Inspección Científica</span>
+                    <span style="font-size: 0.75rem; color: #64748b;">Filtros de Laboratorio</span>
+                </div>
+                <div class="mode-selector">
+                    <button class="mode-btn active" id="btnModeTEM" onclick="setVisualMode('tem')">
+                        <span style="font-size: 1.2rem;">🔬</span>
+                        <span>Microscopio TEM</span>
+                    </button>
+                    <button class="mode-btn" id="btnModeFluo" onclick="setVisualMode('fluo')">
+                        <span style="font-size: 1.2rem;">✨</span>
+                        <span>Fluorescencia</span>
+                    </button>
+                    <button class="mode-btn" id="btnModeTraffic" onclick="setVisualMode('traffic')">
+                        <span style="font-size: 1.2rem;">🟢</span>
+                        <span>Tráfico Vesicular</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- SIMULACIÓN DE ESTADO METABÓLICO -->
+            <div class="control-box">
+                <div class="slider-row">
+                    <span class="slider-label">Ciclo y Actividad Metabólica</span>
+                    <span class="slider-val" id="metabolicPhaseVal">Fase G0: Reposo</span>
+                </div>
+                <input type="range" id="metabolicSlider" min="0" max="3" step="1" value="0" oninput="updateMetabolicPhase(this.value)">
+                
+                <div class="phase-info-box" id="phaseInfoCard">
+                    <div class="phase-name" id="phaseTitle">Fase G0: Célula en Mantenimiento Basal</div>
+                    <div class="phase-desc" id="phaseDesc">
+                        Consumo mínimo de energía. Las mitocondrias mantienen el gradiente de protones y la membrana regula el transporte pasivo de agua e iones sin división celular.
+                    </div>
+                    <div class="phase-stats">
+                        <span>ATP / segundo: <strong id="statATP">1.2 × 10⁷</strong></span>
+                        <span>pH Citoplasmático: <strong id="statPH">7.20</strong></span>
+                        <span>Transcripción: <strong id="statTrans">Basal (15%)</strong></span>
+                        <span>Tráfico Vesicular: <strong id="statVesicles">Normal</strong></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- LISTA DE ORGÁNULOS CLAVE -->
+            <div>
+                <div class="section-title">
+                    <span>Ultraestructura Celular Visible</span>
+                    <span style="font-size: 0.75rem; color: #64748b;">5 Pines Interactivos</span>
+                </div>
+                <div class="parts-list">
+                    <div class="part-card active" id="card-0" onclick="selectHotspot(0)">
+                        <div class="part-num">1</div>
+                        <div class="part-info">
+                            <div class="part-title">Membrana Plasmática</div>
+                            <div class="part-subtitle">Bicapa lipídica exterior y glucocálix</div>
+                        </div>
+                    </div>
+                    <div class="part-card" id="card-1" onclick="selectHotspot(1)">
+                        <div class="part-num">2</div>
+                        <div class="part-info">
+                            <div class="part-title">Núcleo & Poros Nucleares</div>
+                            <div class="part-subtitle">Cromatina, nucleolo y envoltura doble</div>
+                        </div>
+                    </div>
+                    <div class="part-card" id="card-2" onclick="selectHotspot(2)">
+                        <div class="part-num">3</div>
+                        <div class="part-info">
+                            <div class="part-title">Mitocondrias con Crestas</div>
+                            <div class="part-subtitle">Centrales energéticas de síntesis de ATP</div>
+                        </div>
+                    </div>
+                    <div class="part-card" id="card-3" onclick="selectHotspot(3)">
+                        <div class="part-num">4</div>
+                        <div class="part-info">
+                            <div class="part-title">Retículo Endoplasmático Rugoso</div>
+                            <div class="part-subtitle">Cisternas tachonadas de ribosomas</div>
+                        </div>
+                    </div>
+                    <div class="part-card" id="card-4" onclick="selectHotspot(4)">
+                        <div class="part-num">5</div>
+                        <div class="part-info">
+                            <div class="part-title">Aparato de Golgi & Vesículas</div>
+                            <div class="part-subtitle">Empaquetado y secreción de glicoproteínas</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </aside>
+
+        <!-- VIEWPORT DE MICROGRAFÍA ELECTRÓNICA REAL -->
+        <main class="viewport-container" id="viewportArea">
+            
+            <div class="photo-overlay-badge">
+                <span class="dot-live"></span>
+                <span id="badgeInfoText">Micrografía Electrónica de Transmisión Real (TEM) • Sección Ultrafina de Célula Eucariota</span>
+            </div>
+
+            <div class="viewport-wrapper" id="viewportWrapper">
+                <canvas id="photoCanvas"></canvas>
+                
+                <!-- PINS INTERACTIVOS (Superpuestos con coordenadas dinámicas) -->
+                <div class="hotspot-pin active" id="pin-0" onclick="selectHotspot(0)" title="1. Membrana Plasmática">1</div>
+                <div class="hotspot-pin" id="pin-1" onclick="selectHotspot(1)" title="2. Núcleo y Poros">2</div>
+                <div class="hotspot-pin" id="pin-2" onclick="selectHotspot(2)" title="3. Mitocondrias">3</div>
+                <div class="hotspot-pin" id="pin-3" onclick="selectHotspot(3)" title="4. Retículo Rugoso">4</div>
+                <div class="hotspot-pin" id="pin-4" onclick="selectHotspot(4)" title="5. Aparato de Golgi">5</div>
+            </div>
+
+            <!-- BARRA FLOTANTE DE CONTROLES INFERIORES -->
+            <div class="bottom-controls-bar">
+                <button class="btn-tool" onclick="zoomIn()"><span>🔍+</span><span>Zoom</span></button>
+                <button class="btn-tool" onclick="zoomOut()"><span>🔍-</span><span>Alejar</span></button>
+                <button class="btn-tool" onclick="resetView()"><span>🎯</span><span>Centrar</span></button>
+                <button class="btn-tool" onclick="cycleNext()"><span>⏭️</span><span>Avanzar Estado</span></button>
+            </div>
+
+        </main>
+    </div>
+
+    <script>
+        // ESTADO GLOBAL
+        const cellImg = new Image();
+        let isLoaded = false;
+        let visualMode = 'tem'; // 'tem', 'fluo', 'traffic'
+        let currentHotspot = 0;
+        let metabolicPhase = 0; // 0: G0 Reposo, 1: G1 Síntesis, 2: Fase S Replicación, 3: Máximo ATP
+        let scale = 1.0;
+        let panX = 0;
+        let panY = 0;
+        let isDragging = false;
+        let startX, startY;
+
+        const canvas = document.getElementById('photoCanvas');
+        const ctx = canvas.getContext('2d');
+        const metabolicSlider = document.getElementById('metabolicSlider');
+        const metabolicPhaseVal = document.getElementById('metabolicPhaseVal');
+        const phaseTitle = document.getElementById('phaseTitle');
+        const phaseDesc = document.getElementById('phaseDesc');
+        const phaseInfoCard = document.getElementById('phaseInfoCard');
+        const badgeInfoText = document.getElementById('badgeInfoText');
+        const statATP = document.getElementById('statATP');
+        const statPH = document.getElementById('statPH');
+        const statTrans = document.getElementById('statTrans');
+        const statVesicles = document.getElementById('statVesicles');
+
+        // Coordenadas anatómicas en la micrografía TEM real (1200 x 896)
+        const hotspots = [
+            { id: 0, x: 0.50, y: 0.08, name: "Membrana Plasmática", focusScale: 1.8, focusX: 0, focusY: 260 },
+            { id: 1, x: 0.48, y: 0.48, name: "Núcleo & Poros Nucleares", focusScale: 1.9, focusX: 20, focusY: 10 },
+            { id: 2, x: 0.43, y: 0.12, name: "Mitocondria con Crestas", focusScale: 2.1, focusX: 70, focusY: 240 },
+            { id: 3, x: 0.58, y: 0.26, name: "Retículo Rugoso y Ribosomas", focusScale: 2.0, focusX: -60, focusY: 120 },
+            { id: 4, x: 0.76, y: 0.62, name: "Aparato de Golgi & Vesículas", focusScale: 2.1, focusX: -230, focusY: -110 }
+        ];
+
+        // 1. Carga de la Micrografía Electrónica Real (TEM)
+        function loadCellPhoto() {
+            cellImg.onload = function() {
+                isLoaded = true;
+                canvas.width = cellImg.naturalWidth || 1200;
+                canvas.height = cellImg.naturalHeight || 896;
+                render();
+            };
+
+            // Intentar cargar primero desde el asset Base64 autónomo
+            if (window.CELL_PHOTO_B64 && window.CELL_PHOTO_B64.length > 50) {
+                cellImg.src = window.CELL_PHOTO_B64;
+            } else {
+                // Fallback a archivos locales y rutas de sistema
+                cellImg.onerror = function() {
+                    cellImg.onerror = function() {
+                        cellImg.onerror = null;
+                        cellImg.src = "../03_ASSETS_3D_Y_DATOS/eukaryotic_cell_tem.jpg";
+                    };
+                    cellImg.src = "file:///Users/externo/.gemini/antigravity/brain/b1f82f14-3bac-48ff-ba1b-df7a3ce35aae/eukaryotic_cell_tem_jpg_1792416823610.jpg";
+                };
+                cellImg.src = "../03_ASSETS_3D_Y_DATOS/eukaryotic_cell_tem.jpg";
+            }
+        }
+
+        // 2. Renderizado del Canvas con Filtros y Capas Dinámicas
+        function render() {
+            if (!isLoaded) return;
+
+            ctx.save();
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Aplicar Zoom y Desplazamiento
+            ctx.translate(canvas.width / 2 + panX, canvas.height / 2 + panY);
+            ctx.scale(scale, scale);
+            ctx.translate(-canvas.width / 2, -canvas.height / 2);
+
+            // Dibujar la Micrografía TEM Real
+            if (visualMode === 'tem') {
+                ctx.filter = 'none';
+                ctx.drawImage(cellImg, 0, 0, canvas.width, canvas.height);
+            } else if (visualMode === 'fluo') {
+                // Modo Fluorescencia Molecular Multicanal
+                ctx.filter = 'contrast(1.4) brightness(0.85)';
+                ctx.drawImage(cellImg, 0, 0, canvas.width, canvas.height);
+                ctx.filter = 'none';
+
+                // Canal Azul DAPI en el núcleo
+                const nucleusGrad = ctx.createRadialGradient(canvas.width * 0.48, canvas.height * 0.48, 20, canvas.width * 0.48, canvas.height * 0.48, 140);
+                nucleusGrad.addColorStop(0, 'rgba(56, 189, 248, 0.45)');
+                nucleusGrad.addColorStop(1, 'rgba(14, 165, 233, 0.05)');
+                ctx.fillStyle = nucleusGrad;
+                ctx.beginPath();
+                ctx.arc(canvas.width * 0.48, canvas.height * 0.48, 140, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Canal Verde GFP en mitocondrias
+                ctx.fillStyle = 'rgba(16, 185, 129, 0.45)';
+                ctx.beginPath();
+                ctx.ellipse(canvas.width * 0.43, canvas.height * 0.12, 55, 28, 0, 0, Math.PI * 2);
+                ctx.ellipse(canvas.width * 0.32, canvas.height * 0.22, 50, 25, -0.4, 0, Math.PI * 2);
+                ctx.ellipse(canvas.width * 0.86, canvas.height * 0.38, 35, 60, 0.2, 0, Math.PI * 2);
+                ctx.ellipse(canvas.width * 0.69, canvas.height * 0.84, 55, 26, -0.2, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Canal Rojo Rhodamina en cisternas de Golgi
+                ctx.fillStyle = 'rgba(239, 68, 68, 0.4)';
+                ctx.beginPath();
+                ctx.ellipse(canvas.width * 0.76, canvas.height * 0.62, 65, 45, 0.3, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.fillStyle = '#38bdf8';
+                ctx.font = 'bold 18px monospace';
+                ctx.fillText('FLUORESCENCIA: AZUL DAPI (ADN) | VERDE GFP (ATP) | ROJO (GOLGI)', canvas.width * 0.18, canvas.height * 0.95);
+
+            } else if (visualMode === 'traffic') {
+                // Modo Tráfico Vesicular
+                ctx.filter = 'contrast(1.3) brightness(0.9)';
+                ctx.drawImage(cellImg, 0, 0, canvas.width, canvas.height);
+                ctx.filter = 'none';
+
+                // Resaltado de vesículas secretoras en tránsito
+                ctx.fillStyle = 'rgba(52, 211, 153, 0.8)';
+                const vesicles = [
+                    { x: 0.78, y: 0.50, r: 10 },
+                    { x: 0.81, y: 0.55, r: 8 },
+                    { x: 0.74, y: 0.72, r: 9 },
+                    { x: 0.69, y: 0.75, r: 7 },
+                    { x: 0.28, y: 0.65, r: 8 }
+                ];
+                vesicles.forEach(v => {
+                    ctx.beginPath();
+                    ctx.arc(canvas.width * v.x, canvas.height * v.y, v.r, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.strokeStyle = '#ffffff';
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                });
+
+                ctx.fillStyle = '#10b981';
+                ctx.font = 'bold 18px monospace';
+                ctx.fillText('TRÁFICO ACTIVO: VESÍCULAS GUIADAS POR KINESINA', canvas.width * 0.25, canvas.height * 0.95);
+            }
+
+            // Simulación metabólica overlay
+            renderMetabolicOverlay();
+
+            ctx.restore();
+            updatePinPositions();
+        }
+
+        function renderMetabolicOverlay() {
+            if (metabolicPhase === 0) return;
+
+            if (metabolicPhase === 2) {
+                // Fase S: condensación de hebras de cromatina nuclear
+                ctx.strokeStyle = 'rgba(192, 132, 252, 0.4)';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.arc(canvas.width * 0.48, canvas.height * 0.48, 120, 0, Math.PI * 2);
+                ctx.stroke();
+            } else if (metabolicPhase === 3) {
+                // Máximo ATP: resplandor dorado en crestas mitocondriales
+                ctx.strokeStyle = 'rgba(251, 191, 36, 0.7)';
+                ctx.lineWidth = 4;
+                ctx.beginPath();
+                ctx.ellipse(canvas.width * 0.43, canvas.height * 0.12, 60, 32, 0, 0, Math.PI * 2);
+                ctx.ellipse(canvas.width * 0.69, canvas.height * 0.84, 60, 30, -0.2, 0, Math.PI * 2);
+                ctx.stroke();
+            }
+        }
+
+        // 3. Posicionamiento dinámico de los Pins con la transformación de Zoom y Pan
+        function updatePinPositions() {
+            hotspots.forEach(hp => {
+                const pin = document.getElementById(`pin-${hp.id}`);
+                if (!pin) return;
+
+                const origX = canvas.width * hp.x;
+                const origY = canvas.height * hp.y;
+
+                const screenX = (canvas.width / 2 + panX) + (origX - canvas.width / 2) * scale;
+                const screenY = (canvas.height / 2 + panY) + (origY - canvas.height / 2) * scale;
+
+                const pctX = (screenX / canvas.width) * 100;
+                const pctY = (screenY / canvas.height) * 100;
+
+                pin.style.left = `${pctX}%`;
+                pin.style.top = `${pctY}%`;
+
+                if (pctX < 2 || pctX > 98 || pctY < 2 || pctY > 98) {
+                    pin.style.display = 'none';
+                } else {
+                    pin.style.display = 'flex';
+                }
+            });
+        }
+
+        // 4. Modos Visuales
+        function setVisualMode(mode) {
+            visualMode = mode;
+            document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
+            if (mode === 'tem') {
+                document.getElementById('btnModeTEM').classList.add('active');
+                badgeInfoText.innerText = "Micrografía Electrónica de Transmisión Real (TEM) • Sección Ultrafina de Célula Eucariota";
+            } else if (mode === 'fluo') {
+                document.getElementById('btnModeFluo').classList.add('active');
+                badgeInfoText.innerText = "Fluorescencia Molecular Confocal: Marcaje de ADN (DAPI), Mitocondrias (GFP) y Golgi";
+            } else if (mode === 'traffic') {
+                document.getElementById('btnModeTraffic').classList.add('active');
+                badgeInfoText.innerText = "Citoesqueleto Dinámico: Vesículas de Secreción Transportadas por Proteínas Motoras";
+            }
+            render();
+        }
+
+        // 5. Datos y Evolución Metabólica Celular
+        const metabolicData = [
+            {
+                name: "Fase G0: Reposo",
+                title: "Fase G0: Célula en Mantenimiento Basal",
+                desc: "Consumo mínimo de energía. Las mitocondrias mantienen el gradiente electroquímico y la membrana regula el transporte pasivo de agua e iones sin división celular.",
+                atp: "1.2 × 10⁷",
+                ph: "7.20",
+                trans: "Basal (15%)",
+                vesicles: "Estable",
+                border: "#10b981"
+            },
+            {
+                name: "Fase G1: Crecimiento",
+                title: "Fase G1: Síntesis Masiva de Proteínas",
+                desc: "El retículo endoplasmático rugoso trabaja a pleno rendimiento. Millones de ribosomas leen el ARN mensajero y ensamblan enzimas y proteínas estructurales.",
+                atp: "4.8 × 10⁷",
+                ph: "7.25",
+                trans: "Alta (65%)",
+                vesicles: "Acelerado",
+                border: "#38bdf8"
+            },
+            {
+                name: "Fase S: Replicación",
+                title: "Fase S: Duplicación Completa del Genoma",
+                desc: "El núcleo celular incrementa el tránsito por los poros nucleares. Las polimerasas duplican las hebras de cromatina con fidelidad molecular absoluta.",
+                atp: "7.5 × 10⁷",
+                ph: "7.30",
+                trans: "Máxima (90%)",
+                vesicles: "Coordinado",
+                border: "#c084fc"
+            },
+            {
+                name: "Pico Energético",
+                title: "Respiración Aerobia: Máxima Producción de ATP",
+                desc: "Las crestas de las mitocondrias activan la cadena de transporte de electrones al 100%, generando 36 moléculas de ATP por cada molécula de glucosa oxidada.",
+                atp: "1.4 × 10⁸",
+                ph: "7.35",
+                trans: "Óptima (85%)",
+                vesicles: "Máximo",
+                border: "#f59e0b"
+            }
+        ];
+
+        function updateMetabolicPhase(val) {
+            metabolicPhase = parseInt(val);
+            const data = metabolicData[metabolicPhase];
+            metabolicPhaseVal.innerText = data.name;
+            phaseTitle.innerText = data.title;
+            phaseDesc.innerText = data.desc;
+            statATP.innerText = data.atp;
+            statPH.innerText = data.ph;
+            statTrans.innerText = data.trans;
+            statVesicles.innerText = data.vesicles;
+            phaseInfoCard.style.borderLeftColor = data.border;
+            render();
+        }
+
+        function cycleNext() {
+            let next = (metabolicPhase + 1) % 4;
+            metabolicSlider.value = next;
+            updateMetabolicPhase(next);
+        }
+
+        // 6. Selección de Puntos Anatómicos / Hotspots
+        function selectHotspot(index) {
+            currentHotspot = index;
+            document.querySelectorAll('.part-card').forEach(c => c.classList.remove('active'));
+            document.querySelectorAll('.hotspot-pin').forEach(p => p.classList.remove('active'));
+
+            const card = document.getElementById(`card-${index}`);
+            const pin = document.getElementById(`pin-${index}`);
+            if (card) card.classList.add('active');
+            if (pin) pin.classList.add('active');
+
+            const hp = hotspots[index];
+            scale = hp.focusScale;
+            panX = hp.focusX;
+            panY = hp.focusY;
+            render();
+        }
+
+        // 7. Herramientas de Navegación
+        function zoomIn() {
+            scale = Math.min(3.5, scale * 1.25);
+            render();
+        }
+        function zoomOut() {
+            scale = Math.max(0.7, scale / 1.25);
+            render();
+        }
+        function resetView() {
+            scale = 1.0;
+            panX = 0;
+            panY = 0;
+            render();
+        }
+
+        // 8. Pan y Arrastre del Canvas con Ratón
+        canvas.addEventListener('mousedown', e => {
+            isDragging = true;
+            startX = e.clientX - panX;
+            startY = e.clientY - panY;
+        });
+        window.addEventListener('mousemove', e => {
+            if (!isDragging) return;
+            panX = e.clientX - startX;
+            panY = e.clientY - startY;
+            render();
+        });
+        window.addEventListener('mouseup', () => { isDragging = false; });
+
+        // Inicializar
+        window.addEventListener('DOMContentLoaded', () => {
+            loadCellPhoto();
+        });
+    </script>
+</body>
+</html>

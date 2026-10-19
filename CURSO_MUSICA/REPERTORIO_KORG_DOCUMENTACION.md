@@ -2,7 +2,7 @@
 > **Proyecto:** Sistema de Atril Digital, Control Web MIDI y Repertorio Pedagógico Interactivo  
 > **Ubicación:** `CURSO_MUSICA/` · **Repositorio:** `CURSO-IA`  
 > **Dispositivo Principal:** Teclado Korg EK-50 Entertainer Keyboard conectado a iPad / Mac  
-> **Versión del Sistema:** v76 (Modo Atril Pantalla Completa + Botones Maestros 1 y 2)
+> **Versión del Sistema:** v77 (Detección Dual iPadOS/Mac + Modo Atril Fullscreen)
 
 ---
 
@@ -129,6 +129,17 @@ Uno de los grandes desafíos de la interpretación en directo es leer la partitu
      * `[🎹 2. Armónica & Piano + Estilo 042]` (Carga Upper 1 Armónica + Upper 2 Piano + Estilo 042 + 56 BPM en 1 tap).
      * `[✕ Volver a la Ficha]` (Cierra el modo atril y regresa instantáneamente a la ficha didáctica).
   3. **Control 1-Tap Táctil:** El músico lee la partitura a pantalla completa y con un simple toque de dedo sobre el botón 1 o 2 cambia toda la orquestación del Korg EK-50 en vivo sin perder el compás.
+
+### 4.4. Compatibilidad Web MIDI en iPadOS vs Mac/PC (El porqué del Botón 'R' en Safari)
+Existe una diferencia técnica crucial entre el ecosistema iOS/iPadOS y los ordenadores de sobremesa:
+1. **El Icono 'R' en la Pantalla de Inicio del iPad:**  
+   Cuando se pulsa *"Añadir a pantalla de inicio"* en iPadOS, el sistema operativo de Apple crea un Web Clip gestionado obligatoriamente por el motor **WebKit de Safari**. Apple no permite que un acceso directo de pantalla de inicio use navegadores de terceros.
+2. **La Política de Apple con Web MIDI en WebKit (iOS/iPadOS):**  
+   Apple no implementa `navigator.requestMIDIAccess` en el motor WebKit de iOS ni iPadOS alegando motivos de privacidad y *fingerprinting*. Como Apple obliga a **todos los navegadores de iOS** (incluyendo Google Chrome para iPad) a usar WebKit internamente, **ni Safari ni Chrome en iPad soportan Web MIDI de forma nativa**.
+3. **Las Soluciones Reales de Conexión:**
+   * **Control MIDI por Cable desde iPad:** Abrir la web dentro de la app gratuita **`Web MIDI Browser`** (disponible en la App Store de Apple), la cual inyecta la API CoreMIDI en el navegador y permite que los botones 1 y 2 controlen el Korg EK-50 por cable USB.
+   * **Modo Atril Visual en iPad (con el Botón 'R'):** En Safari, el iPad actúa como atril visual inteligente perfecto (partituras 100% pantalla completa, acordes, digitaciones y reproductor de acompañamiento Web Audio sin cables).
+   * **Control Directo en Mac/PC:** Si se conecta el Korg EK-50 por USB al Mac o PC, abrir la web en **Google Chrome** otorga control MIDI nativo 100% inmediato sin apps adicionales.
 
 ---
 
