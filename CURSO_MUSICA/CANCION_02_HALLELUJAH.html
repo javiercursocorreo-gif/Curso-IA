@@ -397,11 +397,11 @@
     
     <!-- BARRA DE NAVEGACIÓN -->
     <div class="nav-bar">
-        <a class="btn-back" href="REPERTORIO_KORG_EK50.html?v=82">
+        <a class="btn-back" href="REPERTORIO_KORG_EK50.html?v=83">
             ⬅ Volver a la Lista de Canciones
         </a>
         <div style="display:flex; align-items:center; gap:8px;">
-            <button onclick="window.location.href='CANCION_02_HALLELUJAH.html?t='+Date.now()" style="background:#0284c7; color:#fff; border:none; padding:6px 12px; border-radius:8px; font-size:0.8rem; font-weight:800; cursor:pointer;" title="Pulsa aquí en el iPad para limpiar la caché y ver la última versión">🔄 Recargar v82</button>
+            <button onclick="window.location.href='CANCION_02_HALLELUJAH.html?t='+Date.now()" style="background:#0284c7; color:#fff; border:none; padding:6px 12px; border-radius:8px; font-size:0.8rem; font-weight:800; cursor:pointer;" title="Pulsa aquí en el iPad para limpiar la caché y ver la última versión">🔄 Recargar v83</button>
             <div class="midi-bar">
                 <span id="midi-dot" class="status-dot"></span>
                 <span id="midi-label">Iniciando MIDI...</span>
@@ -946,34 +946,22 @@
             return;
         }
         try {
-            // 1. Asegurar volumen y expresión al máximo en canales 1, 2, 4 y 10 (batería)
-            [0, 1, 3, 9].forEach(ch => {
-                enviarMidiGlobal([0xB0 | ch, 0x07, 127]); // Volumen CC7 = 127
-                enviarMidiGlobal([0xB0 | ch, 0x0B, 127]); // Expresión CC11 = 127
-            });
+            // Volumen moderado suave en Canal 1
+            enviarMidiGlobal([0xB0 | 0, 0x07, 95]);
+            enviarMidiGlobal([0xB0 | 0, 0x0B, 127]);
 
-            // 2. Enviar nota de prueba Do central (60) en Canal 1 (Upper 1), Canal 2 (Upper 2) y Canal 4 (Lower)
-            enviarMidiGlobal([0x90 | 0, 60, 115]);
-            enviarMidiGlobal([0x90 | 1, 60, 115]);
-            enviarMidiGlobal([0x90 | 3, 60, 115]);
+            // Nota Do central (60) suave (velocidad 75) solo en Canal 1
+            enviarMidiGlobal([0x90 | 0, 60, 75]);
 
-            // 3. Enviar golpe de caja y bombo en Canal 10 (Drums - nunca silenciado en teclados de acompañamiento)
-            enviarMidiGlobal([0x90 | 9, 38, 120]); // Snare 1
-            enviarMidiGlobal([0x90 | 9, 36, 120]); // Bass Drum 1
-
-            // 4. Apagar notas tras 800 ms
+            // Apagar nota tras 400 ms
             setTimeout(() => {
                 try {
                     enviarMidiGlobal([0x80 | 0, 60, 0]);
-                    enviarMidiGlobal([0x80 | 1, 60, 0]);
-                    enviarMidiGlobal([0x80 | 3, 60, 0]);
-                    enviarMidiGlobal([0x80 | 9, 38, 0]);
-                    enviarMidiGlobal([0x80 | 9, 36, 0]);
                 } catch(e){}
-            }, 800);
+            }, 400);
 
             const outNames = salidas.map(o => o.name || 'MIDI Out').join(', ') || (midiOutput ? midiOutput.name : 'USB');
-            if (log) log.innerHTML = `🔊 <b>Señal de prueba enviada</b> a <b>${outNames}</b> (Do3 melódico + Percusión Ch.10). Comprueba el volumen físico del Korg.`;
+            if (log) log.innerHTML = `🔊 <b>Nota de prueba Do3 suave enviada</b> a <b>${outNames}</b>.`;
         } catch(e) {
             if (log) log.innerHTML = `⚠️ Error enviando nota: ${e.message}`;
         }
@@ -1002,7 +990,7 @@
             enviarMidiGlobal([0xB0 | 0, 0x00, 0]);
             enviarMidiGlobal([0xB0 | 0, 0x20, 0]);
             enviarMidiGlobal([0xC0 | 0, 21]); // Harmonica
-            enviarMidiGlobal([0xB0 | 0, 0x07, 127]); // Volumen al 100%
+            enviarMidiGlobal([0xB0 | 0, 0x07, 100]); // Volumen natural equilibrado
             enviarMidiGlobal([0xB0 | 0, 0x0B, 127]); // Expresión al 100%
 
             // Upper 2 y 3 silenciados
@@ -1012,20 +1000,9 @@
             // 3. Fijar reloj MIDI a 56 BPM
             fijarTempoMIDI(56);
 
-            // 4. PREVIEW SONORO INMEDIATO: Acorde Fa Mayor en Upper 1 (Fa4: 65, La4: 69, Do5: 72)
-            enviarMidiGlobal([0x90 | 0, 65, 105]);
-            enviarMidiGlobal([0x90 | 0, 69, 105]);
-            enviarMidiGlobal([0x90 | 0, 72, 105]);
-            setTimeout(() => {
-                try {
-                    enviarMidiGlobal([0x80 | 0, 65, 0]);
-                    enviarMidiGlobal([0x80 | 0, 69, 0]);
-                    enviarMidiGlobal([0x80 | 0, 72, 0]);
-                } catch(e){}
-            }, 800);
-
+            // TOTALMENTE SILENCIOSO: Cambia la configuración sin disparar ráfagas de notas
             const nombres = salidas.map(o=>o.name).join(', ') || (midiOutput ? midiOutput.name : 'USB');
-            if (log) log.innerHTML = `🎵 <b>1. STS Armónica + Estilo 042</b> activado en <b>${nombres}</b> (Línea 1: <b>042</b> · Línea 2: <b>STS Armónica</b> · ⏱️ <b>56 BPM</b> · 🔊 <i>Acorde Fa Mayor emitido</i>).`;
+            if (log) log.innerHTML = `🎵 <b>1. STS Armónica + Estilo 042</b> listo en <b>${nombres}</b> (Línea 1: <b>042</b> · Línea 2: <b>STS Armónica</b> · ⏱️ <b>56 BPM</b>). ¡Toca el teclado!`;
         } catch(e) {
             if (log) log.innerHTML = `⚠️ Error enviando al Korg: ${e.message}`;
         }
@@ -1054,14 +1031,14 @@
             enviarMidiGlobal([0xB0 | 0, 0x00, 0]);
             enviarMidiGlobal([0xB0 | 0, 0x20, 0]);
             enviarMidiGlobal([0xC0 | 0, 21]); // Harmonica
-            enviarMidiGlobal([0xB0 | 0, 0x07, 120]);
+            enviarMidiGlobal([0xB0 | 0, 0x07, 100]); // Volumen equilibrado
             enviarMidiGlobal([0xB0 | 0, 0x0B, 127]);
 
             // Upper 2 = Grand Piano de fondo
             enviarMidiGlobal([0xB0 | 1, 0x00, 0]);
             enviarMidiGlobal([0xB0 | 1, 0x20, 0]);
             enviarMidiGlobal([0xC0 | 1, 0]);  // Grand Piano
-            enviarMidiGlobal([0xB0 | 1, 0x07, 95]);
+            enviarMidiGlobal([0xB0 | 1, 0x07, 80]); // Piano sutil
             enviarMidiGlobal([0xB0 | 1, 0x0B, 127]);
 
             // Upper 3 apagado
@@ -1070,22 +1047,9 @@
             // 3. Fijar reloj MIDI a 56 BPM
             fijarTempoMIDI(56);
 
-            // 4. PREVIEW SONORO INMEDIATO: Armónica (Fa4: 65, La4: 69) + Piano (Fa3: 53, Do4: 60)
-            enviarMidiGlobal([0x90 | 0, 65, 105]);
-            enviarMidiGlobal([0x90 | 0, 69, 105]);
-            enviarMidiGlobal([0x90 | 1, 53, 100]);
-            enviarMidiGlobal([0x90 | 1, 60, 100]);
-            setTimeout(() => {
-                try {
-                    enviarMidiGlobal([0x80 | 0, 65, 0]);
-                    enviarMidiGlobal([0x80 | 0, 69, 0]);
-                    enviarMidiGlobal([0x80 | 1, 53, 0]);
-                    enviarMidiGlobal([0x80 | 1, 60, 0]);
-                } catch(e){}
-            }, 800);
-
+            // TOTALMENTE SILENCIOSO: Cambia la configuración sin disparar ráfagas de notas
             const nombres = salidas.map(o=>o.name).join(', ') || (midiOutput ? midiOutput.name : 'USB');
-            if (log) log.innerHTML = `🎹 <b>2. Armónica & Piano + Estilo 042</b> activado en <b>${nombres}</b> (Upper 1: Armónica · Upper 2: Piano · ⏱️ <b>56 BPM</b> · 🔊 <i>Acorde dual Fa Mayor emitido</i>).`;
+            if (log) log.innerHTML = `🎹 <b>2. Armónica & Piano + Estilo 042</b> listo en <b>${nombres}</b> (Upper 1: Armónica · Upper 2: Piano · ⏱️ <b>56 BPM</b>). ¡Toca el teclado!`;
         } catch(e) {
             if (log) log.innerHTML = `⚠️ Error enviando al Korg: ${e.message}`;
         }
