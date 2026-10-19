@@ -414,9 +414,9 @@
                 <div class="slider-row">
                     <div class="slider-header">
                         <span>Régimen de Giro:</span>
-                        <span class="slider-val" id="lblRPM">240 RPM</span>
+                        <span class="slider-val" id="lblRPM">1.200 RPM</span>
                     </div>
-                    <input type="range" id="sliderRPM" min="0" max="2400" step="20" value="240" oninput="updateRPM(this.value)">
+                    <input type="range" id="sliderRPM" min="0" max="3000" step="50" value="1200" oninput="updateRPM(this.value)">
                 </div>
             </div>
 
@@ -507,20 +507,10 @@
     <script>
         const canvas = document.getElementById("renderCanvas");
         const engine = new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true });
-        let scene, camera;
+        let scene, camera, animGroup = null;
         let isPlaying = true;
         let currentMode = 'pbr';
-        let currentRPM = 240;
-        let crankAngle = 0;
         let originalMaterials = new Map();
-
-        // Grupos anatómicos/mecánicos clasificados
-        let p1Meshes = []; // Cilindro Izquierdo (Pistón + Bulón)
-        let p2Meshes = []; // Cilindro Derecho (Pistón + Bulón)
-        let rod1Meshes = []; // Biela Izquierda
-        let rod2Meshes = []; // Biela Derecha
-        let crankMeshes = []; // Cigüeñal y Volante de inercia
-        let valveMeshes = []; // Válvulas y Resortes
 
         // Fuentes del modelo 3D (Base64 local autónomo + CDN Fallback)
         const MODEL_URL_RAW = "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/2CylinderEngine/glTF-Binary/2CylinderEngine.glb";
@@ -531,7 +521,7 @@
             sc.clearColor = new BABYLON.Color4(0.02, 0.04, 0.08, 1.0);
 
             // Cámara orbital suave 360° centrada en el origen
-            camera = new BABYLON.ArcRotateCamera("Camera", -Math.PI / 2.5, Math.PI / 2.8, 7.8, new BABYLON.Vector3(0, 0, 0), sc);
+            camera = new BABYLON.ArcRotateCamera("Camera", -Math.PI / 2.5, Math.PI / 2.8, 8.5, new BABYLON.Vector3(0, 0, 0), sc);
             camera.attachControl(canvas, true);
             camera.wheelPrecision = 20;
             camera.minZ = 0.05;
@@ -563,7 +553,7 @@
                 : MODEL_URL_RAW;
 
             const tryLoad = (src, isFallback = false) => {
-                BABYLON.SceneLoader.ImportMesh("", "", src, sc, function (meshes, particleSystems, skeletons, animationGroups, transformNodes) {
+                BABYLON.SceneLoader.ImportMesh("", "", src, sc, function (meshes, particleSystems, skeletons, animationGroups) {
                     const cover = document.getElementById("loadingCover");
                     if (cover) {
                         cover.style.opacity = "0";
@@ -572,98 +562,33 @@
 
                     // Contenedor raíz para centrado y escalado de precisión
                     const engineRoot = new BABYLON.TransformNode("engineRoot", sc);
-                    const gltfRoot = sc.getNodeByName("__root__");
-                    if (gltfRoot) {
-                        gltfRoot.parent = engineRoot;
-                    } else {
-                        meshes.forEach(m => { if (!m.parent) m.parent = engineRoot; });
-                        if (transformNodes) transformNodes.forEach(t => { if (!t.parent) t.parent = engineRoot; });
-                    }
+                    meshes.forEach(m => {
+                        if (m.parent === null) m.parent = engineRoot;
+                    });
 
-                    // En el modelo 2CylinderEngine.glb oficial:
-                    // Altura total: 668.8 unidades con centro en (-59.6, 135.2, -41.2)
-                    // Lo escalamos a 5.2 unidades y lo centramos exactamente en el origen (0, 0, 0)
-                    const scale = 5.2 / 668.8;
+                    // El modelo CAD original tiene 668 unidades de altura con centro en Y = 135.2
+                    // Lo escalamos a 5.0 unidades y lo centramos exactamente en el origen (0, 0, 0)
+                    const center = new BABYLON.Vector3(-59.6, 135.2, -41.2);
+                    const scale = 5.0 / 668.8;
+
                     engineRoot.scaling = new BABYLON.Vector3(scale, scale, scale);
-                    engineRoot.position = new BABYLON.Vector3(59.6 * scale, -135.2 * scale, 41.2 * scale);
+                    engineRoot.position = new BABYLON.Vector3(-center.x * scale, -center.y * scale, -center.z * scale);
 
                     // Ajustar cámara para encuadre majestuoso del motor
                     camera.setTarget(new BABYLON.Vector3(0, 0, 0));
-                    camera.radius = 7.8;
+                    camera.radius = 8.5;
 
-                    // Limpiar quaternions para permitir manipulación cinemática Euler directa
-                    meshes.forEach(m => {
-                        m._initPos = m.position.clone();
-                        if (m.rotationQuaternion) {
-                            m.rotation = m.rotationQuaternion.toEulerAngles();
-                            m.rotationQuaternion = null;
-                        }
-                        m._initRot = m.rotation.clone();
-                    });
+                    // Guardar y configurar animación cinemática sincronizada
+                    if (animationGroups && animationGroups.length > 0) {
+                        animGroup = animationGroups[0];
+                        animGroup.play(true);
+                        animGroup.speedRatio = 0.8;
+                    }
 
-                    // Identificación geométrica precisa de partes internas:
-                    // 1. Pistones (Mesh 0 "Piston_..." y Mesh 1 "body_24" bulón)
-                    const allPistonParts = [];
-                    const allRods = [];
-
-                    meshes.forEach(m => {
-                        const name = (m.name || "").toLowerCase();
-                        const id = (m.id || "").toLowerCase();
-                        const vCount = m.getTotalVertices ? m.getTotalVertices() : 0;
-
-                        // Clasificación PBR de materiales originales
-                        if (m.material) {
-                            originalMaterials.set(m, m.material);
-                            if (m.material instanceof BABYLON.PBRMaterial) {
-                                m.material.metallic = 0.88;
-                                m.roughness = 0.32;
-                            }
-                        }
-
-                        // Firma de pistón y bulón (bulón acompaña al pistón en su carrera lineal)
-                        if (name.includes("piston") || id.includes("piston") || name.includes("body_24") || id.includes("body_24") || vCount === 2012 || vCount === 1296 || vCount === 3308 || vCount === 264) {
-                            allPistonParts.push(m);
-                        } else if (name.includes("rod") || id.includes("rod") || name.includes("body_22") || name.includes("body_23") || name.includes("body_18") || name.includes("body_19") || vCount === 408 || vCount === 340 || vCount === 748) {
-                            allRods.push(m);
-                        } else if (name.includes("lifter") || name.includes("spring") || vCount === 96 || vCount === 43) {
-                            valveMeshes.push(m);
-                        } else if (name.includes("crank") || name.includes("flywheel") || name.includes("body_14") || name.includes("body_13") || name.includes("body_12") || name.includes("body_11") || name.includes("body_10") || name.includes("body_9") || name.includes("body_8") || name.includes("body_7") || name.includes("body_6") || name.includes("body_5") || name.includes("body_4") || name.includes("body_15") || name.includes("body_16") || name.includes("body_17")) {
-                            crankMeshes.push(m);
-                        }
-                    });
-
-                    // Forzar cálculo de matrices mundiales para ordenar por posición espacial X
-                    sc.render();
-
-                    // Separación simétrica de cilindros: Izquierdo (menor X) y Derecho (mayor X)
-                    allPistonParts.sort((a, b) => a.getAbsolutePosition().x - b.getAbsolutePosition().x);
-                    const pMid = Math.floor(allPistonParts.length / 2);
-                    p1Meshes = allPistonParts.slice(0, pMid); // Cilindro Izquierdo
-                    p2Meshes = allPistonParts.slice(pMid);     // Cilindro Derecho
-
-                    allRods.sort((a, b) => a.getAbsolutePosition().x - b.getAbsolutePosition().x);
-                    const rMid = Math.floor(allRods.length / 2);
-                    rod1Meshes = allRods.slice(0, rMid); // Biela Izquierda
-                    rod2Meshes = allRods.slice(rMid);     // Biela Derecha
-
-                    // Detectar nodos padre del cigüeñal
-                    crankMeshes.forEach(m => {
-                        if (m.parent && m.parent !== engineRoot && m.parent.name !== "__root__") {
-                            crankParents.add(m.parent);
-                        }
-                    });
-                    crankParents.forEach(p => {
-                        p._initPos = p.position.clone();
-                        p._initRot = p.rotation.clone();
-                        if (p.rotationQuaternion) {
-                            p.rotation = p.rotationQuaternion.toEulerAngles();
-                            p.rotationQuaternion = null;
-                        }
-                    });
-
-                    // Configurar materiales PBR de ingeniería originales
+                    // Configurar materiales PBR de ingeniería y respaldar originales
                     meshes.forEach(m => {
                         if (m.material) {
+                            m._origMaterial = m.material;
                             originalMaterials.set(m, m.material);
                             if (m.material instanceof BABYLON.PBRMaterial) {
                                 m.material.metallic = 0.88;
@@ -685,97 +610,43 @@
             tryLoad(initialSource, false);
         }
 
-        // Bucle cinemático continuo en tiempo real
-        let lastFrameTime = performance.now();
-        function updateKinematics() {
-            const now = performance.now();
-            const dt = Math.min((now - lastFrameTime) / 1000, 0.1);
-            lastFrameTime = now;
-
-            if (isPlaying && currentRPM > 0) {
-                const omega = (currentRPM * 2 * Math.PI) / 60;
-                crankAngle = (crankAngle + omega * dt) % (Math.PI * 2);
-
-                // Geometría cinemática real en unidades CAD del motor (carrera amplia y nítidamente visible)
-                const R = 46.0;   // Radio de manivela del cigüeñal
-                const L = 142.0;  // Longitud de biela
-
-                // Desplazamiento armónico exacto biela-manivela
-                // P1: Cilindro Izquierdo (X negativo)
-                const s1 = R * Math.cos(crankAngle) + (R * R / (2 * L)) * Math.cos(2 * crankAngle);
-                // P2: Cilindro Derecho (X positivo), desfasado 180° en motor boxer opuesto
-                const s2 = R * Math.cos(crankAngle + Math.PI) + (R * R / (2 * L)) * Math.cos(2 * (crankAngle + Math.PI));
-
-                // 1. Recorrido lineal alternativo de los Pistones y Bulones
-                p1Meshes.forEach(m => {
-                    m.position.x = m._initPos.x + s1;
-                });
-                p2Meshes.forEach(m => {
-                    m.position.x = m._initPos.x - s2;
-                });
-
-                // 2. Oscilación pendular de las Bielas articuladas
-                const phi1 = Math.asin((R / L) * Math.sin(crankAngle));
-                const phi2 = Math.asin((R / L) * Math.sin(crankAngle + Math.PI));
-
-                rod1Meshes.forEach(m => {
-                    m.position.x = m._initPos.x + s1 * 0.52;
-                    m.position.y = m._initPos.y + R * Math.sin(crankAngle) * 0.42;
-                    m.rotation.z = m._initRot.z + phi1;
-                });
-
-                rod2Meshes.forEach(m => {
-                    m.position.x = m._initPos.x - s2 * 0.52;
-                    m.position.y = m._initPos.y + R * Math.sin(crankAngle + Math.PI) * 0.42;
-                    m.rotation.z = m._initRot.z + phi2;
-                });
-
-                // 3. Rotación continua del Cigüeñal y Contrapesos
-                crankMeshes.forEach(m => {
-                    m.rotation.z = m._initRot.z + crankAngle;
-                });
-
-                // 4. Apertura y cierre de válvulas y empujadores a 1/2 velocidad (árbol de levas)
-                const v1 = Math.max(0, Math.sin(crankAngle * 0.5)) * 14.0;
-                const v2 = Math.max(0, Math.sin((crankAngle + Math.PI) * 0.5)) * 14.0;
-                valveMeshes.forEach((m, idx) => {
-                    const v = (idx % 2 === 0) ? v1 : v2;
-                    m.position.y = m._initPos.y + v;
-                });
-            }
-        }
-
         function togglePlay() {
             isPlaying = !isPlaying;
             const btn = document.getElementById("btnTogglePlay");
             const lbl = document.getElementById("lblSpeedState");
 
-            if (isPlaying) {
-                btn.innerHTML = "⏸ Pausar Giro";
-                btn.classList.add("active");
-                lbl.innerText = "EN MARCHA";
-                lbl.style.color = "var(--cyan)";
-            } else {
-                btn.innerHTML = "▶ Reanudar Giro";
-                btn.classList.remove("active");
-                lbl.innerText = "PAUSADO";
-                lbl.style.color = "var(--amber)";
+            if (animGroup) {
+                if (isPlaying) {
+                    animGroup.play(true);
+                    btn.innerHTML = "⏸ Pausar Giro";
+                    btn.classList.add("active");
+                    lbl.innerText = "EN MARCHA";
+                    lbl.style.color = "var(--cyan)";
+                } else {
+                    animGroup.pause();
+                    btn.innerHTML = "▶ Reanudar Giro";
+                    btn.classList.remove("active");
+                    lbl.innerText = "PAUSADO";
+                    lbl.style.color = "var(--amber)";
+                }
             }
         }
 
         function updateRPM(val) {
             const rpm = parseInt(val);
-            currentRPM = rpm;
-            document.getElementById("lblRPM").innerText = `${rpm.toLocaleString('es-ES')} RPM`;
+            document.getElementById("lblRPM").innerText = `${rpm} RPM`;
             document.getElementById("valRadS").innerText = `${(rpm * 2 * Math.PI / 60).toFixed(1)} rad/s`;
-            document.getElementById("valPress").innerText = `${(25 + (rpm / 2400) * 50).toFixed(1)} bar`;
-            document.getElementById("valTemp").innerText = `${Math.round(160 + (rpm / 2400) * 340)} °C`;
-            document.getElementById("valForce").innerText = `${(8 + (rpm / 2400) * 26).toFixed(1)} kN`;
+            document.getElementById("valPress").innerText = `${(30 + (rpm / 3000) * 45).toFixed(1)} bar`;
+            document.getElementById("valTemp").innerText = `${Math.round(180 + (rpm / 3000) * 320)} °C`;
+            document.getElementById("valForce").innerText = `${(10 + (rpm / 3000) * 24).toFixed(1)} kN`;
 
-            if (rpm === 0) {
-                if (isPlaying) togglePlay();
-            } else {
-                if (!isPlaying) togglePlay();
+            if (animGroup) {
+                if (rpm === 0) {
+                    animGroup.pause();
+                } else {
+                    if (!isPlaying) togglePlay();
+                    animGroup.speedRatio = (rpm / 1200) * 0.8;
+                }
             }
         }
 
@@ -786,75 +657,30 @@
 
             scene.meshes.forEach(m => {
                 if (!m.material) return;
-                const name = (m.name || "").toLowerCase();
-                const id = (m.id || "").toLowerCase();
-                const vCount = m.getTotalVertices ? m.getTotalVertices() : 0;
-                const orig = originalMaterials.get(m);
-
-                const isPiston = name.includes("piston") || id.includes("piston") || name.includes("body_24") || id.includes("body_24") || vCount === 2012 || vCount === 1296 || vCount === 3308 || vCount === 264;
-                const isRod = name.includes("rod") || id.includes("rod") || name.includes("body_22") || name.includes("body_23") || name.includes("body_18") || name.includes("body_19") || vCount === 408 || vCount === 340 || vCount === 748;
-                const isCrank = name.includes("crank") || name.includes("flywheel") || name.includes("body_14") || name.includes("body_13") || name.includes("body_12") || name.includes("body_11") || name.includes("body_10") || name.includes("body_9") || name.includes("body_8") || name.includes("body_7") || name.includes("body_6") || name.includes("body_5") || name.includes("body_4") || name.includes("body_15") || name.includes("body_16") || name.includes("body_17");
-                const isValve = name.includes("lifter") || name.includes("spring") || vCount === 96 || vCount === 43;
+                // Respaldo indestructible del material PBR original
+                if (!m._origMaterial) {
+                    m._origMaterial = originalMaterials.get(m) || m.material;
+                }
 
                 if (mode === 'pbr') {
-                    if (orig) m.material = orig;
+                    if (m._origMaterial) {
+                        m.material = m._origMaterial;
+                        if (m.material.alpha !== undefined) m.material.alpha = 1.0;
+                    }
                     m.visibility = 1.0;
                 } else if (mode === 'thermal') {
-                    const mat = new BABYLON.StandardMaterial("thermalMat_" + m.name, scene);
-                    if (isPiston) {
-                        // Pistones al rojo vivo por combustión directa (450 °C)
-                        mat.diffuseColor = new BABYLON.Color3(1.0, 0.25, 0.05);
-                        mat.emissiveColor = new BABYLON.Color3(0.7, 0.15, 0.0);
-                    } else if (isRod) {
-                        // Bielas de acero caliente (280 °C)
-                        mat.diffuseColor = new BABYLON.Color3(1.0, 0.65, 0.1);
-                        mat.emissiveColor = new BABYLON.Color3(0.4, 0.2, 0.0);
-                    } else if (isCrank) {
-                        // Cigüeñal en baño de aceite (150 °C)
-                        mat.diffuseColor = new BABYLON.Color3(0.9, 0.85, 0.2);
-                        mat.emissiveColor = new BABYLON.Color3(0.25, 0.2, 0.05);
-                    } else {
-                        // Bloque motor refrigerado por líquido (85 °C)
-                        mat.diffuseColor = new BABYLON.Color3(0.12, 0.35, 0.85);
-                        mat.emissiveColor = new BABYLON.Color3(0.04, 0.12, 0.3);
-                    }
+                    const mat = new BABYLON.StandardMaterial("thermalMat_" + (m.name || m.id), scene);
+                    mat.diffuseColor = new BABYLON.Color3(0.9, 0.2, 0.1);
+                    mat.emissiveColor = new BABYLON.Color3(0.4, 0.05, 0.0);
                     m.material = mat;
                     m.visibility = 1.0;
                 } else if (mode === 'xray') {
-                    if (isPiston) {
-                        // Pistones en aleación de aluminio forjado brillante
-                        const mat = new BABYLON.StandardMaterial("pistonSolidMat_" + m.name, scene);
-                        mat.diffuseColor = new BABYLON.Color3(1.0, 0.95, 0.85);
-                        mat.emissiveColor = new BABYLON.Color3(0.35, 0.3, 0.2);
-                        mat.specularColor = new BABYLON.Color3(1, 1, 1);
-                        m.material = mat;
-                        m.visibility = 1.0;
-                    } else if (isRod) {
-                        // Bielas en cromo-níquel contrastado
-                        const mat = new BABYLON.StandardMaterial("rodSolidMat_" + m.name, scene);
-                        mat.diffuseColor = new BABYLON.Color3(0.85, 0.92, 1.0);
-                        mat.emissiveColor = new BABYLON.Color3(0.2, 0.28, 0.4);
-                        mat.specularColor = new BABYLON.Color3(1, 1, 1);
-                        m.material = mat;
-                        m.visibility = 1.0;
-                    } else if (isCrank || isValve) {
-                        // Cigüeñal y válvulas en acero templado
-                        const mat = new BABYLON.StandardMaterial("crankSolidMat_" + m.name, scene);
-                        mat.diffuseColor = new BABYLON.Color3(0.8, 0.85, 0.95);
-                        mat.emissiveColor = new BABYLON.Color3(0.15, 0.2, 0.3);
-                        mat.specularColor = new BABYLON.Color3(1, 1, 1);
-                        m.material = mat;
-                        m.visibility = 1.0;
-                    } else {
-                        // Bloque exterior y cilindros transparentes en azul cristal de Rayos X
-                        const mat = new BABYLON.StandardMaterial("xrayGlassMat_" + m.name, scene);
-                        mat.diffuseColor = new BABYLON.Color3(0.1, 0.45, 0.95);
-                        mat.emissiveColor = new BABYLON.Color3(0.02, 0.1, 0.25);
-                        mat.alpha = 0.20;
-                        mat.backFaceCulling = false;
-                        m.material = mat;
-                        m.visibility = 0.38;
-                    }
+                    const mat = new BABYLON.StandardMaterial("xrayMat_" + (m.name || m.id), scene);
+                    mat.diffuseColor = new BABYLON.Color3(0.2, 0.6, 1.0);
+                    mat.emissiveColor = new BABYLON.Color3(0.05, 0.2, 0.4);
+                    mat.alpha = 0.35;
+                    m.material = mat;
+                    m.visibility = 0.55;
                 }
             });
         }
@@ -864,34 +690,29 @@
             if (window.event && window.event.currentTarget) window.event.currentTarget.classList.add('active');
 
             if (name === 'piston') {
-                camera.setTarget(new BABYLON.Vector3(-1.2, 0.1, 0));
-                camera.radius = 3.8;
+                camera.setTarget(new BABYLON.Vector3(0, 1.2, 0));
+                camera.radius = 4.5;
             } else if (name === 'rod') {
-                camera.setTarget(new BABYLON.Vector3(-0.5, -0.1, 0));
-                camera.radius = 4.2;
+                camera.setTarget(new BABYLON.Vector3(0, 0, 0));
+                camera.radius = 5.5;
             } else if (name === 'crank') {
-                camera.setTarget(new BABYLON.Vector3(0, -0.2, 0));
-                camera.radius = 4.0;
+                camera.setTarget(new BABYLON.Vector3(0, -1.2, 0));
+                camera.radius = 5.0;
             } else if (name === 'block') {
                 camera.setTarget(new BABYLON.Vector3(0, 0, 0));
-                camera.radius = 7.8;
+                camera.radius = 8.5;
             }
         }
 
         function resetCamera() {
             camera.alpha = -Math.PI / 2.5;
             camera.beta = Math.PI / 2.8;
-            camera.radius = 7.8;
+            camera.radius = 8.5;
             camera.setTarget(new BABYLON.Vector3(0, 0, 0));
         }
 
         scene = createScene();
-        engine.runRenderLoop(() => { 
-            if (scene) {
-                updateKinematics();
-                scene.render(); 
-            }
-        });
+        engine.runRenderLoop(() => { if (scene) scene.render(); });
         window.addEventListener("resize", () => { engine.resize(); });
     </script>
 </body>
