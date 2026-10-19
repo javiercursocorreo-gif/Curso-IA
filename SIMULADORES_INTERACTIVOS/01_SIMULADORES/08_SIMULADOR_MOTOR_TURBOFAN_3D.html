@@ -3,10 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sesión 08 • Simulador Fotográfico Real: Motor Térmico de Combustión Interna [COD-008]</title>
-    <!-- Asset Fotográfico Real en Base64 Autónomo (Múltiples rutas de compatibilidad) -->
-    <script src="../03_ASSETS_3D_Y_DATOS/engine_photo_b64.js"></script>
-    <script src="../../../../SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/engine_photo_b64.js"></script>
+    <title>Sesión 08 • Simulador 3D Real: Motor Térmico de Combustión Interna [COD-008]</title>
+    <!-- Babylon.js CDN Oficial y Loaders para GLTF/GLB -->
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+    <!-- Respaldo Base64 Autónomo para funcionamiento local y offline -->
+    <script src="../03_ASSETS_3D_Y_DATOS/engine_3d_b64.js"></script>
+    <script src="../../../../SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/engine_3d_b64.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -16,8 +19,7 @@
             --cyan-glow: rgba(56, 189, 248, 0.35);
             --amber: #f59e0b;
             --fire: #ef4444;
-            --intake: #06b6d4;
-            --exhaust: #a855f7;
+            --emerald: #10b981;
             --metal: #cbd5e1;
             --text-main: #f8fafc;
             --text-sub: #cbd5e1;
@@ -75,15 +77,10 @@
             align-items: center;
             gap: 10px;
         }
-        .header-right {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
         .pill-status {
-            background: rgba(245, 158, 11, 0.15);
-            color: var(--amber);
-            border: 1px solid rgba(245, 158, 11, 0.4);
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--emerald);
+            border: 1px solid rgba(16, 185, 129, 0.4);
             font-size: 0.85rem;
             font-weight: 700;
             padding: 5px 13px;
@@ -93,7 +90,7 @@
             gap: 6px;
         }
 
-        /* GRID PRINCIPAL */
+        /* WORKSPACE GRID */
         .workspace-grid {
             flex: 1;
             min-height: 0;
@@ -102,7 +99,7 @@
             background: #020409;
         }
 
-        /* PANEL DIDÁCTICO IZQUIERDO */
+        /* SIDEBAR PANEL */
         aside.sidebar-panel {
             background: var(--bg-panel);
             border-right: 1px solid rgba(255, 255, 255, 0.1);
@@ -147,754 +144,552 @@
         }
         .easy-text strong { color: #ffffff; }
 
-        /* MODOS DE INSPECCIÓN TÉCNICA */
+        /* CONTROLES 3D Y ANIMACIÓN */
+        .control-box {
+            background: rgba(15, 23, 42, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
         .section-title {
             font-size: 0.88rem;
             font-weight: 800;
             color: #94a3b8;
             text-transform: uppercase;
             letter-spacing: 0.06em;
-            margin-bottom: 8px;
             display: flex;
             align-items: center;
             justify-content: space-between;
         }
-        .mode-selector {
+        .btn-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+        .btn-action {
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            color: #ffffff;
+            font-weight: 700;
+            font-size: 0.85rem;
+            padding: 10px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        .btn-action:hover {
+            background: rgba(56, 189, 248, 0.2);
+            border-color: var(--cyan);
+        }
+        .btn-action.active {
+            background: rgba(56, 189, 248, 0.35);
+            border-color: var(--cyan);
+            box-shadow: 0 0 12px var(--cyan-glow);
+        }
+
+        /* SLIDER VELOCIDAD RPM */
+        .slider-row {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .slider-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #cbd5e1;
+        }
+        .slider-val {
+            font-family: var(--font-mono);
+            font-weight: 800;
+            color: var(--cyan);
+        }
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            background: #1e293b;
+            border-radius: 3px;
+            outline: none;
+            accent-color: var(--cyan);
+            cursor: pointer;
+        }
+
+        /* MODOS DE VISUALIZACIÓN */
+        .mode-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 8px;
         }
         .mode-btn {
             background: rgba(30, 41, 59, 0.6);
-            border: 1.5px solid rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             color: var(--text-sub);
-            padding: 10px 8px;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 0.82rem;
+            padding: 8px;
+            border-radius: 8px;
+            font-size: 0.8rem;
             font-weight: 700;
+            cursor: pointer;
             text-align: center;
-            transition: all 0.25s ease;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 5px;
-        }
-        .mode-btn:hover {
-            border-color: var(--cyan);
-            background: rgba(56, 189, 248, 0.1);
-            color: #ffffff;
+            transition: all 0.2s;
         }
         .mode-btn.active {
             border-color: var(--amber);
             background: rgba(245, 158, 11, 0.2);
             color: var(--amber);
-            box-shadow: 0 0 14px rgba(245, 158, 11, 0.25);
         }
 
-        /* CONTROL DE CICLO OTTO (4 TIEMPOS) */
-        .control-box {
-            background: rgba(15, 23, 42, 0.7);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            padding: 14px;
-        }
-        .slider-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 8px;
-        }
-        .slider-label {
-            font-size: 0.9rem;
-            font-weight: 700;
-            color: #ffffff;
-        }
-        .slider-val {
-            font-family: var(--font-mono);
-            font-size: 0.95rem;
-            font-weight: 800;
-            color: var(--amber);
-        }
-        input[type="range"] {
-            width: 100%;
-            height: 8px;
-            border-radius: 4px;
-            background: #334155;
-            outline: none;
-            -webkit-appearance: none;
-            accent-color: var(--amber);
-            cursor: pointer;
-        }
-
-        .strokes-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 6px;
-            margin-top: 10px;
-        }
-        .stroke-btn {
-            background: rgba(30, 41, 59, 0.6);
-            border: 1.5px solid rgba(255, 255, 255, 0.12);
-            color: var(--text-sub);
-            padding: 8px 4px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 0.76rem;
-            font-weight: 800;
-            text-align: center;
-            transition: all 0.25s ease;
-            display: flex;
-            flex-direction: column;
-            gap: 3px;
-        }
-        .stroke-btn.active {
-            border-color: var(--cyan);
-            background: rgba(56, 189, 248, 0.2);
-            color: #38bdf8;
-            box-shadow: 0 0 12px rgba(56, 189, 248, 0.25);
-        }
-
-        /* TARJETA DINÁMICA DE TELEMETRÍA */
-        .phase-info-box {
-            background: rgba(0, 0, 0, 0.45);
-            border-radius: 8px;
-            padding: 12px 14px;
-            margin-top: 10px;
-            border-left: 4px solid var(--cyan);
-        }
-        .phase-name {
-            font-size: 0.98rem;
-            font-weight: 800;
-            color: #ffffff;
-            margin-bottom: 4px;
-        }
-        .phase-desc {
-            font-size: 0.88rem;
-            color: #cbd5e1;
-            line-height: 1.45;
-        }
-        .phase-stats {
+        /* TELEMETRÍA */
+        .telemetry-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 8px;
-            margin-top: 8px;
-            padding-top: 8px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            font-family: var(--font-mono);
-            font-size: 0.78rem;
-            color: #94a3b8;
         }
-        .phase-stats strong { color: #f59e0b; }
+        .tele-card {
+            background: rgba(2, 6, 23, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+            padding: 8px 10px;
+        }
+        .tele-label {
+            font-size: 0.72rem;
+            color: #94a3b8;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .tele-val {
+            font-family: var(--font-mono);
+            font-size: 1.05rem;
+            font-weight: 800;
+            color: #ffffff;
+            margin-top: 2px;
+        }
 
-        /* LISTA DE PUNTOS TÉCNICOS */
-        .parts-list {
+        /* COMPONENTES MECÁNICOS */
+        .part-list {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 8px;
         }
-        .part-card {
-            background: rgba(30, 41, 59, 0.5);
+        .part-item {
+            background: rgba(15, 23, 42, 0.6);
             border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 10px;
+            border-radius: 8px;
             padding: 10px 12px;
             cursor: pointer;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            gap: 12px;
+            transition: all 0.2s;
         }
-        .part-card:hover {
+        .part-item:hover, .part-item.active {
             border-color: var(--cyan);
-            background: rgba(56, 189, 248, 0.08);
-            transform: translateX(4px);
+            background: rgba(56, 189, 248, 0.1);
         }
-        .part-card.active {
-            border-color: var(--amber);
-            background: rgba(245, 158, 11, 0.15);
-            box-shadow: 0 0 15px rgba(245, 158, 11, 0.2);
-        }
-        .part-num {
-            width: 26px;
-            height: 26px;
-            border-radius: 50%;
-            background: rgba(56, 189, 248, 0.2);
-            color: var(--cyan);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: var(--font-mono);
-            font-weight: 800;
-            font-size: 0.82rem;
-            flex-shrink: 0;
-            border: 1px solid rgba(56, 189, 248, 0.4);
-        }
-        .part-card.active .part-num {
-            background: var(--amber);
-            color: #000000;
-            border-color: #ffffff;
-        }
-        .part-info { flex: 1; min-width: 0; }
-        .part-title {
-            font-size: 0.92rem;
+        .part-item-title {
+            font-size: 0.88rem;
             font-weight: 700;
             color: #ffffff;
+            display: flex;
+            justify-content: space-between;
         }
-        .part-subtitle {
-            font-size: 0.78rem;
+        .part-item-desc {
+            font-size: 0.8rem;
             color: #94a3b8;
+            margin-top: 4px;
+            line-height: 1.35;
         }
 
-        /* VIEWPORT CANVAS FOTOGRÁFICO REAL */
+        /* 3D VIEWPORT */
         .viewport-container {
             position: relative;
             width: 100%;
             height: 100%;
             overflow: hidden;
-            background: radial-gradient(circle at center, #0d1527 0%, #030712 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            background: radial-gradient(circle at 50% 50%, #0f172a 0%, #020617 100%);
         }
-        #photoCanvas {
+        canvas#renderCanvas {
+            width: 100%;
+            height: 100%;
             display: block;
-            cursor: grab;
+            outline: none;
         }
-        #photoCanvas:active { cursor: grabbing; }
 
-        /* OVERLAY HUD */
-        .photo-overlay-badge {
+        /* OVERLAYS VIEWPORT */
+        .overlay-badge {
             position: absolute;
-            top: 20px;
+            top: 18px;
             left: 20px;
-            background: rgba(14, 20, 32, 0.88);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(12px);
-            padding: 8px 16px;
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(56, 189, 248, 0.35);
+            padding: 8px 14px;
             border-radius: 10px;
-            color: #e2e8f0;
-            font-size: 0.85rem;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            z-index: 40;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
-        }
-        .photo-overlay-badge .dot-live {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background: #10b981;
-            box-shadow: 0 0 8px #10b981;
-            animation: pulse-dot 1.5s infinite;
-        }
-        @keyframes pulse-dot { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
-
-        /* PINS INTERACTIVOS */
-        .hotspot-pin {
-            position: absolute;
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background: rgba(245, 158, 11, 0.9);
-            border: 2px solid #ffffff;
-            box-shadow: 0 0 20px rgba(245, 158, 11, 0.9), 0 0 0 4px rgba(245, 158, 11, 0.3);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #000000;
-            font-weight: 900;
             font-size: 0.82rem;
-            cursor: pointer;
-            transform: translate(-50%, -50%);
-            transition: transform 0.2s ease;
-            z-index: 30;
+            font-weight: 700;
+            color: #f8fafc;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            pointer-events: none;
+            z-index: 10;
         }
-        .hotspot-pin:hover, .hotspot-pin.active {
-            transform: translate(-50%, -50%) scale(1.3);
-            background: #ffffff;
-            color: #000000;
-            border-color: var(--cyan);
-            box-shadow: 0 0 25px rgba(255, 255, 255, 1), 0 0 0 8px rgba(56, 189, 248, 0.4);
-        }
-
-        /* BARRA INFERIOR DE CONTROLES */
-        .bottom-controls-bar {
+        .overlay-hint {
             position: absolute;
-            bottom: 24px;
+            bottom: 18px;
             left: 50%;
             transform: translateX(-50%);
-            background: rgba(14, 20, 32, 0.9);
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(14px);
-            padding: 8px 16px;
+            padding: 6px 16px;
             border-radius: 9999px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #94a3b8;
+            pointer-events: none;
+            z-index: 10;
+        }
+        .loading-cover {
+            position: absolute;
+            inset: 0;
+            background: #020617;
             display: flex;
+            flex-direction: column;
             align-items: center;
-            gap: 12px;
-            z-index: 40;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+            justify-content: center;
+            gap: 16px;
+            z-index: 100;
+            transition: opacity 0.5s ease;
         }
-        .btn-tool {
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            color: #ffffff;
-            padding: 7px 14px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 700;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            transition: all 0.2s ease;
+        .spinner {
+            width: 48px;
+            height: 48px;
+            border: 4px solid rgba(56, 189, 248, 0.2);
+            border-top-color: var(--cyan);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
         }
-        .btn-tool:hover {
-            background: rgba(56, 189, 248, 0.2);
-            border-color: var(--cyan);
-            color: #38bdf8;
-        }
+        @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
-
-    <!-- HEADER SUPERIOR -->
     <header>
         <div class="header-title-box">
-            <span class="badge-code">COD-008</span>
-            <h1>⚙️ Motor Térmico de Combustión • Corte Técnico Longitudinal Real</h1>
+            <span class="badge-code">[COD-008]</span>
+            <h1>⚙️ Simulador 3D Real: Motor de Combustión Interna</h1>
         </div>
-        <div class="header-right">
-            <div class="pill-status">
-                <span>🔬</span>
-                <span>Fotografía de Ingeniería Seccional HD</span>
-            </div>
+        <div class="pill-status">
+            <span>●</span>
+            <span id="txtStatus">Modelo 3D CAD Oficial • Babylon.js</span>
         </div>
     </header>
 
-    <!-- ÁREA DE TRABAJO -->
     <div class="workspace-grid">
-        
-        <!-- SIDEBAR DIDÁCTICO -->
         <aside class="sidebar-panel">
-            
             <!-- TARJETA LA IDEA FÁCIL -->
             <div class="card-easy-concept">
-                <div class="easy-tag">
-                    <span>💡</span>
-                    <span>La Idea Fácil • Explicación Intuitiva</span>
-                </div>
-                <div class="easy-title">El Corazón Mecánico de un Coche</div>
-                <div class="easy-text">
-                    Estás observando una <strong>fotografía real en corte longitudinal</strong> de un motor de combustión interna:
-                    <br><br>
-                    1. <strong>Arriba del todo (Culata):</strong> Las válvulas de acero se abren para dejar entrar aire con gasolina y sacar el humo quemado.<br>
-                    2. <strong>En el centro (Cilindro):</strong> El <strong>pistón de aluminio</strong> sube y baja dentro de la camisa de fundición.<br>
-                    3. <strong>La biela y el cigüeñal:</strong> La biela conecta el pistón al cigüeñal, transformando la fuerza de la explosión en <strong>giro circular</strong> para las ruedas del vehículo.
-                </div>
+                <div class="easy-tag">💡 La Idea Fácil</div>
+                <div class="easy-title">¿Cómo convierte el fuego en giro?</div>
+                <p class="easy-text">
+                    Imagina una bicicleta: tus piernas son los <strong>pistones</strong> y los pedales son el <strong>cigüeñal</strong>. Cada vez que el combustible arde dentro del cilindro, da una fuerte «patada» al pistón, empujándolo hacia abajo. Ese empuje vertical hace girar el eje del motor en círculos perfectos que finalmente mueven las ruedas.
+                </p>
             </div>
 
-            <!-- MODOS DE INSPECCIÓN -->
-            <div>
-                <div class="section-title">
-                    <span>Modos de Inspección Visual</span>
-                </div>
-                <div class="mode-selector">
-                    <button class="mode-btn active" id="btnModePhoto" onclick="setVisualMode('photo')">
-                        <span>📸</span>
-                        <span>Corte Real</span>
-                    </button>
-                    <button class="mode-btn" id="btnModeThermal" onclick="setVisualMode('thermal')">
-                        <span>🔥</span>
-                        <span>Termografía</span>
-                    </button>
-                    <button class="mode-btn" id="btnModeStress" onclick="setVisualMode('stress')">
-                        <span>⚡</span>
-                        <span>Esfuerzos</span>
-                    </button>
-                </div>
-            </div>
-
-            <!-- CONTROL DEL CICLO OTTO -->
+            <!-- CONTROLES DEL MECANISMO 3D -->
             <div class="control-box">
-                <div class="slider-row">
-                    <span class="slider-label">Fase del Ciclo Otto</span>
-                    <span class="slider-val" id="strokePhaseVal">1. Admisión (0° - 180°)</span>
-                </div>
-                <input type="range" id="cycleSlider" min="0" max="3" step="1" value="0" oninput="setCyclePhase(this.value)">
-                
-                <div class="strokes-grid">
-                    <button class="stroke-btn active" id="btnStroke0" onclick="setCyclePhase(0)">
-                        <span>0° - 180°</span>
-                        <span>1. Admisión</span>
-                    </button>
-                    <button class="stroke-btn" id="btnStroke1" onclick="setCyclePhase(1)">
-                        <span>180° - 360°</span>
-                        <span>2. Compresión</span>
-                    </button>
-                    <button class="stroke-btn" id="btnStroke2" onclick="setCyclePhase(2)">
-                        <span>360° - 540°</span>
-                        <span>3. Explosión</span>
-                    </button>
-                    <button class="stroke-btn" id="btnStroke3" onclick="setCyclePhase(3)">
-                        <span>540° - 720°</span>
-                        <span>4. Escape</span>
-                    </button>
-                </div>
-
-                <div class="phase-info-box" id="phaseCard">
-                    <div class="phase-name" id="phaseTitle">Tiempo 1: Admisión (Aspiración)</div>
-                    <div class="phase-desc" id="phaseDesc">
-                        La válvula de admisión izquierda baja abierta. El pistón desciende succionando la mezcla fresca de aire y gasolina pulverizada.
-                    </div>
-                    <div class="phase-stats">
-                        <span>Presión: <strong id="statPress">0.9 bar</strong></span>
-                        <span>Temperatura: <strong id="statTemp">25 °C</strong></span>
-                        <span>Giro Cigüeñal: <strong id="statDeg">0° a 180°</strong></span>
-                        <span>Fuerza en Biela: <strong id="statForce">1.2 kN</strong></span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- COMPONENTES MECÁNICOS CLAVE -->
-            <div>
                 <div class="section-title">
-                    <span>Componentes de Ingeniería en el Corte Real</span>
+                    <span>Cinemática Mecánica 3D</span>
+                    <span id="lblSpeedState" style="color:var(--cyan); font-family:var(--font-mono);">EN MARCHA</span>
                 </div>
-                <div class="parts-list">
-                    <div class="part-card active" id="card-0" onclick="selectHotspot(0)">
-                        <div class="part-num">1</div>
-                        <div class="part-info">
-                            <div class="part-title">Árbol de Levas DOHC y Válvulas</div>
-                            <div class="part-subtitle">Distribución variable con muelles de alta resistencia</div>
-                        </div>
+                <div class="btn-group">
+                    <button class="btn-action active" id="btnTogglePlay" onclick="togglePlay()">⏸ Pausar Giro</button>
+                    <button class="btn-action" onclick="resetCamera()">🎯 Centrar 3D</button>
+                </div>
+                <div class="slider-row">
+                    <div class="slider-header">
+                        <span>Régimen de Giro:</span>
+                        <span class="slider-val" id="lblRPM">1.200 RPM</span>
                     </div>
-                    <div class="part-card" id="card-1" onclick="selectHotspot(1)">
-                        <div class="part-num">2</div>
-                        <div class="part-info">
-                            <div class="part-title">Bujía de Iridio y Cámara de Combustión</div>
-                            <div class="part-subtitle">Chispa eléctrica sincronizada a 25.000 voltios</div>
-                        </div>
+                    <input type="range" id="sliderRPM" min="0" max="3000" step="50" value="1200" oninput="updateRPM(this.value)">
+                </div>
+            </div>
+
+            <!-- MODOS DE VISUALIZACIÓN -->
+            <div class="control-box">
+                <div class="section-title">Modos de Inspección</div>
+                <div class="mode-grid">
+                    <button class="mode-btn active" id="btnModePBR" onclick="setMode('pbr')">Metálico Real</button>
+                    <button class="mode-btn" id="btnModeThermal" onclick="setMode('thermal')">Termografía</button>
+                    <button class="mode-btn" id="btnModeXray" onclick="setMode('xray')">Rayos X</button>
+                </div>
+            </div>
+
+            <!-- TELEMETRÍA EN TIEMPO REAL -->
+            <div class="control-box">
+                <div class="section-title">Telemetría Mecánica</div>
+                <div class="telemetry-grid">
+                    <div class="tele-card">
+                        <div class="tele-label">Velocidad Angular</div>
+                        <div class="tele-val" id="valRadS">125.6 rad/s</div>
                     </div>
-                    <div class="part-card" id="card-2" onclick="selectHotspot(2)">
-                        <div class="part-num">3</div>
-                        <div class="part-info">
-                            <div class="part-title">Cilindro y Camisa con Bruñido Cruzado</div>
-                            <div class="part-subtitle">Galerías perimetrales de refrigeración líquida</div>
-                        </div>
+                    <div class="tele-card">
+                        <div class="tele-label">Presión Máxima</div>
+                        <div class="tele-val" id="valPress">68.5 bar</div>
                     </div>
-                    <div class="part-card" id="card-3" onclick="selectHotspot(3)">
-                        <div class="part-num">4</div>
-                        <div class="part-info">
-                            <div class="part-title">Pistón Forjado con Segmentos</div>
-                            <div class="part-subtitle">Aros de compresión y rascador de aceite</div>
-                        </div>
+                    <div class="tele-card">
+                        <div class="tele-label">Temperatura Culata</div>
+                        <div class="tele-val" id="valTemp">420 °C</div>
                     </div>
-                    <div class="part-card" id="card-4" onclick="selectHotspot(4)">
-                        <div class="part-num">5</div>
-                        <div class="part-info">
-                            <div class="part-title">Biela Forjada y Cigüeñal Equilibrado</div>
-                            <div class="part-subtitle">Viga en H y contrapesos giratorios de bancada</div>
-                        </div>
+                    <div class="tele-card">
+                        <div class="tele-label">Fuerza en Biela</div>
+                        <div class="tele-val" id="valForce">28.4 kN</div>
                     </div>
                 </div>
             </div>
 
+            <!-- DESPIECE DE COMPONENTES -->
+            <div class="control-box">
+                <div class="section-title">Componentes Principales</div>
+                <div class="part-list">
+                    <div class="part-item active" onclick="focusComponent('piston')">
+                        <div class="part-item-title">
+                            <span>1. Pistón y Segmentos</span>
+                            <span style="color:var(--cyan);">Aluminio Forjado</span>
+                        </div>
+                        <div class="part-item-desc">Soporta la violenta explosión de los gases y desciende guiado en el interior de la camisa del cilindro.</div>
+                    </div>
+                    <div class="part-item" onclick="focusComponent('rod')">
+                        <div class="part-item-title">
+                            <span>2. Biela de Transmisión</span>
+                            <span style="color:var(--amber);">Acero Cromo-Níquel</span>
+                        </div>
+                        <div class="part-item-desc">Articula con movimiento pendular para conectar el pistón lineal con el cigüeñal rotativo.</div>
+                    </div>
+                    <div class="part-item" onclick="focusComponent('crank')">
+                        <div class="part-item-title">
+                            <span>3. Cigüeñal y Contrapesos</span>
+                            <span style="color:var(--emerald);">Acero Forjado</span>
+                        </div>
+                        <div class="part-item-desc">Transforma la carrera de empuje vertical en giro continuo uniforme mediante contrapesos de equilibrado dinámico.</div>
+                    </div>
+                    <div class="part-item" onclick="focusComponent('block')">
+                        <div class="part-item-title">
+                            <span>4. Bloque Motor & Cilindro</span>
+                            <span style="color:#a855f7;">Fundición Nodular</span>
+                        </div>
+                        <div class="part-item-desc">Estructura rígida que aloja los conductos de refrigeración líquida y las camisas bruñidas.</div>
+                    </div>
+                </div>
+            </div>
         </aside>
 
-        <!-- VIEWPORT DE LA FOTOGRAFÍA CIENTÍFICA -->
-        <main class="viewport-container" id="viewportArea">
-            
-            <div class="photo-overlay-badge">
-                <span class="dot-live"></span>
-                <span id="badgeInfoText">Fotografía Técnica Real • Corte de Ingeniería Automotriz HD</span>
+        <!-- VIEWPORT 3D -->
+        <main class="viewport-container">
+            <div class="overlay-badge">
+                <span>⚙️</span>
+                <span id="badgeInfo">Motor de 2 Cilindros en V • Geometría CAD Real 3D</span>
             </div>
-
-            <canvas id="photoCanvas"></canvas>
-
-            <!-- PINES INTERACTIVOS (Ubicados con coordenadas relativas exactas) -->
-            <div class="hotspot-pin active" id="pin-0" onclick="selectHotspot(0)" title="1. Árbol de Levas y Válvulas">1</div>
-            <div class="hotspot-pin" id="pin-1" onclick="selectHotspot(1)" title="2. Bujía y Cámara">2</div>
-            <div class="hotspot-pin" id="pin-2" onclick="selectHotspot(2)" title="3. Cilindro y Camisa">3</div>
-            <div class="hotspot-pin" id="pin-3" onclick="selectHotspot(3)" title="4. Pistón Forjado">4</div>
-            <div class="hotspot-pin" id="pin-4" onclick="selectHotspot(4)" title="5. Biela y Cigüeñal">5</div>
-
-            <!-- CONTROLES FLOTANTES -->
-            <div class="bottom-controls-bar">
-                <button class="btn-tool" onclick="zoomIn()"><span>🔍+</span><span>Zoom</span></button>
-                <button class="btn-tool" onclick="zoomOut()"><span>🔍-</span><span>Alejar</span></button>
-                <button class="btn-tool" onclick="resetView()"><span>🎯</span><span>Centrar</span></button>
-                <button class="btn-tool" onclick="toggleSimSound()"><span>🔊</span><span>Audio Motor</span></button>
+            <div class="overlay-hint">🖱️ Arrastra para orbitar 360° • Rueda para zoom • Clic derecho para desplazar</div>
+            <div class="loading-cover" id="loadingCover">
+                <div class="spinner"></div>
+                <div style="font-weight: 700; color: var(--cyan); letter-spacing: 0.05em;">CARGANDO MODELO 3D REAL (BABYLON.JS)...</div>
             </div>
-
+            <canvas id="renderCanvas"></canvas>
         </main>
     </div>
 
     <script>
-        // CONFIGURACIÓN GLOBAL
-        const canvas = document.getElementById('photoCanvas');
-        const ctx = canvas.getContext('2d');
-        const engineImg = new Image();
-        let isLoaded = false;
+        const canvas = document.getElementById("renderCanvas");
+        const engine = new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true });
+        let scene, camera, animGroup = null;
+        let isPlaying = true;
+        let currentMode = 'pbr';
+        let originalMaterials = new Map();
 
-        let visualMode = 'photo'; // 'photo', 'thermal', 'stress'
-        let currentCycle = 0;    // 0: Admisión, 1: Compresión, 2: Explosión, 3: Escape
-        let scale = 1.0;
-        let panX = 0;
-        let panY = 0;
-        let isDragging = false;
-        let startX, startY;
+        // Fuentes del modelo 3D (Base64 local autónomo + CDN Fallback)
+        const MODEL_URL_RAW = "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/2CylinderEngine/glTF-Binary/2CylinderEngine.glb";
+        const MODEL_LOCAL = "../03_ASSETS_3D_Y_DATOS/engine_3d.glb";
 
-        // UI references
-        const cycleSlider = document.getElementById('cycleSlider');
-        const strokePhaseVal = document.getElementById('strokePhaseVal');
-        const phaseTitle = document.getElementById('phaseTitle');
-        const phaseDesc = document.getElementById('phaseDesc');
-        const statPress = document.getElementById('statPress');
-        const statTemp = document.getElementById('statTemp');
-        const statDeg = document.getElementById('statDeg');
-        const statForce = document.getElementById('statForce');
-        const phaseCard = document.getElementById('phaseCard');
-        const badgeInfoText = document.getElementById('badgeInfoText');
+        function createScene() {
+            const sc = new BABYLON.Scene(engine);
+            sc.clearColor = new BABYLON.Color4(0.02, 0.04, 0.08, 1.0);
 
-        // Puntos de inspección en coordenadas relativas sobre la foto técnica
-        const hotspots = [
-            { id: 0, x: 0.50, y: 0.16, name: "Árbol de Levas DOHC y Válvulas", focusScale: 1.8, focusX: 0, focusY: 260 },
-            { id: 1, x: 0.50, y: 0.28, name: "Bujía y Cámara de Combustión", focusScale: 1.9, focusX: 0, focusY: 150 },
-            { id: 2, x: 0.35, y: 0.44, name: "Cilindro y Camisa Bruñida", focusScale: 1.7, focusX: 130, focusY: 20 },
-            { id: 3, x: 0.50, y: 0.46, name: "Pistón Forjado de Aluminio", focusScale: 1.8, focusX: 0, focusY: 0 },
-            { id: 4, x: 0.50, y: 0.76, name: "Biela Forjada y Cigüeñal", focusScale: 1.6, focusX: 0, focusY: -220 }
-        ];
+            // Cámara orbital suave 360°
+            camera = new BABYLON.ArcRotateCamera("Camera", -Math.PI / 2.5, Math.PI / 2.8, 140, new BABYLON.Vector3(0, 15, 0), sc);
+            camera.attachControl(canvas, true);
+            camera.wheelPrecision = 20;
+            camera.minZ = 0.5;
+            camera.maxZ = 2000;
+            camera.lowerRadiusLimit = 25;
+            camera.upperRadiusLimit = 350;
 
-        // 1. Carga del activo fotográfico real
-        function loadEnginePhoto() {
-            engineImg.onload = function() {
-                isLoaded = true;
-                canvas.width = engineImg.naturalWidth || 1200;
-                canvas.height = engineImg.naturalHeight || 900;
-                render();
+            // Iluminación de estudio mecánico
+            const hemiLight = new BABYLON.HemisphericLight("hemiLight", new BABYLON.Vector3(0, 1, 0), sc);
+            hemiLight.intensity = 0.85;
+            hemiLight.groundColor = new BABYLON.Color3(0.08, 0.12, 0.2);
+
+            const dirLight1 = new BABYLON.DirectionalLight("dir1", new BABYLON.Vector3(-1, -2, -1), sc);
+            dirLight1.intensity = 1.2;
+            dirLight1.diffuse = new BABYLON.Color3(0.95, 0.98, 1.0);
+
+            const dirLight2 = new BABYLON.DirectionalLight("dir2", new BABYLON.Vector3(1, -1, 1), sc);
+            dirLight2.intensity = 0.75;
+            dirLight2.diffuse = new BABYLON.Color3(0.9, 0.7, 0.5);
+
+            loadModel(sc);
+            return sc;
+        }
+
+        function loadModel(sc) {
+            let modelSource = "";
+            if (window.ENGINE_3D_GLB_B64 && window.ENGINE_3D_GLB_B64.length > 100) {
+                modelSource = window.ENGINE_3D_GLB_B64;
+            } else {
+                modelSource = MODEL_LOCAL;
+            }
+
+            const tryLoad = (src, isFallback = false) => {
+                BABYLON.SceneLoader.ImportMesh("", "", src, sc, function (meshes, particleSystems, skeletons, animationGroups) {
+                    const cover = document.getElementById("loadingCover");
+                    if (cover) {
+                        cover.style.opacity = "0";
+                        setTimeout(() => cover.style.display = "none", 500);
+                    }
+
+                    // Guardar y configurar animación si existe
+                    if (animationGroups && animationGroups.length > 0) {
+                        animGroup = animationGroups[0];
+                        animGroup.play(true);
+                        animGroup.speedRatio = 0.8;
+                    }
+
+                    // Configurar materiales PBR de ingeniería
+                    meshes.forEach(m => {
+                        if (m.material) {
+                            originalMaterials.set(m, m.material);
+                            if (m.material instanceof BABYLON.PBRMaterial) {
+                                m.material.metallic = 0.85;
+                                m.material.roughness = 0.35;
+                            }
+                        }
+                    });
+
+                }, null, function (scene, message, exception) {
+                    if (!isFallback) {
+                        console.warn("Cargando desde CDN oficial de respaldo...");
+                        tryLoad(MODEL_URL_RAW, true);
+                    } else {
+                        console.error("Error cargando modelo 3D:", message);
+                    }
+                });
             };
 
-            if (window.ENGINE_PHOTO_B64 && window.ENGINE_PHOTO_B64.length > 50) {
-                engineImg.src = window.ENGINE_PHOTO_B64;
-            } else {
-                engineImg.onerror = function() {
-                    engineImg.onerror = null;
-                    engineImg.src = "../03_ASSETS_3D_Y_DATOS/four_stroke_engine_cutaway.jpg";
-                };
-                engineImg.src = "../03_ASSETS_3D_Y_DATOS/four_stroke_engine_cutaway.jpg";
+            tryLoad(modelSource, false);
+        }
+
+        function togglePlay() {
+            isPlaying = !isPlaying;
+            const btn = document.getElementById("btnTogglePlay");
+            const lbl = document.getElementById("lblSpeedState");
+
+            if (animGroup) {
+                if (isPlaying) {
+                    animGroup.play(true);
+                    btn.innerHTML = "⏸ Pausar Giro";
+                    btn.classList.add("active");
+                    lbl.innerText = "EN MARCHA";
+                    lbl.style.color = "var(--cyan)";
+                } else {
+                    animGroup.pause();
+                    btn.innerHTML = "▶ Reanudar Giro";
+                    btn.classList.remove("active");
+                    lbl.innerText = "PAUSADO";
+                    lbl.style.color = "var(--amber)";
+                }
             }
         }
 
-        // 2. Renderizado del Canvas Fotográfico
-        function render() {
-            if (!isLoaded) return;
+        function updateRPM(val) {
+            const rpm = parseInt(val);
+            document.getElementById("lblRPM").innerText = `${rpm} RPM`;
+            document.getElementById("valRadS").innerText = `${(rpm * 2 * Math.PI / 60).toFixed(1)} rad/s`;
+            document.getElementById("valPress").innerText = `${(30 + (rpm / 3000) * 45).toFixed(1)} bar`;
+            document.getElementById("valTemp").innerText = `${Math.round(180 + (rpm / 3000) * 320)} °C`;
+            document.getElementById("valForce").innerText = `${(10 + (rpm / 3000) * 24).toFixed(1)} kN`;
 
-            ctx.save();
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            // Aplicar transformaciones de Zoom y Pan
-            ctx.translate(canvas.width / 2 + panX, canvas.height / 2 + panY);
-            ctx.scale(scale, scale);
-            ctx.translate(-canvas.width / 2, -canvas.height / 2);
-
-            // A. DIBUJAR LA FOTOGRAFÍA REAL
-            if (visualMode === 'photo') {
-                ctx.filter = 'none';
-                ctx.drawImage(engineImg, 0, 0, canvas.width, canvas.height);
-            } else if (visualMode === 'thermal') {
-                // Termografía Infrarroja de Alta Definición
-                ctx.filter = 'contrast(1.6) saturate(2.2) hue-rotate(180deg)';
-                ctx.drawImage(engineImg, 0, 0, canvas.width, canvas.height);
-                ctx.filter = 'none';
-            } else if (visualMode === 'stress') {
-                // Espectroscopía de Esfuerzos Mecánicos
-                ctx.filter = 'contrast(1.5) brightness(0.9) hue-rotate(270deg)';
-                ctx.drawImage(engineImg, 0, 0, canvas.width, canvas.height);
-                ctx.filter = 'none';
+            if (animGroup) {
+                if (rpm === 0) {
+                    animGroup.pause();
+                } else {
+                    if (!isPlaying) togglePlay();
+                    animGroup.speedRatio = (rpm / 1200) * 0.8;
+                }
             }
-
-            ctx.restore();
-
-            // B. ACTUALIZAR POSICIÓN DE PINES ANATÓMICOS
-            updatePins();
         }
 
-        // Posiciona los pines flotantes en pantalla según el canvas transformado
-        function updatePins() {
-            const rect = canvas.getBoundingClientRect();
-            hotspots.forEach(hp => {
-                const pin = document.getElementById(`pin-${hp.id}`);
-                if (!pin) return;
+        function setMode(mode) {
+            currentMode = mode;
+            document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(`btnMode${mode.charAt(0).toUpperCase() + mode.slice(1)}`).classList.add('active');
 
-                // Coordenadas locales en imagen
-                const localX = hp.x * canvas.width;
-                const localY = hp.y * canvas.height;
+            scene.meshes.forEach(m => {
+                if (!m.material) return;
+                const orig = originalMaterials.get(m);
 
-                // Transformar por escala y pan
-                const screenX = rect.left + rect.width / 2 + (localX - canvas.width / 2) * scale * (rect.width / canvas.width) + panX;
-                const screenY = rect.top + rect.height / 2 + (localY - canvas.height / 2) * scale * (rect.height / canvas.height) + panY;
-
-                pin.style.left = `${screenX}px`;
-                pin.style.top = `${screenY}px`;
+                if (mode === 'pbr') {
+                    if (orig) m.material = orig;
+                    m.visibility = 1.0;
+                } else if (mode === 'thermal') {
+                    const mat = new BABYLON.StandardMaterial("thermalMat", scene);
+                    mat.diffuseColor = new BABYLON.Color3(0.9, 0.2, 0.1);
+                    mat.emissiveColor = new BABYLON.Color3(0.4, 0.05, 0.0);
+                    m.material = mat;
+                    m.visibility = 1.0;
+                } else if (mode === 'xray') {
+                    const mat = new BABYLON.StandardMaterial("xrayMat", scene);
+                    mat.diffuseColor = new BABYLON.Color3(0.2, 0.6, 1.0);
+                    mat.emissiveColor = new BABYLON.Color3(0.05, 0.2, 0.4);
+                    mat.alpha = 0.45;
+                    m.material = mat;
+                    m.visibility = 0.55;
+                }
             });
         }
 
-        // Telemetría del ciclo Otto
-        const telemetryData = [
-            {
-                name: "Tiempo 1: Admisión (Aspiración)",
-                desc: "La válvula de admisión izquierda baja abierta. El pistón desciende succionando la mezcla fresca de aire y gasolina pulverizada.",
-                press: "0.9 bar",
-                temp: "25 °C",
-                deg: "0° a 180°",
-                force: "1.2 kN",
-                border: "#06b6d4",
-                badge: "1. Admisión (0° - 180°)"
-            },
-            {
-                name: "Tiempo 2: Compresión Hermética",
-                desc: "Ambas válvulas de acero se cierran herméticamente. El pistón asciende comprimiendo la mezcla a una relación de 10:1 elevando la energía térmica.",
-                press: "16.5 bar",
-                temp: "440 °C",
-                deg: "180° a 360°",
-                force: "8.5 kN",
-                border: "#f59e0b",
-                badge: "2. Compresión (180° - 360°)"
-            },
-            {
-                name: "Tiempo 3: ¡Combustión y Fuerza Motriz!",
-                desc: "La bujía de iridio salta a 25.000 V. La violenta deflagración a 2.100 °C empuja el pistón con toneladas de fuerza útil que hacen girar el cigüeñal.",
-                press: "72.0 bar",
-                temp: "2.100 °C",
-                deg: "360° a 540°",
-                force: "32.0 kN",
-                border: "#ef4444",
-                badge: "3. Explosión (360° - 540°)"
-            },
-            {
-                name: "Tiempo 4: Escape de Gases Quemados",
-                desc: "La válvula de escape derecha se abre. El pistón asciende barriendo con fuerza el humo residual hacia el colector exterior.",
-                press: "3.8 bar",
-                temp: "680 °C",
-                deg: "540° a 720°",
-                force: "2.8 kN",
-                border: "#a855f7",
-                badge: "4. Escape (540° - 720°)"
-            }
-        ];
+        function focusComponent(name) {
+            document.querySelectorAll('.part-item').forEach(i => i.classList.remove('active'));
+            if (event && event.currentTarget) event.currentTarget.classList.add('active');
 
-        function setCyclePhase(phase) {
-            currentCycle = parseInt(phase);
-            cycleSlider.value = currentCycle;
-
-            const d = telemetryData[currentCycle];
-            strokePhaseVal.innerText = d.badge;
-            phaseTitle.innerText = d.name;
-            phaseDesc.innerText = d.desc;
-            statPress.innerText = d.press;
-            statTemp.innerText = d.temp;
-            statDeg.innerText = d.deg;
-            statForce.innerText = d.force;
-            phaseCard.style.borderLeftColor = d.border;
-
-            for (let i = 0; i < 4; i++) {
-                const btn = document.getElementById(`btnStroke${i}`);
-                if (btn) btn.classList.toggle('active', i === currentCycle);
-            }
-
-            // Resaltar pin fotográfico del componente activo en este tiempo
-            const cyclePinMap = [0, 2, 1, 0];
-            const targetPinIdx = cyclePinMap[currentCycle];
-            document.querySelectorAll('.hotspot-pin').forEach(p => p.classList.remove('active'));
-            const pElem = document.getElementById(`pin-${targetPinIdx}`);
-            if (pElem) pElem.classList.add('active');
-
-            render();
-        }
-
-        function setVisualMode(mode) {
-            visualMode = mode;
-            document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
-
-            if (mode === 'photo') {
-                document.getElementById('btnModePhoto').classList.add('active');
-                badgeInfoText.innerText = "Fotografía Técnica Real • Corte de Ingeniería Automotriz HD";
-            } else if (mode === 'thermal') {
-                document.getElementById('btnModeThermal').classList.add('active');
-                badgeInfoText.innerText = "Inspección Termográfica • Gradientes de Combustión Infrarroja";
-            } else if (mode === 'stress') {
-                document.getElementById('btnModeStress').classList.add('active');
-                badgeInfoText.innerText = "Análisis de Esfuerzos Mecánicos • Distribución de Carga en Biela";
-            }
-            render();
-        }
-
-        function selectHotspot(index) {
-            document.querySelectorAll('.part-card').forEach(c => c.classList.remove('active'));
-            document.querySelectorAll('.hotspot-pin').forEach(p => p.classList.remove('active'));
-
-            const card = document.getElementById(`card-${index}`);
-            const pin = document.getElementById(`pin-${index}`);
-            if (card) card.classList.add('active');
-            if (pin) pin.classList.add('active');
-
-            const hp = hotspots[index];
-            scale = hp.focusScale;
-            panX = hp.focusX;
-            panY = hp.focusY;
-            render();
-        }
-
-        function zoomIn() { scale = Math.min(3.0, scale * 1.25); render(); }
-        function zoomOut() { scale = Math.max(0.6, scale / 1.25); render(); }
-        function resetView() { scale = 1.0; panX = 0; panY = 0; render(); }
-
-        // Audio sintetizado opcional
-        let audioCtx = null;
-        let isAudioOn = false;
-        function toggleSimSound() {
-            isAudioOn = !isAudioOn;
-            if (isAudioOn) {
-                if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                const osc = audioCtx.createOscillator();
-                const gain = audioCtx.createGain();
-                osc.type = 'sawtooth';
-                osc.frequency.value = 55;
-                gain.gain.setValueAtTime(0.06, audioCtx.currentTime);
-                osc.connect(gain);
-                gain.connect(audioCtx.destination);
-                osc.start();
-                setTimeout(() => { osc.stop(); isAudioOn = false; }, 800);
+            if (name === 'piston') {
+                camera.setTarget(new BABYLON.Vector3(0, 25, 0));
+                camera.radius = 90;
+            } else if (name === 'rod') {
+                camera.setTarget(new BABYLON.Vector3(0, 15, 0));
+                camera.radius = 110;
+            } else if (name === 'crank') {
+                camera.setTarget(new BABYLON.Vector3(0, -10, 0));
+                camera.radius = 110;
+            } else if (name === 'block') {
+                camera.setTarget(new BABYLON.Vector3(0, 15, 0));
+                camera.radius = 160;
             }
         }
 
-        // Interacción de Pan y Arrastre
-        canvas.addEventListener('mousedown', e => {
-            isDragging = true;
-            startX = e.clientX - panX;
-            startY = e.clientY - panY;
-        });
-        window.addEventListener('mousemove', e => {
-            if (!isDragging) return;
-            panX = e.clientX - startX;
-            panY = e.clientY - startY;
-            render();
-        });
-        window.addEventListener('mouseup', () => { isDragging = false; });
-        canvas.addEventListener('wheel', e => {
-            e.preventDefault();
-            if (e.deltaY < 0) zoomIn();
-            else zoomOut();
-        });
+        function resetCamera() {
+            camera.alpha = -Math.PI / 2.5;
+            camera.beta = Math.PI / 2.8;
+            camera.radius = 140;
+            camera.setTarget(new BABYLON.Vector3(0, 15, 0));
+        }
 
-        window.addEventListener('resize', () => {
-            if (isLoaded) render();
-        });
-
-        // Iniciar carga
-        loadEnginePhoto();
+        scene = createScene();
+        engine.runRenderLoop(() => { if (scene) scene.render(); });
+        window.addEventListener("resize", () => { engine.resize(); });
     </script>
 </body>
 </html>

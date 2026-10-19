@@ -2,7 +2,7 @@
 > **Proyecto:** Sistema de Atril Digital, Control Web MIDI y Repertorio Pedagógico Interactivo  
 > **Ubicación:** `CURSO_MUSICA/` · **Repositorio:** `CURSO-IA`  
 > **Dispositivo Principal:** Teclado Korg EK-50 Entertainer Keyboard conectado a iPad / Mac  
-> **Versión del Sistema:** v80 (Captura de Eventos CoreMIDI + Botón de Prueba de Sonido)
+> **Versión del Sistema:** v81 (Conexión CoreMIDI Blindada con Reintentos + Botón de Prueba de Sonido)
 
 ---
 

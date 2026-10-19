@@ -1,6 +1,35 @@
 #!/bin/bash
 cd "/Users/externo/Library/Mobile Documents/com~apple~CloudDocs/PERSONAL/CLASES DE TECNOLOGÍA/CURSO-IA"
 
+echo "=== 0. Verificando y descargando modelos 3D oficiales (.glb) si no existen... ==="
+mkdir -p "SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS"
+
+# 1. Motor CAD 3D (Khronos Group 2CylinderEngine.glb)
+if [ ! -f "SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/engine_3d.glb" ] || [ ! -s "SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/engine_3d.glb" ]; then
+    echo "Descargando modelo 3D oficial del motor (2CylinderEngine.glb)..."
+    curl -sL "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/2CylinderEngine/glTF-Binary/2CylinderEngine.glb" -o "SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/engine_3d.glb"
+fi
+
+if [ -f "SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/engine_3d.glb" ] && [ ! -f "SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/engine_3d_b64.js" ]; then
+    echo "Generando engine_3d_b64.js..."
+    echo -n 'window.ENGINE_3D_GLB_B64 = "data:model/gltf-binary;base64,' > "SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/engine_3d_b64.js"
+    base64 -i "SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/engine_3d.glb" | tr -d '\n' >> "SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/engine_3d_b64.js"
+    echo '";' >> "SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/engine_3d_b64.js"
+fi
+
+# 2. Tiranosaurio Rex 3D (dinosaur-trex.glb)
+if [ ! -f "SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/trex_3d.glb" ] || [ ! -s "SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/trex_3d.glb" ]; then
+    echo "Descargando modelo 3D oficial del T-Rex de museo (dinosaur-trex.glb)..."
+    curl -sL "https://raw.githubusercontent.com/code4fukui/vr-dinosaur-museum/main/dinosaur-trex.glb" -o "SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/trex_3d.glb"
+fi
+
+if [ -f "SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/trex_3d.glb" ] && [ ! -f "SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/trex_3d_b64.js" ]; then
+    echo "Generando trex_3d_b64.js..."
+    echo -n 'window.TREX_3D_GLB_B64 = "data:model/gltf-binary;base64,' > "SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/trex_3d_b64.js"
+    base64 -i "SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/trex_3d.glb" | tr -d '\n' >> "SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/trex_3d_b64.js"
+    echo '";' >> "SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/trex_3d_b64.js"
+fi
+
 echo "=== 1. Copiando ilustraciones oficiales recortadas del cartel... ==="
 mkdir -p "SIMULADORES_INTERACTIVOS/01_SIMULADORES/cards_11d"
 cp -r "/Users/externo/.gemini/antigravity/brain/cbfe82a5-4265-4c02-9b6a-03745e403571/scratch/cards/"* "SIMULADORES_INTERACTIVOS/01_SIMULADORES/cards_11d/" 2>/dev/null || true
@@ -15,9 +44,10 @@ rm -f "CLASES/EXPORTACION_FICHAS_CLASSROOM_PDF/100. [SESSIONS] TERNAS_LISTAS_PAR
 rm -f "CLASES/EXPORTACION_FICHAS_CLASSROOM_PDF/100. [SESSIONS] TERNAS_LISTAS_PARA_CLASSROOM/09_Sesion/SIMULADOR_TERMAS_CARACALLA_3D.html"
 rm -f "CLASES/EXPORTACION_FICHAS_CLASSROOM_PDF/100. [SESSIONS] TERNAS_LISTAS_PARA_CLASSROOM/10_Sesion/SIMULADOR_ATLANTIDA_3D.html"
 rm -f "CLASES/EXPORTACION_FICHAS_CLASSROOM_PDF/100. [SESSIONS] TERNAS_LISTAS_PARA_CLASSROOM/11_Sesion/SIMULADOR_MACHU_PICCHU_3D.html"
+
 # Sincronizar nombres alternativos en 01_SIMULADORES
 cp "SIMULADORES_INTERACTIVOS/01_SIMULADORES/08_SIMULADOR_MOTOR_TURBOFAN_3D.html" "SIMULADORES_INTERACTIVOS/01_SIMULADORES/08_SIMULADOR_RELOJ_MECANICO_3D.html" 2>/dev/null || true
-cp "SIMULADORES_INTERACTIVOS/01_SIMULADORES/09_SIMULADOR_CELULA_EUCARIOTA_3D.html" "SIMULADORES_INTERACTIVOS/01_SIMULADORES/09_SIMULADOR_CRANEO_TREX_3D.html" 2>/dev/null || true
+cp "SIMULADORES_INTERACTIVOS/01_SIMULADORES/09_SIMULADOR_CRANEO_TREX_3D.html" "SIMULADORES_INTERACTIVOS/01_SIMULADORES/09_SIMULADOR_CELULA_EUCARIOTA_3D.html" 2>/dev/null || true
 
 echo "=== 2. Replicando en carpetas de Sesiones 07 a 15 y 24... ==="
 # Sesión 07
@@ -33,8 +63,8 @@ cp "SIMULADORES_INTERACTIVOS/01_SIMULADORES/08_SIMULADOR_MOTOR_TURBOFAN_3D.html"
 # Sesión 09
 mkdir -p "CLASES/EXPORTACION_FICHAS_CLASSROOM_PDF/100. [SESSIONS] TERNAS_LISTAS_PARA_CLASSROOM/09_Sesion"
 rm -f "CLASES/EXPORTACION_FICHAS_CLASSROOM_PDF/100. [SESSIONS] TERNAS_LISTAS_PARA_CLASSROOM/09_Sesion/SIMULADOR_TERMAS_CARACALLA_3D.html"
-cp "SIMULADORES_INTERACTIVOS/01_SIMULADORES/09_SIMULADOR_CELULA_EUCARIOTA_3D.html" "CLASES/EXPORTACION_FICHAS_CLASSROOM_PDF/100. [SESSIONS] TERNAS_LISTAS_PARA_CLASSROOM/09_Sesion/SIMULADOR_CELULA_EUCARIOTA_3D.html" 2>/dev/null || true
-cp "SIMULADORES_INTERACTIVOS/01_SIMULADORES/09_SIMULADOR_CELULA_EUCARIOTA_3D.html" "CLASES/EXPORTACION_FICHAS_CLASSROOM_PDF/100. [SESSIONS] TERNAS_LISTAS_PARA_CLASSROOM/09_Sesion/SIMULADOR_CRANEO_TREX_3D.html" 2>/dev/null || true
+cp "SIMULADORES_INTERACTIVOS/01_SIMULADORES/09_SIMULADOR_CRANEO_TREX_3D.html" "CLASES/EXPORTACION_FICHAS_CLASSROOM_PDF/100. [SESSIONS] TERNAS_LISTAS_PARA_CLASSROOM/09_Sesion/SIMULADOR_CRANEO_TREX_3D.html" 2>/dev/null || true
+cp "SIMULADORES_INTERACTIVOS/01_SIMULADORES/09_SIMULADOR_CRANEO_TREX_3D.html" "CLASES/EXPORTACION_FICHAS_CLASSROOM_PDF/100. [SESSIONS] TERNAS_LISTAS_PARA_CLASSROOM/09_Sesion/SIMULADOR_CELULA_EUCARIOTA_3D.html" 2>/dev/null || true
 
 # Sesión 10
 mkdir -p "CLASES/EXPORTACION_FICHAS_CLASSROOM_PDF/100. [SESSIONS] TERNAS_LISTAS_PARA_CLASSROOM/10_Sesion"
@@ -69,13 +99,13 @@ cp -r "SIMULADORES_INTERACTIVOS/01_SIMULADORES/cards_11d" "CLASES/EXPORTACION_FI
 
 echo "=== 3. Guardando cambios y sincronizando con GitHub... ==="
 git add -A
-git commit -m "feat(sim): laboratorios fotograficos reales Via A para S08 (Motor Termico) y S09 (Celula TEM) sin primitivas vectoriales" || true
+git commit -m "feat(sim): simuladores 3D reales oficiales con Babylon.js para S08 (Motor CAD animado) y S09 (T-Rex Museo 360)" || true
 git push origin main
 
 echo "=== 4. Abriendo simuladores oficiales en Google Chrome... ==="
 TS=$(date +%s)
 DIR="$(pwd)"
 open -a "Google Chrome" "file://${DIR}/SIMULADORES_INTERACTIVOS/01_SIMULADORES/08_SIMULADOR_MOTOR_TURBOFAN_3D.html?v=$TS"
-open -a "Google Chrome" "file://${DIR}/SIMULADORES_INTERACTIVOS/01_SIMULADORES/09_SIMULADOR_CELULA_EUCARIOTA_3D.html?v=$TS"
+open -a "Google Chrome" "file://${DIR}/SIMULADORES_INTERACTIVOS/01_SIMULADORES/09_SIMULADOR_CRANEO_TREX_3D.html?v=$TS"
 
 echo "=== COMPLETADO CON EXITO ==="
