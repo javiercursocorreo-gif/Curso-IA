@@ -2,7 +2,7 @@
 > **Proyecto:** Sistema de Atril Digital, Control Web MIDI y Repertorio Pedagógico Interactivo  
 > **Ubicación:** `CURSO_MUSICA/` · **Repositorio:** `CURSO-IA`  
 > **Dispositivo Principal:** Teclado Korg EK-50 Entertainer Keyboard conectado a iPad / Mac  
-> **Versión del Sistema:** v77 (Detección Dual iPadOS/Mac + Modo Atril Fullscreen)
+> **Versión del Sistema:** v78 (Corrección SyntaxError Web MIDI + Web MIDI Browser iPad)
 
 ---
 
