@@ -1,0 +1,1367 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <!-- Optimización iOS / iPadOS como Web App Nativa a pantalla completa -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Hallelujah">
+    <meta name="theme-color" content="#0b0f17">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='bg' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%231e3a8a'/%3E%3Cstop offset='100%25' stop-color='%230b0f17'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='100' height='100' rx='22' fill='url(%23bg)' stroke='%2338bdf8' stroke-width='3'/%3E%3Ctext x='50' y='74' font-family='-apple-system, BlinkMacSystemFont, sans-serif' font-weight='900' font-size='68' text-anchor='middle' fill='%2338bdf8'%3EH%3C/text%3E%3C/svg%3E">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='bg' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%231e3a8a'/%3E%3Cstop offset='100%25' stop-color='%230b0f17'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='100' height='100' rx='22' fill='url(%23bg)' stroke='%2338bdf8' stroke-width='3'/%3E%3Ctext x='50' y='74' font-family='-apple-system, BlinkMacSystemFont, sans-serif' font-weight='900' font-size='68' text-anchor='middle' fill='%2338bdf8'%3EH%3C/text%3E%3C/svg%3E">
+    <title>2. Hallelujah · Korg EK-50</title>
+    <style>
+        :root {
+            --bg-color: #0b0f17;
+            --card-bg: #131b26;
+            --border-color: #212c3d;
+            --text-main: #f0f6fc;
+            --text-muted: #8b9bb4;
+            --accent-blue: #38bdf8;
+            --accent-green: #34d399;
+            --accent-purple: #c084fc;
+            --accent-amber: #fbbf24;
+        }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            padding: max(16px, env(safe-area-inset-top)) max(18px, env(safe-area-inset-right)) max(24px, env(safe-area-inset-bottom)) max(18px, env(safe-area-inset-left));
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1040px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .nav-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .btn-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #1e293b;
+            color: #93c5fd;
+            text-decoration: none;
+            min-height: 44px;
+            padding: 10px 18px;
+            border-radius: 10px;
+            font-size: 0.92rem;
+            font-weight: 700;
+            border: 1px solid #334155;
+            touch-action: manipulation;
+            transition: 0.15s;
+        }
+        .btn-back:hover, .btn-back:active { background: #334155; color: #fff; }
+        .midi-bar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #0f172a;
+            border: 1px solid #334155;
+            padding: 8px 14px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            font-weight: 700;
+        }
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #ef4444;
+            flex-shrink: 0;
+        }
+        .status-dot.connected {
+            background: #10b981;
+            box-shadow: 0 0 10px #10b981;
+        }
+        .header-card {
+            background: linear-gradient(135deg, #131b26 0%, #1e293b 100%);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 18px 20px;
+        }
+        .header-title-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .header-title-row h1 {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: #fff;
+            letter-spacing: -0.5px;
+        }
+        .header-title-row p {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+        .meta-pills-row {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .meta-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            border: 1px solid transparent;
+        }
+        .meta-pill.tempo { background: #064e3b; color: #6ee7b7; border-color: #059669; }
+        .meta-pill.piano { background: #1e3a8a; color: #93c5fd; border-color: #3b82f6; }
+        .meta-pill.ballad { background: #581c87; color: #f5d0fe; border-color: #a855f7; }
+
+        .section-box {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 18px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+        .section-title {
+            font-size: 1.12rem;
+            font-weight: 800;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .stage-midi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 12px;
+        }
+        .btn-stage {
+            min-height: 60px;
+            padding: 12px 16px;
+            border-radius: 12px;
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            text-align: left;
+            touch-action: manipulation;
+            transition: all 0.15s;
+        }
+        .btn-stage:active { transform: scale(0.98); }
+        .btn-stage-piano {
+            background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+            border: 1px solid #60a5fa;
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.35);
+        }
+        .btn-stage-strings {
+            background: linear-gradient(135deg, #047857 0%, #059669 100%);
+            border: 1px solid #34d399;
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(5, 150, 105, 0.35);
+        }
+        .stage-icon { font-size: 1.5rem; flex-shrink: 0; }
+        .stage-text { display: flex; flex-direction: column; gap: 2px; }
+        .stage-title { font-size: 0.98rem; font-weight: 800; color: #fff; }
+        .stage-sub { font-size: 0.76rem; opacity: 0.92; font-weight: 500; }
+
+        .live-log {
+            background: #090d16;
+            border: 1px solid #1e293b;
+            border-radius: 8px;
+            padding: 9px 12px;
+            font-size: 0.8rem;
+            color: #94a3b8;
+            font-family: monospace;
+            line-height: 1.4;
+        }
+
+        .card-actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+        .btn-action {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            min-height: 46px;
+            padding: 10px 16px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            text-decoration: none;
+            cursor: pointer;
+            border: none;
+            touch-action: manipulation;
+            transition: 0.15s;
+        }
+        .btn-sheet-pdf { background: #1e293b; color: #93c5fd; border: 1px solid #334155; }
+        .btn-sheet-pdf:hover, .btn-sheet-pdf:active { background: #334155; color: #fff; }
+
+        .chord-seq-box {
+            background: #0d1420;
+            border: 1px solid #1e293b;
+            border-radius: 10px;
+            padding: 14px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .seq-pill-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+        }
+        .seq-pill {
+            display: inline-flex;
+            align-items: center;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.88rem;
+            font-weight: 800;
+            background: #1e293b;
+            color: #f1f5f9;
+            border: 1px solid #334155;
+            min-height: 36px;
+            min-width: 44px;
+            justify-content: center;
+        }
+        .seq-pill.tonic { background: #064e3b; color: #6ee7b7; border-color: #059669; }
+        .seq-pill.minor { background: #312e81; color: #c7d2fe; border-color: #4f46e5; }
+        .seq-pill.dom { background: #78350f; color: #fde68a; border-color: #d97706; }
+        .seq-arrow { color: #64748b; font-size: 0.8rem; font-weight: bold; }
+
+        .chord-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .chord-row {
+            background: #0d131f;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 10px 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .chord-badge {
+            background: #1e293b;
+            color: #38bdf8;
+            font-weight: 800;
+            font-size: 0.95rem;
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px solid #334155;
+            min-width: 50px;
+            text-align: center;
+        }
+        .chord-badge.minor { color: #c084fc; border-color: #4f46e5; }
+        .chord-notes { font-size: 0.86rem; color: #cbd5e1; }
+
+        .beat-dot {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: #1e293b;
+            border: 1px solid #334155;
+            color: #64748b;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 800;
+            transition: all 0.08s ease;
+        }
+        .beat-dot.active {
+            background: #0284c7;
+            color: #fff;
+            border-color: #38bdf8;
+            box-shadow: 0 0 10px #38bdf8;
+            transform: scale(1.15);
+        }
+        .btn-tempo.active-tempo {
+            background: #0284c7 !important;
+            color: #fff !important;
+            border-color: #38bdf8 !important;
+        }
+
+        /* BOTONERA FLOTANTE DE ESCENARIO (FLOATING MIDI DOCK / HUD) */
+        .floating-dock {
+            position: fixed;
+            bottom: max(14px, env(safe-area-inset-bottom));
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(11, 15, 23, 0.94);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(56, 189, 248, 0.45);
+            border-radius: 14px;
+            padding: 8px 14px;
+            box-shadow: 0 10px 32px rgba(0, 0, 0, 0.8), 0 0 16px rgba(56, 189, 248, 0.2);
+            z-index: 99999;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            max-width: 96vw;
+            width: max-content;
+            transition: all 0.2s ease;
+        }
+        .floating-dock.minimized .dock-buttons { display: none; }
+        .floating-dock.minimized { padding: 6px 12px; }
+        .dock-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+        }
+        .dock-title {
+            font-size: 0.72rem;
+            font-weight: 800;
+            color: #38bdf8;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .dock-min-btn {
+            background: #1e293b;
+            border: 1px solid #334155;
+            color: #94a3b8;
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 2px 7px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .dock-buttons {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        .dock-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 7px 11px;
+            border-radius: 8px;
+            border: 1px solid transparent;
+            font-size: 0.8rem;
+            font-weight: 800;
+            cursor: pointer;
+            touch-action: manipulation;
+            white-space: nowrap;
+            transition: transform 0.1s ease;
+        }
+        .dock-btn:active { transform: scale(0.96); }
+        .dock-btn.sound-1 { background: #064e3b; color: #6ee7b7; border-color: #059669; }
+        .dock-btn.sound-2 { background: #1e3a8a; color: #93c5fd; border-color: #3b82f6; }
+        .dock-btn.start-stop { background: #0284c7; color: #fff; border-color: #38bdf8; }
+        .dock-btn.style-btn { background: #1f2937; color: #f3f4f6; border-color: #4b5563; }
+        .dock-btn.full-pdf { background: #581c87; color: #f3e8ff; border-color: #9333ea; }
+    </style>
+</head>
+<body>
+<div class="container">
+    
+    <!-- BARRA DE NAVEGACIÓN -->
+    <div class="nav-bar">
+        <a class="btn-back" href="REPERTORIO_KORG_EK50.html?v=80">
+            ⬅ Volver a la Lista de Canciones
+        </a>
+        <div style="display:flex; align-items:center; gap:8px;">
+            <button onclick="window.location.href='CANCION_02_HALLELUJAH.html?t='+Date.now()" style="background:#0284c7; color:#fff; border:none; padding:6px 12px; border-radius:8px; font-size:0.8rem; font-weight:800; cursor:pointer;" title="Pulsa aquí en el iPad para limpiar la caché y ver la última versión">🔄 Recargar v80</button>
+            <div class="midi-bar">
+                <span id="midi-dot" class="status-dot"></span>
+                <span id="midi-label">Iniciando MIDI...</span>
+                <button style="background:#2563eb; color:white; border:none; padding:4px 9px; border-radius:6px; font-size:0.78rem; font-weight:700; cursor:pointer;" onclick="conectarMIDI()">Detectar</button>
+                <button style="background:#059669; color:white; border:none; padding:4px 9px; border-radius:6px; font-size:0.78rem; font-weight:700; cursor:pointer;" onclick="probarNotaKorg()" title="Toca una nota de prueba Do3 en el Korg">🔊 Probar Sonido</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- BOTONERA FLOTANTE DE ESCENARIO: SOLO LOS DOS BOTONES 1 Y 2 QUE CAMBIAN TODO DE GOLPE -->
+    <div id="floating-midi-dock" class="floating-dock">
+        <div class="dock-header">
+            <span class="dock-title">🎹 Korg EK-50 · Configuración Escénica 1-Tap</span>
+            <div style="display:flex; align-items:center; gap:6px;">
+                <button class="dock-min-btn" onclick="toggleDockMinimize()" id="dock-min-btn" title="Minimizar barra">➖ Minimizar</button>
+            </div>
+        </div>
+        <div class="dock-buttons" id="dock-buttons-container">
+            <button class="dock-btn sound-1" onclick="cargarSTSArmonica()" title="Carga todo de golpe: Melodía Armónica + Estilo 042 + 56 BPM">
+                <span>🎵</span> 1. STS Armónica + Estilo 042
+            </button>
+            <button class="dock-btn sound-2" onclick="cargarArmonicaPiano()" title="Carga todo de golpe: Armónica & Piano + Estilo 042 + 56 BPM">
+                <span>🎹</span> 2. Armónica & Piano + Estilo 042
+            </button>
+            <button class="dock-btn full-pdf" onclick="abrirPartituraPantallaCompleta()" title="Ver partitura a pantalla completa con estos botones encima">
+                <span>🎼</span> Pantalla Completa
+            </button>
+        </div>
+    </div>
+
+    <!-- CABECERA DE LA CANCIÓN -->
+    <div class="header-card">
+        <div class="header-title-row">
+            <div>
+                <h1>2. Hallelujah</h1>
+                <p>Leonard Cohen · Compás 12/8 (o 6/8 Balada) · <b style="color:#6ee7b7;">⏱️ Tempo: 56 BPM (♩. = 56)</b></p>
+            </div>
+            <div class="meta-pills-row">
+                <span class="meta-pill" style="background:#064e3b; color:#6ee7b7; border-color:#059669; font-weight:800;">🥁 Estilo: 042 (56 BPM)</span>
+                <span class="meta-pill" style="background:#854d0e; color:#fef08a; border-color:#eab308; font-weight:800;">🎵 Melodía: STS Armónica</span>
+                <span class="meta-pill" style="background:#1e3a8a; color:#93c5fd; border-color:#3b82f6; font-weight:800;">📱 Barra Flotante HUD Activa</span>
+                <span class="meta-pill tempo">⏱️ 56 BPM</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECCIÓN 1: SONIDOS Y CONTROL DE ACOMPAÑAMIENTO KORG EK-50 -->
+    <div class="section-box">
+        <div class="section-title">⚡ Sonidos y Acompañamiento para el Korg EK-50</div>
+        
+        <div style="background:#172554; border:1px solid #1e40af; border-radius:8px; padding:10px 14px; font-size:0.84rem; color:#bfdbfe; line-height:1.45;">
+            💡 <b>Acompañamiento Oficial: Estilo 042 · Melodía: STS Armónica.</b> En el Korg EK-50 selecciona el Estilo <b>042</b> y para la melodía activa el <b>STS Armónica</b> (Harmonica expresiva). Al pulsar los botones escénicos se configuran los sonidos y el estilo automáticamente por MIDI:
+        </div>
+
+        <div class="stage-midi-grid">
+            <button class="btn-stage btn-stage-piano" onclick="cargarSTSArmonica()" title="Carga Armónica en Upper 1 y fija el Estilo 042 a 56 BPM">
+                <span class="stage-icon">🎵</span>
+                <div class="stage-text">
+                    <span class="stage-title">1. STS Armónica (Melodía) + Estilo 042</span>
+                    <span class="stage-sub">Armónica solista expresiva en Upper 1 + Ritmo Estilo 042 a 56 BPM</span>
+                </div>
+            </button>
+            <button class="btn-stage btn-stage-strings" onclick="cargarArmonicaPiano()" title="Carga Armónica en Upper 1 + Piano en Upper 2 y fija el Estilo 042 a 56 BPM">
+                <span class="stage-icon">🎹</span>
+                <div class="stage-text">
+                    <span class="stage-title">2. Armónica & Piano + Estilo 042</span>
+                    <span class="stage-sub">Armónica con fondo de piano de cola + Ritmo Estilo 042 a 56 BPM</span>
+                </div>
+            </button>
+        </div>
+
+        <!-- BOTONES DE ACCIÓN DIRECTA / EVENTOS MIDI PARA EL KORG EK-50 -->
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:8px; margin-top:4px;">
+            <button onclick="iniciarAcompanamientoKorg()" style="background:linear-gradient(135deg, #059669 0%, #10b981 100%); color:#fff; border:none; padding:10px 14px; border-radius:8px; font-size:0.88rem; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; gap:6px; box-shadow:0 3px 10px rgba(16,185,129,0.3); touch-action:manipulation;">
+                ▶️ Start Acompañamiento Korg
+            </button>
+            <button onclick="detenerAcompanamientoKorg()" style="background:linear-gradient(135deg, #dc2626 0%, #ef4444 100%); color:#fff; border:none; padding:10px 14px; border-radius:8px; font-size:0.88rem; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; gap:6px; box-shadow:0 3px 10px rgba(239,68,68,0.3); touch-action:manipulation;">
+                ⏹️ Stop Acompañamiento Korg
+            </button>
+            <button onclick="cargarSoloEstilo042()" style="background:#1e293b; color:#93c5fd; border:1px solid #334155; padding:10px 14px; border-radius:8px; font-size:0.86rem; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; gap:6px; touch-action:manipulation;">
+                🥁 Reenviar Estilo 042 (56 BPM)
+            </button>
+        </div>
+
+        <div id="log-1" class="live-log">Listo para configurar el sonido y acompañamiento en el Korg EK-50.</div>
+    </div>
+
+    <!-- SECCIÓN 2: ACCESO Y VISOR DE PARTITURA PDF CON BOTONERA FLOTANTE PERMANENTE -->
+    <div class="section-box" id="seccion-partitura">
+        <div class="section-title">🎼 Partitura Oficial de Leonard Cohen (Fa Mayor · 12/8)</div>
+        <div style="background:#0f172a; border:1px solid #1e293b; border-radius:8px; padding:12px 14px; font-size:0.86rem; color:#cbd5e1; line-height:1.45;">
+            <b style="color:#93c5fd;">Partitura Oficial con Botonera 1-Tap:</b> Abre la partitura al 100% de la pantalla del iPad con los dos botones <b>1 y 2</b> flotando encima para cambiar todo de golpe sin salirte de la música.
+        </div>
+        <div class="card-actions">
+            <button class="btn-action" onclick="abrirPartituraPantallaCompleta()" style="background:linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%); color:#fff; border:1px solid #3b82f6; font-size:0.96rem; padding:12px 20px; box-shadow:0 4px 14px rgba(37,99,235,0.4);">
+                🎼 Ver Partitura a Pantalla Completa (con Botones 1 y 2)
+            </button>
+            <button class="btn-action" onclick="togglePdfViewer()" style="background:#1e293b; color:#93c5fd; border:1px solid #334155;">
+                👁️ Ver Integrada en la Ficha
+            </button>
+        </div>
+        <div id="pdf-viewer-container" style="display:none; margin-top:10px;">
+            <iframe id="pdf-frame" src="CANCIONES%20PDF/Hallelujah-%20Leonard%20Cohen.pdf" width="100%" height="680px" style="border:1px solid #334155; border-radius:10px; background:#1e293b;"></iframe>
+        </div>
+    </div>
+
+    <!-- SECCIÓN 3: ACOMPAÑAMIENTO 6/8: REPRODUCTOR INTERACTIVO Y KORG EK-50 -->
+    <div class="section-box" style="border-color:#38bdf8;">
+        <div class="section-title" style="color:#38bdf8;">🎹 Acompañamiento Oficial: Estilo 042 (56 BPM) · Melodía: STS Armónica</div>
+        
+        <!-- GUÍA DE CONFIGURACIÓN KORG EK-50 -->
+        <div style="background:#0f172a; border:1px solid #1e3a8a; border-radius:10px; padding:14px 16px; font-size:0.88rem; color:#bfdbfe; line-height:1.5;">
+            <b style="color:#38bdf8; font-size:0.95rem;">🎛️ Guía del Acompañamiento en el Korg EK-50:</b><br>
+            • <b>Estilo Oficial Asignado:</b> Selecciona el <b>042</b> en el Korg EK-50 (o pulsa "Reenviar Estilo 042" arriba).<br>
+            • <b>Melodía Principal:</b> Activa el <b>STS Armónica</b> (pulsa el botón <b>[STS 1]</b> del teclado para la voz de armónica acústica de Leonard Cohen).<br>
+            • <b>Tempo:</b> Fijado exactamente a <b>56 BPM</b> (♩. = 56).<br>
+            • <b>Activar Acompañamiento:</b> Pulsa el botón <b>[ACCOMP]</b> en el panel (su LED rojo debe quedar iluminado).<br>
+            • <b>Mano Izquierda:</b> Toca los acordes (<b style="color:#6ee7b7;">F</b>, <b style="color:#c084fc;">Dm</b>, <b style="color:#93c5fd;">Bb</b>, <b style="color:#fbbf24;">C</b>, <b style="color:#f472b6;">A</b>) por debajo del punto de división (Split Point C4): el Korg generará automáticamente el arpegio continuo en 6/8 con bajo y colchón armónico siguiendo tus acordes.<br>
+            • <b>Arranque Inmediato:</b> Puedes pulsar <b>"▶️ Start Acompañamiento Korg"</b> aquí arriba para arrancar el ritmo del teclado desde el iPad.
+        </div>
+
+        <!-- REPRODUCTOR WEB AUDIO INTERACTIVO 6/8 -->
+        <div style="background:#090d16; border:1px solid #0284c7; border-radius:12px; padding:16px 18px; display:flex; flex-direction:column; gap:14px; box-shadow:0 4px 16px rgba(2,132,199,0.15);">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+                <div>
+                    <div style="font-weight:800; color:#fff; font-size:1.02rem; display:flex; align-items:center; gap:8px;">
+                        <span>🎧 Reproductor de Acompañamiento 6/8 (Web Audio API)</span>
+                        <span style="font-size:0.75rem; background:#0369a1; color:#e0f2fe; padding:2px 8px; border-radius:4px; font-weight:700;">Sin cables · iPad & Mac</span>
+                    </div>
+                    <div style="font-size:0.82rem; color:#94a3b8; margin-top:3px;">
+                        Arpegio de piano acústico sintetizado en compás 6/8 para practicar la melodía encima.
+                    </div>
+                </div>
+
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <button id="btn-play-accomp" onclick="toggleAccomp()" style="background:linear-gradient(135deg, #059669 0%, #10b981 100%); color:#fff; border:none; padding:12px 20px; border-radius:10px; font-size:0.95rem; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:8px; box-shadow:0 4px 12px rgba(16,185,129,0.35); touch-action:manipulation;">
+                        <span id="play-icon">▶️</span> <span id="play-text">Iniciar Acompañamiento 6/8</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- SELECTORES: SECCIÓN, SONIDO Y TEMPO -->
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:10px;">
+                <div style="background:#131c2d; border:1px solid #1e293b; border-radius:8px; padding:8px 12px; display:flex; flex-direction:column; gap:4px;">
+                    <label style="font-size:0.76rem; color:#94a3b8; font-weight:700;">SECCIÓN DE LA CANCIÓN:</label>
+                    <select id="accomp-section" onchange="cambiarSeccionAccomp()" style="background:#0b0f17; color:#f0f6fc; border:1px solid #334155; padding:6px 10px; border-radius:6px; font-size:0.85rem; font-weight:700;">
+                        <option value="verse">1. Estrofa (F - Dm - F - Dm - Bb - C - F - C)</option>
+                        <option value="bridge">2. Puente "The Fourth..." (F - Bb - C - Dm - Bb - C - A - Dm)</option>
+                        <option value="chorus">3. Estribillo "Hallelujah" (Bb - Dm - Bb - F - C - F)</option>
+                        <option value="full">4. Estructura Completa (Estrofa + Puente + Estribillo)</option>
+                    </select>
+                </div>
+
+                <div style="background:#131c2d; border:1px solid #1e293b; border-radius:8px; padding:8px 12px; display:flex; flex-direction:column; gap:4px;">
+                    <label style="font-size:0.76rem; color:#94a3b8; font-weight:700;">INSTRUMENTACIÓN:</label>
+                    <select id="accomp-sound" onchange="cambiarSonidoAccomp()" style="background:#0b0f17; color:#f0f6fc; border:1px solid #334155; padding:6px 10px; border-radius:6px; font-size:0.85rem; font-weight:700;">
+                        <option value="piano">🎹 Piano de Cola Puro (Arpegio Acústico)</option>
+                        <option value="piano_strings">🎻 Piano de Cola + Cuerdas Cálidas</option>
+                    </select>
+                </div>
+
+                <div style="background:#131c2d; border:1px solid #1e293b; border-radius:8px; padding:8px 12px; display:flex; flex-direction:column; gap:4px;">
+                    <label style="font-size:0.76rem; color:#94a3b8; font-weight:700;">VELOCIDAD DE ENSAYO:</label>
+                    <div style="display:flex; gap:6px;">
+                        <button class="btn-tempo" onclick="cambiarTempoAccomp(50, this)" style="flex:1; background:#1e293b; color:#cbd5e1; border:1px solid #334155; padding:6px; border-radius:6px; font-size:0.8rem; font-weight:700; cursor:pointer;">50 BPM</button>
+                        <button class="btn-tempo active-tempo" onclick="cambiarTempoAccomp(56, this)" style="flex:1; background:#0284c7; color:#fff; border:1px solid #38bdf8; padding:6px; border-radius:6px; font-size:0.8rem; font-weight:700; cursor:pointer;">56 BPM (Oficial)</button>
+                        <button class="btn-tempo" onclick="cambiarTempoAccomp(64, this)" style="flex:1; background:#1e293b; color:#cbd5e1; border:1px solid #334155; padding:6px; border-radius:6px; font-size:0.8rem; font-weight:700; cursor:pointer;">64 BPM</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MONITOR EN VIVO: ACORDE Y PULSOS DEL COMPÁS -->
+            <div style="background:#0b0f17; border:1px solid #1e293b; border-radius:10px; padding:12px 16px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;">
+                <div style="display:flex; align-items:center; gap:14px;">
+                    <div style="font-size:0.78rem; color:#8b9bb4; font-weight:700; text-transform:uppercase;">Acorde:</div>
+                    <div id="display-chord" style="font-size:1.45rem; font-weight:900; color:#38bdf8; min-width:60px; text-shadow:0 0 10px rgba(56,189,248,0.5);">--</div>
+                    <div id="display-notes" style="font-size:0.85rem; color:#94a3b8; font-family:monospace;">Pulsa "Iniciar" para escuchar el arpegio</div>
+                </div>
+
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <div style="font-size:0.78rem; color:#8b9bb4; font-weight:700; margin-right:4px;">PULSOS (6/8):</div>
+                    <div class="beat-dot" id="beat-1">1</div>
+                    <div class="beat-dot" id="beat-2">2</div>
+                    <div class="beat-dot" id="beat-3">3</div>
+                    <div style="width:2px; height:18px; background:#334155; margin:0 2px;"></div>
+                    <div class="beat-dot" id="beat-4">4</div>
+                    <div class="beat-dot" id="beat-5">5</div>
+                    <div class="beat-dot" id="beat-6">6</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- GUÍA FÍSICA DEL ARPEGIO -->
+        <div style="background:#0c1929; border:1px solid #0284c7; border-radius:10px; padding:12px 14px; font-size:0.86rem; color:#bae6fd; line-height:1.5;">
+            <b>🎹 Patrón de Arpegio para la Mano Derecha (6 corcheas por compás):</b><br>
+            • <b>F (Fa Mayor):</b> <code>Fa – La – Do – Fa – Do – La</code> &nbsp;|&nbsp; <b>Dm (Re menor):</b> <code>Re – Fa – La – Re – La – Fa</code><br>
+            • <b>Bb (Si♭ Mayor):</b> <code>Re – Fa – Si♭ – Re – Si♭ – Fa</code> &nbsp;|&nbsp; <b>C (Do Mayor):</b> <code>Do – Mi – Sol – Do – Sol – Mi</code><br>
+            • <b>A (La Mayor):</b> <code>Do♯ – Mi – La – Do♯ – La – Mi</code>
+        </div>
+    </div>
+
+    <!-- SECCIÓN 3: ESTRUCTURA ARMÓNICA Y LETRA GUÍA -->
+    <div class="section-box">
+        <div class="section-title">📖 Estructura Completa de Acordes (Tonalidad: Fa Mayor · F)</div>
+
+        <div style="background:#064e3b; border:1px solid #10b981; border-radius:10px; padding:12px 14px; font-size:0.86rem; color:#d1fae5; line-height:1.5;">
+            <b style="color:#6ee7b7; font-size:0.95rem;">🎯 ENTRADA Y RITMO (6/8):</b><br>
+            • <b>Compás:</b> 6/8 (dos pulsos ternarios por compás: 1-2-3, 4-5-6).<br>
+            • <b>Arpegio típico de piano:</b> Mano izquierda toca el bajo y mano derecha arpegia subiendo y bajando (ej. en F: <code>Fa – La – Do – Fa – Do – La</code>).<br>
+            • <b>El acorde "Secreto":</b> La famosa letra describe la propia armonía: <i>"the fourth (Bb), the fifth (C), the minor fall (Dm), the major lift (Bb)... and the baffled king composing (A ➔ Dm)"</i>.
+        </div>
+
+        <!-- SECUENCIA DE ACORDES -->
+        <div class="chord-seq-box" style="margin-top:8px;">
+            <!-- ESTROFA -->
+            <div>
+                <b style="color:#38bdf8; font-size:0.9rem;">1. Estrofa (Verse):</b>
+                <div style="font-size:0.8rem; color:#94a3b8; margin-top:2px;">"Now I've heard there was a secret chord, that David played and it pleased the Lord..."</div>
+                <div class="seq-pill-group" style="margin-top:6px;">
+                    <span class="seq-pill tonic">F</span> <span class="seq-arrow">➔</span>
+                    <span class="seq-pill minor">Dm</span> <span class="seq-arrow">➔</span>
+                    <span class="seq-pill tonic">F</span> <span class="seq-arrow">➔</span>
+                    <span class="seq-pill minor">Dm</span>
+                </div>
+                <div class="seq-pill-group" style="margin-top:6px;">
+                    <span class="seq-pill">Bb</span> <span class="seq-arrow">➔</span>
+                    <span class="seq-pill dom">C</span> <span class="seq-arrow">➔</span>
+                    <span class="seq-pill tonic">F</span> <span class="seq-arrow">➔</span>
+                    <span class="seq-pill dom">C</span>
+                </div>
+            </div>
+
+            <!-- PRE-CHORUS -->
+            <div style="border-top:1px solid #1e293b; padding-top:10px;">
+                <b style="color:#fbbf24; font-size:0.9rem;">2. Puente Armónico (The Fourth, The Fifth...):</b>
+                <div style="font-size:0.8rem; color:#94a3b8; margin-top:2px;">"It goes like this: the fourth, the fifth, the minor fall, the major lift, the baffled king composing..."</div>
+                <div class="seq-pill-group" style="margin-top:6px;">
+                    <span class="seq-pill tonic">F</span> <span class="seq-arrow">➔</span>
+                    <span class="seq-pill">Bb</span> <span class="seq-arrow">➔</span>
+                    <span class="seq-pill dom">C</span> <span class="seq-arrow">➔</span>
+                    <span class="seq-pill minor">Dm</span> <span class="seq-arrow">➔</span>
+                    <span class="seq-pill">Bb</span>
+                </div>
+                <div class="seq-pill-group" style="margin-top:6px;">
+                    <span class="seq-pill dom">C</span> <span class="seq-arrow">➔</span>
+                    <span class="seq-pill" style="background:#831843; color:#fbcfe8; border-color:#db2777;">A (La Mayor)</span> <span class="seq-arrow">➔</span>
+                    <span class="seq-pill minor">Dm</span>
+                </div>
+            </div>
+
+            <!-- ESTRIBILLO -->
+            <div style="border-top:1px solid #1e293b; padding-top:10px;">
+                <b style="color:#34d399; font-size:0.9rem;">3. Estribillo (Chorus - Hallelujah):</b>
+                <div style="font-size:0.8rem; color:#94a3b8; margin-top:2px;">"Hallelujah, Hallelujah, Hallelujah, Hallelu-u-jah..."</div>
+                <div class="seq-pill-group" style="margin-top:6px;">
+                    <span class="seq-pill">Bb</span> <span class="seq-arrow">➔</span>
+                    <span class="seq-pill minor">Dm</span> <span class="seq-arrow">➔</span>
+                    <span class="seq-pill">Bb</span> <span class="seq-arrow">➔</span>
+                    <span class="seq-pill tonic">F</span> <span class="seq-arrow">➔</span>
+                    <span class="seq-pill dom">C</span> <span class="seq-arrow">➔</span>
+                    <span class="seq-pill tonic">F</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- DICCIONARIO DE ACORDES -->
+        <div style="color:#38bdf8; font-weight:700; font-size:0.88rem; margin-top:10px;">
+            🎹 Glosario de Acordes para la Mano Izquierda (Korg EK-50):
+        </div>
+        <div class="chord-grid">
+            <div class="chord-row">
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <span class="chord-badge">F</span>
+                    <span style="font-weight:700; color:#fff; font-size:0.88rem;">Fa Mayor (Tónica)</span>
+                </div>
+                <div class="chord-notes"><b>Notas:</b> <span style="color:#34d399; font-family:monospace;">Fa – La – Do</span> (F – A – C)</div>
+            </div>
+            <div class="chord-row">
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <span class="chord-badge minor">Dm</span>
+                    <span style="font-weight:700; color:#fff; font-size:0.88rem;">Re menor (the minor fall)</span>
+                </div>
+                <div class="chord-notes"><b>Notas:</b> <span style="color:#34d399; font-family:monospace;">Re – Fa – La</span> (D – F – A)</div>
+            </div>
+            <div class="chord-row">
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <span class="chord-badge">Bb</span>
+                    <span style="font-weight:700; color:#fff; font-size:0.88rem;">Si bemol Mayor (the fourth)</span>
+                </div>
+                <div class="chord-notes"><b>Notas:</b> <span style="color:#34d399; font-family:monospace;">Si♭ – Re – Fa</span> (B♭ – D – F)</div>
+            </div>
+            <div class="chord-row">
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <span class="chord-badge dom">C</span>
+                    <span style="font-weight:700; color:#fff; font-size:0.88rem;">Do Mayor (the fifth)</span>
+                </div>
+                <div class="chord-notes"><b>Notas:</b> <span style="color:#34d399; font-family:monospace;">Do – Mi – Sol</span> (C – E – G)</div>
+            </div>
+            <div class="chord-row">
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <span class="chord-badge" style="background:#831843; color:#fbcfe8; border-color:#db2777;">A</span>
+                    <span style="font-weight:700; color:#fff; font-size:0.88rem;">La Mayor (Acorde dramático mayor que resuelve a Dm)</span>
+                </div>
+                <div class="chord-notes"><b>Notas:</b> <span style="color:#34d399; font-family:monospace;">La – Do♯ – Mi</span> (A – C♯ – E)</div>
+            </div>
+        </div>
+</div>
+
+<!-- MODAL DE PANTALLA COMPLETA TOTAL (MODO ATRIL CON BOTONES 1 Y 2 FLOTANTES) -->
+<div id="modal-partitura-fullscreen" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:#0b0f17; z-index:999999; flex-direction:column;">
+    <!-- BARRA FLOTANTE FIJA DE ESCENARIO: SOLO LOS BOTONES 1 Y 2 QUE CAMBIAN TODO DE GOLPE -->
+    <div style="position:fixed; top:max(10px, env(safe-area-inset-top)); left:50%; transform:translateX(-50%); z-index:1000000; background:rgba(11, 15, 23, 0.94); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); border:1px solid rgba(56, 189, 248, 0.5); border-radius:14px; padding:8px 14px; display:flex; align-items:center; gap:8px; box-shadow:0 10px 30px rgba(0,0,0,0.8), 0 0 16px rgba(56,189,248,0.25); max-width:96vw; width:max-content;">
+        <button onclick="cargarSTSArmonica()" class="dock-btn sound-1" style="font-size:0.86rem; padding:8px 14px;" title="Carga todo de golpe: Armónica + Estilo 042 + 56 BPM">
+            <span>🎵</span> 1. STS Armónica + Estilo 042
+        </button>
+        <button onclick="cargarArmonicaPiano()" class="dock-btn sound-2" style="font-size:0.86rem; padding:8px 14px;" title="Carga todo de golpe: Armónica & Piano + Estilo 042 + 56 BPM">
+            <span>🎹</span> 2. Armónica & Piano + Estilo 042
+        </button>
+        <button onclick="cerrarPartituraPantallaCompleta()" style="background:#334155; color:#f1f5f9; border:1px solid #475569; padding:8px 14px; border-radius:8px; font-weight:700; font-size:0.82rem; cursor:pointer; white-space:nowrap; touch-action:manipulation;">
+            ✕ Volver a la Ficha
+        </button>
+    </div>
+
+    <!-- VISOR PDF QUE OCUPA EL 100% DE LA PANTALLA DEL IPAD -->
+    <iframe id="pdf-frame-fullscreen" src="CANCIONES%20PDF/Hallelujah-%20Leonard%20Cohen.pdf" style="width:100vw; height:100vh; border:none; background:#1e293b; padding-top:max(66px, calc(env(safe-area-inset-top) + 54px)); box-sizing:border-box;"></iframe>
+</div>
+
+<script>
+    let midiOutput = null;
+    let midiAccessInstance = null;
+    let midiClockTimer = null;
+
+    function fijarTempoMIDI(bpm) {
+        if (midiClockTimer) clearInterval(midiClockTimer);
+        if (!midiOutput) return;
+
+        // 24 ticks por negra. Para 56 BPM = 44.64 ms por tick 0xF8
+        const msPerTick = Math.round(60000 / (bpm * 24));
+        midiClockTimer = setInterval(() => {
+            if (midiOutput) {
+                try {
+                    midiOutput.send([0xF8]);
+                } catch(e) {}
+            }
+        }, msPerTick);
+    }
+
+    function extraerPuertos(coleccion) {
+        const res = [];
+        if (!coleccion) return res;
+        try {
+            if (typeof coleccion.forEach === 'function') {
+                coleccion.forEach(p => { if (p) res.push(p); });
+            }
+        } catch(e) {}
+        if (res.length === 0) {
+            try {
+                if (coleccion.values) {
+                    for (let p of coleccion.values()) {
+                        if (p) res.push(p);
+                    }
+                }
+            } catch(e) {}
+        }
+        if (res.length === 0) {
+            try {
+                for (let k in coleccion) {
+                    if (coleccion[k] && typeof coleccion[k].send === 'function') {
+                        res.push(coleccion[k]);
+                    }
+                }
+            } catch(e) {}
+        }
+        return res;
+    }
+
+    async function conectarMIDI() {
+        const dot = document.getElementById("midi-dot");
+        const text = document.getElementById("midi-label");
+        const log = document.getElementById("log-1");
+        if (!dot || !text) return null;
+
+        if (midiAccessInstance) {
+            const outputs = extraerPuertos(midiAccessInstance.outputs);
+            if (outputs.length > 0) {
+                const korg = outputs.find(o => o.name && (o.name.toLowerCase().includes('ek-50') || o.name.toLowerCase().includes('korg') || o.name.toLowerCase().includes('keyboard')));
+                midiOutput = korg || outputs[0];
+                dot.style.background = "#10b981";
+                dot.classList.add("connected");
+                text.innerHTML = `🟢 Conectado: <b>${midiOutput.name}</b>`;
+                if (log && log.innerHTML.includes('Listo para')) {
+                    log.innerHTML = `✅ Korg EK-50 detectado: <b>${midiOutput.name}</b> listo.`;
+                }
+                return midiOutput;
+            }
+        }
+
+        if (!navigator.requestMIDIAccess) {
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+            dot.style.background = "#38bdf8";
+            dot.classList.remove("connected");
+            if (isIOS) {
+                text.innerHTML = '📱 <b>iPad (Modo Atril):</b> Para control MIDI por cable en iPad usa la app gratuita <i>Web MIDI Browser</i>. En Mac usa Chrome.';
+            } else {
+                text.innerHTML = '💻 <b>Modo Consulta:</b> Para enviar MIDI por cable USB abre esta web en <b>Google Chrome</b>.';
+            }
+            return null;
+        }
+
+        try {
+            dot.style.background = "#e3b341";
+            const midiAccess = await navigator.requestMIDIAccess();
+            midiAccessInstance = midiAccess;
+
+            function bindPorts() {
+                if (!midiAccessInstance) return null;
+                const outputs = extraerPuertos(midiAccessInstance.outputs);
+                const inputs = extraerPuertos(midiAccessInstance.inputs);
+
+                if (outputs.length > 0) {
+                    const korg = outputs.find(o => o.name && (o.name.toLowerCase().includes('ek-50') || o.name.toLowerCase().includes('korg') || o.name.toLowerCase().includes('keyboard')));
+                    midiOutput = korg || outputs[0];
+                    dot.style.background = "#10b981";
+                    dot.classList.add("connected");
+                    text.innerHTML = `🟢 Conectado: <b>${midiOutput.name}</b>`;
+                    if (log && log.innerHTML.includes('Listo para')) {
+                        log.innerHTML = `✅ Korg EK-50 detectado: <b>${midiOutput.name}</b> listo.`;
+                    }
+                    return midiOutput;
+                } else if (inputs.length > 0) {
+                    dot.style.background = "#10b981";
+                    dot.classList.add("connected");
+                    text.innerHTML = `🟢 Conectado: <b>${inputs[0].name}</b>`;
+                    return null;
+                } else {
+                    midiOutput = null;
+                    dot.style.background = "#d29922";
+                    dot.classList.remove("connected");
+                    text.innerHTML = '🟡 Conecta el Korg por USB <span style="font-size:0.75rem; text-decoration:underline; cursor:pointer;" onclick="conectarMIDI()">🔄 Re-escanear</span>';
+                    return null;
+                }
+            }
+
+            midiAccessInstance.onstatechange = (e) => {
+                if (e && e.port) {
+                    if (e.port.type === 'output' && (e.port.state === 'connected' || e.port.connection === 'open')) {
+                        midiOutput = e.port;
+                        dot.style.background = "#10b981";
+                        dot.classList.add("connected");
+                        text.innerHTML = `🟢 Conectado: <b>${midiOutput.name}</b>`;
+                        if (log) log.innerHTML = `✅ Korg EK-50 detectado vía USB: <b>${midiOutput.name}</b> listo.`;
+                        return;
+                    }
+                }
+                bindPorts();
+            };
+
+            const res = bindPorts();
+            if (!res) {
+                setTimeout(bindPorts, 600);
+                setTimeout(bindPorts, 1500);
+            }
+            return res;
+        } catch(err) {
+            dot.style.background = "#f85149";
+            text.innerHTML = `🔴 Error: ${err.message}`;
+            return null;
+        }
+    }
+
+    function probarNotaKorg() {
+        const log = document.getElementById('log-1');
+        if (!midiOutput && midiAccessInstance) {
+            const outputs = extraerPuertos(midiAccessInstance.outputs);
+            if (outputs.length > 0) midiOutput = outputs[0];
+        }
+        if (!midiOutput) {
+            alert('⚠️ No se detecta el Korg EK-50 por USB.\n\nPor favor comprueba:\n1. Que el Korg EK-50 esté encendido (que su pantalla tenga luz).\n2. Que el cable USB esté conectado al iPad.\n3. Si sigue sin verse, desconecta y vuelve a conectar el cable USB del iPad.');
+            return;
+        }
+        try {
+            // Nota Do central (60) en Canal 1
+            midiOutput.send([0x90, 60, 100]);
+            setTimeout(() => {
+                try { midiOutput.send([0x80, 60, 0]); } catch(e){}
+            }, 500);
+            if (log) log.innerHTML = `🔊 <b>Nota de prueba Do3 enviada</b> a <b>${midiOutput.name}</b> (comprueba que el volumen del Korg esté subido).`;
+        } catch(e) {
+            if (log) log.innerHTML = `⚠️ Error enviando nota: ${e.message}`;
+        }
+    }
+
+    async function cargarSTSArmonica() {
+        const log = document.getElementById('log-1');
+        if (!midiOutput) await conectarMIDI();
+        if (!midiOutput && midiAccessInstance) {
+            const outputs = extraerPuertos(midiAccessInstance.outputs);
+            if (outputs.length > 0) midiOutput = outputs[0];
+        }
+        if (!midiOutput) {
+            if (log) log.innerHTML = '⚠️ No se detecta el Korg EK-50. Comprueba el cable USB y pulsa "Detectar" arriba.';
+            alert('⚠️ No se detecta el Korg EK-50 por USB.\n\nComprueba:\n1. Que el Korg EK-50 esté encendido.\n2. Que el cable USB esté conectado al iPad.\n3. Pulsa "Detectar" arriba.');
+            return;
+        }
+
+        try {
+            // 1. Cargar Estilo 042 en Canal 16
+            midiOutput.send([0xB0 | 15, 0x00, 32]);
+            midiOutput.send([0xB0 | 15, 0x20, 2]);
+            midiOutput.send([0xC0 | 15, 9]); // Estilo 042
+
+            // 2. Upper 1 = STS Armónica (Harmonica expresiva GM PC 21)
+            midiOutput.send([0xB0 | 0, 0x00, 121]);
+            midiOutput.send([0xB0 | 0, 0x20, 0]);
+            midiOutput.send([0xC0 | 0, 21]); // Harmonica
+            midiOutput.send([0xB0 | 0, 0x07, 127]);
+
+            // Upper 2 y 3 silenciados
+            midiOutput.send([0xB0 | 1, 0x07, 0]);
+            midiOutput.send([0xB0 | 2, 0x07, 0]);
+
+            // 3. Fijar reloj MIDI a 56 BPM
+            fijarTempoMIDI(56);
+            if (log) log.innerHTML = `🎵 <b>1. STS Armónica + Estilo 042</b> activado en ${midiOutput.name} (Línea 1: <b>042</b> · Línea 2: <b>STS Armónica</b> · ⏱️ <b>56 BPM</b>).`;
+        } catch(e) {
+            if (log) log.innerHTML = `⚠️ Error enviando al Korg: ${e.message}`;
+        }
+    }
+    const cargarPianoSolo = cargarSTSArmonica;
+
+    async function cargarArmonicaPiano() {
+        const log = document.getElementById('log-1');
+        if (!midiOutput) await conectarMIDI();
+        if (!midiOutput && midiAccessInstance) {
+            const outputs = extraerPuertos(midiAccessInstance.outputs);
+            if (outputs.length > 0) midiOutput = outputs[0];
+        }
+        if (!midiOutput) {
+            if (log) log.innerHTML = '⚠️ No se detecta el Korg EK-50. Comprueba el cable USB y pulsa "Detectar" arriba.';
+            alert('⚠️ No se detecta el Korg EK-50 por USB.\n\nComprueba:\n1. Que el Korg EK-50 esté encendido.\n2. Que el cable USB esté conectado al iPad.\n3. Pulsa "Detectar" arriba.');
+            return;
+        }
+
+        try {
+            // 1. Cargar Estilo 042 en Canal 16
+            midiOutput.send([0xB0 | 15, 0x00, 32]);
+            midiOutput.send([0xB0 | 15, 0x20, 2]);
+            midiOutput.send([0xC0 | 15, 9]); // Estilo 042
+
+            // 2. Upper 1 = Armónica solista
+            midiOutput.send([0xB0 | 0, 0x00, 121]);
+            midiOutput.send([0xB0 | 0, 0x20, 0]);
+            midiOutput.send([0xC0 | 0, 21]); // Harmonica
+            midiOutput.send([0xB0 | 0, 0x07, 120]);
+
+            // Upper 2 = Grand Piano de fondo
+            midiOutput.send([0xB0 | 1, 0x00, 121]);
+            midiOutput.send([0xB0 | 1, 0x20, 0]);
+            midiOutput.send([0xC0 | 1, 0]);  // Grand Piano
+            midiOutput.send([0xB0 | 1, 0x07, 85]);
+
+            // Upper 3 apagado
+            midiOutput.send([0xB0 | 2, 0x07, 0]);
+
+            // 3. Fijar reloj MIDI a 56 BPM
+            fijarTempoMIDI(56);
+            if (log) log.innerHTML = `🎹 <b>2. Armónica & Piano + Estilo 042</b> activado en ${midiOutput.name} (Línea 1: <b>042</b> · Upper 1: Armónica · Upper 2: Piano · ⏱️ <b>56 BPM</b>).`;
+        } catch(e) {
+            if (log) log.innerHTML = `⚠️ Error enviando al Korg: ${e.message}`;
+        }
+    }
+    const cargarPianoCuerdas = cargarArmonicaPiano;
+
+    function cargarSoloEstilo042() {
+        const log = document.getElementById('log-1');
+        if (!midiOutput && midiAccessInstance) {
+            const outputs = Array.from(midiAccessInstance.outputs.values());
+            if (outputs.length > 0) midiOutput = outputs[0];
+        }
+        if (!midiOutput) {
+            if (log) log.innerHTML = '⚠️ Conecta el Korg EK-50 por USB.';
+            return;
+        }
+        try {
+            midiOutput.send([0xB0 | 15, 0x00, 32]);
+            midiOutput.send([0xB0 | 15, 0x20, 2]);
+            midiOutput.send([0xC0 | 15, 9]); // Estilo 042
+            fijarTempoMIDI(56);
+            if (log) log.innerHTML = `🥁 <b>Estilo 042</b> enviado al Korg EK-50 (⏱️ 56 BPM).`;
+        } catch(e) {
+            if (log) log.innerHTML = `⚠️ Error: ${e.message}`;
+        }
+    }
+    const cargarSoloEstilo090 = cargarSoloEstilo042;
+
+    function iniciarAcompanamientoKorg() {
+        const log = document.getElementById('log-1');
+        if (!midiOutput && midiAccessInstance) {
+            const outputs = Array.from(midiAccessInstance.outputs.values());
+            if (outputs.length > 0) midiOutput = outputs[0];
+        }
+        if (!midiOutput) {
+            if (log) log.innerHTML = '⚠️ Conecta el Korg EK-50 por USB.';
+            return;
+        }
+        try {
+            fijarTempoMIDI(56);
+            midiOutput.send([0xFA]); // MIDI Real-Time START
+            if (log) log.innerHTML = `▶️ <b>Acompañamiento INICIADO en ${midiOutput.name}</b> (Estilo 042 a 56 BPM).`;
+        } catch(e) {
+            if (log) log.innerHTML = `⚠️ Error: ${e.message}`;
+        }
+    }
+
+    function detenerAcompanamientoKorg() {
+        const log = document.getElementById('log-1');
+        if (!midiOutput && midiAccessInstance) {
+            const outputs = Array.from(midiAccessInstance.outputs.values());
+            if (outputs.length > 0) midiOutput = outputs[0];
+        }
+        if (!midiOutput) return;
+        try {
+            midiOutput.send([0xFC]); // MIDI Real-Time STOP
+            if (log) log.innerHTML = `⏹️ <b>Acompañamiento DETENIDO en ${midiOutput.name}</b>.`;
+        } catch(e) {
+            if (log) log.innerHTML = `⚠️ Error: ${e.message}`;
+        }
+    }
+
+    let isKorgAccompanimentRunning = false;
+    let isPdfExpanded = false;
+
+    function toggleDockMinimize() {
+        const dock = document.getElementById('floating-midi-dock');
+        const btn = document.getElementById('dock-min-btn');
+        if (dock) {
+            dock.classList.toggle('minimized');
+            if (btn) {
+                btn.textContent = dock.classList.contains('minimized') ? '➕ Controles' : '➖ Minimizar';
+            }
+        }
+    }
+
+    function abrirPartituraPantallaCompleta() {
+        const modal = document.getElementById('modal-partitura-fullscreen');
+        if (modal) {
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+    }
+
+    function cerrarPartituraPantallaCompleta() {
+        const modal = document.getElementById('modal-partitura-fullscreen');
+        if (modal) {
+            modal.style.display = 'none';
+            document.body.style.overflow = '';
+        }
+    }
+
+    function togglePdfViewer() {
+        const container = document.getElementById('pdf-viewer-container');
+        if (container) {
+            const isHidden = (container.style.display === 'none' || !container.style.display);
+            container.style.display = isHidden ? 'block' : 'none';
+            if (isHidden) {
+                container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+    }
+
+    /* ==========================================================================
+       MOTOR DE ACOMPAÑAMIENTO 6/8 (WEB AUDIO API · ARPEGIOS SINTETIZADOS)
+       ========================================================================== */
+    let audioCtx = null;
+    let masterGain = null;
+    let isAccompPlaying = false;
+    let accompSchedulerTimer = null;
+    let currentTempo = 56;
+    let soundMode = 'piano';
+    let currentSection = 'verse';
+    let currentMeasure = 0;
+    let currentBeat = 0;
+    let nextBeatTime = 0.0;
+
+    const SECCIONES = {
+        verse: ['F', 'Dm', 'F', 'Dm', 'Bb', 'C', 'F', 'C'],
+        bridge: ['F', 'Bb', 'C', 'Dm', 'Bb', 'C', 'A', 'Dm'],
+        chorus: ['Bb', 'Dm', 'Bb', 'F', 'C', 'F'],
+        full: ['F', 'Dm', 'F', 'Dm', 'Bb', 'C', 'F', 'C', 'F', 'Bb', 'C', 'Dm', 'Bb', 'C', 'A', 'Dm', 'Bb', 'Dm', 'Bb', 'F', 'C', 'F']
+    };
+
+    const CHORD_DATA = {
+        'F': {
+            name: 'Fa Mayor (F)',
+            color: '#34d399',
+            bass1: 87.31,  // F2
+            bass2: 130.81, // C3
+            notes: [174.61, 220.00, 261.63, 349.23, 261.63, 220.00], // F3, A3, C4, F4, C4, A3
+            noteNames: ['Fa3', 'La3', 'Do4', 'Fa4', 'Do4', 'La3'],
+            padNotes: [174.61, 220.00, 261.63]
+        },
+        'Dm': {
+            name: 'Re menor (Dm)',
+            color: '#c084fc',
+            bass1: 73.42,  // D2
+            bass2: 110.00, // A2
+            notes: [146.83, 174.61, 220.00, 293.66, 220.00, 174.61], // D3, F3, A3, D4, A3, F3
+            noteNames: ['Re3', 'Fa3', 'La3', 'Re4', 'La3', 'Fa3'],
+            padNotes: [146.83, 174.61, 220.00]
+        },
+        'Bb': {
+            name: 'Si♭ Mayor (B♭)',
+            color: '#38bdf8',
+            bass1: 58.27,  // Bb1
+            bass2: 87.31,  // F2
+            notes: [146.83, 174.61, 233.08, 293.66, 233.08, 174.61], // D3, F3, Bb3, D4, Bb3, F3
+            noteNames: ['Re3', 'Fa3', 'Si♭3', 'Re4', 'Si♭3', 'Fa3'],
+            padNotes: [116.54, 174.61, 233.08]
+        },
+        'C': {
+            name: 'Do Mayor (C)',
+            color: '#fbbf24',
+            bass1: 65.41,  // C2
+            bass2: 98.00,  // G2
+            notes: [130.81, 164.81, 196.00, 261.63, 196.00, 164.81], // C3, E3, G3, C4, G3, E3
+            noteNames: ['Do3', 'Mi3', 'Sol3', 'Do4', 'Sol3', 'Mi3'],
+            padNotes: [130.81, 164.81, 196.00]
+        },
+        'A': {
+            name: 'La Mayor (A)',
+            color: '#f472b6',
+            bass1: 55.00,  // A1
+            bass2: 82.41,  // E2
+            notes: [138.59, 164.81, 220.00, 277.18, 220.00, 164.81], // C#3, E3, A3, C#4, A3, E3
+            noteNames: ['Do♯3', 'Mi3', 'La3', 'Do♯4', 'La3', 'Mi3'],
+            padNotes: [110.00, 138.59, 164.81]
+        }
+    };
+
+    function initAudio() {
+        if (!audioCtx) {
+            const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+            audioCtx = new AudioContextClass();
+            masterGain = audioCtx.createGain();
+            masterGain.gain.setValueAtTime(0.85, audioCtx.currentTime);
+            masterGain.connect(audioCtx.destination);
+        }
+        if (audioCtx.state === 'suspended') {
+            audioCtx.resume();
+        }
+    }
+
+    function tocarNotaPiano(freq, time, duration, velocity = 0.75) {
+        if (!audioCtx) return;
+        const osc1 = audioCtx.createOscillator();
+        const osc2 = audioCtx.createOscillator();
+        const gainNode = audioCtx.createGain();
+        const filter = audioCtx.createBiquadFilter();
+
+        osc1.type = 'triangle';
+        osc1.frequency.setValueAtTime(freq, time);
+
+        osc2.type = 'sine';
+        osc2.frequency.setValueAtTime(freq * 2, time);
+
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(Math.min(freq * 5.5, 3800), time);
+        filter.frequency.exponentialRampToValueAtTime(Math.max(freq * 1.4, 280), time + duration);
+
+        gainNode.gain.setValueAtTime(0.0001, time);
+        gainNode.gain.linearRampToValueAtTime(velocity * 0.35, time + 0.006);
+        gainNode.gain.exponentialRampToValueAtTime(0.0001, time + duration);
+
+        osc1.connect(filter);
+        osc2.connect(filter);
+        filter.connect(gainNode);
+        gainNode.connect(masterGain);
+
+        osc1.start(time);
+        osc2.start(time);
+        osc1.stop(time + duration);
+        osc2.stop(time + duration);
+    }
+
+    function tocarNotaBajo(freq, time, duration, velocity = 0.85) {
+        if (!audioCtx) return;
+        const osc = audioCtx.createOscillator();
+        const gainNode = audioCtx.createGain();
+        const filter = audioCtx.createBiquadFilter();
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, time);
+
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(250, time);
+
+        gainNode.gain.setValueAtTime(0.0001, time);
+        gainNode.gain.linearRampToValueAtTime(velocity * 0.45, time + 0.015);
+        gainNode.gain.exponentialRampToValueAtTime(0.0001, time + duration);
+
+        osc.connect(filter);
+        filter.connect(gainNode);
+        gainNode.connect(masterGain);
+
+        osc.start(time);
+        osc.stop(time + duration);
+    }
+
+    function tocarPadCuerdas(chordKey, time, duration) {
+        if (!audioCtx || soundMode !== 'piano_strings') return;
+        const chord = CHORD_DATA[chordKey];
+        if (!chord || !chord.padNotes) return;
+
+        chord.padNotes.forEach(freq => {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            const filter = audioCtx.createBiquadFilter();
+
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(freq, time);
+
+            filter.type = 'lowpass';
+            filter.frequency.setValueAtTime(750, time);
+
+            gain.gain.setValueAtTime(0.0001, time);
+            gain.gain.linearRampToValueAtTime(0.045, time + 0.28);
+            gain.gain.setValueAtTime(0.045, time + Math.max(0.3, duration - 0.25));
+            gain.gain.exponentialRampToValueAtTime(0.0001, time + duration);
+
+            osc.connect(filter);
+            filter.connect(gain);
+            gain.connect(masterGain);
+
+            osc.start(time);
+            osc.stop(time + duration);
+        });
+    }
+
+    function programarPulsos() {
+        const sequence = SECCIONES[currentSection] || SECCIONES.verse;
+        const corcheaDur = 60 / (currentTempo * 3); // Compás 6/8 con ♩. = currentTempo
+
+        while (nextBeatTime < audioCtx.currentTime + 0.12) {
+            const chordKey = sequence[currentMeasure];
+            const chord = CHORD_DATA[chordKey] || CHORD_DATA['F'];
+            const noteFreq = chord.notes[currentBeat];
+            const beatIndex = currentBeat;
+            const measureIndex = currentMeasure;
+            const scheduledTime = nextBeatTime;
+
+            // 1. Tocar nota del arpegio (duración de 2 corcheas para dejar resonancia suave)
+            tocarNotaPiano(noteFreq, scheduledTime, corcheaDur * 2.2, (beatIndex === 0 || beatIndex === 3) ? 0.85 : 0.65);
+
+            // 2. Pulso 1 (Beat 0): Bajo profundo y colchón de cuerdas
+            if (beatIndex === 0) {
+                tocarNotaBajo(chord.bass1, scheduledTime, corcheaDur * 5.6, 0.9);
+                tocarPadCuerdas(chordKey, scheduledTime, corcheaDur * 5.9);
+            }
+
+            // 3. Pulso 4 (Beat 3): Segundo apoyo del bajo
+            if (beatIndex === 3) {
+                tocarNotaBajo(chord.bass2, scheduledTime, corcheaDur * 2.8, 0.7);
+            }
+
+            // 4. Actualización sincronizada de la interfaz gráfica
+            const delayMs = Math.max(0, (scheduledTime - audioCtx.currentTime) * 1000);
+            setTimeout(() => {
+                if (!isAccompPlaying) return;
+                actualizarUI(chordKey, chord, beatIndex, measureIndex, sequence.length);
+            }, delayMs);
+
+            // Avanzar pulso
+            currentBeat++;
+            if (currentBeat >= 6) {
+                currentBeat = 0;
+                currentMeasure = (currentMeasure + 1) % sequence.length;
+            }
+            nextBeatTime += corcheaDur;
+        }
+    }
+
+    function actualizarUI(chordKey, chord, beatIndex, measureIndex, totalMeasures) {
+        const chordDisplay = document.getElementById('display-chord');
+        const notesDisplay = document.getElementById('display-notes');
+        if (chordDisplay) {
+            chordDisplay.textContent = chordKey;
+            chordDisplay.style.color = chord.color;
+        }
+        if (notesDisplay) {
+            notesDisplay.innerHTML = `<b style="color:#fff;">${chord.name}</b> · Nota: <span style="color:#38bdf8; font-weight:bold;">${chord.noteNames[beatIndex]}</span> · Compás ${measureIndex + 1}/${totalMeasures}`;
+        }
+
+        // Iluminar punto del pulso activo (1 al 6)
+        for (let i = 1; i <= 6; i++) {
+            const dot = document.getElementById(`beat-${i}`);
+            if (dot) {
+                if (i === (beatIndex + 1)) {
+                    dot.classList.add('active');
+                } else {
+                    dot.classList.remove('active');
+                }
+            }
+        }
+    }
+
+    function toggleAccomp() {
+        initAudio();
+        const btn = document.getElementById('btn-play-accomp');
+        const icon = document.getElementById('play-icon');
+        const text = document.getElementById('play-text');
+
+        if (isAccompPlaying) {
+            // Detener
+            isAccompPlaying = false;
+            if (accompSchedulerTimer) clearInterval(accompSchedulerTimer);
+            if (btn) btn.style.background = 'linear-gradient(135deg, #059669 0%, #10b981 100%)';
+            if (icon) icon.textContent = '▶️';
+            if (text) text.textContent = 'Iniciar Acompañamiento 6/8';
+            for (let i = 1; i <= 6; i++) {
+                const dot = document.getElementById(`beat-${i}`);
+                if (dot) dot.classList.remove('active');
+            }
+            const notesDisplay = document.getElementById('display-notes');
+            if (notesDisplay) notesDisplay.textContent = 'Acompañamiento detenido';
+        } else {
+            // Iniciar
+            isAccompPlaying = true;
+            currentMeasure = 0;
+            currentBeat = 0;
+            nextBeatTime = audioCtx.currentTime + 0.05;
+
+            if (btn) btn.style.background = 'linear-gradient(135deg, #dc2626 0%, #ef4444 100%)';
+            if (icon) icon.textContent = '⏹️';
+            if (text) text.textContent = 'Detener Acompañamiento';
+
+            accompSchedulerTimer = setInterval(programarPulsos, 25);
+        }
+    }
+
+    function cambiarSeccionAccomp() {
+        const select = document.getElementById('accomp-section');
+        if (select) currentSection = select.value;
+        currentMeasure = 0;
+        currentBeat = 0;
+    }
+
+    function cambiarSonidoAccomp() {
+        const select = document.getElementById('accomp-sound');
+        if (select) soundMode = select.value;
+    }
+
+    function cambiarTempoAccomp(bpm, btnElement) {
+        currentTempo = bpm;
+        document.querySelectorAll('.btn-tempo').forEach(b => b.classList.remove('active-tempo'));
+        if (btnElement) btnElement.classList.add('active-tempo');
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+        conectarMIDI();
+    });
+</script>
+</body>
+</html>

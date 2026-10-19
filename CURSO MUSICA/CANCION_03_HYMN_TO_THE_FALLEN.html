@@ -1,0 +1,1181 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <!-- Optimización iOS / iPadOS como Web App Nativa a pantalla completa -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Hymn Fallen">
+    <meta name="theme-color" content="#0b0f17">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='bg' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%231e3a8a'/%3E%3Cstop offset='100%25' stop-color='%230b0f17'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='100' height='100' rx='22' fill='url(%23bg)' stroke='%2338bdf8' stroke-width='3'/%3E%3Ctext x='50' y='74' font-family='-apple-system, BlinkMacSystemFont, sans-serif' font-weight='900' font-size='68' text-anchor='middle' fill='%2338bdf8'%3ER%3C/text%3E%3C/svg%3E">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='bg' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%231e3a8a'/%3E%3Cstop offset='100%25' stop-color='%230b0f17'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='100' height='100' rx='22' fill='url(%23bg)' stroke='%2338bdf8' stroke-width='3'/%3E%3Ctext x='50' y='74' font-family='-apple-system, BlinkMacSystemFont, sans-serif' font-weight='900' font-size='68' text-anchor='middle' fill='%2338bdf8'%3ER%3C/text%3E%3C/svg%3E">
+    <title>3. Hymn to the Fallen · Korg EK-50</title>
+    <style>
+        :root {
+            --bg-color: #0b0f17;
+            --card-bg: #131b26;
+            --border-color: #212c3d;
+            --text-main: #f0f6fc;
+            --text-muted: #8b9bb4;
+            --accent-blue: #38bdf8;
+            --accent-green: #34d399;
+            --accent-purple: #c084fc;
+            --accent-amber: #fbbf24;
+        }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            padding: max(12px, env(safe-area-inset-top)) max(14px, env(safe-area-inset-right)) max(20px, env(safe-area-inset-bottom)) max(14px, env(safe-area-inset-left));
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 900px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        /* BARRA SUPERIOR DE NAVEGACIÓN Y CONEXIÓN MIDI */
+        .nav-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 0;
+            gap: 8px;
+        }
+        .btn-back {
+            background: #1e293b;
+            color: #93c5fd;
+            border: 1px solid #334155;
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 0.88rem;
+            font-weight: 700;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            touch-action: manipulation;
+            transition: 0.15s;
+        }
+        .btn-back:active { background: #334155; color: #fff; }
+
+        .midi-bar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #111827;
+            border: 1px solid #1f2937;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            color: #9ca3af;
+        }
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #6b7280;
+            display: inline-block;
+        }
+        .status-dot.connected {
+            background: #10b981;
+            box-shadow: 0 0 8px #10b981;
+        }
+
+        /* CABECERA PRINCIPAL */
+        .header-card {
+            background: linear-gradient(135deg, #1e1b4b 0%, #0f172a 100%);
+            border: 1px solid #312e81;
+            border-radius: 12px;
+            padding: 16px 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .header-title-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .header-card h1 {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: #fff;
+            letter-spacing: -0.3px;
+        }
+        .header-card p {
+            font-size: 0.86rem;
+            color: #cbd5e1;
+            margin-top: 2px;
+        }
+        .meta-pills-row {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        .meta-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.78rem;
+            font-weight: 700;
+        }
+        .meta-pill.tempo { background: #064e3b; color: #6ee7b7; border: 1px solid #059669; }
+        .meta-pill.brass { background: #78350f; color: #fde68a; border: 1px solid #d97706; }
+        .meta-pill.choir { background: #581c87; color: #f5d0fe; border: 1px solid #9333ea; }
+
+        /* SECCIONES TIPO TARJETA */
+        .section-box {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 14px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .section-title {
+            font-size: 1.02rem;
+            font-weight: 800;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* BOTONES DE SONIDO ESCÉNICO MIDI */
+        .stage-midi-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        @media (max-width: 720px) {
+            .stage-midi-grid { grid-template-columns: 1fr; }
+        }
+        .btn-stage {
+            min-height: 60px;
+            padding: 12px 16px;
+            border-radius: 12px;
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            text-align: left;
+            touch-action: manipulation;
+            transition: all 0.15s;
+        }
+        .btn-stage:active { transform: scale(0.98); }
+        .btn-stage-brass {
+            background: linear-gradient(135deg, #b45309 0%, #d97706 100%);
+            border: 1px solid #fcd34d;
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(217, 119, 6, 0.35);
+        }
+        .btn-stage-strings {
+            background: linear-gradient(135deg, #047857 0%, #059669 100%);
+            border: 1px solid #34d399;
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(5, 150, 105, 0.35);
+        }
+        .stage-icon { font-size: 1.5rem; flex-shrink: 0; }
+        .stage-text { display: flex; flex-direction: column; gap: 2px; }
+        .stage-title { font-size: 0.98rem; font-weight: 800; color: #fff; }
+        .stage-sub { font-size: 0.76rem; opacity: 0.92; font-weight: 500; }
+
+        .live-log {
+            background: #090d16;
+            border: 1px solid #1e293b;
+            border-radius: 8px;
+            padding: 9px 12px;
+            font-size: 0.8rem;
+            color: #94a3b8;
+            font-family: monospace;
+            line-height: 1.4;
+        }
+
+        /* ENLACES A PARTITURA */
+        .card-actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+        .btn-action {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            min-height: 46px;
+            padding: 10px 16px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            text-decoration: none;
+            cursor: pointer;
+            border: none;
+            touch-action: manipulation;
+            transition: 0.15s;
+        }
+        .btn-sheet-ms { background: #1d4ed8; color: #fff; border: 1px solid #3b82f6; }
+        .btn-sheet-ms:hover, .btn-sheet-ms:active { background: #2563eb; }
+        .btn-sheet-pdf { background: #1e293b; color: #93c5fd; border: 1px solid #334155; }
+        .btn-sheet-pdf:hover, .btn-sheet-pdf:active { background: #334155; color: #fff; }
+
+        /* GUÍA DE ENTRADA Y COMPÁS */
+        .guide-box {
+            background: #0f172a;
+            border: 1px solid #1e293b;
+            border-radius: 8px;
+            padding: 12px 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            font-size: 0.86rem;
+            line-height: 1.45;
+        }
+        .guide-item { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+
+        /* ESTILOS DE DICCIONARIO DE ACORDES Y CADENCIAS */
+        .chord-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .chord-row {
+            background: #0d131f;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 10px 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .chord-badge {
+            background: #1e3a8a;
+            color: #60a5fa;
+            border: 1px solid #2563eb;
+            font-weight: 800;
+            padding: 3px 10px;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            min-width: 50px;
+            text-align: center;
+        }
+        .chord-badge.minor {
+            background: #312e81;
+            color: #a5b4fc;
+            border-color: #6366f1;
+        }
+        .chord-badge.seventh {
+            background: #581c87;
+            color: #e9d5ff;
+            border-color: #9333ea;
+        }
+        .chord-notes {
+            font-size: 0.86rem;
+            color: #cbd5e1;
+        }
+        .chord-seq-box {
+            background: #0f172a;
+            border: 1px solid #1e293b;
+            border-radius: 8px;
+            padding: 12px 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .seq-pill-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            align-items: center;
+        }
+        .seq-pill {
+            background: #1e293b;
+            border: 1px solid #334155;
+            color: #f1f5f9;
+            font-weight: 800;
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 0.88rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .seq-pill.tonic { background: #064e3b; color: #6ee7b7; border-color: #059669; }
+        .seq-pill.minor { background: #312e81; color: #c7d2fe; border-color: #4f46e5; }
+        .seq-pill.dom { background: #78350f; color: #fde68a; border-color: #d97706; }
+        .seq-arrow { color: #64748b; font-size: 0.8rem; font-weight: bold; }
+    </style>
+</head>
+<body>
+<div class="container">
+    
+    <!-- BARRA DE NAVEGACIÓN -->
+    <div class="nav-bar">
+        <a class="btn-back" href="REPERTORIO_KORG_EK50.html?v=80">
+            ⬅ Volver a la Lista de Canciones
+        </a>
+        <div style="display:flex; align-items:center; gap:8px;">
+            <button onclick="window.location.href='CANCION_03_HYMN_TO_THE_FALLEN.html?t='+Date.now()" style="background:#0284c7; color:#fff; border:none; padding:6px 12px; border-radius:8px; font-size:0.8rem; font-weight:800; cursor:pointer;" title="Pulsa aquí en el iPad para limpiar la caché y ver la última versión">🔄 Recargar v80</button>
+            <div class="midi-bar">
+                <span id="midi-dot" class="status-dot"></span>
+                <span id="midi-label">Iniciando MIDI...</span>
+                <button style="background:#2563eb; color:white; border:none; padding:4px 9px; border-radius:6px; font-size:0.78rem; font-weight:700; cursor:pointer;" onclick="conectarMIDI()">Detectar</button>
+                <button style="background:#059669; color:white; border:none; padding:4px 9px; border-radius:6px; font-size:0.78rem; font-weight:700; cursor:pointer;" onclick="probarNotaKorg()" title="Toca una nota de prueba Do3 en el Korg">🔊 Probar Sonido</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- CABECERA DE LA CANCIÓN -->
+    <div class="header-card">
+        <div class="header-title-row">
+            <div>
+                <h1>3. Hymn to the Fallen</h1>
+                <p>John Williams · BSO Salvar al Soldado Ryan (Saving Private Ryan) · Compás 4/4 · <b style="color:#6ee7b7;">⏱️ Tempo: 60 BPM (Largo Solemne)</b></p>
+            </div>
+            <div class="meta-pills-row">
+                <span class="meta-pill tempo">⏱️ 60 BPM</span>
+                <span class="meta-pill brass">🎺 Trompas & Metales</span>
+                <span class="meta-pill choir">👥 Coro / Cuerdas</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECCIÓN 1: SONIDOS ORQUESTALES RECOMENDADOS PARA KORG EK-50 -->
+    <div class="section-box">
+        <div class="section-title">⚡ Sonidos Orquestales Recomendados para el Korg EK-50</div>
+        
+        <div style="background:#172554; border:1px solid #1e40af; border-radius:8px; padding:10px 14px; font-size:0.84rem; color:#bfdbfe; line-height:1.45;">
+            💡 <b>Carácter Solemne e Himno Bélico:</b> Para esta obra de John Williams se recomiendan metales nobles (trompas francesas y trompetas) y grandes masas de cuerdas o coro orquestal:
+        </div>
+
+        <div class="stage-midi-grid">
+            <button class="btn-stage btn-stage-brass" onclick="cargarMetalesCoro()" title="Trompa/Trompeta majestuosa en Upper 1 con fondo de coro o cuerdas">
+                <span class="stage-icon">🎺</span>
+                <div class="stage-text">
+                    <span class="stage-title">1. Metales Heroicos & Coro</span>
+                    <span class="stage-sub">Trompas solistas con colchón de coro orquestal (Upper 1 + Upper 2)</span>
+                </div>
+            </button>
+            <button class="btn-stage btn-stage-strings" onclick="cargarCuerdasSolemne()" title="Cuerdas orquestales completas y profundas">
+                <span class="stage-icon">🎻</span>
+                <div class="stage-text">
+                    <span class="stage-title">2. Cuerdas Solemnes (The Strings)</span>
+                    <span class="stage-sub">Conjunto de violines y chelos aterciopelados (Set: The Strings)</span>
+                </div>
+            </button>
+        </div>
+        <div id="log-1" class="live-log">Listo para configurar el sonido en el Korg EK-50.</div>
+    </div>
+
+    <!-- SECCIÓN 2: CÓMO HACER EL TAMBOR MILITAR INICIAL (FIELD SNARE DRUM) -->
+    <div class="section-box" style="border-color: #3b82f6;">
+        <div class="section-title" style="color: #60a5fa;">🥁 Cómo Hacer el Tambor Militar Inicial (Field Snare Drum)</div>
+        
+        <div style="background:#0f172a; border:1px solid #1e3a8a; border-radius:10px; padding:12px 14px; font-size:0.88rem; color:#bfdbfe; line-height:1.5;">
+            <b style="color:#38bdf8; font-size:0.95rem;">🎖️ El Redoble Solemne de John Williams (Compás 1 y 2):</b><br>
+            La obra arranca con un <b>redoble militar continuo</b> en <i>pianissimo</i> (pp) que va creciendo suavemente (crescendo), seguido del característico ritmo marcial a <b>58 BPM</b> con tresillos de semicorcheas y acento.
+        </div>
+
+        <!-- 3 FORMAS DE EJECUTARLO EN EL KORG EK-50 -->
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:12px; margin-top:12px;">
+            <!-- OPCIÓN A: TECLADO DIRECTO (DRUM KIT) -->
+            <div style="background:#131d2e; border:1px solid #1e293b; border-radius:10px; padding:12px 14px;">
+                <div style="font-weight:800; color:#fbbf24; margin-bottom:6px; font-size:0.92rem;">
+                    🎹 Opción A: Manual con Teclas (Orchestra Kit)
+                </div>
+                <div style="font-size:0.83rem; color:#cbd5e1; line-height:1.45;">
+                    Selecciona en el Korg la categoría <b>DRUM/SFX</b> ➔ <b>Orchestra Kit</b>:<br>
+                    • <span style="background:#0f172a; padding:1px 6px; border-radius:4px; font-weight:800; color:#38bdf8;">Re# 1 (D#1)</span>: <b>¡Redoble Continuo (Snare Roll)!</b> Mantén la tecla pulsada y el teclado hace el redoble sostenido automáticamente.<br>
+                    • <span style="background:#0f172a; padding:1px 6px; border-radius:4px; font-weight:800; color:#34d399;">Re 1 (D1) o Mi 1 (E1)</span>: Golpe seco de caja sinfónica (<i>Concert Snare</i>). Toca alternando índice y corazón para los tresillos.<br>
+                    • <span style="background:#0f172a; padding:1px 6px; border-radius:4px; font-weight:800; color:#c084fc;">Do 1 (C1)</span>: Bombo sinfónico (<i>Gran Cassa</i>).
+                </div>
+            </div>
+
+            <!-- OPCIÓN B: SPLIT DEL TECLADO -->
+            <div style="background:#131d2e; border:1px solid #1e293b; border-radius:10px; padding:12px 14px;">
+                <div style="font-weight:800; color:#34d399; margin-bottom:6px; font-size:0.92rem;">
+                    ✂️ Opción B: Modo Split (Tambor + Trompas)
+                </div>
+                <div style="font-size:0.83rem; color:#cbd5e1; line-height:1.45;">
+                    Para tocar el tambor con la mano izquierda y la melodía con la derecha:<br>
+                    1. Pulsa el botón <b>[SPLIT]</b> en el Korg EK-50.<br>
+                    2. Asigna en <b>LOWER</b> el sonido <b>Orchestra Kit</b>.<br>
+                    3. Asigna en <b>UPPER 1</b> el sonido <b>Classical Brass</b>.<br>
+                    4. Tu mano izquierda mantiene el redoble en <b>D#1</b> y marca el compás, y tu mano derecha entra con la trompa en <b>SI (B)</b> en el compás 3.
+                </div>
+            </div>
+
+            <!-- OPCIÓN C: ESTILO DE MARCHA (STYLE AUTOMÁTICO) -->
+            <div style="background:#131d2e; border:1px solid #1e293b; border-radius:10px; padding:12px 14px;">
+                <div style="font-weight:800; color:#38bdf8; margin-bottom:6px; font-size:0.92rem;">
+                    🥁 Opción C: Estilo de Marcha Militar (58 BPM)
+                </div>
+                <div style="font-size:0.83rem; color:#cbd5e1; line-height:1.45;">
+                    Si prefieres que el teclado mantenga la percusión constante:<br>
+                    1. En la categoría <b>TRAD / BALLROOM</b>, elige el estilo <b>Military March</b> o <b>Orchestral March</b>.<br>
+                    2. Ajusta el tempo a <b>58 BPM</b> con el dial.<br>
+                    3. Silencia (Mute) las pistas de bajo y acordes, dejando <b>sólo la pista Drum</b>.<br>
+                    4. Pulsa <b>START</b>: el tambor marchará a compás perfecto y tus dos manos quedan libres para el piano/orquesta.
+                </div>
+            </div>
+        </div>
+
+        <!-- REPRODUCTOR DE AUDIO INTERACTIVO DEL TAMBOR MILITAR -->
+        <div style="background:#090d16; border:1px solid #1e293b; border-radius:10px; padding:12px 16px; margin-top:12px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;">
+            <div>
+                <div style="font-weight:800; color:#fff; font-size:0.92rem; display:flex; align-items:center; gap:8px;">
+                    <span>🔊 Escuchar Patrón y Practicar Encima:</span>
+                    <span style="font-size:0.75rem; background:#1e293b; color:#93c5fd; padding:2px 8px; border-radius:4px;">Web Audio Sintetizado · 58 BPM</span>
+                </div>
+                <div style="font-size:0.8rem; color:#94a3b8; margin-top:2px;">
+                    Redoble continuo con crescendo inicial + marcha solemne con tresillos de caja militar.
+                </div>
+            </div>
+            <div style="display:flex; gap:8px; align-items:center;">
+                <button id="btn-drum-play" class="btn-action" onclick="toggleTamborMilitar()" style="background:linear-gradient(135deg, #1e40af 0%, #3b82f6 100%); color:#fff; min-height:42px; padding:8px 16px;">
+                    ▶️ Iniciar Tambor Militar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECCIÓN 3: REFERENCIA DE PARTITURA Y ACCESO -->
+    <div class="section-box">
+        <div class="section-title">🎼 Acceso a Partituras (MuseScore & PDF Local)</div>
+        <div class="guide-box">
+            <div class="guide-item">
+                <span style="color:#93c5fd; font-weight:700;">Arreglos en MuseScore:</span>
+                <span style="color:#fff;">Partituras interactivas con reproducción de audio y notas en tiempo real.</span>
+            </div>
+            <div class="guide-item">
+                <span style="color:#34d399; font-weight:700;">Tempo y Carácter:</span>
+                <span style="color:#cbd5e1;">Lento, solemne y reverente (~60 BPM). Entradas corales y crescendo orquestal.</span>
+            </div>
+        </div>
+        <div class="card-actions">
+            <a class="btn-action btn-sheet-ms" href="https://musescore.com/official_scores/scores/6971015" target="_blank" style="background: linear-gradient(135deg, #047857 0%, #059669 100%); border-color:#34d399;">
+                🌟 Partitura Oficial (MuseScore)
+            </a>
+            <a class="btn-action btn-sheet-ms" href="https://musescore.com/user/39593079/scores/15740377" target="_blank">
+                🎼 Arreglo MuseScore 1 (15740377)
+            </a>
+            <a class="btn-action btn-sheet-ms" href="https://musescore.com/user/6795656/scores/5641611" target="_blank" style="background:#312e81; border-color:#6366f1;">
+                🎼 Arreglo MuseScore 2 (5641611)
+            </a>
+            <a class="btn-action btn-sheet-pdf" href="CANCIONES%20PDF/Hymn%20to%20the%20Fallen%20-%20John%20Williams.pdf" target="_blank">
+                📄 Ver Partitura PDF Local
+            </a>
+        </div>
+    </div>
+
+    <!-- SECCIÓN 4: ESTRUCTURA ARMÓNICA Y MELODÍA EXACTA (SOL MAYOR · G) -->
+    <div class="section-box">
+        <div class="section-title">📖 Progresión Armónica y Melodía Oficial (Tonalidad: Sol Mayor · G)</div>
+
+        <!-- RECUADRO DE ENTRADA Y NOTACIÓN DE ACORDES -->
+        <div style="background:#064e3b; border:1px solid #10b981; border-radius:10px; padding:12px 14px; font-size:0.86rem; color:#d1fae5; line-height:1.5;">
+            <b style="color:#6ee7b7; font-size:0.95rem;">🎯 ENTRADA DEL TEMA A1 (Compás 5):</b><br>
+            • <b>Acorde de inicio (Mano Izquierda):</b> <span style="background:#022c22; padding:2px 8px; border-radius:4px; font-weight:800; color:#34d399;">G (Sol Mayor)</span> · Notas: <code>Sol – Si – Re</code><br>
+            • <b>Primera nota de la melodía (Mano Derecha):</b> <span style="background:#022c22; padding:2px 8px; border-radius:4px; font-weight:800; color:#38bdf8;">SI4 (B4)</span> <i>(3ª línea del pentagrama)</i><br>
+            • <b>Frase melódica inicial:</b> <span style="font-family:monospace; font-weight:700; color:#fff;">SI4 · · LA4 SI4 · MI4 · | (ligado) | SOL4 · LA4 · SI4 · LA4 · | SOL4</span>
+        </div>
+
+        <!-- GUÍA DIDÁCTICA: ¿QUÉ SIGNIFICA EL PUNTO (·) Y LA BARRA (/)? -->
+        <div style="background:#131d2e; border:1px solid #1e3a8a; border-radius:10px; padding:12px 14px; margin-top:10px; font-size:0.85rem; color:#cbd5e1; line-height:1.5;">
+            <b style="color:#38bdf8; font-size:0.92rem;">💡 GUÍA DE NOTACIÓN (¿Qué significa <code>C · G/B</code> o <code>D · G</code>?):</b><br>
+            • <b>El punto central (<code>·</code>):</b> Significa que <b>dos acordes comparten el mismo compás de 4 tiempos</b> (2 tiempos cada uno). Por ejemplo, en <code>C · G/B</code>: tocas <b>C</b> en los tiempos 1 y 2, y <b>G/B</b> en los tiempos 3 y 4.<br>
+            • <b>La barra inclinada (<code>/</code> o Slash Chord):</b> Significa <b>Acorde / Nota de Bajo</b>. Por ejemplo, en <b><code>G/B</code></b> tocas el acorde de Sol Mayor pero poniendo la nota <b>SI</b> como la más grave en la mano izquierda (<code>Si – Re – Sol</code>). Esto crea una <b>línea de bajo descendente natural</b> (<i>Mi ➔ Do ➔ Si ➔ La</i>) típica de la música de cine de John Williams.
+        </div>
+
+        <!-- SECUENCIA DE TODAS LAS PARTES DE LA OBRA -->
+        <div class="chord-seq-box" style="margin-top:12px;">
+            <!-- PARTE 1: INTRODUCCIÓN -->
+            <div>
+                <b style="color:#93c5fd; font-size:0.88rem;">Parte 1: Introducción (Redoble solemne y toque militar suave):</b>
+                <div class="seq-pill-group" style="margin-top:6px;">
+                    <span class="seq-pill tonic">G (Redoble)</span> <span class="seq-arrow">➔</span>
+                    <span class="seq-pill tonic">G</span> <span class="seq-arrow">➔</span>
+                    <span class="seq-pill" style="background:#065f46; color:#a7f3d0; border-color:#10b981;">C/G</span> <span class="seq-arrow">➔</span>
+                    <span class="seq-pill tonic">G</span>
+                </div>
+                <div style="font-size:0.82rem; color:#94a3b8; margin-top:4px; font-family:monospace;">
+                    🎵 <b>Melodía M.D.:</b> [Redoble tambor] ➔ RE4 . . . ➔ MI4 . . RE4 ➔ SI3 . . . (reposo)
+                </div>
+            </div>
+
+            <!-- PARTE 2: TEMA A1 -->
+            <div style="border-top:1px solid #1e293b; padding-top:12px;">
+                <b style="color:#38bdf8; font-size:0.88rem;">Parte 2: Tema A1 (1ª Exposición · Trompas nobles / Coro):</b>
+                
+                <!-- Frase 1 -->
+                <div style="margin-top:6px;">
+                    <div style="font-size:0.84rem; font-weight:700; color:#e2e8f0;">• Frase 1 (Tema principal himno):</div>
+                    <div class="seq-pill-group" style="margin-top:4px;">
+                        <span class="seq-pill tonic">G</span> <span class="seq-arrow">➔</span>
+                        <span class="seq-pill minor">Em</span> <span class="seq-arrow">➔</span>
+                        <span class="seq-pill">C · G/B</span> <span class="seq-arrow">➔</span>
+                        <span class="seq-pill dom">D · G</span>
+                    </div>
+                    <div style="font-size:0.82rem; color:#6ee7b7; margin-top:3px; font-family:monospace;">
+                        🎵 <b>Melodía M.D.:</b> SI4 · · LA4 SI4 · MI4 | (sostener) | SOL4 · LA4 · SI4 · LA4 · | SOL4 · · ·
+                    </div>
+                </div>
+
+                <!-- Frase 2 -->
+                <div style="margin-top:10px;">
+                    <div style="font-size:0.84rem; font-weight:700; color:#e2e8f0;">• Frase 2 (Respuesta hacia el Re agudo y cierre de estrofa):</div>
+                    <div class="seq-pill-group" style="margin-top:4px;">
+                        <span class="seq-pill tonic">G</span> <span class="seq-arrow">➔</span>
+                        <span class="seq-pill minor">Bm</span> <span class="seq-arrow">➔</span>
+                        <span class="seq-pill">C · D7</span> <span class="seq-arrow">➔</span>
+                        <span class="seq-pill tonic">G</span>
+                    </div>
+                    <div style="font-size:0.82rem; color:#6ee7b7; margin-top:3px; font-family:monospace;">
+                        🎵 <b>Melodía M.D.:</b> SI4 · · LA4 SI4 · RE5 | (sostener) | MI5 · RE5 · SI4 · LA4 · | SOL4 · · · (cierre)
+                    </div>
+                </div>
+            </div>
+
+            <!-- PARTE 3: TEMA A2 -->
+            <div style="border-top:1px solid #1e293b; padding-top:12px;">
+                <b style="color:#34d399; font-size:0.88rem;">Parte 3: Tema A2 (2ª Exposición con Variación Armónica · Cuerdas & Viento):</b>
+                
+                <!-- Frase 3 -->
+                <div style="margin-top:6px;">
+                    <div style="font-size:0.84rem; font-weight:700; color:#e2e8f0;">• Frase 3 (Giro emotivo hacia La menor / Re):</div>
+                    <div class="seq-pill-group" style="margin-top:4px;">
+                        <span class="seq-pill tonic">G</span> <span class="seq-arrow">➔</span>
+                        <span class="seq-pill minor">Em</span> <span class="seq-arrow">➔</span>
+                        <span class="seq-pill">C · G/B</span> <span class="seq-arrow">➔</span>
+                        <span class="seq-pill minor">Am7</span> <span class="seq-arrow">➔</span>
+                        <span class="seq-pill dom">D7</span>
+                    </div>
+                    <div style="font-size:0.82rem; color:#a7f3d0; margin-top:3px; font-family:monospace;">
+                        🎵 <b>Melodía M.D.:</b> SI4 · · LA4 SI4 · MI5 | (sostener) | MI5 · RE5 · SI4 · SOL4 · | LA4 · · · (en suspense)
+                    </div>
+                </div>
+
+                <!-- Frase 4 -->
+                <div style="margin-top:10px;">
+                    <div style="font-size:0.84rem; font-weight:700; color:#e2e8f0;">• Frase 4 (Cadencia cromática majestuosa hacia el Sol agudo):</div>
+                    <div class="seq-pill-group" style="margin-top:4px;">
+                        <span class="seq-pill tonic">G · G7/B</span> <span class="seq-arrow">➔</span>
+                        <span class="seq-pill" style="background:#581c87; color:#f5d0fe; border-color:#a855f7;">C · C#dim</span> <span class="seq-arrow">➔</span>
+                        <span class="seq-pill dom">G/D · D7</span> <span class="seq-arrow">➔</span>
+                        <span class="seq-pill tonic">G</span>
+                    </div>
+                    <div style="font-size:0.82rem; color:#a7f3d0; margin-top:3px; font-family:monospace;">
+                        🎵 <b>Melodía M.D.:</b> SI4 · RE5 · SOL5 · FA#5 | MI5 · · RE5 MI5 · | RE5 · SI4 · LA4 · FA#4 · | SOL4 · · ·
+                    </div>
+                </div>
+            </div>
+
+            <!-- PARTE 4: PARTE B -->
+            <div style="border-top:1px solid #1e293b; padding-top:12px;">
+                <b style="color:#c084fc; font-size:0.88rem;">Parte 4: Parte B (Transición Dramática, Tensión & Crescendo):</b>
+                
+                <!-- Frase 5 -->
+                <div style="margin-top:6px;">
+                    <div style="font-size:0.84rem; font-weight:700; color:#e2e8f0;">• Frase 5 (Arpegio dramático ascendente):</div>
+                    <div class="seq-pill-group" style="margin-top:4px;">
+                        <span class="seq-pill minor">Em</span> <span class="seq-arrow">➔</span>
+                        <span class="seq-pill minor">Bm</span> <span class="seq-arrow">➔</span>
+                        <span class="seq-pill">C · Am</span> <span class="seq-arrow">➔</span>
+                        <span class="seq-pill" style="background:#831843; color:#fbcfe8; border-color:#db2777;">Bsus4 · B</span>
+                    </div>
+                    <div style="font-size:0.82rem; color:#f5d0fe; margin-top:3px; font-family:monospace;">
+                        🎵 <b>Melodía M.D.:</b> MI4 · SOL4 · SI4 · MI5 | FA#5 · · MI5 RE5 | MI5 · DO5 · LA4 · DO5 | SI4 · · SI4 · ·
+                    </div>
+                </div>
+
+                <!-- Frase 6 Crescendo -->
+                <div style="margin-top:10px;">
+                    <div style="font-size:0.84rem; font-weight:700; color:#e2e8f0;">• Frase 6 (Escalada en crescendo hacia el Tutti orquestal):</div>
+                    <div class="seq-pill-group" style="margin-top:4px;">
+                        <span class="seq-pill">C</span> <span class="seq-arrow">➔</span>
+                        <span class="seq-pill tonic">G/B</span> <span class="seq-arrow">➔</span>
+                        <span class="seq-pill minor">Am7</span> <span class="seq-arrow">➔</span>
+                        <span class="seq-pill dom" style="background:#b45309; color:#fef3c7; border-color:#f59e0b;">Dsus4 · D (¡Crescendo!)</span>
+                    </div>
+                    <div style="font-size:0.82rem; color:#f5d0fe; margin-top:3px; font-family:monospace;">
+                        🎵 <b>Melodía M.D.:</b> DO5 · MI5 · SOL5 · MI5 | RE5 · · DO5 SI4 | DO5 · SI4 · LA4 · SOL4 | LA4 · · RE4 · ·
+                    </div>
+                </div>
+            </div>
+
+            <!-- PARTE 5: TEMA A3 CLÍMAX -->
+            <div style="border-top:1px solid #1e293b; padding-top:10px;">
+                <b style="color:#f59e0b; font-size:0.88rem;">Parte 5: Tema A3 (El Gran Clímax · Tutti Orquestal + Coro pleno + Timbales):</b>
+                <div class="seq-pill-group" style="margin-top:6px;">
+                    <span class="seq-pill tonic">G</span> <span class="seq-arrow">➔</span>
+                    <span class="seq-pill minor">Em</span> <span class="seq-arrow">➔</span>
+                    <span class="seq-pill">C · G/B</span> <span class="seq-arrow">➔</span>
+                    <span class="seq-pill dom">D · G</span>
+                </div>
+                <div class="seq-pill-group" style="margin-top:6px;">
+                    <span class="seq-pill tonic">G</span> <span class="seq-arrow">➔</span>
+                    <span class="seq-pill" style="background:#701a75; color:#fdf4ff; border-color:#d946ef;">B7/D# · Em</span> <span class="seq-arrow">➔</span>
+                    <span class="seq-pill">C · G/D</span> <span class="seq-arrow">➔</span>
+                    <span class="seq-pill dom" style="background:#dc2626; color:#fee2e2; border-color:#ef4444;">D7 · G (Apoteosis)</span>
+                </div>
+            </div>
+
+            <!-- PARTE 6: CODA -->
+            <div style="border-top:1px solid #1e293b; padding-top:10px;">
+                <b style="color:#94a3b8; font-size:0.88rem;">Parte 6: Coda (Despedida suave · Trompa lejana y redoble que se apaga):</b>
+                <div class="seq-pill-group" style="margin-top:6px;">
+                    <span class="seq-pill" style="background:#065f46; color:#a7f3d0; border-color:#10b981;">C/G</span> <span class="seq-arrow">➔</span>
+                    <span class="seq-pill tonic">G</span> <span class="seq-arrow">➔</span>
+                    <span class="seq-pill">Am7/G · D7/G</span> <span class="seq-arrow">➔</span>
+                    <span class="seq-pill tonic" style="background:#064e3b; color:#6ee7b7; border-color:#10b981;">G (Calderón Final)</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- DICCIONARIO DE NOTAS EXACTAS DE CADA ACORDE -->
+        <div style="color:#38bdf8; font-weight:700; font-size:0.88rem; margin-top:14px; margin-bottom:8px;">
+            🎹 Glosario de Acordes e Inversiones para la Mano Izquierda (Korg EK-50):
+        </div>
+        <div class="chord-grid">
+            <div class="chord-row">
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <span class="chord-badge">G</span>
+                    <span style="font-weight:700; color:#fff; font-size:0.88rem;">Sol Mayor</span>
+                </div>
+                <div class="chord-notes"><b>Notas:</b> <span style="color:#34d399; font-family:monospace;">Sol – Si – Re</span> (G – B – D)</div>
+            </div>
+            <div class="chord-row">
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <span class="chord-badge" style="background:#065f46; color:#a7f3d0; border-color:#10b981;">C/G</span>
+                    <span style="font-weight:700; color:#fff; font-size:0.88rem;">Do Mayor (bajo Sol)</span>
+                </div>
+                <div class="chord-notes"><b>Notas:</b> <span style="color:#34d399; font-family:monospace;">Sol – Do – Mi</span> (G – C – E)</div>
+            </div>
+            <div class="chord-row">
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <span class="chord-badge" style="background:#064e3b; color:#6ee7b7; border-color:#059669;">G/B</span>
+                    <span style="font-weight:700; color:#fff; font-size:0.88rem;">Sol Mayor (bajo Si · 1ª inversión)</span>
+                </div>
+                <div class="chord-notes"><b>Notas:</b> <span style="color:#34d399; font-family:monospace;">Si – Re – Sol</span> (B – D – G)</div>
+            </div>
+            <div class="chord-row">
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <span class="chord-badge minor">Em</span>
+                    <span style="font-weight:700; color:#fff; font-size:0.88rem;">Mi menor</span>
+                </div>
+                <div class="chord-notes"><b>Notas:</b> <span style="color:#34d399; font-family:monospace;">Mi – Sol – Si</span> (E – G – B)</div>
+            </div>
+            <div class="chord-row">
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <span class="chord-badge">C</span>
+                    <span style="font-weight:700; color:#fff; font-size:0.88rem;">Do Mayor</span>
+                </div>
+                <div class="chord-notes"><b>Notas:</b> <span style="color:#34d399; font-family:monospace;">Do – Mi – Sol</span> (C – E – G)</div>
+            </div>
+            <div class="chord-row">
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <span class="chord-badge dom">D</span>
+                    <span style="font-weight:700; color:#fff; font-size:0.88rem;">Re Mayor</span>
+                </div>
+                <div class="chord-notes"><b>Notas:</b> <span style="color:#34d399; font-family:monospace;">Re – Fa♯ – La</span> (D – F♯ – A)</div>
+            </div>
+            <div class="chord-row">
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <span class="chord-badge dom">D7</span>
+                    <span style="font-weight:700; color:#fff; font-size:0.88rem;">Re 7 Dominante</span>
+                </div>
+                <div class="chord-notes"><b>Notas:</b> <span style="color:#34d399; font-family:monospace;">Re – Fa♯ – La – Do</span> (D – F♯ – A – C)</div>
+            </div>
+            <div class="chord-row">
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <span class="chord-badge minor">Bm</span>
+                    <span style="font-weight:700; color:#fff; font-size:0.88rem;">Si menor</span>
+                </div>
+                <div class="chord-notes"><b>Notas:</b> <span style="color:#34d399; font-family:monospace;">Si – Re – Fa♯</span> (B – D – F♯)</div>
+            </div>
+            <div class="chord-row">
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <span class="chord-badge minor">Am / Am7</span>
+                    <span style="font-weight:700; color:#fff; font-size:0.88rem;">La menor (7ª)</span>
+                </div>
+                <div class="chord-notes"><b>Notas:</b> <span style="color:#34d399; font-family:monospace;">La – Do – Mi (– Sol)</span> (A – C – E – G)</div>
+            </div>
+            <div class="chord-row">
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <span class="chord-badge" style="background:#581c87; color:#f5d0fe; border-color:#a855f7;">C#dim</span>
+                    <span style="font-weight:700; color:#fff; font-size:0.88rem;">Do sostenido disminuido</span>
+                </div>
+                <div class="chord-notes"><b>Notas:</b> <span style="color:#34d399; font-family:monospace;">Do♯ – Mi – Sol</span> (C♯ – E – G)</div>
+            </div>
+            <div class="chord-row">
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <span class="chord-badge" style="background:#831843; color:#fbcfe8; border-color:#db2777;">Bsus4 ➔ B</span>
+                    <span style="font-weight:700; color:#fff; font-size:0.88rem;">Si sus4 a Si Mayor</span>
+                </div>
+                <div class="chord-notes"><b>Notas:</b> <span style="color:#34d399; font-family:monospace;">Si – Mi – Fa♯</span> ➔ <span style="color:#34d399; font-family:monospace;">Si – Re♯ – Fa♯</span></div>
+            </div>
+            <div class="chord-row">
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <span class="chord-badge" style="background:#701a75; color:#fdf4ff; border-color:#d946ef;">B7/D#</span>
+                    <span style="font-weight:700; color:#fff; font-size:0.88rem;">Si 7 (bajo Re♯)</span>
+                </div>
+                <div class="chord-notes"><b>Notas:</b> <span style="color:#34d399; font-family:monospace;">Re♯ – Fa♯ – La – Si</span> (D♯ – F♯ – A – B)</div>
+            </div>
+            <div class="chord-row">
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <span class="chord-badge dom">Dsus4</span>
+                    <span style="font-weight:700; color:#fff; font-size:0.88rem;">Re sus4</span>
+                </div>
+                <div class="chord-notes"><b>Notas:</b> <span style="color:#34d399; font-family:monospace;">Re – Sol – La</span> (D – G – A)</div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    let midiOutput = null;
+    let midiAccessInstance = null;
+    let midiClockTimer = null;
+
+    function fijarTempoMIDI(bpm) {
+        if (midiClockTimer) clearInterval(midiClockTimer);
+        if (!midiOutput) return;
+
+        // 24 ticks por negra. Para 60 BPM = 41.66 ms por pulso 0xF8
+        const msPerTick = Math.round(60000 / (bpm * 24));
+        midiClockTimer = setInterval(() => {
+            if (midiOutput) {
+                try {
+                    midiOutput.send([0xF8]); // MIDI Timing Clock
+                } catch(e) {}
+            }
+        }, msPerTick);
+    }
+
+    async function conectarMIDI() {
+        const dot = document.getElementById("midi-dot");
+        const text = document.getElementById("midi-label");
+        if (!dot || !text) return null;
+
+        if (midiAccessInstance) {
+            const outputs = Array.from(midiAccessInstance.outputs.values());
+            if (outputs.length > 0) {
+                const korg = outputs.find(o => o.name && (o.name.toLowerCase().includes('ek-50') || o.name.toLowerCase().includes('korg') || o.name.toLowerCase().includes('keyboard')));
+                midiOutput = korg || outputs[0];
+                dot.style.background = "#10b981";
+                dot.classList.add("connected");
+                text.innerHTML = `🟢 Conectado: <b>${midiOutput.name}</b>`;
+                return midiOutput;
+            }
+        }
+
+        if (!navigator.requestMIDIAccess) {
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+            dot.style.background = "#38bdf8";
+            dot.classList.remove("connected");
+            if (isIOS) {
+                text.innerHTML = '📱 <b>iPad (Modo Atril):</b> Para control MIDI por cable en iPad usa la app gratuita <i>Web MIDI Browser</i>. En Mac usa Chrome.';
+            } else {
+                text.innerHTML = '💻 <b>Modo Consulta:</b> Para enviar MIDI por cable USB abre esta web en <b>Google Chrome</b>.';
+            }
+            return null;
+        }
+
+    function extraerPuertos(coleccion) {
+        const res = [];
+        if (!coleccion) return res;
+        try {
+            if (typeof coleccion.forEach === 'function') {
+                coleccion.forEach(p => { if (p) res.push(p); });
+            }
+        } catch(e) {}
+        if (res.length === 0) {
+            try {
+                if (coleccion.values) {
+                    for (let p of coleccion.values()) {
+                        if (p) res.push(p);
+                    }
+                }
+            } catch(e) {}
+        }
+        if (res.length === 0) {
+            try {
+                for (let k in coleccion) {
+                    if (coleccion[k] && typeof coleccion[k].send === 'function') {
+                        res.push(coleccion[k]);
+                    }
+                }
+            } catch(e) {}
+        }
+        return res;
+    }
+
+    async function conectarMIDI() {
+        const dot = document.getElementById("midi-dot");
+        const text = document.getElementById("midi-label");
+        const log = document.getElementById("log-1");
+        if (!dot || !text) return null;
+
+        if (midiAccessInstance) {
+            const outputs = extraerPuertos(midiAccessInstance.outputs);
+            if (outputs.length > 0) {
+                const korg = outputs.find(o => o.name && (o.name.toLowerCase().includes('ek-50') || o.name.toLowerCase().includes('korg') || o.name.toLowerCase().includes('keyboard')));
+                midiOutput = korg || outputs[0];
+                dot.style.background = "#10b981";
+                dot.classList.add("connected");
+                text.innerHTML = `🟢 Conectado: <b>${midiOutput.name}</b>`;
+                return midiOutput;
+            }
+        }
+
+        if (!navigator.requestMIDIAccess) {
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+            dot.style.background = "#38bdf8";
+            dot.classList.remove("connected");
+            if (isIOS) {
+                text.innerHTML = '📱 <b>iPad (Modo Atril):</b> Para control MIDI por cable en iPad usa la app gratuita <i>Web MIDI Browser</i>. En Mac usa Chrome.';
+            } else {
+                text.innerHTML = '💻 <b>Modo Consulta:</b> Para enviar MIDI por cable USB abre esta web en <b>Google Chrome</b>.';
+            }
+            return null;
+        }
+
+        try {
+            dot.style.background = "#e3b341";
+            const midiAccess = await navigator.requestMIDIAccess();
+            midiAccessInstance = midiAccess;
+
+            function bindPorts() {
+                if (!midiAccessInstance) return null;
+                const outputs = extraerPuertos(midiAccessInstance.outputs);
+                const inputs = extraerPuertos(midiAccessInstance.inputs);
+
+                if (outputs.length > 0) {
+                    const korg = outputs.find(o => o.name && (o.name.toLowerCase().includes('ek-50') || o.name.toLowerCase().includes('korg') || o.name.toLowerCase().includes('keyboard')));
+                    midiOutput = korg || outputs[0];
+                    dot.style.background = "#10b981";
+                    dot.classList.add("connected");
+                    text.innerHTML = `🟢 Conectado: <b>${midiOutput.name}</b>`;
+                    if (log && log.innerHTML.includes('Listo para')) {
+                        log.innerHTML = `✅ Korg EK-50 detectado: <b>${midiOutput.name}</b> listo.`;
+                    }
+                    return midiOutput;
+                } else if (inputs.length > 0) {
+                    dot.style.background = "#10b981";
+                    dot.classList.add("connected");
+                    text.innerHTML = `🟢 Conectado: <b>${inputs[0].name}</b>`;
+                    return null;
+                } else {
+                    midiOutput = null;
+                    dot.style.background = "#d29922";
+                    dot.classList.remove("connected");
+                    text.innerHTML = '🟡 Conecta el Korg por USB <span style="font-size:0.75rem; text-decoration:underline; cursor:pointer;" onclick="conectarMIDI()">🔄 Re-escanear</span>';
+                    return null;
+                }
+            }
+
+            midiAccessInstance.onstatechange = (e) => {
+                if (e && e.port) {
+                    if (e.port.type === 'output' && (e.port.state === 'connected' || e.port.connection === 'open')) {
+                        midiOutput = e.port;
+                        dot.style.background = "#10b981";
+                        dot.classList.add("connected");
+                        text.innerHTML = `🟢 Conectado: <b>${midiOutput.name}</b>`;
+                        if (log) log.innerHTML = `✅ Korg detectado: <b>${midiOutput.name}</b> listo.`;
+                        return;
+                    }
+                }
+                bindPorts();
+            };
+
+            const res = bindPorts();
+            if (!res) {
+                setTimeout(bindPorts, 600);
+                setTimeout(bindPorts, 1500);
+            }
+            return res;
+        } catch(err) {
+            dot.style.background = "#d29922";
+            dot.classList.remove("connected");
+            text.innerHTML = '🟡 Korg listo <span style="font-size:0.75rem; text-decoration:underline; cursor:pointer;" onclick="conectarMIDI()">🔌 Conectar</span>';
+            return null;
+        }
+    }
+
+    function probarNotaKorg() {
+        const log = document.getElementById('log-1');
+        if (!midiOutput && midiAccessInstance) {
+            const outputs = extraerPuertos(midiAccessInstance.outputs);
+            if (outputs.length > 0) midiOutput = outputs[0];
+        }
+        if (!midiOutput) {
+            alert('⚠️ No se detecta el Korg EK-50 por USB.\n\nComprueba:\n1. Que el Korg EK-50 esté encendido.\n2. Que el cable USB esté conectado al iPad.\n3. Pulsa "Detectar" arriba.');
+            return;
+        }
+        try {
+            midiOutput.send([0x90, 60, 100]);
+            setTimeout(() => {
+                try { midiOutput.send([0x80, 60, 0]); } catch(e){}
+            }, 500);
+            if (log) log.innerHTML = `🔊 <b>Nota de prueba Do3 enviada</b> a <b>${midiOutput.name}</b>.`;
+        } catch(e) {
+            if (log) log.innerHTML = `⚠️ Error enviando nota: ${e.message}`;
+        }
+    }
+
+    async function cargarMetalesCoro() {
+        const log = document.getElementById('log-1');
+        if (!midiOutput) {
+            await conectarMIDI();
+        }
+        if (!midiOutput && midiAccessInstance) {
+            const outputs = extraerPuertos(midiAccessInstance.outputs);
+            if (outputs.length > 0) midiOutput = outputs[0];
+        }
+        if (!midiOutput) {
+            if (log) log.innerHTML = '⚠️ No se detecta el Korg EK-50. Comprueba el cable USB y pulsa "Detectar" arriba.';
+            alert('⚠️ No se detecta el Korg EK-50 por USB.\n\nComprueba:\n1. Que el Korg EK-50 esté encendido.\n2. Que el cable USB esté conectado al iPad.');
+            return;
+        }
+
+        try {
+            // 1. Cargar en pantalla del Korg el Keyboard Set de Metales: "Classical Brass" (Banco 33, LSB 7, PC 0)
+            midiOutput.send([0xB0 | 0, 0x00, 33]);
+            midiOutput.send([0xB0 | 0, 0x20, 7]);
+            midiOutput.send([0xC0 | 0, 0]);
+
+            midiOutput.send([0xB0 | 15, 0x00, 33]);
+            midiOutput.send([0xB0 | 15, 0x20, 7]);
+            midiOutput.send([0xC0 | 15, 0]);
+
+            // 2. Upper 1 = French Horn / Trompas solemnes
+            midiOutput.send([0xB0 | 0, 0x00, 121]);
+            midiOutput.send([0xB0 | 0, 0x20, 0]);
+            midiOutput.send([0xC0 | 0, 60]); // French Horn
+            midiOutput.send([0xB0 | 0, 0x07, 125]);
+
+            // 3. Upper 2 = Choir Aahs / Colchón coral
+            midiOutput.send([0xB0 | 1, 0x00, 121]);
+            midiOutput.send([0xB0 | 1, 0x20, 0]);
+            midiOutput.send([0xC0 | 1, 52]); // Choir Aahs
+            midiOutput.send([0xB0 | 1, 0x07, 80]);
+
+            // Upper 3 apagado
+            midiOutput.send([0xB0 | 2, 0x07, 0]);
+
+            // 4. Fijar reloj MIDI a 60 BPM
+            fijarTempoMIDI(60);
+
+            if (log) log.innerHTML = `🎺 <b>1. Metales Heroicos & Coro</b> activado en ${midiOutput.name} (Línea 2: <b>Classical Brass</b> · <b>⏱️ 60 BPM</b> · Trompa Upper 1 + Coro Upper 2).`;
+        } catch(e) {
+            if (log) log.innerHTML = `⚠️ Error enviando al Korg: ${e.message}`;
+        }
+    }
+
+    async function cargarCuerdasSolemne() {
+        const log = document.getElementById('log-1');
+        if (!midiOutput) {
+            await conectarMIDI();
+        }
+        if (!midiOutput && midiAccessInstance) {
+            const outputs = Array.from(midiAccessInstance.outputs.values());
+            if (outputs.length > 0) midiOutput = outputs[0];
+        }
+        if (!midiOutput) {
+            if (log) log.innerHTML = '⚠️ No se detecta el Korg EK-50. Comprueba el cable USB y pulsa "Detectar" arriba.';
+            return;
+        }
+
+        try {
+            // 1. Cargar en pantalla del Korg el Keyboard Set No. 61: "The Strings" (Banco 33, LSB 6, PC 0)
+            midiOutput.send([0xB0 | 0, 0x00, 33]);
+            midiOutput.send([0xB0 | 0, 0x20, 6]);
+            midiOutput.send([0xC0 | 0, 0]);
+
+            midiOutput.send([0xB0 | 15, 0x00, 33]);
+            midiOutput.send([0xB0 | 15, 0x20, 6]);
+            midiOutput.send([0xC0 | 15, 0]);
+
+            // 2. Upper 1 = St. Strings
+            midiOutput.send([0xB0 | 0, 0x00, 121]);
+            midiOutput.send([0xB0 | 0, 0x20, 3]);
+            midiOutput.send([0xC0 | 0, 48]);
+            midiOutput.send([0xB0 | 0, 0x07, 120]);
+
+            // 3. Upper 2 = Cuarteto de cuerdas de fondo
+            midiOutput.send([0xB0 | 1, 0x00, 121]);
+            midiOutput.send([0xB0 | 1, 0x20, 9]);
+            midiOutput.send([0xC0 | 1, 48]);
+            midiOutput.send([0xB0 | 1, 0x07, 70]);
+
+            // Upper 3 apagado
+            midiOutput.send([0xB0 | 2, 0x07, 0]);
+
+            // 4. Fijar reloj MIDI a 60 BPM
+            fijarTempoMIDI(60);
+
+            if (log) log.innerHTML = `🎻 <b>2. Cuerdas Solemnes (The Strings)</b> activado en ${midiOutput.name} (Línea 2: <b>The Strings</b> · <b>⏱️ 60 BPM</b>).`;
+        } catch(e) {
+            if (log) log.innerHTML = `⚠️ Error enviando al Korg: ${e.message}`;
+        }
+    }
+
+    // ==============================================================================
+    // SÍNTESIS WEB AUDIO: TAMBOR MILITAR INICIAL (FIELD SNARE DRUM · 58 BPM)
+    // ==============================================================================
+    let drumAudioCtx = null;
+    let drumTimer = null;
+    let drumIsPlaying = false;
+
+    function createSnareHit(ctx, time, isRoll = false, volume = 0.5) {
+        // 1. Ruido blanco filtrado para el bordón y parche
+        const bufferSize = Math.floor(ctx.sampleRate * 0.15);
+        const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) {
+            data[i] = Math.random() * 2 - 1;
+        }
+
+        const noise = ctx.createBufferSource();
+        noise.buffer = buffer;
+
+        const filter = ctx.createBiquadFilter();
+        filter.type = 'bandpass';
+        filter.frequency.value = isRoll ? 1450 : 1150;
+        filter.Q.value = 1.3;
+
+        const gain = ctx.createGain();
+        const duration = isRoll ? 0.075 : 0.14;
+        gain.gain.setValueAtTime(volume, time);
+        gain.gain.exponentialRampToValueAtTime(0.001, time + duration);
+
+        noise.connect(filter);
+        filter.connect(gain);
+        gain.connect(ctx.destination);
+
+        noise.start(time);
+        noise.stop(time + duration);
+
+        // 2. Tono fundamental del casco/cuerpo del tambor (para golpes secos)
+        if (!isRoll) {
+            const osc = ctx.createOscillator();
+            const oscGain = ctx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(175, time);
+            osc.frequency.exponentialRampToValueAtTime(105, time + 0.05);
+
+            oscGain.gain.setValueAtTime(volume * 0.65, time);
+            oscGain.gain.exponentialRampToValueAtTime(0.001, time + 0.06);
+
+            osc.connect(oscGain);
+            oscGain.connect(ctx.destination);
+
+            osc.start(time);
+            osc.stop(time + 0.06);
+        }
+    }
+
+    function toggleTamborMilitar() {
+        const btn = document.getElementById('btn-drum-play');
+        if (drumIsPlaying) {
+            detenerTamborMilitar();
+            return;
+        }
+
+        drumIsPlaying = true;
+        if (btn) {
+            btn.innerHTML = '⏹️ Detener Tambor';
+            btn.style.background = '#dc2626';
+        }
+
+        if (!drumAudioCtx) {
+            drumAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (drumAudioCtx.state === 'suspended') {
+            drumAudioCtx.resume();
+        }
+
+        const bpm = 58;
+        const beatSec = 60 / bpm; // ~1.034s por tiempo de negra
+        const sub32 = beatSec / 8; // para el redoble continuo en fusa
+
+        let startTime = drumAudioCtx.currentTime + 0.05;
+
+        function scheduleLoop() {
+            if (!drumIsPlaying) return;
+
+            // Compás 1: Redoble continuo en crescendo (Snare Roll pp -> p)
+            for (let i = 0; i < 32; i++) {
+                const t = startTime + (i * sub32);
+                const vol = 0.08 + (0.48 * (i / 31));
+                createSnareHit(drumAudioCtx, t, true, vol);
+            }
+
+            // Compás 2: Marcha marcial característica de John Williams
+            const tBar2 = startTime + (4 * beatSec);
+            // Pulso 1: Golpe acentuado de entrada
+            createSnareHit(drumAudioCtx, tBar2, false, 0.7);
+
+            // Pulso 2: Tresillo militar (ta-ra-ta)
+            const tripletStep = beatSec / 6;
+            createSnareHit(drumAudioCtx, tBar2 + beatSec, false, 0.45);
+            createSnareHit(drumAudioCtx, tBar2 + beatSec + tripletStep, true, 0.4);
+            createSnareHit(drumAudioCtx, tBar2 + beatSec + (2 * tripletStep), true, 0.42);
+
+            // Pulso 3: Golpe con puntillo
+            createSnareHit(drumAudioCtx, tBar2 + (2 * beatSec), false, 0.6);
+            createSnareHit(drumAudioCtx, tBar2 + (2 * beatSec) + (beatSec * 0.75), false, 0.45);
+
+            // Pulso 4: Remate de compás hacia el siguiente ciclo
+            createSnareHit(drumAudioCtx, tBar2 + (3 * beatSec), false, 0.55);
+            createSnareHit(drumAudioCtx, tBar2 + (3 * beatSec) + (beatSec * 0.5), false, 0.48);
+
+            // Siguiente ciclo cada 8 tiempos (2 compases a 58 BPM)
+            const cycleDuration = 8 * beatSec;
+            startTime += cycleDuration;
+
+            drumTimer = setTimeout(scheduleLoop, (cycleDuration - 0.5) * 1000);
+        }
+
+        scheduleLoop();
+    }
+
+    function detenerTamborMilitar() {
+        drumIsPlaying = false;
+        if (drumTimer) {
+            clearTimeout(drumTimer);
+            drumTimer = null;
+        }
+        const btn = document.getElementById('btn-drum-play');
+        if (btn) {
+            btn.innerHTML = '▶️ Iniciar Tambor Militar';
+            btn.style.background = 'linear-gradient(135deg, #1e40af 0%, #3b82f6 100%)';
+        }
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+        conectarMIDI();
+    });
+</script>
+</body>
+</html>

@@ -69,7 +69,7 @@ cp -r "SIMULADORES_INTERACTIVOS/01_SIMULADORES/cards_11d" "CLASES/EXPORTACION_FI
 
 echo "=== 3. Guardando cambios y sincronizando con GitHub... ==="
 git add -A
-git commit -m "feat(sim): actualizar simuladores dinamicos S08 (Motor 4 Tiempos) y S09 (Craneo T-Rex 3D) con movimiento real y catalogos" || true
+git commit -m "feat(sim): laboratorios fotograficos reales Via A para S08 (Motor Termico) y S09 (Celula TEM) sin primitivas vectoriales" || true
 git push origin main
 
 echo "=== 4. Abriendo simuladores oficiales en Google Chrome... ==="

@@ -331,15 +331,16 @@
     
     <!-- BARRA DE NAVEGACIÓN -->
     <div class="nav-bar">
-        <a class="btn-back" href="REPERTORIO_KORG_EK50.html?v=79">
+        <a class="btn-back" href="REPERTORIO_KORG_EK50.html?v=80">
             ⬅ Volver a la Lista de Canciones
         </a>
         <div style="display:flex; align-items:center; gap:8px;">
-            <button onclick="window.location.href='CANCION_01_TO_ALL_THE_GIRLS.html?t='+Date.now()" style="background:#0284c7; color:#fff; border:none; padding:6px 12px; border-radius:8px; font-size:0.8rem; font-weight:800; cursor:pointer;" title="Pulsa aquí en el iPad para limpiar la caché y ver la última versión">🔄 Recargar v79</button>
+            <button onclick="window.location.href='CANCION_01_TO_ALL_THE_GIRLS.html?t='+Date.now()" style="background:#0284c7; color:#fff; border:none; padding:6px 12px; border-radius:8px; font-size:0.8rem; font-weight:800; cursor:pointer;" title="Pulsa aquí en el iPad para limpiar la caché y ver la última versión">🔄 Recargar v80</button>
             <div class="midi-bar">
                 <span id="midi-dot" class="status-dot"></span>
                 <span id="midi-label">Iniciando MIDI...</span>
                 <button style="background:#2563eb; color:white; border:none; padding:5px 10px; border-radius:6px; font-size:0.8rem; font-weight:700; cursor:pointer; touch-action:manipulation;" onclick="conectarMIDI()">Detectar</button>
+                <button style="background:#059669; color:white; border:none; padding:5px 10px; border-radius:6px; font-size:0.8rem; font-weight:700; cursor:pointer; touch-action:manipulation;" onclick="probarNotaKorg()" title="Toca una nota de prueba Do3 en el Korg">🔊 Probar Sonido</button>
             </div>
         </div>
     </div>
@@ -687,9 +688,53 @@
     let midiOutput = null;
     let midiAccessInstance = null;
 
+    function extraerPuertos(coleccion) {
+        const res = [];
+        if (!coleccion) return res;
+        try {
+            if (typeof coleccion.forEach === 'function') {
+                coleccion.forEach(p => { if (p) res.push(p); });
+            }
+        } catch(e) {}
+        if (res.length === 0) {
+            try {
+                if (coleccion.values) {
+                    for (let p of coleccion.values()) {
+                        if (p) res.push(p);
+                    }
+                }
+            } catch(e) {}
+        }
+        if (res.length === 0) {
+            try {
+                for (let k in coleccion) {
+                    if (coleccion[k] && typeof coleccion[k].send === 'function') {
+                        res.push(coleccion[k]);
+                    }
+                }
+            } catch(e) {}
+        }
+        return res;
+    }
+
     async function conectarMIDI() {
         const dot = document.getElementById("midi-dot");
         const text = document.getElementById("midi-label");
+        const log = document.getElementById("log-1");
+        if (!dot || !text) return null;
+
+        if (midiAccessInstance) {
+            const outputs = extraerPuertos(midiAccessInstance.outputs);
+            if (outputs.length > 0) {
+                const korg = outputs.find(o => o.name && (o.name.toLowerCase().includes('ek-50') || o.name.toLowerCase().includes('korg') || o.name.toLowerCase().includes('keyboard')));
+                midiOutput = korg || outputs[0];
+                dot.style.background = "#10b981";
+                dot.classList.add("connected");
+                text.innerHTML = `🟢 Conectado: <b>${midiOutput.name}</b>`;
+                return midiOutput;
+            }
+        }
+
         if (!navigator.requestMIDIAccess) {
             const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
             dot.style.background = "#38bdf8";
@@ -704,15 +749,13 @@
 
         try {
             dot.style.background = "#e3b341";
-            // Korg EK-50 usa comandos MIDI estándar (Program Change, CC y Realtime).
-            // NO se necesita SysEx, evitando la molesta ventana de alerta de seguridad en Web MIDI Browser.
             const midiAccess = await navigator.requestMIDIAccess();
             midiAccessInstance = midiAccess;
 
             function bindPorts() {
                 if (!midiAccessInstance) return null;
-                const outputs = Array.from(midiAccessInstance.outputs.values());
-                const inputs = Array.from(midiAccessInstance.inputs.values());
+                const outputs = extraerPuertos(midiAccessInstance.outputs);
+                const inputs = extraerPuertos(midiAccessInstance.inputs);
 
                 if (outputs.length > 0) {
                     const korg = outputs.find(o => o.name && (o.name.toLowerCase().includes('ek-50') || o.name.toLowerCase().includes('korg') || o.name.toLowerCase().includes('keyboard')));
@@ -720,11 +763,14 @@
                     dot.style.background = "#10b981";
                     dot.classList.add("connected");
                     text.innerHTML = `🟢 Conectado: <b>${midiOutput.name}</b>`;
+                    if (log && log.innerHTML.includes('Listo para')) {
+                        log.innerHTML = `✅ Korg EK-50 detectado: <b>${midiOutput.name}</b> listo.`;
+                    }
                     return midiOutput;
                 } else if (inputs.length > 0) {
                     dot.style.background = "#10b981";
                     dot.classList.add("connected");
-                    text.innerHTML = `🟢 Conectado (Entrada): <b>${inputs[0].name}</b>`;
+                    text.innerHTML = `🟢 Conectado: <b>${inputs[0].name}</b>`;
                     return null;
                 } else {
                     midiOutput = null;
@@ -735,13 +781,24 @@
                 }
             }
 
-            midiAccessInstance.onstatechange = () => {
+            midiAccessInstance.onstatechange = (e) => {
+                if (e && e.port) {
+                    if (e.port.type === 'output' && (e.port.state === 'connected' || e.port.connection === 'open')) {
+                        midiOutput = e.port;
+                        dot.style.background = "#10b981";
+                        dot.classList.add("connected");
+                        text.innerHTML = `🟢 Conectado: <b>${midiOutput.name}</b>`;
+                        if (log) log.innerHTML = `✅ Korg detectado: <b>${midiOutput.name}</b> listo.`;
+                        return;
+                    }
+                }
                 bindPorts();
             };
+
             const res = bindPorts();
             if (!res) {
-                setTimeout(bindPorts, 500);
-                setTimeout(bindPorts, 1200);
+                setTimeout(bindPorts, 600);
+                setTimeout(bindPorts, 1500);
             }
             return res;
         } catch (err) {
@@ -749,6 +806,27 @@
             dot.classList.remove("connected");
             text.innerHTML = '🟡 Korg listo <span style="font-size:0.75rem; text-decoration:underline; cursor:pointer;" onclick="conectarMIDI()">🔌 Conectar</span>';
             return null;
+        }
+    }
+
+    function probarNotaKorg() {
+        const log = document.getElementById('log-1');
+        if (!midiOutput && midiAccessInstance) {
+            const outputs = extraerPuertos(midiAccessInstance.outputs);
+            if (outputs.length > 0) midiOutput = outputs[0];
+        }
+        if (!midiOutput) {
+            alert('⚠️ No se detecta el Korg EK-50 por USB.\n\nComprueba:\n1. Que el Korg EK-50 esté encendido.\n2. Que el cable USB esté conectado al iPad.\n3. Pulsa "Detectar" arriba.');
+            return;
+        }
+        try {
+            midiOutput.send([0x90, 60, 100]);
+            setTimeout(() => {
+                try { midiOutput.send([0x80, 60, 0]); } catch(e){}
+            }, 500);
+            if (log) log.innerHTML = `🔊 <b>Nota de prueba Do3 enviada</b> a <b>${midiOutput.name}</b>.`;
+        } catch(e) {
+            if (log) log.innerHTML = `⚠️ Error enviando nota: ${e.message}`;
         }
     }
 
