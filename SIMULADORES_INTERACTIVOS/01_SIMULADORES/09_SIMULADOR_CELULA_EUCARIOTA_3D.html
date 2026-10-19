@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sesión 09 • Simulador 3D: La Célula Viva Eucariota & Tráfico Molecular (NIH / Cryo-EM) [COD-009]</title>
+    <!-- Babylon.js CDN Oficial -->
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-base: #03080c;
+            --bg-panel: rgba(8, 20, 26, 0.94);
+            --border-glow: rgba(52, 211, 153, 0.35);
+            --primary: #34d399;
+            --primary-glow: rgba(52, 211, 153, 0.25);
+            --cyan: #38bdf8;
+            --purple: #c084fc;
+            --gold: #fbbf24;
+            --rose: #fb7185;
+            --text-main: #f8fafc;
+            --text-sub: #cbd5e1;
+            --font-sans: 'Inter', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+        html, body {
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            font-family: var(--font-sans);
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            font-size: 16px;
+        }
+
+        /* HEADER */
+        header {
+            background: linear-gradient(180deg, rgba(10, 26, 32, 0.98) 0%, rgba(8, 20, 26, 0.88) 100%);
+            backdrop-filter: blur(14px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+            padding: 10px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+            z-index: 50;
+        }
+        .header-title-box {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+        .badge-code {
+            background: rgba(52, 211, 153, 0.15);
+            color: var(--primary);
+            border: 1px solid rgba(52, 211, 153, 0.45);
+            font-family: var(--font-mono);
+            font-size: 0.88rem;
+            font-weight: 800;
+            padding: 4px 10px;
+            border-radius: 8px;
+            letter-spacing: 0.05em;
+        }
+        h1 {
+            font-size: 1.22rem;
+            font-weight: 800;
+            letter-spacing: -0.01em;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .pill-status {
+            background: rgba(52, 211, 153, 0.15);
+            color: #34d399;
+            border: 1px solid rgba(52, 211, 153, 0.4);
+            font-size: 0.85rem;
+            font-weight: 700;
+            padding: 5px 13px;
+            border-radius: 9999px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* GRID PRINCIPAL */
+        .workspace-grid {
+            flex: 1;
+            min-height: 0;
+            display: grid;
+            grid-template-columns: 420px 1fr;
+            gap: 14px;
+            padding: 14px 20px;
+            background: radial-gradient(circle at 75% 45%, #081d24 0%, #03080c 100%);
+        }
+
+        /* PANEL IZQUIERDO */
+        .sidebar-panel {
+            background: var(--bg-panel);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 16px;
+            padding: 18px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            overflow-y: auto;
+            box-shadow: 0 16px 36px rgba(0, 0, 0, 0.55);
+        }
+
+        .sidebar-panel::-webkit-scrollbar { width: 6px; }
+        .sidebar-panel::-webkit-scrollbar-thumb {
+            background: rgba(52, 211, 153, 0.35);
+            border-radius: 3px;
+        }
+
+        .section-title {
+            font-size: 0.82rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 6px;
+        }
+
+        /* TARJETA LA IDEA FÁCIL */
+        .card-easy-idea {
+            background: linear-gradient(135deg, rgba(52, 211, 153, 0.14), rgba(8, 20, 26, 0.65));
+            border: 1.5px solid rgba(52, 211, 153, 0.4);
+            border-radius: 14px;
+            padding: 14px;
+            box-shadow: 0 4px 18px rgba(52, 211, 153, 0.1);
+        }
+        .easy-idea-title {
+            font-size: 0.95rem;
+            font-weight: 900;
+            color: #a7f3d0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 6px;
+        }
+        .easy-idea-text {
+            font-size: 0.90rem;
+            color: #f1f5f9;
+            line-height: 1.5;
+        }
+        .easy-idea-text strong { color: var(--gold); }
+
+        /* MODO DE MICROSCOPÍA */
+        .btn-group-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+        .btn-toggle {
+            background: rgba(10, 26, 32, 0.9);
+            border: 1.5px solid rgba(255, 255, 255, 0.12);
+            color: #cbd5e1;
+            padding: 9px 12px;
+            border-radius: 10px;
+            font-size: 0.86rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        .btn-toggle.active {
+            background: rgba(52, 211, 153, 0.22);
+            border-color: var(--primary);
+            color: #ffffff;
+            box-shadow: 0 0 14px rgba(52, 211, 153, 0.25);
+        }
+
+        /* ACTIVIDAD METABÓLICA Y TRANSPORTE */
+        .controls-box {
+            background: rgba(10, 26, 32, 0.9);
+            border: 1.5px solid rgba(52, 211, 153, 0.35);
+            border-radius: 14px;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .slider-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #cbd5e1;
+        }
+        input[type="range"] {
+            width: 100%;
+            height: 8px;
+            background: #0f2d35;
+            border-radius: 4px;
+            outline: none;
+            -webkit-appearance: none;
+            cursor: pointer;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--primary);
+            box-shadow: 0 0 12px rgba(52, 211, 153, 0.8);
+            cursor: pointer;
+        }
+
+        /* LISTA DE ORGANELOS */
+        .organelle-list {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+        .org-item {
+            background: rgba(10, 26, 32, 0.85);
+            border: 1.5px solid rgba(255, 255, 255, 0.1);
+            border-radius: 11px;
+            padding: 9px 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        .org-item:hover {
+            border-color: var(--primary);
+            background: rgba(52, 211, 153, 0.15);
+            transform: translateX(4px);
+        }
+        .org-item.active {
+            border-color: var(--gold);
+            background: rgba(251, 191, 36, 0.18);
+            box-shadow: 0 0 14px rgba(251, 191, 36, 0.22);
+        }
+        .org-item-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .org-item-name {
+            font-size: 0.92rem;
+            font-weight: 800;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
+        .org-item-badge {
+            font-size: 0.74rem;
+            font-family: var(--font-mono);
+            font-weight: 700;
+            padding: 2px 7px;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.08);
+            color: #cbd5e1;
+        }
+        .org-item-sub {
+            font-size: 0.80rem;
+            color: #94a3b8;
+            line-height: 1.3;
+        }
+
+        /* FICHA DETALLADA */
+        .detail-card {
+            background: rgba(10, 26, 32, 0.94);
+            border: 1.5px solid rgba(52, 211, 153, 0.35);
+            border-radius: 14px;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .detail-badge {
+            font-size: 0.74rem;
+            font-family: var(--font-mono);
+            font-weight: 800;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+        .detail-title {
+            font-size: 1.05rem;
+            font-weight: 900;
+            color: #ffffff;
+        }
+        .detail-body {
+            font-size: 0.88rem;
+            color: #cbd5e1;
+            line-height: 1.48;
+        }
+
+        /* VISOR 3D CENTRAL */
+        .viewport-3d {
+            position: relative;
+            background: #020608;
+            border: 1.5px solid rgba(52, 211, 153, 0.3);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.75);
+        }
+        #renderCanvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+            outline: none;
+        }
+
+        /* HUD SUPERIOR */
+        .hud-overlay-top {
+            position: absolute;
+            top: 16px;
+            left: 18px;
+            right: 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            pointer-events: none;
+            z-index: 10;
+        }
+        .hud-group {
+            display: flex;
+            gap: 8px;
+            pointer-events: auto;
+        }
+        .btn-hud {
+            background: rgba(10, 26, 32, 0.88);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            color: #e2e8f0;
+            padding: 8px 14px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            transition: all 0.2s;
+        }
+        .btn-hud:hover, .btn-hud.active {
+            background: rgba(52, 211, 153, 0.25);
+            border-color: var(--primary);
+            color: #ffffff;
+            box-shadow: 0 0 14px rgba(52, 211, 153, 0.3);
+        }
+
+        /* HUD INFERIOR */
+        .hud-overlay-bottom {
+            position: absolute;
+            bottom: 16px;
+            left: 18px;
+            right: 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            pointer-events: none;
+            z-index: 10;
+        }
+        .hud-legend {
+            background: rgba(10, 26, 32, 0.9);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-size: 0.84rem;
+            color: #94a3b8;
+            pointer-events: auto;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .hud-legend strong { color: #ffffff; }
+
+        /* PINES Y ETIQUETAS */
+        .labels-container {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 5;
+        }
+        .pin-label {
+            position: absolute;
+            transform: translate(-50%, -100%);
+            background: rgba(10, 26, 32, 0.94);
+            border: 1.5px solid var(--primary);
+            color: #ffffff;
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 0.80rem;
+            font-weight: 800;
+            pointer-events: auto;
+            cursor: pointer;
+            white-space: nowrap;
+            box-shadow: 0 0 14px rgba(52, 211, 153, 0.5);
+            margin-top: -10px;
+            transition: opacity 0.2s, transform 0.18s;
+        }
+        .pin-label:hover {
+            transform: translate(-50%, -110%) scale(1.08);
+            border-color: var(--gold);
+        }
+        .pin-label::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 6px;
+            border-style: solid;
+            border-color: var(--primary) transparent transparent transparent;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- CABECERA -->
+    <header>
+        <div class="header-title-box">
+            <span class="badge-code">COD-009</span>
+            <h1>🧬 La Célula Viva Eucariota & Tráfico Molecular 3D • NIH / Cryo-EM</h1>
+        </div>
+        <div class="header-right">
+            <span class="pill-status">🔬 Dinámica de Vesículas, Microtúbulos & Síntesis ATP</span>
+            <span class="pill-status" style="background: rgba(52, 211, 153, 0.15); color: #34d399; border-color: rgba(52, 211, 153, 0.4);">
+                S09 • Biología Celular & Microscopía
+            </span>
+        </div>
+    </header>
+
+    <!-- WORKSPACE -->
+    <main class="workspace-grid">
+        
+        <!-- PANEL IZQUIERDO -->
+        <aside class="sidebar-panel">
+
+            <!-- TARJETA LA IDEA FÁCIL -->
+            <div class="card-easy-idea">
+                <div class="easy-idea-title">
+                    <span>💡 La Idea Fácil para Seniors (+65)</span>
+                </div>
+                <div class="easy-idea-text">
+                    Imagina una <strong>ciudad ultramoderna amurallada en miniatura</strong> de solo 0,02 milímetros: el <strong>Núcleo</strong> es el Ayuntamiento que custodia los planos maestros (el ADN); las <strong>Mitocondrias</strong> son las centrales eléctricas que queman glucosa para generar energía (ATP); y los <strong>Microtúbulos</strong> son las autopistas por donde caminan diminutos 'camiones' moleculares (proteínas cinesina) repartiendo paquetes de proteínas sin descanso.
+                </div>
+            </div>
+
+            <!-- MODOS DE MICROSCOPÍA -->
+            <div>
+                <div class="section-title">
+                    <span>Modalidad de Microscopía</span>
+                </div>
+                <div class="btn-group-2">
+                    <button class="btn-toggle active" id="btnModeConfocal" onclick="setMicroscopyMode('confocal')">
+                        ✨ Confocal Láser (Fluoróforos)
+                    </button>
+                    <button class="btn-toggle" id="btnModeCryoEM" onclick="setMicroscopyMode('cryo')">
+                        🔬 Criomicroscopía (Cryo-EM)
+                    </button>
+                </div>
+            </div>
+
+            <!-- CONTROL DE ACTIVIDAD METABÓLICA -->
+            <div class="controls-box">
+                <div class="section-title" style="margin-bottom:0;">
+                    <span>Tasa Metabólica & Tráfico Celular</span>
+                    <span id="metabolismBadge" style="color:var(--primary); font-family:var(--font-mono); font-weight:800;">NORMAL (1.0x)</span>
+                </div>
+                <input type="range" id="speedSlider" min="0" max="3" step="0.2" value="1.0" oninput="setMetabolismSpeed(this.value)">
+                <div class="slider-row" style="font-size:0.75rem; color:#94a3b8;">
+                    <span>Pausar (0x)</span>
+                    <span>Metabolismo Basal</span>
+                    <span>Alta Demanda (3x)</span>
+                </div>
+            </div>
+
+            <!-- ORGANELOS CELULARES -->
+            <div>
+                <div class="section-title">
+                    <span>Organelos Celulares • Clic para Explorar</span>
+                </div>
+                <div class="organelle-list" id="organelleList">
+                    <!-- Dinámico con JS -->
+                </div>
+            </div>
+
+            <!-- FICHA DETALLADA DEL ORGANELO ACTIVO -->
+            <div class="detail-card" id="detailCard">
+                <div class="detail-badge" id="detailBadge">CENTRO DE CONTROL GENÉTICO</div>
+                <div class="detail-title" id="detailTitle">Núcleo Celular & Poros Nucleares</div>
+                <div class="detail-body" id="detailDesc">
+                    Protegido por una doble membrana lipídica perforada por más de 3.000 poros nucleares que actúan como aduanas biológicas. En su interior se pliegan 2 metros lineales de hebras de ADN asociadas a histonas (cromatina).
+                </div>
+            </div>
+
+        </aside>
+
+        <!-- VISOR BABYLON.JS 3D -->
+        <div class="viewport-3d" id="viewport3D">
+            <canvas id="renderCanvas"></canvas>
+            
+            <!-- CONTENEDOR DE PINES Y ETIQUETAS -->
+            <div class="labels-container" id="labelsContainer"></div>
+
+            <!-- CONTROLES FLOTANTES HUD SUPERIORES -->
+            <div class="hud-overlay-top">
+                <div class="hud-group">
+                    <button class="btn-hud active" id="btnMembraneCut" onclick="toggleMembraneCut()">
+                        ✂️ Corte de Membrana
+                    </button>
+                    <button class="btn-hud active" id="btnPins" onclick="togglePins()">
+                        🏷️ Pines Científicos
+                    </button>
+                    <button class="btn-hud active" id="btnVesicles" onclick="toggleVesicles()">
+                        🟢 Vesículas de Tráfico
+                    </button>
+                </div>
+                <div class="hud-group">
+                    <button class="btn-hud" onclick="focusOrganelle('nucleus')">
+                        🎯 Enfocar Núcleo
+                    </button>
+                    <button class="btn-hud" onclick="resetOverview()">
+                        🧬 Vista Celular
+                    </button>
+                </div>
+            </div>
+
+            <!-- LEYENDA HUD INFERIOR -->
+            <div class="hud-overlay-bottom">
+                <div class="hud-legend">
+                    <span>🖱️ <strong>Arrastrar:</strong> Rotar en 3D</span>
+                    <span>🔍 <strong>Rueda:</strong> Zoom</span>
+                    <span>⚡ <strong>Tráfico en Vivo:</strong> Vesículas desplazándose por microtúbulos</span>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        // ============================================================================
+        // 1. DATOS BIOLÓGICOS DE LOS ORGANELOS (NIH / CRYO-EM)
+        // ============================================================================
+        const CELL_ORGANELLES = {
+            nucleus: {
+                id: "nucleus",
+                name: "Núcleo & Poros Nucleares",
+                badge: "Centro de Mando del ADN",
+                type: "CENTRO DE CONTROL GENÉTICO",
+                icon: "🔮",
+                target: new BABYLON.Vector3(0, 0, 0),
+                camRadius: 3.4,
+                desc: "Protegido por una doble membrana lipídica perforada por más de 3.000 poros nucleares que actúan como aduanas bioquímicas ultraprecisas. En su interior se custodian 2 metros lineales de ADN enrollado en hebras de cromatina que codifican todas las funciones vitales del organismo."
+            },
+            mitochondria: {
+                id: "mitochondria",
+                name: "Mitocondria (Central Energética)",
+                badge: "Síntesis Continua de ATP",
+                type: "PRODUCCIÓN BIOENERGÉTICA",
+                icon: "⚡",
+                target: new BABYLON.Vector3(1.4, 0.5, 0.4),
+                camRadius: 2.2,
+                desc: "Antiguas bacterias que se fusionaron en simbiosis con nuestras células hace 1.500 millones de años. En sus crestas membranosas internas, el ciclo de Krebs y la cadena de transporte de electrones producen millones de moléculas de ATP (adenosín trifosfato), la 'moneda' de energía de la vida."
+            },
+            trafficking: {
+                id: "trafficking",
+                name: "Microtúbulos & Vesículas",
+                badge: "Red de Autopistas Moleculares",
+                icon: "🛣️",
+                target: new BABYLON.Vector3(-0.8, -0.6, 0.8),
+                camRadius: 2.6,
+                desc: "Filamentos de tubulina que forman el citoesqueleto celular. Sobre ellos caminan físicamente proteínas motoras como la cinesina (hacia la membrana) y la dineína (hacia el núcleo) arrastrando vesículas membranosas cargadas de enzimas, lípidos y neurotransmisores."
+            },
+            golgi: {
+                id: "golgi",
+                name: "Aparato de Golgi",
+                badge: "Empaquetado y Envío de Proteínas",
+                icon: "📦",
+                target: new BABYLON.Vector3(-1.3, 0.6, -0.3),
+                camRadius: 2.4,
+                desc: "Una serie de cisternas membranosas aplanadas que funcionan como la oficina de correos celular: reciben las proteínas recién fabricadas en el retículo, les añaden etiquetas de azúcares (glucosilación) y las embalan en vesículas con la dirección exacta donde deben actuar."
+            },
+            membrane: {
+                id: "membrane",
+                name: "Membrana Plasmática",
+                badge: "Bicapa Lipídica Fluida",
+                type: "BARRERA BIOLÓGICA SEMIPERMEABLE",
+                icon: "🛡️",
+                target: new BABYLON.Vector3(0, 0, 0),
+                camRadius: 5.5,
+                desc: "Un mosaico fluido de fosfolípidos con cabezas hidrofílicas y colas hidrofóbicas que separa el interior vivo del entorno exterior. Está tachonada de proteínas receptoras, canales iónicos de sodio/potasio y glucocáliz de reconocimiento inmunológico."
+            }
+        };
+
+        // Renderizar lista en panel lateral
+        const orgListEl = document.getElementById("organelleList");
+        Object.keys(CELL_ORGANELLES).forEach(key => {
+            const item = CELL_ORGANELLES[key];
+            const div = document.createElement("div");
+            div.className = "org-item" + (key === "nucleus" ? " active" : "");
+            div.id = "btn_nav_" + key;
+            div.onclick = () => focusOrganelle(key);
+            div.innerHTML = `
+                <div class="org-item-header">
+                    <span class="org-item-name">${item.icon} ${item.name}</span>
+                    <span class="org-item-badge">Organelo</span>
+                </div>
+                <div class="org-item-sub">${item.badge}</div>
+            `;
+            orgListEl.appendChild(div);
+        });
+
+        // ============================================================================
+        // 2. INICIALIZACIÓN DE BABYLON.JS
+        // ============================================================================
+        const canvas = document.getElementById("renderCanvas");
+        const engine = new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true });
+        const scene = new BABYLON.Scene(engine);
+        scene.clearColor = new BABYLON.Color4(0.012, 0.024, 0.035, 1.0);
+
+        // Cámara ArcRotate
+        const camera = new BABYLON.ArcRotateCamera("Camera", -Math.PI / 2.3, Math.PI / 2.5, 5.8, BABYLON.Vector3.Zero(), scene);
+        camera.attachControl(canvas, true);
+        camera.wheelPrecision = 35;
+        camera.lowerRadiusLimit = 1.8;
+        camera.upperRadiusLimit = 12.0;
+        camera.inertia = 0.85;
+
+        // Iluminación orgánica difusa
+        const hemiLight = new BABYLON.HemisphericLight("hemiLight", new BABYLON.Vector3(0, 1, 0), scene);
+        hemiLight.intensity = 0.45;
+        hemiLight.groundColor = new BABYLON.Color3(0.05, 0.1, 0.15);
+
+        const keyLight = new BABYLON.DirectionalLight("keyLight", new BABYLON.Vector3(-1, -1.2, 0.8), scene);
+        keyLight.intensity = 2.0;
+        keyLight.diffuse = new BABYLON.Color3(0.85, 1.0, 0.95);
+
+        const nucleusLight = new BABYLON.PointLight("nucLight", BABYLON.Vector3.Zero(), scene);
+        nucleusLight.intensity = 2.2;
+        nucleusLight.diffuse = new BABYLON.Color3(0.3, 0.6, 1.0);
+        nucleusLight.range = 2.8;
+
+        // ============================================================================
+        // 3. MATERIALES BIOLÓGICOS TRASLÚCIDOS Y FLUORESCENTES (CONFOCAL & CRYO-EM)
+        // ============================================================================
+        
+        // Membrana plasmática bicapa
+        const membraneMat = new BABYLON.StandardMaterial("membraneMat", scene);
+        membraneMat.diffuseColor = new BABYLON.Color3(0.2, 0.8, 0.6);
+        membraneMat.alpha = 0.32;
+        membraneMat.specularColor = new BABYLON.Color3(0.5, 1.0, 0.8);
+        membraneMat.backFaceCulling = false;
+
+        // Núcleo DAPI azul
+        const nucleusMat = new BABYLON.StandardMaterial("nucleusMat", scene);
+        nucleusMat.diffuseColor = new BABYLON.Color3(0.2, 0.45, 0.9);
+        nucleusMat.emissiveColor = new BABYLON.Color3(0.1, 0.25, 0.65);
+        nucleusMat.specularColor = new BABYLON.Color3(0.8, 0.9, 1.0);
+
+        // Mitocondrias MitoTracker Rojo
+        const mitoMat = new BABYLON.StandardMaterial("mitoMat", scene);
+        mitoMat.diffuseColor = new BABYLON.Color3(0.95, 0.35, 0.25);
+        mitoMat.emissiveColor = new BABYLON.Color3(0.5, 0.15, 0.1);
+
+        // Aparato de Golgi Naranja-Dorado
+        const golgiMat = new BABYLON.StandardMaterial("golgiMat", scene);
+        golgiMat.diffuseColor = new BABYLON.Color3(0.95, 0.72, 0.2);
+        golgiMat.emissiveColor = new BABYLON.Color3(0.4, 0.25, 0.05);
+
+        // Microtúbulos Citoesqueleto Cian
+        const tubuleMat = new BABYLON.StandardMaterial("tubuleMat", scene);
+        tubuleMat.diffuseColor = new BABYLON.Color3(0.2, 0.8, 1.0);
+        tubuleMat.emissiveColor = new BABYLON.Color3(0.15, 0.5, 0.8);
+
+        // Vesículas de Tráfico GFP Verde
+        const vesicleMat = new BABYLON.StandardMaterial("vesicleMat", scene);
+        vesicleMat.diffuseColor = new BABYLON.Color3(0.3, 0.95, 0.5);
+        vesicleMat.emissiveColor = new BABYLON.Color3(0.2, 0.7, 0.35);
+
+        // ============================================================================
+        // 4. CONSTRUCCIÓN GEOMÉTRICA DE LA CÉLULA EUCARIOTA
+        // ============================================================================
+        
+        // Membrana Celular Exterior (Esfera recortable)
+        const cellRadius = 2.4;
+        const membraneMesh = BABYLON.MeshBuilder.CreateSphere("membraneMesh", {
+            diameter: cellRadius * 2, segments: 48, slice: 0.75
+        }, scene);
+        membraneMesh.material = membraneMat;
+
+        // Núcleo Celular Central con poros esféricos
+        const nucleusMesh = BABYLON.MeshBuilder.CreateSphere("nucleusMesh", { diameter: 1.5, segments: 32 }, scene);
+        nucleusMesh.material = nucleusMat;
+
+        // Mitocondrias (Formas elipsoidales con crestas)
+        const mitoMeshes = [];
+        const mitoPositions = [
+            new BABYLON.Vector3(1.4, 0.5, 0.4),
+            new BABYLON.Vector3(-1.3, -0.6, -0.5),
+            new BABYLON.Vector3(0.5, -1.2, 0.6)
+        ];
+
+        mitoPositions.forEach((pos, idx) => {
+            const m = BABYLON.MeshBuilder.CreateSphere("mito_" + idx, {
+                diameterX: 0.45, diameterY: 0.35, diameterZ: 0.85, segments: 24
+            }, scene);
+            m.position = pos;
+            m.rotation.y = idx * 1.1;
+            m.rotation.x = idx * 0.4;
+            m.material = mitoMat;
+            mitoMeshes.push(m);
+        });
+
+        // Aparato de Golgi (Cisternas aplanadas concéntricas)
+        const golgiGroup = new BABYLON.TransformNode("golgiGroup", scene);
+        golgiGroup.position.set(-1.2, 0.6, -0.3);
+
+        for (let g = 0; g < 4; g++) {
+            const cist = BABYLON.MeshBuilder.CreateTorus("golgi_" + g, {
+                diameter: 0.65 + g * 0.18, thickness: 0.07, tessellation: 24
+            }, scene);
+            cist.position.y = g * 0.08;
+            cist.rotation.x = Math.PI / 4;
+            cist.material = golgiMat;
+            cist.parent = golgiGroup;
+        }
+
+        // ============================================================================
+        // 5. RED DE MICROTÚBULOS Y TRÁFICO VESICULAR EN MOVIMIENTO REAL
+        // ============================================================================
+        const microtubulePaths = [
+            [new BABYLON.Vector3(0, 0, 0), new BABYLON.Vector3(1.4, 0.5, 0.4), new BABYLON.Vector3(2.1, 0.8, 0.6)],
+            [new BABYLON.Vector3(0, 0, 0), new BABYLON.Vector3(-1.2, 0.6, -0.3), new BABYLON.Vector3(-1.9, 0.9, -0.5)],
+            [new BABYLON.Vector3(0, 0, 0), new BABYLON.Vector3(-0.8, -0.6, 0.8), new BABYLON.Vector3(-1.5, -1.3, 1.4)],
+            [new BABYLON.Vector3(0, 0, 0), new BABYLON.Vector3(0.6, -1.1, -0.8), new BABYLON.Vector3(1.2, -1.7, -1.2)]
+        ];
+
+        microtubulePaths.forEach((path, i) => {
+            const tube = BABYLON.MeshBuilder.CreateTube("tube_" + i, {
+                path: path, radius: 0.03, sideOrientation: BABYLON.Mesh.DOUBLESIDE
+            }, scene);
+            tube.material = tubuleMat;
+        });
+
+        // Vesículas viajeras
+        const vesicles = [];
+        const NUM_VESICLES = 16;
+        for (let v = 0; v < NUM_VESICLES; v++) {
+            const mesh = BABYLON.MeshBuilder.CreateSphere("vesicle_" + v, { diameter: 0.12, segments: 16 }, scene);
+            mesh.material = vesicleMat;
+            vesicles.push({
+                mesh: mesh,
+                pathIndex: v % microtubulePaths.length,
+                progress: Math.random(),
+                speed: 0.003 + Math.random() * 0.003,
+                direction: Math.random() > 0.5 ? 1 : -1 // Cinesina (hacia fuera) o Dineína (hacia dentro)
+            });
+        }
+
+        // ============================================================================
+        // 6. PINES CIENTÍFICOS 3D PROYECTADOS
+        // ============================================================================
+        const pinElements = {};
+        const labelsContainer = document.getElementById("labelsContainer");
+
+        function createOrganellePin(key, label, pos) {
+            const el = document.createElement("div");
+            el.className = "pin-label";
+            el.innerHTML = `<span>${CELL_ORGANELLES[key].icon} ${label}</span>`;
+            el.onclick = (e) => {
+                e.stopPropagation();
+                focusOrganelle(key);
+            };
+            labelsContainer.appendChild(el);
+            pinElements[key] = { el, pos };
+        }
+
+        createOrganellePin("nucleus", "Núcleo (ADN)", new BABYLON.Vector3(0, 0.9, 0));
+        createOrganellePin("mitochondria", "Mitocondria (ATP)", new BABYLON.Vector3(1.4, 0.9, 0.4));
+        createOrganellePin("golgi", "Aparato de Golgi", new BABYLON.Vector3(-1.2, 1.0, -0.3));
+        createOrganellePin("trafficking", "Vesículas de Tráfico", new BABYLON.Vector3(-0.8, -0.2, 0.8));
+        createOrganellePin("membrane", "Membrana Plasmática", new BABYLON.Vector3(0, 2.5, 0));
+
+        let showPins = true;
+        let isMembraneCut = true;
+        let showVesicles = true;
+        let metabolismSpeed = 1.0;
+
+        scene.onAfterRenderObservable.add(() => {
+            if (!showPins) {
+                labelsContainer.style.display = "none";
+                return;
+            }
+            labelsContainer.style.display = "block";
+
+            Object.keys(pinElements).forEach(key => {
+                const item = pinElements[key];
+                const screenPos = BABYLON.Vector3.Project(
+                    item.pos,
+                    BABYLON.Matrix.Identity(),
+                    scene.getTransformMatrix(),
+                    camera.viewport.toGlobal(engine.getRenderWidth(), engine.getRenderHeight())
+                );
+
+                if (screenPos.z > 0 && screenPos.z < 1.0) {
+                    item.el.style.left = screenPos.x + "px";
+                    item.el.style.top = screenPos.y + "px";
+                    item.el.style.display = "block";
+                    item.el.style.opacity = "1";
+                } else {
+                    item.el.style.display = "none";
+                }
+            });
+        });
+
+        // ============================================================================
+        // 7. BUCLE BIOLÓGICO Y DINÁMICA DE TRÁFICO
+        // ============================================================================
+        let targetCamPos = BABYLON.Vector3.Zero();
+        let targetCamRadius = 5.8;
+
+        engine.runRenderLoop(() => {
+            const time = Date.now() * 0.002;
+
+            // Ondulación biológica suave de la membrana plasmática
+            membraneMesh.rotation.y += 0.0015 * metabolismSpeed;
+            const membraneScale = 1.0 + Math.sin(time) * 0.015;
+            membraneMesh.scaling.set(membraneScale, membraneScale, membraneScale);
+
+            // Pulsos de energía en las mitocondrias (síntesis de ATP)
+            mitoMeshes.forEach((m, idx) => {
+                m.rotation.y += 0.004 * metabolismSpeed;
+                const glow = 0.4 + Math.sin(time * 2 + idx) * 0.2;
+                m.material.emissiveColor = new BABYLON.Color3(glow * 0.8, glow * 0.25, 0.1);
+            });
+
+            // Movimiento continuo de las vesículas por las autopistas de microtúbulos
+            if (showVesicles) {
+                vesicles.forEach(v => {
+                    v.progress += v.speed * v.direction * metabolismSpeed;
+                    if (v.progress > 1.0) { v.progress = 1.0; v.direction = -1; }
+                    if (v.progress < 0.0) { v.progress = 0.0; v.direction = 1; }
+
+                    const path = microtubulePaths[v.pathIndex];
+                    // Interpolación cuadrática entre los 3 puntos del camino
+                    const p0 = path[0], p1 = path[1], p2 = path[2];
+                    const t = v.progress;
+                    const x = (1 - t) * (1 - t) * p0.x + 2 * (1 - t) * t * p1.x + t * t * p2.x;
+                    const y = (1 - t) * (1 - t) * p0.y + 2 * (1 - t) * t * p1.y + t * t * p2.y;
+                    const z = (1 - t) * (1 - t) * p0.z + 2 * (1 - t) * t * p1.z + t * t * p2.z;
+
+                    v.mesh.position.set(x, y, z);
+                });
+            }
+
+            // Suavizado de cámara
+            camera.target = BABYLON.Vector3.Lerp(camera.target, targetCamPos, 0.08);
+            camera.radius = BABYLON.Scalar.Lerp(camera.radius, targetCamRadius, 0.06);
+
+            scene.render();
+        });
+
+        window.addEventListener("resize", () => engine.resize());
+
+        // ============================================================================
+        // 8. INTERACTIVIDAD Y SELECCIÓN DE ORGANELOS
+        // ============================================================================
+        function focusOrganelle(key) {
+            const item = CELL_ORGANELLES[key];
+
+            document.querySelectorAll(".org-item").forEach(el => el.classList.remove("active"));
+            const btn = document.getElementById("btn_nav_" + key);
+            if (btn) btn.classList.add("active");
+
+            document.getElementById("detailBadge").textContent = item.type || "ORGANELO VITAL";
+            document.getElementById("detailTitle").textContent = item.name;
+            document.getElementById("detailDesc").textContent = item.desc;
+
+            targetCamPos = item.target.clone();
+            targetCamRadius = item.camRadius;
+        }
+
+        function resetOverview() {
+            targetCamPos = BABYLON.Vector3.Zero();
+            targetCamRadius = 5.8;
+            focusOrganelle("nucleus");
+        }
+
+        function setMetabolismSpeed(val) {
+            metabolismSpeed = parseFloat(val);
+            const badge = document.getElementById("metabolismBadge");
+            if (metabolismSpeed === 0) badge.textContent = "PAUSADO (0x)";
+            else if (metabolismSpeed <= 1.0) badge.textContent = "BASAL (" + metabolismSpeed.toFixed(1) + "x)";
+            else badge.textContent = "ALTA ACTIVIDAD (" + metabolismSpeed.toFixed(1) + "x)";
+        }
+
+        function setMicroscopyMode(mode) {
+            document.getElementById("btnModeConfocal").classList.toggle("active", mode === "confocal");
+            document.getElementById("btnModeCryoEM").classList.toggle("active", mode === "cryo");
+
+            if (mode === "confocal") {
+                scene.clearColor = new BABYLON.Color4(0.012, 0.024, 0.035, 1.0);
+                membraneMat.emissiveColor = new BABYLON.Color3(0, 0, 0);
+                nucleusMat.emissiveColor = new BABYLON.Color3(0.1, 0.25, 0.65);
+                tubuleMat.emissiveColor = new BABYLON.Color3(0.15, 0.5, 0.8);
+            } else {
+                // Modo Cryo-EM en escala de grises densitométrica y fondo claro de laboratorio
+                scene.clearColor = new BABYLON.Color4(0.08, 0.1, 0.12, 1.0);
+                nucleusMat.emissiveColor = new BABYLON.Color3(0.2, 0.25, 0.3);
+                tubuleMat.emissiveColor = new BABYLON.Color3(0.3, 0.35, 0.4);
+            }
+        }
+
+        function toggleMembraneCut() {
+            isMembraneCut = !isMembraneCut;
+            membraneMesh.dispose();
+
+            membraneMesh = BABYLON.MeshBuilder.CreateSphere("membraneMesh", {
+                diameter: cellRadius * 2, segments: 48, slice: isMembraneCut ? 0.75 : 1.0
+            }, scene);
+            membraneMesh.material = membraneMat;
+            document.getElementById("btnMembraneCut").classList.toggle("active", isMembraneCut);
+        }
+
+        function togglePins() {
+            showPins = !showPins;
+            document.getElementById("btnPins").classList.toggle("active", showPins);
+        }
+
+        function toggleVesicles() {
+            showVesicles = !showVesicles;
+            vesicles.forEach(v => v.mesh.setEnabled(showVesicles));
+            document.getElementById("btnVesicles").classList.toggle("active", showVesicles);
+        }
+
+        // Foco inicial
+        focusOrganelle("nucleus");
+    </script>
+</body>
+</html>
+
