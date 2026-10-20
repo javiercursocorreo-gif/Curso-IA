@@ -401,20 +401,20 @@
                 <div class="section-title">Telemetría Anatómica</div>
                 <div class="telemetry-grid">
                     <div class="tele-card">
-                        <div class="tele-label">Fuerza de Mordida</div>
-                        <div class="tele-val" style="color:var(--rose);">60.000 N</div>
+                        <div class="tele-label" id="lblTele1">Fuerza de Mordida</div>
+                        <div class="tele-val" id="valTele1" style="color:var(--rose);">60.000 N</div>
                     </div>
                     <div class="tele-card">
-                        <div class="tele-label">Presión Maxilar</div>
-                        <div class="tele-val">6.000 kg/cm²</div>
+                        <div class="tele-label" id="lblTele2">Presión Maxilar</div>
+                        <div class="tele-val" id="valTele2">6.000 kg/cm²</div>
                     </div>
                     <div class="tele-card">
-                        <div class="tele-label">Longitud Dental</div>
-                        <div class="tele-val">30 cm (Plátano)</div>
+                        <div class="tele-label" id="lblTele3">Longitud Dental</div>
+                        <div class="tele-val" id="valTele3">30 cm (Sierra)</div>
                     </div>
                     <div class="tele-card">
-                        <div class="tele-label">Visión Binocular</div>
-                        <div class="tele-val" style="color:var(--cyan);">55° (3D Real)</div>
+                        <div class="tele-label" id="lblTele4">Visión Binocular</div>
+                        <div class="tele-val" id="valTele4" style="color:var(--cyan);">55° (3D Real)</div>
                     </div>
                 </div>
             </div>
@@ -423,28 +423,28 @@
             <div class="control-box">
                 <div class="section-title">Puntos Anatómicos de Inspección</div>
                 <div class="part-list">
-                    <div class="part-item active" onclick="focusSpot('head')">
+                    <div class="part-item active" id="partSpot_head" onclick="focusSpot('head')">
                         <div class="part-item-title">
                             <span>1. Mandíbula y Dientes Aserrados</span>
                             <span style="color:var(--amber);">Esmalte Fósil</span>
                         </div>
                         <div class="part-item-desc">Dientes cónicos reforzados con filos de sierra microdentados, diseñados para penetrar carne y quebrar hueso macizo.</div>
                     </div>
-                    <div class="part-item" onclick="focusSpot('eyes')">
+                    <div class="part-item" id="partSpot_eyes" onclick="focusSpot('eyes')">
                         <div class="part-item-title">
                             <span>2. Cuencas Oculares & Visión</span>
                             <span style="color:var(--cyan);">Órbita Frontal</span>
                         </div>
                         <div class="part-item-desc">Hocico estrechado que permitía superposición de ambos ojos, otorgando percepción de profundidad milimétrica para emboscadas.</div>
                     </div>
-                    <div class="part-item" onclick="focusSpot('neck')">
+                    <div class="part-item" id="partSpot_neck" onclick="focusSpot('neck')">
                         <div class="part-item-title">
                             <span>3. Vértebras Cervicales en 'S'</span>
                             <span style="color:var(--emerald);">Masa Muscular</span>
                         </div>
                         <div class="part-item-desc">Cuello corto y grueso con enorme musculatura para sacudir con violencia presas de varias toneladas de peso.</div>
                     </div>
-                    <div class="part-item" onclick="focusSpot('body')">
+                    <div class="part-item" id="partSpot_body" onclick="focusSpot('body')">
                         <div class="part-item-title">
                             <span>4. Postura Bípeda y Equilibrio</span>
                             <span style="color:var(--gold);">Cola Contrapeso</span>
@@ -476,6 +476,8 @@
         let scene, camera, rootNode = null;
         let isTurntable = true;
         let hemiLight, dirLight1, dirLight2;
+        let allMeshes = [];
+        let matUV = null;
 
         // Fuentes del modelo 3D (Base64 local autónomo + CDN Fallback)
         const MODEL_URL_RAW = "https://raw.githubusercontent.com/code4fukui/vr-dinosaur-museum/main/dinosaur-trex.glb";
@@ -500,7 +502,7 @@
             camera.wheelPrecision = 20;
             camera.minZ = 0.05;
             camera.maxZ = 100;
-            camera.lowerRadiusLimit = 2.0;
+            camera.lowerRadiusLimit = 1.6;
             camera.upperRadiusLimit = 25.0;
 
             // Iluminación dramática de sala de museo
@@ -533,6 +535,13 @@
                         cover.style.opacity = "0";
                         setTimeout(() => cover.style.display = "none", 400);
                     }
+
+                    allMeshes = meshes;
+                    meshes.forEach(m => {
+                        if (m.material) {
+                            m._origMaterial = m.material;
+                        }
+                    });
 
                     rootNode = new BABYLON.TransformNode("trexRoot", sc);
                     const gltfRoot = sc.getNodeByName("__root__");
@@ -602,43 +611,152 @@
 
         function setLighting(mode) {
             document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(`btnMode${mode.charAt(0).toUpperCase() + mode.slice(1)}`).classList.add('active');
+            const btn = document.getElementById(`btnMode${mode.charAt(0).toUpperCase() + mode.slice(1)}`);
+            if (btn) btn.classList.add('active');
 
             if (mode === 'museum') {
-                hemiLight.intensity = 0.75;
-                hemiLight.diffuse = new BABYLON.Color3(1.0, 1.0, 1.0);
-                dirLight1.intensity = 1.3;
+                scene.clearColor = new BABYLON.Color4(0.02, 0.03, 0.06, 1.0);
+                hemiLight.intensity = 0.85;
+                hemiLight.diffuse = new BABYLON.Color3(1.0, 0.98, 0.92);
+                hemiLight.groundColor = new BABYLON.Color3(0.05, 0.08, 0.12);
+
+                dirLight1.intensity = 1.4;
+                dirLight1.direction = new BABYLON.Vector3(-1, -2, -1);
                 dirLight1.diffuse = new BABYLON.Color3(1.0, 0.95, 0.85);
+
+                dirLight2.intensity = 0.7;
+                dirLight2.direction = new BABYLON.Vector3(1, -1, 1);
+                dirLight2.diffuse = new BABYLON.Color3(0.5, 0.7, 0.9);
+
+                allMeshes.forEach(m => {
+                    if (m._origMaterial) m.material = m._origMaterial;
+                });
+                document.getElementById("badgeInfo").innerText = "Iluminación: Galería de Museo • Focos Cálidos de Vitrina PBR";
+
             } else if (mode === 'raking') {
-                // Luz rasante para resaltar fósil
-                hemiLight.intensity = 0.35;
-                dirLight1.intensity = 2.0;
-                dirLight1.diffuse = new BABYLON.Color3(1.0, 0.9, 0.7);
+                // Luz rasante arqueológica lateral extrema para revelar microfisuras y volumen
+                scene.clearColor = new BABYLON.Color4(0.01, 0.015, 0.02, 1.0);
+                hemiLight.intensity = 0.12;
+                hemiLight.diffuse = new BABYLON.Color3(0.2, 0.25, 0.3);
+                hemiLight.groundColor = new BABYLON.Color3(0.01, 0.01, 0.02);
+
+                dirLight1.intensity = 3.2;
+                dirLight1.direction = new BABYLON.Vector3(-3.5, -0.25, 0.8); // Ángulo rasante casi horizontal
+                dirLight1.diffuse = new BABYLON.Color3(1.0, 0.88, 0.65); // Tono rasante cálido de linterna
+
+                dirLight2.intensity = 0.0; // Sin luz de relleno secundaria para maximizar sombras
+
+                allMeshes.forEach(m => {
+                    if (m._origMaterial) m.material = m._origMaterial;
+                });
+                document.getElementById("badgeInfo").innerText = "Iluminación: Luz Rasante Paleontológica • Microrelieves Óseos y Sombras Dramáticas";
+
             } else if (mode === 'uv') {
-                // Escáner UV
-                hemiLight.intensity = 0.4;
-                hemiLight.diffuse = new BABYLON.Color3(0.3, 0.1, 0.8);
-                dirLight1.intensity = 1.5;
-                dirLight1.diffuse = new BABYLON.Color3(0.4, 0.6, 1.0);
+                // Escáner ultravioleta forense (365 nm) con biofluorescencia mineral fósil
+                scene.clearColor = new BABYLON.Color4(0.005, 0.005, 0.015, 1.0);
+                hemiLight.intensity = 0.2;
+                hemiLight.diffuse = new BABYLON.Color3(0.35, 0.08, 0.75); // Luz negra UV profunda
+                hemiLight.groundColor = new BABYLON.Color3(0.02, 0.0, 0.08);
+
+                dirLight1.intensity = 1.6;
+                dirLight1.direction = new BABYLON.Vector3(-1, -1.8, -1);
+                dirLight1.diffuse = new BABYLON.Color3(0.2, 0.05, 0.95);
+
+                dirLight2.intensity = 0.9;
+                dirLight2.direction = new BABYLON.Vector3(1, -1, 1);
+                dirLight2.diffuse = new BABYLON.Color3(0.0, 0.85, 0.65); // Resplandor fluorescente
+
+                if (!matUV) {
+                    matUV = new BABYLON.StandardMaterial("matUV", scene);
+                    matUV.diffuseColor = new BABYLON.Color3(0.12, 0.55, 0.42);
+                    matUV.emissiveColor = new BABYLON.Color3(0.08, 0.4, 0.32);
+                    matUV.specularColor = new BABYLON.Color3(0.5, 0.9, 1.0);
+                }
+                allMeshes.forEach(m => {
+                    m.material = matUV;
+                });
+                document.getElementById("badgeInfo").innerText = "Escáner UV Forense (365 nm) • Fluorescencia Ósea y Esmalte Dental Reactivo";
             }
         }
 
         function focusSpot(spot) {
             document.querySelectorAll('.part-item').forEach(i => i.classList.remove('active'));
-            if (event && event.currentTarget) event.currentTarget.classList.add('active');
+            const targetBtn = document.getElementById(`partSpot_${spot}`);
+            if (targetBtn) targetBtn.classList.add('active');
+
+            // Pausar el giro continuo de la plataforma para permitir una inspección precisa
+            isTurntable = false;
+            const btnT = document.getElementById("btnTurntable");
+            const lblT = document.getElementById("lblTurntableState");
+            if (btnT && lblT) {
+                btnT.innerHTML = "▶ Reanudar Giro";
+                btnT.classList.remove("active");
+                lblT.innerText = "PAUSADO (INSPECCIÓN)";
+                lblT.style.color = "#94a3b8";
+            }
+            if (rootNode) {
+                rootNode.rotation.y = 0; // Centrar el dinosaurio de frente para encuadre perfecto
+            }
 
             if (spot === 'head') {
-                camera.setTarget(new BABYLON.Vector3(0, 1.8, 1.8));
-                camera.radius = 3.2;
+                camera.setTarget(new BABYLON.Vector3(0.5, 1.6, 1.1));
+                camera.radius = 2.4;
+                camera.alpha = -Math.PI / 2.5;
+                camera.beta = Math.PI / 2.3;
+                document.getElementById("badgeInfo").innerText = "Inspección: 1. Mandíbula y Dientes Aserrados • 60.000 N Triturahuesos";
+                document.getElementById("lblTele1").innerText = "Fuerza de Mordida";
+                document.getElementById("valTele1").innerText = "60.000 N";
+                document.getElementById("lblTele2").innerText = "Presión Maxilar";
+                document.getElementById("valTele2").innerText = "6.000 kg/cm²";
+                document.getElementById("lblTele3").innerText = "Longitud Dental";
+                document.getElementById("valTele3").innerText = "30 cm (Sierra)";
+                document.getElementById("lblTele4").innerText = "Resistencia Oclusión";
+                document.getElementById("valTele4").innerText = "Hueso Macizo";
+
             } else if (spot === 'eyes') {
-                camera.setTarget(new BABYLON.Vector3(0, 2.0, 1.8));
-                camera.radius = 2.5;
+                camera.setTarget(new BABYLON.Vector3(0.0, 1.85, 1.3));
+                camera.radius = 1.9;
+                camera.alpha = -Math.PI / 2.0; // Cara a cara frontal
+                camera.beta = Math.PI / 2.25;
+                document.getElementById("badgeInfo").innerText = "Inspección: 2. Cuencas Oculares • Visión Estereoscópica 3D (55°)";
+                document.getElementById("lblTele1").innerText = "Visión Binocular";
+                document.getElementById("valTele1").innerText = "55° Estéreo";
+                document.getElementById("lblTele2").innerText = "Profundidad 3D";
+                document.getElementById("valTele2").innerText = "Milimétrica";
+                document.getElementById("lblTele3").innerText = "Superposición";
+                document.getElementById("valTele3").innerText = "Total Frontal";
+                document.getElementById("lblTele4").innerText = "Modo de Caza";
+                document.getElementById("valTele4").innerText = "Emboscada";
+
             } else if (spot === 'neck') {
-                camera.setTarget(new BABYLON.Vector3(0, 1.6, 0.8));
-                camera.radius = 3.5;
+                camera.setTarget(new BABYLON.Vector3(0.3, 1.55, 0.4));
+                camera.radius = 2.8;
+                camera.alpha = -Math.PI / 2.8;
+                camera.beta = Math.PI / 3.0;
+                document.getElementById("badgeInfo").innerText = "Inspección: 3. Cuello en 'S' • Masa Muscular de Sacudida de Presas";
+                document.getElementById("lblTele1").innerText = "Masa Muscular";
+                document.getElementById("valTele1").innerText = "1.200 kg";
+                document.getElementById("lblTele2").innerText = "Estructura Cervical";
+                document.getElementById("valTele2").innerText = "Vértebras en 'S'";
+                document.getElementById("lblTele3").innerText = "Capacidad Sacudida";
+                document.getElementById("valTele3").innerText = "8 Toneladas";
+                document.getElementById("lblTele4").innerText = "Función";
+                document.getElementById("valTele4").innerText = "Torsión y Desgarro";
+
             } else if (spot === 'body') {
-                camera.setTarget(new BABYLON.Vector3(0, 1.2, 0));
-                camera.radius = 5.8;
+                camera.setTarget(new BABYLON.Vector3(0.0, 1.2, 0.0));
+                camera.radius = 6.8;
+                camera.alpha = -Math.PI / 2.2;
+                camera.beta = Math.PI / 2.6;
+                document.getElementById("badgeInfo").innerText = "Inspección: 4. Postura Bípeda y Cola Contrapeso de 4 Toneladas";
+                document.getElementById("lblTele1").innerText = "Longitud Total";
+                document.getElementById("valTele1").innerText = "12.3 metros";
+                document.getElementById("lblTele2").innerText = "Altura a Cadera";
+                document.getElementById("valTele2").innerText = "4.0 metros";
+                document.getElementById("lblTele3").innerText = "Peso Corporal";
+                document.getElementById("valTele3").innerText = "8.4 toneladas";
+                document.getElementById("lblTele4").innerText = "Equilibrio";
+                document.getElementById("valTele4").innerText = "Cola Dinámica";
             }
         }
 
@@ -646,7 +764,12 @@
             camera.alpha = -Math.PI / 2.2;
             camera.beta = Math.PI / 2.6;
             camera.radius = 5.8;
-            camera.setTarget(new BABYLON.Vector3(0, 1.2, 0));
+            camera.setTarget(new BABYLON.Vector3(0, 1.4, 0));
+            if (rootNode) rootNode.rotation.y = 0;
+            setLighting('museum');
+            document.querySelectorAll('.part-item').forEach(i => i.classList.remove('active'));
+            const blk = document.getElementById('partSpot_head');
+            if (blk) blk.classList.add('active');
         }
 
         scene = createScene();
