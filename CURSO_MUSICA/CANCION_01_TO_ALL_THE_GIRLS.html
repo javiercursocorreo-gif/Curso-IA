@@ -744,14 +744,11 @@
     }
 
     function fijarTempoMIDI100BPM() {
-        if (midiClockTimer) clearInterval(midiClockTimer);
-        const salidas = obtenerSalidasDisponibles();
-        if (salidas.length === 0 && !midiOutput) return;
-
-        // Estándar MIDI Clock a 100 BPM: 25 ms por tick 0xF8
-        midiClockTimer = setInterval(() => {
-            enviarMidiGlobal([0xF8]);
-        }, 25);
+        if (midiClockTimer) {
+            clearInterval(midiClockTimer);
+            midiClockTimer = null;
+        }
+        // Canal silencioso: no saturar el bus USB con ráfagas continuas de 0xF8 para no congelar el Korg EK-50
     }
 
     let intentosConexion = 0;
@@ -1144,6 +1141,12 @@
             const favIcon = document.querySelector('link[rel="icon"]');
             if (favIcon) favIcon.href = pngUrl;
         } catch(e) {}
+    });
+    window.addEventListener('beforeunload', () => {
+        if (midiClockTimer) clearInterval(midiClockTimer);
+    });
+    window.addEventListener('pagehide', () => {
+        if (midiClockTimer) clearInterval(midiClockTimer);
     });
 </script>
 </body>

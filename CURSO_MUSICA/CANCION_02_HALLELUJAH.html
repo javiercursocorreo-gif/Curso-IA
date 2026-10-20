@@ -482,12 +482,25 @@
             <button class="btn-action" onclick="togglePdfViewer()" style="background:#1e293b; color:#93c5fd; border:1px solid #334155;">
                 👁️ Ver Integrada en la Ficha
             </button>
-            <a class="btn-action" href="https://youtu.be/CTvSKx8WqhQ?si=-RcvPgUpfSV_mOHY" target="_blank" rel="noopener noreferrer" style="background:#dc2626; color:#fff; border:1px solid #ef4444; text-decoration:none;">
-                <span>▶️</span> Tutorial YouTube
-            </a>
+            <button class="btn-action" onclick="toggleVideoTutorial()" style="background:#dc2626; color:#fff; border:1px solid #ef4444; cursor:pointer;">
+                <span>▶️</span> Ver Tutorial YouTube
+            </button>
             <a class="btn-action" href="https://musescore.com/user/14126321/scores/6346905" target="_blank" rel="noopener noreferrer" style="background:#0284c7; color:#fff; border:1px solid #38bdf8; text-decoration:none;">
                 <span>🎼</span> MuseScore Interactivo
             </a>
+        </div>
+
+        <!-- REPRODUCTOR INTEGRADO DE YOUTUBE CON BOTÓN DE CIERRE INMEDIATO -->
+        <div id="video-tutorial-container" style="display:none; background:#0f172a; border:2px solid #ef4444; border-radius:12px; padding:12px; margin-top:10px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; flex-wrap:wrap; gap:8px;">
+                <span style="font-weight:800; color:#fff; font-size:0.92rem;">▶️ Tutorial de YouTube (Integrado en el Atril)</span>
+                <button onclick="cerrarVideoTutorial()" style="background:#dc2626; color:#fff; border:none; padding:8px 16px; border-radius:8px; font-weight:800; font-size:0.85rem; cursor:pointer; touch-action:manipulation;">
+                    ✕ Cerrar y Pausar Vídeo
+                </button>
+            </div>
+            <div style="position:relative; padding-bottom:56.25%; height:0; overflow:hidden; border-radius:8px; background:#000;">
+                <iframe id="youtube-frame" src="" style="position:absolute; top:0; left:0; width:100%; height:100%; border:none;" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
         </div>
         <div id="pdf-viewer-container" style="display:none; margin-top:10px;">
             <iframe id="pdf-frame" src="CANCIONES%20PDF/Hallelujah-%20Leonard%20Cohen.pdf" width="100%" height="680px" style="border:1px solid #334155; border-radius:10px; background:#1e293b;"></iframe>
@@ -701,15 +714,11 @@
     }
 
     function fijarTempoMIDI(bpm) {
-        if (midiClockTimer) clearInterval(midiClockTimer);
-        const salidas = obtenerSalidasDisponibles();
-        if (salidas.length === 0 && !midiOutput) return;
-
-        // 24 ticks por negra. Para 56 BPM = 44.64 ms por tick 0xF8
-        const msPerTick = Math.round(60000 / (bpm * 24));
-        midiClockTimer = setInterval(() => {
-            enviarMidiGlobal([0xF8]);
-        }, msPerTick);
+        if (midiClockTimer) {
+            clearInterval(midiClockTimer);
+            midiClockTimer = null;
+        }
+        // Canal silencioso: no saturar el bus USB con ráfagas continuas de 0xF8 para no congelar el Korg EK-50
     }
 
     let intentosConexion = 0;
@@ -1348,11 +1357,38 @@
         if (btnElement) btnElement.classList.add('active-tempo');
     }
 
+    function toggleVideoTutorial() {
+        const box = document.getElementById('video-tutorial-container');
+        const iframe = document.getElementById('youtube-frame');
+        if (!box || !iframe) return;
+        const isHidden = (box.style.display === 'none' || !box.style.display);
+        if (isHidden) {
+            iframe.src = 'https://www.youtube-nocookie.com/embed/CTvSKx8WqhQ?autoplay=1';
+            box.style.display = 'block';
+            box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        } else {
+            cerrarVideoTutorial();
+        }
+    }
+
+    function cerrarVideoTutorial() {
+        const box = document.getElementById('video-tutorial-container');
+        const iframe = document.getElementById('youtube-frame');
+        if (iframe) iframe.src = ''; // Detiene el audio y el vídeo al instante
+        if (box) box.style.display = 'none';
+    }
+
     window.addEventListener('DOMContentLoaded', () => {
         // En iOS / Web MIDI Browser, retrasar 350ms para permitir que el puente CoreMIDI se registre
         setTimeout(() => {
             conectarMIDI();
         }, 350);
+    });
+    window.addEventListener('beforeunload', () => {
+        if (midiClockTimer) clearInterval(midiClockTimer);
+    });
+    window.addEventListener('pagehide', () => {
+        if (midiClockTimer) clearInterval(midiClockTimer);
     });
 </script>
 </body>
