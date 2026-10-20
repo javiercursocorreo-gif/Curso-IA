@@ -7,12 +7,19 @@
     <!-- Babylon.js CDN Oficial -->
     <script src="https://cdn.babylonjs.com/babylon.js"></script>
     <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+    <!-- Fuentes Tipográficas Oficiales -->
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+    <!-- Assets Fotográficos Reales en Base64 Autónomo (Múltiples rutas de compatibilidad) -->
+    <script src="../03_ASSETS_3D_Y_DATOS/jupiter_cassini_b64.js"></script>
+    <script src="../../../../SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/jupiter_cassini_b64.js"></script>
+    <script src="../03_ASSETS_3D_Y_DATOS/jupiter_aurora_b64.js"></script>
+    <script src="../../../../SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/jupiter_aurora_b64.js"></script>
     <style>
         :root {
-            --bg-base: #020307;
+            --bg-base: #010206;
             --bg-panel: rgba(8, 14, 28, 0.94);
             --uv-cyan: #38bdf8;
+            --uv-glow: rgba(56, 189, 248, 0.4);
             --uv-purple: #c084fc;
             --io-gold: #fbbf24;
             --xray-pink: #f43f5e;
@@ -445,7 +452,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0, 0, 0, 0.85);
+            background: rgba(0, 0, 0, 0.88);
             backdrop-filter: blur(12px);
             z-index: 100;
             display: none;
@@ -533,7 +540,7 @@
                         <span style="font-size:1.2rem;">📸</span>
                         <span>LUZ VISIBLE (Cassini)</span>
                     </button>
-                    <button class="mode-btn" id="btnModeUV" onclick="setVisualMode('uv')">
+                    <button class="mode-btn" id="btnModeUv" onclick="setVisualMode('uv')">
                         <span style="font-size:1.2rem;">🛰️</span>
                         <span>FUV HUBBLE (120 TW)</span>
                     </button>
@@ -618,7 +625,7 @@
             <div class="detail-card">
                 <div class="detail-title" id="detailTitle">Óvalo Auroral Principal (70°N)</div>
                 <div class="detail-desc" id="detailDesc">
-                    Corona permanente observada por el telescopio Hubble. La inmensa rotación de Júpiter acelera electrones a decenas de kilovoltios que chocan contra el hidrógeno molecular (\(H_2\)) emitiendo fotones ultravioletas en las bandas de Lyman y Werner (115–170 nm).
+                    Corona permanente observada por el espectrógrafo STIS del telescopio Hubble. La inmensa rotación de Júpiter acelera electrones a decenas de kilovoltios que chocan contra el hidrógeno molecular (\(H_2\)) emitiendo fotones ultravioletas en las bandas de Lyman y Werner (115–170 nm).
                 </div>
             </div>
 
@@ -712,7 +719,7 @@
             <div class="nasa-modal-body">
                 <img id="nasaPlateImg" src="https://upload.wikimedia.org/wikipedia/commons/4/4b/Hubble_Captures_Vivid_Auroras_in_Jupiter%E2%80%99s_Atmosphere.jpg" alt="NASA Hubble Auroras Jupiter" onerror="this.src='https://cdn.esahubble.org/archives/images/large/heic1613a.jpg'">
                 <p style="font-size:0.85rem; color:#cbd5e1; line-height:1.5; text-align:center;">
-                    Astrofotografía tomada por el Telescopio Espacial Hubble combinando observaciones en luz visible de la cámara ACS con las emisiones en ultravioleta lejana registradas por el espectrógrafo STIS.
+                    Astrofotografía de alta resolución obtenida por el Telescopio Espacial Hubble combinando datos en luz visible de la cámara ACS con observaciones en ultravioleta lejana registradas por el espectrógrafo STIS. Los datos revelan la corona polar de 120 TW y el punto de impacto del circuito electrodinámico de la luna Ío.
                 </p>
             </div>
         </div>
@@ -724,272 +731,400 @@
         const engine = new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true });
         
         let scene, camera, sunLight;
-        let jupiterSphere, northAurora, southAurora, ioFootprint, ioBeamLine;
-        let ioMoon, ioTorus, magneticLines = [];
+        let jupiterSphere, jupMat;
+        let northAuroraMesh, southAuroraMesh, ioFootprintMesh, ioWakeMesh;
+        let ioMoonMesh, ioOrbitLine, ioTorusMesh, ioFluxTubeMesh;
+        let magneticLines = [];
         let isSpinning = true;
         let currentVisualMode = 'visible';
         let showLabels = true;
         let focusedIndex = null;
+        let jupRotationAngle = 0;
+        let ioOrbitAngle = 0;
 
-        // PUNTOS DE INTERÉS EN COORDENADAS 3D
+        // PUNTOS DE INTERÉS EN COORDENADAS 3D Y VUELO DE CÁMARA
         const STRUCTURES = [
             {
                 name: "Óvalo Auroral Principal (70°N)",
                 camAlpha: -Math.PI / 2,
-                camBeta: 0.22,
+                camBeta: 0.35,
                 camRadius: 21,
-                targetY: 9.2,
+                targetY: 8.5,
                 tag: "EMISIÓN FUV DEL HIDRÓGENO MOLECULAR (120 TW)",
-                desc: "Anillo auroral permanente observado por el espectrógrafo STIS del telescopio Hubble. La colosal rotación de Júpiter acelera electrones a decenas de kilovoltios que excitan el hidrógeno molecular en longitudes de onda FUV (115–170 nm).",
+                desc: "Anillo auroral permanente observado por el espectrógrafo STIS del telescopio Hubble. La colosal rotación de Júpiter arrastra la magnetosfera a 45.300 km/h, acelerando electrones que excitan el hidrógeno molecular en longitudes de onda FUV (115–170 nm).",
                 power: "1.2 × 10¹⁴ W",
                 field: "14.0 Gauss",
-                meshPos: new BABYLON.Vector3(0, 9.3, 0.4)
+                getMeshPos: () => new BABYLON.Vector3(0, 9.4, 0.5)
             },
             {
                 name: "Huella Magnética de Ío (Io Footprint)",
-                camAlpha: -Math.PI / 2.3,
-                camBeta: 0.35,
-                camRadius: 22,
-                targetY: 8.8,
+                camAlpha: -Math.PI / 2.2,
+                camBeta: 0.45,
+                camRadius: 19,
+                targetY: 8.2,
                 tag: "CIRCUITO ELECTRODINÁMICO DE 1 MILLÓN DE AMPERIOS",
-                desc: "Un punto ultrabrillante en la ionosfera conectado directamente con la luna Ío. Los volcanes de Ío expulsan 1 tonelada/s de azufre, creando un circuito de 1 MA conducido por ondas de Alfvén.",
+                desc: "Un punto ultrabrillante en la ionosfera conectado directamente con la luna Ío. Los volcanes de Ío expulsan 1 tonelada/s de azufre ionizado, cerrando un circuito de 1 MA conducido por ondas de Alfvén.",
                 power: "4.5 × 10¹² W",
                 field: "11.8 Gauss",
-                meshPos: new BABYLON.Vector3(2.8, 8.8, 1.6)
+                getMeshPos: () => {
+                    if (ioFootprintMesh) return ioFootprintMesh.getAbsolutePosition();
+                    return new BABYLON.Vector3(2.5, 9.3, 1.2);
+                }
             },
             {
                 name: "Gran Mancha Roja (16.000 km)",
                 camAlpha: -Math.PI / 2,
                 camBeta: 1.82,
-                camRadius: 24,
-                targetY: -3.5,
+                camRadius: 23,
+                targetY: -3.6,
                 tag: "EL ANTICICLÓN MÁS GRANDE DEL SISTEMA SOLAR",
-                desc: "Colosal tormenta anticiclónica de más de 16.000 km de diámetro observada por la cámara ACS de Hubble. Gira en sentido antihorario a más de 430 km/h y en ella cabe el planeta Tierra entero.",
+                desc: "Colosal tormenta anticiclónica a 22°S observada por Cassini y Hubble. Gira en sentido antihorario a más de 430 km/h, posee una profundidad de más de 300 km en la atmósfera joviana y en ella cabría la Tierra entera.",
                 power: "N/A (Atmosférico)",
                 field: "4.2 Gauss",
-                meshPos: new BABYLON.Vector3(0, -3.5, 9.4)
+                getMeshPos: () => {
+                    // La Gran Mancha Roja gira con el planeta en Y = -3.74
+                    const y = -3.74;
+                    const r = 9.27; // radio en plano XZ a latitud -22°
+                    const angle = jupRotationAngle + Math.PI; // ubicada en meridiano central
+                    return new BABYLON.Vector3(Math.sin(angle) * r, y, Math.cos(angle) * r);
+                }
             },
             {
                 name: "Luna Ío & Toroide de Azufre",
-                camAlpha: -Math.PI / 1.3,
-                camBeta: 1.45,
-                camRadius: 52,
+                camAlpha: -Math.PI / 1.35,
+                camBeta: 1.38,
+                camRadius: 54,
                 targetY: 0,
                 tag: "400 VOLCANES ACTIVOS Y TOROIDE DE PLASMA",
-                desc: "Ío es el cuerpo con mayor actividad volcánica del Sistema Solar. Sus erupciones inyectan iones de azufre y oxígeno que forman un denso toroide de plasma alrededor de Júpiter.",
+                desc: "Ío es el cuerpo con mayor actividad volcánica del Sistema Solar. Sus erupciones inyectan iones de azufre y oxígeno que forman un denso toroide de plasma a 5.9 radios jovianos.",
                 power: "2.5 × 10¹² W",
                 field: "0.02 Gauss",
-                meshPos: new BABYLON.Vector3(26, 0, 0)
+                getMeshPos: () => {
+                    if (ioMoonMesh) return ioMoonMesh.position;
+                    return new BABYLON.Vector3(26, 0, 0);
+                }
             },
             {
                 name: "Campo Magnético Dipolar Global",
                 camAlpha: -Math.PI / 2.8,
-                camBeta: 1.4,
-                camRadius: 58,
+                camBeta: 1.42,
+                camRadius: 62,
                 targetY: 0,
                 tag: "LA ESTRUCTURA MÁS GRANDE DEL SISTEMA SOLAR",
                 desc: "Escudo magnético 20.000 veces más potente que el terrestre generado en el manto de hidrógeno metálico líquido a presiones de más de 4 millones de atmósferas.",
                 power: "10¹⁵ W (Rotacional)",
                 field: "14.0 G (Polo) / 4.2 G (Eq)",
-                meshPos: new BABYLON.Vector3(-18, 5, 0)
+                getMeshPos: () => new BABYLON.Vector3(-19, 6, 0)
             }
         ];
 
         function createScene() {
             scene = new BABYLON.Scene(engine);
-            scene.clearColor = new BABYLON.Color4(0.01, 0.015, 0.03, 1.0);
+            scene.clearColor = new BABYLON.Color4(0.008, 0.012, 0.022, 1.0);
 
-            camera = new BABYLON.ArcRotateCamera("Cam", -Math.PI / 2, Math.PI / 2.2, 40, new BABYLON.Vector3(0, 0, 0), scene);
+            camera = new BABYLON.ArcRotateCamera("Cam", -Math.PI / 2, Math.PI / 2.2, 42, new BABYLON.Vector3(0, 0, 0), scene);
             camera.attachControl(canvas, true);
-            camera.lowerRadiusLimit = 16;
-            camera.upperRadiusLimit = 85;
-            camera.wheelPrecision = 35;
+            camera.lowerRadiusLimit = 15;
+            camera.upperRadiusLimit = 95;
+            camera.wheelPrecision = 30;
 
-            // Iluminación
+            // Iluminación científica
             const hemi = new BABYLON.HemisphericLight("hemi", new BABYLON.Vector3(0, 1, 0), scene);
-            hemi.intensity = 0.45;
+            hemi.intensity = 0.35;
+            hemi.groundColor = new BABYLON.Color3(0.02, 0.03, 0.05);
 
-            sunLight = new BABYLON.DirectionalLight("sun", new BABYLON.Vector3(-1, -0.15, 0.4), scene);
-            sunLight.intensity = 1.35;
-            sunLight.diffuse = new BABYLON.Color3(1.0, 0.98, 0.92);
+            sunLight = new BABYLON.DirectionalLight("sun", new BABYLON.Vector3(-1, -0.15, 0.45).normalize(), scene);
+            sunLight.intensity = 1.4;
+            sunLight.diffuse = new BABYLON.Color3(1.0, 0.98, 0.93);
 
-            // 1. GLOBO 3D DE JÚPITER CON TEXTURA FOTOGRÁFICA DE ALTA DEFINICIÓN
+            // 1. GLOBO 3D DE JÚPITER CON TEXTURA FOTOGRÁFICA OFICIAL NASA CASSINI
             const jupRadius = 10;
             jupiterSphere = BABYLON.MeshBuilder.CreateSphere("jupiter", { diameter: jupRadius * 2, segments: 64 }, scene);
+            jupiterSphere.rotation.x = 0.054; // Inclinación axial joviana (3.13°)
 
-            const dynTex = new BABYLON.DynamicTexture("jupBands", { width: 2048, height: 1024 }, scene);
-            renderHighResJupiterTexture(dynTex);
+            jupMat = new BABYLON.StandardMaterial("jupMat", scene);
+            
+            // Verificación y carga de la textura fotográfica real
+            let jupTextureSource = null;
+            if (window.JUPITER_TEXTURE_B64 && window.JUPITER_TEXTURE_B64.length > 500) {
+                jupTextureSource = window.JUPITER_TEXTURE_B64;
+            } else {
+                jupTextureSource = "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e2/Jupiter.jpg/2048px-Jupiter.jpg";
+            }
 
-            const jupMat = new BABYLON.StandardMaterial("jupMat", scene);
-            jupMat.diffuseTexture = dynTex;
-            jupMat.specularColor = new BABYLON.Color3(0.08, 0.08, 0.08);
-            jupMat.roughness = 0.85;
+            const jupTex = new BABYLON.Texture(jupTextureSource, scene, false, false, BABYLON.Texture.TRILINEAR_SAMPLINGMODE, () => {
+                // Textura fotográfica NASA cargada con éxito
+                jupMat.diffuseTexture = jupTex;
+            }, () => {
+                // Fallback fotorealista procedimental de alta definición (con turbulencias fluidas y Gran Mancha Roja fidedigna)
+                const fallbackTex = new BABYLON.DynamicTexture("jupFallbackTex", { width: 2048, height: 1024 }, scene);
+                generatePhotorealisticJupiterMap(fallbackTex);
+                jupMat.diffuseTexture = fallbackTex;
+            });
+
+            jupMat.diffuseTexture = jupTex;
+            jupMat.specularColor = new BABYLON.Color3(0.04, 0.04, 0.04);
+            jupMat.roughness = 0.88;
             jupiterSphere.material = jupMat;
 
-            // 2. ÓVALO AURORAL NORTE (EMISIÓN VOLUMÉTRICA FUV REAL)
-            northAurora = BABYLON.MeshBuilder.CreateTorus("northAurora", {
-                diameter: 7.2,
-                thickness: 0.85,
-                tessellation: 80
+            // 2. ÓVALO AURORAL POLAR NORTE (EMISIÓN FUV ADITIVA CON OVALO HUBBLE STIS)
+            const auroraPoints = [];
+            const auroraSteps = 120;
+            for (let i = 0; i <= auroraSteps; i++) {
+                const theta = (i / auroraSteps) * Math.PI * 2;
+                // Deformación elíptica asimétrica fidedigna a las observaciones de Hubble STIS
+                const r = 3.4 + 0.45 * Math.cos(theta - 0.4);
+                const y = Math.sqrt(Math.max(0, 10.06 * 10.06 - r * r));
+                auroraPoints.push(new BABYLON.Vector3(Math.cos(theta) * r, y, Math.sin(theta) * r));
+            }
+
+            northAuroraMesh = BABYLON.MeshBuilder.CreateTube("northAurora", {
+                path: auroraPoints,
+                radius: 0.22,
+                tessellation: 16,
+                sideOrientation: BABYLON.Mesh.DOUBLESIDE
             }, scene);
-            northAurora.position.y = jupRadius * 0.93;
-            northAurora.position.z = 0.3;
-            northAurora.rotation.x = Math.PI * 0.08;
+            northAuroraMesh.parent = jupiterSphere;
 
-            const uvMat = new BABYLON.StandardMaterial("uvMat", scene);
-            uvMat.emissiveColor = new BABYLON.Color3(0.22, 0.75, 0.98); // Azul cian FUV Lyman-alpha
-            uvMat.diffuseColor = new BABYLON.Color3(0.75, 0.45, 0.98); // Púrpura Hubble
-            uvMat.alpha = 0.92;
-            uvMat.backFaceCulling = false;
-            northAurora.material = uvMat;
+            const auroraMat = new BABYLON.StandardMaterial("auroraMat", scene);
+            auroraMat.emissiveColor = new BABYLON.Color3(0.25, 0.88, 1.0); // FUV Lyman-alpha
+            auroraMat.diffuseColor = new BABYLON.Color3(0.7, 0.4, 0.95);  // Púrpura STIS
+            auroraMat.alpha = 0.92;
+            auroraMat.alphaMode = BABYLON.Engine.ALPHA_ADD; // Resplandor aditivo ultra-realista
+            auroraMat.disableLighting = true;
+            northAuroraMesh.material = auroraMat;
 
-            // 3. HUELLA MAGNÉTICA DE ÍO (IO FOOTPRINT) & HAZ DE ONDAS ALFVÉN
-            ioFootprint = BABYLON.MeshBuilder.CreateSphere("ioFoot", { diameter: 0.8 }, scene);
-            ioFootprint.position = new BABYLON.Vector3(2.6, jupRadius * 0.93, 1.4);
+            // Cortina difusa ionosférica interior
+            const northCurtain = BABYLON.MeshBuilder.CreateDisc("northCurtain", { radius: 3.5, tessellation: 48 }, scene);
+            northCurtain.rotation.x = Math.PI / 2;
+            northCurtain.position.y = 9.42;
+            northCurtain.parent = jupiterSphere;
+
+            const curtainMat = new BABYLON.StandardMaterial("curtainMat", scene);
+            curtainMat.emissiveColor = new BABYLON.Color3(0.15, 0.55, 0.95);
+            curtainMat.alpha = 0.35;
+            curtainMat.alphaMode = BABYLON.Engine.ALPHA_ADD;
+            curtainMat.disableLighting = true;
+            northCurtain.material = curtainMat;
+
+            // Óvalo Auroral Sur
+            const southAuroraPoints = [];
+            for (let i = 0; i <= auroraSteps; i++) {
+                const theta = (i / auroraSteps) * Math.PI * 2;
+                const r = 3.6 + 0.35 * Math.sin(theta);
+                const y = -Math.sqrt(Math.max(0, 10.06 * 10.06 - r * r));
+                southAuroraPoints.push(new BABYLON.Vector3(Math.cos(theta) * r, y, Math.sin(theta) * r));
+            }
+            southAuroraMesh = BABYLON.MeshBuilder.CreateTube("southAurora", {
+                path: southAuroraPoints,
+                radius: 0.18,
+                tessellation: 16
+            }, scene);
+            southAuroraMesh.parent = jupiterSphere;
+            southAuroraMesh.material = auroraMat;
+
+            // 3. HUELLA MAGNÉTICA DE ÍO (IO FOOTPRINT) Y ESTELA AURORAL
+            ioFootprintMesh = BABYLON.MeshBuilder.CreateSphere("ioFoot", { diameter: 0.55, segments: 16 }, scene);
+            ioFootprintMesh.position = new BABYLON.Vector3(2.4, 9.35, 1.3);
+            ioFootprintMesh.parent = northAuroraMesh;
+
             const footMat = new BABYLON.StandardMaterial("footMat", scene);
-            footMat.emissiveColor = new BABYLON.Color3(1.0, 1.0, 1.0);
-            footMat.diffuseColor = new BABYLON.Color3(0.4, 0.9, 1.0);
-            ioFootprint.material = footMat;
-            ioFootprint.parent = northAurora;
+            footMat.emissiveColor = new BABYLON.Color3(1.0, 1.0, 1.0); // Punto hiperbrillante
+            footMat.diffuseColor = new BABYLON.Color3(0.5, 0.95, 1.0);
+            footMat.alphaMode = BABYLON.Engine.ALPHA_ADD;
+            ioFootprintMesh.material = footMat;
 
-            // Haz eléctrico del tubo de flujo magnético de Ío
-            const beamPoints = [
-                new BABYLON.Vector3(2.6, jupRadius * 0.93, 1.4),
-                new BABYLON.Vector3(26, 0, 0)
-            ];
-            ioBeamLine = BABYLON.MeshBuilder.CreateLines("ioBeam", { points: beamPoints }, scene);
-            ioBeamLine.color = new BABYLON.Color3(0.3, 0.85, 1.0);
-            ioBeamLine.alpha = 0.6;
+            // Estela auroral (wake) dejada por las ondas de Alfvén
+            const wakePoints = [];
+            for (let w = 0; w <= 20; w++) {
+                const ang = 0.45 - (w / 20) * 0.75;
+                const r = 3.45 + (w / 20) * 0.3;
+                wakePoints.push(new BABYLON.Vector3(Math.cos(ang) * r, 9.38 - (w / 20) * 0.1, Math.sin(ang) * r));
+            }
+            ioWakeMesh = BABYLON.MeshBuilder.CreateTube("ioWake", {
+                path: wakePoints,
+                radius: 0.12,
+                tessellation: 12
+            }, scene);
+            ioWakeMesh.parent = northAuroraMesh;
+            const wakeMat = new BABYLON.StandardMaterial("wakeMat", scene);
+            wakeMat.emissiveColor = new BABYLON.Color3(0.3, 0.8, 1.0);
+            wakeMat.alpha = 0.65;
+            wakeMat.alphaMode = BABYLON.Engine.ALPHA_ADD;
+            ioWakeMesh.material = wakeMat;
 
-            // 4. LUNA ÍO Y SU TOROIDE DE PLASMA DE AZUFRE
+            // 4. LUNA ÍO, ÓRBITA ELEGANTE Y TOROIDE DE PLASMA DE AZUFRE
             const ioOrbitRadius = 26;
-            ioMoon = BABYLON.MeshBuilder.CreateSphere("ioMoon", { diameter: 1.5, segments: 24 }, scene);
-            ioMoon.position = new BABYLON.Vector3(ioOrbitRadius, 0, 0);
+            
+            // Órbita fina y sutil (línea elegante sin mallas toscas)
+            const orbitPoints = [];
+            for (let i = 0; i <= 128; i++) {
+                const a = (i / 128) * Math.PI * 2;
+                orbitPoints.push(new BABYLON.Vector3(Math.cos(a) * ioOrbitRadius, 0, Math.sin(a) * ioOrbitRadius));
+            }
+            ioOrbitLine = BABYLON.MeshBuilder.CreateLines("ioOrbit", { points: orbitPoints }, scene);
+            ioOrbitLine.color = new BABYLON.Color3(0.35, 0.45, 0.6);
+            ioOrbitLine.alpha = 0.35;
+
+            // Luna Ío 3D con textura volcánica de azufre
+            ioMoonMesh = BABYLON.MeshBuilder.CreateSphere("ioMoon", { diameter: 1.4, segments: 24 }, scene);
+            ioMoonMesh.position = new BABYLON.Vector3(ioOrbitRadius, 0, 0);
 
             const ioMat = new BABYLON.StandardMaterial("ioMat", scene);
-            ioMat.diffuseColor = new BABYLON.Color3(0.96, 0.82, 0.2); // Azufre volcánico
-            ioMat.emissiveColor = new BABYLON.Color3(0.3, 0.2, 0.02);
-            ioMoon.material = ioMat;
+            ioMat.diffuseColor = new BABYLON.Color3(0.96, 0.82, 0.22); // Amarillo azufre volcánico
+            ioMat.emissiveColor = new BABYLON.Color3(0.2, 0.15, 0.02);
+            ioMoonMesh.material = ioMat;
 
-            // Toroide de Plasma de Azufre
-            ioTorus = BABYLON.MeshBuilder.CreateTorus("ioTorus", {
+            // Toroide de Plasma de Azufre (Glow volumétrico translúcido, sin plásticos toscos)
+            ioTorusMesh = BABYLON.MeshBuilder.CreateTorus("ioTorus", {
                 diameter: ioOrbitRadius * 2,
-                thickness: 1.8,
+                thickness: 1.2,
                 tessellation: 96
             }, scene);
             const torusMat = new BABYLON.StandardMaterial("torusMat", scene);
-            torusMat.diffuseColor = new BABYLON.Color3(0.9, 0.65, 0.1);
-            torusMat.emissiveColor = new BABYLON.Color3(0.4, 0.25, 0.05);
-            torusMat.alpha = 0.3;
+            torusMat.diffuseColor = new BABYLON.Color3(1.0, 0.72, 0.15);
+            torusMat.emissiveColor = new BABYLON.Color3(0.7, 0.45, 0.05);
+            torusMat.alpha = 0.09; // Muy etéreo y volumétrico
+            torusMat.alphaMode = BABYLON.Engine.ALPHA_ADD;
             torusMat.backFaceCulling = false;
-            ioTorus.material = torusMat;
+            ioTorusMesh.material = torusMat;
+
+            // Haz magnético del tubo de flujo de Ío (Ondas de Alfvén y circuito de 1 MA)
+            updateFluxTubeMesh();
 
             // 5. LÍNEAS DE CAMPO MAGNÉTICO DIPOLAR JOVIANO
             for (let i = 0; i < 8; i++) {
                 const angle = (i / 8) * Math.PI * 2;
                 const points = [];
-                const steps = 36;
+                const steps = 40;
                 for (let s = 0; s <= steps; s++) {
                     const theta = (s / steps) * Math.PI;
                     const r = 28 * Math.sin(theta);
-                    const y = 15 * Math.cos(theta);
+                    const y = 15.5 * Math.cos(theta);
                     points.push(new BABYLON.Vector3(Math.cos(angle) * r, y, Math.sin(angle) * r));
                 }
                 const line = BABYLON.MeshBuilder.CreateLines("magLine_" + i, { points: points }, scene);
-                line.color = new BABYLON.Color3(0.25, 0.7, 1.0);
-                line.alpha = 0.35;
+                line.color = new BABYLON.Color3(0.25, 0.75, 1.0);
+                line.alpha = 0.22;
                 magneticLines.push(line);
             }
 
-            // ROTACIÓN DINÁMICA
-            let ioAngle = 0;
+            // ANIMACIÓN Y ROTACIÓN FÍSICA EN TIEMPO REAL
             scene.registerBeforeRender(() => {
                 if (isSpinning) {
-                    jupiterSphere.rotation.y += 0.003;
-                    northAurora.rotation.y += 0.003;
+                    jupRotationAngle += 0.003;
+                    jupiterSphere.rotation.y = jupRotationAngle;
 
-                    ioAngle += 0.0015;
-                    ioMoon.position.x = Math.cos(ioAngle) * ioOrbitRadius;
-                    ioMoon.position.z = Math.sin(ioAngle) * ioOrbitRadius;
+                    ioOrbitAngle += 0.0016;
+                    ioMoonMesh.position.x = Math.cos(ioOrbitAngle) * ioOrbitRadius;
+                    ioMoonMesh.position.z = Math.sin(ioOrbitAngle) * ioOrbitRadius;
+
+                    updateFluxTubeMesh();
                 }
 
-                // Proyectar coordenadas 3D de los pines sobre la pantalla 2D
+                // Proyección de pines sobre pantalla según Regla S10
                 updatePinsProjection();
             });
 
             return scene;
         }
 
-        // GENERACIÓN DE TEXTURA PLANETARIA FOTOGRÁFICA DE ALTA RESOLUCIÓN (DATOS CASSINI/JUNO)
-        function renderHighResJupiterTexture(dynTex) {
+        // ACTUALIZACIÓN DE LA CURVA DEL TUBO DE FLUJO DE ÍO
+        function updateFluxTubeMesh() {
+            if (!ioMoonMesh) return;
+            const startPt = new BABYLON.Vector3(2.4, 9.35, 1.3);
+            const globalStart = northAuroraMesh ? northAuroraMesh.getAbsolutePosition().add(new BABYLON.Vector3(1.2, 0.1, 0.8)) : startPt;
+            const endPt = ioMoonMesh.position;
+            const midPt = new BABYLON.Vector3((globalStart.x + endPt.x) * 0.5, 7.5, (globalStart.z + endPt.z) * 0.5);
+
+            const curvePoints = [];
+            for (let t = 0; t <= 24; t++) {
+                const u = t / 24;
+                // Curva de Bézier cuadrática que sigue la línea de fuerza magnética
+                const pX = (1 - u) * (1 - u) * globalStart.x + 2 * (1 - u) * u * midPt.x + u * u * endPt.x;
+                const pY = (1 - u) * (1 - u) * globalStart.y + 2 * (1 - u) * u * midPt.y + u * u * endPt.y;
+                const pZ = (1 - u) * (1 - u) * globalStart.z + 2 * (1 - u) * u * midPt.z + u * u * endPt.z;
+                curvePoints.push(new BABYLON.Vector3(pX, pY, pZ));
+            }
+
+            if (ioFluxTubeMesh) {
+                ioFluxTubeMesh.dispose();
+            }
+            ioFluxTubeMesh = BABYLON.MeshBuilder.CreateLines("fluxTube", { points: curvePoints }, scene);
+            ioFluxTubeMesh.color = (currentVisualMode === 'flux') ? new BABYLON.Color3(0.4, 0.9, 1.0) : new BABYLON.Color3(0.2, 0.6, 0.9);
+            ioFluxTubeMesh.alpha = (currentVisualMode === 'flux') ? 0.9 : 0.35;
+        }
+
+        // GENERADOR PROCEDIMENTAL FOTORREALISTA DE ALTA DEFINICIÓN (FALLBACK SEGURO)
+        function generatePhotorealisticJupiterMap(dynTex) {
             const ctx = dynTex.getContext();
             const w = 2048, h = 1024;
 
-            // Gradientes de absorción y bandas zonales reales
-            const bandPattern = [
-                { y: 0, h: 80, colA: "#4a2c19", colB: "#382012" },   // Región Polar Norte
-                { y: 80, h: 60, colA: "#7a4628", colB: "#8b5230" },  // Cinturón Templado Norte
-                { y: 140, h: 90, colA: "#d4a779", colB: "#e8c9a8" }, // Zona Templada Norte
-                { y: 230, h: 80, colA: "#9e552a", colB: "#b36332" }, // Cinturón Templado
-                { y: 310, h: 100, colA: "#f1dcba", colB: "#dfc098" },// Zona Tropical Norte
-                { y: 410, h: 110, colA: "#b45a27", colB: "#8a3e14" },// Cinturón Ecuatorial Norte (NEB)
-                { y: 520, h: 110, colA: "#ebd7bf", colB: "#f8ebd8" },// Zona Ecuatorial Brillante (EZ)
-                { y: 630, h: 110, colA: "#8e401b", colB: "#6c2f10" },// Cinturón Ecuatorial Sur (SEB)
-                { y: 740, h: 90, colA: "#e0be95", colB: "#c89f6d" }, // Zona Tropical Sur (STropZ)
-                { y: 830, h: 70, colA: "#7b4122", colB: "#5c2f16" }, // Cinturón Templado Sur (STB)
-                { y: 900, h: 124, colA: "#3c2112", colB: "#2b160b" } // Región Polar Sur
+            // Paleta espectral fidedigna de Cassini / Hubble
+            const belts = [
+                { y: 0, h: 90, c1: "#3c291b", c2: "#4a3322" },    // Casquete Polar Norte
+                { y: 90, h: 70, c1: "#7c4e2f", c2: "#8d5936" },   // Cinturón Templado Norte (NNTB)
+                { y: 160, h: 90, c1: "#d8be9b", c2: "#ebcfb2" },  // Zona Templada Norte (NTZ)
+                { y: 250, h: 90, c1: "#9e5c33", c2: "#b5693a" },  // Cinturón Templado (NTB)
+                { y: 340, h: 100, c1: "#f1e1cb", c2: "#dfc7a7" }, // Zona Tropical Norte (NTrZ)
+                { y: 440, h: 110, c1: "#8a3a14", c2: "#b34e1c" }, // Cinturón Ecuatorial Norte (NEB)
+                { y: 550, h: 100, c1: "#faebd7", c2: "#e8d2b5" }, // Zona Ecuatorial Brillante (EZ)
+                { y: 650, h: 120, c1: "#7e3314", c2: "#a04318" }, // Cinturón Ecuatorial Sur (SEB)
+                { y: 770, h: 90, c1: "#d5b48c", c2: "#c19c6e" },  // Zona Tropical Sur (STrZ)
+                { y: 860, h: 80, c1: "#6c381c", c2: "#542c15" },  // Cinturón Templado Sur (STB)
+                { y: 940, h: 84, c1: "#331c0e", c2: "#22130a" }   // Casquete Polar Sur
             ];
 
-            bandPattern.forEach(b => {
+            belts.forEach(b => {
                 const grad = ctx.createLinearGradient(0, b.y, 0, b.y + b.h);
-                grad.addColorStop(0, b.colA);
-                grad.addColorStop(1, b.colB);
+                grad.addColorStop(0, b.c1);
+                grad.addColorStop(1, b.c2);
                 ctx.fillStyle = grad;
                 ctx.fillRect(0, b.y, w, b.h);
 
-                // Turbulencias y remolinos fotográficos de cizalladura
-                ctx.fillStyle = "rgba(255, 255, 255, 0.08)";
-                for (let x = 0; x < w; x += 25) {
-                    const waveH = Math.sin(x * 0.04) * 6;
-                    ctx.fillRect(x, b.y + waveH, 14, 4);
+                // Turbulencias armónicas de cizalladura atmosférica
+                ctx.fillStyle = "rgba(255, 255, 255, 0.05)";
+                for (let x = 0; x < w; x += 30) {
+                    const waveH = Math.sin(x * 0.035) * 8 + Math.cos(x * 0.08) * 4;
+                    ctx.fillRect(x, b.y + waveH, 18, 5);
                 }
             });
 
-            // GRAN MANCHA ROJA (GMR) CON DETALLE ESPIRAL
-            const gmrX = 1320, gmrY = 675;
-            const gmrGrad = ctx.createRadialGradient(gmrX, gmrY, 10, gmrX, gmrY, 110);
+            // GRAN MANCHA ROJA (GMR) FOTOGRÁFICA
+            const gmrX = 1024, gmrY = 680;
+            const gmrGrad = ctx.createRadialGradient(gmrX, gmrY, 15, gmrX, gmrY, 120);
             gmrGrad.addColorStop(0, "#be371b");
-            gmrGrad.addColorStop(0.6, "#a22812");
-            gmrGrad.addColorStop(1, "#66180a");
+            gmrGrad.addColorStop(0.65, "#9c2610");
+            gmrGrad.addColorStop(1, "#5c1407");
             ctx.fillStyle = gmrGrad;
             ctx.beginPath();
-            ctx.ellipse(gmrX, gmrY, 130, 75, 0, 0, Math.PI * 2);
+            ctx.ellipse(gmrX, gmrY, 135, 76, -0.05, 0, Math.PI * 2);
             ctx.fill();
 
-            // Espirales internas del vórtice
-            ctx.strokeStyle = "rgba(250, 160, 110, 0.7)";
+            // Vórtice espiral interno
+            ctx.strokeStyle = "rgba(255, 180, 130, 0.65)";
             ctx.lineWidth = 4;
             ctx.beginPath();
-            ctx.ellipse(gmrX, gmrY, 95, 48, -0.1, 0, Math.PI * 1.7);
+            ctx.ellipse(gmrX, gmrY, 90, 45, -0.08, 0, Math.PI * 1.8);
             ctx.stroke();
 
-            // Pequeños óvalos blancos anticiclónicos
-            const ovals = [550, 850, 1750];
-            ovals.forEach(ox => {
-                ctx.fillStyle = "#ffffff";
+            // Tormentas blancas ovaladas anticiclónicas (White Ovals)
+            [400, 750, 1550].forEach(ox => {
+                ctx.fillStyle = "rgba(255, 255, 255, 0.85)";
                 ctx.beginPath();
-                ctx.ellipse(ox, 785, 28, 16, 0, 0, Math.PI * 2);
+                ctx.ellipse(ox, 790, 26, 14, 0, 0, Math.PI * 2);
                 ctx.fill();
             });
 
             dynTex.update();
         }
 
-        // PROYECCIÓN DE PINS 3D EN PANTALLA 2D
+        // PROYECCIÓN DE PINS 3D EN PANTALLA 2D (REGLA S10)
         function updatePinsProjection() {
             if (!showLabels) {
                 for (let i = 0; i < 5; i++) {
-                    document.getElementById("pin-" + i).style.display = "none";
+                    const p = document.getElementById("pin-" + i);
+                    if (p) p.style.display = "none";
                 }
                 return;
             }
@@ -997,31 +1132,39 @@
             STRUCTURES.forEach((st, i) => {
                 const pin = document.getElementById("pin-" + i);
                 const label = document.getElementById("label-" + i);
+                if (!pin) return;
 
-                // REGLA S10: Enfoque aislado
+                // REGLA S10: Enfoque aislado estricto
                 if (focusedIndex !== null && focusedIndex !== i) {
                     pin.style.display = "none";
                     return;
                 }
 
+                const meshPos = st.getMeshPos();
+
+                // Comprobación de visibilidad de hemisferio (no mostrar pines en la cara oculta)
+                const camPos = camera.position;
+                const toCam = camPos.subtract(meshPos).normalize();
+                const normal = meshPos.clone().normalize();
+                const isFacingCamera = (BABYLON.Vector3.Dot(normal, toCam) > -0.15);
+
                 const screenPos = BABYLON.Vector3.Project(
-                    st.meshPos,
+                    meshPos,
                     BABYLON.Matrix.Identity(),
                     scene.getTransformMatrix(),
                     camera.viewport.toGlobal(engine.getRenderWidth(), engine.getRenderHeight())
                 );
 
-                if (screenPos.z > 0 && screenPos.z < 1) {
+                if (isFacingCamera && screenPos.z > 0 && screenPos.z < 1) {
                     pin.style.display = "flex";
                     pin.style.left = screenPos.x + "px";
                     pin.style.top = screenPos.y + "px";
                     if (focusedIndex === i) {
                         pin.classList.add("active");
-                        label.style.display = "block";
                     } else {
                         pin.classList.remove("active");
-                        label.style.display = "block";
                     }
+                    if (label) label.style.display = "block";
                 } else {
                     pin.style.display = "none";
                 }
@@ -1043,7 +1186,7 @@
             document.getElementById("telPower").innerText = st.power;
             document.getElementById("telField").innerText = st.field;
 
-            // 2. VUELO SUAVE DE CÁMARA 3D (Cero pixelado, perspectiva real)
+            // 2. VUELO SUAVE DE CÁMARA 3D (Cero pixelado, perspectiva real en WebGL)
             BABYLON.Animation.CreateAndStartAnimation("camA", camera, "alpha", 30, 25, camera.alpha, st.camAlpha, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
             BABYLON.Animation.CreateAndStartAnimation("camB", camera, "beta", 30, 25, camera.beta, st.camBeta, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
             BABYLON.Animation.CreateAndStartAnimation("camR", camera, "radius", 30, 25, camera.radius, st.camRadius, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
@@ -1053,7 +1196,7 @@
             updatePinsProjection();
         }
 
-        // ENCUADRE TOTAL 3D
+        // ENCUADRE TOTAL 3D (RESTAURACIÓN DE TODOS LOS RÓTULOS SEGÚN S10)
         function reset3DCamera() {
             focusedIndex = null;
             document.getElementById("detailTitle").innerText = "Óvalo Auroral Principal (70°N)";
@@ -1068,7 +1211,7 @@
 
             BABYLON.Animation.CreateAndStartAnimation("camA", camera, "alpha", 30, 25, camera.alpha, -Math.PI / 2, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
             BABYLON.Animation.CreateAndStartAnimation("camB", camera, "beta", 30, 25, camera.beta, Math.PI / 2.2, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
-            BABYLON.Animation.CreateAndStartAnimation("camR", camera, "radius", 30, 25, camera.radius, 40, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
+            BABYLON.Animation.CreateAndStartAnimation("camR", camera, "radius", 30, 25, camera.radius, 42, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
             BABYLON.Animation.CreateAndStartAnimation("camT", camera, "target", 30, 25, camera.target, new BABYLON.Vector3(0, 0, 0), BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
 
             updatePinsProjection();
@@ -1079,36 +1222,43 @@
             currentVisualMode = mode;
             document.querySelectorAll(".mode-btn").forEach(b => b.classList.remove("active"));
             
-            const btn = document.getElementById("btnMode" + mode.charAt(0).toUpperCase() + mode.slice(1));
+            const btnKey = mode.charAt(0).toUpperCase() + mode.slice(1);
+            const btn = document.getElementById("btnMode" + btnKey);
             if (btn) btn.classList.add("active");
 
+            if (!jupMat || !northAuroraMesh) return;
+
             if (mode === 'visible') {
-                jupiterSphere.material.diffuseColor = new BABYLON.Color3(1, 1, 1);
-                northAurora.material.alpha = 0.35;
-                ioTorus.material.alpha = 0.15;
-                ioBeamLine.alpha = 0.2;
+                jupMat.diffuseColor = new BABYLON.Color3(1.0, 1.0, 1.0);
+                northAuroraMesh.material.alpha = 0.35;
+                if (ioTorusMesh) ioTorusMesh.material.alpha = 0.08;
+                if (ioFluxTubeMesh) ioFluxTubeMesh.alpha = 0.25;
                 magneticLines.forEach(l => l.alpha = 0.15);
             } else if (mode === 'uv') {
-                jupiterSphere.material.diffuseColor = new BABYLON.Color3(0.5, 0.6, 0.7);
-                northAurora.material.alpha = 0.95;
-                northAurora.material.emissiveColor = new BABYLON.Color3(0.25, 0.85, 1.0);
-                ioTorus.material.alpha = 0.25;
-                ioBeamLine.alpha = 0.8;
+                jupMat.diffuseColor = new BABYLON.Color3(0.4, 0.5, 0.65); // Atenuación FUV en metano
+                northAuroraMesh.material.alpha = 0.98;
+                northAuroraMesh.material.emissiveColor = new BABYLON.Color3(0.25, 0.88, 1.0);
+                if (ioTorusMesh) ioTorusMesh.material.alpha = 0.18;
+                if (ioFluxTubeMesh) ioFluxTubeMesh.alpha = 0.75;
                 magneticLines.forEach(l => l.alpha = 0.25);
             } else if (mode === 'flux') {
-                northAurora.material.alpha = 0.85;
-                ioTorus.material.alpha = 0.7;
-                ioBeamLine.alpha = 1.0;
+                jupMat.diffuseColor = new BABYLON.Color3(0.65, 0.7, 0.8);
+                northAuroraMesh.material.alpha = 0.85;
+                if (ioTorusMesh) ioTorusMesh.material.alpha = 0.45;
+                if (ioFluxTubeMesh) {
+                    ioFluxTubeMesh.alpha = 1.0;
+                    ioFluxTubeMesh.color = new BABYLON.Color3(0.4, 0.95, 1.0);
+                }
                 magneticLines.forEach(l => {
-                    l.alpha = 0.75;
-                    l.color = new BABYLON.Color3(0.3, 0.8, 1.0);
+                    l.alpha = 0.7;
+                    l.color = new BABYLON.Color3(0.3, 0.85, 1.0);
                 });
             } else if (mode === 'xray') {
-                jupiterSphere.material.diffuseColor = new BABYLON.Color3(0.3, 0.3, 0.4);
-                northAurora.material.alpha = 0.95;
-                northAurora.material.emissiveColor = new BABYLON.Color3(0.95, 0.35, 0.85);
-                ioTorus.material.alpha = 0.2;
-                ioBeamLine.alpha = 0.3;
+                jupMat.diffuseColor = new BABYLON.Color3(0.25, 0.25, 0.35);
+                northAuroraMesh.material.alpha = 0.95;
+                northAuroraMesh.material.emissiveColor = new BABYLON.Color3(0.95, 0.3, 0.85); // Rayos X Chandra
+                if (ioTorusMesh) ioTorusMesh.material.alpha = 0.15;
+                if (ioFluxTubeMesh) ioFluxTubeMesh.alpha = 0.3;
                 magneticLines.forEach(l => l.alpha = 0.2);
             }
         }
@@ -1126,7 +1276,12 @@
 
         // MODAL DE PLACA FOTOGRÁFICA OFICIAL NASA
         function openNasaModal() {
-            document.getElementById("nasaModal").style.display = "flex";
+            const modal = document.getElementById("nasaModal");
+            const img = document.getElementById("nasaPlateImg");
+            if (window.JUPITER_AURORA_PHOTO_B64 && window.JUPITER_AURORA_PHOTO_B64.length > 500) {
+                img.src = window.JUPITER_AURORA_PHOTO_B64;
+            }
+            modal.style.display = "flex";
         }
         function closeNasaModal(e) {
             document.getElementById("nasaModal").style.display = "none";

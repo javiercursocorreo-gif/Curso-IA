@@ -85,6 +85,35 @@ else
     echo "AVISO: No se pudo verificar la imagen JPEG de Júpiter. jupiter_aurora_b64.js no generado."
 fi
 
+# 5B. Mapa Equirectangular Planetario Oficial de Júpiter (NASA / Cassini / PIA07782)
+JUP_MAP="SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/jupiter_cassini_map.jpg"
+if [ ! -f "$JUP_MAP" ] || ! file "$JUP_MAP" 2>/dev/null | grep -qi "jpeg\|image"; then
+    echo "Descargando mapa fotográfico oficial de la NASA/Cassini de Júpiter (PIA07782)..."
+    rm -f "$JUP_MAP"
+    
+    # Intento 1: Wikimedia Commons versión 2048px
+    curl -sL -A "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36" "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e2/Jupiter.jpg/2048px-Jupiter.jpg" -o "$JUP_MAP"
+
+    # Intento 2: Wikimedia Commons original
+    if [ ! -s "$JUP_MAP" ] || ! file "$JUP_MAP" 2>/dev/null | grep -qi "jpeg\|image"; then
+        curl -sL -A "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36" "https://upload.wikimedia.org/wikipedia/commons/e/e2/Jupiter.jpg" -o "$JUP_MAP"
+    fi
+
+    # Intento 3: SolarSystemScope 2K texture
+    if [ ! -s "$JUP_MAP" ] || ! file "$JUP_MAP" 2>/dev/null | grep -qi "jpeg\|image"; then
+        curl -sL -A "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36" "https://www.solarsystemscope.com/textures/download/2k_jupiter.jpg" -o "$JUP_MAP"
+    fi
+fi
+
+if [ -f "$JUP_MAP" ] && file "$JUP_MAP" 2>/dev/null | grep -qi "jpeg\|image"; then
+    echo "Generando jupiter_cassini_b64.js..."
+    echo -n 'window.JUPITER_TEXTURE_B64 = "data:image/jpeg;base64,' > "SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/jupiter_cassini_b64.js"
+    base64 -i "$JUP_MAP" | tr -d '\n' >> "SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/jupiter_cassini_b64.js"
+    echo '";' >> "SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/jupiter_cassini_b64.js"
+else
+    echo "AVISO: No se pudo verificar la textura JPEG de Júpiter. jupiter_cassini_b64.js no generado."
+fi
+
 echo "=== 1. Copiando ilustraciones oficiales recortadas del cartel... ==="
 mkdir -p "SIMULADORES_INTERACTIVOS/01_SIMULADORES/cards_11d"
 cp -r "/Users/externo/.gemini/antigravity/brain/cbfe82a5-4265-4c02-9b6a-03745e403571/scratch/cards/"* "SIMULADORES_INTERACTIVOS/01_SIMULADORES/cards_11d/" 2>/dev/null || true
@@ -154,7 +183,7 @@ cp -r "SIMULADORES_INTERACTIVOS/01_SIMULADORES/cards_11d" "CLASES/EXPORTACION_FI
 
 echo "=== 3. Guardando cambios y sincronizando con GitHub... ==="
 git add -A
-git commit -m "feat(s14): planetario 3d real con vuelo orbital sin pixelado, filtros volumetricos fuv y aislamiento s10" || true
+git commit -m "feat(s14): integracion textura oficial nasa cassini pia07782, emision fuv lyman-alpha y aislamiento s10" || true
 git push origin main
 
 echo "=== 4. Abriendo simuladores oficiales en Google Chrome... ==="
