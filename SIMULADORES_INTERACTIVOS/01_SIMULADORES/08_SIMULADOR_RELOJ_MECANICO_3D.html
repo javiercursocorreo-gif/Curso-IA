@@ -522,47 +522,53 @@
         const MODEL_LOCAL = "../03_ASSETS_3D_Y_DATOS/engine_3d.glb";
 
         function initCustomMaterials(sc) {
-            // Rayos X: Carcasa translúcida y mecanismo interno brillante
+            // Rayos X: Carcasa translúcida estilo radiografía con resplandor azul zafiro
             matXrayCasing = new BABYLON.StandardMaterial("matXrayCasing", sc);
-            matXrayCasing.diffuseColor = new BABYLON.Color3(0.12, 0.45, 0.85);
-            matXrayCasing.emissiveColor = new BABYLON.Color3(0.04, 0.16, 0.35);
-            matXrayCasing.specularColor = new BABYLON.Color3(0.8, 0.9, 1.0);
-            matXrayCasing.alpha = 0.22;
+            matXrayCasing.diffuseColor = new BABYLON.Color3(0.08, 0.35, 0.75);
+            matXrayCasing.emissiveColor = new BABYLON.Color3(0.05, 0.18, 0.38);
+            matXrayCasing.specularColor = new BABYLON.Color3(0.9, 0.95, 1.0);
+            matXrayCasing.alpha = 0.28;
             matXrayCasing.backFaceCulling = false;
 
+            // Mecanismos internos no destacados en modo Rayos X: semitransparencia azulada de contexto
             matXrayInternal = new BABYLON.StandardMaterial("matXrayInternal", sc);
-            matXrayInternal.diffuseColor = new BABYLON.Color3(0.25, 0.75, 1.0);
-            matXrayInternal.emissiveColor = new BABYLON.Color3(0.15, 0.45, 0.8);
-            matXrayInternal.specularColor = new BABYLON.Color3(1, 1, 1);
-            matXrayInternal.alpha = 1.0;
+            matXrayInternal.diffuseColor = new BABYLON.Color3(0.2, 0.45, 0.7);
+            matXrayInternal.emissiveColor = new BABYLON.Color3(0.08, 0.2, 0.35);
+            matXrayInternal.specularColor = new BABYLON.Color3(0.8, 0.9, 1.0);
+            matXrayInternal.alpha = 0.42;
+            matXrayInternal.backFaceCulling = false;
 
             // Resaltados individuales de componentes principales con emisión luminiscente
+            // 1. Pistón y bulón: Cian eléctrico
             matHighlightPiston = new BABYLON.StandardMaterial("matHighlightPiston", sc);
-            matHighlightPiston.diffuseColor = new BABYLON.Color3(0.0, 0.7, 1.0);
-            matHighlightPiston.emissiveColor = new BABYLON.Color3(0.1, 0.85, 1.0);
+            matHighlightPiston.diffuseColor = new BABYLON.Color3(0.0, 0.85, 1.0);
+            matHighlightPiston.emissiveColor = new BABYLON.Color3(0.1, 0.75, 1.0);
             matHighlightPiston.specularColor = new BABYLON.Color3(1, 1, 1);
             matHighlightPiston.alpha = 1.0;
             matHighlightPiston.backFaceCulling = false;
 
+            // 2. Biela de transmisión: Oro ámbar intenso
             matHighlightRod = new BABYLON.StandardMaterial("matHighlightRod", sc);
-            matHighlightRod.diffuseColor = new BABYLON.Color3(1.0, 0.6, 0.0);
+            matHighlightRod.diffuseColor = new BABYLON.Color3(1.0, 0.65, 0.0);
             matHighlightRod.emissiveColor = new BABYLON.Color3(1.0, 0.75, 0.1);
             matHighlightRod.specularColor = new BABYLON.Color3(1, 1, 1);
             matHighlightRod.alpha = 1.0;
             matHighlightRod.backFaceCulling = false;
 
+            // 3. Cigüeñal y contrapesos: Verde esmeralda vivo
             matHighlightCrank = new BABYLON.StandardMaterial("matHighlightCrank", sc);
-            matHighlightCrank.diffuseColor = new BABYLON.Color3(0.05, 0.85, 0.35);
+            matHighlightCrank.diffuseColor = new BABYLON.Color3(0.05, 0.95, 0.4);
             matHighlightCrank.emissiveColor = new BABYLON.Color3(0.15, 1.0, 0.45);
             matHighlightCrank.specularColor = new BABYLON.Color3(1, 1, 1);
             matHighlightCrank.alpha = 1.0;
             matHighlightCrank.backFaceCulling = false;
 
+            // 4. Bloque motor y cilindro: Púrpura de aleación nodular
             matHighlightBlock = new BABYLON.StandardMaterial("matHighlightBlock", sc);
-            matHighlightBlock.diffuseColor = new BABYLON.Color3(0.68, 0.28, 0.95);
-            matHighlightBlock.emissiveColor = new BABYLON.Color3(0.32, 0.1, 0.5);
+            matHighlightBlock.diffuseColor = new BABYLON.Color3(0.75, 0.3, 1.0);
+            matHighlightBlock.emissiveColor = new BABYLON.Color3(0.35, 0.1, 0.55);
             matHighlightBlock.specularColor = new BABYLON.Color3(0.95, 0.95, 1.0);
-            matHighlightBlock.alpha = 0.88;
+            matHighlightBlock.alpha = 0.85;
             matHighlightBlock.backFaceCulling = false;
 
             // Termografía por gradiente de calor real
@@ -585,29 +591,39 @@
 
         function classifyMesh(m) {
             if (!m) return "casing";
-            const name = (m.name || "").toLowerCase();
-            const id = (m.id || "").toLowerCase();
-            const parentName = (m.parent ? m.parent.name : "").toLowerCase();
-            const full = `${name} ${id} ${parentName}`;
+            const name = ((m.name || "") + " " + (m.id || "") + " " + (m.parent ? m.parent.name : "")).toLowerCase();
 
-            if (full.includes("__root__") || full.includes("engineroot")) return "root";
+            if (name.includes("__root__") || name.includes("engineroot")) return "root";
 
-            // 1. PISTONES Y BULONES (Piston_123-844 y pasador body_24)
-            if (full.includes("piston") || full.includes("body_24")) return "piston";
+            // 1. Detección directa por nombres estándar de ingeniería CAD
+            if (name.includes("piston") || name.includes("body_24")) return "piston";
+            if (name.includes("rod")) return "rod";
+            if (name.includes("crank") || name.includes("shaft") || name.includes("lifter") || name.includes("spring")) return "crank";
+            if (name.includes("block") || name.includes("casing") || name.includes("housing")) return "casing";
 
-            // 2. BIELAS DE TRANSMISIÓN (rod_123-699)
-            if (full.includes("rod")) return "rod";
+            // 2. Detección por índice de nodo en la jerarquía glTF oficial (2CylinderEngine.glb)
+            // Node 1..6: Conjuntos de Pistones y Pasadores
+            if (/node[_]?(1|2|3|4|5|6)\b/i.test(name)) return "piston";
+            // Node 73, 74: Bielas de transmisión principales
+            if (/node[_]?(73|74)\b/i.test(name)) return "rod";
+            // Node 0, 7..13, 79, 80: Bloque motor, cárter y tapas estructurales
+            if (/node[_]?(0|7|8|9|10|11|12|13|79|80)\b/i.test(name)) return "casing";
+            // Node 14..72, 75..78: Cigüeñal, contrapesos, engranajes y árboles de levas
+            if (/node[_]?(1[4-9]|[2-6][0-9]|7[0-2]|7[5-8])\b/i.test(name)) return "crank";
 
-            // 3. BLOQUE MOTOR Y CÁRTER ESTRUCTURAL
-            // En el glTF oficial 2CylinderEngine: "body" (bloque central/cilindros) y "body_1" (cárter/carcasa)
-            const isBodyBlock = /\bbody(\.|\b|_primitive\d*)/i.test(name) && !/\bbody_\d+/i.test(name);
-            const isBodyCarter = /\bbody_1(\.|\b|_primitive\d*)/i.test(name) && !/\bbody_1\d+/i.test(name);
-            if (isBodyBlock || isBodyCarter || full.includes("block") || full.includes("casing") || full.includes("housing")) {
-                return "casing";
-            }
+            // 3. Firma geométrica fidedigna (número exacto de vértices e índices de la malla CAD)
+            const vc = m.getTotalVertices ? m.getTotalVertices() : 0;
+            const ic = m.getTotalIndices ? m.getTotalIndices() : 0;
+            if (vc === 2012 || vc === 1296 || vc === 264 || ic === 8250 || ic === 5034) return "piston";
+            if (vc === 1382 || vc === 1281 || ic === 4839) return "rod";
+            if (vc === 8618 || vc === 5364 || vc === 3672) return "casing";
+            if (vc === 180 || vc === 43 || vc === 870 || vc === 294 || vc === 624 || vc === 408 || vc === 340 || vc === 324 || vc === 96 || vc === 348 || vc === 1409 || vc === 1940 || vc === 1754 || vc === 1749) return "crank";
 
-            // 4. CIGÜEÑAL Y TREN DE TRANSMISIÓN
-            // Mallas body_2 hasta body_23, Lifter_..., Spring_..., engranajes, árboles de levas
+            // 4. Mallas body_X:
+            // "body" y "body_1" corresponden al bloque de cilindros y cárter
+            if (/\bbody(\.|\b|_primitive)/i.test(name) && !/\bbody_\d+/i.test(name)) return "casing";
+            if (/\bbody_1(\.|\b|_primitive)/i.test(name) && !/\bbody_1\d+/i.test(name)) return "casing";
+
             return "crank";
         }
 
@@ -865,7 +881,7 @@
             animateCamera(targetCenter, INSPECT_RADIUS);
 
             if (name === 'piston') {
-                document.getElementById("badgeInfo").innerText = "Diagnóstico: 1. Pistón y Segmentos • Resaltado en Cian Lumínico";
+                document.getElementById("badgeInfo").innerText = "Diagnóstico: 1. Pistón y Segmentos • Resaltado en Cian Lumínico (Rayos X Activo)";
                 document.getElementById("valTemp").innerText = "540 °C";
                 document.getElementById("valPress").innerText = "72.4 bar";
                 document.getElementById("valForce").innerText = "28.4 kN";
@@ -878,15 +894,15 @@
                         m.visibility = 1.0;
                     } else if (type === 'casing') {
                         m.material = matXrayCasing;
-                        m.visibility = 0.12;
+                        m.visibility = 1.0;
                     } else {
                         m.material = matXrayInternal;
-                        m.visibility = 0.35;
+                        m.visibility = 1.0;
                     }
                 });
 
             } else if (name === 'rod') {
-                document.getElementById("badgeInfo").innerText = "Diagnóstico: 2. Biela de Transmisión • Resaltado en Oro/Ámbar";
+                document.getElementById("badgeInfo").innerText = "Diagnóstico: 2. Biela de Transmisión • Resaltado en Oro/Ámbar (Rayos X Activo)";
                 document.getElementById("valForce").innerText = "31.2 kN";
                 document.getElementById("valTemp").innerText = "380 °C";
                 document.getElementById("valPress").innerText = "55.0 bar";
@@ -899,15 +915,15 @@
                         m.visibility = 1.0;
                     } else if (type === 'casing') {
                         m.material = matXrayCasing;
-                        m.visibility = 0.12;
+                        m.visibility = 1.0;
                     } else {
                         m.material = matXrayInternal;
-                        m.visibility = 0.35;
+                        m.visibility = 1.0;
                     }
                 });
 
             } else if (name === 'crank') {
-                document.getElementById("badgeInfo").innerText = "Diagnóstico: 3. Cigüeñal y Contrapesos • Resaltado en Verde Esmeralda";
+                document.getElementById("badgeInfo").innerText = "Diagnóstico: 3. Cigüeñal y Contrapesos • Resaltado en Verde Esmeralda (Rayos X Activo)";
                 document.getElementById("valRadS").innerText = `${(rpm * 2 * Math.PI / 60).toFixed(1)} rad/s`;
                 document.getElementById("valForce").innerText = "24.8 kN";
                 document.getElementById("valPress").innerText = "45.0 bar";
@@ -920,10 +936,10 @@
                         m.visibility = 1.0;
                     } else if (type === 'casing') {
                         m.material = matXrayCasing;
-                        m.visibility = 0.12;
+                        m.visibility = 1.0;
                     } else {
                         m.material = matXrayInternal;
-                        m.visibility = 0.35;
+                        m.visibility = 1.0;
                     }
                 });
 
@@ -938,10 +954,10 @@
                     const type = getComponentType(m);
                     if (type === 'casing') {
                         m.material = matHighlightBlock;
-                        m.visibility = 0.88;
+                        m.visibility = 1.0;
                     } else {
                         m.material = matXrayInternal;
-                        m.visibility = 0.35;
+                        m.visibility = 1.0;
                     }
                 });
             }
