@@ -99,7 +99,7 @@ cp -r "SIMULADORES_INTERACTIVOS/01_SIMULADORES/cards_11d" "CLASES/EXPORTACION_FI
 
 echo "=== 3. Guardando cambios y sincronizando con GitHub... ==="
 git add -A
-git commit -m "fix(s07): cara oculta oscura al rotar slider segun fase astronomica" || true
+git commit -m "feat(s07): indicador explicito de Cara Vista y Cara Oculta en sitios selenograficos" || true
 git push origin main
 
 echo "=== 4. Abriendo simuladores oficiales en Google Chrome... ==="
