@@ -457,28 +457,28 @@
             <div class="control-box">
                 <div class="section-title">Componentes Principales</div>
                 <div class="part-list">
-                    <div class="part-item active" onclick="focusComponent('piston')">
+                    <div class="part-item active" id="partBtn_piston" onclick="focusComponent('piston')">
                         <div class="part-item-title">
                             <span>1. Pistón y Segmentos</span>
                             <span style="color:var(--cyan);">Aluminio Forjado</span>
                         </div>
                         <div class="part-item-desc">Soporta la violenta explosión de los gases y desciende guiado en el interior de la camisa del cilindro.</div>
                     </div>
-                    <div class="part-item" onclick="focusComponent('rod')">
+                    <div class="part-item" id="partBtn_rod" onclick="focusComponent('rod')">
                         <div class="part-item-title">
                             <span>2. Biela de Transmisión</span>
                             <span style="color:var(--amber);">Acero Cromo-Níquel</span>
                         </div>
                         <div class="part-item-desc">Articula con movimiento pendular para conectar el pistón lineal con el cigüeñal rotativo.</div>
                     </div>
-                    <div class="part-item" onclick="focusComponent('crank')">
+                    <div class="part-item" id="partBtn_crank" onclick="focusComponent('crank')">
                         <div class="part-item-title">
                             <span>3. Cigüeñal y Contrapesos</span>
                             <span style="color:var(--emerald);">Acero Forjado</span>
                         </div>
                         <div class="part-item-desc">Transforma la carrera de empuje vertical en giro continuo uniforme mediante contrapesos de equilibrado dinámico.</div>
                     </div>
-                    <div class="part-item" onclick="focusComponent('block')">
+                    <div class="part-item" id="partBtn_block" onclick="focusComponent('block')">
                         <div class="part-item-title">
                             <span>4. Bloque Motor & Cilindro</span>
                             <span style="color:#a855f7;">Fundición Nodular</span>
@@ -512,9 +512,80 @@
         let currentMode = 'pbr';
         let originalMaterials = new Map();
 
+        // Materiales dedicados para rayos X, termografía y diagnóstico de piezas
+        let matXrayCasing, matXrayInternal;
+        let matHighlightPiston, matHighlightRod, matHighlightCrank, matHighlightBlock;
+        let matThermalPiston, matThermalRod, matThermalCrank, matThermalCasing;
+
         // Fuentes del modelo 3D (Base64 local autónomo + CDN Fallback)
         const MODEL_URL_RAW = "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/2CylinderEngine/glTF-Binary/2CylinderEngine.glb";
         const MODEL_LOCAL = "../03_ASSETS_3D_Y_DATOS/engine_3d.glb";
+
+        function initCustomMaterials(sc) {
+            // Rayos X: Carcasa translúcida y mecanismo interno brillante
+            matXrayCasing = new BABYLON.StandardMaterial("matXrayCasing", sc);
+            matXrayCasing.diffuseColor = new BABYLON.Color3(0.12, 0.45, 0.85);
+            matXrayCasing.emissiveColor = new BABYLON.Color3(0.04, 0.16, 0.35);
+            matXrayCasing.specularColor = new BABYLON.Color3(0.8, 0.9, 1.0);
+            matXrayCasing.alpha = 0.22;
+            matXrayCasing.backFaceCulling = false;
+
+            matXrayInternal = new BABYLON.StandardMaterial("matXrayInternal", sc);
+            matXrayInternal.diffuseColor = new BABYLON.Color3(0.25, 0.75, 1.0);
+            matXrayInternal.emissiveColor = new BABYLON.Color3(0.15, 0.45, 0.8);
+            matXrayInternal.specularColor = new BABYLON.Color3(1, 1, 1);
+            matXrayInternal.alpha = 1.0;
+
+            // Resaltados individuales de componentes principales
+            matHighlightPiston = new BABYLON.StandardMaterial("matHighlightPiston", sc);
+            matHighlightPiston.diffuseColor = new BABYLON.Color3(0.05, 0.85, 1.0);
+            matHighlightPiston.emissiveColor = new BABYLON.Color3(0.08, 0.55, 0.9);
+            matHighlightPiston.specularColor = new BABYLON.Color3(1, 1, 1);
+            matHighlightPiston.alpha = 1.0;
+
+            matHighlightRod = new BABYLON.StandardMaterial("matHighlightRod", sc);
+            matHighlightRod.diffuseColor = new BABYLON.Color3(1.0, 0.72, 0.05);
+            matHighlightRod.emissiveColor = new BABYLON.Color3(0.75, 0.45, 0.02);
+            matHighlightRod.specularColor = new BABYLON.Color3(1, 1, 1);
+            matHighlightRod.alpha = 1.0;
+
+            matHighlightCrank = new BABYLON.StandardMaterial("matHighlightCrank", sc);
+            matHighlightCrank.diffuseColor = new BABYLON.Color3(0.15, 0.95, 0.45);
+            matHighlightCrank.emissiveColor = new BABYLON.Color3(0.08, 0.65, 0.25);
+            matHighlightCrank.specularColor = new BABYLON.Color3(1, 1, 1);
+            matHighlightCrank.alpha = 1.0;
+
+            matHighlightBlock = new BABYLON.StandardMaterial("matHighlightBlock", sc);
+            matHighlightBlock.diffuseColor = new BABYLON.Color3(0.7, 0.35, 0.95);
+            matHighlightBlock.emissiveColor = new BABYLON.Color3(0.3, 0.1, 0.45);
+            matHighlightBlock.specularColor = new BABYLON.Color3(0.9, 0.9, 1.0);
+            matHighlightBlock.alpha = 1.0;
+
+            // Termografía por gradiente de calor real
+            matThermalPiston = new BABYLON.StandardMaterial("matThermalPiston", sc);
+            matThermalPiston.diffuseColor = new BABYLON.Color3(1.0, 0.15, 0.05);
+            matThermalPiston.emissiveColor = new BABYLON.Color3(0.7, 0.1, 0.0);
+
+            matThermalRod = new BABYLON.StandardMaterial("matThermalRod", sc);
+            matThermalRod.diffuseColor = new BABYLON.Color3(1.0, 0.65, 0.0);
+            matThermalRod.emissiveColor = new BABYLON.Color3(0.5, 0.25, 0.0);
+
+            matThermalCrank = new BABYLON.StandardMaterial("matThermalCrank", sc);
+            matThermalCrank.diffuseColor = new BABYLON.Color3(0.2, 0.6, 0.9);
+            matThermalCrank.emissiveColor = new BABYLON.Color3(0.05, 0.2, 0.4);
+
+            matThermalCasing = new BABYLON.StandardMaterial("matThermalCasing", sc);
+            matThermalCasing.diffuseColor = new BABYLON.Color3(0.65, 0.25, 0.1);
+            matThermalCasing.emissiveColor = new BABYLON.Color3(0.25, 0.08, 0.02);
+        }
+
+        function getComponentType(m) {
+            const n = (m.name || "").toLowerCase();
+            if (n.includes("piston")) return "piston";
+            if (n.includes("rod")) return "rod";
+            if (n.includes("crank") || n.includes("shaft") || n.includes("lifter") || n.includes("spring")) return "crank";
+            return "casing";
+        }
 
         function createScene() {
             const sc = new BABYLON.Scene(engine);
@@ -542,6 +613,7 @@
             dirLight2.intensity = 0.85;
             dirLight2.diffuse = new BABYLON.Color3(0.9, 0.75, 0.55);
 
+            initCustomMaterials(sc);
             loadModel(sc);
             return sc;
         }
@@ -593,6 +665,8 @@
                             if (m.material instanceof BABYLON.PBRMaterial) {
                                 m.material.metallic = 0.88;
                                 m.material.roughness = 0.32;
+                                m.material.transparencyMode = BABYLON.PBRMaterial.PBR_OPAQUE;
+                                m.material.alpha = 1.0;
                             }
                         }
                     });
@@ -653,54 +727,135 @@
         function setMode(mode) {
             currentMode = mode;
             document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(`btnMode${mode.charAt(0).toUpperCase() + mode.slice(1)}`).classList.add('active');
+            const btn = document.getElementById(`btnMode${mode.charAt(0).toUpperCase() + mode.slice(1)}`);
+            if (btn) btn.classList.add('active');
+
+            if (mode === 'pbr') {
+                document.querySelectorAll('.part-item').forEach(i => i.classList.remove('active'));
+                const blk = document.getElementById('partBtn_block');
+                if (blk) blk.classList.add('active');
+                document.getElementById("badgeInfo").innerText = "Motor 2 Cilindros en V • Geometría CAD Real 3D (Metálico Real)";
+            } else if (mode === 'xray') {
+                document.getElementById("badgeInfo").innerText = "Inspección Rayos X: Carcasa Translúcida con Cinemática Interna";
+            } else if (mode === 'thermal') {
+                document.getElementById("badgeInfo").innerText = "Termografía Infrarroja: Gradiente Térmico de Combustión";
+            }
 
             scene.meshes.forEach(m => {
                 if (!m.material) return;
-                // Respaldo indestructible del material PBR original
-                if (!m._origMaterial) {
-                    m._origMaterial = originalMaterials.get(m) || m.material;
-                }
+                const type = getComponentType(m);
 
                 if (mode === 'pbr') {
                     if (m._origMaterial) {
                         m.material = m._origMaterial;
-                        if (m.material.alpha !== undefined) m.material.alpha = 1.0;
+                        if (m.material instanceof BABYLON.PBRMaterial) {
+                            m.material.transparencyMode = BABYLON.PBRMaterial.PBR_OPAQUE;
+                            m.material.alpha = 1.0;
+                        } else if (m.material.alpha !== undefined) {
+                            m.material.alpha = 1.0;
+                        }
                     }
                     m.visibility = 1.0;
                 } else if (mode === 'thermal') {
-                    const mat = new BABYLON.StandardMaterial("thermalMat_" + (m.name || m.id), scene);
-                    mat.diffuseColor = new BABYLON.Color3(0.9, 0.2, 0.1);
-                    mat.emissiveColor = new BABYLON.Color3(0.4, 0.05, 0.0);
-                    m.material = mat;
+                    if (type === 'piston') m.material = matThermalPiston;
+                    else if (type === 'rod') m.material = matThermalRod;
+                    else if (type === 'crank') m.material = matThermalCrank;
+                    else m.material = matThermalCasing;
                     m.visibility = 1.0;
                 } else if (mode === 'xray') {
-                    const mat = new BABYLON.StandardMaterial("xrayMat_" + (m.name || m.id), scene);
-                    mat.diffuseColor = new BABYLON.Color3(0.2, 0.6, 1.0);
-                    mat.emissiveColor = new BABYLON.Color3(0.05, 0.2, 0.4);
-                    mat.alpha = 0.35;
-                    m.material = mat;
-                    m.visibility = 0.55;
+                    if (type === 'casing') {
+                        m.material = matXrayCasing;
+                        m.visibility = 0.22;
+                    } else {
+                        m.material = matXrayInternal;
+                        m.visibility = 1.0;
+                    }
                 }
             });
         }
 
         function focusComponent(name) {
             document.querySelectorAll('.part-item').forEach(i => i.classList.remove('active'));
-            if (window.event && window.event.currentTarget) window.event.currentTarget.classList.add('active');
+            const targetBtn = document.getElementById(`partBtn_${name}`);
+            if (targetBtn) targetBtn.classList.add('active');
+
+            document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+
+            const rpm = parseInt(document.getElementById("sliderRPM").value) || 1200;
 
             if (name === 'piston') {
-                camera.setTarget(new BABYLON.Vector3(0, 1.2, 0));
-                camera.radius = 4.5;
+                camera.setTarget(new BABYLON.Vector3(0, 0.9, 0));
+                camera.radius = 4.6;
+                document.getElementById("badgeInfo").innerText = "Diagnóstico: 1. Pistones en Carrera • Resaltado en Cian";
+                document.getElementById("valTemp").innerText = "540 °C";
+                document.getElementById("valPress").innerText = "72.4 bar";
+
+                scene.meshes.forEach(m => {
+                    if (!m.material) return;
+                    const type = getComponentType(m);
+                    if (type === 'piston') {
+                        m.material = matHighlightPiston;
+                        m.visibility = 1.0;
+                    } else if (type === 'casing') {
+                        m.material = matXrayCasing;
+                        m.visibility = 0.20;
+                    } else {
+                        if (m._origMaterial) m.material = m._origMaterial;
+                        m.visibility = 0.45;
+                    }
+                });
+
             } else if (name === 'rod') {
-                camera.setTarget(new BABYLON.Vector3(0, 0, 0));
-                camera.radius = 5.5;
+                camera.setTarget(new BABYLON.Vector3(0, 0.05, 0));
+                camera.radius = 5.2;
+                document.getElementById("badgeInfo").innerText = "Diagnóstico: 2. Bielas de Transmisión • Resaltado en Ámbar/Oro";
+                document.getElementById("valForce").innerText = "31.2 kN";
+                document.getElementById("valTemp").innerText = "380 °C";
+
+                scene.meshes.forEach(m => {
+                    if (!m.material) return;
+                    const type = getComponentType(m);
+                    if (type === 'rod') {
+                        m.material = matHighlightRod;
+                        m.visibility = 1.0;
+                    } else if (type === 'casing') {
+                        m.material = matXrayCasing;
+                        m.visibility = 0.20;
+                    } else {
+                        if (m._origMaterial) m.material = m._origMaterial;
+                        m.visibility = 0.45;
+                    }
+                });
+
             } else if (name === 'crank') {
-                camera.setTarget(new BABYLON.Vector3(0, -1.2, 0));
-                camera.radius = 5.0;
+                camera.setTarget(new BABYLON.Vector3(0, -0.95, 0));
+                camera.radius = 4.8;
+                document.getElementById("badgeInfo").innerText = "Diagnóstico: 3. Cigüeñal y Contrapesos • Resaltado en Esmeralda";
+                document.getElementById("valRadS").innerText = `${(rpm * 2 * Math.PI / 60).toFixed(1)} rad/s`;
+                document.getElementById("valForce").innerText = "24.8 kN";
+
+                scene.meshes.forEach(m => {
+                    if (!m.material) return;
+                    const type = getComponentType(m);
+                    if (type === 'crank') {
+                        m.material = matHighlightCrank;
+                        m.visibility = 1.0;
+                    } else if (type === 'casing') {
+                        m.material = matXrayCasing;
+                        m.visibility = 0.20;
+                    } else {
+                        if (m._origMaterial) m.material = m._origMaterial;
+                        m.visibility = 0.45;
+                    }
+                });
+
             } else if (name === 'block') {
                 camera.setTarget(new BABYLON.Vector3(0, 0, 0));
                 camera.radius = 8.5;
+                setMode('pbr');
+                const blk = document.getElementById('partBtn_block');
+                if (blk) blk.classList.add('active');
+                document.getElementById("badgeInfo").innerText = "Diagnóstico: 4. Bloque Motor & Carcasa • Metálico Real";
             }
         }
 
