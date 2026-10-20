@@ -652,13 +652,13 @@
             {
                 id: "shackleton",
                 name: "Polo Sur / Cráter Shackleton",
-                face: "limbo",
-                faceLabel: "🌗 POLO SUR (LIMBO VISTA)",
-                sub: "🌗 Limbo Polar Sur • Cara Vista / Objetivo Artemisa",
+                face: "oculta",
+                faceLabel: "🌑 CARA OCULTA (Polo Sur)",
+                sub: "🌑 Cara Oculta • Polo Sur • Objetivo Artemisa NASA",
                 type: "Futuro Artemisa",
-                lat: -89.9,
-                lon: 0.0,
-                desc: "<strong>📍 Localización:</strong> 🌗 <strong>Limbo Polar Sur (En el límite de la Cara Vista)</strong><br><br>En el vértice meridional exacto de la Luna. Sus bordes elevados reciben luz solar casi continua, mientras su interior permanece en oscuridad absoluta a -230 °C con enormes depósitos de hielo de agua, objetivo de la futura base del programa Artemisa de la NASA."
+                lat: -89.67,
+                lon: 129.78,
+                desc: "<strong>📍 Localización:</strong> 🌑 <strong>Cara Oculta (Polo Sur Lunar)</strong><br><br>Ubicado en el vértice polar sur de la Luna orientado hacia el hemisferio de la Cara Oculta. Su interior permanece en oscuridad perpetua a -230 °C y jamás puede observarse directamente desde la Tierra. Alberga gigantescas reservas de hielo de agua en el fondo de sus cráteres eternamente ensombrecidos, siendo el objetivo prioritario del programa Artemisa de la NASA para establecer la primera base científica lunar permanente."
             },
             {
                 id: "aitken",
@@ -681,8 +681,8 @@
         const scene = new BABYLON.Scene(engine);
         scene.clearColor = new BABYLON.Color4(0.015, 0.025, 0.05, 1.0);
 
-        // Cámara orbital ArcRotate centrada frontalmente hacia la Cara Visible (Longitud 0° en +Z)
-        const camera = new BABYLON.ArcRotateCamera("Camera", Math.PI / 2, Math.PI / 2, 4.3, BABYLON.Vector3.Zero(), scene);
+        // Cámara orbital ArcRotate centrada frontalmente hacia la Cara Visible (Longitud 0° en +X)
+        const camera = new BABYLON.ArcRotateCamera("Camera", 0, Math.PI / 2, 4.3, BABYLON.Vector3.Zero(), scene);
         camera.attachControl(canvas, true);
         camera.wheelPrecision = 45;
         camera.lowerRadiusLimit = 1.6;
@@ -694,8 +694,8 @@
         hemiLight.intensity = 0.16; // Luz cenicienta tenue que preserva la oscuridad del lado nocturno
         hemiLight.groundColor = new BABYLON.Color3(0.015, 0.02, 0.035);
 
-        // Luz solar matemáticamente calibrada (por defecto en Luna Llena: ilumina 100% la Cara Visible frontalmente desde +Z hacia -Z)
-        const sunLight = new BABYLON.DirectionalLight("sunLight", new BABYLON.Vector3(0, -0.05, -1).normalize(), scene);
+        // Luz solar matemáticamente calibrada (por defecto en Luna Llena: ilumina 100% la Cara Visible frontalmente desde +X hacia -X)
+        const sunLight = new BABYLON.DirectionalLight("sunLight", new BABYLON.Vector3(-1, -0.05, 0).normalize(), scene);
         sunLight.intensity = 2.9;
         sunLight.diffuse = new BABYLON.Color3(1.0, 0.98, 0.95);
 
@@ -833,7 +833,9 @@
         const moonMesh = BABYLON.MeshBuilder.CreateSphere("moon", { diameter: moonRadius * 2, segments: 64 }, scene);
 
         const naturalTex = createProceduralMoonTexture(scene, false);
+        naturalTex.uOffset = 0.25;
         const topoTex = createProceduralMoonTexture(scene, true);
+        topoTex.uOffset = 0.25;
 
         const moonMat = new BABYLON.StandardMaterial("moonMat", scene);
         moonMat.diffuseTexture = naturalTex;
@@ -844,6 +846,7 @@
         // Cargar mapa satelital NASA LRO real con fallback
         const nasaMoonUrl = "https://cdn.jsdelivr.net/gh/zhangwenqiang0214/solar-system-3d@main/assets/2k_moon.jpg";
         const realNasaTex = new BABYLON.Texture(nasaMoonUrl, scene, false, false, BABYLON.Texture.TRILINEAR_SAMPLINGMODE, () => {
+            realNasaTex.uOffset = 0.25;
             moonMat.diffuseTexture = realNasaTex;
         }, () => {
             console.log("Usando textura selenográfica procedural de alta resolución Babylon.js");
@@ -853,12 +856,11 @@
         // 5. PINES SELENOGRÁFICOS EN BABYLON.JS
         // ============================================================================
         function latLonToBabylon(lat, lon, radius) {
-            const latRad = (lat * Math.PI) / 180;
-            const lonRad = (lon * Math.PI) / 180;
-            const rXZ = radius * Math.cos(latRad);
-            const x = rXZ * Math.sin(lonRad);
-            const y = radius * Math.sin(latRad);
-            const z = rXZ * Math.cos(lonRad);
+            const phi = (90 - lat) * (Math.PI / 180);
+            const theta = (lon + 180) * (Math.PI / 180);
+            const x = -(radius * Math.sin(phi) * Math.cos(theta));
+            const z = (radius * Math.sin(phi) * Math.sin(theta));
+            const y = (radius * Math.cos(phi));
             return new BABYLON.Vector3(x, y, z);
         }
 
@@ -920,19 +922,19 @@
             const phaseRad = (currentPhaseDeg * Math.PI) / 180;
             const rotRad = (currentMoonRotDeg * Math.PI) / 180;
 
-            // Dirección local del Sol según fase lunar (observador en +Z frente a Cara Visible):
-            // 180° (Llena): Luz incide desde +Z hacia -Z (x=0, z=-1) -> Cara Visible 100% brillante
-            // 0° (Nueva): Luz incide desde -Z hacia +Z (x=0, z=+1) -> Cara Oculta brillante, Cara Visible oscura
-            // 90° (Creciente): Luz incide desde -X hacia +X (x=-1, z=0) -> Mitad derecha iluminada (D)
-            // 270° (Menguante): Luz incide desde +X hacia -X (x=+1, z=0) -> Mitad izquierda iluminada (C)
-            const lx = -Math.sin(phaseRad);
-            const lz = Math.cos(phaseRad);
+            // Dirección local del Sol según fase lunar (observador en +X frente a Cara Visible):
+            // 180° (Llena): Luz incide desde +X hacia -X (x=-1, z=0) -> Cara Visible 100% brillante
+            // 0° (Nueva): Luz incide desde -X hacia +X (x=+1, z=0) -> Cara Oculta brillante, Cara Visible oscura
+            // 90° (Creciente): Luz incide desde +Z hacia -Z (x=0, z=1) -> Mitad derecha iluminada (D)
+            // 270° (Menguante): Luz incide desde -Z hacia +Z (x=0, z=-1) -> Mitad izquierda iluminada (C)
+            const lx = Math.cos(phaseRad);
+            const lz = Math.sin(phaseRad);
             const ly = -0.05;
 
             // Al rotar la Luna con el slider sobre su eje polar (rotRad), rotamos el vector solar en el espacio del mundo
-            // para que la cara iluminada rote con la Luna (en Llena, Cara Oculta permanece oscura al rotar)
-            const wx = lx * Math.cos(rotRad) + lz * Math.sin(rotRad);
-            const wz = -lx * Math.sin(rotRad) + lz * Math.cos(rotRad);
+            // para que la cara orientada al Sol conserve su iluminación y la Cara Oculta permanezca en sombra (noche lunar)
+            const wx = lx * Math.cos(rotRad) - lz * Math.sin(rotRad);
+            const wz = lx * Math.sin(rotRad) + lz * Math.cos(rotRad);
 
             sunLight.direction = new BABYLON.Vector3(wx, ly, wz).normalize();
 
@@ -1067,7 +1069,7 @@
             // Al centrar la Cara Visible, restablecemos la iluminación al 100% (Luna Llena frontal completa)
             setPhase(180, 'Luna Llena (100% Iluminada)');
 
-            BABYLON.Animation.CreateAndStartAnimation("camAlpha", camera, "alpha", 30, 20, camera.alpha, Math.PI / 2, 2);
+            BABYLON.Animation.CreateAndStartAnimation("camAlpha", camera, "alpha", 30, 20, camera.alpha, 0, 2);
             BABYLON.Animation.CreateAndStartAnimation("camBeta", camera, "beta", 30, 20, camera.beta, Math.PI / 2, 2);
             BABYLON.Animation.CreateAndStartAnimation("camRadius", camera, "radius", 30, 20, camera.radius, 4.3, 2);
         }

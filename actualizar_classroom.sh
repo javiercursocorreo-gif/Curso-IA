@@ -99,7 +99,7 @@ cp -r "SIMULADORES_INTERACTIVOS/01_SIMULADORES/cards_11d" "CLASES/EXPORTACION_FI
 
 echo "=== 3. Guardando cambios y sincronizando con GitHub... ==="
 git add -A
-git commit -m "fix(s07): alineacion 100% exacta del eje selenografico y textos de rotacion orbital" || true
+git commit -m "fix(s07): clasificacion y coordenadas cientificas exactas de Crater Shackleton en Cara Oculta" || true
 git push origin main
 
 echo "=== 4. Abriendo simuladores oficiales en Google Chrome... ==="
