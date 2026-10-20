@@ -373,11 +373,11 @@
     
     <!-- BARRA DE NAVEGACIÓN -->
     <div class="nav-bar">
-        <a class="btn-back" href="REPERTORIO_KORG_EK50.html?v=85">
+        <a class="btn-back" href="REPERTORIO_KORG_EK50.html?v=86">
             ⬅ Volver a la Lista de Canciones
         </a>
         <div style="display:flex; align-items:center; gap:8px;">
-            <button onclick="window.location.href='CANCION_02_HALLELUJAH.html?t='+Date.now()" style="background:#0284c7; color:#fff; border:none; padding:6px 12px; border-radius:8px; font-size:0.8rem; font-weight:800; cursor:pointer;" title="Pulsa aquí en el iPad para limpiar la caché y ver la última versión">🔄 Recargar v85</button>
+            <button onclick="window.location.href='CANCION_02_HALLELUJAH.html?t='+Date.now()" style="background:#0284c7; color:#fff; border:none; padding:6px 12px; border-radius:8px; font-size:0.8rem; font-weight:800; cursor:pointer;" title="Pulsa aquí en el iPad para limpiar la caché y ver la última versión">🔄 Recargar v86</button>
             <div class="midi-bar">
                 <span id="midi-dot" class="status-dot"></span>
                 <span id="midi-label">Iniciando MIDI...</span>
@@ -869,6 +869,17 @@
             enviarMidiGlobal([0xB0 | 15, 0x20, 2]);
             enviarMidiGlobal([0xC0 | 15, 9]); // Estilo 042
 
+            // Asegurar que físicamente en el panel solo quede iluminado UPPER 1 (Set 1: Grand Piano)
+            enviarMidiGlobal([0xB0 | 0, 0x00, 33]);
+            enviarMidiGlobal([0xB0 | 0, 0x20, 0]);
+            enviarMidiGlobal([0xC0 | 0, 0]);
+
+            enviarMidiGlobal([0xB0 | 15, 0x00, 33]);
+            enviarMidiGlobal([0xB0 | 15, 0x20, 0]);
+            enviarMidiGlobal([0xC0 | 15, 0]);
+
+            await new Promise(r => setTimeout(r, 45));
+
             // 2. Upper 1 = STS Armónica con Eco (Reverb/Chorus acústico profundo)
             enviarMidiGlobal([0xB0 | 0, 0x00, 121]);
             enviarMidiGlobal([0xB0 | 0, 0x20, 3]);
@@ -887,7 +898,7 @@
 
             // TOTALMENTE SILENCIOSO: Cambia la configuración sin disparar ráfagas de notas
             const nombres = salidas.map(o=>o.name).join(', ') || (midiOutput ? midiOutput.name : 'USB');
-            if (log) log.innerHTML = `🎵 <b>1. Armónica con Eco + Estilo 042</b> listo en <b>${nombres}</b> (Armónica solista con reverberación profunda · ⏱️ <b>56 BPM</b>). ¡Toca el teclado!`;
+            if (log) log.innerHTML = `🎵 <b>1. Armónica con Eco + Estilo 042</b> listo en <b>${nombres}</b> (Panel: Solo Upper 1 · Reverb profunda · ⏱️ <b>56 BPM</b>). ¡Toca el teclado!`;
         } catch(e) {
             if (log) log.innerHTML = `⚠️ Error enviando al Korg: ${e.message}`;
         }
@@ -912,7 +923,20 @@
             enviarMidiGlobal([0xB0 | 15, 0x20, 2]);
             enviarMidiGlobal([0xC0 | 15, 9]); // Estilo 042
 
-            // 2. Upper 1 = Coro / Voces Celestiales (Choir Aahs)
+            // 2. ACTIVAR FÍSICAMENTE UPPER 1 Y UPPER 2 EN EL PANEL DEL KORG
+            // Enviamos el comando de Keyboard Set No. 61 ("The Strings") que enciende los botones físicos UPPER 1 y UPPER 2
+            enviarMidiGlobal([0xB0 | 0, 0x00, 33]);
+            enviarMidiGlobal([0xB0 | 0, 0x20, 6]);
+            enviarMidiGlobal([0xC0 | 0, 0]);
+
+            enviarMidiGlobal([0xB0 | 15, 0x00, 33]);
+            enviarMidiGlobal([0xB0 | 15, 0x20, 6]);
+            enviarMidiGlobal([0xC0 | 15, 0]);
+
+            await new Promise(r => setTimeout(r, 45));
+
+            // 3. Asignar los sonidos específicos a cada capa:
+            // Upper 1 = Coro / Voces Celestiales (Choir Aahs)
             enviarMidiGlobal([0xB0 | 0, 0x00, 121]);
             enviarMidiGlobal([0xB0 | 0, 0x20, 3]);
             enviarMidiGlobal([0xC0 | 0, 52]); // Choir Aahs
@@ -932,12 +956,12 @@
             // Upper 3 apagado
             enviarMidiGlobal([0xB0 | 2, 0x07, 0]);
 
-            // 3. Fijar reloj MIDI a 56 BPM
+            // 4. Fijar reloj MIDI a 56 BPM
             fijarTempoMIDI(56);
 
             // TOTALMENTE SILENCIOSO: Cambia la configuración sin disparar ráfagas de notas
             const nombres = salidas.map(o=>o.name).join(', ') || (midiOutput ? midiOutput.name : 'USB');
-            if (log) log.innerHTML = `👥 <b>2. Voces & Strings + Estilo 042</b> listo en <b>${nombres}</b> (Upper 1: Coro · Upper 2: Cuerdas · ⏱️ <b>56 BPM</b>). ¡Toca el teclado!`;
+            if (log) log.innerHTML = `👥 <b>2. Voces & Strings + Estilo 042</b> listo en <b>${nombres}</b> (Panel: <b>Upper 1 + Upper 2 Iluminados</b> · ⏱️ <b>56 BPM</b>). ¡Toca el teclado!`;
         } catch(e) {
             if (log) log.innerHTML = `⚠️ Error enviando al Korg: ${e.message}`;
         }
