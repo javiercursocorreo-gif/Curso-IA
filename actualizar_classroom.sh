@@ -99,7 +99,7 @@ cp -r "SIMULADORES_INTERACTIVOS/01_SIMULADORES/cards_11d" "CLASES/EXPORTACION_FI
 
 echo "=== 3. Guardando cambios y sincronizando con GitHub... ==="
 git add -A
-git commit -m "fix(s08): eliminacion de tapa de culata verde en punto 3 y reubicacion exacta en cigueñal y contrapesos" || true
+git commit -m "feat(s10): rotulos anatomicos clinicos autoexplicativos con toggle en molar humano S10" || true
 git push origin main
 
 echo "=== 4. Abriendo simuladores oficiales en Google Chrome... ==="
