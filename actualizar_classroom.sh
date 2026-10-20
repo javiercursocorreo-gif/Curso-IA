@@ -99,12 +99,13 @@ cp -r "SIMULADORES_INTERACTIVOS/01_SIMULADORES/cards_11d" "CLASES/EXPORTACION_FI
 
 echo "=== 3. Guardando cambios y sincronizando con GitHub... ==="
 git add -A
-git commit -m "fix(s08-s09): restauracion indestructible carcasa motor S08 y calibracion inspeccion anatomica y modos luz UV T-Rex S09" || true
+git commit -m "fix(s07): calibracion astronomica exacta de fases lunares, centrado frontal de sitios Apolo y control de pines" || true
 git push origin main
 
 echo "=== 4. Abriendo simuladores oficiales en Google Chrome... ==="
 TS=$(date +%s)
 DIR="$(pwd)"
+open -a "Google Chrome" "file://${DIR}/SIMULADORES_INTERACTIVOS/01_SIMULADORES/07_SIMULADOR_LUNA_3D.html?v=$TS"
 open -a "Google Chrome" "file://${DIR}/SIMULADORES_INTERACTIVOS/01_SIMULADORES/08_SIMULADOR_MOTOR_TURBOFAN_3D.html?v=$TS"
 open -a "Google Chrome" "file://${DIR}/SIMULADORES_INTERACTIVOS/01_SIMULADORES/09_SIMULADOR_CRANEO_TREX_3D.html?v=$TS"
 open -a "Google Chrome" "file://${DIR}/SIMULADORES_INTERACTIVOS/01_SIMULADORES/10_SIMULADOR_MOLAR_HUMANO_3D.html?v=$TS"

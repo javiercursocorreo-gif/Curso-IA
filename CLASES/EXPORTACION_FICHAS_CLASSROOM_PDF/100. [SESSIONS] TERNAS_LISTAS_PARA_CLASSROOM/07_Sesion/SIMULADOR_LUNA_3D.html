@@ -485,28 +485,34 @@
             <!-- CONTROL DE ILUMINACIÓN Y FASES LUNARES -->
             <div class="phases-box">
                 <div class="section-title">
-                    <span>Iluminación Solar y Fases</span>
+                    <span>Fases Lunares (Luz Solar)</span>
                     <span id="phaseName" style="color:#ffffff; font-weight:800;">Cuarto Creciente</span>
                 </div>
                 <div class="phase-buttons">
-                    <button class="btn-phase" onclick="setPhase(0, 'Luna Nueva')">
+                    <button class="btn-phase" id="btnPhase_0" onclick="setPhase(0, 'Luna Nueva')">
                         <span>🌑</span><span>Nueva</span>
                     </button>
-                    <button class="btn-phase active" onclick="setPhase(90, 'Cuarto Creciente')">
+                    <button class="btn-phase active" id="btnPhase_90" onclick="setPhase(90, 'Cuarto Creciente')">
                         <span>🌓</span><span>Creciente</span>
                     </button>
-                    <button class="btn-phase" onclick="setPhase(180, 'Luna Llena')">
+                    <button class="btn-phase" id="btnPhase_180" onclick="setPhase(180, 'Luna Llena')">
                         <span>🌕</span><span>Llena</span>
                     </button>
-                    <button class="btn-phase" onclick="setPhase(270, 'Cuarto Menguante')">
+                    <button class="btn-phase" id="btnPhase_270" onclick="setPhase(270, 'Cuarto Menguante')">
                         <span>🌗</span><span>Menguante</span>
                     </button>
                 </div>
+
+                <!-- SLIDER DE ROTACIÓN DEL GLOBO LUNAR -->
                 <div class="phase-slider-container">
-                    <input type="range" id="phaseSlider" min="0" max="360" value="90" oninput="onPhaseSlider(this.value)">
                     <div class="phase-slider-label">
-                        <span>0° (Sol Detrás)</span>
-                        <span>180° (Frente)</span>
+                        <span style="font-weight:700; color:#e2e8f0;">🔄 Giro de la Luna (Eje Polar):</span>
+                        <span id="lblMoonRot" style="color:var(--primary); font-weight:800;">0° (Cara Visible)</span>
+                    </div>
+                    <input type="range" id="moonRotSlider" min="0" max="360" value="0" oninput="onMoonRotSlider(this.value)">
+                    <div class="phase-slider-label">
+                        <span>0° (Tierra)</span>
+                        <span>180° (Cara Oculta)</span>
                         <span>360°</span>
                     </div>
                 </div>
@@ -516,7 +522,9 @@
             <div>
                 <div class="section-title">
                     <span>Sitios Clave & Misiones Apolo</span>
-                    <span style="font-size:0.8rem; color:var(--primary);">Haz clic para volar</span>
+                    <button id="btnPinModeHeader" onclick="toggleAllPinsMode()" style="background:rgba(56,189,248,0.15); border:1px solid rgba(56,189,248,0.35); color:var(--primary); font-size:0.75rem; font-weight:700; padding:3px 8px; border-radius:6px; cursor:pointer;">
+                        📍 Ver Todos los Pines
+                    </button>
                 </div>
                 <div class="poi-list" id="poiListContainer">
                     <!-- Dinámico con JS -->
@@ -540,23 +548,23 @@
             
             <!-- CONTROLES FLOTANTES SUPERIORES -->
             <div class="hud-overlay-top">
-                <button class="btn-hud active" id="btnTogglePins" onclick="togglePins()">
-                    📍 Pines de Sitios
+                <button class="btn-hud" id="btnToggleAllPins" onclick="toggleAllPinsMode()">
+                    📍 Ver Todos los Pines
                 </button>
                 <button class="btn-hud" id="btnAutoRotate" onclick="toggleAutoRotate()">
                     🔄 Giro Automático
                 </button>
                 <button class="btn-hud" onclick="resetCameraView()">
-                    🎯 Centrar Vista
+                    🎯 Centrar Cara Visible
                 </button>
             </div>
 
             <!-- LEYENDA HUD INFERIOR -->
             <div class="hud-overlay-bottom">
                 <div class="hud-legend">
-                    <span>🖱️ <strong>Arrastrar:</strong> Rotar 360° (Babylon.js)</span>
+                    <span>🖱️ <strong>Arrastrar:</strong> Rotar órbita 360°</span>
                     <span>🔍 <strong>Rueda:</strong> Zoom</span>
-                    <span>🌓 <strong>Terminador:</strong> Relieve nítido con sombras rasantes en cráteres</span>
+                    <span>🌓 <strong>Frontera Día/Noche (Terminador):</strong> La línea donde el Sol incide de perfil y proyecta sombras rasantes que revelan el relieve</span>
                 </div>
             </div>
 
@@ -653,11 +661,11 @@
         const scene = new BABYLON.Scene(engine);
         scene.clearColor = new BABYLON.Color4(0.015, 0.025, 0.05, 1.0);
 
-        // Cámara orbital ArcRotate
-        const camera = new BABYLON.ArcRotateCamera("Camera", -Math.PI / 2, Math.PI / 2.2, 4.3, BABYLON.Vector3.Zero(), scene);
+        // Cámara orbital ArcRotate centrada frontalmente hacia la Cara Visible (Longitud 0° en +X)
+        const camera = new BABYLON.ArcRotateCamera("Camera", 0, Math.PI / 2, 4.3, BABYLON.Vector3.Zero(), scene);
         camera.attachControl(canvas, true);
         camera.wheelPrecision = 45;
-        camera.lowerRadiusLimit = 1.7;
+        camera.lowerRadiusLimit = 1.6;
         camera.upperRadiusLimit = 10.0;
         camera.inertia = 0.85;
 
@@ -666,7 +674,8 @@
         hemiLight.intensity = 0.22; // Suave luz cenicienta
         hemiLight.groundColor = new BABYLON.Color3(0.04, 0.06, 0.1);
 
-        const sunLight = new BABYLON.DirectionalLight("sunLight", new BABYLON.Vector3(-1, -0.1, 0), scene);
+        // Luz solar matemáticamente calibrada (por defecto en Cuarto Creciente: ilumina mitad derecha en +Z)
+        const sunLight = new BABYLON.DirectionalLight("sunLight", new BABYLON.Vector3(0, -0.05, 1).normalize(), scene);
         sunLight.intensity = 2.6;
         sunLight.diffuse = new BABYLON.Color3(1.0, 0.98, 0.95);
 
@@ -832,19 +841,24 @@
             return new BABYLON.Vector3(x, y, z);
         }
 
+        const pinParent = new BABYLON.TransformNode("pinParent", scene);
         const pinMeshes = [];
         const pinElements = [];
         const labelsContainer = document.getElementById("labelsContainer");
 
-        const pinMat = new BABYLON.StandardMaterial("pinMat", scene);
-        pinMat.emissiveColor = new BABYLON.Color3(0.22, 0.74, 0.97);
+        const pinMatNormal = new BABYLON.StandardMaterial("pinMatNormal", scene);
+        pinMatNormal.emissiveColor = new BABYLON.Color3(0.22, 0.74, 0.97);
+
+        const pinMatSelected = new BABYLON.StandardMaterial("pinMatSelected", scene);
+        pinMatSelected.emissiveColor = new BABYLON.Color3(1.0, 0.75, 0.1);
 
         POI_DATA.forEach((poi, index) => {
             const pos = latLonToBabylon(poi.lat, poi.lon, moonRadius * 1.018);
 
             const pin = BABYLON.MeshBuilder.CreateSphere("pin_" + poi.id, { diameter: 0.05, segments: 16 }, scene);
             pin.position = pos;
-            pin.material = pinMat;
+            pin.material = (index === 0) ? pinMatSelected : pinMatNormal;
+            pin.parent = pinParent;
             pinMeshes.push(pin);
 
             // Etiqueta DOM 2D
@@ -875,7 +889,8 @@
         // ============================================================================
         // 6. INTERACCIÓN Y NAVEGACIÓN
         // ============================================================================
-        let isPinsVisible = true;
+        let currentPOIIndex = 0;
+        let showAllPins = false; // Por defecto: solo el pin del punto seleccionado
         let isAutoRotating = false;
 
         function playSoftBeep() {
@@ -899,7 +914,16 @@
 
         function selectPOI(index) {
             playSoftBeep();
+            currentPOIIndex = index;
             const poi = POI_DATA[index];
+
+            // Si la Luna fue rotada con el slider, restablecemos a 0 para coincidencia exacta
+            moonMesh.rotation.y = 0;
+            pinParent.rotation.y = 0;
+            const rotSlider = document.getElementById("moonRotSlider");
+            if (rotSlider) rotSlider.value = 0;
+            const lblRot = document.getElementById("lblMoonRot");
+            if (lblRot) lblRot.textContent = "0° (Cara Visible)";
 
             document.querySelectorAll(".poi-card").forEach(c => c.classList.remove("active"));
             const card = document.getElementById(`poi-card-${poi.id}`);
@@ -909,20 +933,48 @@
             document.getElementById("detailTitle").textContent = poi.name;
             document.getElementById("detailDesc").textContent = poi.desc;
 
-            // Orientar cámara de Babylon hacia el punto
-            const targetAlpha = -((poi.lon) * (Math.PI / 180)) - Math.PI / 2;
-            const targetBeta = ((90 - poi.lat) * (Math.PI / 180));
+            // Coordenadas del sitio en la esfera
+            const pos = latLonToBabylon(poi.lat, poi.lon, moonRadius);
 
-            BABYLON.Animation.CreateAndStartAnimation("camAlpha", camera, "alpha", 30, 20, camera.alpha, targetAlpha, 2);
-            BABYLON.Animation.CreateAndStartAnimation("camBeta", camera, "beta", 30, 20, camera.beta, Math.max(0.2, Math.min(Math.PI - 0.2, targetBeta)), 2);
+            // Orientar cámara de Babylon para que el sitio quede EXACTAMENTE DE FRENTE EN EL CENTRO
+            const targetAlpha = Math.atan2(pos.z, pos.x);
+            const targetBeta = Math.max(0.15, Math.min(Math.PI - 0.15, Math.acos(pos.y / moonRadius)));
+            const targetRadius = 2.4; // Zoom directo sobre el sitio histórico
+
+            BABYLON.Animation.CreateAndStartAnimation("camAlpha", camera, "alpha", 30, 22, camera.alpha, targetAlpha, 2);
+            BABYLON.Animation.CreateAndStartAnimation("camBeta", camera, "beta", 30, 22, camera.beta, targetBeta, 2);
+            BABYLON.Animation.CreateAndStartAnimation("camRadius", camera, "radius", 30, 22, camera.radius, targetRadius, 2);
+
+            updatePinsVisibility();
         }
 
-        function togglePins() {
-            isPinsVisible = !isPinsVisible;
-            const btn = document.getElementById("btnTogglePins");
-            btn.classList.toggle("active", isPinsVisible);
-            pinMeshes.forEach(m => m.setEnabled(isPinsVisible));
-            labelsContainer.style.display = isPinsVisible ? "block" : "none";
+        function toggleAllPinsMode() {
+            showAllPins = !showAllPins;
+            const btnHud = document.getElementById("btnToggleAllPins");
+            const btnHeader = document.getElementById("btnPinModeHeader");
+            const text = showAllPins ? "🎯 Ver Solo Pin Activo" : "📍 Ver Todos los Pines";
+            
+            if (btnHud) {
+                btnHud.innerHTML = text;
+                btnHud.classList.toggle("active", showAllPins);
+            }
+            if (btnHeader) {
+                btnHeader.innerHTML = text;
+            }
+            updatePinsVisibility();
+        }
+
+        function updatePinsVisibility() {
+            pinElements.forEach((item, idx) => {
+                const isCurrent = (idx === currentPOIIndex);
+                const shouldShow = showAllPins || isCurrent;
+                item.mesh.setEnabled(shouldShow);
+                item.mesh.material = isCurrent ? pinMatSelected : pinMatNormal;
+                item.mesh.scaling = isCurrent ? new BABYLON.Vector3(1.35, 1.35, 1.35) : new BABYLON.Vector3(1.0, 1.0, 1.0);
+                if (!shouldShow) {
+                    item.el.style.display = "none";
+                }
+            });
         }
 
         function toggleAutoRotate() {
@@ -932,8 +984,15 @@
         }
 
         function resetCameraView() {
-            BABYLON.Animation.CreateAndStartAnimation("camAlpha", camera, "alpha", 30, 20, camera.alpha, -Math.PI / 2, 2);
-            BABYLON.Animation.CreateAndStartAnimation("camBeta", camera, "beta", 30, 20, camera.beta, Math.PI / 2.2, 2);
+            moonMesh.rotation.y = 0;
+            pinParent.rotation.y = 0;
+            const rotSlider = document.getElementById("moonRotSlider");
+            if (rotSlider) rotSlider.value = 0;
+            const lblRot = document.getElementById("lblMoonRot");
+            if (lblRot) lblRot.textContent = "0° (Cara Visible)";
+
+            BABYLON.Animation.CreateAndStartAnimation("camAlpha", camera, "alpha", 30, 20, camera.alpha, 0, 2);
+            BABYLON.Animation.CreateAndStartAnimation("camBeta", camera, "beta", 30, 20, camera.beta, Math.PI / 2, 2);
             BABYLON.Animation.CreateAndStartAnimation("camRadius", camera, "radius", 30, 20, camera.radius, 4.3, 2);
         }
 
@@ -952,29 +1011,35 @@
         }
 
         function setPhase(deg, name) {
-            document.getElementById("phaseSlider").value = deg;
             document.getElementById("phaseName").textContent = name;
             document.querySelectorAll(".btn-phase").forEach(b => b.classList.remove("active"));
-            if (event && event.currentTarget) event.currentTarget.classList.add("active");
+            const btn = document.getElementById(`btnPhase_${deg}`);
+            if (btn) btn.classList.add("active");
 
             const rad = (deg * Math.PI) / 180;
-            sunLight.direction = new BABYLON.Vector3(-Math.cos(rad), -0.1, -Math.sin(rad));
+            // Calibración astronómica exacta para observador en Cara Visible (+X):
+            // deg = 0° (Nueva): Sol detrás de la Luna -> cara visible oscura
+            // deg = 90° (Creciente): Mitad derecha iluminada (en D)
+            // deg = 180° (Llena): Sol detrás de la cámara -> cara visible 100% brillante
+            // deg = 270° (Menguante): Mitad izquierda iluminada (en C)
+            sunLight.direction = new BABYLON.Vector3(Math.cos(rad), -0.05, Math.sin(rad)).normalize();
         }
 
-        function onPhaseSlider(val) {
+        function onMoonRotSlider(val) {
             const deg = parseFloat(val);
             const rad = (deg * Math.PI) / 180;
-            sunLight.direction = new BABYLON.Vector3(-Math.cos(rad), -0.1, -Math.sin(rad));
+            moonMesh.rotation.y = rad;
+            pinParent.rotation.y = rad;
 
-            let name = "Fase Intermedia";
-            if (deg >= 340 || deg <= 20) name = "Luna Nueva";
-            else if (deg >= 70 && deg <= 110) name = "Cuarto Creciente";
-            else if (deg >= 160 && deg <= 200) name = "Luna Llena";
-            else if (deg >= 250 && deg <= 290) name = "Cuarto Menguante";
-
-            document.getElementById("phaseName").textContent = name;
-            document.querySelectorAll(".btn-phase").forEach(b => b.classList.remove("active"));
+            let lbl = `${Math.round(deg)}°`;
+            if (deg < 40 || deg > 320) lbl += " (Cara Visible)";
+            else if (deg >= 140 && deg <= 220) lbl += " (Cara Oculta)";
+            else lbl += " (Limbo)";
+            document.getElementById("lblMoonRot").textContent = lbl;
         }
+
+        // Inicializar pines en modo individual
+        updatePinsVisibility();
 
         // ============================================================================
         // 7. RENDER LOOP Y PROYECCIÓN 2D DE ETIQUETAS
@@ -984,29 +1049,41 @@
                 camera.alpha += 0.0025;
             }
 
-            if (isPinsVisible) {
-                pinElements.forEach(item => {
-                    const worldPos = item.mesh.getAbsolutePosition();
-                    const screenPos = BABYLON.Vector3.Project(
-                        worldPos,
-                        BABYLON.Matrix.Identity(),
-                        scene.getTransformMatrix(),
-                        camera.viewport.toGlobal(engine.getRenderWidth(), engine.getRenderHeight())
-                    );
+            pinElements.forEach((item, idx) => {
+                const isCurrent = (idx === currentPOIIndex);
+                const shouldShow = showAllPins || isCurrent;
+                if (!shouldShow) {
+                    item.el.style.display = "none";
+                    return;
+                }
 
-                    // Verificar oclusión con la cara trasera de la Luna
-                    const camToPos = worldPos.subtract(camera.position);
-                    const dot = BABYLON.Vector3.Dot(camToPos.normalize(), worldPos.normalize());
+                const worldPos = item.mesh.getAbsolutePosition();
+                const screenPos = BABYLON.Vector3.Project(
+                    worldPos,
+                    BABYLON.Matrix.Identity(),
+                    scene.getTransformMatrix(),
+                    camera.viewport.toGlobal(engine.getRenderWidth(), engine.getRenderHeight())
+                );
 
-                    if (screenPos.z > 0 && screenPos.z < 1 && dot < 0.2) {
-                        item.el.style.display = "block";
-                        item.el.style.left = `${screenPos.x}px`;
-                        item.el.style.top = `${screenPos.y}px`;
+                // Verificar oclusión con la cara trasera de la Luna respecto a la cámara
+                const camToPos = worldPos.subtract(camera.position);
+                const dot = BABYLON.Vector3.Dot(camToPos.normalize(), worldPos.normalize());
+
+                if (screenPos.z > 0 && screenPos.z < 1 && dot < 0.15) {
+                    item.el.style.display = "block";
+                    item.el.style.left = `${screenPos.x}px`;
+                    item.el.style.top = `${screenPos.y}px`;
+                    if (isCurrent) {
+                        item.el.style.borderColor = "var(--gold)";
+                        item.el.style.boxShadow = "0 0 16px rgba(251, 191, 36, 0.7)";
                     } else {
-                        item.el.style.display = "none";
+                        item.el.style.borderColor = "var(--primary)";
+                        item.el.style.boxShadow = "0 0 12px rgba(56, 189, 248, 0.4)";
                     }
-                });
-            }
+                } else {
+                    item.el.style.display = "none";
+                }
+            });
         });
 
         engine.runRenderLoop(() => {

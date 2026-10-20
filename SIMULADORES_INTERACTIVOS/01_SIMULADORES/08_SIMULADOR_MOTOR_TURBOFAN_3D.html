@@ -536,24 +536,27 @@
             matXrayInternal.specularColor = new BABYLON.Color3(1, 1, 1);
             matXrayInternal.alpha = 1.0;
 
-            // Resaltados individuales de componentes principales
+            // Resaltados individuales de componentes principales con emisión luminiscente
             matHighlightPiston = new BABYLON.StandardMaterial("matHighlightPiston", sc);
-            matHighlightPiston.diffuseColor = new BABYLON.Color3(0.05, 0.85, 1.0);
-            matHighlightPiston.emissiveColor = new BABYLON.Color3(0.08, 0.55, 0.9);
+            matHighlightPiston.diffuseColor = new BABYLON.Color3(0.0, 0.7, 1.0);
+            matHighlightPiston.emissiveColor = new BABYLON.Color3(0.1, 0.85, 1.0);
             matHighlightPiston.specularColor = new BABYLON.Color3(1, 1, 1);
             matHighlightPiston.alpha = 1.0;
+            matHighlightPiston.backFaceCulling = false;
 
             matHighlightRod = new BABYLON.StandardMaterial("matHighlightRod", sc);
-            matHighlightRod.diffuseColor = new BABYLON.Color3(1.0, 0.72, 0.05);
-            matHighlightRod.emissiveColor = new BABYLON.Color3(0.75, 0.45, 0.02);
+            matHighlightRod.diffuseColor = new BABYLON.Color3(1.0, 0.6, 0.0);
+            matHighlightRod.emissiveColor = new BABYLON.Color3(1.0, 0.75, 0.1);
             matHighlightRod.specularColor = new BABYLON.Color3(1, 1, 1);
             matHighlightRod.alpha = 1.0;
+            matHighlightRod.backFaceCulling = false;
 
             matHighlightCrank = new BABYLON.StandardMaterial("matHighlightCrank", sc);
-            matHighlightCrank.diffuseColor = new BABYLON.Color3(0.15, 0.95, 0.45);
-            matHighlightCrank.emissiveColor = new BABYLON.Color3(0.08, 0.65, 0.25);
+            matHighlightCrank.diffuseColor = new BABYLON.Color3(0.05, 0.85, 0.35);
+            matHighlightCrank.emissiveColor = new BABYLON.Color3(0.15, 1.0, 0.45);
             matHighlightCrank.specularColor = new BABYLON.Color3(1, 1, 1);
             matHighlightCrank.alpha = 1.0;
+            matHighlightCrank.backFaceCulling = false;
 
             matHighlightBlock = new BABYLON.StandardMaterial("matHighlightBlock", sc);
             matHighlightBlock.diffuseColor = new BABYLON.Color3(0.7, 0.35, 0.95);
@@ -579,12 +582,50 @@
             matThermalCasing.emissiveColor = new BABYLON.Color3(0.25, 0.08, 0.02);
         }
 
-        function getComponentType(m) {
-            const n = (m.name || "").toLowerCase();
-            if (n.includes("piston")) return "piston";
-            if (n.includes("rod")) return "rod";
-            if (n.includes("crank") || n.includes("shaft") || n.includes("lifter") || n.includes("spring")) return "crank";
+        function classifyMesh(m) {
+            if (!m) return "casing";
+            const name = ((m.name || "") + " " + (m.id || "") + " " + (m.parent ? m.parent.name : "")).toLowerCase();
+
+            // 1. Detección directa por nombres estándar de ingeniería CAD
+            if (name.includes("piston")) return "piston";
+            if (name.includes("rod")) return "rod";
+            if (name.includes("crank") || name.includes("shaft") || name.includes("lifter") || name.includes("spring")) return "crank";
+            if (name.includes("block") || name.includes("casing") || name.includes("housing")) return "casing";
+
+            // 2. Detección por índice de nodo en la jerarquía glTF oficial (2CylinderEngine.glb)
+            // Node 1..6: Conjuntos de Pistones y Pasadores
+            if (/node[_]?(1|2|3|4|5|6)\b/i.test(name)) return "piston";
+            // Node 73, 74: Bielas de transmisión principales
+            if (/node[_]?(73|74)\b/i.test(name)) return "rod";
+            // Node 14..72, 75..78: Cigüeñal, contrapesos, engranajes y árboles de levas
+            if (/node[_]?(1[4-9]|[2-6][0-9]|7[0-2]|7[5-8])\b/i.test(name)) return "crank";
+            // Node 0, 7..13, 79, 80: Bloque motor, cárter y tapas estructurales
+            if (/node[_]?(0|7|8|9|10|11|12|13|79|80)\b/i.test(name)) return "casing";
+
+            // 3. Firma geométrica fidedigna (número exacto de vértices e índices de la malla)
+            const vc = m.getTotalVertices ? m.getTotalVertices() : 0;
+            const ic = m.getTotalIndices ? m.getTotalIndices() : 0;
+            if (vc === 2012 || vc === 1296 || vc === 264 || ic === 8250 || ic === 5034) return "piston";
+            if (vc === 1382 || vc === 1281 || ic === 4839) return "rod";
+            if (vc === 180 || vc === 43 || vc === 870 || vc === 294 || vc === 624 || vc === 408 || vc === 340 || vc === 324 || vc === 96 || vc === 348 || vc === 1409 || vc === 1940 || vc === 1754 || vc === 1749) return "crank";
+            if (vc === 8618 || vc === 5364 || vc === 3672) return "casing";
+
+            // 4. Elevación espacial en el eje Y (Pistones arriba, Bielas en medio, Cigüeñal abajo)
+            if (m.getBoundingInfo) {
+                const center = m.getBoundingInfo().boundingBox.center;
+                if (center.y > 0.35) return "piston";
+                if (center.y > -0.25 && center.y <= 0.35) return "rod";
+                if (center.y <= -0.25) return "crank";
+            }
+
             return "casing";
+        }
+
+        function getComponentType(m) {
+            if (!m) return "casing";
+            if (m._componentType) return m._componentType;
+            m._componentType = classifyMesh(m);
+            return m._componentType;
         }
 
         function createScene() {
@@ -669,6 +710,9 @@
                                 m.material.alpha = 1.0;
                             }
                         }
+                        if (m.name !== "__root__" && m.name !== "engineRoot") {
+                            m._componentType = classifyMesh(m);
+                        }
                     });
 
                 }, null, function (scene, message, exception) {
@@ -742,7 +786,7 @@
             }
 
             scene.meshes.forEach(m => {
-                if (!m.material) return;
+                if (!m.material || m.name === "__root__" || m.name === "engineRoot") return;
                 const type = getComponentType(m);
 
                 if (mode === 'pbr') {
@@ -786,44 +830,44 @@
             if (name === 'piston') {
                 camera.setTarget(new BABYLON.Vector3(0, 0.9, 0));
                 camera.radius = 4.6;
-                document.getElementById("badgeInfo").innerText = "Diagnóstico: 1. Pistones en Carrera • Resaltado en Cian";
+                document.getElementById("badgeInfo").innerText = "Diagnóstico: 1. Pistones en Carrera • Resaltado en Cian Lente Lumínico";
                 document.getElementById("valTemp").innerText = "540 °C";
                 document.getElementById("valPress").innerText = "72.4 bar";
 
                 scene.meshes.forEach(m => {
-                    if (!m.material) return;
+                    if (!m.material || m.name === "__root__" || m.name === "engineRoot") return;
                     const type = getComponentType(m);
                     if (type === 'piston') {
                         m.material = matHighlightPiston;
                         m.visibility = 1.0;
                     } else if (type === 'casing') {
                         m.material = matXrayCasing;
-                        m.visibility = 0.20;
+                        m.visibility = 0.12;
                     } else {
-                        if (m._origMaterial) m.material = m._origMaterial;
-                        m.visibility = 0.45;
+                        m.material = matXrayInternal;
+                        m.visibility = 0.35;
                     }
                 });
 
             } else if (name === 'rod') {
                 camera.setTarget(new BABYLON.Vector3(0, 0.05, 0));
-                camera.radius = 5.2;
-                document.getElementById("badgeInfo").innerText = "Diagnóstico: 2. Bielas de Transmisión • Resaltado en Ámbar/Oro";
+                camera.radius = 5.0;
+                document.getElementById("badgeInfo").innerText = "Diagnóstico: 2. Bielas de Transmisión • Resaltado en Oro/Ámbar";
                 document.getElementById("valForce").innerText = "31.2 kN";
                 document.getElementById("valTemp").innerText = "380 °C";
 
                 scene.meshes.forEach(m => {
-                    if (!m.material) return;
+                    if (!m.material || m.name === "__root__" || m.name === "engineRoot") return;
                     const type = getComponentType(m);
                     if (type === 'rod') {
                         m.material = matHighlightRod;
                         m.visibility = 1.0;
                     } else if (type === 'casing') {
                         m.material = matXrayCasing;
-                        m.visibility = 0.20;
+                        m.visibility = 0.12;
                     } else {
-                        if (m._origMaterial) m.material = m._origMaterial;
-                        m.visibility = 0.45;
+                        m.material = matXrayInternal;
+                        m.visibility = 0.35;
                     }
                 });
 
@@ -835,17 +879,17 @@
                 document.getElementById("valForce").innerText = "24.8 kN";
 
                 scene.meshes.forEach(m => {
-                    if (!m.material) return;
+                    if (!m.material || m.name === "__root__" || m.name === "engineRoot") return;
                     const type = getComponentType(m);
                     if (type === 'crank') {
                         m.material = matHighlightCrank;
                         m.visibility = 1.0;
                     } else if (type === 'casing') {
                         m.material = matXrayCasing;
-                        m.visibility = 0.20;
+                        m.visibility = 0.12;
                     } else {
-                        if (m._origMaterial) m.material = m._origMaterial;
-                        m.visibility = 0.45;
+                        m.material = matXrayInternal;
+                        m.visibility = 0.35;
                     }
                 });
 
@@ -855,7 +899,7 @@
                 setMode('pbr');
                 const blk = document.getElementById('partBtn_block');
                 if (blk) blk.classList.add('active');
-                document.getElementById("badgeInfo").innerText = "Diagnóstico: 4. Bloque Motor & Carcasa • Metálico Real";
+                document.getElementById("badgeInfo").innerText = "Diagnóstico: 4. Bloque Motor & Carcasa • Metálico Real PBR";
             }
         }
 
