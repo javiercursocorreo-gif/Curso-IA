@@ -154,7 +154,7 @@ cp -r "SIMULADORES_INTERACTIVOS/01_SIMULADORES/cards_11d" "CLASES/EXPORTACION_FI
 
 echo "=== 3. Guardando cambios y sincronizando con GitHub... ==="
 git add -A
-git commit -m "fix(s14): descarga oficial de astrofotografia real heic1613a de hubble sin bloqueos html y validacion jpeg" || true
+git commit -m "feat(s14): planetario 3d real con vuelo orbital sin pixelado, filtros volumetricos fuv y aislamiento s10" || true
 git push origin main
 
 echo "=== 4. Abriendo simuladores oficiales en Google Chrome... ==="

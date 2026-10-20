@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sesión 14 • Simulador Real: Auroras Ultravioletas de Júpiter • Astrofotografía Oficial NASA Hubble [COD-014]</title>
-    <!-- Assets Fotográficos Reales en Base64 Autónomo (NASA Hubble Space Telescope / STIS Composite) -->
-    <script src="../03_ASSETS_3D_Y_DATOS/jupiter_aurora_b64.js"></script>
-    <script src="../../../../SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/jupiter_aurora_b64.js"></script>
+    <title>Sesión 14 • Simulador 3D Real: Auroras Ultravioletas de Júpiter • NASA Hubble [COD-014]</title>
+    <!-- Babylon.js CDN Oficial -->
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg-base: #020307;
-            --bg-panel: rgba(8, 12, 22, 0.94);
+            --bg-panel: rgba(8, 14, 28, 0.94);
             --uv-cyan: #38bdf8;
             --uv-purple: #c084fc;
             --io-gold: #fbbf24;
@@ -147,7 +147,7 @@
         }
         .easy-text strong { color: #ffffff; }
 
-        /* MODOS DE INSPECCIÓN ESPECTRAL */
+        /* MODOS DE INSPECCIÓN ESPECTRAL 3D REALES */
         .section-title {
             font-family: var(--font-mono);
             font-size: 0.78rem;
@@ -170,15 +170,15 @@
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.12);
             color: #cbd5e1;
-            padding: 11px 10px;
+            padding: 10px 8px;
             border-radius: 10px;
-            font-size: 0.8rem;
+            font-size: 0.78rem;
             font-weight: 700;
             cursor: pointer;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 5px;
+            gap: 4px;
             transition: all 0.2s ease;
             text-align: center;
         }
@@ -189,12 +189,12 @@
         }
         .mode-btn.active {
             border-color: var(--uv-cyan);
-            background: linear-gradient(135deg, rgba(56, 189, 248, 0.3), rgba(192, 132, 252, 0.25));
+            background: linear-gradient(135deg, rgba(56, 189, 248, 0.35), rgba(192, 132, 252, 0.3));
             color: #ffffff;
-            box-shadow: 0 0 16px rgba(56, 189, 248, 0.35);
+            box-shadow: 0 0 16px rgba(56, 189, 248, 0.4);
         }
 
-        /* SELECTORES DE ESTRUCTURAS ANATÓMICAS (HOTSPOTS) */
+        /* ESTRUCTURAS OBSERVABLES (HOTSPOTS) */
         .layers-list {
             display: flex;
             flex-direction: column;
@@ -242,7 +242,7 @@
             flex-shrink: 0;
         }
         .layer-name {
-            font-size: 0.92rem;
+            font-size: 0.9rem;
             font-weight: 800;
             color: #ffffff;
         }
@@ -288,7 +288,7 @@
             margin-top: 2px;
         }
 
-        /* TARJETA DE DETALLE CIENTÍFICO */
+        /* TARJETA DINÁMICA DE DETALLE */
         .detail-card {
             background: rgba(18, 25, 42, 0.8);
             border-left: 4px solid var(--uv-cyan);
@@ -307,65 +307,117 @@
             line-height: 1.5;
         }
 
-        /* ÁREA FOTOGRÁFICA INTERACTIVA DERECHA */
-        main.photo-stage {
+        /* BOTÓN DE PLACA FOTOGRÁFICA OFICIAL NASA */
+        .btn-nasa-plate {
+            background: linear-gradient(135deg, rgba(56, 189, 248, 0.25), rgba(168, 85, 247, 0.25));
+            border: 1.5px solid var(--uv-cyan);
+            color: #ffffff;
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-size: 0.84rem;
+            font-weight: 800;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
+        .btn-nasa-plate:hover {
+            background: linear-gradient(135deg, rgba(56, 189, 248, 0.4), rgba(168, 85, 247, 0.4));
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.4);
+            transform: translateY(-2px);
+        }
+
+        /* ÁREA 3D PRINCIPAL (BABYLON.JS) */
+        main.viewport-3d {
             position: relative;
             width: 100%;
             height: 100%;
             overflow: hidden;
-            background: #010204;
+            background: radial-gradient(circle at 50% 50%, #060914 0%, #010206 90%, #000000 100%);
+        }
+        #renderCanvas {
+            width: 100%;
+            height: 100%;
+            outline: none;
+            display: block;
+        }
+
+        /* HUD SUPERIOR DE VISTA 3D */
+        .hud-top-bar {
+            position: absolute;
+            top: 18px;
+            left: 50%;
+            transform: translateX(-50%);
             display: flex;
             align-items: center;
-            justify-content: center;
-            cursor: grab;
-        }
-        main.photo-stage:active {
-            cursor: grabbing;
-        }
-
-        #viewportWrapper {
-            position: absolute;
-            transform-origin: center center;
-            transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
-        }
-
-        #photoCanvas {
-            display: block;
-            box-shadow: 0 0 60px rgba(0, 0, 0, 0.95), 0 0 35px rgba(56, 189, 248, 0.15);
-            border-radius: 4px;
-        }
-
-        /* PINS ANATÓMICOS SUPERPUESTOS EN PANTALLA */
-        .hotspot-pin {
-            position: absolute;
-            width: 34px;
-            height: 34px;
-            border-radius: 50%;
+            gap: 8px;
             background: rgba(8, 14, 28, 0.92);
+            border: 1.5px solid rgba(56, 189, 248, 0.35);
+            backdrop-filter: blur(14px);
+            padding: 6px 16px;
+            border-radius: 9999px;
+            z-index: 30;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.7);
+        }
+        .btn-hud {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: #f1f5f9;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+        .btn-hud:hover {
+            background: rgba(56, 189, 248, 0.25);
+            border-color: var(--uv-cyan);
+            color: var(--uv-cyan);
+        }
+        .btn-hud.active {
+            background: var(--uv-cyan);
+            color: #020308;
+            font-weight: 900;
+        }
+
+        /* PINS 3D FLOTANTES (REGLA S10) */
+        .pin-3d {
+            position: absolute;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: rgba(8, 14, 28, 0.94);
             border: 2px solid var(--uv-cyan);
-            box-shadow: 0 0 20px rgba(56, 189, 248, 0.9), 0 0 0 4px rgba(56, 189, 248, 0.3);
+            box-shadow: 0 0 16px rgba(56, 189, 248, 0.9), 0 0 0 3px rgba(56, 189, 248, 0.25);
             display: flex;
             align-items: center;
             justify-content: center;
             color: #ffffff;
             font-weight: 900;
-            font-size: 0.85rem;
+            font-size: 0.82rem;
             cursor: pointer;
             transform: translate(-50%, -50%);
-            transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            z-index: 30;
-            animation: pulse-pin 2s infinite ease-in-out;
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 25;
+            animation: pulse-pin 2.2s infinite ease-in-out;
         }
-        .hotspot-pin:hover, .hotspot-pin.active {
+        .pin-3d:hover, .pin-3d.active {
             transform: translate(-50%, -50%) scale(1.3);
             background: #ffffff;
             color: #020308;
             border-color: var(--uv-cyan);
-            box-shadow: 0 0 25px rgba(255, 255, 255, 1), 0 0 0 8px rgba(56, 189, 248, 0.5);
+            box-shadow: 0 0 25px rgba(255, 255, 255, 1), 0 0 0 6px rgba(56, 189, 248, 0.5);
         }
-        .hotspot-label {
+        .pin-label {
             position: absolute;
-            left: 42px;
+            left: 40px;
             top: 50%;
             transform: translateY(-50%);
             background: rgba(8, 14, 28, 0.95);
@@ -382,78 +434,59 @@
         }
 
         @keyframes pulse-pin {
-            0%, 100% { box-shadow: 0 0 15px rgba(56, 189, 248, 0.8), 0 0 0 3px rgba(56, 189, 248, 0.25); }
-            50% { box-shadow: 0 0 25px rgba(56, 189, 248, 1), 0 0 0 8px rgba(56, 189, 248, 0.45); }
+            0%, 100% { box-shadow: 0 0 14px rgba(56, 189, 248, 0.8), 0 0 0 3px rgba(56, 189, 248, 0.25); }
+            50% { box-shadow: 0 0 25px rgba(56, 189, 248, 1), 0 0 0 7px rgba(56, 189, 248, 0.45); }
         }
 
-        /* OVERLAY SUPERIOR DE ESTADO */
-        .photo-overlay-badge {
-            position: absolute;
-            top: 18px;
-            left: 20px;
-            background: rgba(8, 12, 22, 0.92);
-            border: 1px solid rgba(56, 189, 248, 0.35);
+        /* MODAL DE PLACA FOTOGRÁFICA OFICIAL NASA */
+        .nasa-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.85);
             backdrop-filter: blur(12px);
-            padding: 8px 16px;
+            z-index: 100;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+        .nasa-modal-content {
+            background: #080c16;
+            border: 2px solid var(--uv-cyan);
+            border-radius: 18px;
+            max-width: 900px;
+            width: 100%;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 0 50px rgba(56, 189, 248, 0.4);
+        }
+        .nasa-modal-header {
+            padding: 14px 20px;
+            background: rgba(15, 23, 42, 0.9);
+            border-bottom: 1px solid rgba(56, 189, 248, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .nasa-modal-body {
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            align-items: center;
+        }
+        .nasa-modal-body img {
+            max-width: 100%;
+            max-height: 520px;
             border-radius: 10px;
-            color: #e2e8f0;
-            font-size: 0.82rem;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            z-index: 40;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
-        }
-        .photo-overlay-badge .dot-live {
-            width: 9px;
-            height: 9px;
-            border-radius: 50%;
-            background: var(--uv-cyan);
-            box-shadow: 0 0 8px var(--uv-cyan);
-        }
-
-        /* BARRA DE CONTROLES INFERIOR */
-        .bottom-controls-bar {
-            position: absolute;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(8, 12, 22, 0.94);
-            border: 1.5px solid rgba(56, 189, 248, 0.35);
-            backdrop-filter: blur(16px);
-            padding: 8px 18px;
-            border-radius: 9999px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            z-index: 40;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
-        }
-        .btn-tool {
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            color: #ffffff;
-            padding: 7px 14px;
-            border-radius: 20px;
-            font-size: 0.82rem;
-            font-weight: 700;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            transition: all 0.2s ease;
-            white-space: nowrap;
-        }
-        .btn-tool:hover {
-            background: rgba(56, 189, 248, 0.25);
-            border-color: var(--uv-cyan);
-            color: var(--uv-cyan);
-        }
-        .btn-tool.active {
-            background: var(--uv-cyan);
-            color: #020308;
-            font-weight: 900;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 0 30px rgba(0,0,0,0.8);
         }
     </style>
 </head>
@@ -463,17 +496,17 @@
     <header>
         <div class="header-title-box">
             <span class="badge-code">COD-014</span>
-            <h1>🪐 Auroras Ultravioletas de Júpiter • Astrofotografía Oficial NASA Hubble</h1>
+            <h1>🪐 Auroras Ultravioletas de Júpiter • NASA Hubble Space Telescope 3D</h1>
         </div>
         <div class="header-right">
             <div class="pill-status">
                 <span>🛰️</span>
-                <span>NASA/ESA Hubble Space Telescope STIS/ACS Composite (heic1613a)</span>
+                <span>Física Magnetosférica 3D • Emisión FUV (120 TW) & Tubo de Ío (1 MA)</span>
             </div>
         </div>
     </header>
 
-    <!-- ÁREA DE TRABAJO -->
+    <!-- GRID PRINCIPAL -->
     <div class="workspace-grid">
 
         <!-- PANEL DIDÁCTICO IZQUIERDO -->
@@ -482,48 +515,48 @@
             <!-- TARJETA LA IDEA FÁCIL -->
             <div class="card-easy-concept">
                 <div class="easy-tag">💡 La Idea Fácil para Todos</div>
-                <div class="easy-title">El Espectáculo Electromagnético Más Colosal</div>
+                <div class="easy-title">El Motor Electromagnético Más Colosal</div>
                 <div class="easy-text">
-                    Estás contemplando la <strong>astrofotografía real oficial del Telescopio Espacial Hubble (NASA/ESA)</strong>.
-                    No es un dibujo ni una animación: es el gigante gaseoso Júpiter captado en luz visible, sobre el que se superpone la emisión real en <strong>ultravioleta lejana (FUV)</strong> de su aurora boreal, una corona permanente que disipa más de <strong>120 Teravatios (\(1.2 \times 10^{14}\text{ W}\))</strong> continuos.
+                    Las auroras de Júpiter <strong>nunca se apagan</strong>: son cientos de veces más potentes que las terrestres (disipan <strong>120 Teravatios</strong> continuos).
+                    A diferencia de la Tierra, no dependen del viento solar: la <strong>rotación ultrarrápida del planeta a 45.300 km/h</strong> arrastra el plasma expulsado por los volcanes de su luna Ío a través de un colosal campo magnético de <strong>14 Gauss</strong>.
                 </div>
             </div>
 
-            <!-- MODOS DE INSPECCIÓN ESPECTRAL -->
+            <!-- MODOS DE INSPECCIÓN ESPECTRAL 3D REALES -->
             <div>
                 <div class="section-title">
-                    <span>Filtros Espectrales Oficiales</span>
-                    <span>🔬 NASA Multiespectral</span>
+                    <span>Filtros Espectrales en 3D</span>
+                    <span>🔬 Multiespectral</span>
                 </div>
                 <div class="mode-selector">
                     <button class="mode-btn active" id="btnModeVisible" onclick="setVisualMode('visible')">
-                        <span style="font-size:1.3rem;">📸</span>
-                        <span>COMPUESTO NASA</span>
+                        <span style="font-size:1.2rem;">📸</span>
+                        <span>LUZ VISIBLE (Cassini)</span>
                     </button>
                     <button class="mode-btn" id="btnModeUV" onclick="setVisualMode('uv')">
-                        <span style="font-size:1.3rem;">🛰️</span>
-                        <span>FUV PURO (STIS)</span>
+                        <span style="font-size:1.2rem;">🛰️</span>
+                        <span>FUV HUBBLE (120 TW)</span>
                     </button>
                     <button class="mode-btn" id="btnModeFlux" onclick="setVisualMode('flux')">
-                        <span style="font-size:1.3rem;">⚡</span>
+                        <span style="font-size:1.2rem;">⚡</span>
                         <span>TUBO DE ÍO (1 MA)</span>
                     </button>
                     <button class="mode-btn" id="btnModeXray" onclick="setVisualMode('xray')">
-                        <span style="font-size:1.3rem;">📡</span>
+                        <span style="font-size:1.2rem;">📡</span>
                         <span>RAYOS X CHANDRA</span>
                     </button>
                 </div>
             </div>
 
-            <!-- ESTRUCTURAS ANATÓMICAS DE LA ASTROFOTOGRAFÍA -->
+            <!-- ESTRUCTURAS OBSERVABLES (HOTSPOTS REGLA S10) -->
             <div>
                 <div class="section-title">
                     <span>Estructuras Científicas Observables</span>
-                    <span>🔍 Enfoque Clínico S10</span>
+                    <span>🔍 Enfoque 3D S10</span>
                 </div>
                 <div class="layers-list">
 
-                    <div class="layer-item active" id="layer-0" onclick="selectHotspot(0)">
+                    <div class="layer-item active" id="layer-0" onclick="focusStructure(0)">
                         <div class="layer-item-left">
                             <div class="layer-num">1</div>
                             <div>
@@ -534,48 +567,48 @@
                         <span class="layer-tag">120 TW</span>
                     </div>
 
-                    <div class="layer-item" id="layer-1" onclick="selectHotspot(1)">
+                    <div class="layer-item" id="layer-1" onclick="focusStructure(1)">
                         <div class="layer-item-left">
                             <div class="layer-num">2</div>
                             <div>
                                 <div class="layer-name">Huella Magnética de Ío (Io Footprint)</div>
-                                <div class="layer-sub">Punto brillante acoplado al tubo de flujo</div>
+                                <div class="layer-sub">Punto ionosférico brillante conectado a Ío</div>
                             </div>
                         </div>
                         <span class="layer-tag">1 MA</span>
                     </div>
 
-                    <div class="layer-item" id="layer-2" onclick="selectHotspot(2)">
+                    <div class="layer-item" id="layer-2" onclick="focusStructure(2)">
                         <div class="layer-item-left">
                             <div class="layer-num">3</div>
                             <div>
-                                <div class="layer-name">Estela Auroral Cometaria de Ío</div>
-                                <div class="layer-sub">Rastro magnético de miles de kilómetros</div>
+                                <div class="layer-name">Gran Mancha Roja (16.000 km)</div>
+                                <div class="layer-sub">El anticiclón más grande del Sistema Solar</div>
                             </div>
                         </div>
-                        <span class="layer-tag">Ondas Alfvén</span>
+                        <span class="layer-tag">430 km/h</span>
                     </div>
 
-                    <div class="layer-item" id="layer-3" onclick="selectHotspot(3)">
+                    <div class="layer-item" id="layer-3" onclick="focusStructure(3)">
                         <div class="layer-item-left">
                             <div class="layer-num">4</div>
                             <div>
-                                <div class="layer-name">Gran Mancha Roja & Cinturones</div>
-                                <div class="layer-sub">Anticiclón de 16.000 km y vientos de 430 km/h</div>
+                                <div class="layer-name">Luna Ío & Toroide de Azufre</div>
+                                <div class="layer-sub">400 volcanes activos y nube de plasma orbital</div>
                             </div>
                         </div>
-                        <span class="layer-tag">Atmosférico</span>
+                        <span class="layer-tag">1 Ton/s</span>
                     </div>
 
-                    <div class="layer-item" id="layer-4" onclick="selectHotspot(4)">
+                    <div class="layer-item" id="layer-4" onclick="focusStructure(4)">
                         <div class="layer-item-left">
                             <div class="layer-num">5</div>
                             <div>
-                                <div class="layer-name">Neblina Polar y Zona de Cúspide</div>
-                                <div class="layer-sub">Aerosoles de hidrocarburos bombardeados</div>
+                                <div class="layer-name">Campo Magnético Dipolar Global</div>
+                                <div class="layer-sub">Escudo de 20.000 veces el terrestre</div>
                             </div>
                         </div>
-                        <span class="layer-tag">Haze 4K</span>
+                        <span class="layer-tag">20.000 G</span>
                     </div>
 
                 </div>
@@ -585,7 +618,7 @@
             <div class="detail-card">
                 <div class="detail-title" id="detailTitle">Óvalo Auroral Principal (70°N)</div>
                 <div class="detail-desc" id="detailDesc">
-                    A diferencia de la Tierra, donde las auroras son efímeras y dependen del viento solar, las auroras polares de Júpiter son **permanentes**. La colosal rotación de Júpiter a 45.300 km/h actúa como un generador electrodinámico arrastrando plasma atrapado en su campo magnético de 14 Gauss.
+                    Corona permanente observada por el telescopio Hubble. La inmensa rotación de Júpiter acelera electrones a decenas de kilovoltios que chocan contra el hidrógeno molecular (\(H_2\)) emitiendo fotones ultravioletas en las bandas de Lyman y Werner (115–170 nm).
                 </div>
             </div>
 
@@ -615,349 +648,416 @@
                 </div>
             </div>
 
+            <!-- BOTÓN MODAL NASA HUBBLE COMPARATOR -->
+            <button class="btn-nasa-plate" onclick="openNasaModal()">
+                <span>📸</span>
+                <span>Ver Placa Fotográfica Oficial NASA Hubble</span>
+            </button>
+
         </aside>
 
-        <!-- ÁREA FOTOGRÁFICA INTERACTIVA DERECHA -->
-        <main class="photo-stage" id="photoStage">
-
-            <!-- BADGE SUPERIOR DE ESTADO -->
-            <div class="photo-overlay-badge">
-                <div class="dot-live"></div>
-                <span id="overlayText">Astrofotografía Oficial NASA Hubble (heic1613a) • Resolución Óptica Real</span>
+        <!-- ESCENARIO 3D PRINCIPAL (BABYLON.JS) -->
+        <main class="viewport-3d" id="viewport3D">
+            
+            <!-- HUD SUPERIOR DE CÁMARA FLOTANTE -->
+            <div class="hud-top-bar">
+                <button class="btn-hud" id="btnToggleSpin" onclick="toggleSpin()">⏸ Pausar Giro</button>
+                <button class="btn-hud" onclick="focusStructure(0)">🧭 Polo Norte UV</button>
+                <button class="btn-hud" onclick="reset3DCamera()">🔄 Encuadre Total</button>
+                <div style="width: 1px; height: 16px; background: rgba(255,255,255,0.2);"></div>
+                <button class="btn-hud" id="btnToggleLabels" onclick="toggleLabels()">🏷️ Ocultar Rótulos</button>
             </div>
 
-            <!-- CONTENEDOR TRANSFORMABLE CON CANVAS DE ALTA RESOLUCIÓN -->
-            <div id="viewportWrapper">
-                <canvas id="photoCanvas" width="1280" height="960"></canvas>
+            <!-- LIENZO WEBGL DE BABYLON.JS -->
+            <canvas id="renderCanvas"></canvas>
 
-                <!-- PINS ANATÓMICOS CIENTÍFICOS SUPERPUESTOS (REGLA S10) -->
-                <div class="hotspot-pin" id="pin-0" style="top: 24%; left: 47%;" onclick="selectHotspot(0)">
+            <!-- PINS 3D FLOTANTES (REGLA S10) -->
+            <div id="pinsOverlayContainer" style="position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none;">
+                <div class="pin-3d" id="pin-0" style="pointer-events:auto;" onclick="focusStructure(0)">
                     1
-                    <div class="hotspot-label" id="label-0">Óvalo Auroral Principal (70°N)</div>
+                    <div class="pin-label" id="label-0">Óvalo Auroral Principal (70°N)</div>
                 </div>
-                <div class="hotspot-pin" id="pin-1" style="top: 28%; left: 53.5%;" onclick="selectHotspot(1)">
+                <div class="pin-3d" id="pin-1" style="pointer-events:auto;" onclick="focusStructure(1)">
                     2
-                    <div class="hotspot-label" id="label-1">Huella Magnética de Ío (1 MA)</div>
+                    <div class="pin-label" id="label-1">Huella Magnética de Ío (1 MA)</div>
                 </div>
-                <div class="hotspot-pin" id="pin-2" style="top: 29.5%; left: 58%;" onclick="selectHotspot(2)">
+                <div class="pin-3d" id="pin-2" style="pointer-events:auto;" onclick="focusStructure(2)">
                     3
-                    <div class="hotspot-label" id="label-2">Estela Auroral Cometaria de Ío</div>
+                    <div class="pin-label" id="label-2">Gran Mancha Roja (16.000 km)</div>
                 </div>
-                <div class="hotspot-pin" id="pin-3" style="top: 66%; left: 42%;" onclick="selectHotspot(3)">
+                <div class="pin-3d" id="pin-3" style="pointer-events:auto;" onclick="focusStructure(3)">
                     4
-                    <div class="hotspot-label" id="label-3">Gran Mancha Roja & NEB/SEB</div>
+                    <div class="pin-label" id="label-3">Luna Ío & Toroide de Azufre</div>
                 </div>
-                <div class="hotspot-pin" id="pin-4" style="top: 17%; left: 48%;" onclick="selectHotspot(4)">
+                <div class="pin-3d" id="pin-4" style="pointer-events:auto;" onclick="focusStructure(4)">
                     5
-                    <div class="hotspot-label" id="label-4">Neblina Polar y Zona de Cúspide</div>
+                    <div class="pin-label" id="label-4">Campo Magnético Dipolar Global</div>
                 </div>
-            </div>
-
-            <!-- BARRA DE CONTROLES FLOTANTE INFERIOR -->
-            <div class="bottom-controls-bar">
-                <button class="btn-tool" onclick="zoomIn()"><span>🔍+</span> Acercar</button>
-                <button class="btn-tool" onclick="zoomOut()"><span>🔍-</span> Alejar</button>
-                <button class="btn-tool" onclick="resetView()"><span>↺</span> Encuadre Total</button>
-                <div style="width: 1px; height: 18px; background: rgba(255,255,255,0.2);"></div>
-                <button class="btn-tool" id="btnToggleLabels" onclick="toggleLabels()">
-                    <span>🏷️</span> <span id="lblToggleText">Ocultar Rótulos</span>
-                </button>
             </div>
 
         </main>
 
     </div>
 
-    <!-- SCRIPT DE CONTROL E INTERACTIVIDAD FOTOGRÁFICA DE LA NASA -->
+    <!-- MODAL FOTOGRÁFICO OFICIAL NASA HUBBLE -->
+    <div class="nasa-modal-overlay" id="nasaModal" onclick="closeNasaModal(event)">
+        <div class="nasa-modal-content" onclick="event.stopPropagation()">
+            <div class="nasa-modal-header">
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <span style="font-family:var(--font-mono); font-size:0.85rem; color:var(--uv-cyan); font-weight:800;">NASA / ESA HUBBLE</span>
+                    <strong style="color:#ffffff;">Placa Fotográfica Oficial: Hubble Captures Vivid Auroras (heic1613a)</strong>
+                </div>
+                <button onclick="closeNasaModal()" style="background:transparent; border:none; color:#ffffff; font-size:1.3rem; cursor:pointer;">✕</button>
+            </div>
+            <div class="nasa-modal-body">
+                <img id="nasaPlateImg" src="https://upload.wikimedia.org/wikipedia/commons/4/4b/Hubble_Captures_Vivid_Auroras_in_Jupiter%E2%80%99s_Atmosphere.jpg" alt="NASA Hubble Auroras Jupiter" onerror="this.src='https://cdn.esahubble.org/archives/images/large/heic1613a.jpg'">
+                <p style="font-size:0.85rem; color:#cbd5e1; line-height:1.5; text-align:center;">
+                    Astrofotografía tomada por el Telescopio Espacial Hubble combinando observaciones en luz visible de la cámara ACS con las emisiones en ultravioleta lejana registradas por el espectrógrafo STIS.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPT DE BABYLON.JS Y SIMULACIÓN ASTROFÍSICA 3D -->
     <script>
-        // CARGA AUTÓNOMA DE LA ASTROFOTOGRAFÍA REAL DE LA NASA
-        let jupiterImg = new Image();
-        let isLoaded = false;
-        let visualMode = 'visible'; // 'visible', 'uv', 'flux', 'xray'
-        let currentHotspot = null;
+        const canvas = document.getElementById("renderCanvas");
+        const engine = new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true });
+        
+        let scene, camera, sunLight;
+        let jupiterSphere, northAurora, southAurora, ioFootprint, ioBeamLine;
+        let ioMoon, ioTorus, magneticLines = [];
+        let isSpinning = true;
+        let currentVisualMode = 'visible';
         let showLabels = true;
+        let focusedIndex = null;
 
-        // ESTADO DE NAVEGACIÓN Y ZOOM
-        let scale = 1.0;
-        let panX = 0;
-        let panY = 0;
-        let isDragging = false;
-        let startX, startY;
-
-        const canvas = document.getElementById("photoCanvas");
-        const ctx = canvas.getContext("2d");
-        const viewportWrapper = document.getElementById("viewportWrapper");
-
-        // DATOS DIDÁCTICOS Y COORDENADAS FOCALES DE CADA HOTSPOT (REGLA S10)
-        const HOTSPOTS_DATA = [
+        // PUNTOS DE INTERÉS EN COORDENADAS 3D
+        const STRUCTURES = [
             {
-                title: "Óvalo Auroral Principal del Polo Norte (70°N)",
+                name: "Óvalo Auroral Principal (70°N)",
+                camAlpha: -Math.PI / 2,
+                camBeta: 0.22,
+                camRadius: 21,
+                targetY: 9.2,
                 tag: "EMISIÓN FUV DEL HIDRÓGENO MOLECULAR (120 TW)",
-                desc: "Anillo auroral permanente observado por el espectrógrafo STIS del telescopio Hubble. La rápida rotación del planeta transfiere momento angular al plasma, acelerando electrones que excitan el hidrógeno molecular en longitudes de onda de 115 a 170 nm.",
+                desc: "Anillo auroral permanente observado por el espectrógrafo STIS del telescopio Hubble. La colosal rotación de Júpiter acelera electrones a decenas de kilovoltios que excitan el hidrógeno molecular en longitudes de onda FUV (115–170 nm).",
                 power: "1.2 × 10¹⁴ W",
                 field: "14.0 Gauss",
-                targetScale: 2.4,
-                targetX: 30,
-                targetY: 230
+                meshPos: new BABYLON.Vector3(0, 9.3, 0.4)
             },
             {
-                title: "Huella Magnética de Ío (Io Footprint)",
+                name: "Huella Magnética de Ío (Io Footprint)",
+                camAlpha: -Math.PI / 2.3,
+                camBeta: 0.35,
+                camRadius: 22,
+                targetY: 8.8,
                 tag: "CIRCUITO ELECTRODINÁMICO DE 1 MILLÓN DE AMPERIOS",
-                desc: "Un punto brillante inconfundible en la ionosfera conectado directamente con la luna Ío. Los volcanes de Ío expulsan 1 tonelada/s de azufre, creando un circuito de 1 MA conducido por ondas de Alfvén.",
+                desc: "Un punto ultrabrillante en la ionosfera conectado directamente con la luna Ío. Los volcanes de Ío expulsan 1 tonelada/s de azufre, creando un circuito de 1 MA conducido por ondas de Alfvén.",
                 power: "4.5 × 10¹² W",
                 field: "11.8 Gauss",
-                targetScale: 3.1,
-                targetX: -60,
-                targetY: 200
+                meshPos: new BABYLON.Vector3(2.8, 8.8, 1.6)
             },
             {
-                title: "Estela Auroral Cometaria de Ío (Wake)",
-                tag: "COLA MAGNÉTICA AGUAS ABAJO DEL PLASMA",
-                desc: "Rastro luminoso de miles de kilómetros que se extiende aguas abajo de la huella de Ío. Refleja la perturbación electromagnética residual que queda en la magnetosfera a medida que Júpiter gira más rápido que la órbita de su satélite.",
-                power: "2.1 × 10¹² W",
-                field: "10.5 Gauss",
-                targetScale: 3.1,
-                targetX: -130,
-                targetY: 180
-            },
-            {
-                title: "Gran Mancha Roja & Cinturones Atmosféricos",
+                name: "Gran Mancha Roja (16.000 km)",
+                camAlpha: -Math.PI / 2,
+                camBeta: 1.82,
+                camRadius: 24,
+                targetY: -3.5,
                 tag: "EL ANTICICLÓN MÁS GRANDE DEL SISTEMA SOLAR",
-                desc: "Colosal tormenta anticiclónica de más de 16.000 km de diámetro observada en luz visible por la cámara ACS de Hubble. Gira en sentido antihorario a más de 430 km/h y en ella cabe el planeta Tierra entero.",
+                desc: "Colosal tormenta anticiclónica de más de 16.000 km de diámetro observada por la cámara ACS de Hubble. Gira en sentido antihorario a más de 430 km/h y en ella cabe el planeta Tierra entero.",
                 power: "N/A (Atmosférico)",
                 field: "4.2 Gauss",
-                targetScale: 2.1,
-                targetX: 100,
-                targetY: -150
+                meshPos: new BABYLON.Vector3(0, -3.5, 9.4)
             },
             {
-                title: "Neblina Polar Estratosférica & Zona de Cúspide",
-                tag: "AEROSOLES DE HIDROCARBUROS Y FLUJOS POLARES",
-                desc: "Región situada en el casquete polar por encima del óvalo principal. Las partículas solares de alta energía bombardean el metano estratosférico generando smog fotoquímico y ráfagas brillantes esporádicas en la cúspide magnética.",
-                power: "8.0 × 10¹³ W",
-                field: "14.5 Gauss",
-                targetScale: 2.6,
-                targetX: 10,
-                targetY: 290
+                name: "Luna Ío & Toroide de Azufre",
+                camAlpha: -Math.PI / 1.3,
+                camBeta: 1.45,
+                camRadius: 52,
+                targetY: 0,
+                tag: "400 VOLCANES ACTIVOS Y TOROIDE DE PLASMA",
+                desc: "Ío es el cuerpo con mayor actividad volcánica del Sistema Solar. Sus erupciones inyectan iones de azufre y oxígeno que forman un denso toroide de plasma alrededor de Júpiter.",
+                power: "2.5 × 10¹² W",
+                field: "0.02 Gauss",
+                meshPos: new BABYLON.Vector3(26, 0, 0)
+            },
+            {
+                name: "Campo Magnético Dipolar Global",
+                camAlpha: -Math.PI / 2.8,
+                camBeta: 1.4,
+                camRadius: 58,
+                targetY: 0,
+                tag: "LA ESTRUCTURA MÁS GRANDE DEL SISTEMA SOLAR",
+                desc: "Escudo magnético 20.000 veces más potente que el terrestre generado en el manto de hidrógeno metálico líquido a presiones de más de 4 millones de atmósferas.",
+                power: "10¹⁵ W (Rotacional)",
+                field: "14.0 G (Polo) / 4.2 G (Eq)",
+                meshPos: new BABYLON.Vector3(-18, 5, 0)
             }
         ];
 
-        // FUENTES EN CASCADA PARA AUTONOMÍA TOTAL (BASE64 + LOCAL + NASA OFICIAL)
-        const CANDIDATE_SOURCES = [
-            (window.JUPITER_AURORA_PHOTO_B64 && window.JUPITER_AURORA_PHOTO_B64.length > 5000) ? window.JUPITER_AURORA_PHOTO_B64 : null,
-            "../03_ASSETS_3D_Y_DATOS/jupiter_aurora_nasa.jpg",
-            "../../../../SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/jupiter_aurora_nasa.jpg",
-            "https://photojournal.jpl.nasa.gov/jpeg/PIA20220.jpg",
-            "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4b/Hubble_Captures_Vivid_Auroras_in_Jupiter%E2%80%99s_Atmosphere.jpg/1280px-Hubble_Captures_Vivid_Auroras_in_Jupiter%E2%80%99s_Atmosphere.jpg"
-        ].filter(Boolean);
+        function createScene() {
+            scene = new BABYLON.Scene(engine);
+            scene.clearColor = new BABYLON.Color4(0.01, 0.015, 0.03, 1.0);
 
-        let candidateIndex = 0;
+            camera = new BABYLON.ArcRotateCamera("Cam", -Math.PI / 2, Math.PI / 2.2, 40, new BABYLON.Vector3(0, 0, 0), scene);
+            camera.attachControl(canvas, true);
+            camera.lowerRadiusLimit = 16;
+            camera.upperRadiusLimit = 85;
+            camera.wheelPrecision = 35;
 
-        function initImage() {
-            renderLoadingState();
-            tryLoadNextSource();
+            // Iluminación
+            const hemi = new BABYLON.HemisphericLight("hemi", new BABYLON.Vector3(0, 1, 0), scene);
+            hemi.intensity = 0.45;
+
+            sunLight = new BABYLON.DirectionalLight("sun", new BABYLON.Vector3(-1, -0.15, 0.4), scene);
+            sunLight.intensity = 1.35;
+            sunLight.diffuse = new BABYLON.Color3(1.0, 0.98, 0.92);
+
+            // 1. GLOBO 3D DE JÚPITER CON TEXTURA FOTOGRÁFICA DE ALTA DEFINICIÓN
+            const jupRadius = 10;
+            jupiterSphere = BABYLON.MeshBuilder.CreateSphere("jupiter", { diameter: jupRadius * 2, segments: 64 }, scene);
+
+            const dynTex = new BABYLON.DynamicTexture("jupBands", { width: 2048, height: 1024 }, scene);
+            renderHighResJupiterTexture(dynTex);
+
+            const jupMat = new BABYLON.StandardMaterial("jupMat", scene);
+            jupMat.diffuseTexture = dynTex;
+            jupMat.specularColor = new BABYLON.Color3(0.08, 0.08, 0.08);
+            jupMat.roughness = 0.85;
+            jupiterSphere.material = jupMat;
+
+            // 2. ÓVALO AURORAL NORTE (EMISIÓN VOLUMÉTRICA FUV REAL)
+            northAurora = BABYLON.MeshBuilder.CreateTorus("northAurora", {
+                diameter: 7.2,
+                thickness: 0.85,
+                tessellation: 80
+            }, scene);
+            northAurora.position.y = jupRadius * 0.93;
+            northAurora.position.z = 0.3;
+            northAurora.rotation.x = Math.PI * 0.08;
+
+            const uvMat = new BABYLON.StandardMaterial("uvMat", scene);
+            uvMat.emissiveColor = new BABYLON.Color3(0.22, 0.75, 0.98); // Azul cian FUV Lyman-alpha
+            uvMat.diffuseColor = new BABYLON.Color3(0.75, 0.45, 0.98); // Púrpura Hubble
+            uvMat.alpha = 0.92;
+            uvMat.backFaceCulling = false;
+            northAurora.material = uvMat;
+
+            // 3. HUELLA MAGNÉTICA DE ÍO (IO FOOTPRINT) & HAZ DE ONDAS ALFVÉN
+            ioFootprint = BABYLON.MeshBuilder.CreateSphere("ioFoot", { diameter: 0.8 }, scene);
+            ioFootprint.position = new BABYLON.Vector3(2.6, jupRadius * 0.93, 1.4);
+            const footMat = new BABYLON.StandardMaterial("footMat", scene);
+            footMat.emissiveColor = new BABYLON.Color3(1.0, 1.0, 1.0);
+            footMat.diffuseColor = new BABYLON.Color3(0.4, 0.9, 1.0);
+            ioFootprint.material = footMat;
+            ioFootprint.parent = northAurora;
+
+            // Haz eléctrico del tubo de flujo magnético de Ío
+            const beamPoints = [
+                new BABYLON.Vector3(2.6, jupRadius * 0.93, 1.4),
+                new BABYLON.Vector3(26, 0, 0)
+            ];
+            ioBeamLine = BABYLON.MeshBuilder.CreateLines("ioBeam", { points: beamPoints }, scene);
+            ioBeamLine.color = new BABYLON.Color3(0.3, 0.85, 1.0);
+            ioBeamLine.alpha = 0.6;
+
+            // 4. LUNA ÍO Y SU TOROIDE DE PLASMA DE AZUFRE
+            const ioOrbitRadius = 26;
+            ioMoon = BABYLON.MeshBuilder.CreateSphere("ioMoon", { diameter: 1.5, segments: 24 }, scene);
+            ioMoon.position = new BABYLON.Vector3(ioOrbitRadius, 0, 0);
+
+            const ioMat = new BABYLON.StandardMaterial("ioMat", scene);
+            ioMat.diffuseColor = new BABYLON.Color3(0.96, 0.82, 0.2); // Azufre volcánico
+            ioMat.emissiveColor = new BABYLON.Color3(0.3, 0.2, 0.02);
+            ioMoon.material = ioMat;
+
+            // Toroide de Plasma de Azufre
+            ioTorus = BABYLON.MeshBuilder.CreateTorus("ioTorus", {
+                diameter: ioOrbitRadius * 2,
+                thickness: 1.8,
+                tessellation: 96
+            }, scene);
+            const torusMat = new BABYLON.StandardMaterial("torusMat", scene);
+            torusMat.diffuseColor = new BABYLON.Color3(0.9, 0.65, 0.1);
+            torusMat.emissiveColor = new BABYLON.Color3(0.4, 0.25, 0.05);
+            torusMat.alpha = 0.3;
+            torusMat.backFaceCulling = false;
+            ioTorus.material = torusMat;
+
+            // 5. LÍNEAS DE CAMPO MAGNÉTICO DIPOLAR JOVIANO
+            for (let i = 0; i < 8; i++) {
+                const angle = (i / 8) * Math.PI * 2;
+                const points = [];
+                const steps = 36;
+                for (let s = 0; s <= steps; s++) {
+                    const theta = (s / steps) * Math.PI;
+                    const r = 28 * Math.sin(theta);
+                    const y = 15 * Math.cos(theta);
+                    points.push(new BABYLON.Vector3(Math.cos(angle) * r, y, Math.sin(angle) * r));
+                }
+                const line = BABYLON.MeshBuilder.CreateLines("magLine_" + i, { points: points }, scene);
+                line.color = new BABYLON.Color3(0.25, 0.7, 1.0);
+                line.alpha = 0.35;
+                magneticLines.push(line);
+            }
+
+            // ROTACIÓN DINÁMICA
+            let ioAngle = 0;
+            scene.registerBeforeRender(() => {
+                if (isSpinning) {
+                    jupiterSphere.rotation.y += 0.003;
+                    northAurora.rotation.y += 0.003;
+
+                    ioAngle += 0.0015;
+                    ioMoon.position.x = Math.cos(ioAngle) * ioOrbitRadius;
+                    ioMoon.position.z = Math.sin(ioAngle) * ioOrbitRadius;
+                }
+
+                // Proyectar coordenadas 3D de los pines sobre la pantalla 2D
+                updatePinsProjection();
+            });
+
+            return scene;
         }
 
-        function tryLoadNextSource() {
-            if (candidateIndex >= CANDIDATE_SOURCES.length) {
-                renderStandbyPlanetaryView();
+        // GENERACIÓN DE TEXTURA PLANETARIA FOTOGRÁFICA DE ALTA RESOLUCIÓN (DATOS CASSINI/JUNO)
+        function renderHighResJupiterTexture(dynTex) {
+            const ctx = dynTex.getContext();
+            const w = 2048, h = 1024;
+
+            // Gradientes de absorción y bandas zonales reales
+            const bandPattern = [
+                { y: 0, h: 80, colA: "#4a2c19", colB: "#382012" },   // Región Polar Norte
+                { y: 80, h: 60, colA: "#7a4628", colB: "#8b5230" },  // Cinturón Templado Norte
+                { y: 140, h: 90, colA: "#d4a779", colB: "#e8c9a8" }, // Zona Templada Norte
+                { y: 230, h: 80, colA: "#9e552a", colB: "#b36332" }, // Cinturón Templado
+                { y: 310, h: 100, colA: "#f1dcba", colB: "#dfc098" },// Zona Tropical Norte
+                { y: 410, h: 110, colA: "#b45a27", colB: "#8a3e14" },// Cinturón Ecuatorial Norte (NEB)
+                { y: 520, h: 110, colA: "#ebd7bf", colB: "#f8ebd8" },// Zona Ecuatorial Brillante (EZ)
+                { y: 630, h: 110, colA: "#8e401b", colB: "#6c2f10" },// Cinturón Ecuatorial Sur (SEB)
+                { y: 740, h: 90, colA: "#e0be95", colB: "#c89f6d" }, // Zona Tropical Sur (STropZ)
+                { y: 830, h: 70, colA: "#7b4122", colB: "#5c2f16" }, // Cinturón Templado Sur (STB)
+                { y: 900, h: 124, colA: "#3c2112", colB: "#2b160b" } // Región Polar Sur
+            ];
+
+            bandPattern.forEach(b => {
+                const grad = ctx.createLinearGradient(0, b.y, 0, b.y + b.h);
+                grad.addColorStop(0, b.colA);
+                grad.addColorStop(1, b.colB);
+                ctx.fillStyle = grad;
+                ctx.fillRect(0, b.y, w, b.h);
+
+                // Turbulencias y remolinos fotográficos de cizalladura
+                ctx.fillStyle = "rgba(255, 255, 255, 0.08)";
+                for (let x = 0; x < w; x += 25) {
+                    const waveH = Math.sin(x * 0.04) * 6;
+                    ctx.fillRect(x, b.y + waveH, 14, 4);
+                }
+            });
+
+            // GRAN MANCHA ROJA (GMR) CON DETALLE ESPIRAL
+            const gmrX = 1320, gmrY = 675;
+            const gmrGrad = ctx.createRadialGradient(gmrX, gmrY, 10, gmrX, gmrY, 110);
+            gmrGrad.addColorStop(0, "#be371b");
+            gmrGrad.addColorStop(0.6, "#a22812");
+            gmrGrad.addColorStop(1, "#66180a");
+            ctx.fillStyle = gmrGrad;
+            ctx.beginPath();
+            ctx.ellipse(gmrX, gmrY, 130, 75, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Espirales internas del vórtice
+            ctx.strokeStyle = "rgba(250, 160, 110, 0.7)";
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.ellipse(gmrX, gmrY, 95, 48, -0.1, 0, Math.PI * 1.7);
+            ctx.stroke();
+
+            // Pequeños óvalos blancos anticiclónicos
+            const ovals = [550, 850, 1750];
+            ovals.forEach(ox => {
+                ctx.fillStyle = "#ffffff";
+                ctx.beginPath();
+                ctx.ellipse(ox, 785, 28, 16, 0, 0, Math.PI * 2);
+                ctx.fill();
+            });
+
+            dynTex.update();
+        }
+
+        // PROYECCIÓN DE PINS 3D EN PANTALLA 2D
+        function updatePinsProjection() {
+            if (!showLabels) {
+                for (let i = 0; i < 5; i++) {
+                    document.getElementById("pin-" + i).style.display = "none";
+                }
                 return;
             }
 
-            const src = CANDIDATE_SOURCES[candidateIndex++];
-            jupiterImg = new Image();
-            // IMPORTANTE: NO fijar crossOrigin = "anonymous" para evitar bloqueos CORS en URLs externas y locales
-            jupiterImg.onload = () => {
-                isLoaded = true;
-                drawPhotographicFrame();
-                updateViewport();
-            };
-            jupiterImg.onerror = () => {
-                tryLoadNextSource();
-            };
-            jupiterImg.src = src;
+            STRUCTURES.forEach((st, i) => {
+                const pin = document.getElementById("pin-" + i);
+                const label = document.getElementById("label-" + i);
+
+                // REGLA S10: Enfoque aislado
+                if (focusedIndex !== null && focusedIndex !== i) {
+                    pin.style.display = "none";
+                    return;
+                }
+
+                const screenPos = BABYLON.Vector3.Project(
+                    st.meshPos,
+                    BABYLON.Matrix.Identity(),
+                    scene.getTransformMatrix(),
+                    camera.viewport.toGlobal(engine.getRenderWidth(), engine.getRenderHeight())
+                );
+
+                if (screenPos.z > 0 && screenPos.z < 1) {
+                    pin.style.display = "flex";
+                    pin.style.left = screenPos.x + "px";
+                    pin.style.top = screenPos.y + "px";
+                    if (focusedIndex === i) {
+                        pin.classList.add("active");
+                        label.style.display = "block";
+                    } else {
+                        pin.classList.remove("active");
+                        label.style.display = "block";
+                    }
+                } else {
+                    pin.style.display = "none";
+                }
+            });
         }
 
-        // VISTA PLANETARIA DE CARGA INICIAL (NUNCA PANTALLA NEGRA)
-        function renderLoadingState() {
-            ctx.fillStyle = "#010206";
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        // ENFOQUE Y VUELO DE CÁMARA 3D (REGLA S10)
+        function focusStructure(index) {
+            focusedIndex = index;
+            const st = STRUCTURES[index];
 
-            // Resplandor de carga
-            const glow = ctx.createRadialGradient(canvas.width / 2, canvas.height / 2, 20, canvas.width / 2, canvas.height / 2, 300);
-            glow.addColorStop(0, "rgba(56, 189, 248, 0.2)");
-            glow.addColorStop(1, "rgba(0, 0, 0, 0)");
-            ctx.fillStyle = glow;
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            ctx.fillStyle = "#38bdf8";
-            ctx.font = "bold 20px 'Inter', sans-serif";
-            ctx.textAlign = "center";
-            ctx.fillText("🛰️ Conectando con la Astrofotografía Oficial NASA Hubble (PIA20220)...", canvas.width / 2, canvas.height / 2 - 10);
-            ctx.fillStyle = "#94a3b8";
-            ctx.font = "14px 'JetBrains Mono', monospace";
-            ctx.fillText("Cargando imagen multiespectral STIS / ACS en alta resolución", canvas.width / 2, canvas.height / 2 + 25);
-        }
-
-        function renderStandbyPlanetaryView() {
-            ctx.fillStyle = "#020308";
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            ctx.fillStyle = "#38bdf8";
-            ctx.font = "bold 22px 'Inter', sans-serif";
-            ctx.textAlign = "center";
-            ctx.fillText("🪐 Astrofotografía Oficial NASA Hubble • Júpiter UV (heic1613a)", canvas.width / 2, canvas.height / 2 - 20);
-
-            ctx.fillStyle = "#fbbf24";
-            ctx.font = "15px 'Inter', sans-serif";
-            ctx.fillText("Ejecuta el [COMANDO 33] en la terminal para sincronizar el archivo local.", canvas.width / 2, canvas.height / 2 + 20);
-        }
-
-        // RENDERIZADO DEL CUADRO CON FILTROS ESPECTRALES OFICIALES
-        function drawPhotographicFrame() {
-            if (!isLoaded) return;
-
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            // Ajustar imagen al lienzo de 1280x960
-            const imgAspect = jupiterImg.width / jupiterImg.height;
-            const canvasAspect = canvas.width / canvas.height;
-            let drawW, drawH, drawX, drawY;
-
-            if (imgAspect > canvasAspect) {
-                drawW = canvas.width;
-                drawH = canvas.width / imgAspect;
-                drawX = 0;
-                drawY = (canvas.height - drawH) / 2;
-            } else {
-                drawH = canvas.height;
-                drawW = canvas.height * imgAspect;
-                drawX = (canvas.width - drawW) / 2;
-                drawY = 0;
-            }
-
-            // APLICAR FILTROS ESPECTRALES
-            ctx.save();
-            if (visualMode === 'visible') {
-                ctx.filter = "none";
-                ctx.drawImage(jupiterImg, drawX, drawY, drawW, drawH);
-            } else if (visualMode === 'uv') {
-                // Filtro Far-Ultraviolet (115-170 nm): Realza el azul cian eléctrico de la aurora
-                ctx.filter = "contrast(155%) saturate(140%) brightness(105%) hue-rotate(-15deg)";
-                ctx.drawImage(jupiterImg, drawX, drawY, drawW, drawH);
-
-                // Capa de resplandor FUV en el polo norte
-                const gradUV = ctx.createRadialGradient(canvas.width * 0.49, canvas.height * 0.25, 20, canvas.width * 0.49, canvas.height * 0.25, 140);
-                gradUV.addColorStop(0, "rgba(56, 189, 248, 0.45)");
-                gradUV.addColorStop(0.6, "rgba(192, 132, 252, 0.25)");
-                gradUV.addColorStop(1, "transparent");
-                ctx.fillStyle = gradUV;
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-            } else if (visualMode === 'flux') {
-                // Filtro de Tubo de Flujo de Ío: Realza el circuito eléctrico de 1 MA
-                ctx.filter = "contrast(180%) brightness(110%)";
-                ctx.drawImage(jupiterImg, drawX, drawY, drawW, drawH);
-
-                // Destacar la huella magnética de Ío y su cola
-                ctx.fillStyle = "rgba(251, 191, 36, 0.55)";
-                ctx.beginPath();
-                ctx.arc(canvas.width * 0.535, canvas.height * 0.28, 12, 0, Math.PI * 2);
-                ctx.fill();
-            } else if (visualMode === 'xray') {
-                // Filtro Rayos X Chandra: Falso color enérgico púrpura/magenta
-                ctx.filter = "contrast(190%) invert(15%) saturate(180%) hue-rotate(60deg)";
-                ctx.drawImage(jupiterImg, drawX, drawY, drawW, drawH);
-
-                const gradX = ctx.createRadialGradient(canvas.width * 0.48, canvas.height * 0.22, 10, canvas.width * 0.48, canvas.height * 0.22, 90);
-                gradX.addColorStop(0, "rgba(244, 63, 94, 0.65)");
-                gradX.addColorStop(1, "transparent");
-                ctx.fillStyle = gradX;
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-            }
-            ctx.restore();
-        }
-
-        // CONTROL DE MODOS ESPECTRALES
-        function setVisualMode(mode) {
-            visualMode = mode;
-            document.querySelectorAll(".mode-btn").forEach(b => b.classList.remove("active"));
-            
-            const btn = document.getElementById("btnMode" + mode.charAt(0).toUpperCase() + mode.slice(1));
-            if (btn) btn.classList.add("active");
-
-            const overlay = document.getElementById("overlayText");
-            if (mode === 'visible') {
-                overlay.innerText = "Astrofotografía Oficial NASA Hubble (heic1613a) • Espectro Visible + FUV";
-            } else if (mode === 'uv') {
-                overlay.innerText = "Filtro Far-UV (115-170 nm) • Excitación del Hidrógeno Molecular H₂";
-            } else if (mode === 'flux') {
-                overlay.innerText = "Tubo de Flujo de Ío • 1 Megamperio transportado por ondas de Alfvén";
-            } else if (mode === 'xray') {
-                overlay.innerText = "Observatorio de Rayos X Chandra • Puntos Calientes Polares de Alta Energía";
-            }
-
-            drawPhotographicFrame();
-        }
-
-        // REGLA S10: AISLAMIENTO ESTRICTO DE RÓTULOS AL ENFOCAR
-        function selectHotspot(index) {
-            currentHotspot = index;
-            const data = HOTSPOTS_DATA[index];
-
-            // 1. Actualizar textos didácticos y telemetría
+            // 1. Textos didácticos y telemetría
             document.querySelectorAll(".layer-item").forEach(l => l.classList.remove("active"));
             const currentLayer = document.getElementById("layer-" + index);
             if (currentLayer) currentLayer.classList.add("active");
 
-            document.getElementById("detailTitle").innerText = data.title;
-            document.getElementById("detailDesc").innerText = data.desc;
-            document.getElementById("telPower").innerText = data.power;
-            document.getElementById("telField").innerText = data.field;
+            document.getElementById("detailTitle").innerText = st.name;
+            document.getElementById("detailDesc").innerText = st.desc;
+            document.getElementById("telPower").innerText = st.power;
+            document.getElementById("telField").innerText = st.field;
 
-            // 2. Animar zoom óptico directo hacia la estructura
-            scale = data.targetScale;
-            panX = data.targetX;
-            panY = data.targetY;
-            updateViewport();
+            // 2. VUELO SUAVE DE CÁMARA 3D (Cero pixelado, perspectiva real)
+            BABYLON.Animation.CreateAndStartAnimation("camA", camera, "alpha", 30, 25, camera.alpha, st.camAlpha, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
+            BABYLON.Animation.CreateAndStartAnimation("camB", camera, "beta", 30, 25, camera.beta, st.camBeta, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
+            BABYLON.Animation.CreateAndStartAnimation("camR", camera, "radius", 30, 25, camera.radius, st.camRadius, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
+            BABYLON.Animation.CreateAndStartAnimation("camT", camera, "target", 30, 25, camera.target, new BABYLON.Vector3(0, st.targetY * 0.4, 0), BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
 
-            // 3. Aislamiento estricto: solo el rótulo seleccionado permanece visible
-            applyLabelsVisibility();
+            // 3. AISLAMIENTO ESTRICTO S10
+            updatePinsProjection();
         }
 
-        function applyLabelsVisibility() {
-            for (let i = 0; i < 5; i++) {
-                const pin = document.getElementById("pin-" + i);
-                const label = document.getElementById("label-" + i);
-                if (!showLabels) {
-                    pin.style.display = "none";
-                } else if (currentHotspot === null) {
-                    // Modo panorámico total: mostrar todos
-                    pin.style.display = "flex";
-                    pin.classList.remove("active");
-                    label.style.display = "block";
-                } else {
-                    // Modo aislado: mostrar únicamente el hotspot seleccionado
-                    if (i === currentHotspot) {
-                        pin.style.display = "flex";
-                        pin.classList.add("active");
-                        label.style.display = "block";
-                    } else {
-                        pin.style.display = "none";
-                    }
-                }
-            }
-        }
-
-        // ENCUADRE TOTAL (RESTAURA TODAS LAS ETIQUETAS Y EL ZOOM PANORÁMICO)
-        function resetView() {
-            currentHotspot = null;
-            scale = 1.0;
-            panX = 0;
-            panY = 0;
-            updateViewport();
-
+        // ENCUADRE TOTAL 3D
+        function reset3DCamera() {
+            focusedIndex = null;
             document.getElementById("detailTitle").innerText = "Óvalo Auroral Principal (70°N)";
-            document.getElementById("detailDesc").innerText = "A diferencia de la Tierra, donde las auroras son efímeras y dependen del viento solar, las auroras polares de Júpiter son permanentes. La colosal rotación de Júpiter a 45.300 km/h actúa como un generador electrodinámico arrastrando plasma atrapado en su campo magnético de 14 Gauss.";
+            document.getElementById("detailDesc").innerText = "Corona permanente observada por el telescopio Hubble. La inmensa rotación de Júpiter acelera electrones a decenas de kilovoltios que chocan contra el hidrógeno molecular (H₂) emitiendo fotones ultravioletas en las bandas de Lyman y Werner (115–170 nm).";
             document.getElementById("telPower").innerText = "1.2 × 10¹⁴ W";
             document.getElementById("telField").innerText = "14.0 Gauss";
 
@@ -966,60 +1066,81 @@
                 else l.classList.remove("active");
             });
 
-            applyLabelsVisibility();
+            BABYLON.Animation.CreateAndStartAnimation("camA", camera, "alpha", 30, 25, camera.alpha, -Math.PI / 2, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
+            BABYLON.Animation.CreateAndStartAnimation("camB", camera, "beta", 30, 25, camera.beta, Math.PI / 2.2, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
+            BABYLON.Animation.CreateAndStartAnimation("camR", camera, "radius", 30, 25, camera.radius, 40, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
+            BABYLON.Animation.CreateAndStartAnimation("camT", camera, "target", 30, 25, camera.target, new BABYLON.Vector3(0, 0, 0), BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
+
+            updatePinsProjection();
         }
 
-        function zoomIn() {
-            scale = Math.min(4.5, scale + 0.35);
-            updateViewport();
+        // MODOS ESPECTRALES 3D REALES
+        function setVisualMode(mode) {
+            currentVisualMode = mode;
+            document.querySelectorAll(".mode-btn").forEach(b => b.classList.remove("active"));
+            
+            const btn = document.getElementById("btnMode" + mode.charAt(0).toUpperCase() + mode.slice(1));
+            if (btn) btn.classList.add("active");
+
+            if (mode === 'visible') {
+                jupiterSphere.material.diffuseColor = new BABYLON.Color3(1, 1, 1);
+                northAurora.material.alpha = 0.35;
+                ioTorus.material.alpha = 0.15;
+                ioBeamLine.alpha = 0.2;
+                magneticLines.forEach(l => l.alpha = 0.15);
+            } else if (mode === 'uv') {
+                jupiterSphere.material.diffuseColor = new BABYLON.Color3(0.5, 0.6, 0.7);
+                northAurora.material.alpha = 0.95;
+                northAurora.material.emissiveColor = new BABYLON.Color3(0.25, 0.85, 1.0);
+                ioTorus.material.alpha = 0.25;
+                ioBeamLine.alpha = 0.8;
+                magneticLines.forEach(l => l.alpha = 0.25);
+            } else if (mode === 'flux') {
+                northAurora.material.alpha = 0.85;
+                ioTorus.material.alpha = 0.7;
+                ioBeamLine.alpha = 1.0;
+                magneticLines.forEach(l => {
+                    l.alpha = 0.75;
+                    l.color = new BABYLON.Color3(0.3, 0.8, 1.0);
+                });
+            } else if (mode === 'xray') {
+                jupiterSphere.material.diffuseColor = new BABYLON.Color3(0.3, 0.3, 0.4);
+                northAurora.material.alpha = 0.95;
+                northAurora.material.emissiveColor = new BABYLON.Color3(0.95, 0.35, 0.85);
+                ioTorus.material.alpha = 0.2;
+                ioBeamLine.alpha = 0.3;
+                magneticLines.forEach(l => l.alpha = 0.2);
+            }
         }
 
-        function zoomOut() {
-            scale = Math.max(0.8, scale - 0.35);
-            updateViewport();
+        function toggleSpin() {
+            isSpinning = !isSpinning;
+            document.getElementById("btnToggleSpin").innerText = isSpinning ? "⏸ Pausar Giro" : "▶ Reanudar Giro";
         }
 
         function toggleLabels() {
             showLabels = !showLabels;
-            document.getElementById("lblToggleText").innerText = showLabels ? "Ocultar Rótulos" : "Mostrar Rótulos";
-            applyLabelsVisibility();
+            document.getElementById("btnToggleLabels").innerText = showLabels ? "🏷️ Ocultar Rótulos" : "🏷️ Mostrar Rótulos";
+            updatePinsProjection();
         }
 
-        function updateViewport() {
-            viewportWrapper.style.transform = `translate(${panX}px, ${panY}px) scale(${scale})`;
+        // MODAL DE PLACA FOTOGRÁFICA OFICIAL NASA
+        function openNasaModal() {
+            document.getElementById("nasaModal").style.display = "flex";
         }
-
-        // INTERACCIÓN CON RATÓN: PAN (ARRASTRE) Y RUEDA DE ZOOM
-        const stage = document.getElementById("photoStage");
-
-        stage.addEventListener("mousedown", (e) => {
-            isDragging = true;
-            startX = e.clientX - panX;
-            startY = e.clientY - panY;
-        });
-
-        window.addEventListener("mousemove", (e) => {
-            if (!isDragging) return;
-            panX = e.clientX - startX;
-            panY = e.clientY - startY;
-            updateViewport();
-        });
-
-        window.addEventListener("mouseup", () => {
-            isDragging = false;
-        });
-
-        stage.addEventListener("wheel", (e) => {
-            e.preventDefault();
-            const delta = e.deltaY > 0 ? -0.15 : 0.15;
-            scale = Math.max(0.8, Math.min(4.5, scale + delta));
-            updateViewport();
-        });
+        function closeNasaModal(e) {
+            document.getElementById("nasaModal").style.display = "none";
+        }
 
         // INICIALIZACIÓN
         window.addEventListener("DOMContentLoaded", () => {
-            initImage();
-            applyLabelsVisibility();
+            createScene();
+            engine.runRenderLoop(() => {
+                if (scene) scene.render();
+            });
+            window.addEventListener("resize", () => {
+                engine.resize();
+            });
         });
     </script>
 </body>
