@@ -744,10 +744,11 @@
 
         // FUENTES EN CASCADA PARA AUTONOMÍA TOTAL (BASE64 + LOCAL + NASA OFICIAL)
         const CANDIDATE_SOURCES = [
-            (window.JUPITER_AURORA_PHOTO_B64 && window.JUPITER_AURORA_PHOTO_B64.length > 5000) ? window.JUPITER_AURORA_PHOTO_B64 : null,
+            (window.JUPITER_AURORA_PHOTO_B64 && !window.JUPITER_AURORA_PHOTO_B64.includes("PCFkb2N0eXBl") && window.JUPITER_AURORA_PHOTO_B64.length > 5000) ? window.JUPITER_AURORA_PHOTO_B64 : null,
             "../03_ASSETS_3D_Y_DATOS/jupiter_aurora_nasa.jpg",
             "../../../../SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/jupiter_aurora_nasa.jpg",
-            "https://photojournal.jpl.nasa.gov/jpeg/PIA20220.jpg",
+            "https://upload.wikimedia.org/wikipedia/commons/4/4b/Hubble_Captures_Vivid_Auroras_in_Jupiter%E2%80%99s_Atmosphere.jpg",
+            "https://cdn.esahubble.org/archives/images/large/heic1613a.jpg",
             "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4b/Hubble_Captures_Vivid_Auroras_in_Jupiter%E2%80%99s_Atmosphere.jpg/1280px-Hubble_Captures_Vivid_Auroras_in_Jupiter%E2%80%99s_Atmosphere.jpg"
         ].filter(Boolean);
 
@@ -766,11 +767,15 @@
 
             const src = CANDIDATE_SOURCES[candidateIndex++];
             jupiterImg = new Image();
-            // IMPORTANTE: NO fijar crossOrigin = "anonymous" para evitar bloqueos CORS en URLs externas y locales
+            // IMPORTANTE: NO fijar crossOrigin = "anonymous" para evitar bloqueos CORS
             jupiterImg.onload = () => {
-                isLoaded = true;
-                drawPhotographicFrame();
-                updateViewport();
+                if (jupiterImg.naturalWidth > 100 && jupiterImg.naturalHeight > 100) {
+                    isLoaded = true;
+                    drawPhotographicFrame();
+                    updateViewport();
+                } else {
+                    tryLoadNextSource();
+                }
             };
             jupiterImg.onerror = () => {
                 tryLoadNextSource();

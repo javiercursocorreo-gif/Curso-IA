@@ -56,22 +56,33 @@ if [ -f "SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/helix_nebula_nasa.jpg" ] 
     echo '";' >> "SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/helix_nebula_b64.js"
 fi
 
-# 5. Auroras Ultravioletas de Júpiter Oficiales de la NASA / Hubble (PIA20220 / heic1613a)
-if [ ! -f "SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/jupiter_aurora_nasa.jpg" ] || [ $(wc -c < "SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/jupiter_aurora_nasa.jpg" 2>/dev/null || echo 0) -lt 5000 ]; then
-    echo "Descargando astrofotografía oficial de la NASA/Hubble de las Auroras de Júpiter (PIA20220)..."
-    rm -f "SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/jupiter_aurora_nasa.jpg"
-    curl -sL "https://photojournal.jpl.nasa.gov/jpeg/PIA20220.jpg" -o "SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/jupiter_aurora_nasa.jpg"
+# 5. Auroras Ultravioletas de Júpiter Oficiales de la NASA / Hubble (heic1613a / opo1624a)
+JUP_IMG="SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/jupiter_aurora_nasa.jpg"
+if [ ! -f "$JUP_IMG" ] || ! file "$JUP_IMG" 2>/dev/null | grep -qi "jpeg\|image"; then
+    echo "Descargando astrofotografía oficial de la NASA/Hubble de las Auroras de Júpiter (heic1613a)..."
+    rm -f "$JUP_IMG"
     
-    if [ ! -s "SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/jupiter_aurora_nasa.jpg" ] || [ $(wc -c < "SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/jupiter_aurora_nasa.jpg" 2>/dev/null || echo 0) -lt 5000 ]; then
-        curl -sL -A "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36" "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4b/Hubble_Captures_Vivid_Auroras_in_Jupiter%E2%80%99s_Atmosphere.jpg/1280px-Hubble_Captures_Vivid_Auroras_in_Jupiter%E2%80%99s_Atmosphere.jpg" -o "SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/jupiter_aurora_nasa.jpg"
+    # Intento 1: Wikimedia Commons con User-Agent
+    curl -sL -A "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36" "https://upload.wikimedia.org/wikipedia/commons/4/4b/Hubble_Captures_Vivid_Auroras_in_Jupiter%E2%80%99s_Atmosphere.jpg" -o "$JUP_IMG"
+    
+    # Intento 2: Versión 1280px
+    if [ ! -s "$JUP_IMG" ] || ! file "$JUP_IMG" 2>/dev/null | grep -qi "jpeg\|image"; then
+        curl -sL -A "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36" "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4b/Hubble_Captures_Vivid_Auroras_in_Jupiter%E2%80%99s_Atmosphere.jpg/1280px-Hubble_Captures_Vivid_Auroras_in_Jupiter%E2%80%99s_Atmosphere.jpg" -o "$JUP_IMG"
+    fi
+
+    # Intento 3: ESA Hubble Archive
+    if [ ! -s "$JUP_IMG" ] || ! file "$JUP_IMG" 2>/dev/null | grep -qi "jpeg\|image"; then
+        curl -sL -A "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36" "https://cdn.esahubble.org/archives/images/large/heic1613a.jpg" -o "$JUP_IMG"
     fi
 fi
 
-if [ -f "SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/jupiter_aurora_nasa.jpg" ] && [ $(wc -c < "SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/jupiter_aurora_nasa.jpg" 2>/dev/null || echo 0) -gt 5000 ]; then
+if [ -f "$JUP_IMG" ] && file "$JUP_IMG" 2>/dev/null | grep -qi "jpeg\|image"; then
     echo "Generando jupiter_aurora_b64.js..."
     echo -n 'window.JUPITER_AURORA_PHOTO_B64 = "data:image/jpeg;base64,' > "SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/jupiter_aurora_b64.js"
-    base64 -i "SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/jupiter_aurora_nasa.jpg" | tr -d '\n' >> "SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/jupiter_aurora_b64.js"
+    base64 -i "$JUP_IMG" | tr -d '\n' >> "SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/jupiter_aurora_b64.js"
     echo '";' >> "SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/jupiter_aurora_b64.js"
+else
+    echo "AVISO: No se pudo verificar la imagen JPEG de Júpiter. jupiter_aurora_b64.js no generado."
 fi
 
 echo "=== 1. Copiando ilustraciones oficiales recortadas del cartel... ==="
@@ -143,7 +154,7 @@ cp -r "SIMULADORES_INTERACTIVOS/01_SIMULADORES/cards_11d" "CLASES/EXPORTACION_FI
 
 echo "=== 3. Guardando cambios y sincronizando con GitHub... ==="
 git add -A
-git commit -m "feat(s14): astrofotografia real oficial nasa hubble heic1613a de auroras de jupiter con filtros espectrales y regla s10" || true
+git commit -m "fix(s14): descarga oficial de astrofotografia real heic1613a de hubble sin bloqueos html y validacion jpeg" || true
 git push origin main
 
 echo "=== 4. Abriendo simuladores oficiales en Google Chrome... ==="
