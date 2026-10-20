@@ -152,7 +152,7 @@ El proyecto opera con una arquitectura de archivos correlativa donde la document
 ├── 📁 CURSO_MUSICA/                         <-- Repositorio de desarrollo bajo Git
 │   ├── index.html                          <-- Menú principal del repertorio
 │   ├── REPERTORIO_KORG_EK50.html           <-- Lista oficial de repertorio
-│   ├── REPERTORIO_KORG_DOCUMENTACION.md    <-- Manual maestro en Markdown
+│   ├── REPERTORIO_KORG_DOCUMENTACION.md    <-- Manual maestro en Markdown (Este archivo)
 │   ├── REPERTORIO_KORG_DOCUMENTACION.html  <-- Manual maestro visor Web PWA
 │   ├── CANCION_01_TO_ALL_THE_GIRLS.html    <-- Ficha interactiva Canción 1
 │   ├── CANCION_02_HALLELUJAH.html          <-- Ficha interactiva Canción 2
@@ -162,8 +162,43 @@ El proyecto opera con una arquitectura de archivos correlativa donde la document
 │       └── Himno a los caidos.pdf
 │
 📁 CURSO MUSICA/                            <-- Carpeta sincronizada de acceso iPad
-    ├── (Réplica idéntica 100% de los archivos anteriores)
+    ├── (Réplica idéntica 100% de los archivos anteriores para acceso local)
 ```
+
+---
+
+## 6. LECCIONES APRENDIDAS Y BITÁCORA TÉCNICA DE DEPURACIÓN (v75 - v83)
+
+Esta sección recopila los descubrimientos críticos de ingeniería realizados durante las sesiones de prueba con el Korg EK-50 conectado físicamente al iPad:
+
+### 6.1. La Trampa de los Permisos SysEx en iOS/iPadOS
+* **Problema:** Al invocar `navigator.requestMIDIAccess({ sysex: true })`, la app *Web MIDI Browser* en el iPad rechazaba la conexión o arrojaba errores indefinidos de seguridad.
+* **Causa:** WebKit e iOS tienen bloqueados por defecto los permisos para mensajes de sistema exclusivo (*System Exclusive*) salvo configuración de certificados especiales.
+* **Solución:** Pasar siempre `{ sysex: false }`. Todas las funciones esenciales (cambio de banco MSB/LSB, cambio de programa, volúmenes CC7, expresión CC11, inicio/parada de ritmo `0xFA`/`0xFC` y reloj `0xF8`) operan bajo el estándar de canal MIDI sin requerir SysEx.
+
+### 6.2. El Retardo de Inicialización del Puente CoreMIDI (350 ms)
+* **Problema:** Si JavaScript solicita el acceso MIDI inmediatamente al cargar el DOM, CoreMIDI en iOS aún no ha terminado de enlazar los puertos, arrojando "Driver Web MIDI no listo".
+* **Solución:** Introducir un retardo deliberado de 350 ms en el evento `DOMContentLoaded` antes de llamar a `conectarMIDI()`, acompañado de un sistema de reintentos escalonados a los 600 ms, 1500 ms y 3000 ms.
+
+### 6.3. La Falsa Conexión por Entrada Única (False Green)
+* **Problema:** En ciertas versiones preliminares, si se detectaba un puerto de entrada pero ninguna salida USB, la barra mostraba erróneamente `🟢 Conectado`, pero la variable `midiOutput` quedaba en `null`, provocando que los botones parecieran "rotos".
+* **Solución:** `bindPorts()` ahora exige explícitamente `outputs.length > 0` para activar el estado verde. Si solo hay entrada, se muestra aviso amarillo (`🟡 Entrada detectada, sin salida USB`).
+
+### 6.4. El Enrutamiento de CoreMIDI y la Difusión Multi-Salida Global (`enviarMidiGlobal`)
+* **Problema:** En iOS, CoreMIDI lista frecuentemente puertos virtuales o sesiones de red Wi-Fi (`Network Session 1`) en la posición 0 (`outputs[0]`). Enviar únicamente al primer puerto mandaba las órdenes al vacío en lugar del cable USB del Korg.
+* **Solución:** Implementación de la función `enviarMidiGlobal(bytes)`, que itera y transmite cada evento a **todas las salidas USB activas simultáneamente**. Así, sin importar cómo nombre CoreMIDI al teclado (`KEYBOARD`, `KORG EK-50`, etc.) ni qué índice ocupe, la orden llega con fiabilidad del 100%.
+
+### 6.5. Activación Escénica 100% Silenciosa (Sin Notas Espurias)
+* **Problema:** Al enviar un acorde automático de confirmación auditiva al tocar los botones 1 y 2, el sonido atronaba los altavoces de forma repentina antes de que el pianista colocara las manos sobre las teclas.
+* **Solución:** Los botones de escenario 1 y 2 deben ser **completamente silenciosos**. Modifican el estilo, el banco, el patch, los volúmenes y el tempo en segundo plano, sin disparar ningún evento *Note On*. El teclado solo suena cuando el músico toca físicamente las teclas.
+
+### 6.6. Calibración de Volúmenes Digitales
+* **Problema:** Enviar volumen máximo (`CC7 = 127`) saturaba el preamplificador digital del teclado, perdiendo rango dinámico.
+* **Solución:** Fijar volúmenes equilibrados estándar: voz principal solista a `100`, capas secundarias a `75–80` y expresión a `127`.
+
+### 6.7. El Ciclo de Despliegue en GitHub Pages y Rompe-Caché
+* **Problema:** La lentitud de propagación de GitHub Pages (60 a 120 segundos) hacía creer que el iPad no se actualizaba.
+* **Solución:** Distintivo de versión correlativo (`vXX`) visible en la barra y botón de recarga con marca de tiempo dinámica (`?t=Date.now()`). En cuanto la pantalla muestra la versión actual, el usuario tiene la certeza absoluta de que el código activo es el último generado.
 
 ---
 *Manual redactado y sellado para el proyecto CURSO-IA / CURSO_MUSICA. Todos los derechos reservados.*
