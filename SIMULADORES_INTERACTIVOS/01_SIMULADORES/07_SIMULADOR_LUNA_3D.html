@@ -486,16 +486,16 @@
             <div class="phases-box">
                 <div class="section-title">
                     <span>Fases Lunares (Luz Solar)</span>
-                    <span id="phaseName" style="color:#ffffff; font-weight:800;">Cuarto Creciente</span>
+                    <span id="phaseName" style="color:#ffffff; font-weight:800;">Luna Llena (100% Iluminada)</span>
                 </div>
                 <div class="phase-buttons">
                     <button class="btn-phase" id="btnPhase_0" onclick="setPhase(0, 'Luna Nueva')">
                         <span>🌑</span><span>Nueva</span>
                     </button>
-                    <button class="btn-phase active" id="btnPhase_90" onclick="setPhase(90, 'Cuarto Creciente')">
+                    <button class="btn-phase" id="btnPhase_90" onclick="setPhase(90, 'Cuarto Creciente')">
                         <span>🌓</span><span>Creciente</span>
                     </button>
-                    <button class="btn-phase" id="btnPhase_180" onclick="setPhase(180, 'Luna Llena')">
+                    <button class="btn-phase active" id="btnPhase_180" onclick="setPhase(180, 'Luna Llena (100% Iluminada)')">
                         <span>🌕</span><span>Llena</span>
                     </button>
                     <button class="btn-phase" id="btnPhase_270" onclick="setPhase(270, 'Cuarto Menguante')">
@@ -671,12 +671,12 @@
 
         // Iluminación
         const hemiLight = new BABYLON.HemisphericLight("hemiLight", new BABYLON.Vector3(0, 1, 0), scene);
-        hemiLight.intensity = 0.22; // Suave luz cenicienta
-        hemiLight.groundColor = new BABYLON.Color3(0.04, 0.06, 0.1);
+        hemiLight.intensity = 0.38; // Suave luz de relleno
+        hemiLight.groundColor = new BABYLON.Color3(0.06, 0.08, 0.12);
 
-        // Luz solar matemáticamente calibrada (por defecto en Cuarto Creciente: ilumina mitad derecha en +Z)
-        const sunLight = new BABYLON.DirectionalLight("sunLight", new BABYLON.Vector3(0, -0.05, 1).normalize(), scene);
-        sunLight.intensity = 2.6;
+        // Luz solar matemáticamente calibrada (por defecto en Luna Llena: ilumina 100% la Cara Visible frontalmente desde la cámara)
+        const sunLight = new BABYLON.DirectionalLight("sunLight", new BABYLON.Vector3(-1, -0.05, 0).normalize(), scene);
+        sunLight.intensity = 2.8;
         sunLight.diffuse = new BABYLON.Color3(1.0, 0.98, 0.95);
 
         // ============================================================================
@@ -991,6 +991,9 @@
             const lblRot = document.getElementById("lblMoonRot");
             if (lblRot) lblRot.textContent = "0° (Cara Visible)";
 
+            // Al centrar la Cara Visible, restablecemos la iluminación al 100% (Luna Llena frontal completa)
+            setPhase(180, 'Luna Llena (100% Iluminada)');
+
             BABYLON.Animation.CreateAndStartAnimation("camAlpha", camera, "alpha", 30, 20, camera.alpha, 0, 2);
             BABYLON.Animation.CreateAndStartAnimation("camBeta", camera, "beta", 30, 20, camera.beta, Math.PI / 2, 2);
             BABYLON.Animation.CreateAndStartAnimation("camRadius", camera, "radius", 30, 20, camera.radius, 4.3, 2);
@@ -1020,9 +1023,18 @@
             // Calibración astronómica exacta para observador en Cara Visible (+X):
             // deg = 0° (Nueva): Sol detrás de la Luna -> cara visible oscura
             // deg = 90° (Creciente): Mitad derecha iluminada (en D)
-            // deg = 180° (Llena): Sol detrás de la cámara -> cara visible 100% brillante
+            // deg = 180° (Llena): Sol frontal detrás de la cámara -> cara visible 100% brillante e iluminada por completo
             // deg = 270° (Menguante): Mitad izquierda iluminada (en C)
             sunLight.direction = new BABYLON.Vector3(Math.cos(rad), -0.05, Math.sin(rad)).normalize();
+
+            // Refuerzo luminoso en Luna Llena para evitar sombras rasantes en el disco frontal
+            if (deg === 180) {
+                hemiLight.intensity = 0.38;
+                sunLight.intensity = 2.8;
+            } else {
+                hemiLight.intensity = 0.22;
+                sunLight.intensity = 2.6;
+            }
         }
 
         function onMoonRotSlider(val) {
