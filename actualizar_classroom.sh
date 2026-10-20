@@ -99,7 +99,7 @@ cp -r "SIMULADORES_INTERACTIVOS/01_SIMULADORES/cards_11d" "CLASES/EXPORTACION_FI
 
 echo "=== 3. Guardando cambios y sincronizando con GitHub... ==="
 git add -A
-git commit -m "fix(s08): eliminacion de capa opaca en cigueñal y contrapesos para visibilidad directa y transparente" || true
+git commit -m "fix(s08): clasificacion exacta de nodos Khronos (casing vs crank) y encuadre amplio despejado" || true
 git push origin main
 
 echo "=== 4. Abriendo simuladores oficiales en Google Chrome... ==="

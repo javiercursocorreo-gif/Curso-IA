@@ -595,38 +595,44 @@
 
             if (name.includes("__root__") || name.includes("engineroot")) return "root";
 
-            // 1. Detección directa por nombres estándar de ingeniería CAD
+            // 1. PISTONES Y BULONES (Node 2, 3, 5, 6)
             if (name.includes("piston") || name.includes("body_24") || /node[_]?(1|2|3|4|5|6)\b/i.test(name)) return "piston";
+
+            // 2. BIELAS DE TRANSMISIÓN (Node 73, 74)
             if (name.includes("rod") || /node[_]?(73|74)\b/i.test(name)) return "rod";
 
-            // 2. Firma geométrica fidedigna (número exacto de vértices e índices de la malla CAD)
+            // 3. FIRMAS GEOMÉTRICAS EXACTAS POR NÚMERO DE VÉRTICES (glTF CAD Khronos)
             const vc = m.getTotalVertices ? m.getTotalVertices() : 0;
-            const ic = m.getTotalIndices ? m.getTotalIndices() : 0;
-            if (vc === 2012 || vc === 1296 || vc === 264 || ic === 8250 || ic === 5034) return "piston";
-            if (vc === 1382 || vc === 1281 || ic === 4839) return "rod";
+            if (vc === 2012 || vc === 264) return "piston";
+            if (vc === 1281) return "rod";
 
-            // Bloque motor, cárter, tapas estructurales y carcasas
-            if (vc === 8618 || vc === 5364 || vc === 3672 || vc === 5474 || vc === 3120 || vc === 2240) return "casing";
+            // CARCASA ESTRUCTURAL, BLOQUE, CÁRTER Y TAPAS (Meshes 18, 21, 22, 23, 24, 25, 26)
+            // body_2 y body_3 (8618 v), body_8 (5474 v), body_4 (5364 v), body_1 cárter inferior (3672 v), body_5 (1414 v), body pernos (192 v)
+            if (vc === 8618 || vc === 5474 || vc === 5364 || vc === 3672 || vc === 1414 || vc === 192) return "casing";
 
-            // Cigüeñal, muñequillas, contrapesos, volante de inercia y tren motriz
-            if (vc === 180 || vc === 43 || vc === 870 || vc === 294 || vc === 624 || vc === 408 || vc === 340 || vc === 324 || vc === 96 || vc === 348 || vc === 1409 || vc === 1940 || vc === 1754 || vc === 1749) return "crank";
-
-            // 3. Palabras clave específicas de componentes
-            if (name.includes("crank") || name.includes("shaft") || name.includes("counterweight") || name.includes("flywheel") || name.includes("lifter") || name.includes("spring") || name.includes("valve") || name.includes("gear")) {
-                return "crank";
-            }
+            // 4. DETECCIÓN POR NOMBRE DE MALLAS DE LA CARCASA
+            if (/\bbody(_[123458])?(\.|\b|_primitive)/i.test(name)) return "casing";
             if (name.includes("block") || name.includes("casing") || name.includes("housing") || name.includes("cover") || name.includes("pan") || name.includes("head") || name.includes("sump")) {
                 return "casing";
             }
 
-            // 4. Índices de nodo glTF oficial (2CylinderEngine.glb)
-            // Node 14..72, 75..78: Cigüeñal, contrapesos, engranajes y árboles de levas
-            if (/node[_]?(1[4-9]|[2-6][0-9]|7[0-2]|7[5-8])\b/i.test(name)) return "crank";
-            // Node 0, 7..13, 79, 80: Bloque motor, cárter y tapas estructurales
-            if (/node[_]?(0|7|8|9|10|11|12|13|79|80)\b/i.test(name)) return "casing";
+            // 5. NODOS DEL GLTF OFICIAL
+            // Nodos del bloque motor, cárter, soportes y tapas estructurales:
+            if (/node[_]?(0|7|10|13|62|66|67|68|69|70|71|72|79|80)\b/i.test(name)) return "casing";
 
-            // 5. Default seguro y protegido: cualquier otra pieza estructural es CASING
-            // De este modo, NINGUNA tapa, tornillo o cubierta opaca tapará jamás el cigüeñal
+            // Nodos cinemáticos del cigüeñal, contrapesos, levas y tren motriz:
+            if (/node[_]?(8|9|11|12|1[4-9]|[2-5][0-9]|6[01345]|7[5-8])\b/i.test(name)) return "crank";
+
+            // Firmas de vértices del cigüeñal y contrapesos (Meshes 2..4, 6..17, 19..20, 28)
+            if (vc === 2470 || vc === 1382 || vc === 670 || vc === 1553 || vc === 1409 || vc === 1940 || vc === 1754 || vc === 1749 || vc === 348 || vc === 372 || vc === 240 || vc === 96 || vc === 324 || vc === 340 || vc === 408 || vc === 624 || vc === 294 || vc === 43 || vc === 143) {
+                return "crank";
+            }
+
+            if (name.includes("crank") || name.includes("shaft") || name.includes("counterweight") || name.includes("flywheel") || name.includes("lifter") || name.includes("spring") || name.includes("valve") || name.includes("gear")) {
+                return "crank";
+            }
+
+            // Default seguro: cualquier pieza desconocida es CASING (NUNCA crank para no tapar el cigüeñal)
             return "casing";
         }
 
@@ -883,7 +889,7 @@
             });
         }
 
-        const INSPECT_RADIUS = 5.2; // Zoom normalizado idéntico para todos los puntos de inspección
+        const INSPECT_RADIUS = 6.0; // Zoom equilibrado y confortable sin apelotonamiento óptico
 
         function focusComponent(name) {
             document.querySelectorAll('.part-item').forEach(i => i.classList.remove('active'));
@@ -896,22 +902,27 @@
             const targetType = (name === 'block') ? 'casing' : name;
             const targetCenter = getComponentCenter(targetType);
 
-            // Centrado matemático exacto de cámara y encuadres biomecánicos óptimos
-            let targetAlpha = -Math.PI / 2.5;
-            let targetBeta = Math.PI / 2.8;
+            // Centrado matemático exacto y perspectiva amplia en 3/4
+            let targetAlpha = -Math.PI / 2.45;
+            let targetBeta = Math.PI / 2.65;
+            let targetRadius = INSPECT_RADIUS;
 
             if (name === 'piston') {
-                targetBeta = Math.PI / 3.0; // Perspectiva semi-cenital para coronas y carrera de pistón
+                targetBeta = Math.PI / 2.85;
+                targetRadius = 5.8;
             } else if (name === 'rod') {
-                targetBeta = Math.PI / 2.5; // Perspectiva lateral para movimiento angular de biela
+                targetBeta = Math.PI / 2.6;
+                targetRadius = 5.8;
             } else if (name === 'crank') {
-                targetBeta = Math.PI / 2.15; // Línea de visión directa al eje del cárter (horizontal)
-                targetAlpha = -Math.PI / 2.25;
+                targetBeta = Math.PI / 2.5; // Ángulo amplio en 3/4 para ver el cigüeñal y contrapesos despejados
+                targetAlpha = -Math.PI / 2.35;
+                targetRadius = 6.0;
             } else if (name === 'block') {
                 targetBeta = Math.PI / 2.6;
+                targetRadius = 6.5;
             }
 
-            animateCamera(targetCenter, INSPECT_RADIUS, targetAlpha, targetBeta);
+            animateCamera(targetCenter, targetRadius, targetAlpha, targetBeta);
 
             if (name === 'piston') {
                 document.getElementById("badgeInfo").innerText = "Diagnóstico: 1. Pistón y Segmentos • Resaltado en Cian Lumínico (Rayos X Activo)";
@@ -966,13 +977,13 @@
                     const type = getComponentType(m);
                     if (type === 'crank') {
                         m.material = matHighlightCrank;
-                        m.visibility = 1.0; // Cigüeñal y contrapesos 100% visibles y brillantes
+                        m.visibility = 1.0; // Cigüeñal y contrapesos 100% visibles y brillantes en verde esmeralda
                     } else if (type === 'casing') {
                         m.material = matXrayCasing;
-                        m.visibility = 0.14; // Cárter ultra-translúcido: despeje total para ver girar el cigüeñal
+                        m.visibility = 0.10; // Cárter y bloque en cristal radiográfico azul: DESPEJE TOTAL
                     } else {
                         m.material = matXrayInternal;
-                        m.visibility = 0.35;
+                        m.visibility = 0.35; // Pistones y bielas en semitransparencia azulada de contexto
                     }
                 });
 
