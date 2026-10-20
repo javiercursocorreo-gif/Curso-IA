@@ -30,6 +30,19 @@ if [ -f "SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/trex_3d.glb" ] && [ ! -f 
     echo '";' >> "SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/trex_3d_b64.js"
 fi
 
+# 3. Violín Stradivarius Real de Museo (The Gould, 1693, The Metropolitan Museum of Art)
+if [ ! -f "SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/violin_stradivarius_real.jpg" ] || [ ! -s "SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/violin_stradivarius_real.jpg" ]; then
+    echo "Descargando fotografía oficial de museo del Violín Stradivarius 'The Gould' (Met Museum)..."
+    curl -sL "https://images.metmuseum.org/CRDImages/mi/original/DT669a.jpg" -o "SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/violin_stradivarius_real.jpg"
+fi
+
+if [ -f "SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/violin_stradivarius_real.jpg" ] && [ ! -f "SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/violin_stradivarius_b64.js" ]; then
+    echo "Generando violin_stradivarius_b64.js..."
+    echo -n 'window.STRADIVARIUS_PHOTO_B64 = "data:image/jpeg;base64,' > "SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/violin_stradivarius_b64.js"
+    base64 -i "SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/violin_stradivarius_real.jpg" | tr -d '\n' >> "SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/violin_stradivarius_b64.js"
+    echo '";' >> "SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/violin_stradivarius_b64.js"
+fi
+
 echo "=== 1. Copiando ilustraciones oficiales recortadas del cartel... ==="
 mkdir -p "SIMULADORES_INTERACTIVOS/01_SIMULADORES/cards_11d"
 cp -r "/Users/externo/.gemini/antigravity/brain/cbfe82a5-4265-4c02-9b6a-03745e403571/scratch/cards/"* "SIMULADORES_INTERACTIVOS/01_SIMULADORES/cards_11d/" 2>/dev/null || true
@@ -99,7 +112,7 @@ cp -r "SIMULADORES_INTERACTIVOS/01_SIMULADORES/cards_11d" "CLASES/EXPORTACION_FI
 
 echo "=== 3. Guardando cambios y sincronizando con GitHub... ==="
 git add -A
-git commit -m "feat(s11): simulador 3D real Babylon.js del violin stradivarius con notas en quintas y afinador" || true
+git commit -m "feat(s11): simulador fotografico real Stradivarius The Gould 1693 del Met Museum con cuerdas en quintas" || true
 git push origin main
 
 echo "=== 4. Abriendo simuladores oficiales en Google Chrome... ==="
