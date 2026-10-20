@@ -507,13 +507,13 @@
                 <div class="phase-slider-container">
                     <div class="phase-slider-label">
                         <span style="font-weight:700; color:#e2e8f0;">🔄 Giro de la Luna (Eje Polar):</span>
-                        <span id="lblMoonRot" style="color:var(--primary); font-weight:800;">0° (Cara Visible)</span>
+                        <span id="lblMoonRot" style="color:var(--primary); font-weight:800;">0° (Cara Visible • Tierra)</span>
                     </div>
                     <input type="range" id="moonRotSlider" min="0" max="360" value="0" oninput="onMoonRotSlider(this.value)">
-                    <div class="phase-slider-label">
-                        <span>0° (Tierra)</span>
+                    <div class="phase-slider-label" style="font-size:0.75rem;">
+                        <span>0° (Cara Visible)</span>
                         <span>180° (Cara Oculta)</span>
-                        <span>360°</span>
+                        <span>360° (Cara Visible)</span>
                     </div>
                 </div>
             </div>
@@ -681,8 +681,8 @@
         const scene = new BABYLON.Scene(engine);
         scene.clearColor = new BABYLON.Color4(0.015, 0.025, 0.05, 1.0);
 
-        // Cámara orbital ArcRotate centrada frontalmente hacia la Cara Visible (Longitud 0° en +X)
-        const camera = new BABYLON.ArcRotateCamera("Camera", 0, Math.PI / 2, 4.3, BABYLON.Vector3.Zero(), scene);
+        // Cámara orbital ArcRotate centrada frontalmente hacia la Cara Visible (Longitud 0° en +Z)
+        const camera = new BABYLON.ArcRotateCamera("Camera", Math.PI / 2, Math.PI / 2, 4.3, BABYLON.Vector3.Zero(), scene);
         camera.attachControl(canvas, true);
         camera.wheelPrecision = 45;
         camera.lowerRadiusLimit = 1.6;
@@ -694,8 +694,8 @@
         hemiLight.intensity = 0.16; // Luz cenicienta tenue que preserva la oscuridad del lado nocturno
         hemiLight.groundColor = new BABYLON.Color3(0.015, 0.02, 0.035);
 
-        // Luz solar matemáticamente calibrada (por defecto en Luna Llena: ilumina 100% la Cara Visible frontalmente desde la cámara)
-        const sunLight = new BABYLON.DirectionalLight("sunLight", new BABYLON.Vector3(-1, -0.05, 0).normalize(), scene);
+        // Luz solar matemáticamente calibrada (por defecto en Luna Llena: ilumina 100% la Cara Visible frontalmente desde +Z hacia -Z)
+        const sunLight = new BABYLON.DirectionalLight("sunLight", new BABYLON.Vector3(0, -0.05, -1).normalize(), scene);
         sunLight.intensity = 2.9;
         sunLight.diffuse = new BABYLON.Color3(1.0, 0.98, 0.95);
 
@@ -853,11 +853,12 @@
         // 5. PINES SELENOGRÁFICOS EN BABYLON.JS
         // ============================================================================
         function latLonToBabylon(lat, lon, radius) {
-            const phi = (90 - lat) * (Math.PI / 180);
-            const theta = (lon + 180) * (Math.PI / 180);
-            const x = -(radius * Math.sin(phi) * Math.cos(theta));
-            const z = (radius * Math.sin(phi) * Math.sin(theta));
-            const y = (radius * Math.cos(phi));
+            const latRad = (lat * Math.PI) / 180;
+            const lonRad = (lon * Math.PI) / 180;
+            const rXZ = radius * Math.cos(latRad);
+            const x = rXZ * Math.sin(lonRad);
+            const y = radius * Math.sin(latRad);
+            const z = rXZ * Math.cos(lonRad);
             return new BABYLON.Vector3(x, y, z);
         }
 
@@ -916,12 +917,24 @@
         let currentMoonRotDeg = 0;
 
         function updateSunLight() {
-            // Relación angular coordinada entre fase lunar y rotación sobre el eje polar:
-            // Al girar la Luna hacia la Cara Oculta (180°), en Luna Llena el Sol continúa alumbrando la Cara Visible (en el reverso),
-            // dejando la Cara Oculta de frente en total sombra/noche lunar (oscura).
-            const effDeg = currentPhaseDeg - currentMoonRotDeg;
-            const rad = (effDeg * Math.PI) / 180;
-            sunLight.direction = new BABYLON.Vector3(Math.cos(rad), -0.05, Math.sin(rad)).normalize();
+            const phaseRad = (currentPhaseDeg * Math.PI) / 180;
+            const rotRad = (currentMoonRotDeg * Math.PI) / 180;
+
+            // Dirección local del Sol según fase lunar (observador en +Z frente a Cara Visible):
+            // 180° (Llena): Luz incide desde +Z hacia -Z (x=0, z=-1) -> Cara Visible 100% brillante
+            // 0° (Nueva): Luz incide desde -Z hacia +Z (x=0, z=+1) -> Cara Oculta brillante, Cara Visible oscura
+            // 90° (Creciente): Luz incide desde -X hacia +X (x=-1, z=0) -> Mitad derecha iluminada (D)
+            // 270° (Menguante): Luz incide desde +X hacia -X (x=+1, z=0) -> Mitad izquierda iluminada (C)
+            const lx = -Math.sin(phaseRad);
+            const lz = Math.cos(phaseRad);
+            const ly = -0.05;
+
+            // Al rotar la Luna con el slider sobre su eje polar (rotRad), rotamos el vector solar en el espacio del mundo
+            // para que la cara iluminada rote con la Luna (en Llena, Cara Oculta permanece oscura al rotar)
+            const wx = lx * Math.cos(rotRad) + lz * Math.sin(rotRad);
+            const wz = -lx * Math.sin(rotRad) + lz * Math.cos(rotRad);
+
+            sunLight.direction = new BABYLON.Vector3(wx, ly, wz).normalize();
 
             if (currentPhaseDeg === 180) {
                 hemiLight.intensity = 0.16; // Noche lunar oscura y profunda
@@ -963,7 +976,7 @@
             const rotSlider = document.getElementById("moonRotSlider");
             if (rotSlider) rotSlider.value = 0;
             const lblRot = document.getElementById("lblMoonRot");
-            if (lblRot) lblRot.textContent = "0° (Cara Visible)";
+            if (lblRot) lblRot.textContent = "0° (Cara Visible • Tierra)";
             updateSunLight();
 
             document.querySelectorAll(".poi-card").forEach(c => c.classList.remove("active"));
@@ -1049,12 +1062,12 @@
             const rotSlider = document.getElementById("moonRotSlider");
             if (rotSlider) rotSlider.value = 0;
             const lblRot = document.getElementById("lblMoonRot");
-            if (lblRot) lblRot.textContent = "0° (Cara Visible)";
+            if (lblRot) lblRot.textContent = "0° (Cara Visible • Tierra)";
 
             // Al centrar la Cara Visible, restablecemos la iluminación al 100% (Luna Llena frontal completa)
             setPhase(180, 'Luna Llena (100% Iluminada)');
 
-            BABYLON.Animation.CreateAndStartAnimation("camAlpha", camera, "alpha", 30, 20, camera.alpha, 0, 2);
+            BABYLON.Animation.CreateAndStartAnimation("camAlpha", camera, "alpha", 30, 20, camera.alpha, Math.PI / 2, 2);
             BABYLON.Animation.CreateAndStartAnimation("camBeta", camera, "beta", 30, 20, camera.beta, Math.PI / 2, 2);
             BABYLON.Animation.CreateAndStartAnimation("camRadius", camera, "radius", 30, 20, camera.radius, 4.3, 2);
         }
@@ -1091,9 +1104,15 @@
             pinParent.rotation.y = rad;
 
             let lbl = `${Math.round(deg)}°`;
-            if (deg < 40 || deg > 320) lbl += " (Cara Visible • Día)";
-            else if (deg >= 140 && deg <= 220) lbl += " (Cara Oculta • Noche Oscura)";
-            else lbl += " (Limbo)";
+            if (deg <= 30 || deg >= 330) {
+                lbl += " (Cara Visible • Tierra)";
+            } else if (deg >= 150 && deg <= 210) {
+                lbl += " (Cara Oculta • Noche Lunar)";
+            } else if (deg > 30 && deg < 150) {
+                lbl += " (Limbo Este)";
+            } else {
+                lbl += " (Limbo Oeste)";
+            }
             document.getElementById("lblMoonRot").textContent = lbl;
 
             updateSunLight();
