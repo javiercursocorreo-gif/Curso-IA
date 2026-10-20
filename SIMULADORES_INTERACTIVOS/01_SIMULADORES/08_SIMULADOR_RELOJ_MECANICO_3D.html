@@ -595,45 +595,37 @@
 
             if (name.includes("__root__") || name.includes("engineroot")) return "root";
 
-            // 1. PISTONES Y BULONES (Node 2, 3, 5, 6)
-            if (name.includes("piston") || name.includes("body_24") || /node[_]?(1|2|3|4|5|6)\b/i.test(name)) return "piston";
-
-            // 2. BIELAS DE TRANSMISIÓN (Node 73, 74)
-            if (name.includes("rod") || /node[_]?(73|74)\b/i.test(name)) return "rod";
-
-            // 3. FIRMAS GEOMÉTRICAS EXACTAS POR NÚMERO DE VÉRTICES (glTF CAD Khronos)
             const vc = m.getTotalVertices ? m.getTotalVertices() : 0;
-            if (vc === 2012 || vc === 264) return "piston";
-            if (vc === 1281) return "rod";
 
-            // CARCASA ESTRUCTURAL, BLOQUE, CÁRTER Y TAPAS (Meshes 18, 21, 22, 23, 24, 25, 26)
-            // body_2 y body_3 (8618 v), body_8 (5474 v), body_4 (5364 v), body_1 cárter inferior (3672 v), body_5 (1414 v), body pernos (192 v)
-            if (vc === 8618 || vc === 5474 || vc === 5364 || vc === 3672 || vc === 1414 || vc === 192) return "casing";
+            // 1. PISTONES Y BULONES
+            if (name.includes("piston") || name.includes("body_24") || vc === 2012 || vc === 264 || /node[_]?(2|3|5|6)\b/i.test(name)) {
+                return "piston";
+            }
 
-            // 4. DETECCIÓN POR NOMBRE DE MALLAS DE LA CARCASA
-            if (/\bbody(_[123458])?(\.|\b|_primitive)/i.test(name)) return "casing";
-            if (name.includes("block") || name.includes("casing") || name.includes("housing") || name.includes("cover") || name.includes("pan") || name.includes("head") || name.includes("sump")) {
+            // 2. BIELAS DE TRANSMISIÓN
+            if (name.includes("rod") || vc === 1281 || /node[_]?(73|74)\b/i.test(name)) {
+                return "rod";
+            }
+
+            // 3. CIGÜEÑAL Y CONTRAPESOS (ÚNICAMENTE el conjunto motriz rotativo donde articulan las bielas)
+            // Meshes 2, 3, 4, 5, 16, 17 en Nodos 8, 9, 11, 12, 60, 61 del glTF oficial
+            if (vc === 2470 || vc === 1553 || vc === 1382 || vc === 670 || vc === 1754 || vc === 1749 || 
+                /node[_]?(8|9|11|12|60|61)\b/i.test(name) ||
+                /\bbody_(20|21|22|23|9|10)\b/i.test(name)) {
+                return "crank";
+            }
+
+            // 4. CARCASA ESTRUCTURAL, BLOQUE MOTOR, CÁRTER Y TAPAS
+            // Incluye body_12 (tapa de culata / balancines 1409 v), body_1 cárter (3672 v), body_2/3 bloque (8618 v), body_4 (5364 v), body_8 (5474 v), body_5 (1414 v), pernos (192 v)
+            if (vc === 8618 || vc === 5474 || vc === 5364 || vc === 3672 || vc === 1414 || vc === 1409 || vc === 192 ||
+                /\bbody(_[123458]|_12)?(\.|\b|_primitive)/i.test(name) ||
+                /node[_]?(0|7|10|13|58|62|66|67|68|69|70|71|72|79|80)\b/i.test(name) ||
+                name.includes("block") || name.includes("casing") || name.includes("housing") || name.includes("cover") || name.includes("pan") || name.includes("head") || name.includes("sump")) {
                 return "casing";
             }
 
-            // 5. NODOS DEL GLTF OFICIAL
-            // Nodos del bloque motor, cárter, soportes y tapas estructurales:
-            if (/node[_]?(0|7|10|13|62|66|67|68|69|70|71|72|79|80)\b/i.test(name)) return "casing";
-
-            // Nodos cinemáticos del cigüeñal, contrapesos, levas y tren motriz:
-            if (/node[_]?(8|9|11|12|1[4-9]|[2-5][0-9]|6[01345]|7[5-8])\b/i.test(name)) return "crank";
-
-            // Firmas de vértices del cigüeñal y contrapesos (Meshes 2..4, 6..17, 19..20, 28)
-            if (vc === 2470 || vc === 1382 || vc === 670 || vc === 1553 || vc === 1409 || vc === 1940 || vc === 1754 || vc === 1749 || vc === 348 || vc === 372 || vc === 240 || vc === 96 || vc === 324 || vc === 340 || vc === 408 || vc === 624 || vc === 294 || vc === 43 || vc === 143) {
-                return "crank";
-            }
-
-            if (name.includes("crank") || name.includes("shaft") || name.includes("counterweight") || name.includes("flywheel") || name.includes("lifter") || name.includes("spring") || name.includes("valve") || name.includes("gear")) {
-                return "crank";
-            }
-
-            // Default seguro: cualquier pieza desconocida es CASING (NUNCA crank para no tapar el cigüeñal)
-            return "casing";
+            // 5. MECANISMOS INTERNOS SECUNDARIOS (Válvulas, muelles, árboles de levas, empujadores)
+            return "internal";
         }
 
         function getComponentType(m) {
