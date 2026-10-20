@@ -671,12 +671,12 @@
 
         // Iluminación
         const hemiLight = new BABYLON.HemisphericLight("hemiLight", new BABYLON.Vector3(0, 1, 0), scene);
-        hemiLight.intensity = 0.38; // Suave luz de relleno
-        hemiLight.groundColor = new BABYLON.Color3(0.06, 0.08, 0.12);
+        hemiLight.intensity = 0.16; // Luz cenicienta tenue que preserva la oscuridad del lado nocturno
+        hemiLight.groundColor = new BABYLON.Color3(0.015, 0.02, 0.035);
 
         // Luz solar matemáticamente calibrada (por defecto en Luna Llena: ilumina 100% la Cara Visible frontalmente desde la cámara)
         const sunLight = new BABYLON.DirectionalLight("sunLight", new BABYLON.Vector3(-1, -0.05, 0).normalize(), scene);
-        sunLight.intensity = 2.8;
+        sunLight.intensity = 2.9;
         sunLight.diffuse = new BABYLON.Color3(1.0, 0.98, 0.95);
 
         // ============================================================================
@@ -892,6 +892,25 @@
         let currentPOIIndex = 0;
         let showAllPins = false; // Por defecto: solo el pin del punto seleccionado
         let isAutoRotating = false;
+        let currentPhaseDeg = 180;
+        let currentMoonRotDeg = 0;
+
+        function updateSunLight() {
+            // Relación angular coordinada entre fase lunar y rotación sobre el eje polar:
+            // Al girar la Luna hacia la Cara Oculta (180°), en Luna Llena el Sol continúa alumbrando la Cara Visible (en el reverso),
+            // dejando la Cara Oculta de frente en total sombra/noche lunar (oscura).
+            const effDeg = currentPhaseDeg - currentMoonRotDeg;
+            const rad = (effDeg * Math.PI) / 180;
+            sunLight.direction = new BABYLON.Vector3(Math.cos(rad), -0.05, Math.sin(rad)).normalize();
+
+            if (currentPhaseDeg === 180) {
+                hemiLight.intensity = 0.16; // Noche lunar oscura y profunda
+                sunLight.intensity = 2.9;
+            } else {
+                hemiLight.intensity = 0.14;
+                sunLight.intensity = 2.6;
+            }
+        }
 
         function playSoftBeep() {
             try {
@@ -918,12 +937,14 @@
             const poi = POI_DATA[index];
 
             // Si la Luna fue rotada con el slider, restablecemos a 0 para coincidencia exacta
+            currentMoonRotDeg = 0;
             moonMesh.rotation.y = 0;
             pinParent.rotation.y = 0;
             const rotSlider = document.getElementById("moonRotSlider");
             if (rotSlider) rotSlider.value = 0;
             const lblRot = document.getElementById("lblMoonRot");
             if (lblRot) lblRot.textContent = "0° (Cara Visible)";
+            updateSunLight();
 
             document.querySelectorAll(".poi-card").forEach(c => c.classList.remove("active"));
             const card = document.getElementById(`poi-card-${poi.id}`);
@@ -984,6 +1005,7 @@
         }
 
         function resetCameraView() {
+            currentMoonRotDeg = 0;
             moonMesh.rotation.y = 0;
             pinParent.rotation.y = 0;
             const rotSlider = document.getElementById("moonRotSlider");
@@ -1014,40 +1036,29 @@
         }
 
         function setPhase(deg, name) {
+            currentPhaseDeg = deg;
             document.getElementById("phaseName").textContent = name;
             document.querySelectorAll(".btn-phase").forEach(b => b.classList.remove("active"));
             const btn = document.getElementById(`btnPhase_${deg}`);
             if (btn) btn.classList.add("active");
 
-            const rad = (deg * Math.PI) / 180;
-            // Calibración astronómica exacta para observador en Cara Visible (+X):
-            // deg = 0° (Nueva): Sol detrás de la Luna -> cara visible oscura
-            // deg = 90° (Creciente): Mitad derecha iluminada (en D)
-            // deg = 180° (Llena): Sol frontal detrás de la cámara -> cara visible 100% brillante e iluminada por completo
-            // deg = 270° (Menguante): Mitad izquierda iluminada (en C)
-            sunLight.direction = new BABYLON.Vector3(Math.cos(rad), -0.05, Math.sin(rad)).normalize();
-
-            // Refuerzo luminoso en Luna Llena para evitar sombras rasantes en el disco frontal
-            if (deg === 180) {
-                hemiLight.intensity = 0.38;
-                sunLight.intensity = 2.8;
-            } else {
-                hemiLight.intensity = 0.22;
-                sunLight.intensity = 2.6;
-            }
+            updateSunLight();
         }
 
         function onMoonRotSlider(val) {
             const deg = parseFloat(val);
+            currentMoonRotDeg = deg;
             const rad = (deg * Math.PI) / 180;
             moonMesh.rotation.y = rad;
             pinParent.rotation.y = rad;
 
             let lbl = `${Math.round(deg)}°`;
-            if (deg < 40 || deg > 320) lbl += " (Cara Visible)";
-            else if (deg >= 140 && deg <= 220) lbl += " (Cara Oculta)";
+            if (deg < 40 || deg > 320) lbl += " (Cara Visible • Día)";
+            else if (deg >= 140 && deg <= 220) lbl += " (Cara Oculta • Noche Oscura)";
             else lbl += " (Limbo)";
             document.getElementById("lblMoonRot").textContent = lbl;
+
+            updateSunLight();
         }
 
         // Inicializar pines en modo individual
