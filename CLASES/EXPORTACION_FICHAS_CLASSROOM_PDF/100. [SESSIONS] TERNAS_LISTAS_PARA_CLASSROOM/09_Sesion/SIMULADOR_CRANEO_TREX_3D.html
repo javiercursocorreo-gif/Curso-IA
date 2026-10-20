@@ -392,7 +392,7 @@
                 <div class="mode-grid">
                     <button class="mode-btn active" id="btnModeMuseum" onclick="setLighting('museum')">Galería Museo</button>
                     <button class="mode-btn" id="btnModeRaking" onclick="setLighting('raking')">Luz Rasante</button>
-                    <button class="mode-btn" id="btnModeUV" onclick="setLighting('uv')">Escáner UV</button>
+                    <button class="mode-btn" id="btnModeLab" onclick="setLighting('lab')">Luz Laboratorio</button>
                 </div>
             </div>
 
@@ -477,8 +477,6 @@
         let isTurntable = true;
         let hemiLight, dirLight1, dirLight2;
         let allMeshes = [];
-        let matUV = null;
-        let spotMarker = null;
 
         // Landmarks anatómicos del espécimen (calculados en base a la geometría 3D real)
         let anatomyLandmarks = {
@@ -505,18 +503,6 @@
             groundMat.roughness = 0.8;
             groundMat.metallic = 0.1;
             ground.material = groundMat;
-
-            // Retícula holográfica paleontológica sutil con modo Billboard frontal
-            spotMarker = BABYLON.MeshBuilder.CreateTorus("spotMarker", { diameter: 0.22, thickness: 0.014, tessellation: 48 }, sc);
-            spotMarker.billboardMode = BABYLON.Mesh.BILLBOARDMODE_ALL;
-            const matMarker = new BABYLON.StandardMaterial("matSpotMarker", sc);
-            matMarker.diffuseColor = new BABYLON.Color3(1.0, 0.75, 0.1);
-            matMarker.emissiveColor = new BABYLON.Color3(1.0, 0.65, 0.0);
-            matMarker.specularColor = new BABYLON.Color3(1, 1, 1);
-            matMarker.alpha = 0.75;
-            spotMarker.material = matMarker;
-            spotMarker.isPickable = false;
-            spotMarker.visibility = 0;
 
             // Cámara orbital suave 360° enfocada en el centro anatómico del dinosaurio
             // Límite de radio mínimo bajado a 0.4 para permitir primeros planos macro de dientes y ojos
@@ -683,31 +669,25 @@
                 });
                 document.getElementById("badgeInfo").innerText = "Iluminación: Luz Rasante Paleontológica • Microrelieves Óseos y Sombras Dramáticas";
 
-            } else if (mode === 'uv') {
-                // Escáner ultravioleta forense (365 nm) con biofluorescencia mineral fósil
-                scene.clearColor = new BABYLON.Color4(0.005, 0.005, 0.015, 1.0);
-                hemiLight.intensity = 0.2;
-                hemiLight.diffuse = new BABYLON.Color3(0.35, 0.08, 0.75); // Luz negra UV profunda
-                hemiLight.groundColor = new BABYLON.Color3(0.02, 0.0, 0.08);
+            } else if (mode === 'lab') {
+                // Iluminación científica de laboratorio (6500K luz diurna neutra homogénea)
+                scene.clearColor = new BABYLON.Color4(0.015, 0.02, 0.03, 1.0);
+                hemiLight.intensity = 1.35;
+                hemiLight.diffuse = new BABYLON.Color3(0.95, 0.98, 1.0);
+                hemiLight.groundColor = new BABYLON.Color3(0.2, 0.25, 0.3);
 
                 dirLight1.intensity = 1.6;
-                dirLight1.direction = new BABYLON.Vector3(-1, -1.8, -1);
-                dirLight1.diffuse = new BABYLON.Color3(0.2, 0.05, 0.95);
+                dirLight1.direction = new BABYLON.Vector3(-1, -2, -1);
+                dirLight1.diffuse = new BABYLON.Color3(1.0, 1.0, 1.0);
 
-                dirLight2.intensity = 0.9;
-                dirLight2.direction = new BABYLON.Vector3(1, -1, 1);
-                dirLight2.diffuse = new BABYLON.Color3(0.0, 0.85, 0.65); // Resplandor fluorescente
+                dirLight2.intensity = 1.1;
+                dirLight2.direction = new BABYLON.Vector3(1, -1.5, 1);
+                dirLight2.diffuse = new BABYLON.Color3(0.85, 0.9, 1.0);
 
-                if (!matUV) {
-                    matUV = new BABYLON.StandardMaterial("matUV", scene);
-                    matUV.diffuseColor = new BABYLON.Color3(0.12, 0.55, 0.42);
-                    matUV.emissiveColor = new BABYLON.Color3(0.08, 0.4, 0.32);
-                    matUV.specularColor = new BABYLON.Color3(0.5, 0.9, 1.0);
-                }
                 allMeshes.forEach(m => {
-                    m.material = matUV;
+                    if (m._origMaterial) m.material = m._origMaterial;
                 });
-                document.getElementById("badgeInfo").innerText = "Escáner UV Forense (365 nm) • Fluorescencia Ósea y Esmalte Dental Reactivo";
+                document.getElementById("badgeInfo").innerText = "Iluminación: Laboratorio Paleontológico • Luz Neutra 6500K de Alta Definición";
             }
         }
 
@@ -929,16 +909,6 @@
                 document.getElementById("lblTele4").innerText = "Equilibrio";
                 document.getElementById("valTele4").innerText = "Cola Dinámica";
             }
-
-            // Ubicación del marcador holográfico 3D de diagnóstico
-            if (spotMarker) {
-                if (spot === 'body') {
-                    spotMarker.visibility = 0;
-                } else {
-                    spotMarker.visibility = 0.75;
-                    spotMarker.position = anatomyLandmarks[spot].clone();
-                }
-            }
         }
 
         function resetCamera() {
@@ -947,7 +917,6 @@
             setLighting('museum');
             document.getElementById("badgeInfo").innerText = "Tyrannosaurus Rex • Espécimen Fósil 3D de Museo (Vista General)";
             if (rootNode) rootNode.rotation.y = 0;
-            if (spotMarker) spotMarker.visibility = 0;
             const face = anatomyLandmarks.facingAngle;
             animateCamera(anatomyLandmarks.body, 6.0, face + Math.PI / 4.5, Math.PI / 2.5);
         }
@@ -957,10 +926,6 @@
             if (scene) {
                 if (isTurntable && rootNode) {
                     rootNode.rotation.y += 0.004;
-                }
-                if (spotMarker && spotMarker.visibility > 0) {
-                    const pulse = 1.0 + Math.sin(Date.now() * 0.005) * 0.06;
-                    spotMarker.scaling.set(pulse, pulse, pulse);
                 }
                 scene.render();
             }
