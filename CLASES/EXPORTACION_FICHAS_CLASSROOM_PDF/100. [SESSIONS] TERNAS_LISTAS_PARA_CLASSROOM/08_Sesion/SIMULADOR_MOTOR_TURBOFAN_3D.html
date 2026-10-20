@@ -457,7 +457,7 @@
             <div class="control-box">
                 <div class="section-title">Componentes Principales</div>
                 <div class="part-list">
-                    <div class="part-item active" id="partBtn_piston" onclick="focusComponent('piston')">
+                    <div class="part-item" id="partBtn_piston" onclick="focusComponent('piston')">
                         <div class="part-item-title">
                             <span>1. Pistón y Segmentos</span>
                             <span style="color:var(--cyan);">Aluminio Forjado</span>
@@ -559,10 +559,11 @@
             matHighlightCrank.backFaceCulling = false;
 
             matHighlightBlock = new BABYLON.StandardMaterial("matHighlightBlock", sc);
-            matHighlightBlock.diffuseColor = new BABYLON.Color3(0.7, 0.35, 0.95);
-            matHighlightBlock.emissiveColor = new BABYLON.Color3(0.3, 0.1, 0.45);
-            matHighlightBlock.specularColor = new BABYLON.Color3(0.9, 0.9, 1.0);
-            matHighlightBlock.alpha = 1.0;
+            matHighlightBlock.diffuseColor = new BABYLON.Color3(0.68, 0.28, 0.95);
+            matHighlightBlock.emissiveColor = new BABYLON.Color3(0.32, 0.1, 0.5);
+            matHighlightBlock.specularColor = new BABYLON.Color3(0.95, 0.95, 1.0);
+            matHighlightBlock.alpha = 0.88;
+            matHighlightBlock.backFaceCulling = false;
 
             // Termografía por gradiente de calor real
             matThermalPiston = new BABYLON.StandardMaterial("matThermalPiston", sc);
@@ -584,41 +585,30 @@
 
         function classifyMesh(m) {
             if (!m) return "casing";
-            const name = ((m.name || "") + " " + (m.id || "") + " " + (m.parent ? m.parent.name : "")).toLowerCase();
+            const name = (m.name || "").toLowerCase();
+            const id = (m.id || "").toLowerCase();
+            const parentName = (m.parent ? m.parent.name : "").toLowerCase();
+            const full = `${name} ${id} ${parentName}`;
 
-            // 1. Detección directa por nombres estándar de ingeniería CAD
-            if (name.includes("piston")) return "piston";
-            if (name.includes("rod")) return "rod";
-            if (name.includes("crank") || name.includes("shaft") || name.includes("lifter") || name.includes("spring")) return "crank";
-            if (name.includes("block") || name.includes("casing") || name.includes("housing")) return "casing";
+            if (full.includes("__root__") || full.includes("engineroot")) return "root";
 
-            // 2. Detección por índice de nodo en la jerarquía glTF oficial (2CylinderEngine.glb)
-            // Node 1..6: Conjuntos de Pistones y Pasadores
-            if (/node[_]?(1|2|3|4|5|6)\b/i.test(name)) return "piston";
-            // Node 73, 74: Bielas de transmisión principales
-            if (/node[_]?(73|74)\b/i.test(name)) return "rod";
-            // Node 14..72, 75..78: Cigüeñal, contrapesos, engranajes y árboles de levas
-            if (/node[_]?(1[4-9]|[2-6][0-9]|7[0-2]|7[5-8])\b/i.test(name)) return "crank";
-            // Node 0, 7..13, 79, 80: Bloque motor, cárter y tapas estructurales
-            if (/node[_]?(0|7|8|9|10|11|12|13|79|80)\b/i.test(name)) return "casing";
+            // 1. PISTONES Y BULONES (Piston_123-844 y pasador body_24)
+            if (full.includes("piston") || full.includes("body_24")) return "piston";
 
-            // 3. Firma geométrica fidedigna (número exacto de vértices e índices de la malla)
-            const vc = m.getTotalVertices ? m.getTotalVertices() : 0;
-            const ic = m.getTotalIndices ? m.getTotalIndices() : 0;
-            if (vc === 2012 || vc === 1296 || vc === 264 || ic === 8250 || ic === 5034) return "piston";
-            if (vc === 1382 || vc === 1281 || ic === 4839) return "rod";
-            if (vc === 180 || vc === 43 || vc === 870 || vc === 294 || vc === 624 || vc === 408 || vc === 340 || vc === 324 || vc === 96 || vc === 348 || vc === 1409 || vc === 1940 || vc === 1754 || vc === 1749) return "crank";
-            if (vc === 8618 || vc === 5364 || vc === 3672) return "casing";
+            // 2. BIELAS DE TRANSMISIÓN (rod_123-699)
+            if (full.includes("rod")) return "rod";
 
-            // 4. Elevación espacial en el eje Y (Pistones arriba, Bielas en medio, Cigüeñal abajo)
-            if (m.getBoundingInfo) {
-                const center = m.getBoundingInfo().boundingBox.center;
-                if (center.y > 0.35) return "piston";
-                if (center.y > -0.25 && center.y <= 0.35) return "rod";
-                if (center.y <= -0.25) return "crank";
+            // 3. BLOQUE MOTOR Y CÁRTER ESTRUCTURAL
+            // En el glTF oficial 2CylinderEngine: "body" (bloque central/cilindros) y "body_1" (cárter/carcasa)
+            const isBodyBlock = /\bbody(\.|\b|_primitive\d*)/i.test(name) && !/\bbody_\d+/i.test(name);
+            const isBodyCarter = /\bbody_1(\.|\b|_primitive\d*)/i.test(name) && !/\bbody_1\d+/i.test(name);
+            if (isBodyBlock || isBodyCarter || full.includes("block") || full.includes("casing") || full.includes("housing")) {
+                return "casing";
             }
 
-            return "casing";
+            // 4. CIGÜEÑAL Y TREN DE TRANSMISIÓN
+            // Mallas body_2 hasta body_23, Lifter_..., Spring_..., engranajes, árboles de levas
+            return "crank";
         }
 
         function getComponentType(m) {
@@ -626,6 +616,48 @@
             if (m._componentType) return m._componentType;
             m._componentType = classifyMesh(m);
             return m._componentType;
+        }
+
+        function getComponentCenter(componentType) {
+            let min = new BABYLON.Vector3(Number.MAX_VALUE, Number.MAX_VALUE, Number.MAX_VALUE);
+            let max = new BABYLON.Vector3(-Number.MAX_VALUE, -Number.MAX_VALUE, -Number.MAX_VALUE);
+            let found = false;
+
+            scene.meshes.forEach(m => {
+                if (!m || m.name === "__root__" || m.name === "engineRoot" || !m.getBoundingInfo) return;
+                if (getComponentType(m) === componentType) {
+                    m.computeWorldMatrix(true);
+                    const b = m.getBoundingInfo().boundingBox;
+                    min = BABYLON.Vector3.Minimize(min, b.minimumWorld);
+                    max = BABYLON.Vector3.Maximize(max, b.maximumWorld);
+                    found = true;
+                }
+            });
+
+            if (found && isFinite(min.x) && isFinite(max.x)) {
+                return BABYLON.Vector3.Center(min, max);
+            }
+
+            // Fallbacks precisos calibrados en el espacio métrico del motor
+            if (componentType === 'piston') return new BABYLON.Vector3(0, 0.85, 0);
+            if (componentType === 'rod') return new BABYLON.Vector3(0, 0.05, 0);
+            if (componentType === 'crank') return new BABYLON.Vector3(0, -0.65, 0);
+            return new BABYLON.Vector3(0, 0, 0);
+        }
+
+        function animateCamera(targetPos, targetRadius) {
+            BABYLON.Animation.CreateAndStartAnimation(
+                "camTargetAnim", camera, "target", 60, 24,
+                camera.target.clone(), targetPos,
+                BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT,
+                new BABYLON.CubicEase()
+            );
+            BABYLON.Animation.CreateAndStartAnimation(
+                "camRadiusAnim", camera, "radius", 60, 24,
+                camera.radius, targetRadius,
+                BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT,
+                new BABYLON.CubicEase()
+            );
         }
 
         function createScene() {
@@ -776,8 +808,6 @@
 
             if (mode === 'pbr') {
                 document.querySelectorAll('.part-item').forEach(i => i.classList.remove('active'));
-                const blk = document.getElementById('partBtn_block');
-                if (blk) blk.classList.add('active');
                 document.getElementById("badgeInfo").innerText = "Motor 2 Cilindros en V • Geometría CAD Real 3D (Metálico Real)";
             } else if (mode === 'xray') {
                 document.getElementById("badgeInfo").innerText = "Inspección Rayos X: Carcasa Translúcida con Cinemática Interna";
@@ -818,6 +848,8 @@
             });
         }
 
+        const INSPECT_RADIUS = 5.2; // Zoom normalizado idéntico para todos los puntos de inspección
+
         function focusComponent(name) {
             document.querySelectorAll('.part-item').forEach(i => i.classList.remove('active'));
             const targetBtn = document.getElementById(`partBtn_${name}`);
@@ -826,13 +858,17 @@
             document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
 
             const rpm = parseInt(document.getElementById("sliderRPM").value) || 1200;
+            const targetType = (name === 'block') ? 'casing' : name;
+            const targetCenter = getComponentCenter(targetType);
+
+            // Centrado matemático exacto de cámara y zoom normalizado uniforme
+            animateCamera(targetCenter, INSPECT_RADIUS);
 
             if (name === 'piston') {
-                camera.setTarget(new BABYLON.Vector3(0, 0.9, 0));
-                camera.radius = 4.6;
-                document.getElementById("badgeInfo").innerText = "Diagnóstico: 1. Pistones en Carrera • Resaltado en Cian Lente Lumínico";
+                document.getElementById("badgeInfo").innerText = "Diagnóstico: 1. Pistón y Segmentos • Resaltado en Cian Lumínico";
                 document.getElementById("valTemp").innerText = "540 °C";
                 document.getElementById("valPress").innerText = "72.4 bar";
+                document.getElementById("valForce").innerText = "28.4 kN";
 
                 scene.meshes.forEach(m => {
                     if (!m.material || m.name === "__root__" || m.name === "engineRoot") return;
@@ -850,11 +886,10 @@
                 });
 
             } else if (name === 'rod') {
-                camera.setTarget(new BABYLON.Vector3(0, 0.05, 0));
-                camera.radius = 5.0;
-                document.getElementById("badgeInfo").innerText = "Diagnóstico: 2. Bielas de Transmisión • Resaltado en Oro/Ámbar";
+                document.getElementById("badgeInfo").innerText = "Diagnóstico: 2. Biela de Transmisión • Resaltado en Oro/Ámbar";
                 document.getElementById("valForce").innerText = "31.2 kN";
                 document.getElementById("valTemp").innerText = "380 °C";
+                document.getElementById("valPress").innerText = "55.0 bar";
 
                 scene.meshes.forEach(m => {
                     if (!m.material || m.name === "__root__" || m.name === "engineRoot") return;
@@ -872,11 +907,10 @@
                 });
 
             } else if (name === 'crank') {
-                camera.setTarget(new BABYLON.Vector3(0, -0.95, 0));
-                camera.radius = 4.8;
-                document.getElementById("badgeInfo").innerText = "Diagnóstico: 3. Cigüeñal y Contrapesos • Resaltado en Esmeralda";
+                document.getElementById("badgeInfo").innerText = "Diagnóstico: 3. Cigüeñal y Contrapesos • Resaltado en Verde Esmeralda";
                 document.getElementById("valRadS").innerText = `${(rpm * 2 * Math.PI / 60).toFixed(1)} rad/s`;
                 document.getElementById("valForce").innerText = "24.8 kN";
+                document.getElementById("valPress").innerText = "45.0 bar";
 
                 scene.meshes.forEach(m => {
                     if (!m.material || m.name === "__root__" || m.name === "engineRoot") return;
@@ -894,20 +928,42 @@
                 });
 
             } else if (name === 'block') {
-                camera.setTarget(new BABYLON.Vector3(0, 0, 0));
-                camera.radius = 8.5;
-                setMode('pbr');
-                const blk = document.getElementById('partBtn_block');
-                if (blk) blk.classList.add('active');
-                document.getElementById("badgeInfo").innerText = "Diagnóstico: 4. Bloque Motor & Carcasa • Metálico Real PBR";
+                document.getElementById("badgeInfo").innerText = "Diagnóstico: 4. Bloque Motor & Camisas • Resaltado en Púrpura de Aleación";
+                document.getElementById("valPress").innerText = "68.5 bar";
+                document.getElementById("valTemp").innerText = "220 °C";
+                document.getElementById("valForce").innerText = "12.0 kN";
+
+                scene.meshes.forEach(m => {
+                    if (!m.material || m.name === "__root__" || m.name === "engineRoot") return;
+                    const type = getComponentType(m);
+                    if (type === 'casing') {
+                        m.material = matHighlightBlock;
+                        m.visibility = 0.88;
+                    } else {
+                        m.material = matXrayInternal;
+                        m.visibility = 0.35;
+                    }
+                });
             }
         }
 
         function resetCamera() {
-            camera.alpha = -Math.PI / 2.5;
-            camera.beta = Math.PI / 2.8;
-            camera.radius = 8.5;
-            camera.setTarget(new BABYLON.Vector3(0, 0, 0));
+            document.querySelectorAll('.part-item').forEach(i => i.classList.remove('active'));
+            setMode('pbr');
+            document.getElementById("badgeInfo").innerText = "Motor 2 Cilindros en V • Geometría CAD Real 3D (Vista General)";
+            animateCamera(new BABYLON.Vector3(0, 0, 0), 8.5);
+            BABYLON.Animation.CreateAndStartAnimation(
+                "camAlphaAnim", camera, "alpha", 60, 24,
+                camera.alpha, -Math.PI / 2.5,
+                BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT,
+                new BABYLON.CubicEase()
+            );
+            BABYLON.Animation.CreateAndStartAnimation(
+                "camBetaAnim", camera, "beta", 60, 24,
+                camera.beta, Math.PI / 2.8,
+                BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT,
+                new BABYLON.CubicEase()
+            );
         }
 
         scene = createScene();

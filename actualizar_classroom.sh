@@ -99,7 +99,7 @@ cp -r "SIMULADORES_INTERACTIVOS/01_SIMULADORES/cards_11d" "CLASES/EXPORTACION_FI
 
 echo "=== 3. Guardando cambios y sincronizando con GitHub... ==="
 git add -A
-git commit -m "feat(s07): incorporacion de puntos historicos clave en la Cara Oculta (Change 4, Tsiolkovskiy, Moscoviense)" || true
+git commit -m "fix(s09): orientacion frontal del T-Rex y calibracion exacta de puntos anatomicos (mandibula, cuencas, cuello)" || true
 git push origin main
 
 echo "=== 4. Abriendo simuladores oficiales en Google Chrome... ==="

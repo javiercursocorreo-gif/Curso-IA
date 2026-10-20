@@ -423,7 +423,7 @@
             <div class="control-box">
                 <div class="section-title">Puntos Anatómicos de Inspección</div>
                 <div class="part-list">
-                    <div class="part-item active" id="partSpot_head" onclick="focusSpot('head')">
+                    <div class="part-item" id="partSpot_head" onclick="focusSpot('head')">
                         <div class="part-item-title">
                             <span>1. Mandíbula y Dientes Aserrados</span>
                             <span style="color:var(--amber);">Esmalte Fósil</span>
@@ -506,13 +506,14 @@
             groundMat.metallic = 0.1;
             ground.material = groundMat;
 
-            // Marcador holográfico 3D de inspección anatómica
-            spotMarker = BABYLON.MeshBuilder.CreateTorus("spotMarker", { diameter: 0.38, thickness: 0.045, tessellation: 32 }, sc);
+            // Retícula holográfica paleontológica sutil con modo Billboard frontal
+            spotMarker = BABYLON.MeshBuilder.CreateTorus("spotMarker", { diameter: 0.22, thickness: 0.014, tessellation: 48 }, sc);
+            spotMarker.billboardMode = BABYLON.Mesh.BILLBOARDMODE_ALL;
             const matMarker = new BABYLON.StandardMaterial("matSpotMarker", sc);
-            matMarker.diffuseColor = new BABYLON.Color3(1.0, 0.72, 0.05);
+            matMarker.diffuseColor = new BABYLON.Color3(1.0, 0.75, 0.1);
             matMarker.emissiveColor = new BABYLON.Color3(1.0, 0.65, 0.0);
             matMarker.specularColor = new BABYLON.Color3(1, 1, 1);
-            matMarker.alpha = 0.9;
+            matMarker.alpha = 0.75;
             spotMarker.material = matMarker;
             spotMarker.isPickable = false;
             spotMarker.visibility = 0;
@@ -603,9 +604,10 @@
                     computeAnatomyLandmarks(sc);
 
                     // Encuadre inicial frontal majestuoso en perspectiva 3/4
+                    const face = anatomyLandmarks.facingAngle;
                     camera.setTarget(anatomyLandmarks.body);
-                    camera.radius = 5.8;
-                    camera.alpha = anatomyLandmarks.facingAngle + Math.PI / 3.2;
+                    camera.radius = 6.0;
+                    camera.alpha = face + Math.PI / 4.5;
                     camera.beta = Math.PI / 2.5;
 
                 }, null, function (scene, message, exception) {
@@ -709,12 +711,41 @@
             }
         }
 
+        function animateCamera(targetPos, targetRadius, targetAlpha, targetBeta) {
+            BABYLON.Animation.CreateAndStartAnimation(
+                "camTargetAnim", camera, "target", 60, 24,
+                camera.target.clone(), targetPos,
+                BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT,
+                new BABYLON.CubicEase()
+            );
+            BABYLON.Animation.CreateAndStartAnimation(
+                "camRadiusAnim", camera, "radius", 60, 24,
+                camera.radius, targetRadius,
+                BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT,
+                new BABYLON.CubicEase()
+            );
+            if (targetAlpha !== undefined) {
+                BABYLON.Animation.CreateAndStartAnimation(
+                    "camAlphaAnim", camera, "alpha", 60, 24,
+                    camera.alpha, targetAlpha,
+                    BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT,
+                    new BABYLON.CubicEase()
+                );
+            }
+            if (targetBeta !== undefined) {
+                BABYLON.Animation.CreateAndStartAnimation(
+                    "camBetaAnim", camera, "beta", 60, 24,
+                    camera.beta, targetBeta,
+                    BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT,
+                    new BABYLON.CubicEase()
+                );
+            }
+        }
+
         function computeAnatomyLandmarks(sc) {
             if (!allMeshes || allMeshes.length === 0) return;
 
-            let highestPt = new BABYLON.Vector3(0, -Infinity, 0);
             let pts = [];
-
             allMeshes.forEach(m => {
                 if (!m.getVerticesData) return;
                 const positions = m.getVerticesData(BABYLON.VertexBuffer.PositionKind);
@@ -725,8 +756,6 @@
                     const localPt = new BABYLON.Vector3(positions[i], positions[i+1], positions[i+2]);
                     const worldPt = BABYLON.Vector3.TransformCoordinates(localPt, wm);
                     pts.push(worldPt);
-
-                    if (worldPt.y > highestPt.y) highestPt = worldPt.clone();
                 }
             });
 
@@ -744,65 +773,89 @@
             const spanZ = max.z - min.z;
             const isAxisZ = (spanZ >= spanX);
 
-            // Determinar qué extremo corresponde a la cabeza (cercano al punto más alto) y cuál a la cola
-            let headEnd, tailEnd;
+            // Discriminador anatómico científico:
+            // La cabeza/cráneo del T-Rex concentra la mayor densidad poligonal (dientes, mandíbula, fenestras)
+            // y una anchura transversal marcadamente mayor que la punta afilada y cónica de la cola.
+            const frac = 0.22;
+            let ptsMinEnd, ptsMaxEnd;
             if (isAxisZ) {
-                const distToMinZ = Math.abs(highestPt.z - min.z);
-                const distToMaxZ = Math.abs(highestPt.z - max.z);
-                headEnd = (distToMinZ < distToMaxZ) ? min.z : max.z;
-                tailEnd = (distToMinZ < distToMaxZ) ? max.z : min.z;
+                ptsMinEnd = pts.filter(p => p.z < min.z + frac * spanZ);
+                ptsMaxEnd = pts.filter(p => p.z > max.z - frac * spanZ);
             } else {
-                const distToMinX = Math.abs(highestPt.x - min.x);
-                const distToMaxX = Math.abs(highestPt.x - max.x);
-                headEnd = (distToMinX < distToMaxX) ? min.x : max.x;
-                tailEnd = (distToMinX < distToMaxX) ? max.x : min.x;
+                ptsMinEnd = pts.filter(p => p.x < min.x + frac * spanX);
+                ptsMaxEnd = pts.filter(p => p.x > max.x - frac * spanX);
             }
 
-            // Filtrar vértices craneales en la región superior
-            let skullPts = pts.filter(p => {
-                const fracY = (p.y - min.y) / (max.y - min.y);
-                const fracLong = isAxisZ 
-                    ? Math.abs(p.z - headEnd) / (spanZ || 1) 
-                    : Math.abs(p.x - headEnd) / (spanX || 1);
-                return fracY > 0.50 && fracLong < 0.28;
-            });
+            const spanTransMin = isAxisZ 
+                ? (Math.max(...ptsMinEnd.map(p => p.x)) - Math.min(...ptsMinEnd.map(p => p.x)))
+                : (Math.max(...ptsMinEnd.map(p => p.z)) - Math.min(...ptsMinEnd.map(p => p.z)));
+            const spanTransMax = isAxisZ 
+                ? (Math.max(...ptsMaxEnd.map(p => p.x)) - Math.min(...ptsMaxEnd.map(p => p.x)))
+                : (Math.max(...ptsMaxEnd.map(p => p.z)) - Math.min(...ptsMaxEnd.map(p => p.z)));
 
-            if (skullPts.length === 0) {
-                skullPts = pts.filter(p => BABYLON.Vector3.Distance(p, highestPt) < 1.4);
-            }
+            const scoreMin = ptsMinEnd.length * spanTransMin;
+            const scoreMax = ptsMaxEnd.length * spanTransMax;
+            const isMaxHead = (scoreMax >= scoreMin);
 
-            let skullCenter = new BABYLON.Vector3(0, 0, 0);
-            skullPts.forEach(p => skullCenter.addInPlace(p));
-            if (skullPts.length > 0) skullCenter.scaleInPlace(1.0 / skullPts.length);
-            else skullCenter = highestPt.clone();
+            // Filtrar vértices del extremo cefálico (cráneo, órbitas y dientes)
+            let headPts = isAxisZ
+                ? (isMaxHead ? pts.filter(p => p.z > max.z - 0.28 * spanZ) : pts.filter(p => p.z < min.z + 0.28 * spanZ))
+                : (isMaxHead ? pts.filter(p => p.x > max.x - 0.28 * spanX) : pts.filter(p => p.x < min.x + 0.28 * spanX));
 
-            // Extremo delantero del hocico (mandíbula y dientes)
-            let snoutPt = skullPts[0] || skullCenter;
-            let maxSnoutDist = -1;
-            skullPts.forEach(p => {
-                const d = BABYLON.Vector3.Distance(p, center);
-                if (d > maxSnoutDist) {
-                    maxSnoutDist = d;
+            if (headPts.length === 0) headPts = isMaxHead ? ptsMaxEnd : ptsMinEnd;
+
+            // 1. MANDÍBULA Y DIENTES (Extremo frontal del hocico a la altura dental)
+            let snoutPt = headPts[0];
+            let bestSnoutDist = -1;
+            headPts.forEach(p => {
+                const distAlongAxis = isAxisZ 
+                    ? (isMaxHead ? (p.z - center.z) : (center.z - p.z))
+                    : (isMaxHead ? (p.x - center.x) : (center.x - p.x));
+                if (distAlongAxis > bestSnoutDist) {
+                    bestSnoutDist = distAlongAxis;
                     snoutPt = p;
                 }
             });
 
-            // Cuencas oculares (parte superior y posterior al hocico)
-            const eyePt = skullCenter.add(new BABYLON.Vector3(0, 0.12, 0));
+            // Centro del cráneo
+            let skullCenter = new BABYLON.Vector3(0, 0, 0);
+            headPts.forEach(p => skullCenter.addInPlace(p));
+            skullCenter.scaleInPlace(1.0 / headPts.length);
 
-            // Cuello en 'S'
-            const neckPt = skullCenter.scale(0.6).add(center.scale(0.4));
-            neckPt.y = (skullCenter.y + center.y) * 0.52;
+            // Calibración exacta de la mandíbula inferior y arcada dental
+            const jawPt = new BABYLON.Vector3(
+                snoutPt.x * 0.85 + skullCenter.x * 0.15,
+                (snoutPt.y + skullCenter.y) * 0.5 - 0.08,
+                snoutPt.z * 0.85 + skullCenter.z * 0.15
+            );
 
-            // Orientación del hocico respecto al centro del dinosaurio
+            // 2. CUENCAS OCULARES (Parte superior del cráneo, ligeramente retrasadas del hocico hacia la nuca)
+            const eyePt = new BABYLON.Vector3(
+                skullCenter.x,
+                Math.max(...headPts.map(p => p.y)) - 0.12,
+                skullCenter.z * 0.65 + snoutPt.z * 0.35
+            );
+
+            // 3. CUELLO EN 'S' (Región cervical de conexión entre cráneo y columna)
+            const neckPt = new BABYLON.Vector3(
+                (skullCenter.x + center.x) * 0.5,
+                (skullCenter.y + center.y) * 0.52 + 0.15,
+                (skullCenter.z + center.z) * 0.5
+            );
+
+            // 4. POSTURA BÍPEDA (Centro de masa en cadera / columna horizontal)
+            const bodyPt = new BABYLON.Vector3(center.x, center.y + 0.15, center.z);
+
+            // Vector director del hocico desde el centro del dinosaurio
             const dirHocico = snoutPt.subtract(center);
-            const facingAngle = Math.atan2(dirHocico.x, dirHocico.z);
+            // Ángulo azimutal de la cámara mirando DIRECTAMENTE DE FRENTE hacia el hocico
+            const facingAngle = Math.atan2(dirHocico.z, dirHocico.x);
 
             anatomyLandmarks = {
-                head: snoutPt,
+                head: jawPt,
                 eyes: eyePt,
                 neck: neckPt,
-                body: new BABYLON.Vector3(center.x, center.y + 0.15, center.z),
+                body: bodyPt,
                 facingAngle: facingAngle
             };
         }
@@ -829,10 +882,7 @@
             const face = anatomyLandmarks.facingAngle;
 
             if (spot === 'head') {
-                camera.setTarget(anatomyLandmarks.head);
-                camera.radius = 1.15; // Primer plano macro real en la mandíbula y dientes
-                camera.alpha = face + 0.35; // Ángulo 3/4 frontal directo
-                camera.beta = Math.PI / 2.2;
+                animateCamera(anatomyLandmarks.head, 1.6, face + 0.35, Math.PI / 2.3);
                 document.getElementById("badgeInfo").innerText = "Inspección: 1. Mandíbula y Dientes Aserrados • 60.000 N Triturahuesos";
                 document.getElementById("lblTele1").innerText = "Fuerza de Mordida";
                 document.getElementById("valTele1").innerText = "60.000 N";
@@ -844,10 +894,7 @@
                 document.getElementById("valTele4").innerText = "Hueso Macizo";
 
             } else if (spot === 'eyes') {
-                camera.setTarget(anatomyLandmarks.eyes);
-                camera.radius = 0.90; // Primer plano extremo cara a cara en las cuencas oculares
-                camera.alpha = face + 0.08; // Visión binocular frontal estéreo
-                camera.beta = Math.PI / 2.3;
+                animateCamera(anatomyLandmarks.eyes, 1.35, face, Math.PI / 2.35);
                 document.getElementById("badgeInfo").innerText = "Inspección: 2. Cuencas Oculares • Visión Estereoscópica 3D (55°)";
                 document.getElementById("lblTele1").innerText = "Visión Binocular";
                 document.getElementById("valTele1").innerText = "55° Estéreo";
@@ -859,10 +906,7 @@
                 document.getElementById("valTele4").innerText = "Emboscada";
 
             } else if (spot === 'neck') {
-                camera.setTarget(anatomyLandmarks.neck);
-                camera.radius = 1.55; // Plano medio en la curvatura cervical en 'S'
-                camera.alpha = face + Math.PI / 2.15; // Ángulo lateral para apreciar masa muscular
-                camera.beta = Math.PI / 2.35;
+                animateCamera(anatomyLandmarks.neck, 2.2, face + Math.PI / 2.2, Math.PI / 2.4);
                 document.getElementById("badgeInfo").innerText = "Inspección: 3. Cuello en 'S' • Masa Muscular de Sacudida de Presas";
                 document.getElementById("lblTele1").innerText = "Masa Muscular";
                 document.getElementById("valTele1").innerText = "1.200 kg";
@@ -874,10 +918,7 @@
                 document.getElementById("valTele4").innerText = "Torsión y Desgarro";
 
             } else if (spot === 'body') {
-                camera.setTarget(anatomyLandmarks.body);
-                camera.radius = 6.0; // Encuadre panorámico completo de 12.3 metros
-                camera.alpha = face + Math.PI / 3.0;
-                camera.beta = Math.PI / 2.5;
+                animateCamera(anatomyLandmarks.body, 6.2, face + Math.PI / 3.2, Math.PI / 2.5);
                 document.getElementById("badgeInfo").innerText = "Inspección: 4. Postura Bípeda y Cola Contrapeso de 4 Toneladas";
                 document.getElementById("lblTele1").innerText = "Longitud Total";
                 document.getElementById("valTele1").innerText = "12.3 metros";
@@ -894,23 +935,21 @@
                 if (spot === 'body') {
                     spotMarker.visibility = 0;
                 } else {
-                    spotMarker.visibility = 0.85;
+                    spotMarker.visibility = 0.75;
                     spotMarker.position = anatomyLandmarks[spot].clone();
                 }
             }
         }
 
         function resetCamera() {
-            camera.alpha = anatomyLandmarks.facingAngle + Math.PI / 3.2;
-            camera.beta = Math.PI / 2.5;
-            camera.radius = 5.8;
-            camera.setTarget(anatomyLandmarks.body);
+            isTurntable = false;
+            document.querySelectorAll('.part-item').forEach(i => i.classList.remove('active'));
+            setLighting('museum');
+            document.getElementById("badgeInfo").innerText = "Tyrannosaurus Rex • Espécimen Fósil 3D de Museo (Vista General)";
             if (rootNode) rootNode.rotation.y = 0;
             if (spotMarker) spotMarker.visibility = 0;
-            setLighting('museum');
-            document.querySelectorAll('.part-item').forEach(i => i.classList.remove('active'));
-            const blk = document.getElementById('partSpot_head');
-            if (blk) blk.classList.add('active');
+            const face = anatomyLandmarks.facingAngle;
+            animateCamera(anatomyLandmarks.body, 6.0, face + Math.PI / 4.5, Math.PI / 2.5);
         }
 
         scene = createScene();
@@ -920,8 +959,8 @@
                     rootNode.rotation.y += 0.004;
                 }
                 if (spotMarker && spotMarker.visibility > 0) {
-                    spotMarker.rotation.y += 0.04;
-                    spotMarker.rotation.x += 0.02;
+                    const pulse = 1.0 + Math.sin(Date.now() * 0.005) * 0.06;
+                    spotMarker.scaling.set(pulse, pulse, pulse);
                 }
                 scene.render();
             }
