@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
     <!-- Optimización iOS / iPadOS como Web App Nativa a pantalla completa -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -1142,10 +1142,49 @@
             if (favIcon) favIcon.href = pngUrl;
         } catch(e) {}
     });
+    /* ==========================================================================
+       MODO ATRIL ACTIVO: EVITAR APAGADO AUTOMÁTICO DE PANTALLA EN IPAD
+       ========================================================================== */
+    let wakeLockInstance = null;
+
+    async function activarModoAtrilSinApagado() {
+        if ('wakeLock' in navigator) {
+            try {
+                wakeLockInstance = await navigator.wakeLock.request('screen');
+                console.log('☀️ Modo Atril: Pantalla mantenida siempre encendida');
+            } catch(e) {
+                console.warn('WakeLock bloqueado o no disponible:', e);
+            }
+        }
+    }
+
+    function liberarModoAtril() {
+        if (wakeLockInstance) {
+            try {
+                wakeLockInstance.release();
+                wakeLockInstance = null;
+            } catch(e){}
+        }
+    }
+
+    document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') {
+            activarModoAtrilSinApagado();
+        } else {
+            liberarModoAtril();
+        }
+    });
+
+    document.addEventListener('touchstart', () => {
+        if (!wakeLockInstance) activarModoAtrilSinApagado();
+    }, { once: true });
+
     window.addEventListener('beforeunload', () => {
+        liberarModoAtril();
         if (midiClockTimer) clearInterval(midiClockTimer);
     });
     window.addEventListener('pagehide', () => {
+        liberarModoAtril();
         if (midiClockTimer) clearInterval(midiClockTimer);
     });
 </script>

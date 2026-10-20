@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sesión 12 • Simulador 3D: Nebulosa Helix (El Ojo de Dios) [COD-012]</title>
-    <!-- Babylon.js CDN Oficial -->
-    <script src="https://cdn.babylonjs.com/babylon.js"></script>
-    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;800;900&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+    <title>Sesión 12 • Simulador Real: Nebulosa Helix (NGC 7293) • Astrofotografía Oficial NASA/Hubble [COD-012]</title>
+    <!-- Assets Fotográficos Reales en Base64 Autónomo (NASA / ESA Hubble / Spitzer) -->
+    <script src="../03_ASSETS_3D_Y_DATOS/helix_nebula_b64.js"></script>
+    <script src="../../../../SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/helix_nebula_b64.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg-base: #030206;
@@ -16,586 +16,998 @@
             --nebula-mid: #a855f7;
             --nebula-outer: #f43f5e;
             --gold: #fbbf24;
+            --cyan: #38bdf8;
+            --text-main: #f8fafc;
+            --text-sub: #cbd5e1;
             --font-title: 'Cinzel', serif;
             --font-sans: 'Inter', sans-serif;
             --font-mono: 'JetBrains Mono', monospace;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body {
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+        html, body {
             background-color: var(--bg-base);
-            color: #f8fafc;
+            color: var(--text-main);
             font-family: var(--font-sans);
             height: 100vh;
             width: 100vw;
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            user-select: none;
+            font-size: 15px;
         }
 
+        /* HEADER SUPERIOR */
         header {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 20;
-            padding: 14px 24px;
+            background: linear-gradient(180deg, rgba(14, 10, 24, 0.98) 0%, rgba(14, 10, 24, 0.88) 100%);
+            backdrop-filter: blur(14px);
+            border-bottom: 1px solid rgba(168, 85, 247, 0.3);
+            padding: 10px 24px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            background: linear-gradient(180deg, rgba(7, 4, 15, 0.96) 0%, rgba(7, 4, 15, 0.6) 80%, transparent 100%);
-            border-bottom: 1px solid rgba(168, 85, 247, 0.25);
-            backdrop-filter: blur(10px);
+            flex-shrink: 0;
+            z-index: 50;
         }
-
-        .brand-box {
+        .header-title-box {
             display: flex;
             align-items: center;
             gap: 14px;
         }
-
-        .brand-badge {
+        .badge-code {
             background: rgba(168, 85, 247, 0.2);
-            border: 1px solid var(--nebula-mid);
-            color: #c084fc;
+            color: #d8b4fe;
+            border: 1px solid rgba(168, 85, 247, 0.5);
             font-family: var(--font-mono);
+            font-size: 0.88rem;
             font-weight: 800;
-            font-size: 1rem;
-            padding: 5px 12px;
+            padding: 4px 10px;
             border-radius: 8px;
+            letter-spacing: 0.05em;
         }
-
-        .brand-title {
+        h1 {
             font-family: var(--font-title);
-            font-size: 1.35rem;
-            font-weight: 900;
+            font-size: 1.25rem;
+            font-weight: 800;
+            letter-spacing: 0.02em;
             color: #ffffff;
-            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
-
-        .brand-sub {
-            font-size: 0.78rem;
-            color: #94a3b8;
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
-
-        .btn-action {
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            color: #f1f5f9;
-            padding: 8px 16px;
+        .pill-status {
+            background: rgba(56, 189, 248, 0.12);
+            color: #38bdf8;
+            border: 1px solid rgba(56, 189, 248, 0.35);
+            font-size: 0.85rem;
+            font-weight: 700;
+            padding: 5px 13px;
             border-radius: 9999px;
-            font-size: 0.82rem;
-            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* GRID PRINCIPAL */
+        .workspace-grid {
+            flex: 1;
+            min-height: 0;
+            display: grid;
+            grid-template-columns: 360px 1fr 370px;
+            position: relative;
+        }
+
+        /* PANELES LATERALES */
+        .sidebar-panel {
+            background: var(--bg-panel);
+            backdrop-filter: blur(16px);
+            padding: 18px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            z-index: 20;
+        }
+        .sidebar-left {
+            border-right: 1px solid rgba(168, 85, 247, 0.2);
+        }
+        .sidebar-right {
+            border-left: 1px solid rgba(168, 85, 247, 0.2);
+        }
+
+        /* TARJETA LA IDEA FÁCIL */
+        .card-easy-concept {
+            background: linear-gradient(135deg, rgba(168, 85, 247, 0.18) 0%, rgba(14, 10, 24, 0.9) 100%);
+            border: 1.5px solid var(--nebula-mid);
+            border-radius: 14px;
+            padding: 14px;
+            box-shadow: 0 0 20px rgba(168, 85, 247, 0.2);
+        }
+        .easy-tag {
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            font-weight: 800;
+            color: #d8b4fe;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .easy-title {
+            font-size: 1.05rem;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 6px;
+            line-height: 1.3;
+        }
+        .easy-text {
+            font-size: 0.85rem;
+            color: #e2e8f0;
+            line-height: 1.5;
+        }
+
+        .section-title {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            font-weight: 800;
+            color: #d8b4fe;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        /* SELECTORES DE FILTROS ESPECTRALES */
+        .spectra-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .spectra-btn {
+            background: rgba(30, 20, 45, 0.7);
+            border: 1.5px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 11px 14px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            text-align: left;
+            color: #f1f5f9;
+        }
+        .spectra-btn:hover {
+            border-color: var(--nebula-mid);
+            background: rgba(168, 85, 247, 0.15);
+            transform: translateX(4px);
+        }
+        .spectra-btn.active {
+            border-color: #c084fc;
+            background: rgba(168, 85, 247, 0.28);
+            box-shadow: 0 0 18px rgba(168, 85, 247, 0.4);
+            color: #ffffff;
+        }
+        .spectra-title {
+            font-size: 0.92rem;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .spectra-pill {
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            font-weight: 800;
+            padding: 2px 7px;
+            border-radius: 6px;
+            background: rgba(168, 85, 247, 0.25);
+            color: #d8b4fe;
+        }
+        .spectra-desc {
+            font-size: 0.78rem;
+            color: var(--text-sub);
+            margin-top: 3px;
+            line-height: 1.35;
+        }
+
+        /* TELEMETRÍA CIENTÍFICA */
+        .telemetry-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+        .telemetry-cell {
+            background: rgba(0, 0, 0, 0.45);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            padding: 10px;
+            text-align: center;
+        }
+        .telemetry-val {
+            font-family: var(--font-mono);
+            font-size: 1.05rem;
+            font-weight: 800;
+            color: #38bdf8;
+        }
+        .telemetry-lbl {
+            font-size: 0.68rem;
+            color: #94a3b8;
+            text-transform: uppercase;
+            margin-top: 2px;
+        }
+
+        /* ÁREA CENTRAL DEL CANVAS */
+        .stage-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: radial-gradient(circle at center, #0e0818 0%, #030206 85%, #000000 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #photoCanvas {
+            cursor: grab;
+            display: block;
+        }
+        #photoCanvas:active {
+            cursor: grabbing;
+        }
+
+        /* BARRA SUPERIOR DE HERRAMIENTAS */
+        .top-tools-bar {
+            position: absolute;
+            top: 14px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(14, 10, 24, 0.9);
+            border: 1px solid rgba(168, 85, 247, 0.35);
+            backdrop-filter: blur(12px);
+            padding: 6px 14px;
+            border-radius: 9999px;
+            z-index: 30;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7);
+        }
+        .btn-tool {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: #f1f5f9;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
             cursor: pointer;
             transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            white-space: nowrap;
         }
-
-        .btn-action:hover {
+        .btn-tool:hover {
             background: rgba(168, 85, 247, 0.25);
             border-color: var(--nebula-mid);
             color: #d8b4fe;
         }
-
-        #helixStage {
-            flex: 1;
-            width: 100%;
-            height: 100%;
-            display: block;
+        .btn-tool.active {
+            background: var(--nebula-mid);
+            color: #060507;
+            font-weight: 800;
         }
 
-        /* PANEL DIDÁCTICO DERECHO */
-        .info-card {
+        /* BADGE FLOTANTE DE ESTADO */
+        .canvas-hud-badge {
             position: absolute;
-            top: 80px;
-            right: 24px;
-            width: 410px;
-            background: var(--bg-panel);
-            border: 1.5px solid var(--nebula-mid);
-            border-radius: 20px;
-            padding: 22px;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9), 0 0 25px rgba(168, 85, 247, 0.3);
-            backdrop-filter: blur(20px);
-            z-index: 15;
-            display: flex;
-            flex-direction: column;
-            gap: 13px;
-        }
-
-        .spitzer-tag {
+            top: 65px;
+            left: 20px;
+            background: rgba(14, 10, 24, 0.88);
+            border: 1px solid rgba(168, 85, 247, 0.35);
+            padding: 8px 14px;
+            border-radius: 10px;
             font-family: var(--font-mono);
             font-size: 0.8rem;
-            font-weight: 800;
-            padding: 5px 12px;
-            border-radius: 9999px;
-            background: rgba(56, 189, 248, 0.15);
-            color: #38bdf8;
-            border: 1px solid rgba(56, 189, 248, 0.35);
-            width: fit-content;
-        }
-
-        .info-title {
-            font-family: var(--font-title);
-            font-size: 1.3rem;
-            font-weight: 900;
-            color: #ffffff;
-            line-height: 1.25;
-        }
-
-        .info-summary {
-            background: rgba(255, 255, 255, 0.05);
-            border-left: 3.5px solid var(--nebula-mid);
-            padding: 10px 14px;
-            border-radius: 0 10px 10px 0;
-            font-size: 0.9rem;
-            color: #f1f5f9;
-            line-height: 1.45;
-        }
-
-        .data-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
-
-        .data-cell {
-            background: rgba(0, 0, 0, 0.4);
-            border: 1px solid rgba(255, 255, 255, 0.07);
-            border-radius: 10px;
-            padding: 8px 12px;
-        }
-
-        .data-label {
-            font-size: 0.72rem;
-            color: #94a3b8;
-            text-transform: uppercase;
-            font-family: var(--font-mono);
-            font-weight: 700;
-        }
-
-        .data-val {
-            font-size: 1rem;
-            color: #38bdf8;
-            font-weight: 800;
-            margin-top: 2px;
-        }
-
-        /* MODOS DE VISIÓN Y CAPAS ESPECTRALES */
-        .tabs-header {
-            font-size: 0.76rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: #94a3b8;
-            margin-top: 4px;
-        }
-
-        .layers-btn-group {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 8px;
-        }
-
-        .layer-btn {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            color: #cbd5e1;
-            padding: 9px 10px;
-            border-radius: 10px;
-            font-size: 0.8rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            text-align: center;
-        }
-
-        .layer-btn.active {
-            background: linear-gradient(135deg, rgba(168, 85, 247, 0.4), rgba(56, 189, 248, 0.4));
-            border-color: #c084fc;
-            color: #ffffff;
-            box-shadow: 0 0 12px rgba(168, 85, 247, 0.4);
-        }
-
-        .slider-box {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            background: rgba(0, 0, 0, 0.35);
-            border: 1px solid rgba(255, 255, 255, 0.07);
-            border-radius: 10px;
-            padding: 10px 12px;
-        }
-
-        .slider-row {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.78rem;
-            color: #94a3b8;
-            font-weight: 600;
-        }
-
-        .slider-box input[type="range"] {
-            width: 100%;
-            accent-color: #a855f7;
-            cursor: pointer;
-        }
-
-        /* GUÍA DIDÁCTICA INFERIOR */
-        .bottom-guide {
-            position: absolute;
-            bottom: 20px;
-            left: 24px;
-            background: rgba(14, 10, 24, 0.92);
-            border: 1px solid rgba(168, 85, 247, 0.3);
-            border-radius: 14px;
-            padding: 12px 20px;
+            color: #d8b4fe;
             display: flex;
             align-items: center;
-            gap: 16px;
-            z-index: 15;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(12px);
-            font-size: 0.85rem;
-            color: #94a3b8;
+            gap: 8px;
+            z-index: 25;
+            backdrop-filter: blur(8px);
         }
-        .bottom-guide strong {
-            color: #fff;
+        .pulse-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #38bdf8;
+            box-shadow: 0 0 8px #38bdf8;
+            animation: pulse 1.2s infinite;
         }
-        .guide-tag {
-            background: rgba(56, 189, 248, 0.15);
-            color: #38bdf8;
-            border: 1px solid rgba(56, 189, 248, 0.3);
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(1.3); }
+        }
+
+        /* RÓTULOS ANATÓMICOS CÓSMICOS */
+        .anatomical-callout {
+            position: absolute;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(10, 7, 18, 0.94);
+            border: 1.5px solid var(--nebula-mid);
+            border-radius: 9999px;
+            padding: 6px 14px 6px 8px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.8), 0 0 15px rgba(168, 85, 247, 0.35);
+            transition: all 0.25s ease;
+            z-index: 25;
+            transform: translate(-50%, -50%);
+        }
+        .anatomical-callout:hover, .anatomical-callout.active {
+            border-color: #c084fc;
+            background: rgba(168, 85, 247, 0.3);
+            transform: translate(-50%, -50%) scale(1.08);
+        }
+        .callout-num {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: var(--nebula-mid);
+            color: #060507;
             font-family: var(--font-mono);
             font-size: 0.75rem;
+            font-weight: 900;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .callout-title {
+            font-size: 0.82rem;
             font-weight: 800;
-            padding: 4px 10px;
-            border-radius: 6px;
+            color: #ffffff;
+        }
+        .callout-sub {
+            font-size: 0.7rem;
+            color: #38bdf8;
+            font-family: var(--font-mono);
+        }
+
+        /* ESTRUCTURAS ANATÓMICAS DE LA NEBULOSA */
+        .structures-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .structure-card {
+            background: rgba(22, 16, 36, 0.7);
+            border: 1.5px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 12px 14px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+        .structure-card:hover {
+            border-color: var(--nebula-mid);
+            background: rgba(168, 85, 247, 0.12);
+            transform: translateX(4px);
+        }
+        .structure-card.active {
+            border-color: #c084fc;
+            background: rgba(168, 85, 247, 0.22);
+            box-shadow: 0 0 16px rgba(168, 85, 247, 0.3);
+        }
+        .structure-name {
+            font-size: 0.95rem;
+            font-weight: 800;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 4px;
+        }
+        .structure-desc {
+            font-size: 0.82rem;
+            color: var(--text-sub);
+            line-height: 1.45;
         }
     </style>
 </head>
 <body>
 
+    <!-- HEADER SUPERIOR -->
     <header>
-        <div class="brand-box">
-            <span class="brand-badge">[COD-012]</span>
-            <div>
-                <h1 class="brand-title">Nebulosa Helix • El Ojo de Dios (NGC 7293)</h1>
-                <p class="brand-sub">Astronomía Infrarroja con Telescopio Espacial Spitzer & Babylon.js 3D</p>
-            </div>
+        <div class="header-title-box">
+            <span class="badge-code">COD-012</span>
+            <h1>🌌 Nebulosa Helix (NGC 7293) • 'El Ojo de Dios' • NASA / Hubble</h1>
         </div>
-        <div style="display: flex; gap: 10px;">
-            <button class="btn-action" id="btnToggleSpin">⏸ Pausar Giro</button>
-            <button class="btn-action" id="btnResetView">🔄 Vista Frontal</button>
+        <div class="header-right">
+            <div class="pill-status">
+                <span>🔭</span>
+                <span>Telescopios Espaciales Hubble & Spitzer • Mosaico Oficial Ultra-HD</span>
+            </div>
         </div>
     </header>
 
-    <canvas id="helixStage"></canvas>
+    <!-- ÁREA DE TRABAJO -->
+    <div class="workspace-grid">
 
-    <div class="info-card">
-        <div class="spitzer-tag">🔭 SPITZER + HUBBLE INFRARED DATA</div>
-        <h2 class="info-title" id="infoTitle">Estructura Volumétrica del Disco</h2>
-        <div class="info-summary" id="infoDesc">
-            La Nebulosa Helix es una nebulosa planetaria situada a 655 años luz en Acuario. Revela cómo morirá nuestro Sol dentro de 5.000 millones de años, expulsando sus capas externas de gas y dejando expuesto su núcleo ardiente.
-        </div>
+        <!-- PANEL IZQUIERDO: LA FÍSICA DE LA MUERTE SOLAR -->
+        <aside class="sidebar-panel sidebar-left">
 
-        <div class="data-grid">
-            <div class="data-cell">
-                <div class="data-label">Distancia</div>
-                <div class="data-val">655 años luz</div>
+            <div class="card-easy-concept">
+                <div class="easy-tag">💡 La Idea Fácil para Todos</div>
+                <div class="easy-title">El Espejo del Futuro de Nuestro Propio Sol</div>
+                <div class="easy-text">
+                    Estás contemplando la <strong>astrofotografía real oficial de la NASA</strong> obtenida combinando el telescopio espacial <strong>Hubble</strong>, el telescopio infrarrojo <strong>Spitzer</strong> y el observatorio de <strong>Cerro Tololo (CTIO)</strong>.
+                    La Nebulosa Helix es una <strong>nebulosa planetaria</strong>: una estrella similar a nuestro Sol que agotó su combustible nuclear, expulsó sus capas exteriores de gas al espacio a <strong>40 km/s</strong> y dejó en el centro una <strong>enana blanca</strong> ultra-densa. Es exactamente el mismo destino que vivirá nuestro Sol dentro de 5.000 millones de años.
+                </div>
             </div>
-            <div class="data-cell">
-                <div class="data-label">Diámetro Real</div>
-                <div class="data-val">2.87 años luz</div>
-            </div>
-            <div class="data-cell">
-                <div class="data-label">Temperatura Núcleo</div>
-                <div class="data-val">120.000 K</div>
-            </div>
-            <div class="data-cell">
-                <div class="data-label">Expansión</div>
-                <div class="data-val">40 km/s</div>
-            </div>
-        </div>
 
-        <div class="tabs-header">Capas Espectrales & Observación:</div>
-        <div class="layers-btn-group">
-            <button class="layer-btn active" id="btnModeAll" onclick="setSpectraMode('all')">🌌 Espectro Completo</button>
-            <button class="layer-btn" id="btnModeCore" onclick="setSpectraMode('core')">⚪ Enana Blanca</button>
-            <button class="layer-btn" id="btnModeInfra" onclick="setSpectraMode('infra')">🔴 Polvo Infrarrojo (24µm)</button>
-            <button class="layer-btn" id="btnModeKnots" onclick="setSpectraMode('knots')">☄️ Filamentos / Cometas</button>
-        </div>
+            <!-- MODOS DE VISIÓN ESPECTRAL -->
+            <div>
+                <div class="section-title">
+                    <span>Filtros Espectrales de la NASA</span>
+                    <span>🔬 Multi-Longitud de Onda</span>
+                </div>
+                <div class="spectra-grid">
 
-        <div class="slider-box">
-            <div class="slider-row">
-                <span>Velocidad de Expansión Gas:</span>
-                <span id="txtExpSpeed" style="color:#a855f7; font-weight:800;">1.0x</span>
-            </div>
-            <input type="range" id="expRange" min="0" max="3" step="0.1" value="1.0" oninput="updateExpSpeed(this.value)">
-        </div>
+                    <div class="spectra-btn active" id="btnModeAll" onclick="setSpectraMode('all')">
+                        <div>
+                            <div class="spectra-title"><span>🌌</span> Espectro Completo</div>
+                            <div class="spectra-desc">Mosaico astronómico compuesto visible + infrarrojo (Hubble & Spitzer).</div>
+                        </div>
+                        <span class="spectra-pill">Color Real</span>
+                    </div>
 
-        <div class="slider-box">
-            <div class="slider-row">
-                <span>Densidad de Polvo Cósmico:</span>
-                <span id="txtDustDense" style="color:#38bdf8; font-weight:800;">100%</span>
+                    <div class="spectra-btn" id="btnModeOxygen" onclick="setSpectraMode('oxygen')">
+                        <div>
+                            <div class="spectra-title"><span>🔵</span> Oxígeno [O III]</div>
+                            <div class="spectra-desc">Gas ionizado ultra-caliente (120.000 K) que forma el disco azul-cian central.</div>
+                        </div>
+                        <span class="spectra-pill">500.7 nm</span>
+                    </div>
+
+                    <div class="spectra-btn" id="btnModeHydrogen" onclick="setSpectraMode('hydrogen')">
+                        <div>
+                            <div class="spectra-title"><span>🔴</span> Hidrógeno H-Alfa</div>
+                            <div class="spectra-desc">Envoltura toroidal de hidrógeno y nitrógeno expulsada en fase de gigante roja.</div>
+                        </div>
+                        <span class="spectra-pill">656.3 nm</span>
+                    </div>
+
+                    <div class="spectra-btn" id="btnModeInfrared" onclick="setSpectraMode('infrared')">
+                        <div>
+                            <div class="spectra-title"><span>🔥</span> Infrarrojo Spitzer</div>
+                            <div class="spectra-desc">Disco de polvo caliente generado por el choque de cometas supervivientes.</div>
+                        </div>
+                        <span class="spectra-pill">24 µm (IR)</span>
+                    </div>
+
+                    <div class="spectra-btn" id="btnModeKnots" onclick="setSpectraMode('knots')">
+                        <div>
+                            <div class="spectra-title"><span>☄️</span> Nudos Cometarios</div>
+                            <div class="spectra-desc">Más de 20.000 filamentos con cabezas gaseosas que apuntan a la estrella central.</div>
+                        </div>
+                        <span class="spectra-pill">Radiales</span>
+                    </div>
+
+                </div>
             </div>
-            <input type="range" id="dustRange" min="20" max="200" step="10" value="100" oninput="updateDustDensity(this.value)">
-        </div>
+
+        </aside>
+
+        <!-- ÁREA CENTRAL DE VISUALIZACIÓN ASTRONÓMICA REAL -->
+        <main class="stage-container" id="stageContainer">
+
+            <!-- BARRA DE HERRAMIENTAS FLOTANTE -->
+            <div class="top-tools-bar">
+                <button class="btn-tool" onclick="zoomIn()"><span>🔍+</span> Acercar</button>
+                <button class="btn-tool" onclick="zoomOut()"><span>🔍-</span> Alejar</button>
+                <button class="btn-tool" onclick="resetView()"><span>↺</span> Encuadre Total</button>
+                <div style="width: 1px; height: 16px; background: rgba(255,255,255,0.2);"></div>
+                <button class="btn-tool" id="btnToggleLabels" onclick="toggleLabels()">
+                    <span id="lblToggleIcon">🏷️</span> <span id="lblToggleText">Ocultar Rótulos</span>
+                </button>
+            </div>
+
+            <div class="canvas-hud-badge">
+                <div class="pulse-dot"></div>
+                <span id="hudStatusText">Astrofotografía Real de la NASA • Telescopios Hubble & Spitzer</span>
+            </div>
+
+            <!-- CANVAS DE ALTA RESOLUCIÓN CÓSMICA -->
+            <canvas id="photoCanvas" width="1200" height="900"></canvas>
+
+            <!-- RÓTULOS ANATÓMICOS CÓSMICOS -->
+            <div class="anatomical-callout active" id="pin-0" style="top: 50%; left: 50%;" onclick="focusStructure(0)" title="Enana Blanca Central">
+                <div class="callout-num">1</div>
+                <div>
+                    <div class="callout-title">⚪ Enana Blanca Central</div>
+                    <div class="callout-sub">Núcleo Solar • 120.000 K • 1 Ton/cm³</div>
+                </div>
+            </div>
+
+            <div class="anatomical-callout" id="pin-1" style="top: 42%; left: 45%;" onclick="focusStructure(1)" title="Disco de Oxígeno [O III]">
+                <div class="callout-num">2</div>
+                <div>
+                    <div class="callout-title">🔵 Iris de Oxígeno [O III]</div>
+                    <div class="callout-sub">Gas Ionizado Ultra-Caliente • 500.7 nm</div>
+                </div>
+            </div>
+
+            <div class="anatomical-callout" id="pin-2" style="top: 32%; left: 65%;" onclick="focusStructure(2)" title="Toroide Principal de Hidrógeno">
+                <div class="callout-num">3</div>
+                <div>
+                    <div class="callout-title">🔴 Toroide de Gas H-Alfa</div>
+                    <div class="callout-sub">Anillo en Expansión • 40 km/s</div>
+                </div>
+            </div>
+
+            <div class="anatomical-callout" id="pin-3" style="top: 58%; left: 38%;" onclick="focusStructure(3)" title="Nudos Cometarios">
+                <div class="callout-num">4</div>
+                <div>
+                    <div class="callout-title">☄️ Nudos Cometarios</div>
+                    <div class="callout-sub">20.000 Filamentos Radiales</div>
+                </div>
+            </div>
+
+            <div class="anatomical-callout" id="pin-4" style="top: 20%; left: 50%;" onclick="focusStructure(4)" title="Halo Externo">
+                <div class="callout-num">5</div>
+                <div>
+                    <div class="callout-title">🌌 Halo y Viento Interestelar</div>
+                    <div class="callout-sub">Diámetro: 2.87 Años Luz</div>
+                </div>
+            </div>
+
+        </main>
+
+        <!-- PANEL DERECHO: ESTRUCTURAS Y TELEMETRÍA -->
+        <aside class="sidebar-panel sidebar-right">
+
+            <!-- TELEMETRÍA ASTROFÍSICA -->
+            <div>
+                <div class="section-title">
+                    <span>Telemetría Astrofísica Oficial</span>
+                    <span>📡 NASA / ESA</span>
+                </div>
+                <div class="telemetry-grid">
+                    <div class="telemetry-cell">
+                        <div class="telemetry-val">655 al</div>
+                        <div class="telemetry-lbl">Distancia a la Tierra</div>
+                    </div>
+                    <div class="telemetry-cell">
+                        <div class="telemetry-val">2.87 al</div>
+                        <div class="telemetry-lbl">Diámetro Real</div>
+                    </div>
+                    <div class="telemetry-cell">
+                        <div class="telemetry-val">120.000 K</div>
+                        <div class="telemetry-lbl">Temp. Enana Blanca</div>
+                    </div>
+                    <div class="telemetry-cell">
+                        <div class="telemetry-val">40 km/s</div>
+                        <div class="telemetry-lbl">Vel. Expansión</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ESTRUCTURAS ANATÓMICAS DE LA NEBULOSA -->
+            <div>
+                <div class="section-title">
+                    <span>Estructuras Científicas de Helix</span>
+                    <span>🔍 Clic para examinar</span>
+                </div>
+                <div class="structures-list">
+
+                    <div class="structure-card active" id="card-0" onclick="focusStructure(0)">
+                        <div class="structure-name"><span>⚪</span> Enana Blanca Central (WD 2226-210)</div>
+                        <p class="structure-desc">
+                            El cadáver estelar compacto. Con una masa similar a la del Sol pero comprimida en el tamaño de la Tierra, emite radiación ultravioleta tan intensa que hace florecer los gases circundantes.
+                        </p>
+                    </div>
+
+                    <div class="structure-card" id="card-1" onclick="focusStructure(1)">
+                        <div class="structure-name"><span>🔵</span> Cavidad de Oxígeno [O III]</div>
+                        <p class="structure-desc">
+                            El 'iris' turquesa central. Átomos de oxígeno que han perdido dos electrones por el bombardeo de fotones UV de la estrella, emitiendo una longitud de onda verde-azulada brillante.
+                        </p>
+                    </div>
+
+                    <div class="structure-card" id="card-2" onclick="focusStructure(2)">
+                        <div class="structure-name"><span>🔴</span> Anillo Toroidal de Hidrógeno H-Alfa</div>
+                        <p class="structure-desc">
+                            La coraza rojiza exterior. Cilindro toroidal de gas hidrógeno neutro e ionizado enriquecido con nitrógeno que viaja hacia el vacío interestelar a 144.000 km/h.
+                        </p>
+                    </div>
+
+                    <div class="structure-card" id="card-3" onclick="focusStructure(3)">
+                        <div class="structure-name"><span>☄️</span> Nudos Cometarios (Cometary Knots)</div>
+                        <p class="structure-desc">
+                            Más de 20.000 filamentos de gas denso con cabezas del tamaño del Sistema Solar y colas de millones de kilómetros orientadas radialmente lejos de la estrella.
+                        </p>
+                    </div>
+
+                    <div class="structure-card" id="card-4" onclick="focusStructure(4)">
+                        <div class="structure-name"><span>🌌</span> Halo Exterior & Viento Interestelar</div>
+                        <p class="structure-desc">
+                            Envolturas de gas expulsadas en las primeras etapas de la muerte de la gigante roja hace más de 10.000 años, fusionándose con el medio interestelar de la Vía Láctea.
+                        </p>
+                    </div>
+
+                </div>
+            </div>
+
+        </aside>
+
     </div>
 
-    <div class="bottom-guide">
-        <span class="guide-tag">LA IDEA FÁCIL SENIOR</span>
-        <span>👉 <strong>Arrastra con el ratón</strong> para girar la nebulosa en 3D. <strong>Rueda del ratón</strong> para hacer zoom y entrar en el centro del ojo cósmico.</span>
-    </div>
-
+    <!-- SCRIPT DE CONTROL CIENTÍFICO Y PROCESAMIENTO ÓPTICO ESPECTRAL -->
     <script>
-        const canvas = document.getElementById("helixStage");
-        const engine = new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true });
-        
-        let scene, camera;
-        let whiteDwarf, innerGlow, mainTorus, outerRing, cometKnots = [];
-        let dustParticleSystem;
-        let isSpinning = true;
-        let expansionFactor = 1.0;
+        // =========================================================================
+        // 1. CONSTANTES Y PUNTOS DE INTERÉS DE LA NEBULOSA HELIX
+        // =========================================================================
+        const structuresData = [
+            { id: 0, x: 0.50, y: 0.50, name: "Enana Blanca Central", scale: 3.2, panX: 0, panY: 0 },
+            { id: 1, x: 0.46, y: 0.44, name: "Disco de Oxígeno [O III]", scale: 2.2, panX: 50, panY: 50 },
+            { id: 2, x: 0.62, y: 0.34, name: "Toroide de Hidrógeno H-Alfa", scale: 1.8, panX: -140, panY: 140 },
+            { id: 3, x: 0.40, y: 0.58, name: "Nudos Cometarios (Filamentos)", scale: 2.6, panX: 120, panY: -90 },
+            { id: 4, x: 0.50, y: 0.22, name: "Halo Exterior Remanente", scale: 1.4, panX: 0, panY: 260 }
+        ];
 
-        function createScene() {
-            scene = new BABYLON.Scene(engine);
-            scene.clearColor = new BABYLON.Color4(0.015, 0.01, 0.025, 1.0);
+        let currentSpectraMode = 'all'; // 'all', 'oxygen', 'hydrogen', 'infrared', 'knots'
+        let focusedStructure = null;
+        let labelsVisible = true;
+        let isLoaded = false;
 
-            // Cámara orbital
-            camera = new BABYLON.ArcRotateCamera("Cam", -Math.PI / 2, Math.PI / 2.3, 38, new BABYLON.Vector3(0, 0, 0), scene);
-            camera.attachControl(canvas, true);
-            camera.lowerRadiusLimit = 8;
-            camera.upperRadiusLimit = 90;
-            camera.wheelPrecision = 40;
+        const canvas = document.getElementById("photoCanvas");
+        const ctx = canvas.getContext("2d");
+        const hudStatusText = document.getElementById("hudStatusText");
 
-            // Iluminación cósmica
-            const light = new BABYLON.HemisphericLight("hemi", new BABYLON.Vector3(0, 1, 0), scene);
-            light.intensity = 0.4;
-            light.diffuse = new BABYLON.Color3(0.5, 0.4, 0.8);
+        // Transformaciones del Canvas
+        let scale = 1.0;
+        let panX = 0;
+        let panY = 0;
+        let isDragging = false;
+        let startX, startY;
 
-            const pointLight = new BABYLON.PointLight("dwarfLight", new BABYLON.Vector3(0, 0, 0), scene);
-            pointLight.diffuse = new BABYLON.Color3(0.7, 0.9, 1.0);
-            pointLight.specular = new BABYLON.Color3(1, 1, 1);
-            pointLight.intensity = 2.5;
+        // Imagen oficial de la NASA (Hubble Space Telescope)
+        let helixImg = new Image();
 
-            // 1. Enana Blanca Central (Estrella moribunda)
-            whiteDwarf = BABYLON.MeshBuilder.CreateSphere("whiteDwarf", { diameter: 0.9, segments: 32 }, scene);
-            const dwarfMat = new BABYLON.StandardMaterial("dwarfMat", scene);
-            dwarfMat.emissiveColor = new BABYLON.Color3(0.9, 0.95, 1.0);
-            dwarfMat.diffuseColor = new BABYLON.Color3(1, 1, 1);
-            whiteDwarf.material = dwarfMat;
+        // URLs oficiales de la NASA / Hubble / Wikimedia Commons
+        const NASA_HELIX_URL = "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b1/NGC7293_%282004%29.jpg/1280px-NGC7293_%282004%29.jpg";
+        const NASA_HELIX_FULL = "https://upload.wikimedia.org/wikipedia/commons/b/b1/NGC7293_%282004%29.jpg";
 
-            // Resplandor del núcleo (Inner Glow)
-            innerGlow = BABYLON.MeshBuilder.CreateSphere("innerGlow", { diameter: 3.2, segments: 24 }, scene);
-            const glowMat = new BABYLON.StandardMaterial("glowMat", scene);
-            glowMat.emissiveColor = new BABYLON.Color3(0.2, 0.65, 0.95);
-            glowMat.alpha = 0.35;
-            glowMat.backFaceCulling = false;
-            innerGlow.material = glowMat;
+        function loadHelixPhoto() {
+            helixImg.onload = function() {
+                isLoaded = true;
+                canvas.width = helixImg.naturalWidth || 1200;
+                canvas.height = helixImg.naturalHeight || 900;
+                render();
+            };
 
-            // 2. Toroide Principal (El "Iris" brillante en luz ultravioleta y óptica)
-            mainTorus = BABYLON.MeshBuilder.CreateTorus("mainTorus", {
-                diameter: 14.5,
-                thickness: 4.8,
-                tessellation: 64
-            }, scene);
-            mainTorus.rotation.x = Math.PI * 0.22;
-            const torusMat = new BABYLON.StandardMaterial("torusMat", scene);
-            torusMat.diffuseColor = new BABYLON.Color3(0.3, 0.1, 0.5);
-            torusMat.emissiveColor = new BABYLON.Color3(0.55, 0.15, 0.65);
-            torusMat.alpha = 0.65;
-            torusMat.backFaceCulling = false;
-            mainTorus.material = torusMat;
+            // Intentar cargar primero desde el asset Base64 autónomo
+            if (window.HELIX_NEBULA_PHOTO_B64 && window.HELIX_NEBULA_PHOTO_B64.length > 50) {
+                helixImg.src = window.HELIX_NEBULA_PHOTO_B64;
+            } else {
+                helixImg.onerror = function() {
+                    helixImg.onerror = null;
+                    helixImg.src = NASA_HELIX_URL;
+                };
+                // Fallback a archivo local descargado
+                helixImg.src = "../03_ASSETS_3D_Y_DATOS/helix_nebula_nasa.jpg";
+            }
+        }
 
-            // 3. Anillo Exterior de Polvo Infrarrojo Spitzer (Rojo/Naranja 24 micras)
-            outerRing = BABYLON.MeshBuilder.CreateTorus("outerRing", {
-                diameter: 22.0,
-                thickness: 3.5,
-                tessellation: 64
-            }, scene);
-            outerRing.rotation.x = Math.PI * 0.18;
-            outerRing.rotation.y = Math.PI * 0.08;
-            const outerMat = new BABYLON.StandardMaterial("outerMat", scene);
-            outerMat.diffuseColor = new BABYLON.Color3(0.7, 0.1, 0.2);
-            outerMat.emissiveColor = new BABYLON.Color3(0.85, 0.2, 0.25);
-            outerMat.alpha = 0.42;
-            outerMat.backFaceCulling = false;
-            outerRing.material = outerMat;
+        // =========================================================================
+        // 2. RENDERIZADO DEL CANVAS CON FILTROS ESPECTRALES DE LA NASA
+        // =========================================================================
+        function render() {
+            if (!isLoaded) return;
 
-            // 4. Filamentos Radiales / Nudos Comentarios (Cometary Knots - Más de 20.000 en la realidad)
-            const knotCount = 36;
-            for (let i = 0; i < knotCount; i++) {
-                const angle = (i / knotCount) * Math.PI * 2;
-                const dist = 6.8 + Math.random() * 2.5;
-                const knot = BABYLON.MeshBuilder.CreateCylinder("knot_" + i, {
-                    diameterTop: 0.15,
-                    diameterBottom: 0.55,
-                    height: 2.4,
-                    tessellation: 8
-                }, scene);
+            ctx.save();
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-                knot.position = new BABYLON.Vector3(Math.cos(angle) * dist, (Math.random() - 0.5) * 1.5, Math.sin(angle) * dist);
-                knot.rotation.z = Math.PI / 2;
-                knot.rotation.y = -angle;
+            // Aplicar Zoom y Desplazamiento
+            ctx.translate(canvas.width / 2 + panX, canvas.height / 2 + panY);
+            ctx.scale(scale, scale);
+            ctx.translate(-canvas.width / 2, -canvas.height / 2);
 
-                const knotMat = new BABYLON.StandardMaterial("knotMat_" + i, scene);
-                knotMat.emissiveColor = new BABYLON.Color3(0.9, 0.45, 0.2);
-                knotMat.diffuseColor = new BABYLON.Color3(0.8, 0.3, 0.1);
-                knotMat.alpha = 0.7;
-                knot.material = knotMat;
-                cometKnots.push(knot);
+            // -------------------------------------------------------------
+            // A) FILTRO ESPECTRAL 1: ESPECTRO COMPLETO (Hubble + Spitzer)
+            // -------------------------------------------------------------
+            if (currentSpectraMode === 'all') {
+                ctx.filter = 'contrast(1.15) brightness(1.05)';
+                ctx.drawImage(helixImg, 0, 0, canvas.width, canvas.height);
+                ctx.filter = 'none';
+
+                // Resplandor pulsátil tenue de la enana blanca central
+                const pulse = 0.8 + 0.2 * Math.sin(Date.now() / 400);
+                ctx.save();
+                ctx.shadowColor = '#38bdf8';
+                ctx.shadowBlur = 18 * pulse;
+                ctx.fillStyle = `rgba(255, 255, 255, ${pulse})`;
+                ctx.beginPath();
+                ctx.arc(canvas.width * 0.50, canvas.height * 0.50, 4, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            }
+            // -------------------------------------------------------------
+            // B) FILTRO ESPECTRAL 2: OXÍGENO DOBLEMENTE IONIZADO [O III] (500.7 nm)
+            // -------------------------------------------------------------
+            else if (currentSpectraMode === 'oxygen') {
+                // Realzar tonos cian y azules de alta energía
+                ctx.filter = 'contrast(1.6) brightness(0.9) hue-rotate(170deg) saturate(2.5)';
+                ctx.drawImage(helixImg, 0, 0, canvas.width, canvas.height);
+                ctx.filter = 'none';
+
+                // Mascarilla óptica de emisión de oxígeno
+                ctx.save();
+                ctx.globalCompositeOperation = 'screen';
+                const oxGlow = ctx.createRadialGradient(canvas.width * 0.50, canvas.height * 0.50, 10, canvas.width * 0.50, canvas.height * 0.50, 220);
+                oxGlow.addColorStop(0, 'rgba(56, 189, 248, 0.7)');
+                oxGlow.addColorStop(0.6, 'rgba(6, 182, 212, 0.35)');
+                oxGlow.addColorStop(1, 'rgba(0, 0, 0, 0)');
+                ctx.fillStyle = oxGlow;
+                ctx.beginPath();
+                ctx.arc(canvas.width * 0.50, canvas.height * 0.50, 220, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+
+                drawHudOverlay("FILTRO ESPECTRAL [O III] • 500.7 nm (Oxígeno Ionizado)", "• Temperatura del gas central: 120.000 K excitado por radiación UV", "#38bdf8");
+            }
+            // -------------------------------------------------------------
+            // C) FILTRO ESPECTRAL 3: HIDRÓGENO H-ALFA & NITRÓGENO (656.3 nm)
+            // -------------------------------------------------------------
+            else if (currentSpectraMode === 'hydrogen') {
+                // Realzar tonos carmesí y rojo profundo del toroide exterior
+                ctx.filter = 'contrast(1.7) brightness(0.85) hue-rotate(-20deg) saturate(3.0)';
+                ctx.drawImage(helixImg, 0, 0, canvas.width, canvas.height);
+                ctx.filter = 'none';
+
+                // Resaltar anillo toroidal exterior de hidrógeno
+                ctx.save();
+                ctx.globalCompositeOperation = 'screen';
+                const hGlow = ctx.createRadialGradient(canvas.width * 0.50, canvas.height * 0.50, 180, canvas.width * 0.50, canvas.height * 0.50, 380);
+                hGlow.addColorStop(0, 'rgba(239, 68, 68, 0)');
+                hGlow.addColorStop(0.5, 'rgba(244, 63, 94, 0.5)');
+                hGlow.addColorStop(1, 'rgba(225, 29, 72, 0)');
+                ctx.fillStyle = hGlow;
+                ctx.beginPath();
+                ctx.arc(canvas.width * 0.50, canvas.height * 0.50, 380, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+
+                drawHudOverlay("FILTRO ESPECTRAL H-ALFA • 656.3 nm (Hidrógeno y Nitrógeno)", "• Envoltura gaseosa expulsada en la fase de gigante roja a 40 km/s", "#f43f5e");
+            }
+            // -------------------------------------------------------------
+            // D) FILTRO ESPECTRAL 4: INFRARROJO SPITZER (24 µm)
+            // -------------------------------------------------------------
+            else if (currentSpectraMode === 'infrared') {
+                ctx.filter = 'contrast(1.5) brightness(0.8) hue-rotate(60deg) saturate(2.0)';
+                ctx.drawImage(helixImg, 0, 0, canvas.width, canvas.height);
+                ctx.filter = 'none';
+
+                // Disco infrarrojo cálido de polvo cometario en el centro
+                ctx.save();
+                ctx.globalCompositeOperation = 'screen';
+                const irGlow = ctx.createRadialGradient(canvas.width * 0.50, canvas.height * 0.50, 5, canvas.width * 0.50, canvas.height * 0.50, 90);
+                irGlow.addColorStop(0, 'rgba(249, 115, 22, 0.85)');
+                irGlow.addColorStop(0.7, 'rgba(234, 88, 12, 0.4)');
+                irGlow.addColorStop(1, 'rgba(0, 0, 0, 0)');
+                ctx.fillStyle = irGlow;
+                ctx.beginPath();
+                ctx.arc(canvas.width * 0.50, canvas.height * 0.50, 90, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+
+                drawHudOverlay("INFRARROJO TÉRMICO SPITZER • 24 µm (Polvo Cometario)", "• Revela colisiones de cometas supervivientes alrededor de la enana blanca", "#fb923c");
+            }
+            // -------------------------------------------------------------
+            // E) FILTRO ESPECTRAL 5: NUDOS COMETARIOS RADIALES (COMETARY KNOTS)
+            // -------------------------------------------------------------
+            else if (currentSpectraMode === 'knots') {
+                ctx.filter = 'contrast(1.8) brightness(1.1) saturate(1.4)';
+                ctx.drawImage(helixImg, 0, 0, canvas.width, canvas.height);
+                ctx.filter = 'none';
+
+                // Trazos radiales que ilustran los filamentos cometarios
+                ctx.save();
+                ctx.strokeStyle = "rgba(251, 191, 36, 0.65)";
+                ctx.lineWidth = 1.5;
+                const knotCount = 18;
+                for (let k = 0; k < knotCount; k++) {
+                    const angle = (k / knotCount) * Math.PI * 2;
+                    const innerR = 120;
+                    const outerR = 260;
+                    const x1 = canvas.width * 0.50 + Math.cos(angle) * innerR;
+                    const y1 = canvas.height * 0.50 + Math.sin(angle) * innerR;
+                    const x2 = canvas.width * 0.50 + Math.cos(angle) * outerR;
+                    const y2 = canvas.height * 0.50 + Math.sin(angle) * outerR;
+
+                    ctx.beginPath();
+                    ctx.moveTo(x1, y1);
+                    ctx.lineTo(x2, y2);
+                    ctx.stroke();
+
+                    // Cabeza densa del nudo cometario
+                    ctx.fillStyle = "#fde047";
+                    ctx.beginPath();
+                    ctx.arc(x1, y1, 3, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+                ctx.restore();
+
+                drawHudOverlay("NUDOS COMETARIOS • ESTRUCTURA FILAMENTOSA", "• Más de 20.000 condensaciones densas gaseosas del tamaño de nuestro Sistema Solar", "#fbbf24");
             }
 
-            // 5. Sistema de Partículas: Polvo Cósmico Spitzer
-            dustParticleSystem = new BABYLON.ParticleSystem("dustParticles", 1800, scene);
-            
-            // Textura procedural de partícula suave
-            const pTexture = new BABYLON.DynamicTexture("pTex", { width: 64, height: 64 }, scene);
-            const pCtx = pTexture.getContext();
-            const radGrad = pCtx.createRadialGradient(32, 32, 2, 32, 32, 30);
-            radGrad.addColorStop(0, "rgba(255, 255, 255, 1)");
-            radGrad.addColorStop(0.3, "rgba(168, 85, 247, 0.8)");
-            radGrad.addColorStop(0.8, "rgba(56, 189, 248, 0.3)");
-            radGrad.addColorStop(1, "rgba(0, 0, 0, 0)");
-            pCtx.fillStyle = radGrad;
-            pCtx.fillRect(0, 0, 64, 64);
-            pTexture.update();
+            ctx.restore();
+            updateCalloutsPosition();
+        }
 
-            dustParticleSystem.particleTexture = pTexture;
-            dustParticleSystem.emitter = new BABYLON.Vector3(0, 0, 0);
-            dustParticleSystem.minEmitBox = new BABYLON.Vector3(-8, -2, -8);
-            dustParticleSystem.maxEmitBox = new BABYLON.Vector3(8, 2, 8);
+        function drawHudOverlay(title, subtitle, color) {
+            ctx.save();
+            ctx.fillStyle = "rgba(10, 7, 18, 0.88)";
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 1.5;
+            const hudX = canvas.width * 0.04;
+            const hudY = canvas.height * 0.05;
+            ctx.beginPath();
+            ctx.roundRect(hudX, hudY, 520, 75, 10);
+            ctx.fill();
+            ctx.stroke();
 
-            dustParticleSystem.color1 = new BABYLON.Color4(0.3, 0.8, 1.0, 0.6);
-            dustParticleSystem.color2 = new BABYLON.Color4(0.9, 0.2, 0.5, 0.5);
-            dustParticleSystem.colorDead = new BABYLON.Color4(0.1, 0.05, 0.2, 0.0);
+            ctx.fillStyle = color;
+            ctx.font = 'bold 15px "JetBrains Mono", monospace';
+            ctx.fillText(title, hudX + 16, hudY + 28);
 
-            dustParticleSystem.minSize = 0.3;
-            dustParticleSystem.maxSize = 1.1;
-            dustParticleSystem.minLifeTime = 4;
-            dustParticleSystem.maxLifeTime = 8;
-            dustParticleSystem.emitRate = 350;
-            dustParticleSystem.blendMode = BABYLON.ParticleSystem.BLENDMODE_ADD;
-            dustParticleSystem.gravity = new BABYLON.Vector3(0, 0, 0);
+            ctx.fillStyle = "#e2e8f0";
+            ctx.font = '12px "Inter", sans-serif';
+            ctx.fillText(subtitle, hudX + 16, hudY + 52);
+            ctx.restore();
+        }
 
-            dustParticleSystem.direction1 = new BABYLON.Vector3(-1.5, -0.4, -1.5);
-            dustParticleSystem.direction2 = new BABYLON.Vector3(1.5, 0.4, 1.5);
-            dustParticleSystem.minEmitPower = 0.4;
-            dustParticleSystem.maxEmitPower = 1.6;
-            dustParticleSystem.updateSpeed = 0.008;
-            dustParticleSystem.start();
+        // =========================================================================
+        // 3. POSICIONAMIENTO Y ENFOQUE INDIVIDUAL DE RÓTULOS (REGLA DE S10)
+        // =========================================================================
+        function updateCalloutsPosition() {
+            structuresData.forEach(s => {
+                const pin = document.getElementById(`pin-${s.id}`);
+                if (!pin) return;
 
-            // Fondo de Estrellas Lejanas
-            const starField = BABYLON.MeshBuilder.CreateBox("starField", { size: 180 }, scene);
-            const starMat = new BABYLON.StandardMaterial("starMat", scene);
-            starMat.backFaceCulling = false;
-            starMat.emissiveColor = new BABYLON.Color3(0.01, 0.015, 0.03);
-            starField.material = starMat;
-
-            // Bucle de Animación continua
-            let t = 0;
-            scene.registerBeforeRender(() => {
-                if (isSpinning) {
-                    const rotSpeed = 0.002 * expansionFactor;
-                    mainTorus.rotation.y += rotSpeed;
-                    outerRing.rotation.y += rotSpeed * 0.75;
-                    whiteDwarf.rotation.y += 0.005;
-                    cometKnots.forEach((k, idx) => {
-                        k.rotation.y += rotSpeed;
-                    });
+                // 1. REGLA ESTRICTA DE PERSISTENCIA
+                if (!labelsVisible) {
+                    pin.style.display = "none";
+                    return;
                 }
 
-                t += 0.02 * expansionFactor;
-                // Efecto de latido / respiración de ionización cósmica
-                const pulse = 1 + Math.sin(t) * 0.03;
-                innerGlow.scaling.set(pulse, pulse, pulse);
-            });
+                // 2. REGLA DE AISLAMIENTO: Mostrar SOLO el rótulo enfocado si hay foco
+                if (focusedStructure !== null && s.id !== focusedStructure) {
+                    pin.style.display = "none";
+                    return;
+                }
 
-            return scene;
+                const origX = canvas.width * s.x;
+                const origY = canvas.height * s.y;
+
+                const screenX = (canvas.width / 2 + panX) + (origX - canvas.width / 2) * scale;
+                const screenY = (canvas.height / 2 + panY) + (origY - canvas.height / 2) * scale;
+
+                const pctX = (screenX / canvas.width) * 100;
+                const pctY = (screenY / canvas.height) * 100;
+
+                pin.style.left = `${pctX}%`;
+                pin.style.top = `${pctY}%`;
+
+                if (pctX < 2 || pctX > 98 || pctY < 2 || pctY > 98) {
+                    pin.style.display = "none";
+                } else {
+                    pin.style.display = "inline-flex";
+                }
+            });
         }
 
-        scene = createScene();
+        function focusStructure(index) {
+            focusedStructure = index;
+            document.querySelectorAll(".anatomical-callout").forEach(p => p.classList.remove("active"));
+            document.querySelectorAll(".structure-card").forEach(c => c.classList.remove("active"));
 
-        // Control de Modos Didácticos
+            const pin = document.getElementById(`pin-${index}`);
+            const card = document.getElementById(`card-${index}`);
+            if (pin) pin.classList.add("active");
+            if (card) card.classList.add("active");
+
+            const struct = structuresData[index];
+            scale = struct.scale;
+            panX = struct.panX;
+            panY = struct.panY;
+            hudStatusText.innerText = `Examinando: ${struct.name} • Zoom Astrofísico ${struct.scale}x`;
+            render();
+        }
+
         function setSpectraMode(mode) {
-            document.querySelectorAll('.layer-btn').forEach(b => b.classList.remove('active'));
-            const t = document.getElementById("infoTitle");
-            const d = document.getElementById("infoDesc");
+            currentSpectraMode = mode;
+            document.querySelectorAll(".spectra-btn").forEach(b => b.classList.remove("active"));
+            const btn = document.getElementById(`btnMode${mode.charAt(0).toUpperCase() + mode.slice(1)}`);
+            if (btn) btn.classList.add("active");
 
             if (mode === 'all') {
-                document.getElementById("btnModeAll").classList.add('active');
-                whiteDwarf.setEnabled(true);
-                innerGlow.setEnabled(true);
-                mainTorus.setEnabled(true);
-                outerRing.setEnabled(true);
-                cometKnots.forEach(k => k.setEnabled(true));
-                dustParticleSystem.start();
-                t.textContent = "Espectro Completo: Óptico + Infrarrojo Spitzer";
-                d.textContent = "La imagen icónica combina la luz visible de Hubble (anillo azul/verde de oxígeno y nitrógeno ionizado) con la visión infrarroja de Spitzer (rojo brillante de polvo de carbono cálido).";
-            } else if (mode === 'core') {
-                document.getElementById("btnModeCore").classList.add('active');
-                whiteDwarf.setEnabled(true);
-                innerGlow.setEnabled(true);
-                mainTorus.setEnabled(false);
-                outerRing.setEnabled(false);
-                cometKnots.forEach(k => k.setEnabled(false));
-                dustParticleSystem.stop();
-                t.textContent = "La Enana Blanca Central (120.000 ºC)";
-                d.textContent = "Es el cadáver estelar de la gigante roja original. Aunque tiene un tamaño similar a la Tierra, contiene la mitad de la masa del Sol y emite una radiación ultravioleta descomunal que ioniza todo a su alrededor.";
-            } else if (mode === 'infra') {
-                document.getElementById("btnModeInfra").classList.add('active');
-                whiteDwarf.setEnabled(false);
-                innerGlow.setEnabled(false);
-                mainTorus.setEnabled(false);
-                outerRing.setEnabled(true);
-                cometKnots.forEach(k => k.setEnabled(false));
-                dustParticleSystem.start();
-                t.textContent = "Visión Infrarroja Spitzer (24 Micrómetros)";
-                d.textContent = "El Telescopio Espacial Spitzer reveló el polvo cósmico caliente que permanecía invisible a los telescopios tradicionales de luz visible, formando el halo exterior rojo del ojo.";
+                hudStatusText.innerText = "Astrofotografía Real de la NASA • Telescopios Hubble & Spitzer";
+            } else if (mode === 'oxygen') {
+                hudStatusText.innerText = "Filtro [O III] (500.7 nm): Gas de Oxígeno Ionizado Ultra-Caliente (120.000 K)";
+            } else if (mode === 'hydrogen') {
+                hudStatusText.innerText = "Filtro H-Alfa (656.3 nm): Toroide de Hidrógeno Expulsado a 40 km/s";
+            } else if (mode === 'infrared') {
+                hudStatusText.innerText = "Infrarrojo Spitzer (24 µm): Disco de Polvo Cometario Cálido";
             } else if (mode === 'knots') {
-                document.getElementById("btnModeKnots").classList.add('active');
-                whiteDwarf.setEnabled(true);
-                innerGlow.setEnabled(false);
-                mainTorus.setEnabled(true);
-                outerRing.setEnabled(false);
-                cometKnots.forEach(k => k.setEnabled(true));
-                dustParticleSystem.stop();
-                t.textContent = "Nudos Comentarios ('Cometary Knots')";
-                d.textContent = "Miles de cúmulos de gas denso con colas que apuntan en dirección contraria a la enana blanca. Cada nudo mide más que nuestro Sistema Solar completo y es una cápsula fósil molecular.";
+                hudStatusText.innerText = "Estructura Filamentosa: 20.000 Nudos Cometarios Radiales";
             }
+            render();
         }
 
-        function updateExpSpeed(val) {
-            expansionFactor = parseFloat(val);
-            document.getElementById("txtExpSpeed").textContent = val + "x";
+        function toggleLabels() {
+            labelsVisible = !labelsVisible;
+            const txt = document.getElementById("lblToggleText");
+            if (txt) txt.innerText = labelsVisible ? "Ocultar Rótulos" : "Mostrar Rótulos";
+            const icon = document.getElementById("lblToggleIcon");
+            if (icon) icon.innerText = labelsVisible ? "🏷️" : "👁️";
+            updateCalloutsPosition();
         }
 
-        function updateDustDensity(val) {
-            const density = parseInt(val);
-            document.getElementById("txtDustDense").textContent = density + "%";
-            dustParticleSystem.emitRate = 3.5 * density;
+        // =========================================================================
+        // 4. ZOOM, NAVEGACIÓN Y ARRASTRE
+        // =========================================================================
+        function zoomIn() {
+            scale = Math.min(4.5, scale * 1.25);
+            render();
+        }
+        function zoomOut() {
+            scale = Math.max(0.7, scale / 1.25);
+            render();
+        }
+        function resetView() {
+            scale = 1.0;
+            panX = 0;
+            panY = 0;
+            focusedStructure = null; // Restaurar todas las etiquetas
+            document.querySelectorAll(".anatomical-callout").forEach(p => p.classList.remove("active"));
+            document.querySelectorAll(".structure-card").forEach(c => c.classList.remove("active"));
+            hudStatusText.innerText = "Astrofotografía Real de la NASA • Telescopios Hubble & Spitzer";
+            render();
         }
 
-        document.getElementById("btnToggleSpin").addEventListener("click", () => {
-            isSpinning = !isSpinning;
-            document.getElementById("btnToggleSpin").textContent = isSpinning ? "⏸ Pausar Giro" : "▶ Reanudar Giro";
+        canvas.addEventListener("mousedown", e => {
+            isDragging = true;
+            startX = e.clientX - panX;
+            startY = e.clientY - panY;
         });
-
-        document.getElementById("btnResetView").addEventListener("click", () => {
-            camera.alpha = -Math.PI / 2;
-            camera.beta = Math.PI / 2.3;
-            camera.radius = 38;
-            camera.target = new BABYLON.Vector3(0, 0, 0);
+        window.addEventListener("mousemove", e => {
+            if (!isDragging) return;
+            panX = e.clientX - startX;
+            panY = e.clientY - startY;
+            render();
         });
+        window.addEventListener("mouseup", () => { isDragging = false; });
 
-        window.addEventListener("resize", () => {
-            engine.resize();
-        });
-
-        engine.runRenderLoop(() => {
-            scene.render();
+        // Inicializar
+        window.addEventListener("DOMContentLoaded", () => {
+            loadHelixPhoto();
+            // Bucle suave de pulso para la enana blanca
+            setInterval(() => {
+                if (currentSpectraMode === 'all') {
+                    render();
+                }
+            }, 60);
         });
     </script>
 </body>
 </html>
-

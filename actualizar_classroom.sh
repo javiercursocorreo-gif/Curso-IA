@@ -43,6 +43,37 @@ if [ -f "SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/violin_stradivarius_real.
     echo '";' >> "SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/violin_stradivarius_b64.js"
 fi
 
+# 4. Nebulosa Helix Oficial de la NASA / Hubble / Spitzer (NGC 7293)
+if [ ! -f "SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/helix_nebula_nasa.jpg" ] || [ ! -s "SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/helix_nebula_nasa.jpg" ]; then
+    echo "Descargando astrofotografía oficial de la NASA/Hubble de la Nebulosa Helix..."
+    curl -sL "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b1/NGC7293_%282004%29.jpg/1280px-NGC7293_%282004%29.jpg" -o "SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/helix_nebula_nasa.jpg"
+fi
+
+if [ -f "SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/helix_nebula_nasa.jpg" ] && [ ! -f "SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/helix_nebula_b64.js" ]; then
+    echo "Generando helix_nebula_b64.js..."
+    echo -n 'window.HELIX_NEBULA_PHOTO_B64 = "data:image/jpeg;base64,' > "SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/helix_nebula_b64.js"
+    base64 -i "SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/helix_nebula_nasa.jpg" | tr -d '\n' >> "SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/helix_nebula_b64.js"
+    echo '";' >> "SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/helix_nebula_b64.js"
+fi
+
+# 5. Auroras Ultravioletas de Júpiter Oficiales de la NASA / Hubble (PIA20220 / heic1613a)
+if [ ! -f "SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/jupiter_aurora_nasa.jpg" ] || [ $(wc -c < "SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/jupiter_aurora_nasa.jpg" 2>/dev/null || echo 0) -lt 5000 ]; then
+    echo "Descargando astrofotografía oficial de la NASA/Hubble de las Auroras de Júpiter (PIA20220)..."
+    rm -f "SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/jupiter_aurora_nasa.jpg"
+    curl -sL "https://photojournal.jpl.nasa.gov/jpeg/PIA20220.jpg" -o "SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/jupiter_aurora_nasa.jpg"
+    
+    if [ ! -s "SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/jupiter_aurora_nasa.jpg" ] || [ $(wc -c < "SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/jupiter_aurora_nasa.jpg" 2>/dev/null || echo 0) -lt 5000 ]; then
+        curl -sL -A "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36" "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4b/Hubble_Captures_Vivid_Auroras_in_Jupiter%E2%80%99s_Atmosphere.jpg/1280px-Hubble_Captures_Vivid_Auroras_in_Jupiter%E2%80%99s_Atmosphere.jpg" -o "SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/jupiter_aurora_nasa.jpg"
+    fi
+fi
+
+if [ -f "SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/jupiter_aurora_nasa.jpg" ] && [ $(wc -c < "SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/jupiter_aurora_nasa.jpg" 2>/dev/null || echo 0) -gt 5000 ]; then
+    echo "Generando jupiter_aurora_b64.js..."
+    echo -n 'window.JUPITER_AURORA_PHOTO_B64 = "data:image/jpeg;base64,' > "SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/jupiter_aurora_b64.js"
+    base64 -i "SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/jupiter_aurora_nasa.jpg" | tr -d '\n' >> "SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/jupiter_aurora_b64.js"
+    echo '";' >> "SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/jupiter_aurora_b64.js"
+fi
+
 echo "=== 1. Copiando ilustraciones oficiales recortadas del cartel... ==="
 mkdir -p "SIMULADORES_INTERACTIVOS/01_SIMULADORES/cards_11d"
 cp -r "/Users/externo/.gemini/antigravity/brain/cbfe82a5-4265-4c02-9b6a-03745e403571/scratch/cards/"* "SIMULADORES_INTERACTIVOS/01_SIMULADORES/cards_11d/" 2>/dev/null || true
@@ -112,16 +143,14 @@ cp -r "SIMULADORES_INTERACTIVOS/01_SIMULADORES/cards_11d" "CLASES/EXPORTACION_FI
 
 echo "=== 3. Guardando cambios y sincronizando con GitHub... ==="
 git add -A
-git commit -m "feat(s11): simulador fotografico real Stradivarius The Gould 1693 del Met Museum con cuerdas en quintas" || true
+git commit -m "feat(s14): astrofotografia real oficial nasa hubble heic1613a de auroras de jupiter con filtros espectrales y regla s10" || true
 git push origin main
 
 echo "=== 4. Abriendo simuladores oficiales en Google Chrome... ==="
 TS=$(date +%s)
 DIR="$(pwd)"
-open -a "Google Chrome" "file://${DIR}/SIMULADORES_INTERACTIVOS/01_SIMULADORES/07_SIMULADOR_LUNA_3D.html?v=$TS"
-open -a "Google Chrome" "file://${DIR}/SIMULADORES_INTERACTIVOS/01_SIMULADORES/08_SIMULADOR_MOTOR_TURBOFAN_3D.html?v=$TS"
-open -a "Google Chrome" "file://${DIR}/SIMULADORES_INTERACTIVOS/01_SIMULADORES/09_SIMULADOR_CRANEO_TREX_3D.html?v=$TS"
-open -a "Google Chrome" "file://${DIR}/SIMULADORES_INTERACTIVOS/01_SIMULADORES/10_SIMULADOR_MOLAR_HUMANO_3D.html?v=$TS"
-open -a "Google Chrome" "file://${DIR}/SIMULADORES_INTERACTIVOS/01_SIMULADORES/11_SIMULADOR_VIOLIN_STRADIVARIUS_3D.html?v=$TS"
+open -a "Google Chrome" "file://${DIR}/SIMULADORES_INTERACTIVOS/01_SIMULADORES/13_SIMULADOR_ADN_GENETICO_3D.html?v=$TS"
+open -a "Google Chrome" "file://${DIR}/SIMULADORES_INTERACTIVOS/01_SIMULADORES/14_SIMULADOR_AURORAS_JUPITER_3D.html?v=$TS"
+open -a "Google Chrome" "file://${DIR}/SIMULADORES_INTERACTIVOS/01_SIMULADORES/15_SIMULADOR_PARTENON_AUREO_3D.html?v=$TS"
 
 echo "=== COMPLETADO CON EXITO ==="

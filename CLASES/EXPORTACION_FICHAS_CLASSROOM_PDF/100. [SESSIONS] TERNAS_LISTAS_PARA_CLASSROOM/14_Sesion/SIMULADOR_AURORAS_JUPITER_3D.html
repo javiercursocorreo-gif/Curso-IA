@@ -3,629 +3,1024 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sesión 14 • Simulador 3D: Auroras Ultravioletas de Júpiter [COD-014]</title>
-    <!-- Babylon.js CDN Oficial -->
-    <script src="https://cdn.babylonjs.com/babylon.js"></script>
-    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;800;900&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+    <title>Sesión 14 • Simulador Real: Auroras Ultravioletas de Júpiter • Astrofotografía Oficial NASA Hubble [COD-014]</title>
+    <!-- Assets Fotográficos Reales en Base64 Autónomo (NASA Hubble Space Telescope / STIS Composite) -->
+    <script src="../03_ASSETS_3D_Y_DATOS/jupiter_aurora_b64.js"></script>
+    <script src="../../../../SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/jupiter_aurora_b64.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg-base: #020307;
-            --bg-panel: rgba(8, 14, 26, 0.94);
-            --jup-band1: #c28859;
-            --jup-band2: #e3bc9a;
+            --bg-panel: rgba(8, 12, 22, 0.94);
             --uv-cyan: #38bdf8;
-            --uv-violet: #a855f7;
-            --uv-glow: rgba(56, 189, 248, 0.4);
+            --uv-purple: #c084fc;
             --io-gold: #fbbf24;
+            --xray-pink: #f43f5e;
+            --text-main: #f8fafc;
+            --text-sub: #cbd5e1;
             --font-title: 'Cinzel', serif;
             --font-sans: 'Inter', sans-serif;
             --font-mono: 'JetBrains Mono', monospace;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body {
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+        html, body {
             background-color: var(--bg-base);
-            color: #f8fafc;
+            color: var(--text-main);
             font-family: var(--font-sans);
             height: 100vh;
             width: 100vw;
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            user-select: none;
+            font-size: 15px;
         }
 
+        /* HEADER SUPERIOR */
         header {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 20;
-            padding: 14px 24px;
+            background: linear-gradient(180deg, rgba(8, 12, 22, 0.98) 0%, rgba(8, 12, 22, 0.88) 100%);
+            backdrop-filter: blur(14px);
+            border-bottom: 1px solid rgba(56, 189, 248, 0.3);
+            padding: 10px 24px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            background: linear-gradient(180deg, rgba(4, 7, 14, 0.96) 0%, rgba(4, 7, 14, 0.6) 80%, transparent 100%);
-            border-bottom: 1px solid rgba(56, 189, 248, 0.25);
-            backdrop-filter: blur(10px);
+            flex-shrink: 0;
+            z-index: 50;
         }
-
-        .brand-box {
+        .header-title-box {
             display: flex;
             align-items: center;
             gap: 14px;
         }
-
-        .brand-badge {
+        .badge-code {
             background: rgba(56, 189, 248, 0.15);
-            border: 1px solid var(--uv-cyan);
             color: var(--uv-cyan);
+            border: 1px solid rgba(56, 189, 248, 0.45);
             font-family: var(--font-mono);
+            font-size: 0.88rem;
             font-weight: 800;
-            font-size: 1rem;
-            padding: 5px 12px;
+            padding: 4px 10px;
             border-radius: 8px;
-        }
-
-        .brand-title {
-            font-family: var(--font-title);
-            font-size: 1.35rem;
-            font-weight: 900;
-            color: #ffffff;
-            letter-spacing: 0.5px;
-        }
-
-        .brand-sub {
-            font-size: 0.78rem;
-            color: #94a3b8;
-        }
-
-        .btn-action {
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            color: #f1f5f9;
-            padding: 8px 16px;
-            border-radius: 9999px;
-            font-size: 0.82rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .btn-action:hover {
-            background: rgba(56, 189, 248, 0.2);
-            border-color: var(--uv-cyan);
-            color: var(--uv-cyan);
-        }
-
-        #jupiterStage {
-            flex: 1;
-            width: 100%;
-            height: 100%;
-            display: block;
-        }
-
-        /* PANEL DIDÁCTICO DERECHO */
-        .info-card {
-            position: absolute;
-            top: 80px;
-            right: 24px;
-            width: 415px;
-            background: var(--bg-panel);
-            border: 1.5px solid var(--uv-cyan);
-            border-radius: 20px;
-            padding: 22px;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9), 0 0 25px var(--uv-glow);
-            backdrop-filter: blur(20px);
-            z-index: 15;
-            display: flex;
-            flex-direction: column;
-            gap: 13px;
-        }
-
-        .hubble-tag {
-            font-family: var(--font-mono);
-            font-size: 0.8rem;
-            font-weight: 800;
-            padding: 5px 12px;
-            border-radius: 9999px;
-            background: rgba(168, 85, 247, 0.2);
-            color: #c084fc;
-            border: 1px solid rgba(168, 85, 247, 0.4);
-            width: fit-content;
-        }
-
-        .info-title {
-            font-family: var(--font-title);
-            font-size: 1.3rem;
-            font-weight: 900;
-            color: #ffffff;
-            line-height: 1.25;
-        }
-
-        .info-summary {
-            background: rgba(255, 255, 255, 0.05);
-            border-left: 3.5px solid var(--uv-cyan);
-            padding: 10px 14px;
-            border-radius: 0 10px 10px 0;
-            font-size: 0.9rem;
-            color: #f1f5f9;
-            line-height: 1.45;
-        }
-
-        .data-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
-
-        .data-cell {
-            background: rgba(0, 0, 0, 0.4);
-            border: 1px solid rgba(255, 255, 255, 0.07);
-            border-radius: 10px;
-            padding: 8px 12px;
-        }
-
-        .data-label {
-            font-size: 0.72rem;
-            color: #94a3b8;
-            text-transform: uppercase;
-            font-family: var(--font-mono);
-            font-weight: 700;
-        }
-
-        .data-val {
-            font-size: 1rem;
-            color: var(--uv-cyan);
-            font-weight: 800;
-            margin-top: 2px;
-        }
-
-        .tabs-header {
-            font-size: 0.76rem;
-            font-weight: 800;
-            text-transform: uppercase;
             letter-spacing: 0.05em;
-            color: #94a3b8;
-            margin-top: 4px;
         }
-
-        .layers-btn-group {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 8px;
-        }
-
-        .layer-btn {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            color: #cbd5e1;
-            padding: 9px 8px;
-            border-radius: 10px;
-            font-size: 0.8rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            text-align: center;
-        }
-
-        .layer-btn.active {
-            background: linear-gradient(135deg, rgba(56, 189, 248, 0.35), rgba(168, 85, 247, 0.35));
-            border-color: #38bdf8;
+        h1 {
+            font-family: var(--font-title);
+            font-size: 1.25rem;
+            font-weight: 800;
+            letter-spacing: 0.02em;
             color: #ffffff;
-            box-shadow: 0 0 12px rgba(56, 189, 248, 0.4);
-        }
-
-        .slider-box {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            background: rgba(0, 0, 0, 0.35);
-            border: 1px solid rgba(255, 255, 255, 0.07);
-            border-radius: 10px;
-            padding: 10px 12px;
-        }
-
-        .slider-row {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.78rem;
-            color: #94a3b8;
-            font-weight: 600;
-        }
-
-        .slider-box input[type="range"] {
-            width: 100%;
-            accent-color: #38bdf8;
-            cursor: pointer;
-        }
-
-        /* GUÍA DIDÁCTICA INFERIOR */
-        .bottom-guide {
-            position: absolute;
-            bottom: 20px;
-            left: 24px;
-            background: rgba(8, 14, 26, 0.92);
-            border: 1px solid rgba(56, 189, 248, 0.3);
-            border-radius: 14px;
-            padding: 12px 20px;
             display: flex;
             align-items: center;
-            gap: 16px;
-            z-index: 15;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(12px);
+            gap: 10px;
+        }
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .pill-status {
+            background: rgba(56, 189, 248, 0.12);
+            color: #38bdf8;
+            border: 1px solid rgba(56, 189, 248, 0.35);
             font-size: 0.85rem;
-            color: #94a3b8;
+            font-weight: 700;
+            padding: 5px 13px;
+            border-radius: 9999px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
-        .bottom-guide strong {
-            color: #fff;
+
+        /* GRID PRINCIPAL */
+        .workspace-grid {
+            flex: 1;
+            min-height: 0;
+            display: grid;
+            grid-template-columns: 420px 1fr;
+            background: #010204;
         }
-        .guide-tag {
-            background: rgba(168, 85, 247, 0.2);
-            color: #c084fc;
-            border: 1px solid rgba(168, 85, 247, 0.4);
+
+        /* PANEL DIDÁCTICO IZQUIERDO */
+        aside.sidebar-panel {
+            background: var(--bg-panel);
+            border-right: 1px solid rgba(56, 189, 248, 0.2);
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            padding: 20px;
+            gap: 16px;
+            z-index: 20;
+        }
+
+        /* TARJETA LA IDEA FÁCIL */
+        .card-easy-concept {
+            background: linear-gradient(135deg, rgba(56, 189, 248, 0.15) 0%, rgba(10, 16, 28, 0.95) 100%);
+            border: 1.5px solid var(--uv-cyan);
+            border-radius: 14px;
+            padding: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+        }
+        .easy-tag {
             font-family: var(--font-mono);
             font-size: 0.75rem;
             font-weight: 800;
-            padding: 4px 10px;
+            color: var(--uv-cyan);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .easy-title {
+            font-size: 1.12rem;
+            font-weight: 800;
+            color: #ffffff;
+            line-height: 1.3;
+            margin-bottom: 8px;
+        }
+        .easy-text {
+            font-size: 0.88rem;
+            color: var(--text-sub);
+            line-height: 1.55;
+        }
+        .easy-text strong { color: #ffffff; }
+
+        /* MODOS DE INSPECCIÓN ESPECTRAL */
+        .section-title {
+            font-family: var(--font-mono);
+            font-size: 0.78rem;
+            font-weight: 800;
+            color: var(--uv-cyan);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .mode-selector {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+        .mode-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: #cbd5e1;
+            padding: 11px 10px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.2s ease;
+            text-align: center;
+        }
+        .mode-btn:hover {
+            border-color: var(--uv-cyan);
+            background: rgba(56, 189, 248, 0.15);
+            color: #ffffff;
+        }
+        .mode-btn.active {
+            border-color: var(--uv-cyan);
+            background: linear-gradient(135deg, rgba(56, 189, 248, 0.3), rgba(192, 132, 252, 0.25));
+            color: #ffffff;
+            box-shadow: 0 0 16px rgba(56, 189, 248, 0.35);
+        }
+
+        /* SELECTORES DE ESTRUCTURAS ANATÓMICAS (HOTSPOTS) */
+        .layers-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .layer-item {
+            background: rgba(18, 25, 42, 0.7);
+            border: 1.5px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 11px 14px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .layer-item:hover {
+            transform: translateX(4px);
+            border-color: var(--uv-cyan);
+            background: rgba(56, 189, 248, 0.15);
+        }
+        .layer-item.active {
+            border-color: var(--uv-cyan);
+            background: rgba(56, 189, 248, 0.25);
+            box-shadow: 0 0 16px rgba(56, 189, 248, 0.35);
+        }
+        .layer-item-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .layer-num {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            background: rgba(56, 189, 248, 0.2);
+            border: 1.5px solid var(--uv-cyan);
+            color: #ffffff;
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .layer-name {
+            font-size: 0.92rem;
+            font-weight: 800;
+            color: #ffffff;
+        }
+        .layer-sub {
+            font-size: 0.75rem;
+            color: var(--text-sub);
+            margin-top: 2px;
+        }
+        .layer-tag {
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            font-weight: 800;
+            padding: 3px 8px;
             border-radius: 6px;
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--uv-cyan);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+        }
+
+        /* TELEMETRÍA ASTROFÍSICA */
+        .telemetry-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+        .telemetry-cell {
+            background: rgba(0, 0, 0, 0.45);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            padding: 10px;
+            text-align: center;
+        }
+        .telemetry-val {
+            font-family: var(--font-mono);
+            font-size: 1.05rem;
+            font-weight: 800;
+            color: var(--uv-cyan);
+        }
+        .telemetry-lbl {
+            font-size: 0.68rem;
+            color: #94a3b8;
+            text-transform: uppercase;
+            margin-top: 2px;
+        }
+
+        /* TARJETA DE DETALLE CIENTÍFICO */
+        .detail-card {
+            background: rgba(18, 25, 42, 0.8);
+            border-left: 4px solid var(--uv-cyan);
+            border-radius: 0 12px 12px 0;
+            padding: 14px;
+        }
+        .detail-title {
+            font-size: 0.95rem;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 4px;
+        }
+        .detail-desc {
+            font-size: 0.82rem;
+            color: #cbd5e1;
+            line-height: 1.5;
+        }
+
+        /* ÁREA FOTOGRÁFICA INTERACTIVA DERECHA */
+        main.photo-stage {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: #010204;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: grab;
+        }
+        main.photo-stage:active {
+            cursor: grabbing;
+        }
+
+        #viewportWrapper {
+            position: absolute;
+            transform-origin: center center;
+            transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        #photoCanvas {
+            display: block;
+            box-shadow: 0 0 60px rgba(0, 0, 0, 0.95), 0 0 35px rgba(56, 189, 248, 0.15);
+            border-radius: 4px;
+        }
+
+        /* PINS ANATÓMICOS SUPERPUESTOS EN PANTALLA */
+        .hotspot-pin {
+            position: absolute;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: rgba(8, 14, 28, 0.92);
+            border: 2px solid var(--uv-cyan);
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.9), 0 0 0 4px rgba(56, 189, 248, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            font-weight: 900;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transform: translate(-50%, -50%);
+            transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 30;
+            animation: pulse-pin 2s infinite ease-in-out;
+        }
+        .hotspot-pin:hover, .hotspot-pin.active {
+            transform: translate(-50%, -50%) scale(1.3);
+            background: #ffffff;
+            color: #020308;
+            border-color: var(--uv-cyan);
+            box-shadow: 0 0 25px rgba(255, 255, 255, 1), 0 0 0 8px rgba(56, 189, 248, 0.5);
+        }
+        .hotspot-label {
+            position: absolute;
+            left: 42px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(8, 14, 28, 0.95);
+            border: 1px solid rgba(56, 189, 248, 0.5);
+            backdrop-filter: blur(10px);
+            padding: 5px 12px;
+            border-radius: 8px;
+            color: #f8fafc;
+            font-size: 0.78rem;
+            font-weight: 800;
+            white-space: nowrap;
+            pointer-events: none;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.7);
+        }
+
+        @keyframes pulse-pin {
+            0%, 100% { box-shadow: 0 0 15px rgba(56, 189, 248, 0.8), 0 0 0 3px rgba(56, 189, 248, 0.25); }
+            50% { box-shadow: 0 0 25px rgba(56, 189, 248, 1), 0 0 0 8px rgba(56, 189, 248, 0.45); }
+        }
+
+        /* OVERLAY SUPERIOR DE ESTADO */
+        .photo-overlay-badge {
+            position: absolute;
+            top: 18px;
+            left: 20px;
+            background: rgba(8, 12, 22, 0.92);
+            border: 1px solid rgba(56, 189, 248, 0.35);
+            backdrop-filter: blur(12px);
+            padding: 8px 16px;
+            border-radius: 10px;
+            color: #e2e8f0;
+            font-size: 0.82rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 40;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+        }
+        .photo-overlay-badge .dot-live {
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            background: var(--uv-cyan);
+            box-shadow: 0 0 8px var(--uv-cyan);
+        }
+
+        /* BARRA DE CONTROLES INFERIOR */
+        .bottom-controls-bar {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(8, 12, 22, 0.94);
+            border: 1.5px solid rgba(56, 189, 248, 0.35);
+            backdrop-filter: blur(16px);
+            padding: 8px 18px;
+            border-radius: 9999px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 40;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+        }
+        .btn-tool {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #ffffff;
+            padding: 7px 14px;
+            border-radius: 20px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+        .btn-tool:hover {
+            background: rgba(56, 189, 248, 0.25);
+            border-color: var(--uv-cyan);
+            color: var(--uv-cyan);
+        }
+        .btn-tool.active {
+            background: var(--uv-cyan);
+            color: #020308;
+            font-weight: 900;
         }
     </style>
 </head>
 <body>
 
+    <!-- HEADER SUPERIOR -->
     <header>
-        <div class="brand-box">
-            <span class="brand-badge">[COD-014]</span>
-            <div>
-                <h1 class="brand-title">Auroras Ultravioletas de Júpiter • NASA Hubble</h1>
-                <p class="brand-sub">Magnetosfera Joviana, Tubo de Flujo de Ío y Viento Solar en Babylon.js 3D</p>
-            </div>
+        <div class="header-title-box">
+            <span class="badge-code">COD-014</span>
+            <h1>🪐 Auroras Ultravioletas de Júpiter • Astrofotografía Oficial NASA Hubble</h1>
         </div>
-        <div style="display: flex; gap: 10px;">
-            <button class="btn-action" id="btnToggleSpin">⏸ Pausar Giro</button>
-            <button class="btn-action" id="btnPoloNorte">🧭 Polo Norte UV</button>
-            <button class="btn-action" id="btnResetView">🔄 Vista Ecuatorial</button>
+        <div class="header-right">
+            <div class="pill-status">
+                <span>🛰️</span>
+                <span>NASA/ESA Hubble Space Telescope STIS/ACS Composite (heic1613a)</span>
+            </div>
         </div>
     </header>
 
-    <canvas id="jupiterStage"></canvas>
+    <!-- ÁREA DE TRABAJO -->
+    <div class="workspace-grid">
 
-    <div class="info-card">
-        <div class="hubble-tag">🛰️ HUBBLE SPACE TELESCOPE UV EMISSION</div>
-        <h2 class="info-title" id="infoTitle">Anillo de Plasma Fluorescente Polar</h2>
-        <div class="info-summary" id="infoDesc">
-            Las auroras de Júpiter son las más energéticas del Sistema Solar: cientos de veces más potentes que las de la Tierra y permanentes. Brillan en radiación ultravioleta gracias a su colosal campo magnético (20.000 veces el terrestre).
-        </div>
+        <!-- PANEL DIDÁCTICO IZQUIERDO -->
+        <aside class="sidebar-panel">
 
-        <div class="data-grid">
-            <div class="data-cell">
-                <div class="data-label">Potencia Auroral</div>
-                <div class="data-val">100 Teravatios</div>
+            <!-- TARJETA LA IDEA FÁCIL -->
+            <div class="card-easy-concept">
+                <div class="easy-tag">💡 La Idea Fácil para Todos</div>
+                <div class="easy-title">El Espectáculo Electromagnético Más Colosal</div>
+                <div class="easy-text">
+                    Estás contemplando la <strong>astrofotografía real oficial del Telescopio Espacial Hubble (NASA/ESA)</strong>.
+                    No es un dibujo ni una animación: es el gigante gaseoso Júpiter captado en luz visible, sobre el que se superpone la emisión real en <strong>ultravioleta lejana (FUV)</strong> de su aurora boreal, una corona permanente que disipa más de <strong>120 Teravatios (\(1.2 \times 10^{14}\text{ W}\))</strong> continuos.
+                </div>
             </div>
-            <div class="data-cell">
-                <div class="data-label">Campo Magnético</div>
-                <div class="data-val">20.000x Tierra</div>
-            </div>
-            <div class="data-cell">
-                <div class="data-label">Aporte de Ío</div>
-                <div class="data-val">1 Ton/s de SO₂</div>
-            </div>
-            <div class="data-cell">
-                <div class="data-label">Longitud de Onda</div>
-                <div class="data-val">120 - 165 nm (UV)</div>
-            </div>
-        </div>
 
-        <div class="tabs-header">Componentes del Sistema Magnetosférico:</div>
-        <div class="layers-btn-group">
-            <button class="layer-btn active" id="btnModeAll" onclick="setAuroraMode('all')">✨ Aurora + Ío + Toroides</button>
-            <button class="layer-btn" id="btnModeNorth" onclick="setAuroraMode('north')">⚡ Anillo Polar Norte UV</button>
-            <button class="layer-btn" id="btnModeIo" onclick="setAuroraMode('io')">🌋 Luna Ío & Huella Magnética</button>
-            <button class="layer-btn" id="btnModeLines" onclick="setAuroraMode('lines')">🧲 Líneas de Campo Magnético</button>
-        </div>
-
-        <div class="slider-box">
-            <div class="slider-row">
-                <span>Intensidad del Brillo UV:</span>
-                <span id="txtUvIntensity" style="color:#38bdf8; font-weight:800;">100%</span>
+            <!-- MODOS DE INSPECCIÓN ESPECTRAL -->
+            <div>
+                <div class="section-title">
+                    <span>Filtros Espectrales Oficiales</span>
+                    <span>🔬 NASA Multiespectral</span>
+                </div>
+                <div class="mode-selector">
+                    <button class="mode-btn active" id="btnModeVisible" onclick="setVisualMode('visible')">
+                        <span style="font-size:1.3rem;">📸</span>
+                        <span>COMPUESTO NASA</span>
+                    </button>
+                    <button class="mode-btn" id="btnModeUV" onclick="setVisualMode('uv')">
+                        <span style="font-size:1.3rem;">🛰️</span>
+                        <span>FUV PURO (STIS)</span>
+                    </button>
+                    <button class="mode-btn" id="btnModeFlux" onclick="setVisualMode('flux')">
+                        <span style="font-size:1.3rem;">⚡</span>
+                        <span>TUBO DE ÍO (1 MA)</span>
+                    </button>
+                    <button class="mode-btn" id="btnModeXray" onclick="setVisualMode('xray')">
+                        <span style="font-size:1.3rem;">📡</span>
+                        <span>RAYOS X CHANDRA</span>
+                    </button>
+                </div>
             </div>
-            <input type="range" id="uvRange" min="20" max="250" step="10" value="100" oninput="updateUvIntensity(this.value)">
-        </div>
 
-        <div class="slider-box">
-            <div class="slider-row">
-                <span>Viento Solar & Plasma:</span>
-                <span id="txtSolarWind" style="color:#a855f7; font-weight:800;">1.0x</span>
+            <!-- ESTRUCTURAS ANATÓMICAS DE LA ASTROFOTOGRAFÍA -->
+            <div>
+                <div class="section-title">
+                    <span>Estructuras Científicas Observables</span>
+                    <span>🔍 Enfoque Clínico S10</span>
+                </div>
+                <div class="layers-list">
+
+                    <div class="layer-item active" id="layer-0" onclick="selectHotspot(0)">
+                        <div class="layer-item-left">
+                            <div class="layer-num">1</div>
+                            <div>
+                                <div class="layer-name">Óvalo Auroral Principal (70°N)</div>
+                                <div class="layer-sub">Emisión FUV permanente del hidrógeno molecular</div>
+                            </div>
+                        </div>
+                        <span class="layer-tag">120 TW</span>
+                    </div>
+
+                    <div class="layer-item" id="layer-1" onclick="selectHotspot(1)">
+                        <div class="layer-item-left">
+                            <div class="layer-num">2</div>
+                            <div>
+                                <div class="layer-name">Huella Magnética de Ío (Io Footprint)</div>
+                                <div class="layer-sub">Punto brillante acoplado al tubo de flujo</div>
+                            </div>
+                        </div>
+                        <span class="layer-tag">1 MA</span>
+                    </div>
+
+                    <div class="layer-item" id="layer-2" onclick="selectHotspot(2)">
+                        <div class="layer-item-left">
+                            <div class="layer-num">3</div>
+                            <div>
+                                <div class="layer-name">Estela Auroral Cometaria de Ío</div>
+                                <div class="layer-sub">Rastro magnético de miles de kilómetros</div>
+                            </div>
+                        </div>
+                        <span class="layer-tag">Ondas Alfvén</span>
+                    </div>
+
+                    <div class="layer-item" id="layer-3" onclick="selectHotspot(3)">
+                        <div class="layer-item-left">
+                            <div class="layer-num">4</div>
+                            <div>
+                                <div class="layer-name">Gran Mancha Roja & Cinturones</div>
+                                <div class="layer-sub">Anticiclón de 16.000 km y vientos de 430 km/h</div>
+                            </div>
+                        </div>
+                        <span class="layer-tag">Atmosférico</span>
+                    </div>
+
+                    <div class="layer-item" id="layer-4" onclick="selectHotspot(4)">
+                        <div class="layer-item-left">
+                            <div class="layer-num">5</div>
+                            <div>
+                                <div class="layer-name">Neblina Polar y Zona de Cúspide</div>
+                                <div class="layer-sub">Aerosoles de hidrocarburos bombardeados</div>
+                            </div>
+                        </div>
+                        <span class="layer-tag">Haze 4K</span>
+                    </div>
+
+                </div>
             </div>
-            <input type="range" id="windRange" min="0" max="3" step="0.1" value="1.0" oninput="updateWindSpeed(this.value)">
-        </div>
+
+            <!-- TARJETA DINÁMICA DE DETALLE -->
+            <div class="detail-card">
+                <div class="detail-title" id="detailTitle">Óvalo Auroral Principal (70°N)</div>
+                <div class="detail-desc" id="detailDesc">
+                    A diferencia de la Tierra, donde las auroras son efímeras y dependen del viento solar, las auroras polares de Júpiter son **permanentes**. La colosal rotación de Júpiter a 45.300 km/h actúa como un generador electrodinámico arrastrando plasma atrapado en su campo magnético de 14 Gauss.
+                </div>
+            </div>
+
+            <!-- TELEMETRÍA ASTROFÍSICA -->
+            <div>
+                <div class="section-title">
+                    <span>Telemetría de la Misión Espacial</span>
+                    <span>📐 Hubble / Juno</span>
+                </div>
+                <div class="telemetry-grid">
+                    <div class="telemetry-cell">
+                        <div class="telemetry-val" id="telPower">1.2 × 10¹⁴ W</div>
+                        <div class="telemetry-lbl">Potencia Auroral</div>
+                    </div>
+                    <div class="telemetry-cell">
+                        <div class="telemetry-val" id="telField">14.0 Gauss</div>
+                        <div class="telemetry-lbl">Campo Polar B₀</div>
+                    </div>
+                    <div class="telemetry-cell">
+                        <div class="telemetry-val" id="telCurrent">1.0 MA (10⁶ A)</div>
+                        <div class="telemetry-lbl">Corriente Tubo Ío</div>
+                    </div>
+                    <div class="telemetry-cell">
+                        <div class="telemetry-val" id="telRotation">45.300 km/h</div>
+                        <div class="telemetry-lbl">Velocidad Ecuatorial</div>
+                    </div>
+                </div>
+            </div>
+
+        </aside>
+
+        <!-- ÁREA FOTOGRÁFICA INTERACTIVA DERECHA -->
+        <main class="photo-stage" id="photoStage">
+
+            <!-- BADGE SUPERIOR DE ESTADO -->
+            <div class="photo-overlay-badge">
+                <div class="dot-live"></div>
+                <span id="overlayText">Astrofotografía Oficial NASA Hubble (heic1613a) • Resolución Óptica Real</span>
+            </div>
+
+            <!-- CONTENEDOR TRANSFORMABLE CON CANVAS DE ALTA RESOLUCIÓN -->
+            <div id="viewportWrapper">
+                <canvas id="photoCanvas" width="1280" height="960"></canvas>
+
+                <!-- PINS ANATÓMICOS CIENTÍFICOS SUPERPUESTOS (REGLA S10) -->
+                <div class="hotspot-pin" id="pin-0" style="top: 24%; left: 47%;" onclick="selectHotspot(0)">
+                    1
+                    <div class="hotspot-label" id="label-0">Óvalo Auroral Principal (70°N)</div>
+                </div>
+                <div class="hotspot-pin" id="pin-1" style="top: 28%; left: 53.5%;" onclick="selectHotspot(1)">
+                    2
+                    <div class="hotspot-label" id="label-1">Huella Magnética de Ío (1 MA)</div>
+                </div>
+                <div class="hotspot-pin" id="pin-2" style="top: 29.5%; left: 58%;" onclick="selectHotspot(2)">
+                    3
+                    <div class="hotspot-label" id="label-2">Estela Auroral Cometaria de Ío</div>
+                </div>
+                <div class="hotspot-pin" id="pin-3" style="top: 66%; left: 42%;" onclick="selectHotspot(3)">
+                    4
+                    <div class="hotspot-label" id="label-3">Gran Mancha Roja & NEB/SEB</div>
+                </div>
+                <div class="hotspot-pin" id="pin-4" style="top: 17%; left: 48%;" onclick="selectHotspot(4)">
+                    5
+                    <div class="hotspot-label" id="label-4">Neblina Polar y Zona de Cúspide</div>
+                </div>
+            </div>
+
+            <!-- BARRA DE CONTROLES FLOTANTE INFERIOR -->
+            <div class="bottom-controls-bar">
+                <button class="btn-tool" onclick="zoomIn()"><span>🔍+</span> Acercar</button>
+                <button class="btn-tool" onclick="zoomOut()"><span>🔍-</span> Alejar</button>
+                <button class="btn-tool" onclick="resetView()"><span>↺</span> Encuadre Total</button>
+                <div style="width: 1px; height: 18px; background: rgba(255,255,255,0.2);"></div>
+                <button class="btn-tool" id="btnToggleLabels" onclick="toggleLabels()">
+                    <span>🏷️</span> <span id="lblToggleText">Ocultar Rótulos</span>
+                </button>
+            </div>
+
+        </main>
+
     </div>
 
-    <div class="bottom-guide">
-        <span class="guide-tag">LA IDEA FÁCIL SENIOR</span>
-        <span>👉 Haz clic en <strong>"Polo Norte UV"</strong> para mirar desde arriba la corona ultravioleta capturada por el telescopio Hubble.</span>
-    </div>
-
+    <!-- SCRIPT DE CONTROL E INTERACTIVIDAD FOTOGRÁFICA DE LA NASA -->
     <script>
-        const canvas = document.getElementById("jupiterStage");
-        const engine = new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true });
-        
-        let scene, camera;
-        let jupiterSphere, northAuroraRing, southAuroraRing, ioMoon, ioTorus, magneticLines = [];
-        let plasmaParticles;
-        let isSpinning = true;
-        let uvMultiplier = 1.0;
-        let windSpeed = 1.0;
+        // CARGA AUTÓNOMA DE LA ASTROFOTOGRAFÍA REAL DE LA NASA
+        let jupiterImg = new Image();
+        let isLoaded = false;
+        let visualMode = 'visible'; // 'visible', 'uv', 'flux', 'xray'
+        let currentHotspot = null;
+        let showLabels = true;
 
-        function createScene() {
-            scene = new BABYLON.Scene(engine);
-            scene.clearColor = new BABYLON.Color4(0.01, 0.015, 0.03, 1.0);
+        // ESTADO DE NAVEGACIÓN Y ZOOM
+        let scale = 1.0;
+        let panX = 0;
+        let panY = 0;
+        let isDragging = false;
+        let startX, startY;
 
-            camera = new BABYLON.ArcRotateCamera("Cam", -Math.PI / 2, Math.PI / 2.2, 42, new BABYLON.Vector3(0, 0, 0), scene);
-            camera.attachControl(canvas, true);
-            camera.lowerRadiusLimit = 16;
-            camera.upperRadiusLimit = 95;
-            camera.wheelPrecision = 40;
+        const canvas = document.getElementById("photoCanvas");
+        const ctx = canvas.getContext("2d");
+        const viewportWrapper = document.getElementById("viewportWrapper");
 
-            const hemi = new BABYLON.HemisphericLight("hemi", new BABYLON.Vector3(0, 1, 0), scene);
-            hemi.intensity = 0.5;
+        // DATOS DIDÁCTICOS Y COORDENADAS FOCALES DE CADA HOTSPOT (REGLA S10)
+        const HOTSPOTS_DATA = [
+            {
+                title: "Óvalo Auroral Principal del Polo Norte (70°N)",
+                tag: "EMISIÓN FUV DEL HIDRÓGENO MOLECULAR (120 TW)",
+                desc: "Anillo auroral permanente observado por el espectrógrafo STIS del telescopio Hubble. La rápida rotación del planeta transfiere momento angular al plasma, acelerando electrones que excitan el hidrógeno molecular en longitudes de onda de 115 a 170 nm.",
+                power: "1.2 × 10¹⁴ W",
+                field: "14.0 Gauss",
+                targetScale: 2.4,
+                targetX: 30,
+                targetY: 230
+            },
+            {
+                title: "Huella Magnética de Ío (Io Footprint)",
+                tag: "CIRCUITO ELECTRODINÁMICO DE 1 MILLÓN DE AMPERIOS",
+                desc: "Un punto brillante inconfundible en la ionosfera conectado directamente con la luna Ío. Los volcanes de Ío expulsan 1 tonelada/s de azufre, creando un circuito de 1 MA conducido por ondas de Alfvén.",
+                power: "4.5 × 10¹² W",
+                field: "11.8 Gauss",
+                targetScale: 3.1,
+                targetX: -60,
+                targetY: 200
+            },
+            {
+                title: "Estela Auroral Cometaria de Ío (Wake)",
+                tag: "COLA MAGNÉTICA AGUAS ABAJO DEL PLASMA",
+                desc: "Rastro luminoso de miles de kilómetros que se extiende aguas abajo de la huella de Ío. Refleja la perturbación electromagnética residual que queda en la magnetosfera a medida que Júpiter gira más rápido que la órbita de su satélite.",
+                power: "2.1 × 10¹² W",
+                field: "10.5 Gauss",
+                targetScale: 3.1,
+                targetX: -130,
+                targetY: 180
+            },
+            {
+                title: "Gran Mancha Roja & Cinturones Atmosféricos",
+                tag: "EL ANTICICLÓN MÁS GRANDE DEL SISTEMA SOLAR",
+                desc: "Colosal tormenta anticiclónica de más de 16.000 km de diámetro observada en luz visible por la cámara ACS de Hubble. Gira en sentido antihorario a más de 430 km/h y en ella cabe el planeta Tierra entero.",
+                power: "N/A (Atmosférico)",
+                field: "4.2 Gauss",
+                targetScale: 2.1,
+                targetX: 100,
+                targetY: -150
+            },
+            {
+                title: "Neblina Polar Estratosférica & Zona de Cúspide",
+                tag: "AEROSOLES DE HIDROCARBUROS Y FLUJOS POLARES",
+                desc: "Región situada en el casquete polar por encima del óvalo principal. Las partículas solares de alta energía bombardean el metano estratosférico generando smog fotoquímico y ráfagas brillantes esporádicas en la cúspide magnética.",
+                power: "8.0 × 10¹³ W",
+                field: "14.5 Gauss",
+                targetScale: 2.6,
+                targetX: 10,
+                targetY: 290
+            }
+        ];
 
-            const sunLight = new BABYLON.DirectionalLight("sun", new BABYLON.Vector3(-1, -0.2, 0.5), scene);
-            sunLight.intensity = 1.2;
-            sunLight.diffuse = new BABYLON.Color3(1, 0.98, 0.9);
+        // FUENTES EN CASCADA PARA AUTONOMÍA TOTAL (BASE64 + LOCAL + NASA OFICIAL)
+        const CANDIDATE_SOURCES = [
+            (window.JUPITER_AURORA_PHOTO_B64 && window.JUPITER_AURORA_PHOTO_B64.length > 5000) ? window.JUPITER_AURORA_PHOTO_B64 : null,
+            "../03_ASSETS_3D_Y_DATOS/jupiter_aurora_nasa.jpg",
+            "../../../../SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/jupiter_aurora_nasa.jpg",
+            "https://photojournal.jpl.nasa.gov/jpeg/PIA20220.jpg",
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4b/Hubble_Captures_Vivid_Auroras_in_Jupiter%E2%80%99s_Atmosphere.jpg/1280px-Hubble_Captures_Vivid_Auroras_in_Jupiter%E2%80%99s_Atmosphere.jpg"
+        ].filter(Boolean);
 
-            // 1. Globo de Júpiter con bandas atmosféricas pintadas en DynamicTexture
-            const jupRadius = 10;
-            jupiterSphere = BABYLON.MeshBuilder.CreateSphere("jupiter", { diameter: jupRadius * 2, segments: 64 }, scene);
-            
-            const dynTex = new BABYLON.DynamicTexture("jupBands", { width: 1024, height: 512 }, scene);
-            const ctx = dynTex.getContext();
-            
-            // Dibujar franjas gaseosas de Júpiter (Zonas y Cinturones)
-            const bands = [
-                { y: 0, h: 40, col: "#683b21" },
-                { y: 40, h: 30, col: "#995832" },
-                { y: 70, h: 45, col: "#d4a373" },
-                { y: 115, h: 35, col: "#bc7c4f" },
-                { y: 150, h: 60, col: "#ebd1b5" }, // Zona Ecuatorial
-                { y: 210, h: 50, col: "#b05e27" }, // Cinturón ecuatorial
-                { y: 260, h: 40, col: "#dfb288" },
-                { y: 300, h: 50, col: "#9a562d" },
-                { y: 350, h: 50, col: "#d8a478" },
-                { y: 400, h: 45, col: "#844622" },
-                { y: 445, h: 67, col: "#532b17" }
-            ];
-            bands.forEach(b => {
-                ctx.fillStyle = b.col;
-                ctx.fillRect(0, b.y, 1024, b.h);
-            });
+        let candidateIndex = 0;
 
-            // Gran Mancha Roja
-            ctx.fillStyle = "#a83218";
-            ctx.beginPath();
-            ctx.ellipse(650, 310, 65, 38, 0, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.strokeStyle = "#e88050";
-            ctx.lineWidth = 4;
-            ctx.stroke();
+        function initImage() {
+            renderLoadingState();
+            tryLoadNextSource();
+        }
 
-            dynTex.update();
-
-            const jupMat = new BABYLON.StandardMaterial("jupMat", scene);
-            jupMat.diffuseTexture = dynTex;
-            jupMat.specularColor = new BABYLON.Color3(0.1, 0.1, 0.1);
-            jupiterSphere.material = jupMat;
-
-            // 2. Anillo de Aurora Boreal Ultravioleta (Polo Norte)
-            northAuroraRing = BABYLON.MeshBuilder.CreateTorus("northAurora", {
-                diameter: 7.2,
-                thickness: 0.95,
-                tessellation: 64
-            }, scene);
-            northAuroraRing.position.y = jupRadius * 0.94;
-            northAuroraRing.position.z = -0.4;
-            northAuroraRing.rotation.x = Math.PI * 0.08;
-
-            const uvMat = new BABYLON.StandardMaterial("uvMat", scene);
-            uvMat.emissiveColor = new BABYLON.Color3(0.22, 0.74, 0.97); // Azul cian UV
-            uvMat.diffuseColor = new BABYLON.Color3(0.65, 0.33, 0.96); // Púrpura Hubble
-            uvMat.alpha = 0.85;
-            uvMat.backFaceCulling = false;
-            northAuroraRing.material = uvMat;
-
-            // 3. Anillo de Aurora Austral (Polo Sur)
-            southAuroraRing = BABYLON.MeshBuilder.CreateTorus("southAurora", {
-                diameter: 6.8,
-                thickness: 0.85,
-                tessellation: 64
-            }, scene);
-            southAuroraRing.position.y = -jupRadius * 0.94;
-            southAuroraRing.position.z = 0.3;
-            southAuroraRing.rotation.x = -Math.PI * 0.06;
-            southAuroraRing.material = uvMat;
-
-            // 4. Luna Ío y Huella Magnética (Io Footprint)
-            const ioOrbitRadius = 24;
-            ioMoon = BABYLON.MeshBuilder.CreateSphere("ioMoon", { diameter: 1.4 }, scene);
-            ioMoon.position = new BABYLON.Vector3(ioOrbitRadius, 0, 0);
-
-            const ioMat = new BABYLON.StandardMaterial("ioMat", scene);
-            ioMat.diffuseColor = new BABYLON.Color3(0.95, 0.8, 0.2); // Volcánico de azufre
-            ioMat.emissiveColor = new BABYLON.Color3(0.2, 0.15, 0.0);
-            ioMoon.material = ioMat;
-
-            // Toroide de Plasma de Ío (Nube de iones de azufre y oxígeno)
-            ioTorus = BABYLON.MeshBuilder.CreateTorus("ioTorus", {
-                diameter: ioOrbitRadius * 2,
-                thickness: 1.6,
-                tessellation: 90
-            }, scene);
-            const torusMat = new BABYLON.StandardMaterial("torusMat", scene);
-            torusMat.diffuseColor = new BABYLON.Color3(0.8, 0.6, 0.1);
-            torusMat.emissiveColor = new BABYLON.Color3(0.3, 0.2, 0.05);
-            torusMat.alpha = 0.25;
-            torusMat.backFaceCulling = false;
-            ioTorus.material = torusMat;
-
-            // 5. Líneas de Campo Magnético Dipolar de Júpiter
-            for (let i = 0; i < 8; i++) {
-                const angle = (i / 8) * Math.PI * 2;
-                const points = [];
-                const steps = 30;
-                for (let s = 0; s <= steps; s++) {
-                    const theta = (s / steps) * Math.PI;
-                    const r = 26 * Math.sin(theta);
-                    const y = 14 * Math.cos(theta);
-                    points.push(new BABYLON.Vector3(Math.cos(angle) * r, y, Math.sin(angle) * r));
-                }
-                const line = BABYLON.MeshBuilder.CreateLines("magLine_" + i, { points: points }, scene);
-                line.color = new BABYLON.Color3(0.3, 0.7, 1.0);
-                line.alpha = 0.35;
-                magneticLines.push(line);
+        function tryLoadNextSource() {
+            if (candidateIndex >= CANDIDATE_SOURCES.length) {
+                renderStandbyPlanetaryView();
+                return;
             }
 
-            // 6. Partículas de Viento Solar / Iones cargados
-            plasmaParticles = new BABYLON.ParticleSystem("plasma", 1200, scene);
-            const pTexture = new BABYLON.DynamicTexture("pTex", { width: 32, height: 32 }, scene);
-            const pCtx = pTexture.getContext();
-            pCtx.fillStyle = "#38bdf8";
-            pCtx.beginPath();
-            pCtx.arc(16, 16, 14, 0, Math.PI * 2);
-            pCtx.fill();
-            pTexture.update();
-
-            plasmaParticles.particleTexture = pTexture;
-            plasmaParticles.emitter = new BABYLON.Vector3(0, jupRadius * 0.95, 0);
-            plasmaParticles.minEmitBox = new BABYLON.Vector3(-3.5, 0, -3.5);
-            plasmaParticles.maxEmitBox = new BABYLON.Vector3(3.5, 1.5, 3.5);
-            plasmaParticles.color1 = new BABYLON.Color4(0.2, 0.7, 1.0, 0.7);
-            plasmaParticles.color2 = new BABYLON.Color4(0.7, 0.3, 0.9, 0.6);
-            plasmaParticles.colorDead = new BABYLON.Color4(0, 0, 0, 0);
-            plasmaParticles.minSize = 0.2;
-            plasmaParticles.maxSize = 0.6;
-            plasmaParticles.emitRate = 280;
-            plasmaParticles.blendMode = BABYLON.ParticleSystem.BLENDMODE_ADD;
-            plasmaParticles.start();
-
-            // Animación continua
-            let orbitAngle = 0;
-            scene.registerBeforeRender(() => {
-                if (isSpinning) {
-                    jupiterSphere.rotation.y += 0.003 * windSpeed;
-                    northAuroraRing.rotation.y += 0.003 * windSpeed;
-                    southAuroraRing.rotation.y += 0.003 * windSpeed;
-
-                    // Órbita de Ío
-                    orbitAngle += 0.008 * windSpeed;
-                    ioMoon.position.x = Math.cos(orbitAngle) * ioOrbitRadius;
-                    ioMoon.position.z = Math.sin(orbitAngle) * ioOrbitRadius;
-                }
-
-                // Ondulación / Parpadeo energético de las auroras
-                const flicker = (1 + Math.sin(Date.now() * 0.005) * 0.08) * uvMultiplier;
-                uvMat.alpha = Math.min(0.95, 0.75 * flicker);
-            });
-
-            return scene;
+            const src = CANDIDATE_SOURCES[candidateIndex++];
+            jupiterImg = new Image();
+            // IMPORTANTE: NO fijar crossOrigin = "anonymous" para evitar bloqueos CORS en URLs externas y locales
+            jupiterImg.onload = () => {
+                isLoaded = true;
+                drawPhotographicFrame();
+                updateViewport();
+            };
+            jupiterImg.onerror = () => {
+                tryLoadNextSource();
+            };
+            jupiterImg.src = src;
         }
 
-        scene = createScene();
+        // VISTA PLANETARIA DE CARGA INICIAL (NUNCA PANTALLA NEGRA)
+        function renderLoadingState() {
+            ctx.fillStyle = "#010206";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        // Modos Didácticos
-        function setAuroraMode(mode) {
-            document.querySelectorAll('.layer-btn').forEach(b => b.classList.remove('active'));
-            const t = document.getElementById("infoTitle");
-            const d = document.getElementById("infoDesc");
+            // Resplandor de carga
+            const glow = ctx.createRadialGradient(canvas.width / 2, canvas.height / 2, 20, canvas.width / 2, canvas.height / 2, 300);
+            glow.addColorStop(0, "rgba(56, 189, 248, 0.2)");
+            glow.addColorStop(1, "rgba(0, 0, 0, 0)");
+            ctx.fillStyle = glow;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            if (mode === 'all') {
-                document.getElementById("btnModeAll").classList.add('active');
-                northAuroraRing.setEnabled(true);
-                southAuroraRing.setEnabled(true);
-                ioMoon.setEnabled(true);
-                ioTorus.setEnabled(true);
-                magneticLines.forEach(l => l.setEnabled(true));
-                plasmaParticles.start();
-                t.textContent = "Sistema Magnetosférico Integral";
-                d.textContent = "El sistema acopla el gigantesco campo magnético joviano, los volcanes de dióxido de azufre de la luna Ío y las colisiones de partículas que excitan la atmósfera superior.";
-            } else if (mode === 'north') {
-                document.getElementById("btnModeNorth").classList.add('active');
-                northAuroraRing.setEnabled(true);
-                southAuroraRing.setEnabled(false);
-                ioMoon.setEnabled(false);
-                ioTorus.setEnabled(false);
-                magneticLines.forEach(l => l.setEnabled(false));
-                plasmaParticles.start();
-                camera.alpha = -Math.PI / 2;
-                camera.beta = 0.25; // Ángulo casi cenital polar
-                camera.radius = 28;
-                t.textContent = "Óvalo Auroral Norte (Visión Hubble)";
-                d.textContent = "El Telescopio Hubble descubrió que las auroras jovianas nunca se apagan (a diferencia de las terrestres). Muestran una huella brillante provocada directamente por la estela magnética de Ío.";
-            } else if (mode === 'io') {
-                document.getElementById("btnModeIo").classList.add('active');
-                northAuroraRing.setEnabled(true);
-                southAuroraRing.setEnabled(true);
-                ioMoon.setEnabled(true);
-                ioTorus.setEnabled(true);
-                magneticLines.forEach(l => l.setEnabled(false));
-                plasmaParticles.stop();
-                t.textContent = "Tubo de Flujo y Toroide de Plasma de Ío";
-                d.textContent = "Los más de 400 volcanes activos de Ío eyectan una tonelada de azufre y oxígeno por segundo al espacio. Los iones son atrapados por el campo de Júpiter formando un anillo conductor electrificado de 5 millones de amperios.";
-            } else if (mode === 'lines') {
-                document.getElementById("btnModeLines").classList.add('active');
-                northAuroraRing.setEnabled(true);
-                southAuroraRing.setEnabled(true);
-                ioMoon.setEnabled(false);
-                ioTorus.setEnabled(false);
-                magneticLines.forEach(l => l.setEnabled(true));
-                plasmaParticles.start();
-                camera.alpha = -Math.PI / 2;
-                camera.beta = Math.PI / 2.3;
-                camera.radius = 55;
-                t.textContent = "Escudo Dipolar de Júpiter";
-                d.textContent = "Generado en su manto profundo por hidrógeno líquido metálico a presiones extremas. Es la estructura física individual más grande del Sistema Solar después de la heliosfera solar.";
+            ctx.fillStyle = "#38bdf8";
+            ctx.font = "bold 20px 'Inter', sans-serif";
+            ctx.textAlign = "center";
+            ctx.fillText("🛰️ Conectando con la Astrofotografía Oficial NASA Hubble (PIA20220)...", canvas.width / 2, canvas.height / 2 - 10);
+            ctx.fillStyle = "#94a3b8";
+            ctx.font = "14px 'JetBrains Mono', monospace";
+            ctx.fillText("Cargando imagen multiespectral STIS / ACS en alta resolución", canvas.width / 2, canvas.height / 2 + 25);
+        }
+
+        function renderStandbyPlanetaryView() {
+            ctx.fillStyle = "#020308";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.fillStyle = "#38bdf8";
+            ctx.font = "bold 22px 'Inter', sans-serif";
+            ctx.textAlign = "center";
+            ctx.fillText("🪐 Astrofotografía Oficial NASA Hubble • Júpiter UV (heic1613a)", canvas.width / 2, canvas.height / 2 - 20);
+
+            ctx.fillStyle = "#fbbf24";
+            ctx.font = "15px 'Inter', sans-serif";
+            ctx.fillText("Ejecuta el [COMANDO 33] en la terminal para sincronizar el archivo local.", canvas.width / 2, canvas.height / 2 + 20);
+        }
+
+        // RENDERIZADO DEL CUADRO CON FILTROS ESPECTRALES OFICIALES
+        function drawPhotographicFrame() {
+            if (!isLoaded) return;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Ajustar imagen al lienzo de 1280x960
+            const imgAspect = jupiterImg.width / jupiterImg.height;
+            const canvasAspect = canvas.width / canvas.height;
+            let drawW, drawH, drawX, drawY;
+
+            if (imgAspect > canvasAspect) {
+                drawW = canvas.width;
+                drawH = canvas.width / imgAspect;
+                drawX = 0;
+                drawY = (canvas.height - drawH) / 2;
+            } else {
+                drawH = canvas.height;
+                drawW = canvas.height * imgAspect;
+                drawX = (canvas.width - drawW) / 2;
+                drawY = 0;
+            }
+
+            // APLICAR FILTROS ESPECTRALES
+            ctx.save();
+            if (visualMode === 'visible') {
+                ctx.filter = "none";
+                ctx.drawImage(jupiterImg, drawX, drawY, drawW, drawH);
+            } else if (visualMode === 'uv') {
+                // Filtro Far-Ultraviolet (115-170 nm): Realza el azul cian eléctrico de la aurora
+                ctx.filter = "contrast(155%) saturate(140%) brightness(105%) hue-rotate(-15deg)";
+                ctx.drawImage(jupiterImg, drawX, drawY, drawW, drawH);
+
+                // Capa de resplandor FUV en el polo norte
+                const gradUV = ctx.createRadialGradient(canvas.width * 0.49, canvas.height * 0.25, 20, canvas.width * 0.49, canvas.height * 0.25, 140);
+                gradUV.addColorStop(0, "rgba(56, 189, 248, 0.45)");
+                gradUV.addColorStop(0.6, "rgba(192, 132, 252, 0.25)");
+                gradUV.addColorStop(1, "transparent");
+                ctx.fillStyle = gradUV;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+            } else if (visualMode === 'flux') {
+                // Filtro de Tubo de Flujo de Ío: Realza el circuito eléctrico de 1 MA
+                ctx.filter = "contrast(180%) brightness(110%)";
+                ctx.drawImage(jupiterImg, drawX, drawY, drawW, drawH);
+
+                // Destacar la huella magnética de Ío y su cola
+                ctx.fillStyle = "rgba(251, 191, 36, 0.55)";
+                ctx.beginPath();
+                ctx.arc(canvas.width * 0.535, canvas.height * 0.28, 12, 0, Math.PI * 2);
+                ctx.fill();
+            } else if (visualMode === 'xray') {
+                // Filtro Rayos X Chandra: Falso color enérgico púrpura/magenta
+                ctx.filter = "contrast(190%) invert(15%) saturate(180%) hue-rotate(60deg)";
+                ctx.drawImage(jupiterImg, drawX, drawY, drawW, drawH);
+
+                const gradX = ctx.createRadialGradient(canvas.width * 0.48, canvas.height * 0.22, 10, canvas.width * 0.48, canvas.height * 0.22, 90);
+                gradX.addColorStop(0, "rgba(244, 63, 94, 0.65)");
+                gradX.addColorStop(1, "transparent");
+                ctx.fillStyle = gradX;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+            }
+            ctx.restore();
+        }
+
+        // CONTROL DE MODOS ESPECTRALES
+        function setVisualMode(mode) {
+            visualMode = mode;
+            document.querySelectorAll(".mode-btn").forEach(b => b.classList.remove("active"));
+            
+            const btn = document.getElementById("btnMode" + mode.charAt(0).toUpperCase() + mode.slice(1));
+            if (btn) btn.classList.add("active");
+
+            const overlay = document.getElementById("overlayText");
+            if (mode === 'visible') {
+                overlay.innerText = "Astrofotografía Oficial NASA Hubble (heic1613a) • Espectro Visible + FUV";
+            } else if (mode === 'uv') {
+                overlay.innerText = "Filtro Far-UV (115-170 nm) • Excitación del Hidrógeno Molecular H₂";
+            } else if (mode === 'flux') {
+                overlay.innerText = "Tubo de Flujo de Ío • 1 Megamperio transportado por ondas de Alfvén";
+            } else if (mode === 'xray') {
+                overlay.innerText = "Observatorio de Rayos X Chandra • Puntos Calientes Polares de Alta Energía";
+            }
+
+            drawPhotographicFrame();
+        }
+
+        // REGLA S10: AISLAMIENTO ESTRICTO DE RÓTULOS AL ENFOCAR
+        function selectHotspot(index) {
+            currentHotspot = index;
+            const data = HOTSPOTS_DATA[index];
+
+            // 1. Actualizar textos didácticos y telemetría
+            document.querySelectorAll(".layer-item").forEach(l => l.classList.remove("active"));
+            const currentLayer = document.getElementById("layer-" + index);
+            if (currentLayer) currentLayer.classList.add("active");
+
+            document.getElementById("detailTitle").innerText = data.title;
+            document.getElementById("detailDesc").innerText = data.desc;
+            document.getElementById("telPower").innerText = data.power;
+            document.getElementById("telField").innerText = data.field;
+
+            // 2. Animar zoom óptico directo hacia la estructura
+            scale = data.targetScale;
+            panX = data.targetX;
+            panY = data.targetY;
+            updateViewport();
+
+            // 3. Aislamiento estricto: solo el rótulo seleccionado permanece visible
+            applyLabelsVisibility();
+        }
+
+        function applyLabelsVisibility() {
+            for (let i = 0; i < 5; i++) {
+                const pin = document.getElementById("pin-" + i);
+                const label = document.getElementById("label-" + i);
+                if (!showLabels) {
+                    pin.style.display = "none";
+                } else if (currentHotspot === null) {
+                    // Modo panorámico total: mostrar todos
+                    pin.style.display = "flex";
+                    pin.classList.remove("active");
+                    label.style.display = "block";
+                } else {
+                    // Modo aislado: mostrar únicamente el hotspot seleccionado
+                    if (i === currentHotspot) {
+                        pin.style.display = "flex";
+                        pin.classList.add("active");
+                        label.style.display = "block";
+                    } else {
+                        pin.style.display = "none";
+                    }
+                }
             }
         }
 
-        function updateUvIntensity(val) {
-            const intVal = parseInt(val);
-            uvMultiplier = intVal / 100.0;
-            document.getElementById("txtUvIntensity").textContent = intVal + "%";
+        // ENCUADRE TOTAL (RESTAURA TODAS LAS ETIQUETAS Y EL ZOOM PANORÁMICO)
+        function resetView() {
+            currentHotspot = null;
+            scale = 1.0;
+            panX = 0;
+            panY = 0;
+            updateViewport();
+
+            document.getElementById("detailTitle").innerText = "Óvalo Auroral Principal (70°N)";
+            document.getElementById("detailDesc").innerText = "A diferencia de la Tierra, donde las auroras son efímeras y dependen del viento solar, las auroras polares de Júpiter son permanentes. La colosal rotación de Júpiter a 45.300 km/h actúa como un generador electrodinámico arrastrando plasma atrapado en su campo magnético de 14 Gauss.";
+            document.getElementById("telPower").innerText = "1.2 × 10¹⁴ W";
+            document.getElementById("telField").innerText = "14.0 Gauss";
+
+            document.querySelectorAll(".layer-item").forEach((l, i) => {
+                if (i === 0) l.classList.add("active");
+                else l.classList.remove("active");
+            });
+
+            applyLabelsVisibility();
         }
 
-        function updateWindSpeed(val) {
-            windSpeed = parseFloat(val);
-            document.getElementById("txtSolarWind").textContent = val + "x";
+        function zoomIn() {
+            scale = Math.min(4.5, scale + 0.35);
+            updateViewport();
         }
 
-        document.getElementById("btnToggleSpin").addEventListener("click", () => {
-            isSpinning = !isSpinning;
-            document.getElementById("btnToggleSpin").textContent = isSpinning ? "⏸ Pausar Giro" : "▶ Reanudar Giro";
+        function zoomOut() {
+            scale = Math.max(0.8, scale - 0.35);
+            updateViewport();
+        }
+
+        function toggleLabels() {
+            showLabels = !showLabels;
+            document.getElementById("lblToggleText").innerText = showLabels ? "Ocultar Rótulos" : "Mostrar Rótulos";
+            applyLabelsVisibility();
+        }
+
+        function updateViewport() {
+            viewportWrapper.style.transform = `translate(${panX}px, ${panY}px) scale(${scale})`;
+        }
+
+        // INTERACCIÓN CON RATÓN: PAN (ARRASTRE) Y RUEDA DE ZOOM
+        const stage = document.getElementById("photoStage");
+
+        stage.addEventListener("mousedown", (e) => {
+            isDragging = true;
+            startX = e.clientX - panX;
+            startY = e.clientY - panY;
         });
 
-        document.getElementById("btnPoloNorte").addEventListener("click", () => {
-            camera.alpha = -Math.PI / 2;
-            camera.beta = 0.28;
-            camera.radius = 28;
+        window.addEventListener("mousemove", (e) => {
+            if (!isDragging) return;
+            panX = e.clientX - startX;
+            panY = e.clientY - startY;
+            updateViewport();
         });
 
-        document.getElementById("btnResetView").addEventListener("click", () => {
-            camera.alpha = -Math.PI / 2;
-            camera.beta = Math.PI / 2.2;
-            camera.radius = 42;
-            camera.target = new BABYLON.Vector3(0, 0, 0);
+        window.addEventListener("mouseup", () => {
+            isDragging = false;
         });
 
-        window.addEventListener("resize", () => {
-            engine.resize();
+        stage.addEventListener("wheel", (e) => {
+            e.preventDefault();
+            const delta = e.deltaY > 0 ? -0.15 : 0.15;
+            scale = Math.max(0.8, Math.min(4.5, scale + delta));
+            updateViewport();
         });
 
-        engine.runRenderLoop(() => {
-            scene.render();
+        // INICIALIZACIÓN
+        window.addEventListener("DOMContentLoaded", () => {
+            initImage();
+            applyLabelsVisibility();
         });
     </script>
 </body>
 </html>
-

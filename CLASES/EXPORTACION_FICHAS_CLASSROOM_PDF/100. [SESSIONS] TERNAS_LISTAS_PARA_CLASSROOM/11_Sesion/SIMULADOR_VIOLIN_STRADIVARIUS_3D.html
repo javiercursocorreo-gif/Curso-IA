@@ -3,11 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sesión 11 • Simulador 3D Real: Violín Stradivarius & Resonancia Acústica [COD-011]</title>
-    <!-- Babylon.js CDN Oficial y Loaders para Renderizado 3D PBR -->
-    <script src="https://cdn.babylonjs.com/babylon.js"></script>
-    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
-    <script src="https://cdn.babylonjs.com/earcut.min.js"></script>
+    <title>Sesión 11 • Simulador Real: Violín Stradivarius & Resonancia Acústica [COD-011]</title>
+    <!-- Assets Fotográficos Reales en Base64 Autónomo (Metropolitan Museum of Art) -->
+    <script src="../03_ASSETS_3D_Y_DATOS/violin_stradivarius_b64.js"></script>
+    <script src="../../../../SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/violin_stradivarius_b64.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -19,7 +18,6 @@
             --amber-wood: #d97706;
             --cyan-note: #38bdf8;
             --silver-string: #e2e8f0;
-            --ebony: #0f172a;
             --text-main: #f8fafc;
             --text-sub: #cbd5e1;
             --font-title: 'Cinzel', serif;
@@ -269,23 +267,27 @@
             display: block;
         }
 
-        /* ÁREA CENTRAL BABYLON.JS */
+        /* ÁREA CENTRAL DE VISUALIZACIÓN FOTOGRÁFICA REAL */
         .stage-container {
             position: relative;
             width: 100%;
             height: 100%;
             overflow: hidden;
             background: radial-gradient(circle at center, #181116 0%, #080608 85%, #020102 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-        #renderCanvas {
-            width: 100%;
-            height: 100%;
-            outline: none;
+        #photoCanvas {
+            cursor: grab;
             display: block;
         }
+        #photoCanvas:active {
+            cursor: grabbing;
+        }
 
-        /* CONTROLES DE CÁMARA SUPERIORES */
-        .camera-floating-bar {
+        /* BARRA SUPERIOR DE HERRAMIENTAS */
+        .top-tools-bar {
             position: absolute;
             top: 14px;
             left: 50%;
@@ -301,7 +303,7 @@
             z-index: 30;
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7);
         }
-        .btn-cam {
+        .btn-tool {
             background: rgba(255, 255, 255, 0.08);
             border: 1px solid rgba(255, 255, 255, 0.12);
             color: #f1f5f9;
@@ -316,12 +318,12 @@
             gap: 5px;
             white-space: nowrap;
         }
-        .btn-cam:hover {
+        .btn-tool:hover {
             background: rgba(245, 158, 11, 0.25);
             border-color: var(--gold);
             color: var(--gold-bright);
         }
-        .btn-cam.active {
+        .btn-tool.active {
             background: var(--gold);
             color: #060507;
             font-weight: 800;
@@ -379,7 +381,7 @@
             background: rgba(255, 255, 255, 0.15);
         }
 
-        /* HUD CLÍNICO FLOTANTE SOBRE EL CANVAS */
+        /* BADGE FLOTANTE DE ESTADO */
         .canvas-hud-badge {
             position: absolute;
             top: 65px;
@@ -409,6 +411,51 @@
             0%, 100% { opacity: 1; transform: scale(1); }
             50% { opacity: 0.4; transform: scale(1.3); }
         }
+
+        /* CHIPS DE LLAMADA ANATÓMICA */
+        .anatomical-callout {
+            position: absolute;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(15, 12, 16, 0.92);
+            border: 1.5px solid var(--gold);
+            border-radius: 9999px;
+            padding: 6px 14px 6px 8px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.8), 0 0 15px var(--gold-glow);
+            transition: all 0.25s ease;
+            z-index: 25;
+            transform: translate(-50%, -50%);
+        }
+        .anatomical-callout:hover, .anatomical-callout.active {
+            border-color: #fde047;
+            background: rgba(245, 158, 11, 0.25);
+            transform: translate(-50%, -50%) scale(1.08);
+        }
+        .callout-num {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: var(--gold);
+            color: #060507;
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            font-weight: 900;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .callout-title {
+            font-size: 0.82rem;
+            font-weight: 800;
+            color: #ffffff;
+        }
+        .callout-sub {
+            font-size: 0.7rem;
+            color: var(--cyan-note);
+            font-family: var(--font-mono);
+        }
     </style>
 </head>
 <body>
@@ -417,12 +464,12 @@
     <header>
         <div class="header-title-box">
             <span class="badge-code">COD-011</span>
-            <h1>🎻 Violín Stradivarius Cremona 1715 • Física Acústica 3D</h1>
+            <h1>🎻 Violín Stradivarius 'The Gould' 1693 • Acústica Física Real</h1>
         </div>
         <div class="header-right">
             <div class="pill-status">
-                <span>🎼</span>
-                <span>Afinación en Quintas Justas (3:2) • Resonancia de Helmholtz</span>
+                <span>🏛️</span>
+                <span>The Metropolitan Museum of Art (NY) • Fotografía Científica Oficial</span>
             </div>
         </div>
     </header>
@@ -437,18 +484,18 @@
                 <div class="easy-tag">💡 La Idea Fácil para Todos</div>
                 <div class="easy-title">El Violín es un Amplificador Acústico Natural</div>
                 <div class="easy-text">
-                    Una cuerda de violín tensada en el aire casi no suena. 
-                    El secreto de Antonio Stradivari radica en que la cuerda transmite su energía al <strong>Puente</strong>, el puente empuja el <strong>Alma</strong> interior, y el alma hace que los <strong>1.000 cm³ de aire</strong> dentro de la caja de abeto y arce resuenen y proyecten el sonido hasta la última fila de un teatro sin ningún micrófono.
+                    Estás contemplando la <strong>fotografía real en alta resolución</strong> del célebre violín <em>'The Gould'</em> fabricado en 1693 por Antonio Stradivari en Cremona.
+                    Una cuerda de violín tensada en el aire casi no produce sonido. El secreto de Stradivari es que la cuerda empuja el <strong>Puente</strong>, el puente transmite la vibración al <strong>Alma interior</strong>, y el alma hace que los <strong>1.000 cm³ de aire</strong> dentro de la caja resuenen para proyectar el sonido a todo un teatro sin micrófonos.
                 </div>
             </div>
 
             <div>
                 <div class="section-title">
                     <span>Afinación del Violín en Quintas</span>
-                    <span>📐 Física 3:2</span>
+                    <span>📐 Razón Pitagórica 3:2</span>
                 </div>
                 <div class="easy-text" style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 8px; border-left: 3px solid var(--cyan-note); font-size: 0.8rem;">
-                    Las 4 cuerdas del violín se afinan exactamente a una distancia de <strong>Quinta Justa (7 semitonos)</strong>. 
+                    Las 4 cuerdas del violín se afinan exactamente a intervalos de <strong>Quinta Justa (7 semitonos)</strong>. 
                     La proporción de frecuencia entre cuerdas consecutivas es de <strong>3:2 (1.5x)</strong>:
                     <ul style="margin-left: 18px; margin-top: 6px; line-height: 1.6;">
                         <li><strong>Sol₃ (196 Hz)</strong> × 1.5 = <strong>Re₄ (294 Hz)</strong></li>
@@ -460,26 +507,26 @@
 
             <div>
                 <div class="section-title">
-                    <span>Misterios de la Lutería de 1700</span>
-                    <span>🔬 Anatomía 3D</span>
+                    <span>Misterios Ocultos en el Interior</span>
+                    <span>🔬 El Alma y la Barra</span>
                 </div>
                 <div style="display: flex; flex-direction: column; gap: 8px;">
                     <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 10px;">
                         <strong style="color: var(--gold-bright); font-size: 0.85rem;">⚡ El Alma (L'Anima):</strong>
                         <p style="font-size: 0.78rem; color: #cbd5e1; margin-top: 3px;">
-                            Un cilindro de pino de 6 mm bajo el puente (lado agudo). Une la tapa y el fondo. Sin él, el violín queda mudo y sordo.
+                            Cilindro de pino de 6 mm ubicado milimétricamente tras el pie derecho del puente. Transmite la onda acústica de la tapa al fondo en 0.2 milisegundos. Sin él, el violín queda mudo.
                         </p>
                     </div>
                     <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 10px;">
                         <strong style="color: var(--gold-bright); font-size: 0.85rem;">🪵 La Barra Armónica:</strong>
                         <p style="font-size: 0.78rem; color: #cbd5e1; margin-top: 3px;">
-                            Listón de abeto pegado bajo la cuerda Sol (lado grave). Distribuye las ondas graves y soporta 20 kg de tensión.
+                            Listón de abeto pegado bajo la cuerda grave (Sol). Distribuye las bajas frecuencias y soporta los 20 kg de tensión del cordal.
                         </p>
                     </div>
                     <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 10px;">
                         <strong style="color: var(--gold-bright); font-size: 0.85rem;">❄️ Madera de la Pequeña Edad de Hielo:</strong>
                         <p style="font-size: 0.78rem; color: #cbd5e1; margin-top: 3px;">
-                            Los inviernos gélidos de 1645-1715 generaron anillos de árbol ultra-densos con porosidad cristalina inigualable.
+                            Los inviernos gélidos entre 1645 y 1715 generaron anillos de árbol ultra-densos con porosidad cristalina inigualable en el abeto rojo de Val di Fiemme.
                         </p>
                     </div>
                 </div>
@@ -487,26 +534,71 @@
 
         </aside>
 
-        <!-- ÁREA CENTRAL BABYLON.JS 3D -->
-        <main class="stage-container">
+        <!-- ÁREA CENTRAL DE VISUALIZACIÓN FOTOGRÁFICA REAL -->
+        <main class="stage-container" id="stageContainer">
 
-            <!-- BARRA DE CÁMARA 3D FLOTANTE -->
-            <div class="camera-floating-bar">
-                <button class="btn-cam" onclick="setCameraView('overview')">🎻 General</button>
-                <button class="btn-cam" onclick="setCameraView('bridge')">🌉 Puente & Alma</button>
-                <button class="btn-cam" onclick="setCameraView('scroll')">🌀 Clavijero</button>
-                <button class="btn-cam" onclick="setCameraView('top')">📐 Vista Cenital</button>
+            <!-- BARRA DE HERRAMIENTAS FLOTANTE -->
+            <div class="top-tools-bar">
+                <button class="btn-tool" onclick="zoomIn()"><span>🔍+</span> Acercar</button>
+                <button class="btn-tool" onclick="zoomOut()"><span>🔍-</span> Alejar</button>
+                <button class="btn-tool" onclick="resetView()"><span>↺</span> Encuadre Total</button>
                 <div style="width: 1px; height: 16px; background: rgba(255,255,255,0.2);"></div>
-                <button class="btn-cam" id="btnToggleSpin" onclick="toggleAutoRotate()">🔄 Rotar</button>
-                <button class="btn-cam" onclick="reset3DCamera()">↺ Reset</button>
+                <button class="btn-tool" id="btnToggleLabels" onclick="toggleLabels()">
+                    <span id="lblToggleIcon">🏷️</span> <span id="lblToggleText">Ocultar Rótulos</span>
+                </button>
+                <button class="btn-tool" id="btnToggleViewFace" onclick="toggleInstrumentFace()">
+                    <span>🔄</span> <span id="btnFaceText">Ver Fondo (Arce)</span>
+                </button>
             </div>
 
             <div class="canvas-hud-badge">
                 <div class="pulse-dot"></div>
-                <span id="hudStatusText">Motor 3D Babylon.js • Modo Acústico Activo</span>
+                <span id="hudStatusText">Fotografía Real de Museo • Antonio Stradivari 1693</span>
             </div>
 
-            <canvas id="renderCanvas"></canvas>
+            <!-- CANVAS DE ALTA RESOLUCIÓN -->
+            <canvas id="photoCanvas" width="1200" height="900"></canvas>
+
+            <!-- RÓTULOS ANATÓMICOS AUTOEXPLICATIVOS -->
+            <div class="anatomical-callout active" id="pin-0" style="top: 15%; left: 50%;" onclick="focusComponent(0)" title="Voluta y Clavijero">
+                <div class="callout-num">1</div>
+                <div>
+                    <div class="callout-title">🌀 Voluta & Clavijero</div>
+                    <div class="callout-sub">Caracol Tallado • Clavijas de Afinación</div>
+                </div>
+            </div>
+
+            <div class="anatomical-callout" id="pin-1" style="top: 38%; left: 50%;" onclick="focusComponent(1)" title="Batidor de Ébano">
+                <div class="callout-num">2</div>
+                <div>
+                    <div class="callout-title">🪵 Batidor (Diapasón)</div>
+                    <div class="callout-sub">Ébano Africano • Sin Trastes</div>
+                </div>
+            </div>
+
+            <div class="anatomical-callout" id="pin-2" style="top: 66%; left: 50%;" onclick="focusComponent(2)" title="Puente de Arce">
+                <div class="callout-num">3</div>
+                <div>
+                    <div class="callout-title">🌉 Puente & Efes de Helmholtz</div>
+                    <div class="callout-sub">Transmisor Mecánico • Frecuencia 280 Hz</div>
+                </div>
+            </div>
+
+            <div class="anatomical-callout" id="pin-3" style="top: 74%; left: 62%;" onclick="focusComponent(3)" title="El Alma del Violín">
+                <div class="callout-num">4</div>
+                <div>
+                    <div class="callout-title">⚡ El Alma (L'Anima)</div>
+                    <div class="callout-sub">Cilindro Interno • 6 mm Pino</div>
+                </div>
+            </div>
+
+            <div class="anatomical-callout" id="pin-4" style="top: 86%; left: 50%;" onclick="focusComponent(4)" title="Cordal y Botón">
+                <div class="callout-num">5</div>
+                <div>
+                    <div class="callout-title">🎻 Cordal & Microafinadores</div>
+                    <div class="callout-sub">Tensión Total 22 kg • Sujeción</div>
+                </div>
+            </div>
 
             <!-- BARRA DE CUERDAS Y RAYOS X INFERIOR -->
             <div class="bottom-dock">
@@ -526,7 +618,7 @@
                 <div class="divider"></div>
 
                 <button class="dock-btn" id="btnXrayMode" onclick="toggleXrayMode()">
-                    <span>⚡</span> <span>Radiografía Interior (El Alma)</span>
+                    <span>⚡</span> <span>Radiografía (El Alma & Barra)</span>
                 </button>
             </div>
 
@@ -629,7 +721,7 @@
 
     </div>
 
-    <!-- SCRIPT DE BABYLON.JS Y SÍNTESIS ACÚSTICA WEB AUDIO -->
+    <!-- SCRIPT DE CONTROL FOTOGRÁFICO Y SÍNTESIS ACÚSTICA REAL -->
     <script>
         // =========================================================================
         // 1. CONSTANTES MUSICALES Y AFINACIÓN OFICIAL EN QUINTAS
@@ -646,8 +738,8 @@
                 gauge: "0.26 mm (Acero de carbono solista)",
                 desc: "La cuerda más aguda y penetrante. Diseñada para proyectar solos orquestales virtuosos.",
                 color: "#f8fafc",
-                xOffset: 0.28,
-                thickness: 0.038
+                lineX: 0.522, // Posición relativa en la fotografía real del violín
+                thickness: 2.0
             },
             {
                 id: 1,
@@ -660,8 +752,8 @@
                 gauge: "0.50 mm (Entorchado aluminio)",
                 desc: "La frecuencia de referencia absoluta internacional adoptada en todo el planeta para afinar.",
                 color: "#e2e8f0",
-                xOffset: 0.09,
-                thickness: 0.052
+                lineX: 0.507,
+                thickness: 2.8
             },
             {
                 id: 2,
@@ -674,8 +766,8 @@
                 gauge: "0.72 mm (Plata sobre sintético)",
                 desc: "Tono cálido, cantable y aterciopelado. Fundamental para pasajes melódicos expresivos.",
                 color: "#cbd5e1",
-                xOffset: -0.09,
-                thickness: 0.068
+                lineX: 0.493,
+                thickness: 3.6
             },
             {
                 id: 3,
@@ -688,16 +780,30 @@
                 gauge: "0.95 mm (Plata esterlina maciza)",
                 desc: "Sonido profundo y oscuro. Su energía la transmite directamente la barra armónica bajo el puente.",
                 color: "#94a3b8",
-                xOffset: -0.28,
-                thickness: 0.088
+                lineX: 0.478,
+                thickness: 4.5
             }
         ];
 
-        let currentStringIdx = 1; // LA 440 Hz por defecto
-        let isXray = false;
-        let isAutoRotating = false;
+        // Componentes anatómicos destacados en la fotografía real
+        const componentsData = [
+            { id: 0, x: 0.50, y: 0.15, name: "Voluta & Clavijero", scale: 2.2, panX: 0, panY: 280 },
+            { id: 1, x: 0.50, y: 0.38, name: "Batidor de Ébano", scale: 1.8, panX: 0, panY: 100 },
+            { id: 2, x: 0.50, y: 0.66, name: "Puente & Efes Acústicas", scale: 2.4, panX: 0, panY: -150 },
+            { id: 3, x: 0.54, y: 0.69, name: "El Alma (Soundpost)", scale: 2.6, panX: -40, panY: -180 },
+            { id: 4, x: 0.50, y: 0.86, name: "Cordal & Microafinadores", scale: 2.0, panX: 0, panY: -320 }
+        ];
 
-        // Elementos DOM
+        let currentStringIdx = 1; // LA 440 Hz
+        let focusedComponent = null;
+        let labelsVisible = true;
+        let isXray = false;
+        let showBackView = false;
+        let stringVibrations = [0, 0, 0, 0];
+
+        // Canvas y Contexto
+        const canvas = document.getElementById("photoCanvas");
+        const ctx = canvas.getContext("2d");
         const tunerNote = document.getElementById("tunerNote");
         const tunerNoteSub = document.getElementById("tunerNoteSub");
         const tunerHz = document.getElementById("tunerHz");
@@ -705,8 +811,49 @@
         const oscCanvas = document.getElementById("oscilloscope");
         const oscCtx = oscCanvas.getContext("2d");
 
+        // Transformaciones del Canvas
+        let scale = 1.0;
+        let panX = 0;
+        let panY = 0;
+        let isDragging = false;
+        let startX, startY;
+
+        // Imágenes del violín real de museo
+        let violinImgFront = new Image();
+        let violinImgBack = new Image();
+        let isLoaded = false;
+
+        // URLs oficiales de museo (The Met Open Access & Fallbacks)
+        const MET_STRAD_FRONT = "https://images.metmuseum.org/CRDImages/mi/original/DT669a.jpg";
+        const MET_STRAD_BACK = "https://images.metmuseum.org/CRDImages/mi/original/DT669b.jpg";
+        const WIKI_STRAD_FRONT = "https://upload.wikimedia.org/wikipedia/commons/9/96/%22The_Gould%22_Violin_MET_DT669a.jpg";
+
+        function loadViolinPhotos() {
+            violinImgFront.onload = function() {
+                isLoaded = true;
+                canvas.width = violinImgFront.naturalWidth || 1200;
+                canvas.height = violinImgFront.naturalHeight || 900;
+                render();
+            };
+
+            // Intentar cargar primero desde el asset Base64 autónomo
+            if (window.STRADIVARIUS_PHOTO_B64 && window.STRADIVARIUS_PHOTO_B64.length > 50) {
+                violinImgFront.src = window.STRADIVARIUS_PHOTO_B64;
+            } else {
+                violinImgFront.onerror = function() {
+                    violinImgFront.onerror = null;
+                    // Fallback a Wikimedia Commons Open Access
+                    violinImgFront.src = WIKI_STRAD_FRONT;
+                };
+                // Intentar archivo local de museo
+                violinImgFront.src = "../03_ASSETS_3D_Y_DATOS/violin_stradivarius_real.jpg";
+            }
+
+            violinImgBack.src = MET_STRAD_BACK;
+        }
+
         // =========================================================================
-        // 2. MOTOR DE AUDIO REALISTA (SÍNTESIS ARMÓNICA Y CAJA DE RESONANCIA)
+        // 2. MOTOR DE SÍNTESIS SONORA REALISTA DE VIOLÍN (WEB AUDIO API)
         // =========================================================================
         let audioCtx = null;
         let analyser = null;
@@ -732,24 +879,24 @@
             // Envolvente dinámica ADSR de arco de violín
             const masterGain = audioCtx.createGain();
             masterGain.gain.setValueAtTime(0.0001, now);
-            masterGain.gain.linearRampToValueAtTime(0.42, now + 0.09); // Ataque de crin de caballo
+            masterGain.gain.linearRampToValueAtTime(0.42, now + 0.08); // Ataque de crin de caballo
             masterGain.gain.exponentialRampToValueAtTime(0.28, now + 0.45); // Sustain
-            masterGain.gain.exponentialRampToValueAtTime(0.0001, now + 2.4); // Caída
+            masterGain.gain.exponentialRampToValueAtTime(0.0001, now + 2.3); // Caída natural
 
-            // Filtros de formante de la madera del violín (cuerpo de arce a 450 Hz y aire de Helmholtz a 285 Hz)
+            // Filtros de formante de madera de arce y cavidad de aire de Helmholtz
             const woodResonance = audioCtx.createBiquadFilter();
             woodResonance.type = "peaking";
             woodResonance.frequency.setValueAtTime(450, now);
-            woodResonance.gain.setValueAtTime(9.0, now);
+            woodResonance.gain.setValueAtTime(8.5, now);
             woodResonance.Q.setValueAtTime(2.2, now);
 
             const airResonance = audioCtx.createBiquadFilter();
             airResonance.type = "peaking";
             airResonance.frequency.setValueAtTime(285, now);
-            airResonance.gain.setValueAtTime(7.5, now);
+            airResonance.gain.setValueAtTime(7.0, now);
             airResonance.Q.setValueAtTime(3.0, now);
 
-            // Generador de armónicos en diente de sierra (Física de cuerdas frotadas por arco)
+            // Generador de armónicos en diente de sierra (física de cuerdas frotadas)
             const oscFundamental = audioCtx.createOscillator();
             oscFundamental.type = "sawtooth";
             oscFundamental.frequency.setValueAtTime(freq, now);
@@ -760,11 +907,11 @@
             const harmonicGain = audioCtx.createGain();
             harmonicGain.gain.setValueAtTime(0.35, now);
 
-            // Vibrato acústico natural suave (5.8 Hz, modulación sutil de frecuencia)
+            // Vibrato acústico suave
             const vibratoLfo = audioCtx.createOscillator();
             vibratoLfo.frequency.setValueAtTime(5.8, now);
             const vibratoDepth = audioCtx.createGain();
-            vibratoDepth.gain.setValueAtTime(freq * 0.009, now); // 0.9% vibrato
+            vibratoDepth.gain.setValueAtTime(freq * 0.009, now);
             vibratoLfo.connect(vibratoDepth);
             vibratoDepth.connect(oscFundamental.frequency);
             vibratoDepth.connect(oscHarmonic.frequency);
@@ -782,12 +929,11 @@
             oscFundamental.start(now);
             oscHarmonic.start(now);
 
-            vibratoLfo.stop(now + 2.5);
-            oscFundamental.stop(now + 2.5);
-            oscHarmonic.stop(now + 2.5);
+            vibratoLfo.stop(now + 2.4);
+            oscFundamental.stop(now + 2.4);
+            oscHarmonic.stop(now + 2.4);
         }
 
-        // Visualizador osciloscópico de onda acústica en tiempo real
         function drawOscilloscope() {
             requestAnimationFrame(drawOscilloscope);
             if (!analyser) {
@@ -833,325 +979,219 @@
         }
 
         // =========================================================================
-        // 3. MOTOR 3D BABYLON.JS: CONSTRUCCIÓN HIPERREALISTA DEL VIOLÍN STRADIVARIUS
+        // 3. RENDERIZADO DEL CANVAS CON LA FOTOGRAFÍA REAL Y EFECTOS ACÚSTICOS
         // =========================================================================
-        const canvas = document.getElementById("renderCanvas");
-        const engine = new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true });
+        function render() {
+            if (!isLoaded) return;
 
-        let scene, camera;
-        let violinRoot, topPlate, backPlate, ribsMesh;
-        let soundpostMesh, bassBarMesh, bridgeMesh, fingerboardMesh, neckMesh, scrollMesh, tailpieceMesh;
-        let stringMeshes = [];
-        let stringVibrationActive = [0, 0, 0, 0];
+            ctx.save();
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        // Materiales PBR y Shaders
-        let varnishWoodMat, backWoodMat, ebonyMat, mapleBridgeMat, goldMetalMat, soundpostMat, stringMat;
+            // Aplicar Zoom y Desplazamiento
+            ctx.translate(canvas.width / 2 + panX, canvas.height / 2 + panY);
+            ctx.scale(scale, scale);
+            ctx.translate(-canvas.width / 2, -canvas.height / 2);
 
-        function createScene() {
-            scene = new BABYLON.Scene(engine);
-            scene.clearColor = new BABYLON.Color4(0.04, 0.03, 0.04, 1.0);
+            // 1. Dibujar la fotografía médica real del instrumento
+            const currentImg = showBackView && violinImgBack.complete ? violinImgBack : violinImgFront;
+            ctx.drawImage(currentImg, 0, 0, canvas.width, canvas.height);
 
-            // Cámara Orbital 360° con límites de suavidad
-            camera = new BABYLON.ArcRotateCamera("ViolinCam", -Math.PI / 2, Math.PI / 2.6, 22, new BABYLON.Vector3(0, 0.8, 0), scene);
-            camera.attachControl(canvas, true);
-            camera.lowerRadiusLimit = 8;
-            camera.upperRadiusLimit = 42;
-            camera.wheelPrecision = 30;
+            // 2. Si está activo el Modo Radiografía: Superponer El Alma y la Barra Armónica
+            if (isXray) {
+                drawXrayOverlays();
+            }
 
-            // Iluminación de Concierto Cálida
-            const hemiLight = new BABYLON.HemisphericLight("hemiLight", new BABYLON.Vector3(0, 1, 0), scene);
-            hemiLight.intensity = 0.65;
-            hemiLight.diffuse = new BABYLON.Color3(1.0, 0.95, 0.88);
+            // 3. Dibujar las 4 cuerdas y su vibración física activa
+            drawActiveStringsOnPhoto();
 
-            const keyLight = new BABYLON.DirectionalLight("keyLight", new BABYLON.Vector3(-1, -1.8, 1.2), scene);
-            keyLight.intensity = 1.35;
-            keyLight.diffuse = new BABYLON.Color3(1.0, 0.92, 0.8);
+            ctx.restore();
+            updateCalloutsPosition();
+        }
 
-            const rimLight = new BABYLON.DirectionalLight("rimLight", new BABYLON.Vector3(1.5, 1.2, -1.5), scene);
-            rimLight.intensity = 0.85;
-            rimLight.diffuse = new BABYLON.Color3(0.95, 0.65, 0.2);
+        // 3.1 Dibujar las 4 cuerdas sobre la fotografía real
+        function drawActiveStringsOnPhoto() {
+            const bridgeY = canvas.height * 0.665;
+            const nutY = canvas.height * 0.255;
+            const tailpieceY = canvas.height * 0.825;
 
-            violinRoot = new BABYLON.TransformNode("violinRoot", scene);
+            STRINGS_DATA.forEach((s, idx) => {
+                const baseX = canvas.width * s.lineX;
+                const vib = stringVibrations[idx];
 
-            // MATERIALES PBR REALISTAS
-            // 1. Tapa armónica de abeto rojo con barniz ambarino dorado de Cremona
-            varnishWoodMat = new BABYLON.StandardMaterial("varnishWoodMat", scene);
-            varnishWoodMat.diffuseColor = new BABYLON.Color3(0.92, 0.48, 0.12);
-            varnishWoodMat.specularColor = new BABYLON.Color3(0.45, 0.35, 0.2);
-            varnishWoodMat.specularPower = 32;
+                ctx.save();
+                ctx.strokeStyle = s.color;
+                ctx.lineWidth = s.thickness;
 
-            // 2. Fondo de arce flameado rizado
-            backWoodMat = new BABYLON.StandardMaterial("backWoodMat", scene);
-            backWoodMat.diffuseColor = new BABYLON.Color3(0.82, 0.38, 0.08);
-            backWoodMat.specularColor = new BABYLON.Color3(0.5, 0.4, 0.2);
-            backWoodMat.specularPower = 40;
-
-            // 3. Ébano africano pulido (Batidor, cordal, clavijas)
-            ebonyMat = new BABYLON.StandardMaterial("ebonyMat", scene);
-            ebonyMat.diffuseColor = new BABYLON.Color3(0.06, 0.06, 0.08);
-            ebonyMat.specularColor = new BABYLON.Color3(0.25, 0.25, 0.3);
-            ebonyMat.specularPower = 64;
-
-            // 4. Puente de arce crudo
-            mapleBridgeMat = new BABYLON.StandardMaterial("mapleBridgeMat", scene);
-            mapleBridgeMat.diffuseColor = new BABYLON.Color3(0.98, 0.86, 0.6);
-            mapleBridgeMat.specularColor = new BABYLON.Color3(0.1, 0.1, 0.1);
-
-            // 5. Oro y latón (microafinadores y detalles)
-            goldMetalMat = new BABYLON.StandardMaterial("goldMetalMat", scene);
-            goldMetalMat.diffuseColor = new BABYLON.Color3(0.95, 0.75, 0.18);
-            goldMetalMat.specularColor = new BABYLON.Color3(1.0, 0.9, 0.4);
-            goldMetalMat.emissiveColor = new BABYLON.Color3(0.2, 0.14, 0.02);
-
-            // 6. El Alma (Madera de pino dorada con alta luminosidad)
-            soundpostMat = new BABYLON.StandardMaterial("soundpostMat", scene);
-            soundpostMat.diffuseColor = new BABYLON.Color3(1.0, 0.85, 0.3);
-            soundpostMat.emissiveColor = new BABYLON.Color3(0.5, 0.38, 0.05);
-
-            // 7. Cuerdas metálicas
-            stringMat = new BABYLON.StandardMaterial("stringMat", scene);
-            stringMat.diffuseColor = new BABYLON.Color3(0.92, 0.95, 0.98);
-            stringMat.specularColor = new BABYLON.Color3(0.9, 0.9, 1.0);
-            stringMat.specularPower = 90;
-
-            // CONSTRUCCIÓN GEOMÉTRICA DE LA CAJA DE RESONANCIA
-            buildViolinBody();
-
-            // CONSTRUCCIÓN DE COMPONENTES ACÚSTICOS INTERIORES (EL ALMA Y BARRA)
-            buildAcousticCore();
-
-            // CONSTRUCCIÓN DEL MÁSTIL, DIAPASÓN, CLAVIJERO Y PUENTE
-            buildNeckAndHardware();
-
-            // CONSTRUCCIÓN DE LAS 4 CUERDAS FÍSICAS TENSIÓN
-            buildStrings();
-
-            // Bucle de vibración de cuerdas en tiempo real
-            scene.registerBeforeRender(() => {
-                if (isAutoRotating) {
-                    violinRoot.rotation.y += 0.006;
+                if (idx === currentStringIdx && vib > 0.05) {
+                    ctx.shadowColor = "#38bdf8";
+                    ctx.shadowBlur = 12;
+                    ctx.lineWidth = s.thickness + 1.5;
                 }
 
-                // Oscilación transversal física de la cuerda activa
-                for (let i = 0; i < 4; i++) {
-                    if (stringVibrationActive[i] > 0.001) {
-                        stringVibrationActive[i] *= 0.965; // Amortiguamiento
-                        const stringMesh = stringMeshes[i];
-                        if (stringMesh) {
-                            const freqFactor = STRINGS_DATA[i].hz / 80;
-                            const vibOffset = Math.sin(Date.now() * 0.04 * freqFactor) * (stringVibrationActive[i] * 0.08);
-                            stringMesh.position.y = 0.52 + vibOffset;
-                        }
-                    }
+                ctx.beginPath();
+                // Desde la cejuela superior (nut)
+                ctx.moveTo(baseX, nutY);
+
+                // Si la cuerda está vibrando, calcular curva de oscilación armónica
+                if (vib > 0.01) {
+                    const waveOffset = Math.sin(Date.now() * 0.05 * (s.hz / 80)) * (vib * 12);
+                    const midY = (nutY + bridgeY) / 2;
+                    ctx.quadraticCurveTo(baseX + waveOffset, midY, baseX, bridgeY);
+                } else {
+                    ctx.lineTo(baseX, bridgeY);
+                }
+
+                // Continuación recta hacia el cordal
+                ctx.lineTo(baseX, tailpieceY);
+                ctx.stroke();
+                ctx.restore();
+
+                // Amortiguamiento natural
+                if (stringVibrations[idx] > 0.005) {
+                    stringVibrations[idx] *= 0.96;
                 }
             });
-
-            return scene;
         }
 
-        // 3.1 Construcción del cuerpo del violín (Tapa, fondo, aros, efes)
-        function buildViolinBody() {
-            // Contorno armónico clásico de Cremona (Bóveda superior, cintura en C y lóbulo inferior)
-            const outlineHalf = [
-                new BABYLON.Vector3(0, 0, -4.8),
-                new BABYLON.Vector3(1.4, 0, -4.5),
-                new BABYLON.Vector3(2.3, 0, -3.6),
-                new BABYLON.Vector3(2.1, 0, -2.4),
-                new BABYLON.Vector3(1.4, 0, -1.2), // Esquina C superior
-                new BABYLON.Vector3(1.15, 0, 0),   // Cintura central C
-                new BABYLON.Vector3(1.5, 0, 1.2),  // Esquina C inferior
-                new BABYLON.Vector3(2.5, 0, 2.3),
-                new BABYLON.Vector3(2.9, 0, 3.8),  // Lóbulo inferior
-                new BABYLON.Vector3(2.4, 0, 5.0),
-                new BABYLON.Vector3(1.2, 0, 5.6),
-                new BABYLON.Vector3(0, 0, 5.8)
-            ];
+        // 3.2 Proyección tomográfica de rayos X interior: El Alma & Barra Armónica
+        function drawXrayOverlays() {
+            ctx.save();
+            // Filtro de semitransparencia azul radiográfico sobre el cuerpo
+            ctx.fillStyle = "rgba(14, 28, 54, 0.55)";
+            ctx.fillRect(canvas.width * 0.28, canvas.height * 0.40, canvas.width * 0.44, canvas.height * 0.48);
 
-            const fullOutline = [];
-            for (let i = 0; i < outlineHalf.length; i++) {
-                fullOutline.push(outlineHalf[i]);
-            }
-            for (let i = outlineHalf.length - 2; i > 0; i--) {
-                fullOutline.push(new BABYLON.Vector3(-outlineHalf[i].x, 0, outlineHalf[i].z));
-            }
+            // A) EL ALMA (Soundpost): Cilindro de pino tras el pie derecho del puente
+            const soulX = canvas.width * 0.528;
+            const soulY = canvas.height * 0.685;
+            ctx.save();
+            ctx.shadowColor = "#f59e0b";
+            ctx.shadowBlur = 25;
+            ctx.fillStyle = "#fbbf24";
+            ctx.strokeStyle = "#ffffff";
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(soulX, soulY, 14, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
 
-            // Tapa armónica superior abombada (Abeto)
-            topPlate = BABYLON.MeshBuilder.CreatePolygon("topPlate", {
-                shape: fullOutline,
-                depth: 0.18,
-                sideOrientation: BABYLON.Mesh.DOUBLESIDE,
-                earcut: window.earcut || earcut
-            }, scene);
-            topPlate.position.y = 0.45;
-            topPlate.material = varnishWoodMat;
-            topPlate.parent = violinRoot;
+            ctx.fillStyle = "#fde047";
+            ctx.font = 'bold 16px "JetBrains Mono", monospace';
+            ctx.fillText("⚡ EL ALMA (L'ANIMA - 6 mm Pino)", soulX + 22, soulY + 5);
+            ctx.restore();
 
-            // Fondo inferior (Arce flameado)
-            backPlate = BABYLON.MeshBuilder.CreatePolygon("backPlate", {
-                shape: fullOutline,
-                depth: 0.18,
-                sideOrientation: BABYLON.Mesh.DOUBLESIDE,
-                earcut: window.earcut || earcut
-            }, scene);
-            backPlate.position.y = -0.55;
-            backPlate.material = backWoodMat;
-            backPlate.parent = violinRoot;
+            // B) LA BARRA ARMÓNICA (Bass Bar): Listón longitudinal bajo cuerda grave
+            const barX = canvas.width * 0.468;
+            const barStartY = canvas.height * 0.48;
+            const barEndY = canvas.height * 0.78;
+            ctx.save();
+            ctx.shadowColor = "#38bdf8";
+            ctx.shadowBlur = 20;
+            ctx.strokeStyle = "#38bdf8";
+            ctx.lineWidth = 8;
+            ctx.beginPath();
+            ctx.moveTo(barX, barStartY);
+            ctx.lineTo(barX, barEndY);
+            ctx.stroke();
 
-            // Aros laterales perimetrales (Ribs)
-            const ribPaths = [];
-            const pathTop = fullOutline.map(p => new BABYLON.Vector3(p.x * 0.98, 0.43, p.z * 0.98));
-            const pathBottom = fullOutline.map(p => new BABYLON.Vector3(p.x * 0.98, -0.53, p.z * 0.98));
-            pathTop.push(pathTop[0]);
-            pathBottom.push(pathBottom[0]);
-            ribPaths.push(pathTop, pathBottom);
+            ctx.fillStyle = "#38bdf8";
+            ctx.font = 'bold 15px "JetBrains Mono", monospace';
+            ctx.fillText("🪵 BARRA ARMÓNICA (Distribución de Graves)", barX - 340, (barStartY + barEndY) / 2);
+            ctx.restore();
 
-            ribsMesh = BABYLON.MeshBuilder.CreateRibbon("ribsMesh", {
-                pathArray: ribPaths,
-                closeArray: false,
-                sideOrientation: BABYLON.Mesh.DOUBLESIDE
-            }, scene);
-            ribsMesh.material = backWoodMat;
-            ribsMesh.parent = violinRoot;
+            // Panel informativo HUD de Rayos X en el canvas
+            ctx.save();
+            ctx.fillStyle = "rgba(10, 15, 30, 0.9)";
+            ctx.strokeStyle = "#f59e0b";
+            ctx.lineWidth = 1.5;
+            const hudX = canvas.width * 0.04;
+            const hudY = canvas.height * 0.05;
+            ctx.beginPath();
+            ctx.roundRect(hudX, hudY, 460, 95, 10);
+            ctx.fill();
+            ctx.stroke();
 
-            // Efes acústicas talladas (f-holes) sobre la tapa superior
-            const fHoleR = BABYLON.MeshBuilder.CreateCylinder("fHoleR", { diameterX: 0.32, diameterZ: 1.8, height: 0.25 }, scene);
-            fHoleR.position = new BABYLON.Vector3(0.9, 0.46, 0.4);
-            fHoleR.rotation.y = 0.22;
-            fHoleR.material = ebonyMat;
-            fHoleR.parent = violinRoot;
+            ctx.fillStyle = "#fbbf24";
+            ctx.font = 'bold 14px "JetBrains Mono", monospace';
+            ctx.fillText("⚡ RADIOGRAFÍA ACÚSTICA: EL SECRETO DE STRADIVARI", hudX + 16, hudY + 26);
 
-            const fHoleL = BABYLON.MeshBuilder.CreateCylinder("fHoleL", { diameterX: 0.32, diameterZ: 1.8, height: 0.25 }, scene);
-            fHoleL.position = new BABYLON.Vector3(-0.9, 0.46, 0.4);
-            fHoleL.rotation.y = -0.22;
-            fHoleL.material = ebonyMat;
-            fHoleL.parent = violinRoot;
-        }
+            ctx.fillStyle = "#e2e8f0";
+            ctx.font = '12px "Inter", sans-serif';
+            ctx.fillText("• El Alma acopla la tapa armónica con el fondo en 0.2 ms", hudX + 16, hudY + 48);
+            ctx.fillText("• La Barra Armónica soporta la presión de 20 kg del puente", hudX + 16, hudY + 68);
+            ctx.restore();
 
-        // 3.2 Construcción del Alma y la Barra Armónica
-        function buildAcousticCore() {
-            // El Alma (Soundpost): Cilindro de pino entre tapa y fondo en el lado agudo (bajo cuerda Mi)
-            soundpostMesh = BABYLON.MeshBuilder.CreateCylinder("soundpostMesh", {
-                diameter: 0.16,
-                height: 0.98
-            }, scene);
-            soundpostMesh.position = new BABYLON.Vector3(0.42, -0.05, 0.7);
-            soundpostMesh.material = soundpostMat;
-            soundpostMesh.parent = violinRoot;
-
-            // Barra Armónica (Bass bar): Viga longitudinal bajo la cuerda grave (Sol)
-            bassBarMesh = BABYLON.MeshBuilder.CreateBox("bassBarMesh", {
-                width: 0.14,
-                height: 0.28,
-                depth: 5.2
-            }, scene);
-            bassBarMesh.position = new BABYLON.Vector3(-0.62, 0.28, 0.3);
-            bassBarMesh.material = soundpostMat;
-            bassBarMesh.parent = violinRoot;
-        }
-
-        // 3.3 Construcción del mástil, batidor de ébano, puente y clavijero
-        function buildNeckAndHardware() {
-            // Mástil de arce
-            neckMesh = BABYLON.MeshBuilder.CreateBox("neckMesh", {
-                width: 0.65,
-                height: 0.65,
-                depth: 5.2
-            }, scene);
-            neckMesh.position = new BABYLON.Vector3(0, 0.4, -7.2);
-            neckMesh.material = backWoodMat;
-            neckMesh.parent = violinRoot;
-
-            // Batidor (Diapasón) curvado de ébano negro
-            fingerboardMesh = BABYLON.MeshBuilder.CreateBox("fingerboardMesh", {
-                width: 0.88,
-                height: 0.16,
-                depth: 7.2
-            }, scene);
-            fingerboardMesh.position = new BABYLON.Vector3(0, 0.75, -5.2);
-            fingerboardMesh.material = ebonyMat;
-            fingerboardMesh.parent = violinRoot;
-
-            // Puente de arce (Bridge)
-            bridgeMesh = BABYLON.MeshBuilder.CreateBox("bridgeMesh", {
-                width: 1.1,
-                height: 0.68,
-                depth: 0.14
-            }, scene);
-            bridgeMesh.position = new BABYLON.Vector3(0, 0.75, 0.5);
-            bridgeMesh.material = mapleBridgeMat;
-            bridgeMesh.parent = violinRoot;
-
-            // Cordal inferior (Tailpiece) con 4 microafinadores
-            tailpieceMesh = BABYLON.MeshBuilder.CreateCylinder("tailpieceMesh", {
-                diameterTop: 0.75,
-                diameterBottom: 0.28,
-                height: 3.4
-            }, scene);
-            tailpieceMesh.rotation.x = Math.PI / 2;
-            tailpieceMesh.position = new BABYLON.Vector3(0, 0.58, 3.6);
-            tailpieceMesh.material = ebonyMat;
-            tailpieceMesh.parent = violinRoot;
-
-            // Clavijero (Pegbox) y Voluta barroca (Scroll)
-            scrollMesh = BABYLON.MeshBuilder.CreateTorus("scrollMesh", {
-                diameter: 0.9,
-                thickness: 0.28,
-                tessellation: 32
-            }, scene);
-            scrollMesh.rotation.z = Math.PI / 2;
-            scrollMesh.position = new BABYLON.Vector3(0, 0.65, -10.2);
-            scrollMesh.material = backWoodMat;
-            scrollMesh.parent = violinRoot;
-
-            // 4 Clavijas de afinación transversales
-            for (let p = 0; p < 4; p++) {
-                const peg = BABYLON.MeshBuilder.CreateCylinder("peg_" + p, {
-                    diameter: 0.12,
-                    height: 1.5
-                }, scene);
-                peg.rotation.z = Math.PI / 2;
-                peg.position = new BABYLON.Vector3(0, 0.55 + (p % 2) * 0.12, -8.6 - p * 0.38);
-                peg.material = ebonyMat;
-                peg.parent = violinRoot;
-            }
-        }
-
-        // 3.4 Construcción de las 4 cuerdas físicas con calibres diferenciados
-        function buildStrings() {
-            stringMeshes = [];
-            for (let i = 0; i < 4; i++) {
-                const sData = STRINGS_DATA[i];
-                const str = BABYLON.MeshBuilder.CreateCylinder("string_" + i, {
-                    diameter: sData.thickness,
-                    height: 11.8
-                }, scene);
-                str.rotation.x = Math.PI / 2;
-                str.position = new BABYLON.Vector3(sData.xOffset, 0.82, -3.8);
-                str.material = stringMat;
-                str.parent = violinRoot;
-                stringMeshes.push(str);
-            }
+            ctx.restore();
         }
 
         // =========================================================================
-        // 4. INTERACTIVIDAD, MODOS DIDÁCTICOS Y QUINTAS
+        // 4. POSICIONAMIENTO Y ENFOQUE INDIVIDUAL DE RÓTULOS
         // =========================================================================
+        function updateCalloutsPosition() {
+            componentsData.forEach(c => {
+                const pin = document.getElementById(`pin-${c.id}`);
+                if (!pin) return;
+
+                // 1. REGLA ESTRICTA DE PERSISTENCIA
+                if (!labelsVisible) {
+                    pin.style.display = "none";
+                    return;
+                }
+
+                // 2. REGLA DE AISLAMIENTO: Mostrar SOLO el rótulo enfocado si hay foco
+                if (focusedComponent !== null && c.id !== focusedComponent) {
+                    pin.style.display = "none";
+                    return;
+                }
+
+                const origX = canvas.width * c.x;
+                const origY = canvas.height * c.y;
+
+                const screenX = (canvas.width / 2 + panX) + (origX - canvas.width / 2) * scale;
+                const screenY = (canvas.height / 2 + panY) + (origY - canvas.height / 2) * scale;
+
+                const pctX = (screenX / canvas.width) * 100;
+                const pctY = (screenY / canvas.height) * 100;
+
+                pin.style.left = `${pctX}%`;
+                pin.style.top = `${pctY}%`;
+
+                if (pctX < 2 || pctX > 98 || pctY < 2 || pctY > 98) {
+                    pin.style.display = "none";
+                } else {
+                    pin.style.display = "inline-flex";
+                }
+            });
+        }
+
+        function focusComponent(index) {
+            focusedComponent = index;
+            document.querySelectorAll(".anatomical-callout").forEach(p => p.classList.remove("active"));
+            const pin = document.getElementById(`pin-${index}`);
+            if (pin) pin.classList.add("active");
+
+            const comp = componentsData[index];
+            scale = comp.scale;
+            panX = comp.panX;
+            panY = comp.panY;
+            render();
+        }
+
         function triggerString(idx) {
             currentStringIdx = idx;
             const data = STRINGS_DATA[idx];
 
-            // 1. Sonido realista con formantes
+            // 1. Sonido físico realista de violín
             playViolinSound(data.hz);
 
-            // 2. Activar vibración física en malla 3D
-            stringVibrationActive[idx] = 1.0;
+            // 2. Activar oscilación visual de la cuerda en el canvas
+            stringVibrations[idx] = 1.0;
 
             // 3. Actualizar afinador estroboscópico
             tunerNote.innerText = data.noteName;
             tunerNoteSub.innerText = data.intlNote;
             tunerHz.innerText = data.hzText;
 
-            // 4. Actualizar botones y tarjetas activas
+            // 4. Actualizar botones del dock y tarjetas
             document.querySelectorAll(".dock-btn").forEach((b, i) => {
                 if (i < 4) b.classList.toggle("active", i === (3 - idx));
             });
@@ -1160,75 +1200,86 @@
             });
 
             hudStatusText.innerText = `Tañendo ${data.name} (${data.hzText}) • Intervalo de Quinta Justa`;
+            render();
         }
 
         function toggleXrayMode() {
             isXray = !isXray;
             const btn = document.getElementById("btnXrayMode");
             btn.classList.toggle("active", isXray);
-
             if (isXray) {
-                // Tapa y aros translúcidos para revelar el Alma y la Barra Armónica
-                topPlate.visibility = 0.28;
-                backPlate.visibility = 0.28;
-                ribsMesh.visibility = 0.22;
-                soundpostMesh.scaling = new BABYLON.Vector3(1.6, 1.0, 1.6);
-                bassBarMesh.scaling = new BABYLON.Vector3(1.4, 1.2, 1.0);
-                hudStatusText.innerText = "Radiografía 3D: El Alma (cilindro central) y Barra Armónica Revelados";
-                // Enfoque de cámara hacia el puente y el alma interior
-                setCameraView('bridge');
+                // Enfocar el puente y el alma
+                focusComponent(3);
+                hudStatusText.innerText = "Radiografía: El Alma (L'Anima) y Barra Armónica Revelados";
             } else {
-                topPlate.visibility = 1.0;
-                backPlate.visibility = 1.0;
-                ribsMesh.visibility = 1.0;
-                soundpostMesh.scaling = new BABYLON.Vector3(1.0, 1.0, 1.0);
-                bassBarMesh.scaling = new BABYLON.Vector3(1.0, 1.0, 1.0);
-                hudStatusText.innerText = "Vista 3D Completa • Barniz Ámbar de Cremona 1715";
+                resetView();
+                hudStatusText.innerText = "Fotografía Real de Museo • Antonio Stradivari 1693";
             }
+            render();
         }
 
-        function setCameraView(view) {
-            if (view === 'overview') {
-                camera.setTarget(new BABYLON.Vector3(0, 0.8, 0));
-                camera.alpha = -Math.PI / 2;
-                camera.beta = Math.PI / 2.6;
-                camera.radius = 22;
-            } else if (view === 'bridge') {
-                camera.setTarget(new BABYLON.Vector3(0, 0.5, 0.5));
-                camera.alpha = -Math.PI / 2.3;
-                camera.beta = Math.PI / 3.2;
-                camera.radius = 11;
-            } else if (view === 'scroll') {
-                camera.setTarget(new BABYLON.Vector3(0, 0.6, -8.5));
-                camera.alpha = -Math.PI / 2.5;
-                camera.beta = Math.PI / 2.2;
-                camera.radius = 9;
-            } else if (view === 'top') {
-                camera.setTarget(new BABYLON.Vector3(0, 0.5, 0));
-                camera.alpha = -Math.PI / 2;
-                camera.beta = 0.05;
-                camera.radius = 20;
-            }
+        function toggleInstrumentFace() {
+            showBackView = !showBackView;
+            const btnText = document.getElementById("btnFaceText");
+            btnText.innerText = showBackView ? "Ver Frente (Abeto)" : "Ver Fondo (Arce)";
+            hudStatusText.innerText = showBackView 
+                ? "Fondo de Arce Rizado Flameado (Arce de los Balcanes 1693)" 
+                : "Tapa Armónica de Abeto Rojo de Val di Fiemme (1693)";
+            render();
         }
 
-        function toggleAutoRotate() {
-            isAutoRotating = !isAutoRotating;
-            document.getElementById("btnToggleSpin").classList.toggle("active", isAutoRotating);
+        function toggleLabels() {
+            labelsVisible = !labelsVisible;
+            const txt = document.getElementById("lblToggleText");
+            if (txt) txt.innerText = labelsVisible ? "Ocultar Rótulos" : "Mostrar Rótulos";
+            const icon = document.getElementById("lblToggleIcon");
+            if (icon) icon.innerText = labelsVisible ? "🏷️" : "👁️";
+            updateCalloutsPosition();
         }
 
-        function reset3DCamera() {
-            setCameraView('overview');
+        // =========================================================================
+        // 5. HERRAMIENTAS DE ZOOM, ENCUADRE Y ARRASTRE
+        // =========================================================================
+        function zoomIn() {
+            scale = Math.min(3.8, scale * 1.25);
+            render();
+        }
+        function zoomOut() {
+            scale = Math.max(0.7, scale / 1.25);
+            render();
+        }
+        function resetView() {
+            scale = 1.0;
+            panX = 0;
+            panY = 0;
+            focusedComponent = null; // Restaurar todas las etiquetas
+            document.querySelectorAll(".anatomical-callout").forEach(p => p.classList.remove("active"));
+            render();
         }
 
-        // Inicialización y redimensionado de ventana
+        // Arrastre con ratón o touch
+        canvas.addEventListener("mousedown", e => {
+            isDragging = true;
+            startX = e.clientX - panX;
+            startY = e.clientY - panY;
+        });
+        window.addEventListener("mousemove", e => {
+            if (!isDragging) return;
+            panX = e.clientX - startX;
+            panY = e.clientY - startY;
+            render();
+        });
+        window.addEventListener("mouseup", () => { isDragging = false; });
+
+        // Inicializar
         window.addEventListener("DOMContentLoaded", () => {
-            createScene();
-            engine.runRenderLoop(() => {
-                scene.render();
-            });
-            window.addEventListener("resize", () => {
-                engine.resize();
-            });
+            loadViolinPhotos();
+            // Bucle suave de renderizado continuo para amortiguación de cuerdas
+            setInterval(() => {
+                if (stringVibrations.some(v => v > 0.01)) {
+                    render();
+                }
+            }, 30);
         });
     </script>
 </body>

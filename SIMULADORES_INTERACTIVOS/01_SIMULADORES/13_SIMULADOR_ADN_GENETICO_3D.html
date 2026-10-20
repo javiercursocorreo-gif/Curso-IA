@@ -3,203 +3,240 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sesión 13 • Simulador 3D: Doble Hélice del ADN & Código Genético [COD-013]</title>
+    <title>Sesión 13 • Simulador 3D Real: Doble Hélice del ADN (B-DNA) & Difracción Rayos X [COD-013]</title>
     <!-- Babylon.js CDN Oficial -->
     <script src="https://cdn.babylonjs.com/babylon.js"></script>
     <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;800;900&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg-base: #030509;
             --bg-panel: rgba(10, 16, 28, 0.94);
-            --ade: #38bdf8;  /* Adenina - Azul */
-            --tim: #fbbf24;  /* Timina - Amarillo Dorado */
-            --cit: #34d399;  /* Citosina - Verde Esmeralda */
-            --gua: #fb7185;  /* Guanina - Rosa Coral */
-            --ura: #c084fc;  /* Uracilo ARN - Púrpura */
-            --backbone: #94a3b8;
+            --ade: #38bdf8;       /* Adenina - Azul Turquesa */
+            --tim: #fbbf24;       /* Timina - Amarillo Dorado */
+            --cit: #34d399;       /* Citosina - Verde Esmeralda */
+            --gua: #f43f5e;       /* Guanina - Carmesí */
+            --ura: #c084fc;       /* Uracilo ARN - Púrpura */
+            --backbone: #94a3b8;  /* Esqueleto Azúcar-Fosfato */
+            --hydrogen: #ffffff;  /* Puentes de Hidrógeno */
+            --text-main: #f8fafc;
+            --text-sub: #cbd5e1;
             --font-title: 'Cinzel', serif;
             --font-sans: 'Inter', sans-serif;
             --font-mono: 'JetBrains Mono', monospace;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body {
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+        html, body {
             background-color: var(--bg-base);
-            color: #f8fafc;
+            color: var(--text-main);
             font-family: var(--font-sans);
             height: 100vh;
             width: 100vw;
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            user-select: none;
+            font-size: 15px;
         }
 
+        /* HEADER SUPERIOR */
         header {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 20;
-            padding: 14px 24px;
+            background: linear-gradient(180deg, rgba(8, 12, 22, 0.98) 0%, rgba(8, 12, 22, 0.88) 100%);
+            backdrop-filter: blur(14px);
+            border-bottom: 1px solid rgba(56, 189, 248, 0.25);
+            padding: 10px 24px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            background: linear-gradient(180deg, rgba(6, 10, 18, 0.96) 0%, rgba(6, 10, 18, 0.6) 80%, transparent 100%);
-            border-bottom: 1px solid rgba(56, 189, 248, 0.25);
-            backdrop-filter: blur(10px);
+            flex-shrink: 0;
+            z-index: 50;
         }
-
-        .brand-box {
+        .header-title-box {
             display: flex;
             align-items: center;
             gap: 14px;
         }
-
-        .brand-badge {
+        .badge-code {
             background: rgba(56, 189, 248, 0.15);
-            border: 1px solid var(--ade);
-            color: var(--ade);
+            color: #38bdf8;
+            border: 1px solid rgba(56, 189, 248, 0.45);
             font-family: var(--font-mono);
+            font-size: 0.88rem;
             font-weight: 800;
-            font-size: 1rem;
-            padding: 5px 12px;
+            padding: 4px 10px;
             border-radius: 8px;
+            letter-spacing: 0.05em;
         }
-
-        .brand-title {
+        h1 {
             font-family: var(--font-title);
-            font-size: 1.35rem;
-            font-weight: 900;
-            color: #ffffff;
-            letter-spacing: 0.5px;
-        }
-
-        .brand-sub {
-            font-size: 0.78rem;
-            color: #94a3b8;
-        }
-
-        .btn-action {
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            color: #f1f5f9;
-            padding: 8px 16px;
-            border-radius: 9999px;
-            font-size: 0.82rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .btn-action:hover {
-            background: rgba(56, 189, 248, 0.2);
-            border-color: var(--ade);
-            color: var(--ade);
-        }
-
-        #dnaStage {
-            flex: 1;
-            width: 100%;
-            height: 100%;
-            display: block;
-        }
-
-        /* PANEL DIDÁCTICO DERECHO */
-        .info-card {
-            position: absolute;
-            top: 80px;
-            right: 24px;
-            width: 415px;
-            background: var(--bg-panel);
-            border: 1.5px solid var(--ade);
-            border-radius: 20px;
-            padding: 22px;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9), 0 0 25px rgba(56, 189, 248, 0.25);
-            backdrop-filter: blur(20px);
-            z-index: 15;
-            display: flex;
-            flex-direction: column;
-            gap: 13px;
-        }
-
-        .dna-tag {
-            font-family: var(--font-mono);
-            font-size: 0.8rem;
+            font-size: 1.25rem;
             font-weight: 800;
-            padding: 5px 12px;
-            border-radius: 9999px;
-            background: rgba(52, 211, 153, 0.15);
-            color: #34d399;
-            border: 1px solid rgba(52, 211, 153, 0.35);
-            width: fit-content;
-        }
-
-        .info-title {
-            font-family: var(--font-title);
-            font-size: 1.3rem;
-            font-weight: 900;
+            letter-spacing: 0.02em;
             color: #ffffff;
-            line-height: 1.25;
-        }
-
-        .info-summary {
-            background: rgba(255, 255, 255, 0.05);
-            border-left: 3.5px solid var(--ade);
-            padding: 10px 14px;
-            border-radius: 0 10px 10px 0;
-            font-size: 0.9rem;
-            color: #f1f5f9;
-            line-height: 1.45;
-        }
-
-        /* LEYENDA DE BASES NITROGENADAS */
-        .base-legend {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 8px;
-        }
-
-        .base-item {
             display: flex;
             align-items: center;
-            gap: 8px;
-            background: rgba(0, 0, 0, 0.35);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 8px;
-            padding: 6px 10px;
-            font-size: 0.82rem;
+            gap: 10px;
+        }
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .pill-status {
+            background: rgba(52, 211, 153, 0.12);
+            color: #34d399;
+            border: 1px solid rgba(52, 211, 153, 0.35);
+            font-size: 0.85rem;
             font-weight: 700;
+            padding: 5px 13px;
+            border-radius: 9999px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
 
-        .dot-base {
+        /* GRID PRINCIPAL */
+        .workspace-grid {
+            flex: 1;
+            min-height: 0;
+            display: grid;
+            grid-template-columns: 360px 1fr 380px;
+            position: relative;
+        }
+
+        /* PANELES LATERALES */
+        .sidebar-panel {
+            background: var(--bg-panel);
+            backdrop-filter: blur(16px);
+            padding: 18px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            z-index: 20;
+        }
+        .sidebar-left {
+            border-right: 1px solid rgba(56, 189, 248, 0.18);
+        }
+        .sidebar-right {
+            border-left: 1px solid rgba(56, 189, 248, 0.18);
+        }
+
+        /* TARJETA LA IDEA FÁCIL */
+        .card-easy-concept {
+            background: linear-gradient(135deg, rgba(56, 189, 248, 0.15) 0%, rgba(10, 16, 28, 0.9) 100%);
+            border: 1.5px solid var(--ade);
+            border-radius: 14px;
+            padding: 14px;
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.18);
+        }
+        .easy-tag {
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            font-weight: 800;
+            color: #38bdf8;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .easy-title {
+            font-size: 1.05rem;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 6px;
+            line-height: 1.3;
+        }
+        .easy-text {
+            font-size: 0.85rem;
+            color: #e2e8f0;
+            line-height: 1.5;
+        }
+
+        .section-title {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            font-weight: 800;
+            color: #38bdf8;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        /* SELECTORES DE BASES NITROGENADAS */
+        .bases-selector-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .base-card {
+            background: rgba(18, 25, 42, 0.75);
+            border: 1.5px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 11px 14px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .base-card:hover {
+            transform: translateX(4px);
+            border-color: #38bdf8;
+            background: rgba(56, 189, 248, 0.15);
+        }
+        .base-card.active {
+            border-color: #38bdf8;
+            background: rgba(56, 189, 248, 0.25);
+            box-shadow: 0 0 16px rgba(56, 189, 248, 0.35);
+        }
+        .base-card-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .base-dot {
             width: 14px;
             height: 14px;
             border-radius: 50%;
             flex-shrink: 0;
+            box-shadow: 0 0 10px currentColor;
         }
-
-        .tabs-header {
-            font-size: 0.76rem;
+        .base-name {
+            font-size: 0.95rem;
             font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: #94a3b8;
-            margin-top: 4px;
+            color: #ffffff;
+        }
+        .base-sub {
+            font-size: 0.75rem;
+            color: var(--text-sub);
+            margin-top: 2px;
+        }
+        .base-pill {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            font-weight: 800;
+            padding: 3px 8px;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.08);
         }
 
-        .processes-group {
+        /* PROCESOS BIOLÓGICOS */
+        .processes-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: 1fr 1fr;
             gap: 8px;
         }
-
-        .proc-btn {
+        .btn-proc {
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.12);
             color: #cbd5e1;
-            padding: 9px 8px;
+            padding: 10px 8px;
             border-radius: 10px;
             font-size: 0.8rem;
             font-weight: 700;
@@ -207,392 +244,901 @@
             transition: all 0.2s ease;
             text-align: center;
         }
-
-        .proc-btn.active {
-            background: linear-gradient(135deg, rgba(56, 189, 248, 0.3), rgba(52, 211, 153, 0.3));
+        .btn-proc:hover {
             border-color: #38bdf8;
+            background: rgba(56, 189, 248, 0.15);
             color: #ffffff;
-            box-shadow: 0 0 12px rgba(56, 189, 248, 0.35);
+        }
+        .btn-proc.active {
+            border-color: #38bdf8;
+            background: linear-gradient(135deg, rgba(56, 189, 248, 0.35), rgba(52, 211, 153, 0.3));
+            color: #ffffff;
+            box-shadow: 0 0 14px rgba(56, 189, 248, 0.35);
         }
 
-        .slider-box {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            background: rgba(0, 0, 0, 0.35);
-            border: 1px solid rgba(255, 255, 255, 0.07);
+        /* TELEMETRÍA CRISTALOGRÁFICA B-DNA */
+        .telemetry-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+        .telemetry-cell {
+            background: rgba(0, 0, 0, 0.45);
+            border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 10px;
-            padding: 10px 12px;
+            padding: 10px;
+            text-align: center;
         }
-
-        .slider-row {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.78rem;
+        .telemetry-val {
+            font-family: var(--font-mono);
+            font-size: 1.05rem;
+            font-weight: 800;
+            color: #38bdf8;
+        }
+        .telemetry-lbl {
+            font-size: 0.68rem;
             color: #94a3b8;
-            font-weight: 600;
+            text-transform: uppercase;
+            margin-top: 2px;
         }
 
-        .slider-box input[type="range"] {
+        /* ÁREA CENTRAL 3D BABYLON.JS */
+        .stage-container {
+            position: relative;
             width: 100%;
-            accent-color: #38bdf8;
-            cursor: pointer;
+            height: 100%;
+            overflow: hidden;
+            background: radial-gradient(circle at center, #0c1424 0%, #030509 85%, #000000 100%);
+        }
+        #dnaCanvas {
+            width: 100%;
+            height: 100%;
+            outline: none;
+            display: block;
         }
 
-        /* GUÍA DIDÁCTICA INFERIOR */
-        .bottom-guide {
+        /* BARRA SUPERIOR DE CÁMARA 3D */
+        .camera-floating-bar {
             position: absolute;
-            bottom: 20px;
-            left: 24px;
-            background: rgba(10, 16, 28, 0.92);
-            border: 1px solid rgba(56, 189, 248, 0.3);
-            border-radius: 14px;
-            padding: 12px 20px;
+            top: 14px;
+            left: 50%;
+            transform: translateX(-50%);
             display: flex;
             align-items: center;
-            gap: 16px;
-            z-index: 15;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+            gap: 8px;
+            background: rgba(10, 16, 28, 0.92);
+            border: 1px solid rgba(56, 189, 248, 0.3);
             backdrop-filter: blur(12px);
-            font-size: 0.85rem;
-            color: #94a3b8;
+            padding: 6px 14px;
+            border-radius: 9999px;
+            z-index: 30;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7);
         }
-        .bottom-guide strong {
-            color: #fff;
+        .btn-cam {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: #f1f5f9;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            white-space: nowrap;
         }
-        .guide-tag {
-            background: rgba(52, 211, 153, 0.15);
-            color: #34d399;
-            border: 1px solid rgba(52, 211, 153, 0.3);
-            font-family: var(--font-mono);
-            font-size: 0.75rem;
+        .btn-cam:hover {
+            background: rgba(56, 189, 248, 0.25);
+            border-color: #38bdf8;
+            color: #38bdf8;
+        }
+        .btn-cam.active {
+            background: #38bdf8;
+            color: #030509;
             font-weight: 800;
-            padding: 4px 10px;
-            border-radius: 6px;
+        }
+
+        /* BADGE FLOTANTE DE ESTADO */
+        .canvas-hud-badge {
+            position: absolute;
+            top: 65px;
+            left: 20px;
+            background: rgba(10, 16, 28, 0.9);
+            border: 1px solid rgba(56, 189, 248, 0.35);
+            padding: 8px 14px;
+            border-radius: 10px;
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            color: #38bdf8;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 25;
+            backdrop-filter: blur(8px);
+        }
+        .pulse-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #34d399;
+            box-shadow: 0 0 8px #34d399;
+            animation: pulse 1.2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(1.3); }
+        }
+
+        /* SLIDERS Y CONTROLES INFERIORES */
+        .bottom-dock {
+            position: absolute;
+            bottom: 16px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            background: rgba(10, 16, 28, 0.94);
+            border: 1.5px solid rgba(56, 189, 248, 0.4);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.85), 0 0 25px rgba(56, 189, 248, 0.2);
+            backdrop-filter: blur(16px);
+            padding: 8px 16px;
+            border-radius: 9999px;
+            z-index: 30;
+            max-width: 96%;
+        }
+        .dock-btn {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #ffffff;
+            padding: 6px 12px;
+            border-radius: 9999px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+        .dock-btn:hover {
+            background: rgba(56, 189, 248, 0.25);
+            border-color: #38bdf8;
+            color: #38bdf8;
+            transform: translateY(-2px);
+        }
+        .dock-btn.active {
+            background: #38bdf8;
+            color: #030509;
+            font-weight: 900;
+            box-shadow: 0 0 18px rgba(56, 189, 248, 0.5);
+        }
+        .divider {
+            width: 1px;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.15);
         }
     </style>
 </head>
 <body>
 
+    <!-- HEADER SUPERIOR -->
     <header>
-        <div class="brand-box">
-            <span class="brand-badge">[COD-013]</span>
-            <div>
-                <h1 class="brand-title">Doble Hélice del ADN • Genética & Vida</h1>
-                <p class="brand-sub">Modelo Molecular Watson & Crick con Babylon.js 3D</p>
-            </div>
+        <div class="header-title-box">
+            <span class="badge-code">COD-013</span>
+            <h1>🧬 Doble Hélice del B-DNA • Biofísica Molecular Cristalográfica PDB</h1>
         </div>
-        <div style="display: flex; gap: 10px;">
-            <button class="btn-action" id="btnToggleSpin">⏸ Pausar Giro</button>
-            <button class="btn-action" id="btnResetView">🔄 Centrar Hélice</button>
+        <div class="header-right">
+            <div class="pill-status">
+                <span>🔬</span>
+                <span>Resolución Atómica 1.9 Å • Modelo Oficial PDB (1BNA)</span>
+            </div>
         </div>
     </header>
 
-    <canvas id="dnaStage"></canvas>
+    <!-- ÁREA DE TRABAJO -->
+    <div class="workspace-grid">
 
-    <div class="info-card">
-        <div class="dna-tag">🧬 MODELO MOLECULAR HUMANO (WATSON & CRICK)</div>
-        <h2 class="info-title" id="infoTitle">Estructura de Doble Hélice</h2>
-        <div class="info-summary" id="infoDesc">
-            El ADN almacena las instrucciones de todos los seres vivos. Formado por dos cadenas de azúcares y fosfatos unidas por peldaños de bases nitrogenadas complementarias: Adenina con Timina (A-T), y Citosina con Guanina (C-G).
-        </div>
+        <!-- PANEL IZQUIERDO: BIOFÍSICA DEL CÓDIGO GENÉTICO -->
+        <aside class="sidebar-panel sidebar-left">
 
-        <div class="tabs-header">Código de 4 Letras Químicas:</div>
-        <div class="base-legend">
-            <div class="base-item">
-                <span class="dot-base" style="background:var(--ade);"></span>
-                <span>Adenina (A) ⇄ T</span>
+            <div class="card-easy-concept">
+                <div class="easy-tag">💡 La Idea Fácil para Todos</div>
+                <div class="easy-title">El Manual de Instrucciones de la Vida</div>
+                <div class="easy-text">
+                    La molécula de ADN contiene las instrucciones para construir y mantener vivo a cada ser humano.
+                    En lugar de una escalera simétrica de plástico, el ADN biológico real (forma B) es una <strong>doble hélice dextrógira asimétrica</strong> con dos hendiduras esenciales: el <strong>Surco Mayor (2.2 nm)</strong> y el <strong>Surco Menor (1.2 nm)</strong>, por donde las enzimas celulares leen los genes sin necesidad de abrir la molécula.
+                </div>
             </div>
-            <div class="base-item">
-                <span class="dot-base" style="background:var(--tim);"></span>
-                <span>Timina (T) ⇄ A</span>
-            </div>
-            <div class="base-item">
-                <span class="dot-base" style="background:var(--cit);"></span>
-                <span>Citosina (C) ⇄ G</span>
-            </div>
-            <div class="base-item">
-                <span class="dot-base" style="background:var(--gua);"></span>
-                <span>Guanina (G) ⇄ C</span>
-            </div>
-        </div>
 
-        <div class="tabs-header">Procesos Biológicos Interactivos:</div>
-        <div class="processes-group">
-            <button class="proc-btn active" id="btnProcDoble" onclick="setBioProcess('double')">🧬 Doble Hélice</button>
-            <button class="proc-btn" id="btnProcUnzip" onclick="setBioProcess('unzip')">✂️ Desenrollado / Helicasa</button>
-            <button class="proc-btn" id="btnProcARN" onclick="setBioProcess('arn')">🧪 Transcripción a ARN-m</button>
-            <button class="proc-btn" id="btnProcMut" onclick="setBioProcess('mutation')">⚠️ Mutación Genética</button>
-        </div>
+            <!-- SELECTOR DE BASES NITROGENADAS Y COMPLEMENTARIEDAD -->
+            <div>
+                <div class="section-title">
+                    <span>Las 4 Letras Químicas</span>
+                    <span>🔬 Regla de Chargaff</span>
+                </div>
+                <div class="bases-selector-grid">
 
-        <div class="slider-box">
-            <div class="slider-row">
-                <span>Velocidad de Rotación:</span>
-                <span id="txtSpinSpeed" style="color:#38bdf8; font-weight:800;">1.0x</span>
-            </div>
-            <input type="range" id="spinRange" min="0" max="3" step="0.1" value="1.0" oninput="updateSpinSpeed(this.value)">
-        </div>
+                    <div class="base-card active" id="cardBase-A" onclick="selectBase('A')">
+                        <div class="base-card-left">
+                            <div class="base-dot" style="background:#38bdf8; color:#38bdf8;"></div>
+                            <div>
+                                <div class="base-name">Adenina (A)</div>
+                                <div class="base-sub">Purina Bicíclica • Empareja con Timina</div>
+                            </div>
+                        </div>
+                        <span class="base-pill" style="color:#38bdf8; border:1px solid rgba(56,189,248,0.4);">2 Enlaces H</span>
+                    </div>
 
-        <div class="slider-box">
-            <div class="slider-row">
-                <span>Apertura de la Horquilla:</span>
-                <span id="txtSeparation" style="color:#34d399; font-weight:800;">0 Å</span>
+                    <div class="base-card active" id="cardBase-T" onclick="selectBase('T')">
+                        <div class="base-card-left">
+                            <div class="base-dot" style="background:#fbbf24; color:#fbbf24;"></div>
+                            <div>
+                                <div class="base-name">Timina (T)</div>
+                                <div class="base-sub">Pirimidina Monocíclica • Empareja con A</div>
+                            </div>
+                        </div>
+                        <span class="base-pill" style="color:#fbbf24; border:1px solid rgba(251,191,36,0.4);">2 Enlaces H</span>
+                    </div>
+
+                    <div class="base-card active" id="cardBase-G" onclick="selectBase('G')">
+                        <div class="base-card-left">
+                            <div class="base-dot" style="background:#f43f5e; color:#f43f5e;"></div>
+                            <div>
+                                <div class="base-name">Guanina (G)</div>
+                                <div class="base-sub">Purina Bicíclica • Empareja con Citosina</div>
+                            </div>
+                        </div>
+                        <span class="base-pill" style="color:#f43f5e; border:1px solid rgba(244,63,94,0.4);">3 Enlaces H</span>
+                    </div>
+
+                    <div class="base-card active" id="cardBase-C" onclick="selectBase('C')">
+                        <div class="base-card-left">
+                            <div class="base-dot" style="background:#34d399; color:#34d399;"></div>
+                            <div>
+                                <div class="base-name">Citosina (C)</div>
+                                <div class="base-sub">Pirimidina Monocíclica • Empareja con G</div>
+                            </div>
+                        </div>
+                        <span class="base-pill" style="color:#34d399; border:1px solid rgba(52,211,153,0.4);">3 Enlaces H</span>
+                    </div>
+
+                </div>
             </div>
-            <input type="range" id="sepRange" min="0" max="8" step="0.2" value="0" oninput="updateSeparation(this.value)">
-        </div>
+
+            <!-- PROCESOS BIOLÓGICOS -->
+            <div>
+                <div class="section-title">
+                    <span>Procesos Celulares en Vivo</span>
+                    <span>⚡ Simulación 3D</span>
+                </div>
+                <div class="processes-grid">
+                    <button class="btn-proc active" id="btnProcDouble" onclick="setBioProcess('native')">
+                        🧬 B-DNA Canónico
+                    </button>
+                    <button class="btn-proc" id="btnProcFork" onclick="setBioProcess('fork')">
+                        ✂️ Horquilla Helicasa
+                    </button>
+                    <button class="btn-proc" id="btnProcMrna" onclick="setBioProcess('mrna')">
+                        📋 Transcripción ARNm
+                    </button>
+                    <button class="btn-proc" id="btnProcThermal" onclick="setBioProcess('thermal')">
+                        🔥 Desnaturalización
+                    </button>
+                </div>
+            </div>
+
+        </aside>
+
+        <!-- ÁREA CENTRAL 3D BABYLON.JS -->
+        <main class="stage-container" id="stageContainer">
+
+            <!-- BARRA DE CÁMARA 3D FLOTANTE -->
+            <div class="camera-floating-bar">
+                <button class="btn-cam active" onclick="setCameraView('overview')">🧬 Vista 3D Completa</button>
+                <button class="btn-cam" onclick="setCameraView('groove')">📐 Surco Mayor & Menor</button>
+                <button class="btn-cam" onclick="setCameraView('topdown')">👁️ Eje Axial (Cenital)</button>
+                <div style="width: 1px; height: 16px; background: rgba(255,255,255,0.2);"></div>
+                <button class="btn-cam" id="btnToggleSpin" onclick="toggleAutoRotate()">🔄 Rotar</button>
+                <button class="btn-cam" onclick="reset3DCamera()">↺ Centrar</button>
+            </div>
+
+            <div class="canvas-hud-badge">
+                <div class="pulse-dot"></div>
+                <span id="hudStatusText">Motor 3D Babylon.js • Arquitectura Canónica B-DNA (PDB 1BNA)</span>
+            </div>
+
+            <!-- LIENZO WEBGL 3D -->
+            <canvas id="dnaCanvas"></canvas>
+
+            <!-- BARRA INFERIOR DE ACCIÓN -->
+            <div class="bottom-dock">
+                <button class="dock-btn" id="btnFilterAT" onclick="filterBases('AT')" title="Filtrar pares Adenina = Timina (2 puentes de hidrógeno)">
+                    <span>💛</span> <strong>Pares A = T</strong> <span style="opacity:0.8;">(2H)</span>
+                </button>
+                <button class="dock-btn" id="btnFilterGC" onclick="filterBases('GC')" title="Filtrar pares Guanina ≡ Citosina (3 puentes de hidrógeno)">
+                    <span>💚</span> <strong>Pares G ≡ C</strong> <span style="opacity:0.8;">(3H)</span>
+                </button>
+                <button class="dock-btn active" id="btnFilterAll" onclick="filterBases('ALL')" title="Mostrar todas las bases nitrogenadas">
+                    <span>🌈</span> <strong>Todas</strong>
+                </button>
+
+                <div class="divider"></div>
+
+                <button class="dock-btn" id="btnXrayDiffraction" onclick="toggleXrayDiffraction()" title="Difracción de Rayos X de Rosalind Franklin (King's College London, 1952)">
+                    <span>🔬</span> <strong>Foto 51</strong> (Rayos X)
+                </button>
+            </div>
+
+        </main>
+
+        <!-- PANEL DERECHO: TELEMETRÍA CRISTALOGRÁFICA Y DETALLES -->
+        <aside class="sidebar-panel sidebar-right">
+
+            <!-- TELEMETRÍA CRISTALOGRÁFICA B-DNA -->
+            <div>
+                <div class="section-title">
+                    <span>Parámetros Biofísicos del B-DNA</span>
+                    <span>📐 Cristalografía</span>
+                </div>
+                <div class="telemetry-grid">
+                    <div class="telemetry-cell">
+                        <div class="telemetry-val">2.0 nm</div>
+                        <div class="telemetry-lbl">Diámetro de la Hélice</div>
+                    </div>
+                    <div class="telemetry-cell">
+                        <div class="telemetry-val">0.34 nm</div>
+                        <div class="telemetry-lbl">Distancia entre Pares</div>
+                    </div>
+                    <div class="telemetry-cell">
+                        <div class="telemetry-val">3.4 nm</div>
+                        <div class="telemetry-lbl">Paso por Vuelta (10.5 pb)</div>
+                    </div>
+                    <div class="telemetry-cell">
+                        <div class="telemetry-val">36.0°</div>
+                        <div class="telemetry-lbl">Giro Helicoidal por Par</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TARJETA EXPLICATIVA DEL DETALLE SELECCIONADO -->
+            <div style="background: rgba(18, 25, 42, 0.7); border-radius: 12px; padding: 14px; border: 1.5px solid rgba(56, 189, 248, 0.25);" id="detailBox">
+                <div style="font-size: 0.82rem; font-weight: 800; color: #38bdf8; margin-bottom: 4px;" id="detailTitle">
+                    ⚡ Fuerza de los Puentes de Hidrógeno
+                </div>
+                <p style="font-size: 0.8rem; color: #cbd5e1; line-height: 1.5;" id="detailDesc">
+                    Los pares <strong>Guanina ≡ Citosina</strong> se unen mediante <strong>3 puentes de hidrógeno</strong> electrostáticos, lo que hace que las secuencias ricas en G-C sean mucho más estables y requieran una temperatura de desnaturalización significativamente mayor que las regiones ricas en <strong>A = T</strong> (2 puentes de hidrógeno).
+                </p>
+            </div>
+
+            <!-- FOTO 51: EL EXPERIMENTO HISTÓRICO -->
+            <div style="background: rgba(0,0,0,0.4); border-radius: 12px; padding: 12px; border: 1px solid rgba(255,255,255,0.08);">
+                <div style="font-size: 0.82rem; font-weight: 800; color: #fde047; margin-bottom: 4px;">
+                    📷 El Hallazgo de Rosalind Franklin (1952)
+                </div>
+                <p style="font-size: 0.77rem; color: #94a3b8; line-height: 1.45;">
+                    La emblemática <strong>Foto 51</strong> de difracción de rayos X reveló la firma inequívoca en forma de <strong>'X'</strong> propia de las estructuras helicoidales, y la ausencia de reflexión en la 4ª capa demostró que las dos hebras de fosfato discurren en sentidos <strong>antiparalelos (5' \(\to\) 3' y 3' \(\to\) 5')</strong>.
+                </p>
+            </div>
+
+        </aside>
+
     </div>
 
-    <div class="bottom-guide">
-        <span class="guide-tag">LA IDEA FÁCIL SENIOR</span>
-        <span>👉 <strong>Arrastra con el ratón</strong> para inspeccionar los pares químicos. Cada color solo encaja exactamente con su pareja.</span>
-    </div>
-
+    <!-- SCRIPT DE BABYLON.JS Y MODELADO BIOMOLECULAR CRISTALOGRÁFICO -->
     <script>
-        const canvas = document.getElementById("dnaStage");
-        const engine = new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true });
-        
-        let scene, camera;
-        let dnaRoot, strand1Meshes = [], strand2Meshes = [], rungsMeshes = [];
-        let isSpinning = true;
-        let spinSpeedMultiplier = 1.0;
-        let separationOffset = 0.0;
-        let currentProcess = 'double';
+        // =========================================================================
+        // 1. CONSTANTES CRISTALOGRÁFICAS Y SECUENCIA REAL DEL B-DNA
+        // =========================================================================
+        const DNA_PARAMS = {
+            numPairs: 32,         // ~3 vueltas completas de hélice
+            diameterNm: 2.0,      // Diámetro molecular: 20 Å
+            helixRadius: 3.8,     // Escala de visualización en escena 3D
+            risePerBase: 1.25,    // Elevación entre pares consecutivos
+            twistAngle: 0.355,    // 36° por par (10.5 pares por vuelta)
+            majorGrooveRatio: 0.62, // Asimetría de surco mayor y menor
+            minorGrooveRatio: 0.38
+        };
 
-        // Materiales de Bases Nitrogenadas
-        let matA, matT, matC, matG, matU, matBackbone, matHydrogenBond;
+        // Secuencia didáctica canónica inspirada en el Dodecámero de Drew-Dickerson (PDB 1BNA)
+        const BASE_SEQUENCE = [
+            'C','G','C','G','A','A','T','T','C','G','C','G',
+            'A','T','G','C','A','T','C','G','G','C','A','T',
+            'T','A','G','C','C','G','A','T'
+        ];
+
+        let isAutoRotating = true;
+        let currentFilter = 'ALL'; // 'ALL', 'AT', 'GC'
+        let currentBioProcess = 'native'; // 'native', 'fork', 'mrna', 'thermal'
+        let separationAmount = 0.0;
+        let isDiffractionMode = false;
+
+        // Babylon.js Engine y Canvas
+        const canvas = document.getElementById("dnaCanvas");
+        const engine = new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true });
+
+        let scene, camera;
+        let dnaRoot, strand1Ribbon, strand2Ribbon;
+        let basePairMeshes = [];
+        let hydrogenBondMeshes = [];
+        let diffractionPlane = null;
+
+        // Materiales Biofísicos PBR
+        let matAdenine, matThymine, matGuanine, matCytosine, matUracil;
+        let matBackboneStrand1, matBackboneStrand2, matHBond;
 
         function createScene() {
             scene = new BABYLON.Scene(engine);
             scene.clearColor = new BABYLON.Color4(0.015, 0.02, 0.035, 1.0);
 
-            camera = new BABYLON.ArcRotateCamera("Cam", -Math.PI / 2, Math.PI / 2, 42, new BABYLON.Vector3(0, 0, 0), scene);
+            // Cámara orbital 360° con límites suaves
+            camera = new BABYLON.ArcRotateCamera("DnaCam", -Math.PI / 2, Math.PI / 2, 45, new BABYLON.Vector3(0, 0, 0), scene);
             camera.attachControl(canvas, true);
-            camera.lowerRadiusLimit = 12;
+            camera.lowerRadiusLimit = 14;
             camera.upperRadiusLimit = 85;
-            camera.wheelPrecision = 40;
+            camera.wheelPrecision = 35;
 
-            const hemi = new BABYLON.HemisphericLight("hemi", new BABYLON.Vector3(0, 1, 0), scene);
-            hemi.intensity = 0.6;
-            hemi.diffuse = new BABYLON.Color3(0.8, 0.9, 1.0);
+            // Iluminación biomolecular suave
+            const hemi = new BABYLON.HemisphericLight("hemiLight", new BABYLON.Vector3(0, 1, 0), scene);
+            hemi.intensity = 0.65;
+            hemi.diffuse = new BABYLON.Color3(0.85, 0.92, 1.0);
 
-            const dirLight = new BABYLON.DirectionalLight("dir", new BABYLON.Vector3(1, -1, 1), scene);
-            dirLight.intensity = 0.8;
+            const keyLight = new BABYLON.DirectionalLight("keyLight", new BABYLON.Vector3(1, -1.2, 1), scene);
+            keyLight.intensity = 0.95;
+            keyLight.diffuse = new BABYLON.Color3(1.0, 0.98, 0.92);
 
-            // Creación de materiales
-            matA = new BABYLON.StandardMaterial("matA", scene);
-            matA.diffuseColor = new BABYLON.Color3(0.22, 0.74, 0.97); // Azul Adenina
-            matA.emissiveColor = new BABYLON.Color3(0.08, 0.25, 0.35);
-
-            matT = new BABYLON.StandardMaterial("matT", scene);
-            matT.diffuseColor = new BABYLON.Color3(0.98, 0.75, 0.14); // Amarillo Timina
-            matT.emissiveColor = new BABYLON.Color3(0.35, 0.25, 0.05);
-
-            matC = new BABYLON.StandardMaterial("matC", scene);
-            matC.diffuseColor = new BABYLON.Color3(0.2, 0.83, 0.6); // Verde Citosina
-            matC.emissiveColor = new BABYLON.Color3(0.05, 0.28, 0.18);
-
-            matG = new BABYLON.StandardMaterial("matG", scene);
-            matG.diffuseColor = new BABYLON.Color3(0.98, 0.44, 0.52); // Rosa Guanina
-            matG.emissiveColor = new BABYLON.Color3(0.35, 0.12, 0.16);
-
-            matU = new BABYLON.StandardMaterial("matU", scene);
-            matU.diffuseColor = new BABYLON.Color3(0.75, 0.52, 0.99); // Uracilo Púrpura
-            matU.emissiveColor = new BABYLON.Color3(0.25, 0.15, 0.38);
-
-            matBackbone = new BABYLON.StandardMaterial("matBB", scene);
-            matBackbone.diffuseColor = new BABYLON.Color3(0.65, 0.72, 0.8);
-            matBackbone.specularColor = new BABYLON.Color3(0.9, 0.9, 0.9);
-
-            matHydrogenBond = new BABYLON.StandardMaterial("matH", scene);
-            matHydrogenBond.diffuseColor = new BABYLON.Color3(1, 1, 1);
-            matHydrogenBond.emissiveColor = new BABYLON.Color3(0.6, 0.8, 1);
+            const backLight = new BABYLON.DirectionalLight("backLight", new BABYLON.Vector3(-1, 0.8, -1), scene);
+            backLight.intensity = 0.55;
+            backLight.diffuse = new BABYLON.Color3(0.4, 0.7, 1.0);
 
             dnaRoot = new BABYLON.TransformNode("dnaRoot", scene);
 
-            // Generar 32 pares de bases en hélice (aprox 3 vueltas completas)
-            const numPairs = 32;
-            const helixRadius = 3.6;
-            const heightStep = 1.15;
-            const angleStep = 0.36; // ~10.5 pares por vuelta como el ADN B biológico
+            // 1. MATERIALES PBR DE BASES NITROGENADAS (COLORES BIOQUÍMICOS OFICIALES)
+            // Adenina (A) - Azul turquesa
+            matAdenine = new BABYLON.StandardMaterial("matAdenine", scene);
+            matAdenine.diffuseColor = new BABYLON.Color3(0.22, 0.74, 0.97);
+            matAdenine.specularColor = new BABYLON.Color3(0.4, 0.4, 0.4);
+            matAdenine.emissiveColor = new BABYLON.Color3(0.06, 0.22, 0.32);
 
-            for (let i = 0; i < numPairs; i++) {
-                const y = (i - numPairs / 2) * heightStep;
-                const angle = i * angleStep;
+            // Timina (T) - Amarillo Dorado
+            matThymine = new BABYLON.StandardMaterial("matThymine", scene);
+            matThymine.diffuseColor = new BABYLON.Color3(0.98, 0.75, 0.14);
+            matThymine.specularColor = new BABYLON.Color3(0.4, 0.4, 0.4);
+            matThymine.emissiveColor = new BABYLON.Color3(0.32, 0.22, 0.04);
 
-                // Posiciones de los extremos del esqueleto azúcar-fosfato
-                const p1 = new BABYLON.Vector3(Math.cos(angle) * helixRadius, y, Math.sin(angle) * helixRadius);
-                const p2 = new BABYLON.Vector3(Math.cos(angle + Math.PI) * helixRadius, y, Math.sin(angle + Math.PI) * helixRadius);
+            // Guanina (G) - Carmesí / Rosa Coral
+            matGuanine = new BABYLON.StandardMaterial("matGuanine", scene);
+            matGuanine.diffuseColor = new BABYLON.Color3(0.96, 0.25, 0.37);
+            matGuanine.specularColor = new BABYLON.Color3(0.4, 0.4, 0.4);
+            matGuanine.emissiveColor = new BABYLON.Color3(0.32, 0.08, 0.12);
 
-                // Esfera columna 1
-                const bb1 = BABYLON.MeshBuilder.CreateSphere("bb1_" + i, { diameter: 0.95 }, scene);
-                bb1.position = p1;
-                bb1.material = matBackbone;
-                bb1.parent = dnaRoot;
-                strand1Meshes.push(bb1);
+            // Citosina (C) - Verde Esmeralda
+            matCytosine = new BABYLON.StandardMaterial("matCytosine", scene);
+            matCytosine.diffuseColor = new BABYLON.Color3(0.2, 0.83, 0.6);
+            matCytosine.specularColor = new BABYLON.Color3(0.4, 0.4, 0.4);
+            matCytosine.emissiveColor = new BABYLON.Color3(0.05, 0.28, 0.18);
 
-                // Esfera columna 2
-                const bb2 = BABYLON.MeshBuilder.CreateSphere("bb2_" + i, { diameter: 0.95 }, scene);
-                bb2.position = p2;
-                bb2.material = matBackbone;
-                bb2.parent = dnaRoot;
-                strand2Meshes.push(bb2);
+            // Uracilo (U - ARN) - Púrpura
+            matUracil = new BABYLON.StandardMaterial("matUracil", scene);
+            matUracil.diffuseColor = new BABYLON.Color3(0.75, 0.52, 0.99);
+            matUracil.emissiveColor = new BABYLON.Color3(0.25, 0.15, 0.38);
 
-                // Definir par según secuencia realista (A-T o C-G)
-                const isAT = (i % 2 === 0);
-                const half1 = BABYLON.MeshBuilder.CreateCylinder("base1_" + i, {
-                    diameter: 0.5,
-                    height: helixRadius * 0.95
-                }, scene);
-                const half2 = BABYLON.MeshBuilder.CreateCylinder("base2_" + i, {
-                    diameter: 0.5,
-                    height: helixRadius * 0.95
-                }, scene);
+            // Esqueleto Azúcar-Fosfato (Desoxirribosa) - Hebra 5'->3' y 3'->5'
+            matBackboneStrand1 = new BABYLON.StandardMaterial("matBackbone1", scene);
+            matBackboneStrand1.diffuseColor = new BABYLON.Color3(0.75, 0.82, 0.92);
+            matBackboneStrand1.specularColor = new BABYLON.Color3(0.8, 0.8, 0.9);
+            matBackboneStrand1.specularPower = 32;
 
-                // Punto medio para enlace de hidrógeno
-                const bond = BABYLON.MeshBuilder.CreateSphere("bond_" + i, { diameter: 0.38 }, scene);
-                bond.position = new BABYLON.Vector3(0, y, 0);
-                bond.material = matHydrogenBond;
-                bond.parent = dnaRoot;
+            matBackboneStrand2 = new BABYLON.StandardMaterial("matBackbone2", scene);
+            matBackboneStrand2.diffuseColor = new BABYLON.Color3(0.55, 0.65, 0.78);
+            matBackboneStrand2.specularColor = new BABYLON.Color3(0.7, 0.7, 0.8);
+            matBackboneStrand2.specularPower = 32;
 
-                // Asignar colores complementarios
-                if (isAT) {
-                    half1.material = (i % 4 === 0) ? matA : matT;
-                    half2.material = (i % 4 === 0) ? matT : matA;
-                } else {
-                    half1.material = (i % 4 === 1) ? matC : matG;
-                    half2.material = (i % 4 === 1) ? matG : matC;
-                }
+            // Puentes de hidrógeno electrostáticos
+            matHBond = new BABYLON.StandardMaterial("matHBond", scene);
+            matHBond.diffuseColor = new BABYLON.Color3(1.0, 1.0, 1.0);
+            matHBond.emissiveColor = new BABYLON.Color3(0.6, 0.85, 1.0);
 
-                // Posicionar cilindros apuntando al centro
-                half1.rotation.z = Math.PI / 2;
-                half1.rotation.y = -angle;
-                half1.position = new BABYLON.Vector3(Math.cos(angle) * (helixRadius * 0.5), y, Math.sin(angle) * (helixRadius * 0.5));
-                half1.parent = dnaRoot;
+            // 2. CONSTRUCCIÓN DE LA DOBLE HÉLICE BIOFÍSICA
+            buildCanonicalBDna();
 
-                half2.rotation.z = Math.PI / 2;
-                half2.rotation.y = -(angle + Math.PI);
-                half2.position = new BABYLON.Vector3(Math.cos(angle + Math.PI) * (helixRadius * 0.5), y, Math.sin(angle + Math.PI) * (helixRadius * 0.5));
-                half2.parent = dnaRoot;
+            // 3. CONSTRUCCIÓN DEL PLANO DE DIFRACCIÓN DE RAYOS X (FOTO 51)
+            buildDiffractionPlane();
 
-                rungsMeshes.push({ half1, half2, bond, baseAngle: angle, y: y, isAT: isAT, origMat1: half1.material, origMat2: half2.material });
-            }
-
-            // Animación de rotación continua
+            // Bucle de renderizado continuo y animación biológica
             scene.registerBeforeRender(() => {
-                if (isSpinning) {
-                    dnaRoot.rotation.y += 0.008 * spinSpeedMultiplier;
+                if (isAutoRotating) {
+                    dnaRoot.rotation.y += 0.007;
                 }
 
-                // Efecto de apertura de hebras (horquilla de replicación helicasa)
-                rungsMeshes.forEach((item, idx) => {
-                    const ang = item.baseAngle;
-                    const sep = separationOffset;
-                    item.half1.position.x = Math.cos(ang) * (helixRadius * 0.5 + sep);
-                    item.half1.position.z = Math.sin(ang) * (helixRadius * 0.5 + sep);
+                // Dinámica de apertura de horquilla (helicasa) o desnaturalización térmica
+                if (separationAmount > 0.001) {
+                    basePairMeshes.forEach(bp => {
+                        const sep = separationAmount;
+                        const ang = bp.baseAngle;
 
-                    item.half2.position.x = Math.cos(ang + Math.PI) * (helixRadius * 0.5 + sep);
-                    item.half2.position.z = Math.sin(ang + Math.PI) * (helixRadius * 0.5 + sep);
+                        // Separar hebra 1 y hebra 2
+                        bp.baseMesh1.position.x = Math.cos(ang) * (DNA_PARAMS.helixRadius * 0.48 + sep);
+                        bp.baseMesh1.position.z = Math.sin(ang) * (DNA_PARAMS.helixRadius * 0.48 + sep);
 
-                    strand1Meshes[idx].position.x = Math.cos(ang) * (helixRadius + sep);
-                    strand1Meshes[idx].position.z = Math.sin(ang) * (helixRadius + sep);
+                        bp.baseMesh2.position.x = Math.cos(ang + bp.asymOffset) * (DNA_PARAMS.helixRadius * 0.48 + sep);
+                        bp.baseMesh2.position.z = Math.sin(ang + bp.asymOffset) * (DNA_PARAMS.helixRadius * 0.48 + sep);
 
-                    strand2Meshes[idx].position.x = Math.cos(ang + Math.PI) * (helixRadius + sep);
-                    strand2Meshes[idx].position.z = Math.sin(ang + Math.PI) * (helixRadius + sep);
-
-                    item.bond.scaling.set(sep > 0.5 ? 0.001 : 1, sep > 0.5 ? 0.001 : 1, sep > 0.5 ? 0.001 : 1);
-                });
+                        // Amortiguar visibilidad de los puentes de hidrógeno al romperse
+                        if (bp.bondMeshes) {
+                            bp.bondMeshes.forEach(b => {
+                                b.scaling.set(sep > 0.6 ? 0.001 : 1 - sep * 1.5, sep > 0.6 ? 0.001 : 1, sep > 0.6 ? 0.001 : 1);
+                            });
+                        }
+                    });
+                }
             });
 
             return scene;
         }
 
-        scene = createScene();
+        // =========================================================================
+        // 2. CONSTRUCCIÓN BIOMOLECULAR DEL B-DNA CANÓNICO (WATSON, CRICK, PDB 1BNA)
+        // =========================================================================
+        function buildCanonicalBDna() {
+            basePairMeshes = [];
+            hydrogenBondMeshes = [];
 
-        // Control de Procesos Biológicos
-        function setBioProcess(proc) {
-            currentProcess = proc;
-            document.querySelectorAll('.proc-btn').forEach(b => b.classList.remove('active'));
-            const t = document.getElementById("infoTitle");
-            const d = document.getElementById("infoDesc");
+            const N = DNA_PARAMS.numPairs;
+            const R = DNA_PARAMS.helixRadius;
+            const dY = DNA_PARAMS.risePerBase;
+            const dTheta = DNA_PARAMS.twistAngle;
 
-            // Restaurar materiales originales
-            rungsMeshes.forEach(item => {
-                item.half1.material = item.origMat1;
-                item.half2.material = item.origMat2;
-                item.half2.setEnabled(true);
-            });
+            const pathStrand1 = [];
+            const pathStrand2 = [];
 
-            if (proc === 'double') {
-                document.getElementById("btnProcDoble").classList.add('active');
-                separationOffset = 0;
-                document.getElementById("sepRange").value = 0;
-                document.getElementById("txtSeparation").textContent = "0 Å";
-                t.textContent = "Doble Hélice en Reposo";
-                d.textContent = "La molécula se encuentra enrollada y protegida en el núcleo de la célula humana. Mide unos 2 metros desplegada pero cabe en un núcleo microscópico de 6 micrómetros.";
-            } else if (proc === 'unzip') {
-                document.getElementById("btnProcUnzip").classList.add('active');
-                separationOffset = 3.5;
-                document.getElementById("sepRange").value = 3.5;
-                document.getElementById("txtSeparation").textContent = "3.5 Å";
-                t.textContent = "Acción de la Enzima Helicasa";
-                d.textContent = "Para copiarse (replicación celular), la enzima helicasa rompe los puentes de hidrógeno centrales como una cremallera biológica, dejando al descubierto las letras para crear una copia exacta.";
-            } else if (proc === 'arn') {
-                document.getElementById("btnProcARN").classList.add('active');
-                separationOffset = 2.0;
-                document.getElementById("sepRange").value = 2.0;
-                document.getElementById("txtSeparation").textContent = "2.0 Å";
-                // En transcripción a ARN la Timina se sustituye por Uracilo (Púrpura)
-                rungsMeshes.forEach((item, idx) => {
-                    if (item.half2.material === matT) {
-                        item.half2.material = matU;
-                    }
+            for (let i = 0; i < N; i++) {
+                const y = (i - N / 2) * dY;
+                const theta = i * dTheta;
+
+                // ASIMETRÍA BIOLÓGICA REAL: Surco Mayor (Major Groove) y Surco Menor (Minor Groove)
+                // En el B-DNA real, las dos hebras NO están a 180° simétricas, sino separadas por ~145° y 215°
+                const asymOffset = Math.PI * 0.82; // Ángulo que genera los surcos mayor (2.2 nm) y menor (1.2 nm)
+
+                const p1 = new BABYLON.Vector3(Math.cos(theta) * R, y, Math.sin(theta) * R);
+                const p2 = new BABYLON.Vector3(Math.cos(theta + asymOffset) * R, y, Math.sin(theta + asymOffset) * R);
+
+                pathStrand1.push(p1);
+                pathStrand2.push(p2);
+
+                // Determinar el par de bases químicas complementarias
+                const baseLetter1 = BASE_SEQUENCE[i % BASE_SEQUENCE.length];
+                let baseLetter2;
+                let numBonds = 2;
+
+                if (baseLetter1 === 'A') {
+                    baseLetter2 = 'T';
+                    numBonds = 2;
+                } else if (baseLetter1 === 'T') {
+                    baseLetter2 = 'A';
+                    numBonds = 2;
+                } else if (baseLetter1 === 'G') {
+                    baseLetter2 = 'C';
+                    numBonds = 3;
+                } else {
+                    baseLetter2 = 'G';
+                    numBonds = 3;
+                }
+
+                // GEOMETRÍA MOLECULAR:
+                // Purinas (A, G): Bicíclicas (anillo doble más ancho, 9 átomos)
+                // Pirimidinas (T, C): Monocíclicas (anillo simple más estrecho, 6 átomos)
+                const isPurine1 = (baseLetter1 === 'A' || baseLetter1 === 'G');
+                const len1 = isPurine1 ? R * 0.54 : R * 0.42;
+                const len2 = isPurine1 ? R * 0.42 : R * 0.54; // La suma es siempre 2.0 nm uniforme
+
+                // Base 1 (Hebra líder 5'->3')
+                const baseMesh1 = BABYLON.MeshBuilder.CreateBox("base1_" + i, {
+                    width: isPurine1 ? 0.85 : 0.65,
+                    height: 0.28,
+                    depth: len1
+                }, scene);
+                baseMesh1.rotation.y = -theta + Math.PI / 2;
+                baseMesh1.position = new BABYLON.Vector3(Math.cos(theta) * (R - len1 / 2), y, Math.sin(theta) * (R - len1 / 2));
+                baseMesh1.material = getBaseMaterial(baseLetter1);
+                baseMesh1.parent = dnaRoot;
+
+                // Base 2 (Hebra rezagada 3'->5')
+                const baseMesh2 = BABYLON.MeshBuilder.CreateBox("base2_" + i, {
+                    width: isPurine1 ? 0.65 : 0.85,
+                    height: 0.28,
+                    depth: len2
+                }, scene);
+                baseMesh2.rotation.y = -(theta + asymOffset) + Math.PI / 2;
+                baseMesh2.position = new BABYLON.Vector3(Math.cos(theta + asymOffset) * (R - len2 / 2), y, Math.sin(theta + asymOffset) * (R - len2 / 2));
+                baseMesh2.material = getBaseMaterial(baseLetter2);
+                baseMesh2.parent = dnaRoot;
+
+                // PUENTES DE HIDRÓGENO FÍSICOS ENTRE AMBAS BASES:
+                // 2 enlaces electrostáticos para A=T y 3 enlaces para G≡C
+                const bondMeshes = [];
+                for (let b = 0; b < numBonds; b++) {
+                    const bondYOffset = (b - (numBonds - 1) / 2) * 0.12;
+                    const bondCyl = BABYLON.MeshBuilder.CreateCylinder("bond_" + i + "_" + b, {
+                        diameter: 0.08,
+                        height: 0.65
+                    }, scene);
+                    bondCyl.rotation.z = Math.PI / 2;
+                    bondCyl.rotation.y = -theta;
+                    bondCyl.position = new BABYLON.Vector3(0, y + bondYOffset, 0);
+                    bondCyl.material = matHBond;
+                    bondCyl.parent = dnaRoot;
+                    bondMeshes.push(bondCyl);
+                    hydrogenBondMeshes.push(bondCyl);
+                }
+
+                basePairMeshes.push({
+                    id: i,
+                    y: y,
+                    baseAngle: theta,
+                    asymOffset: asymOffset,
+                    letter1: baseLetter1,
+                    letter2: baseLetter2,
+                    numBonds: numBonds,
+                    baseMesh1: baseMesh1,
+                    baseMesh2: baseMesh2,
+                    bondMeshes: bondMeshes,
+                    origMat1: baseMesh1.material,
+                    origMat2: baseMesh2.material
                 });
-                t.textContent = "Transcripción a ARN Mensajero (ARNm)";
-                d.textContent = "La célula lee un gen para fabricar proteínas. Crea una copia de una sola hebra (ARN) donde la Timina (amarilla) se reemplaza químicamente por Uracilo (púrpura).";
-            } else if (proc === 'mutation') {
-                document.getElementById("btnProcMut").classList.add('active');
-                separationOffset = 0;
-                document.getElementById("sepRange").value = 0;
-                document.getElementById("txtSeparation").textContent = "0 Å";
-                // Simular 3 errores de emparejamiento (mutaciones puntuales de bases)
-                rungsMeshes[8].half2.material = matC; // A emparejada erróneamente con C
-                rungsMeshes[16].half2.material = matA; // G emparejada erróneamente con A
-                rungsMeshes[24].half1.material = matG; // T emparejada con G
-                t.textContent = "Mutación Genética (Error de Emparejamiento)";
-                d.textContent = "Por radiación, sustancias químicas o error de copia, una letra se sustituye erróneamente (por ejemplo A emparejada con C). La mayoría son corregidas por enzimas de reparación, pero algunas impulsan la evolución o enfermedades.";
+            }
+
+            // ESQUELETO CONTINUO AZÚCAR-FOSFATO (TUBOS HELICOIDALES SUAVES)
+            strand1Ribbon = BABYLON.MeshBuilder.CreateTube("strand1Ribbon", {
+                path: pathStrand1,
+                radius: 0.38,
+                tessellation: 16,
+                sideOrientation: BABYLON.Mesh.DOUBLESIDE
+            }, scene);
+            strand1Ribbon.material = matBackboneStrand1;
+            strand1Ribbon.parent = dnaRoot;
+
+            strand2Ribbon = BABYLON.MeshBuilder.CreateTube("strand2Ribbon", {
+                path: pathStrand2,
+                radius: 0.38,
+                tessellation: 16,
+                sideOrientation: BABYLON.Mesh.DOUBLESIDE
+            }, scene);
+            strand2Ribbon.material = matBackboneStrand2;
+            strand2Ribbon.parent = dnaRoot;
+        }
+
+        function getBaseMaterial(letter) {
+            if (letter === 'A') return matAdenine;
+            if (letter === 'T') return matThymine;
+            if (letter === 'G') return matGuanine;
+            if (letter === 'C') return matCytosine;
+            return matUracil;
+        }
+
+        // =========================================================================
+        // 3. MODO DIFRACCIÓN DE RAYOS X (LA CÉLEBRE FOTO 51 DE ROSALIND FRANKLIN)
+        // =========================================================================
+        function buildDiffractionPlane() {
+            diffractionPlane = BABYLON.MeshBuilder.CreatePlane("diffractionPlane", {
+                width: 32,
+                height: 32
+            }, scene);
+            diffractionPlane.position = new BABYLON.Vector3(0, 0, -2);
+            diffractionPlane.rotation.x = Math.PI;
+
+            const diffMat = new BABYLON.StandardMaterial("diffMat", scene);
+            diffMat.diffuseTexture = new BABYLON.Texture("https://upload.wikimedia.org/wikipedia/en/b/b2/Photo_51_x-ray_diffraction_image.jpg", scene);
+            diffMat.emissiveColor = new BABYLON.Color3(0.9, 0.9, 0.9);
+            diffMat.backFaceCulling = false;
+            diffractionPlane.material = diffMat;
+            diffractionPlane.setEnabled(false); // Oculto por defecto
+        }
+
+        function toggleXrayDiffraction() {
+            isDiffractionMode = !isDiffractionMode;
+            const btn = document.getElementById("btnXrayDiffraction");
+            btn.classList.toggle("active", isDiffractionMode);
+
+            if (isDiffractionMode) {
+                dnaRoot.setEnabled(false);
+                diffractionPlane.setEnabled(true);
+                camera.setTarget(new BABYLON.Vector3(0, 0, 0));
+                camera.alpha = -Math.PI / 2;
+                camera.beta = Math.PI / 2;
+                camera.radius = 35;
+                hudStatusText.innerText = "Difracción de Rayos X • Foto 51 de Rosalind Franklin (King's College London, Mayo 1952)";
+                document.getElementById("detailTitle").innerText = "📷 La Firma en 'X' que Descubrió el ADN";
+                document.getElementById("detailDesc").innerText = "El característico patrón en forma de 'X' de la Foto 51 demostró la geometría helicoidal de 10.5 pares por vuelta y los 34 Å de paso que permitieron a Watson y Crick publicar su modelo en Nature en 1953.";
+            } else {
+                diffractionPlane.setEnabled(false);
+                dnaRoot.setEnabled(true);
+                camera.radius = 45;
+                hudStatusText.innerText = "Motor 3D Babylon.js • Arquitectura Canónica B-DNA (PDB 1BNA)";
+                document.getElementById("detailTitle").innerText = "⚡ Fuerza de los Puentes de Hidrógeno";
+                document.getElementById("detailDesc").innerText = "Los pares Guanina ≡ Citosina (3 enlaces H) confieren mucha más rigidez térmica que los pares Adenina = Timina (2 enlaces H).";
             }
         }
 
-        function updateSpinSpeed(val) {
-            spinSpeedMultiplier = parseFloat(val);
-            document.getElementById("txtSpinSpeed").textContent = val + "x";
+        // =========================================================================
+        // 4. AISLAMIENTO Y SELECCIÓN DE BASES NITROGENADAS (REGLA DE S10)
+        // =========================================================================
+        function selectBase(baseKey) {
+            document.querySelectorAll(".base-card").forEach(c => c.classList.remove("active"));
+            const card = document.getElementById(`cardBase-${baseKey}`);
+            if (card) card.classList.add("active");
+
+            // Resaltar en la hélice únicamente la base seleccionada
+            basePairMeshes.forEach(bp => {
+                const match1 = (bp.letter1 === baseKey);
+                const match2 = (bp.letter2 === baseKey);
+
+                bp.baseMesh1.visibility = match1 ? 1.0 : 0.22;
+                bp.baseMesh2.visibility = match2 ? 1.0 : 0.22;
+
+                if (match1) bp.baseMesh1.scaling.set(1.15, 1.3, 1.15);
+                else bp.baseMesh1.scaling.set(1.0, 1.0, 1.0);
+
+                if (match2) bp.baseMesh2.scaling.set(1.15, 1.3, 1.15);
+                else bp.baseMesh2.scaling.set(1.0, 1.0, 1.0);
+            });
+
+            const t = document.getElementById("detailTitle");
+            const d = document.getElementById("detailDesc");
+
+            if (baseKey === 'A') {
+                t.innerText = "🔵 Adenina (A) • C₅H₅N₅ (Purina)";
+                d.innerText = "Base púrica bicíclica. Posee 2 centros donantes/aceptores de hidrógeno que se emparejan con Timina a una distancia de 0.28 nm.";
+                hudStatusText.innerText = "Base Aislada: Adenina (A) • Purina Bicíclica";
+            } else if (baseKey === 'T') {
+                t.innerText = "🟡 Timina (T) • C₅H₆N₂O₂ (Pirimidina)";
+                d.innerText = "Base pirimidínica monocíclica exclusiva del ADN. Se sustituye por Uracilo (U) durante la transcripción al ARN mensajero.";
+                hudStatusText.innerText = "Base Aislada: Timina (T) • Pirimidina Monocíclica";
+            } else if (baseKey === 'G') {
+                t.innerText = "🔴 Guanina (G) • C₅H₅N₅O (Purina)";
+                d.innerText = "Base púrica bicíclica con 3 enlaces de hidrógeno complementarios con Citosina. Aporta máxima estabilidad estructural.";
+                hudStatusText.innerText = "Base Aislada: Guanina (G) • Purina Bicíclica";
+            } else if (baseKey === 'C') {
+                t.innerText = "🟢 Citosina (C) • C₄H₅N₃O (Pirimidina)";
+                d.innerText = "Base pirimidínica que puede sufrir metilación epigenética (5-metilcitosina), regulando la expresión génica sin alterar la secuencia.";
+                hudStatusText.innerText = "Base Aislada: Citosina (C) • Pirimidina Monocíclica";
+            }
         }
 
-        function updateSeparation(val) {
-            separationOffset = parseFloat(val);
-            document.getElementById("txtSeparation").textContent = val + " Å";
+        function filterBases(mode) {
+            currentFilter = mode;
+            document.querySelectorAll(".bottom-dock .dock-btn").forEach((b, i) => {
+                if (i < 3) b.classList.remove("active");
+            });
+
+            if (mode === 'AT') {
+                document.getElementById("btnFilterAT").classList.add("active");
+                basePairMeshes.forEach(bp => {
+                    const isAT = (bp.letter1 === 'A' || bp.letter1 === 'T');
+                    bp.baseMesh1.visibility = isAT ? 1.0 : 0.18;
+                    bp.baseMesh2.visibility = isAT ? 1.0 : 0.18;
+                    bp.bondMeshes.forEach(b => b.visibility = isAT ? 1.0 : 0.1);
+                });
+                hudStatusText.innerText = "Filtro Biofísico: Aislados Pares A = T (2 Puentes de Hidrógeno)";
+            } else if (mode === 'GC') {
+                document.getElementById("btnFilterGC").classList.add("active");
+                basePairMeshes.forEach(bp => {
+                    const isGC = (bp.letter1 === 'G' || bp.letter1 === 'C');
+                    bp.baseMesh1.visibility = isGC ? 1.0 : 0.18;
+                    bp.baseMesh2.visibility = isGC ? 1.0 : 0.18;
+                    bp.bondMeshes.forEach(b => b.visibility = isGC ? 1.0 : 0.1);
+                });
+                hudStatusText.innerText = "Filtro Biofísico: Aislados Pares G ≡ C (3 Puentes de Hidrógeno)";
+            } else {
+                document.getElementById("btnFilterAll").classList.add("active");
+                basePairMeshes.forEach(bp => {
+                    bp.baseMesh1.visibility = 1.0;
+                    bp.baseMesh2.visibility = 1.0;
+                    bp.baseMesh1.scaling.set(1, 1, 1);
+                    bp.baseMesh2.scaling.set(1, 1, 1);
+                    bp.bondMeshes.forEach(b => b.visibility = 1.0);
+                });
+                document.querySelectorAll(".base-card").forEach(c => c.classList.add("active"));
+                hudStatusText.innerText = "Motor 3D Babylon.js • Arquitectura Canónica B-DNA (PDB 1BNA)";
+            }
         }
 
-        document.getElementById("btnToggleSpin").addEventListener("click", () => {
-            isSpinning = !isSpinning;
-            document.getElementById("btnToggleSpin").textContent = isSpinning ? "⏸ Pausar Giro" : "▶ Reanudar Giro";
-        });
+        // =========================================================================
+        // 5. PROCESOS CELULARES: HORQUILLA HELICASA, ARNm Y TERMODINÁMICA
+        // =========================================================================
+        function setBioProcess(proc) {
+            currentBioProcess = proc;
+            document.querySelectorAll(".btn-proc").forEach(b => b.classList.remove("active"));
 
-        document.getElementById("btnResetView").addEventListener("click", () => {
-            camera.alpha = -Math.PI / 2;
-            camera.beta = Math.PI / 2;
-            camera.radius = 42;
-            camera.target = new BABYLON.Vector3(0, 0, 0);
-        });
+            // Restaurar estado
+            separationAmount = 0.0;
+            basePairMeshes.forEach(bp => {
+                bp.baseMesh1.material = bp.origMat1;
+                bp.baseMesh2.material = bp.origMat2;
+                bp.bondMeshes.forEach(b => b.scaling.set(1, 1, 1));
+            });
 
-        window.addEventListener("resize", () => {
-            engine.resize();
-        });
+            if (proc === 'native') {
+                document.getElementById("btnProcDouble").classList.add("active");
+                hudStatusText.innerText = "Proceso Celular: B-DNA Canónico en Estado Fisiológico (37°C)";
+            } else if (proc === 'fork') {
+                document.getElementById("btnProcFork").classList.add("active");
+                separationAmount = 1.6;
+                hudStatusText.innerText = "Horquilla de Replicación: La enzima Helicasa rompe los puentes de H para duplicar el ADN";
+                document.getElementById("detailTitle").innerText = "✂️ Horquilla de Replicación (Helicasa)";
+                document.getElementById("detailDesc").innerText = "La enzima Helicasa avanza consumiendo ATP para romper los enlaces de hidrógeno y separar las dos hebras antiparalelas, permitiendo que la ADN Polimerasa sintetice las cadenas hijas.";
+            } else if (proc === 'mrna') {
+                document.getElementById("btnProcMrna").classList.add("active");
+                separationAmount = 0.8;
+                // Sustituir timinas de la hebra molde por Uracilo (púrpura)
+                basePairMeshes.forEach(bp => {
+                    if (bp.letter2 === 'T') bp.baseMesh2.material = matUracil;
+                });
+                hudStatusText.innerText = "Transcripción Celular: La ARN Polimerasa copia el gen sustituyendo Timina por Uracilo (U)";
+                document.getElementById("detailTitle").innerText = "📋 Transcripción a ARN Mensajero";
+                document.getElementById("detailDesc").innerText = "Durante la expresión génica, la ARN polimerasa lee la hebra molde e inserta Uracilo (U, color púrpura) en lugar de Timina para exportar el mensaje al ribosoma.";
+            } else if (proc === 'thermal') {
+                document.getElementById("btnProcThermal").classList.add("active");
+                separationAmount = 2.4;
+                hudStatusText.innerText = "Desnaturalización Térmica (95°C): Ruptura completa de puentes de hidrógeno (PCR)";
+                document.getElementById("detailTitle").innerText = "🔥 Termodinámica y PCR (95°C)";
+                document.getElementById("detailDesc").innerText = "A 95°C la agitación térmica supera la energía de los puentes de hidrógeno, separando las hebras sin romper el fuerte esqueleto covalente de fosfodiéster.";
+            }
+        }
 
-        engine.runRenderLoop(() => {
-            scene.render();
+        // =========================================================================
+        // 6. CÁMARAS Y ENFOQUES DIDÁCTICOS
+        // =========================================================================
+        function setCameraView(view) {
+            document.querySelectorAll(".btn-cam").forEach(b => b.classList.remove("active"));
+
+            if (view === 'overview') {
+                camera.setTarget(new BABYLON.Vector3(0, 0, 0));
+                camera.alpha = -Math.PI / 2;
+                camera.beta = Math.PI / 2;
+                camera.radius = 45;
+            } else if (view === 'groove') {
+                camera.setTarget(new BABYLON.Vector3(0, 2, 0));
+                camera.alpha = -Math.PI / 2.8;
+                camera.beta = Math.PI / 2.3;
+                camera.radius = 24;
+                document.getElementById("detailTitle").innerText = "📐 Surco Mayor (2.2 nm) vs Surco Menor (1.2 nm)";
+                document.getElementById("detailDesc").innerText = "La asimetría angular de la desoxirribosa crea dos hendiduras de distinta anchura. En el Surco Mayor los grupos químicos quedan expuestos para que los factores de transcripción reconozcan la secuencia.";
+            } else if (view === 'topdown') {
+                camera.setTarget(new BABYLON.Vector3(0, 0, 0));
+                camera.alpha = -Math.PI / 2;
+                camera.beta = 0.05; // Vista axial directa por el centro de la hélice
+                camera.radius = 32;
+                document.getElementById("detailTitle").innerText = "👁️ Vista Axial: Diámetro Constante de 2.0 nm";
+                document.getElementById("detailDesc").innerText = "Desde el eje central se aprecia cómo el emparejamiento estricto de una Purina bicíclica con una Pirimidina monocíclica mantiene exactamente el radio constante de 1.0 nm en toda la longitud.";
+            }
+        }
+
+        function toggleAutoRotate() {
+            isAutoRotating = !isAutoRotating;
+            document.getElementById("btnToggleSpin").classList.toggle("active", isAutoRotating);
+        }
+
+        function reset3DCamera() {
+            setCameraView('overview');
+            filterBases('ALL');
+        }
+
+        // Inicializar renderizado
+        window.addEventListener("DOMContentLoaded", () => {
+            createScene();
+            engine.runRenderLoop(() => {
+                scene.render();
+            });
+            window.addEventListener("resize", () => {
+                engine.resize();
+            });
         });
     </script>
 </body>
 </html>
-
