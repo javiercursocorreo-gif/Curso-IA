@@ -28,6 +28,7 @@ def get_niv_items():
         )
         items.append({
             'id_code': code,
+            'is_senior_microapp': False,
             'block_dir': '09. [NIV] BLOQUE_9_ESCALAFONES_Y_NIVELES_CULTURA101',
             'block_name': 'BLOQUE X: ESCALAFONES Y NIVELES DE CLASIFICACIÓN UNIVERSAL [NIV] (Cultura 101)',
             'title': title,
@@ -40,261 +41,252 @@ def get_niv_items():
             'extra': None
         })
 
-    # GRUPO A: ECONOMÍA, RIQUEZA Y PODER SOCIAL (NIV-001 a NIV-010)
-    add_it('[NIV-001]', 'Los 7 Niveles de Riqueza y Libertad Financiera',
-           'Análisis estratificado de la evolución económica personal y familiar según los modelos de educación financiera (estilo Cultura 101). La riqueza se mide en meses de autonomía y soberanía de tiempo.',
-           7, 'Una llave dorada tridimensional abriendo un cofre de engranajes temporales luminosos, simbolizando soberanía de tiempo.',
-           [
-               ("Supervivencia y Deuda", "Una persona haciendo malabares angustiosos con facturas y tarjetas al borde de un abismo financiero."),
-               ("Estabilidad Básica", "Un trabajador con sus cuentas al día, ingresos estables y cero deudas al consumo destructivas."),
-               ("Fondo de Seguridad", "Una bóveda doméstica de ladrillos dorados que representa de 6 a 12 meses de gastos cubiertos."),
-               ("Autonomía y Respiro", "Un profesional invirtiendo en activos productivos mientras disfruta de tiempo libre con su familia."),
-               ("Independencia Financiera", "Un árbol frondoso de cuyas ramas caen frutos de rentas pasivas que cubren el coste de vida básico."),
-               ("Soberanía y Abundancia", "Una brújula sobre un mapa mundial simbolizando libertad total para elegir proyectos por vocación."),
-               ("Legado y Filantropía", "Un mecenas construyendo escuelas y fundaciones científicas para impactar a las futuras generaciones.")
-           ],
-           'Modifica el Peldaño 3 para ilustrar un escudo protector azul que detiene flechas de imprevistos económicos en castellano.')
+    def add_senior_microapp(code, title, concept, seed_step1, seed_step2, blueprint, sim_file, sim_title):
+        items.append({
+            'id_code': code,
+            'is_senior_microapp': True,
+            'block_dir': '09. [NIV] BLOQUE_9_ESCALAFONES_Y_NIVELES_CULTURA101',
+            'block_name': 'BLOQUE X: ESCALAFONES Y MICRO-APLICACIONES DE VIDA REAL [NIV] (+65)',
+            'title': title,
+            'concept': concept,
+            'concept_text': concept,
+            'seed_step1': seed_step1,
+            'seed_step2': seed_step2,
+            'blueprint': blueprint,
+            'sim_file': sim_file,
+            'sim_title': sim_title,
+            'prompt': (seed_step1, seed_step2),
+            'prompt_data': f"PASO 1 (PROMPT SEMILLA):\n{seed_step1}\n\nPASO 2 (ORDEN DE EJECUCIÓN):\n{seed_step2}",
+            'tips': f"<b>Paso 1:</b> Dicta o escribe la orden semilla en Gemini.<br/><b>Paso 2:</b> Da la orden de generar la Micro-App HTML.<br/><b>Garantía Oficial:</b> Si tu IA tarda, pulsa en el simulador terminado: <i>{sim_file}</i>",
+            'tips_text': f"Paso 1: Dicta o escribe la orden semilla en Gemini.\nPaso 2: Da la orden de generar la Micro-App HTML.\nGarantía Oficial: Si tu IA tarda, pulsa en el simulador terminado: {sim_file}",
+            'extra': None
+        })
 
-    add_it('[NIV-002]', 'Los 6 Niveles de las Pirámides y Fraudes Financieros Históricos',
-           'Clasificación de los esquemas de ingeniería social y fraude económico desde el siglo XVII hasta las criptoestafas algorítmicas.',
-           6, 'Una pirámide de cartas financieras en 3D desmoronándose en el centro junto a un reloj de arena de colapso inevitable.',
-           [
-               ("La Manía de los Tulipanes (1637)", "Comerciantes holandeses intercambiando bulbos de flor por casas enteras en plena burbuja especulativa."),
-               ("Compañía de los Mares del Sur (1720)", "Accionistas aristócratas en pánico ante el estallido de acciones infladas sin respaldo comercial."),
-               ("El Esquema Ponzi Original (1920)", "Charles Ponzi pagando con dinero de nuevos inversores los intereses ilusorios de los antiguos."),
-               ("Estafas Piramidales Multinivel", "Una red de diagramas donde solo la cúspide absorbe el capital de las bases reclutadas."),
-               ("Megafraude de Bernard Madoff (2008)", "Pantallas bursátiles falsificadas ocultando una pirámide de 64.000 millones de dólares en Wall Street."),
-               ("Cripto-Burbujas y Estafas Algorítmicas", "Tokens fantasma y contratos digitales vacíos prometiendo rentabilidades mágicas sin modelo real.")
-           ],
-           'Añade en el margen derecho una columna de advertencia roja con 3 banderas de peligro (Señales Rojas) para detectar estafas antes de invertir.')
+    # =========================================================================
+    # LOTE 1 (SESIONES 01 A 10): MICRO-APLICACIONES INTERACTIVAS SENIORS (+65)
+    # =========================================================================
+    add_senior_microapp(
+        '[NIV-001]',
+        'Los 5 Escalones de la Tranquilidad en la Jubilación',
+        'Micro-aplicación interactiva de diagnóstico financiero familiar para personas mayores (+65). Permite visualizar con total claridad cómo se combinan la pensión pública mensual, los ahorros guardados y la vivienda en propiedad para garantizar paz mental y solvencia vitalicia sin depender de nadie.',
+        'Actúa como un orientador familiar y pedagogo para personas mayores de 65 años.\nExplícame en 3 puntos claros cómo estructurar una calculadora sencilla en HTML para valorar la tranquilidad en la jubilación, teniendo en cuenta la pensión vitalicia, los ahorros guardados y la vivienda propia.',
+        'Perfecto. Ahora genera en un único archivo HTML interactivo la calculadora completa: con diseño oscuro accesible, deslizadores fáciles, tipografía grande (17px) y mensajes tranquilizadores sin jerga financiera inglesa.',
+        '• Controles (Sliders): Pensión mensual (0-4.000 €), Gastos mensuales (0-4.000 €), Ahorros bancarios (0-300.000 €), Valor vivienda propia (0-600.000 €).\n• Lógica sin contradicciones: Si la pensión cubre los gastos, los ahorros no se tocan jamás ("Vitalicio"). Si hay déficit mensual, calcula cuántos años de colchón quedan.\n• 5 Escalones visuales: 1. Ajuste necesario, 2. Respiro mensual, 3. Colchón de seguridad, 4. Disfrutar de la jubilación, 5. Paz y serenidad total.\n• Interfaz: Modo oscuro (#060913), alto contraste, botones amplios, tipografía grande y advertencias en color verde/ámbar.',
+        'SIMULADOR_TRANQUILIDAD_JUBILACION.html',
+        'Calculadora Tranquilidad Jubilación (+65)'
+    )
 
-    add_it('[NIV-003]', 'Los 5 Niveles del Poder Geopolítico y Hegemonía Mundial',
-           'Evolución de las estructuras de poder entre civilizaciones desde el control agrario hasta la supremacía en Inteligencia Artificial.',
-           5, 'Un globo terráqueo geopolítico tridimensional rodeado por anillos de cables de fibra óptica submarina y satélites cuánticos.',
-           [
-               ("Poder Territorial Agrario", "Imperios antiguos defendiendo murallas de piedra y campos de cultivo con ejércitos de infantería."),
-               ("Hegemonía Marítima y Comercial", "Galeones y flotas mercantes controlando los cuellos de botella oceánicos y las rutas de oro."),
-               ("Potencia Industrial y de Acero", "Fábricas de la Revolución Industrial, redes ferroviarias continentales y acorazados de vapor."),
-               ("Superpotencia Nuclear y Aeroespacial", "Silos de disuasión nuclear, portaaviones y satélites de espionaje en órbita."),
-               ("Supremacía Algorítmica y Microchips", "Centros de supercómputo cuántico, laboratorios de silicio de 2 nm y redes de Inteligencia Artificial.")
-           ],
-           'Modifica el Peldaño 5 para resaltar un microchip gigante brillante conectando tres continentes con rayos de luz láser azul.')
+    add_senior_microapp(
+        '[NIV-002]',
+        'Radar de Detección de Fraudes y Estafas para Mayores',
+        'Micro-aplicación interactiva diseñada como escudo protector contra las estafas más habituales dirigidas a seniors: llamadas urgentes haciéndose pasar por el banco, mensajes SMS de paquetes falsos, falsos revisores del gas o timos del hijo en apuros. Evalúa el nivel de riesgo en segundos y ofrece pautas de acción seguras.',
+        'Actúa como un inspector de policía especializado en ciberseguridad para mayores.\nExplícame en 3 puntos cómo crear un detector interactivo en HTML que ayude a mis padres a identificar si un mensaje, llamada telefónica o visita a casa es una estafa.',
+        'Genera en un único archivo HTML la aplicación completa del Radar Antifraude: con preguntas claras de respuesta Sí/No, semáforo de peligro (Verde, Ámbar, Rojo), botones de marcado rápido de emergencia (091/062) y textos grandes.',
+        '• Cuestionario dinámico: 6 situaciones cotidianas (urgencia por hacer transferencia, pedir claves secretas por SMS, visita no avisada del gas, link desconocido).\n• Algoritmo de puntuación: 0 puntos = Seguro (Verde), 1-2 puntos = Sospechoso (Ámbar), 3+ puntos = Estafa Inminente (Rojo).\n• Panel de socorro: Botones directos para llamar al 091 (Policía Nacional), 062 (Guardia Civil) o bloquear tarjeta bancaria.\n• Diseño: Tipografía de 18px, iconos nítidos, colores contrastados y sin tecnicismos informáticos.',
+        'SIMULADOR_RADAR_ESTAFAS_SENIORS.html',
+        'Radar Antifraude para Seniors (+65)'
+    )
 
-    add_it('[NIV-004]', 'Los 6 Niveles de Aporte de Valor en una Empresa',
-           'Escalafón del valor profesional y transición desde tareas mecánicas instruidas hasta la creación de propiedad intelectual escalable.',
-           6, 'Un engranaje maestro de cristal 3D del cual emergen bombillas de ideas creativas, simbolizando claridad estratégica.',
-           [
-               ("Ejecución Mecánica Instruida", "Un operario siguiendo un manual paso a paso bajo supervisión directa para tareas rutinarias."),
-               ("Resolución Autónoma de Tareas", "Un técnico cualificado resolviendo incidencias operativas sin requerir guía constante."),
-               ("Optimización de Procesos", "Un analista identificando cuellos de botella y mejorando la eficiencia y velocidad del equipo."),
-               ("Liderazgo y Gestión de Personas", "Un director coordinando talentos diversos, alineando voluntades y resolviendo conflictos."),
-               ("Diseño Estratégico y de Negocio", "Un visionario abriendo nuevos mercados, creando productos innovadores y gestionando riesgo."),
-               ("Creación de Activos y Patentes", "El arquitecto patrimonial que genera marcas registradas, software escalable y propiedad intelectual duradera.")
-           ],
-           'Ilustra en el Peldaño 6 una balanza equilibrando una patente de software con un lingote de oro, todo con textos en español.')
+    add_senior_microapp(
+        '[NIV-003]',
+        'Los 5 Niveles del Poder Geopolítico y la Economía del Hogar',
+        'Herramienta pedagógica interactiva que conecta los grandes movimientos de la geopolítica mundial (crisis energéticas, aranceles, conflictos y tipos de interés) con su impacto directo en el bolsillo diario del jubilado: la factura de la luz, el precio del gasóleo, la barra de pan y el coste del aceite.',
+        'Actúa como un divulgador económico cercano para personas mayores.\nExplícame en 3 puntos cómo diseñar una aplicación interactiva que muestre cómo las noticias de conflictos y mercados mundiales influyen en los precios de la compra diaria en España.',
+        'Crea el código HTML completo con una escala de 5 niveles geopolíticos, simulador de cesta de la compra con deslizadores para luz, carburante y alimentos, y consejos prácticos de ahorro doméstico.',
+        '• 5 Niveles de Impacto: Local, Nacional, Europeo, Geopolítico Global, Cambio de Orden Mundial.\n• Deslizadores de costes del hogar: Factura de electricidad (30-200 €), Calefacción/Gas (20-180 €), Cesta de alimentos (150-600 €).\n• Simulador de escenarios: "Paz y estabilidad", "Subida de petróleo", "Tensión internacional".\n• Métricas: Inflación estimada en el hogar y recomendaciones prácticas de optimización de tarifas.',
+        'SIMULADOR_RADAR_GEOPOLITICA_SENIORS.html',
+        'Radar Geopolítica y Cesta de la Compra (+65)'
+    )
 
-    add_it('[NIV-005]', 'Los 5 Niveles de la Evolución del Dinero',
-           'Estudio de la transformación tecnológica del intercambio comercial desde el trueque hasta los activos criptográficos descentralizados.',
-           5, 'Una moneda de oro antigua fundiéndose metamórficamente en un bloque de luz digital tridimensional en red descentralizada.',
-           [
-               ("Trueque Directo de Mercancías", "Aldeanos prehistóricos intercambiando sacos de trigo por ganado según coincidencia de necesidades."),
-               ("Dinero Mercancía y Sal", "Conchas de cauri, sacos de sal y granos de cacao utilizados como unidades comunes de cuenta."),
-               ("Moneda Metálica (Oro y Plata)", "Monedas acuñadas en el Imperio Romano con peso estandarizado, durabilidad absoluta y valor intrínseco."),
-               ("Papel Moneda Fiduciario", "Billetes emitidos por bancos centrales basados en confianza institucional y deuda pública."),
-               ("Dinero Digital y Descentralizado", "Tarjetas bancarias fotónicas y activos criptográficos inmutables protegidos por matemática.")
-           ],
-           'Añade en el centro del Peldaño 3 una moneda romana clásica brillante con el busto del emperador muy detallado.')
+    add_senior_microapp(
+        '[NIV-004]',
+        'Los 6 Niveles de Aporte de Valor y Sabiduría Senior',
+        'Micro-aplicación de autodiagnóstico del capital humano y vital. Ayuda a las personas mayores a poner en valor su inmensa trayectoria profesional y personal: resolución de conflictos familiares, mentoría a nietos o emprendedores, voluntariado social y transmisión de valores éticos.',
+        'Actúa como un psicólogo y orientador de talento sénior.\nExplícame en 3 puntos cómo crear un test interactivo en HTML que valore las 6 formas en que una persona jubilada aporta sabiduría y valor a su familia y a la sociedad.',
+        'Genera el código HTML completo en un único archivo: con preguntas sencillas tipo test, gráfico de radar de fortalezas, tipografía grande y diploma descargable de Mentor Vitalicio.',
+        '• 6 Niveles de Sabiduría: 1. Experiencia técnica, 2. Resolución de problemas, 3. Templanza emocional, 4. Mediación de conflictos familiares, 5. Mentoría generacional, 6. Legado ético y cultural.\n• Cuestionario de 6 preguntas con escala 1 a 5.\n• Resultado: Gráfico de radar visual y cálculo de la "Puntuación de Sabiduría Activa".',
+        'SIMULADOR_APORTE_VALOR_EMPRESA_SENIORS.html',
+        'Simulador Sabiduría y Valor Senior (+65)'
+    )
 
-    add_it('[NIV-006]', 'Los 6 Niveles del Poder Adquisitivo y Coste de Vida Global',
-           'Comparativa económica de las condiciones materiales de vida y acceso a servicios según el nivel de ingreso en la economía mundial.',
-           6, 'Una balanza económica en 3D sosteniendo en un extremo una canasta básica de alimentos y en el otro una hora de trabajo humano.',
-           [
-               ("Pobreza Extrema (< 2$ al día)", "Una familia acarreando agua turbia en bidones plásticos desde pozos lejanos y cocinando con leña en el suelo."),
-               ("Subsistencia Básica (2$ a 8$ al día)", "Acceso a agua potable en grifo comunitario, bicicleta de transporte y electricidad intermitente."),
-               ("Clase Media Emergente (8$ a 32$ al día)", "Vivienda de ladrillo con fontanería interior, motocicleta o coche pequeño y educación pública."),
-               ("Clase Media Consolidada (32$ a 100$ al día)", "Electrodomésticos modernos, cobertura médica, viajes vacacionales y ahorro mensual sistemático."),
-               ("Afluencia y Confort (100$ a 500$ al día)", "Propiedad de viviendas excelentes, educación universitaria internacional e inversiones patrimoniales."),
-               ("Élite Económica Global (> 500$ al día)", "Acceso ilimitado a medicina de vanguardia, capitalización corporativa global y movilidad geográfica.")
-           ],
-           'Ilustra en el Peldaño 3 un grifo soltando agua limpia cristalina al lado de una bombilla LED encendida en castellano.')
+    add_senior_microapp(
+        '[NIV-005]',
+        'Los 5 Niveles de la Evolución del Dinero: Del Trueque a Bizum',
+        'Guía interactiva e histórica pensada para mayores que vivieron la transición de las pesetas al euro, las libretas de ahorro tradicionales y ahora se enfrentan a Bizum, pagos contactless y tarjetas virtuales. Explica el funcionamiento seguro de cada medio de pago.',
+        'Actúa como un pedagogo financiero para mayores de 65 años.\nExplícame en 3 pasos cómo crear una aplicación interactiva que explique la historia del dinero desde las monedas de plata hasta Bizum, transmitiendo tranquilidad y seguridad.',
+        'Genera el archivo HTML interactivo con las 5 etapas del dinero, comparativa de seguridad en el pago con móvil, y consejos paso a paso para usar Bizum y tarjeta sin miedo.',
+        '• 5 Niveles: 1. Moneda física y peseta, 2. Libreta de ahorro bancaria, 3. Tarjeta de débito/crédito, 4. Banca online en el ordenador, 5. Bizum y pago con teléfono móvil.\n• Pestaña de práctica: Simulador guiado de un envío de Bizum paso a paso (sin dinero real) para perder el miedo.\n• Protocolos de seguridad: Cómo evitar pagos duplicados y límites de seguridad en la app del banco.',
+        'SIMULADOR_EVOLUCION_DINERO_SENIORS.html',
+        'Simulador Evolución del Dinero (+65)'
+    )
 
-    add_it('[NIV-007]', 'Los 5 Niveles de Automatización del Trabajo Humano',
-           'Sustitución del esfuerzo muscular y mental por herramientas mecánicas, informáticas y algorítmicas autónomas Nivel 5.',
-           5, 'Un brazo robótico industrial hiper-preciso en 3D entregando una herramienta de diamante a una mano humana en colaboración.',
-           [
-               ("Trabajo 100% Manual Artesanal", "Un herrero medieval golpeando hierro al rojo vivo con un martillo pesado usando pura energía muscular."),
-               ("Mecanización de Fuerza Motriz", "Máquinas de vapor y telares mecánicos donde el humano guía la herramienta impulsada por carbón."),
-               ("Automatización Programada de Rutinas", "Cadenas de montaje en los años 80 con robots soldadores repitiendo trayectorias fijas blindadas."),
-               ("Sistemas Adaptativos con Sensores", "Vehículos y robots con visión artificial que esquivan obstáculos imprevistos en almacenes modernos."),
-               ("Autonomía Cognitiva y Robótica Total", "Enjambres de drones e IA gestionando una planta de energía tomando decisiones en tiempo real.")
-           ],
-           'Modifica el Peldaño 4 para mostrar un vehículo autónomo repartiendo paquetes en una ciudad limpia con rótulos en español.')
+    add_senior_microapp(
+        '[NIV-006]',
+        'Calculadora de Poder Adquisitivo y Cesta de la Compra Real',
+        'Simulador doméstico que compara el coste de los productos esenciales del supermercado (leche, pan, huevos, aceite de oliva, carne) con la revalorización de la pensión. Permite calcular el poder adquisitivo real y detectar desajustes en el presupuesto mensual.',
+        'Actúa como un economista doméstico para personas jubiladas.\nExplícame en 3 puntos cómo hacer una calculadora en HTML que compare la evolución de la pensión frente a la subida de los alimentos básicos en el supermercado.',
+        'Genera la aplicación interactiva en HTML con deslizadores para la pensión y los artículos de la cesta básica, mostrando el porcentaje de revalorización real y recomendaciones de compra inteligente.',
+        '• Deslizadores de productos: Aceite de oliva, huevos, panadería, lácteos, carnes/pescados y productos de higiene.\n• Deslizador de Pensión: Comparación interanual (IPC vs. Subida real).\n• Semáforo de holgura: Verde (Pensión supera a la cesta), Ámbar (Empate técnico), Rojo (Pérdida de poder adquisitivo).\n• Consejos de ahorro: Marcas de distribución, compra por temporadas y trucos de conservación de alimentos.',
+        'SIMULADOR_PODER_ADQUISITIVO_COSTE_VIDA_SENIORS.html',
+        'Calculadora Poder Adquisitivo (+65)'
+    )
 
-    add_it('[NIV-008]', 'Los 6 Niveles de Persuasión e Influencia de Masas',
-           'Taxonomía de las tecnologías de comunicación estratégica desde el ágora griega hasta la microsegmentación predictiva por IA.',
-           6, 'Un megáfono clásico de latón transformándose ópticamente en una red de prismas láser de datos en 3D.',
-           [
-               ("Discurso Oral en el Ágora", "Un orador clásico romano debatiendo ante ciudadanos en una plaza pública usando retórica y carisma."),
-               ("Imprenta y Panfletos Masivos", "Prensas de Gutenberg en el siglo XVI difundiendo manifiestos impresos a miles de lectores."),
-               ("Radiodifusión y Voz Nacional", "Familias de los años 30 reunidas en torno a un aparato de radio de madera escuchando discursos estatales."),
-               ("Televisión e Imagen Publicitaria", "Anuncios comerciales a todo color en los años 70 moldeando aspiraciones de la clase media global."),
-               ("Redes Sociales y Feed Viral", "Pantallas de smartphone mostrando notificaciones adictivas y cámaras de eco diseñadas para retener atención."),
-               ("Microsegmentación Predictiva por IA", "Algoritmos psicométricos analizando miles de datos para mostrar mensajes a medida del perfil emocional.")
-           ],
-           'Ilustra en el Peldaño 6 una lupa gigante examinando una huella digital luminosa con textos en castellano.')
+    add_senior_microapp(
+        '[NIV-007]',
+        'Los 5 Niveles de Automatización e IA en el Hogar de los Mayores',
+        'Laboratorio interactivo de domótica y tecnologías de asistencia doméstica para la tercera edad. Muestra desde electrodomésticos convencionales hasta asistentes de voz (Alexa/Google), sensores de caída en el baño, cerraduras inteligentes y recordatorios médicos automatizados.',
+        'Actúa como un especialista en tecnología accesible para el cuidado de mayores.\nExplícame en 3 puntos cómo crear un simulador en HTML que enseñe cómo la domótica y los altavoces inteligentes pueden ayudar a vivir de forma independiente y segura en casa.',
+        'Genera el archivo HTML interactivo con los 5 niveles de tecnología para el hogar, un plano interactivo de la casa con dispositivos activables (luz, voz, alarma) y guía de privacidad.',
+        '• 5 Niveles: 1. Electrodomésticos tradicionales, 2. Programadores y mandos a distancia, 3. Asistentes de voz y bombillas automáticas, 4. Sensores de salud y teleasistencia conectada, 5. IA preventiva de caídas.\n• Plano interactivo del hogar: Habitaciones donde activar sensores de seguridad y luces con sensor nocturno.\n• Medidor de tranquilidad familiar: Incremento de seguridad y autonomía personal.',
+        'SIMULADOR_AUTOMATIZACION_TRABAJO_IA_SENIORS.html',
+        'Simulador Asistencia e IA en el Hogar (+65)'
+    )
 
-    add_it('[NIV-009]', 'Los 5 Niveles de Seguridad Ciudadana y Prevención Urbana',
-           'Evolución de la protección ciudadana desde murallas medievales hasta el urbanismo preventivo y vigilancia algorítmica IA.',
-           5, 'Un escudo de protección de alta tecnología tridimensional con textura de grafeno y circuitos de luz azul protegiendo un skyline.',
-           [
-               ("Autodefensa y Muralla Perimetral", "Ciudadela medieval protegida por fosos de agua, guardias en torreones y portones macizos de roble."),
-               ("Patrulla Policial e Iluminación de Gas", "Agentes uniformados rondando calles empedradas bajo las primeras farolas públicas del siglo XIX."),
-               ("Urbanismo Preventivo (CPTED)", "Calles abiertas, plazas sin escondites, fachadas transparentes y parques bien iluminados disuasorios."),
-               ("Vigilancia Electrónica y Centro de Mando", "Redes de cámaras CCTV y sensores monitoreados 24/7 desde una sala central con pantallas murales."),
-               ("Prevención Algorítmica y Sensores IA", "Cámaras térmicas e IA detectando caídas o anomalías para enviar ayuda de emergencia automática.")
-           ],
-           'Modifica el Peldaño 3 para mostrar una plaza peatonal llena de árboles, bancos de madera y farolas solares en español.')
+    add_senior_microapp(
+        '[NIV-008]',
+        'Radar Antimanipulación: Los 6 Niveles de Persuasión y Venta Agresiva',
+        'Detector interactivo de técnicas de venta abusivas y presión psicológica: llamadas comerciales a la hora de la siesta, comerciales a puerta fría vendiendo colchones milagro o contratos de luz engañosos, y ofertas exprés con límite de 24 horas.',
+        'Actúa como un experto en derechos del consumidor para personas mayores.\nExplícame en 3 puntos cómo hacer un test interactivo en HTML para detectar cuándo un comercial por teléfono o en persona está usando técnicas de manipulación o venta agresiva.',
+        'Genera el código HTML del Radar Antimanipulación: con preguntas sencillas, detector de "trampas típicas", frases comodín para decir NO con asertividad y botón para inscribirse en la Lista Robinson.',
+        '• 6 Niveles de Persuasión comercial: 1. Información neutra, 2. Halago y simpatía forzada, 3. Falsa urgencia ("Solo hoy"), 4. Miedo a perder un beneficio, 5. Confusión contractual, 6. Intimidación psicológica.\n• Guión asertivo: Frases prefabricadas grandes para colgar el teléfono o despedir comerciales amablemente.\n• Enlace informativo a la Lista Robinson y derecho de desistimiento de 14 días.',
+        'SIMULADOR_RADAR_PERSUASION_PUBLICIDAD_SENIORS.html',
+        'Radar Antimanipulación y Ventas (+65)'
+    )
 
-    add_it('[NIV-010]', 'Los 6 Niveles de Alfabetización Financiera Personal',
-           'Progresión desde el analfabetismo de la deuda revolucionaria hasta la inversión pasiva indexada y la ingeniería patrimonial.',
-           6, 'Un cerebro humano en 3D en el que los hemisferios se iluminan con engranajes dorados de lógica matemática y visión a largo plazo.',
-           [
-               ("Analfabetismo Económico Básico", "Una persona firmando un contrato con letra minúscula sin comprender el interés compuesto destructivo de una deuda."),
-               ("Control de Presupuesto y Flujo de Caja", "Una libreta o hoja de cálculo clara separando ingresos fijos, gastos obligatorios y ahorro del mes."),
-               ("Eliminación Sistemática de Deudas", "El método de Bola de Nieve aplastando uno a uno los préstamos personales y tarjetas de mayor interés."),
-               ("Inversión Indexada a Largo Plazo", "Aportaciones automáticas mensuales a un fondo indexado global aprovechando el interés compuesto."),
-               ("Optimización Fiscal y Diversificación", "Estructuración legal inteligente del patrimonio entre bienes raíces, renta fija y variable."),
-               ("Ingeniería Patrimonial y Legado", "Creación de fideicomisos y rentas perpetuas destinadas a blindar el futuro intergeneracional.")
-           ],
-           'Dibuja en el Peldaño 4 una curva de crecimiento exponencial verde ascendiendo sobre un gráfico con rótulos en castellano.')
+    add_senior_microapp(
+        '[NIV-009]',
+        'Semáforo de Seguridad Ciudadana y Prevención en el Hogar',
+        'Herramienta interactiva de prevención y seguridad física para el día a día: cómo evitar descuidos al sacar dinero en el cajero, precauciones en la calle frente al timo de la estampita o el abrazo solidario, y revisión de cerraduras y mirillas de seguridad en el domicilio.',
+        'Actúa como un delegado de participación ciudadana de la Policía Nacional.\nExplícame en 3 puntos cómo estructurar una guía interactiva en HTML para prevenir robos y descuidos habituales tanto en la calle como en el portal y el domicilio.',
+        'Genera la aplicación HTML interactiva con un semáforo de seguridad en 3 entornos (Calle y Cajero, Portal y Puerta, Interior del Hogar), checklist de verificación y teléfonos de auxilio.',
+        '• 3 Escenarios Clave: 1. Cajero automático (cubrir teclado, acompañamiento), 2. Portal y descansillo (no abrir a desconocidos, mirilla digital), 3. Seguridad en la calle (bolso cruzado, desconfiar de empujones extraños).\n• Semáforo de Hábitos: Puntuación según el cumplimiento de buenas prácticas.\n• Tarjeta de emergencia con teléfonos directos: 091, 062 y 112.',
+        'SIMULADOR_SEGURIDAD_PREVENCION_SENIORS.html',
+        'Semáforo Seguridad Ciudadana (+65)'
+    )
 
-    # GRUPO B: INTELIGENCIA, MENTE Y NEUROBIOLOGÍA (NIV-011 a NIV-020)
-    add_it('[NIV-011]', 'Los 7 Niveles de Inteligencia Cognitiva y Conciencia',
-           'Taxonomía estratificada de la capacidad de procesamiento neurológico biológico y cuántico sintético en el universo.',
-           7, 'Un chispazo sináptico tridimensional conectando un cerebro biológico humano con un núcleo cuántico de Superinteligencia Artificial.',
-           [
-               ("Instinto Reflejo Biológico", "Hormigas e insectos respondiendo de forma automática e invariable a estímulos químicos feromonales simples."),
-               ("Memoria Asociativa y Aprendizaje", "Córvidos y aves utilizando herramientas mecánicas simples para extraer alimento de ranuras difíciles."),
-               ("Conciencia Social y Comunicación", "Delfines y chimpancés reconociéndose en el espejo, coordinando cazas complejas y mostrando empatía grupal."),
-               ("Lenguaje Simbólico y Cultura", "Primeros humanos de la prehistoria pintando bisontes en cuevas y transmitiendo conocimientos oralmente."),
-               ("Razonamiento Científico e Ingeniería", "Científicos e ingenieros calculando órbitas espaciales, diseñando rascacielos y comprendiendo física cuántica."),
-               ("Red Neural Digital Global", "Miles de millones de mentes conectadas mediante satélites, fibra óptica y centros de datos planetarios compartiendo conocimiento."),
-               ("Superinteligencia Cuántica y Sintética", "Una red algorítmica autoconsciente capaz de resolver el plegamiento de proteínas y el clima en segundos con exactitud.")
-           ],
-           'Asegúrate de que los textos de los 7 peldaños estén estrictamente en español sin ninguna palabra en inglés.')
+    add_senior_microapp(
+        '[NIV-010]',
+        'Los 6 Niveles de Alfabetización y Blindaje Patrimonial Familiar',
+        'Simulador de orden patrimonial y legado familiar: testamento ordenado ante notario, titularidad y autorización en cuentas bancarias para evitar bloqueos por herencia, poderes notariales preventivos y donaciones en vida según fiscalidad autonómica.',
+        'Actúa como un notario y asesor patrimonial de confianza para familias.\nExplícame en 3 pasos cómo hacer una aplicación interactiva en HTML que ayude a una persona mayor a comprobar si tiene sus papeles, testamento y cuentas ordenadas para proteger a sus hijos.',
+        'Genera la aplicación HTML en un archivo único: con un checklist de 6 pilares de tranquilidad jurídica, explicaciones claras sobre la diferencia entre heredero y autorizado en el banco, y semáforo de orden patrimonial.',
+        '• 6 Pilares de Blindaje: 1. Testamento al día, 2. Cuentas bancarias claras (cotitularidad vs. autorización), 3. Poder notarial preventivo, 4. Organización de escrituras de inmuebles, 5. Registro de seguros de vida, 6. Voluntades anticipadas médicas.\n• Diagnóstico: Porcentaje de protección familiar completado y pasos recomendados a seguir.',
+        'SIMULADOR_SALUD_FINANCIERA_SENIORS.html',
+        'Blindaje Patrimonial y Cuentas (+65)'
+    )
 
-    add_it('[NIV-012]', 'Los 6 Niveles de Conciencia y Alerta Neurológica',
-           'Clasificación electroencefalográfica (EEG) de las ondas cerebrales humanas desde el sueño Delta hasta el Flow y la sincronización Gamma.',
-           6, 'Un modelo de cerebro humano en 3D flotando en el centro con ondas electromagnéticas de colores vibrantes irradiando desde su corteza.',
-           [
-               ("Ondas Delta (Sueño Profundo Sin Sueños)", "Una figura humana en reposo absoluto mientras el cerebro realiza limpieza glinfática celular a 1-4 Hz."),
-               ("Ondas Theta (Sueño REM y Soñación)", "Frecuencias cerebrales de 4-8 Hz mostrando al paciente soñando intensamente y consolidando memorias emocionales."),
-               ("Ondas Alfa (Relajación y Vigilia Tranquila)", "Una persona sentada cómodamente con ojos cerrados, con un trazado cerebral suave y estable a 8-12 Hz."),
-               ("Ondas Beta (Alerta Activa y Trabajo Diario)", "Un estudiante resolviendo problemas matemáticos y conversando con frecuencia rápida y enfocada de 13-30 Hz."),
-               ("Estado de Flow (Sincronización Prefrontal)", "Un músico o cirujano inmerso totalmente en su tarea en máxima lucidez sin fatiga mental percibida."),
-               ("Ondas Gamma (Hiper-Sincronización Cortical)", "Frecuencias ultra-rápidas de 30-100 Hz de insight creativo masivo y meditación profunda de monjes zen.")
-           ],
-           'Ilustra en el Peldaño 5 una nota musical dorada flotando junto a una neurona brillante con rótulos en castellano.')
+    # =========================================================================
+    # LOTE 2 (SESIONES 11 A 20): MICRO-APLICACIONES INTERACTIVAS SENIORS (+65)
+    # =========================================================================
+    add_senior_microapp(
+        '[NIV-011]',
+        'Los 7 Niveles de Inteligencia Cognitiva y Sabiduría en la Madurez',
+        'Micro-aplicación de estimulación y evaluación de la reserva cognitiva. Muestra cómo el cerebro sénior compensa la velocidad con sabiduría cristalizada, razonamiento estratégico, intuición basada en patrones acumulados y resolución madura de problemas.',
+        'Actúa como un neuropsicólogo especializado en envejecimiento activo.\nExplícame en 3 puntos cómo crear un test interactivo en HTML que ayude a una persona mayor a reconocer y entrenar su inteligencia cristalizada y reserva cognitiva.',
+        'Genera la aplicación HTML interactiva con ejercicios breves de agilidad mental (sin estrés), diagnóstico de reserva cognitiva y consejos diarios de nutrición y ejercicio cerebral.',
+        '• 7 Dimensiones cognitivas: Vocabulario, razonamiento verbal, juicio ético, memoria de trabajo, creatividad vital, templanza y síntesis de experiencias.\n• 3 Minijuegos de gimnasia mental: Asociación de palabras, cálculo mental cotidiano y reconocimiento de patrones.\n• Puntuación de "Reserva Cognitiva Activa" y recomendaciones de actividades.',
+        'SIMULADOR_INTELIGENCIA_COGNITIVA_SENIORS.html',
+        'Diagnóstico Reserva Cognitiva (+65)'
+    )
 
-    add_it('[NIV-013]', 'Los 5 Niveles de la Memoria y Retención Biológica',
-           'Desglose del procesamiento de la memoria desde el impacto sensorial fugaz hasta la consolidación nocturna en el hipocampo y córtex.',
-           5, 'Un hipocampo cerebral luminoso en 3D en forma de caballito de mar cristalino transformando flujos de luz en redes de diamante permanentes.',
-           [
-               ("Memoria Sensorial Fugaz (Milisegundos)", "La retina y el oído capturando miles de impresiones que desaparecen al instante si no se les presta atención."),
-               ("Memoria de Trabajo (El Escritorio Mental)", "La corteza prefrontal sosteniendo activa 4 o 5 datos temporales como un número de teléfono en 20 segundos."),
-               ("Memoria a Corto Plazo (Horas a Días)", "Recuerdos recientes almacenados provisionalmente en circuitos del hipocampo esperando ser priorizados o descartados."),
-               ("Consolidación Nocturna (Sueño REM)", "El cerebro dormido transfiriendo por la noche experiencias importantes desde el hipocampo hacia la corteza cerebral."),
-               ("Memoria a Largo Plazo y Sinapsis Cortical", "Redes neuronales sólidamente unidas por espinas dendríticas reforzadas que conservan recuerdos décadas enteras.")
-           ],
-           'Dibuja en el Peldaño 4 una persona durmiendo con pequeñas estrellas brillantes migrando desde el centro de su cerebro al exterior.')
+    add_senior_microapp(
+        '[NIV-012]',
+        'Los 6 Niveles de Conciencia, Ritmos Circadianos y Alerta Serena',
+        'Guía interactiva del sueño y la energía vital para mayores: cómo adaptar los ritmos circadianos con la edad, higiene del sueño frente al despertar temprano, la siesta española reparadora (20 min) y técnicas de respiración para calmar la mente y lograr alerta serena.',
+        'Actúa como un médico especialista en medicina del sueño y gerontología.\nExplícame en 3 pasos cómo hacer un planificador interactivo en HTML para ayudar a una persona mayor a dormir mejor y tener energía estable durante el día.',
+        'Crea la aplicación en HTML con un reloj interactivo de 24 horas que organice la luz solar matutina, las comidas, la siesta corta y las horas de descanso nocturno sin recurrir a somníferos innecesarios.',
+        '• Reloj circadiano de 24 horas: Horas óptimas de paseo al sol, ingesta de líquidos, cena ligera y desconexión de pantallas.\n• Calculadora del sueño: Evaluación de horas dormidas y calidad del descanso.\n• Ejercicio guiado de respiración 4-7-8 con animación relajante para conciliar el sueño.',
+        'SIMULADOR_CONCIENCIA_ALERTA_NEUROLOGICA_SENIORS.html',
+        'Simulador Ritmos y Alerta Serena (+65)'
+    )
 
-    add_it('[NIV-014]', 'Los 6 Niveles de Toma de Decisiones y Sesgos Cognitivos',
-           'Evolución desde el Sistema 1 rápido instintivo de Kahneman y sesgos de confirmación hacia la deliberación del Sistema 2 bayesiano.',
-           6, 'Una balanza mental de precisión 3D en la que una pesa pesada de Razón Analítica equilibra a una llama ardiente roja de Impulso Instintivo.',
-           [
-               ("Reacción Instintiva y de Supervivencia", "La amígdala cerebral disparando la alarma de lucha o huida en milisegundos ante un peligro físico inminente."),
-               ("Sesgo de Confirmación y Manada", "La mente aceptando solo las noticias que confirman sus creencias previas mientras rechaza evidencias contradictorias."),
-               ("Aversión a la Pérdida y Miedo Límbico", "El dolor psicológico de perder 100 euros pesando el doble en la decisión humana que la alegría de ganar 100 euros."),
-               ("Pensamiento Lento y Deliberado (Sistema 2)", "La corteza prefrontal tomando el control para realizar cálculos lógicos y evaluar pros y contras con calma."),
-               ("Análisis Probabilístico y Criterio Bayesiano", "Un analista evaluando escenarios futuros asignando porcentajes reales de probabilidad en lugar de certezas dogmáticas."),
-               ("Sabiduría Metacognitiva y Criterio Ético Superior", "El pensador capaz de auditar sus propios pensamientos en tiempo real reconociendo sus puntos ciegos para el bien común.")
-           ],
-           'Añade en el Peldaño 4 una lupa sobre una ecuación matemática clara con textos en castellano estricto.')
+    add_senior_microapp(
+        '[NIV-013]',
+        'Los 5 Niveles de Memoria Práctica y Retención Cotidiana',
+        'Entrenador interactivo para la memoria del día a día: recordar nombres de personas, dónde se han dejado las gafas o las llaves, la toma de medicamentos a su hora y citas del médico. Distingue los despistes normales de la edad de síntomas que requieren consulta médica.',
+        'Actúa como un terapeuta ocupacional de memoria para adultos mayores.\nExplícame en 3 puntos cómo crear una aplicación en HTML con trucos mnemotécnicos prácticos para recordar tareas y objetos cotidianos sin agobios.',
+        'Genera el archivo HTML completo con un simulador de "Puntos Fijos en Casa", técnicas de asociación visual para nombres y un semáforo de tranquilidad sobre la memoria.',
+        '• 5 Niveles de Memoria: 1. Sensorial, 2. Inmediata (las llaves), 3. Procedural (cocinar/conducir), 4. Episódica (recuerdos de juventud), 5. Prospectiva (acordarse de la cita de mañana).\n• Métodos prácticos: "El rincón de las cosas fijas", técnica de la cadena visual y notas de voz en el móvil.\n• Guía tranquilizadora sobre olvidos benignos vs. señales de alarma.',
+        'SIMULADOR_MEMORIA_RETENCION_BIOLOGICA_SENIORS.html',
+        'Simulador Memoria Cotidiana (+65)'
+    )
 
-    add_it('[NIV-015]', 'Los 5 Niveles de Resiliencia y Salud Mental',
-           'Espectro clínico desde el bienestar emocional robusto y afrontamiento hasta la fatiga crónica, Burnout y desregulación neuroquímica.',
-           5, 'Un faro costero de piedra sólida y luminoso en 3D resistiendo el embate de olas bravías, simbolizando fortaleza psicológica resuelta.',
-           [
-               ("Bienestar y Resiliencia Robusta", "Una persona afrontando reveses cotidianos con calma, flexibilidad cognitiva y excelentes relaciones de apoyo social."),
-               ("Sobrecarga y Estrés Agudo Transitorio", "Tensión muscular y cansancio acumulado ante picos de exámenes o trabajo intenso, con capacidad de recuperación."),
-               ("Fatiga Crónica y Burnout Profesional", "Agotamiento emocional continuo, insomnio de mantenimiento, apatía general y sensación de estar desbordado."),
-               ("Trastorno de Ansiedad o Depresión Funcional", "Desregulación de serotonina y cortisol que dificulta severamente la concentración generando anhedonia marcada."),
-               ("Desconexión y Trastorno Clínico Severo", "Crisis aguda que requiere intervención médica o psiquiátrica especializada urgente para restaurar equilibrio químico.")
-           ],
-           'Ilustra en el Peldaño 1 una planta verde fuerte creciendo en tierra fértil junto a un sol brillante con rótulos en español.')
+    add_senior_microapp(
+        '[NIV-014]',
+        'Los 6 Niveles de Toma de Decisiones y Filtro de Sesgos Mentales',
+        'Herramienta interactiva para tomar decisiones familiares o económicas importantes con serenidad: ayudar económicamente a un hijo, cambiar de vivienda a una más accesible, vender un coche o afrontar un tratamiento médico. Enseña a filtrar el miedo y las presiones externas.',
+        'Actúa como un mediador y consejero de familia para personas mayores.\nExplícame en 3 pasos cómo hacer una balanza interactiva de decisiones en HTML que ayude a sopesar pros, contras y emociones ante un cambio importante de vida.',
+        'Genera la aplicación HTML con una balanza digital donde introducir argumentos a favor y en contra, filtro de sesgos (miedo a la pérdida, presión familiar) y un consejo final de templanza.',
+        '• Balanza interactiva: Ponderación de factores emocionales, económicos y de salud.\n• Filtro de los 4 Sesgos comunes: Aversión a cambiar de casa, culpa por decir no, exceso de confianza y efecto ancla en precios antiguos.\n• Informe de decisión serena con resumen para hablarlo en familia.',
+        'SIMULADOR_TOMA_DECISIONES_SESGOS_SENIORS.html',
+        'Filtro de Sesgos y Decisiones (+65)'
+    )
 
-    add_it('[NIV-016]', 'Los 6 Niveles de Adicción y Dependencia Neuroquímica',
-           'Secuestro del circuito de recompensa dopaminérgico y pérdida de voluntad prefrontal frente a la plasticidad cerebral y rehabilitación.',
-           6, 'Una cadena de hierro pesada rompiéndose en pedazos en el aire con un destello de luz verde esmeralda, simbolizando voluntad terapéutica.',
-           [
-               ("Contacto Inicial y Estímulo Recreativo", "Una liberación normal y natural de dopamina ante recompensas fisiológicas o un estímulo placentero transitorio no adictivo."),
-               ("Tolerancia y Sobrecarga Dopaminérgica", "El cerebro bombardeado por estímulos artificiales intensos reduce el número de receptores para protegerse."),
-               ("Dependencia y Anhedonia Cotidiana", "El usuario ya no siente placer en actividades normales como leer o pasear, necesitando el estímulo tan solo para sentirse normal."),
-               ("Secuestro Prefrontal y Pérdida de Voluntad", "El circuito de recompensa domina a la corteza prefrontal racional generando conductas compulsivas pese al daño personal."),
-               ("Desintoxicación y Síndrome de Abstinencia", "El duro proceso fisiológico inicial de limpieza y re-sensibilización receptora celular acompañado de apoyo médico riguroso."),
-               ("Rehabilitación y Plasticidad Sináptica", "El cerebro regenerando sus receptores dopaminérgicos y fortaleciendo nuevas conexiones saludables de autocontrol duradero.")
-           ],
-           'Dibuja en el Peldaño 6 un cerebro sonriente con pequeños brotes de hojas verdes en su corteza con textos 100% en castellano.')
+    add_senior_microapp(
+        '[NIV-015]',
+        'Los 5 Niveles de Resiliencia Emocional y Fortaleza Interior',
+        'Micro-aplicación de bienestar psicológico y adaptación a las etapas de la jubilación: afrontar el síndrome del nido vacío, sobrellevar pérdidas de seres queridos, aceptar limitaciones físicas con dignidad y redescubrir propósitos vitales ilusionantes.',
+        'Actúa como un psicólogo humanista experto en la etapa de la madurez.\nExplícame en 3 puntos cómo crear un termómetro emocional interactivo en HTML que ayude a fortalecer la resiliencia y el ánimo diario.',
+        'Genera el código HTML interactivo con el "Termómetro de Resiliencia", diario de agradecimiento guiado en 3 clics y caja de herramientas emocionales para días difíciles.',
+        '• 5 Niveles de Fortaleza: 1. Desánimo o soledad, 2. Aceptación serena, 3. Conexión social activa, 4. Sentido de utilidad vital, 5. Sabiduría y plenitud interior.\n• Diario positivo de 3 cosas buenas del día.\n• Recursos de apoyo: Directorio de centros de día, teléfonos de la esperanza y asociaciones de voluntariado.',
+        'SIMULADOR_RESILIENCIA_SALUD_MENTAL_SENIORS.html',
+        'Simulador Resiliencia y Paz Interior (+65)'
+    )
 
-    add_it('[NIV-017]', 'Los 5 Niveles de Empatía e Inteligencia Emocional',
-           'Evolución desde el contagio emocional reflejo y teoría de la mente cognitiva hacia la empatía compasiva activa y liderazgo transformador.',
-           5, 'Un corazón anatómico de cristal luminoso entrelazado sinérgicamente con un cerebro dorado en 3D, mostrando razón analítica y sensibilidad humana.',
-           [
-               ("Contagio Emocional Instintivo", "Bebés en una guardería llorando por reflejo automático y neuronas espejo al escuchar el llanto desconsolado de otro bebé."),
-               ("Autoconciencia y Reconocimiento Propio", "La persona identificando y poniendo nombre exacto a sus propias emociones sin actuar impulsivamente."),
-               ("Teoría de la Mente y Empatía Cognitiva", "La capacidad intelectual de ponerse en los zapatos del otro y comprender su perspectiva lógica."),
-               ("Empatía Compasiva y Ayuda Activa", "Conmovernos profundamente con el dolor ajeno y movilizarnos con acciones reales para aliviar el sufrimiento."),
-               ("Regulación Social y Liderazgo Transformador", "El mentor o líder capaz de armonizar las emociones de un grupo entero y generar seguridad psicológica inspiradora.")
-           ],
-           'Modifica el Peldaño 4 para mostrar dos manos de diferentes tonos de piel entrelazadas con calidez en español.')
+    add_senior_microapp(
+        '[NIV-016]',
+        'Los 6 Niveles de Prevención de Hábitos y Seguridad Farmacológica',
+        'Organizador y semáforo de seguridad farmacológica para mayores: cómo prevenir interacciones entre medicamentos recetados por distintos especialistas, evitar automedicarse con pastillas para dormir o analgésicos, y organizar el pastillero semanal sin errores.',
+        'Actúa como un farmacéutico comunitario y geriatra.\nExplícame en 3 puntos cómo crear una aplicación interactiva en HTML para ayudar a una persona mayor a gestionar su pastillero semanal y evitar mezclas peligrosas de medicinas.',
+        'Genera el archivo HTML interactivo con un pastillero digital interactivo (Mañana, Mediodía, Tarde, Noche), verificador de precauciones básicas y consejos para hablar con el médico de cabecera.',
+        '• Pastillero visual interactivo: Configuración de tomas con colores y recordatorios.\n• Semáforo de advertencias: Alertas sobre no duplicar dosis si se olvida una toma, no mezclar con alcohol ni zumo de pomelo, y revisión semestral de recetas.\n• Tarjeta imprimible de medicación actual para llevar siempre en la cartera al acudir a urgencias.',
+        'SIMULADOR_PREVENCION_ADICCIONES_HABITOS_SENIORS.html',
+        'Semáforo Seguridad Farmacológica (+65)'
+    )
 
-    add_it('[NIV-018]', 'Los 6 Niveles de Disciplina y Formación de Hábitos',
-           'Automatización conductual desde el esfuerzo prefrontal agotador hasta la mielinización sináptica y ejecución en ganglios basales.',
-           6, 'Un martillo de escultor cincelando una estatua de mármol de sí mismo en 3D, simbolizando que la autodisciplina esculpe nuestro carácter.',
-           [
-               ("Resistencia Inicial y Esfuerzo Prefrontal", "Los primeros días donde cada acción requiere un combate agotador contra la pereza y la fricción de empezar."),
-               ("Bucle de Señal y Recompensa Consciente", "El diseño deliberado de recordatorios visuales y pequeñas recompensas post-esfuerzo para reforzar el circuito."),
-               ("Mielinización y Fricción Reducida", "A partir de la tercera semana la funda de mielina acelera la ruta neuronal haciendo que el esfuerzo disminuya drásticamente."),
-               ("Automatismo en los Ganglios Basales", "El hábito se ejecuta casi sin pensar (como cepillarse los dientes), consumiendo un mínimo nivel de glucosa prefrontal."),
-               ("Identidad Conductual Arraigada", "La persona ya no dice que lo intenta, sino que asume la identidad interna profunda de ser una persona perseverante."),
-               ("Maestría y Disciplina de Alto Rendimiento", "Capacidad de aplicar el mismo bucle de autodisciplina de forma rápida a cualquier nueva habilidad compleja técnica o científica.")
-           ],
-           'Añade en el Peldaño 2 unas zapatillas deportivas azules junto a una alarma de reloj con textos en castellano estricto.')
+    add_senior_microapp(
+        '[NIV-017]',
+        'Los 5 Niveles de Empatía, Vínculo Familiar e Inteligencia Emocional',
+        'Guía interactiva para fortalecer las relaciones afectivas entre generaciones: cómo comunicarse con hijos adultos respetando su independencia, conectar con nietos adolescentes a través de sus intereses, y expresar necesidades propias con afecto sin caer en el reproche.',
+        'Actúa como un orientador familiar y pedagogo intergeneracional.\nExplícame en 3 pasos cómo hacer una aplicación en HTML que dé pautas para mejorar la comunicación y el cariño entre abuelos, hijos y nietos.',
+        'Genera la aplicación interactiva en HTML con situaciones cotidianas (consejos no pedidos, visitas familiares, uso del móvil en la mesa) y frases constructivas para dialogar con empatía.',
+        '• 5 Niveles de Conexión: 1. Distanciamiento o reproche, 2. Convivencia educada, 3. Escucha activa sin juicio, 4. Complicidad y apoyo mutuo, 5. Vínculo intergeneracional profundo.\n• Simulador de conversaciones: Respuestas ante frases difíciles de hijos o nietos.\n• Ideas para compartir tiempo de calidad: Cocinar juntos, contar historias de infancia, paseos.',
+        'SIMULADOR_EMPATIA_INTELIGENCIA_EMOCIONAL_SENIORS.html',
+        'Simulador Empatía Familiar (+65)'
+    )
 
-    add_it('[NIV-019]', 'Los 5 Niveles de la Comunicación y Lenguaje Biológico',
-           'Progresión desde rastros químicos feromonales y cantos acústicos animales hasta la gramática recursiva humana y la comunicación por IA.',
-           5, 'Una onda sonora acústica de canto de ballena transformándose visualmente en letras clásicas en 3D y luego en código binario láser luminoso.',
-           [
-               ("Señalización Química Feromonal", "Hormigas y polillas dejando rastros químicos odoríferos en el aire o suelo para indicar rutas o alertas de peligro."),
-               ("Vocalización Acústica y Danza Animal", "Las abejas realizando la danza en ocho y ballenas cantando a cientos de kilómetros en el océano."),
-               ("Lenguaje Gramatical Recursivo Humano", "La capacidad cerebral exclusiva del Homo Sapiens para combinar infinitamente palabras abstractas y expresar tiempos futuros."),
-               ("Escritura Simbólica y Registro Permanente", "Jeroglíficos, alfabeto clásico y libros de imprenta que permitieron que el pensamiento de un científico sobreviviera intacto siglos tras su muerte."),
-               ("Comunicación Sintética y Grafos IA", "Modelos matemáticos de lenguaje procesando miles de millones de parámetros en milisegundos para traducir y dialogar en red con humanos.")
-           ],
-           'Ilustra en el Peldaño 2 una abeja haciendo un recorrido en forma de 8 con flechas amarillas y rótulos en castellano.')
+    add_senior_microapp(
+        '[NIV-018]',
+        'Los 6 Niveles de Disciplina Serena y Hábitos de Longevidad Activa',
+        'Planificador interactivo de hábitos saludables para vivir con vitalidad e independencia: caminata diaria (7.000 pasos), ejercicios de fuerza y equilibrio para prevenir caídas, hidratación suficiente, lectura activa y vida social estimulante.',
+        'Actúa como un médico especialista en geriatría preventiva y ejercicio en mayores.\nExplícame en 3 puntos cómo crear un planificador diario en HTML para mantener hábitos de longevidad activa adaptados a cada ritmo físico.',
+        'Genera la aplicación HTML con un contador de hábitos saludables (Paseo, Agua, Lectura, Equilibrio, Conversación), gráfico de progreso semanal y mensajes motivadores.',
+        '• Los 5 Pilares de Longevidad: 1. Movimiento diario (paseo y fuerza suave), 2. Nutrición mediterránea rica en proteína, 3. Hidratación regular (1,5L agua), 4. Entrenamiento de equilibrio sobre una pierna, 5. Interacción social diaria.\n• Panel de seguimiento semanal sencillo con casillas marcables.\n• Medidor de energía física y bienestar corporal.',
+        'SIMULADOR_DISCIPLINA_HABITOS_VIDA_SENIORS.html',
+        'Simulador Hábitos y Longevidad (+65)'
+    )
 
-    add_it('[NIV-020]', 'Los 6 Niveles de Creatividad e Innovación Humana',
-           'Clasificación cognitiva desde la imitación adaptativa y combinatoria de ideas preexistentes hasta la invención de paradigmas disruptivos.',
-           6, 'Una bombilla de cristal en 3D cuyo interior no tiene filamento de metal sino un prisma chispeante que descompone un rayo de luz blanca en un arcoíris de ideas.',
-           [
-               ("Imitación Adaptativa y Aprendizaje", "El aprendiz copiando con precisión las técnicas de un maestro para dominar las bases mecánicas del oficio."),
-               ("Combinatoria de Ideas Preexistentes", "Conectar dos conceptos conocidos para crear una solución útil como combinar un teléfono con una cámara fotográfica."),
-               ("Pensamiento Divergente y Lluvia de Ideas", "La capacidad mental de generar 30 usos insólitos para un objeto común en 5 minutos superando la rigidez funcional."),
-               ("Resolución Creativa de Incidencias Complejas", "Un ingeniero improvisando un filtro de aire con cinta aislante para salvar a la tripulación en una emergencia."),
-               ("Invención de un Nuevo Paradigma Disruptivo", "Albert Einstein reformulando por completo la gravedad y el espacio-tiempo con la Relatividad, rompiendo los esquemas de Newton."),
-               ("Genio Visionario y Transformación Civilizatoria", "Creaciones inmortales universales como la Imprenta o la Penicilina que cambian el curso de la humanidad.")
-           ],
-           'Dibuja en el Peldaño 2 un teléfono antiguo unido por un rayo de luz con una cámara de fotos con textos en castellano.')
+    add_senior_microapp(
+        '[NIV-019]',
+        'Los 5 Niveles de Comunicación y Lenguaje Claro para Mayores',
+        'Asistente interactivo para entender y redactar documentos complejos: cartas del banco con tecnicismos, informes médicos incomprensibles, notificaciones de la Seguridad Social o facturas de la luz. Enseña a usar la IA para traducir la jerga al lenguaje llano de la calle.',
+        'Actúa como un experto en lenguaje claro y derechos del ciudadano mayor.\nExplícame en 3 pasos cómo hacer un traductor interactivo en HTML que transforme cartas bancarias y avisos médicos complicados en explicaciones sencillas.',
+        'Genera el archivo HTML interactivo con un cuadro de texto donde pegar o seleccionar una carta formal confusa, y un botón que genere la versión en español claro, destacando lo urgente y los plazos.',
+        '• Simulador de traducción: Ejemplos de cartas de banco, cartas de pensión y prospectos médicos con su versión "en lenguaje claro".\n• Guía para preguntar al médico en consulta: Lista de las 3 preguntas clave que todo paciente debe hacer.\n• Asistente de redacción: Modelo de reclamación sencilla para solicitar aclaraciones.',
+        'SIMULADOR_COMUNICACION_LENGUAJE_SENIORS.html',
+        'Guía Comunicación Médica y Bancaria (+65)'
+    )
+
+    add_senior_microapp(
+        '[NIV-020]',
+        'Los 6 Niveles de Creatividad, Curiosidad e Innovación Vital',
+        'Laboratorio interactivo de estimulación creativa y proyectos vitales para la jubilación: escribir las memorias familiares, recuperar la pintura o la fotografía, iniciarse en la botánica o el huerto urbano, viajar con asociaciones culturales y mantenerse eternamente curioso.',
+        'Actúa como un dinamizador cultural y mentor de proyectos de jubilación creativa.\nExplícame en 3 puntos cómo crear un explorador interactivo en HTML que despierte nuevas aficiones y proyectos creativos en personas mayores.',
+        'Genera la aplicación interactiva en HTML con una "Rueda de Nuevas Pasiones", cuestionario de intereses (arte, escritura, naturaleza, tecnología) y plan de acción para arrancar un proyecto personal.',
+        '• 6 Niveles de Creatividad: 1. Curiosidad latente, 2. Aprendizaje de un oficio o técnica, 3. Creación personal de obras o relatos, 4. Compartir con la comunidad o familia, 5. Proyectos colaborativos, 6. Legado cultural y vivencial.\n• Rueda de intereses: Sugerencias prácticas con talleres municipales y recursos gratuitos online.\n• Diario de ideas y proyectos ilusionantes para este mes.',
+        'SIMULADOR_CREATIVIDAD_INNOVACION_SENIORS.html',
+        'Diagnóstico Creatividad y Legado (+65)'
+    )
 
     # GRUPO C: ESCALAS FÍSICAS, DEL UNIVERSO Y ENERGÍA (NIV-021 a NIV-030)
     add_it('[NIV-021]', 'La Escala del Universo (De lo Subatómico a lo Macroscópico)',

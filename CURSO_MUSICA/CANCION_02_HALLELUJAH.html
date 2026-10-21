@@ -373,11 +373,11 @@
     
     <!-- BARRA DE NAVEGACIÓN -->
     <div class="nav-bar">
-        <a class="btn-back" href="REPERTORIO_KORG_EK50.html?v=86">
+        <a class="btn-back" href="REPERTORIO_KORG_EK50.html?v=91">
             ⬅ Volver a la Lista de Canciones
         </a>
         <div style="display:flex; align-items:center; gap:8px;">
-            <button onclick="window.location.href='CANCION_02_HALLELUJAH.html?t='+Date.now()" style="background:#0284c7; color:#fff; border:none; padding:6px 12px; border-radius:8px; font-size:0.8rem; font-weight:800; cursor:pointer;" title="Pulsa aquí en el iPad para limpiar la caché y ver la última versión">🔄 Recargar v86</button>
+            <button onclick="window.location.href='CANCION_02_HALLELUJAH.html?t='+Date.now()" style="background:#0284c7; color:#fff; border:none; padding:6px 12px; border-radius:8px; font-size:0.8rem; font-weight:800; cursor:pointer;" title="Pulsa aquí en el iPad para limpiar la caché y ver la última versión">🔄 Recargar v91</button>
             <div class="midi-bar">
                 <span id="midi-dot" class="status-dot"></span>
                 <span id="midi-label">Iniciando MIDI...</span>
@@ -869,36 +869,46 @@
             enviarMidiGlobal([0xB0 | 15, 0x20, 2]);
             enviarMidiGlobal([0xC0 | 15, 9]); // Estilo 042
 
-            // Asegurar que físicamente en el panel solo quede iluminado UPPER 1 (Set 1: Grand Piano)
+            // Cargar Keyboard Set de Armónica (MSB 33, LSB 2, PC 8: "Sweet Harm.")
+            // Muestra en la pantalla del Korg "Sweet Harm." (Armónica) y deja iluminado exclusivamente UPPER 1
             enviarMidiGlobal([0xB0 | 0, 0x00, 33]);
-            enviarMidiGlobal([0xB0 | 0, 0x20, 0]);
-            enviarMidiGlobal([0xC0 | 0, 0]);
+            enviarMidiGlobal([0xB0 | 0, 0x20, 2]);
+            enviarMidiGlobal([0xC0 | 0, 8]);
 
             enviarMidiGlobal([0xB0 | 15, 0x00, 33]);
-            enviarMidiGlobal([0xB0 | 15, 0x20, 0]);
-            enviarMidiGlobal([0xC0 | 15, 0]);
+            enviarMidiGlobal([0xB0 | 15, 0x20, 2]);
+            enviarMidiGlobal([0xC0 | 15, 8]);
 
             await new Promise(r => setTimeout(r, 45));
 
-            // 2. Upper 1 = STS Armónica con Eco (Reverb/Chorus acústico profundo)
+            // 2. Upper 1 = Sweet Harmonica con Eco Profundo y Reverb Máxima
             enviarMidiGlobal([0xB0 | 0, 0x00, 121]);
-            enviarMidiGlobal([0xB0 | 0, 0x20, 3]);
-            enviarMidiGlobal([0xC0 | 0, 21]); // Harmonica
-            enviarMidiGlobal([0xB0 | 0, 0x07, 105]); // Volumen natural
+            enviarMidiGlobal([0xB0 | 0, 0x20, 1]);   // LSB 1 = Sweet Harmonica oficial
+            enviarMidiGlobal([0xC0 | 0, 21]);        // Harmonica
+            enviarMidiGlobal([0xB0 | 0, 0x07, 120]); // Volumen potente
             enviarMidiGlobal([0xB0 | 0, 0x0B, 127]); // Expresión 100%
-            enviarMidiGlobal([0xB0 | 0, 0x5B, 85]);  // CC 91 = Reverb Send (Eco acústico amplio)
-            enviarMidiGlobal([0xB0 | 0, 0x5D, 45]);  // CC 93 = Chorus Send (Ambiente)
+            enviarMidiGlobal([0xB0 | 0, 0x5B, 127]); // CC 91 = 127 (Reverb / Eco de Sala MÁXIMO)
+            enviarMidiGlobal([0xB0 | 0, 0x5D, 120]); // CC 93 = 120 (Delay / Eco de Repetición MÁXIMO)
+            enviarMidiGlobal([0xB0 | 0, 0x48, 76]);  // CC 72 = Release Time prolongado para sostener la cola del eco
 
             // Upper 2 y 3 silenciados
             enviarMidiGlobal([0xB0 | 1, 0x07, 0]);
             enviarMidiGlobal([0xB0 | 2, 0x07, 0]);
+
+            // LOWER (Canal 4 - Mano Izquierda): Coro / Voces Celestiales activas para acordes
+            enviarMidiGlobal([0xB0 | 3, 0x00, 121]);
+            enviarMidiGlobal([0xB0 | 3, 0x20, 0]);
+            enviarMidiGlobal([0xC0 | 3, 52]); // Choir Aahs
+            enviarMidiGlobal([0xB0 | 3, 0x07, 110]); // Volumen cálido
+            enviarMidiGlobal([0xB0 | 3, 0x0B, 127]);
+            enviarMidiGlobal([0xB0 | 3, 0x5B, 90]);
 
             // 3. Fijar reloj MIDI a 56 BPM
             fijarTempoMIDI(56);
 
             // TOTALMENTE SILENCIOSO: Cambia la configuración sin disparar ráfagas de notas
             const nombres = salidas.map(o=>o.name).join(', ') || (midiOutput ? midiOutput.name : 'USB');
-            if (log) log.innerHTML = `🎵 <b>1. Armónica con Eco + Estilo 042</b> listo en <b>${nombres}</b> (Panel: Solo Upper 1 · Reverb profunda · ⏱️ <b>56 BPM</b>). ¡Toca el teclado!`;
+            if (log) log.innerHTML = `🎵 <b>1. Armónica (Sweet Harm.) + Lower: Voces</b> listo en <b>${nombres}</b> (Melodía: Armónica · Izquierda: Voces · ⏱️ <b>56 BPM</b>). ¡Toca el teclado!`;
         } catch(e) {
             if (log) log.innerHTML = `⚠️ Error enviando al Korg: ${e.message}`;
         }
@@ -935,33 +945,41 @@
 
             await new Promise(r => setTimeout(r, 45));
 
-            // 3. Asignar los sonidos específicos a cada capa:
-            // Upper 1 = Coro / Voces Celestiales (Choir Aahs)
+            // 3. Asignar los sonidos específicos a cada capa con MÁXIMA PRESENCIA Y VOLUMEN:
+            // Upper 1 = Cuerdas Orquestales Principales (St. Strings - volumen máximo 127 y presencia frontal)
             enviarMidiGlobal([0xB0 | 0, 0x00, 121]);
             enviarMidiGlobal([0xB0 | 0, 0x20, 3]);
-            enviarMidiGlobal([0xC0 | 0, 52]); // Choir Aahs
-            enviarMidiGlobal([0xB0 | 0, 0x07, 115]); // Volumen potente
-            enviarMidiGlobal([0xB0 | 0, 0x0B, 127]);
-            enviarMidiGlobal([0xB0 | 0, 0x5B, 90]);  // CC 91 = Reverb majestuosa
+            enviarMidiGlobal([0xC0 | 0, 48]); // St. Strings
+            enviarMidiGlobal([0xB0 | 0, 0x07, 127]); // Volumen al 100% (127)
+            enviarMidiGlobal([0xB0 | 0, 0x0B, 127]); // Expresión 127
+            enviarMidiGlobal([0xB0 | 0, 0x5B, 85]);  // CC 91 = Reverb orquestal
 
-            // Upper 2 = Cuerdas Cálidas (String Ensemble)
+            // Upper 2 = Coro / Voces Celestiales (Choir Aahs - volumen potente 125)
             enviarMidiGlobal([0xB0 | 1, 0x00, 121]);
-            enviarMidiGlobal([0xB0 | 1, 0x20, 3]);
-            enviarMidiGlobal([0xC0 | 1, 48]); // String Ensemble
-            enviarMidiGlobal([0xB0 | 1, 0x07, 110]); // Volumen cuerdas cálido
+            enviarMidiGlobal([0xB0 | 1, 0x20, 0]);
+            enviarMidiGlobal([0xC0 | 1, 52]); // Choir Aahs
+            enviarMidiGlobal([0xB0 | 1, 0x07, 125]); // Volumen alto 125
             enviarMidiGlobal([0xB0 | 1, 0x0B, 127]);
-            enviarMidiGlobal([0xB0 | 1, 0x5B, 85]);  // CC 91 = Reverb de sala
+            enviarMidiGlobal([0xB0 | 1, 0x5B, 92]);  // CC 91 = Reverb de coro
             enviarMidiGlobal([0xB0 | 1, 0x0A, 64]);  // Pan centrado
 
             // Upper 3 apagado
             enviarMidiGlobal([0xB0 | 2, 0x07, 0]);
+
+            // LOWER (Canal 4 - Mano Izquierda): Coro / Voces Celestiales sonando en acordes
+            enviarMidiGlobal([0xB0 | 3, 0x00, 121]);
+            enviarMidiGlobal([0xB0 | 3, 0x20, 0]);
+            enviarMidiGlobal([0xC0 | 3, 52]); // Choir Aahs
+            enviarMidiGlobal([0xB0 | 3, 0x07, 120]); // Volumen potente en la mano izquierda
+            enviarMidiGlobal([0xB0 | 3, 0x0B, 127]);
+            enviarMidiGlobal([0xB0 | 3, 0x5B, 90]);
 
             // 4. Fijar reloj MIDI a 56 BPM
             fijarTempoMIDI(56);
 
             // TOTALMENTE SILENCIOSO: Cambia la configuración sin disparar ráfagas de notas
             const nombres = salidas.map(o=>o.name).join(', ') || (midiOutput ? midiOutput.name : 'USB');
-            if (log) log.innerHTML = `👥 <b>2. Voces & Strings + Estilo 042</b> listo en <b>${nombres}</b> (Panel: <b>Upper 1 + Upper 2 Iluminados</b> · ⏱️ <b>56 BPM</b>). ¡Toca el teclado!`;
+            if (log) log.innerHTML = `👥 <b>2. Strings & Voces + Lower: Coro</b> listo en <b>${nombres}</b> (Derecha: <b>Cuerdas (127) + Coro (125)</b> · Izquierda: <b>Coro</b> · ⏱️ <b>56 BPM</b>). ¡Toca el teclado!`;
         } catch(e) {
             if (log) log.innerHTML = `⚠️ Error enviando al Korg: ${e.message}`;
         }
