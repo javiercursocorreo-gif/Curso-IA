@@ -373,11 +373,11 @@
     
     <!-- BARRA DE NAVEGACIÓN -->
     <div class="nav-bar">
-        <a class="btn-back" href="REPERTORIO_KORG_EK50.html?v=96">
+        <a class="btn-back" href="REPERTORIO_KORG_EK50.html?v=97">
             ⬅ Volver a la Lista de Canciones
         </a>
         <div style="display:flex; align-items:center; gap:8px;">
-            <button onclick="window.location.href='CANCION_02_HALLELUJAH.html?t='+Date.now()" style="background:#0284c7; color:#fff; border:none; padding:6px 12px; border-radius:8px; font-size:0.8rem; font-weight:800; cursor:pointer;" title="Pulsa aquí en el iPad para limpiar la caché y ver la última versión">🔄 Recargar v96</button>
+            <button onclick="window.location.href='CANCION_02_HALLELUJAH.html?t='+Date.now()" style="background:#0284c7; color:#fff; border:none; padding:6px 12px; border-radius:8px; font-size:0.8rem; font-weight:800; cursor:pointer;" title="Pulsa aquí en el iPad para limpiar la caché y ver la última versión">🔄 Recargar v97</button>
             <div class="midi-bar">
                 <span id="midi-dot" class="status-dot"></span>
                 <span id="midi-label">Iniciando MIDI...</span>
@@ -869,39 +869,65 @@
             enviarMidiGlobal([0xB0 | 15, 0x20, 2]);
             enviarMidiGlobal([0xC0 | 15, 9]); // Estilo 042
 
-            await new Promise(r => setTimeout(r, 45));
+            // 2. ACTIVAR EN PANEL EL KEYBOARD SET 29 (HARMONICA)
+            // Enciende físicamente UPPER 1 en el panel frontal del Korg y muestra "Harmonica" en la pantalla LCD
+            enviarMidiGlobal([0xB0 | 0, 0x00, 33]);
+            enviarMidiGlobal([0xB0 | 0, 0x20, 2]);
+            enviarMidiGlobal([0xC0 | 0, 8]); // Keyboard Set 29: Harmonica
 
-            // 2. Upper 1 = HARMONICA AUTÉNTICA (GM PC 22) con VIBRATO y ECO AMPLIO
-            // Banco estándar directo: garantiza sonido 100% armónica, sin caídas a piano ni acordeón
-            enviarMidiGlobal([0xB0 | 0, 0x00, 0]);
-            enviarMidiGlobal([0xB0 | 0, 0x20, 0]);
+            enviarMidiGlobal([0xB0 | 15, 0x00, 33]);
+            enviarMidiGlobal([0xB0 | 15, 0x20, 2]);
+            enviarMidiGlobal([0xC0 | 15, 8]);
+
+            await new Promise(r => setTimeout(r, 70));
+
+            // 3. Upper 1 = HARMONICA AUTÉNTICA (GM2 MSB 121, LSB 0, PC 22) con VIBRATO y ECO AMPLIO
+            // En el Korg EK-50, el banco de sonidos e instrumentos GM2 es Bank MSB 121 (0x79).
+            // El Banco MSB 0 es el banco de Pianos de fábrica, por lo que MSB 0 provocaba la caída a Grand Piano.
+            // Con MSB 121 se selecciona directamente la Harmonica oficial con sus efectos:
+            enviarMidiGlobal([0xB0 | 0, 0x00, 121]); // Banco GM2 oficial en Korg EK-50
+            enviarMidiGlobal([0xB0 | 0, 0x20, 0]);   // LSB 0
             enviarMidiGlobal([0xC0 | 0, 22]);        // PC 22 = Harmonica oficial universal
-            enviarMidiGlobal([0xB0 | 0, 0x07, 118]); // Volumen potente
+            enviarMidiGlobal([0xB0 | 0, 0x07, 122]); // Volumen potente de voz principal
             enviarMidiGlobal([0xB0 | 0, 0x0B, 127]); // Expresión 100%
-            enviarMidiGlobal([0xB0 | 0, 0x01, 50]);  // CC 01 = Modulación / Vibrato activo
-            enviarMidiGlobal([0xB0 | 0, 0x4D, 68]);  // CC 77 = Profundidad de vibrato
-            enviarMidiGlobal([0xB0 | 0, 0x5B, 115]); // CC 91 = Reverb Send (Eco acústico amplio)
-            enviarMidiGlobal([0xB0 | 0, 0x5D, 60]);  // CC 93 = Chorus / Ambiente espacial
-            enviarMidiGlobal([0xB0 | 0, 0x48, 76]);  // CC 72 = Release suave para sostener la nota
+            enviarMidiGlobal([0xB0 | 0, 0x01, 52]);  // CC 01 = Modulación / Vibrato activo
+            enviarMidiGlobal([0xB0 | 0, 0x4D, 70]);  // CC 77 = Profundidad de vibrato analógico
+            enviarMidiGlobal([0xB0 | 0, 0x5B, 122]); // CC 91 = Reverb Send (Eco acústico amplio y profundo)
+            enviarMidiGlobal([0xB0 | 0, 0x5D, 75]);  // CC 93 = Chorus / Ambiente espacial 3D
+            enviarMidiGlobal([0xB0 | 0, 0x48, 80]);  // CC 72 = Release suave para sostener la nota
 
-            // Upper 2 y 3 silenciados para que la armónica suene limpia y sin interferencias
+            // Upper 2 y 3 silenciados para que la armónica suene limpia y solista
             enviarMidiGlobal([0xB0 | 1, 0x07, 0]);
             enviarMidiGlobal([0xB0 | 2, 0x07, 0]);
 
-            // LOWER (Canal 4 - Mano Izquierda): Coro / Voces Celestiales activas para acordes
-            enviarMidiGlobal([0xB0 | 3, 0x00, 0]);
+            // LOWER (Canal 4 - Mano Izquierda): Coro / Voces Celestiales (MSB 121, LSB 0, PC 52)
+            enviarMidiGlobal([0xB0 | 3, 0x00, 121]); // Banco GM2 oficial (evita caída a piano en mano izquierda)
             enviarMidiGlobal([0xB0 | 3, 0x20, 0]);
             enviarMidiGlobal([0xC0 | 3, 52]);        // PC 52 = Choir Aahs (Voces celestiales)
-            enviarMidiGlobal([0xB0 | 3, 0x07, 115]); // Volumen cálido
+            enviarMidiGlobal([0xB0 | 3, 0x07, 115]); // Volumen cálido en la mano izquierda
             enviarMidiGlobal([0xB0 | 3, 0x0B, 127]);
-            enviarMidiGlobal([0xB0 | 3, 0x5B, 90]);
+            enviarMidiGlobal([0xB0 | 3, 0x5B, 95]);  // Reverb amplio de coro
 
-            // 3. Fijar reloj MIDI a 56 BPM
+            // 4. Fijar reloj MIDI a 56 BPM
             fijarTempoMIDI(56);
+
+            // 5. Refuerzo de seguridad anti-reset de estilo:
+            // Por si el procesador del Korg tardase más de 70ms en asentar el Estilo 042 (que por defecto trae piano en STS 1),
+            // inyectamos un segundo pulso de confirmación que blinda la Armónica con eco
+            setTimeout(() => {
+                enviarMidiGlobal([0xB0 | 0, 0x00, 121]);
+                enviarMidiGlobal([0xB0 | 0, 0x20, 0]);
+                enviarMidiGlobal([0xC0 | 0, 22]);
+                enviarMidiGlobal([0xB0 | 0, 0x07, 122]);
+                enviarMidiGlobal([0xB0 | 0, 0x01, 52]);
+                enviarMidiGlobal([0xB0 | 0, 0x5B, 122]);
+                enviarMidiGlobal([0xB0 | 0, 0x5D, 75]);
+                enviarMidiGlobal([0xB0 | 0, 0x48, 80]);
+            }, 140);
 
             // TOTALMENTE SILENCIOSO: Cambia la configuración sin disparar ráfagas de notas
             const nombres = salidas.map(o=>o.name).join(', ') || (midiOutput ? midiOutput.name : 'USB');
-            if (log) log.innerHTML = `🎵 <b>1. Armónica (Harmonica) + Vibrato + Eco + Lower: Voces</b> listo en <b>${nombres}</b> (Pantalla: <b>Harmonica</b> · Melodía: Armónica con Vibrato y Eco · Izquierda: Voces · ⏱️ <b>56 BPM</b>). ¡Toca el teclado!`;
+            if (log) log.innerHTML = `🎵 <b>1. Armónica (Harmonica) + Vibrato + Eco Profundo + Lower: Voces</b> listo en <b>${nombres}</b> (Pantalla: <b>Harmonica</b> · Melodía: Armónica GM2 con Vibrato y Eco · Izquierda: Voces · ⏱️ <b>56 BPM</b>). ¡Toca el teclado!`;
         } catch(e) {
             if (log) log.innerHTML = `⚠️ Error enviando al Korg: ${e.message}`;
         }

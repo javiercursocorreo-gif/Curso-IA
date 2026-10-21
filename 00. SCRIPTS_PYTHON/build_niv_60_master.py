@@ -288,134 +288,118 @@ def get_niv_items():
         'Diagnóstico Creatividad y Legado (+65)'
     )
 
-    # GRUPO C: ESCALAS FÍSICAS, DEL UNIVERSO Y ENERGÍA (NIV-021 a NIV-030)
-    add_it('[NIV-021]', 'La Escala del Universo (De lo Subatómico a lo Macroscópico)',
-           'Órdenes de magnitud del cosmos en potencias de 10 desde la longitud de Planck y quarks hasta el Universo Observable y la red de materia oscura.',
-           7, 'Una lupa cósmica de cristal tridimensional mostrando simultáneamente la órbita cuántica en un átomo y galaxias en espiral.',
-           [
-               ("Longitud de Planck y Quarks (10⁻³⁵ m)", "El límite absoluto del espacio-tiempo cuántico donde vibran los quarks en el núcleo del protón."),
-               ("El Átomo de Hidrógeno (10⁻¹⁰ m)", "La nube electrónica difusa orbitando alrededor del minúsculo núcleo cargado en un espacio vacío casi en un 99.999%."),
-               ("La Célula Biológica y el ADN (10⁻⁵ m)", "La intrincada maquinaria molecular de la doble hélice del ADN empacada dentro del núcleo de un glóbulo blanco humano."),
-               ("La Escala Humana y Terrestre (1 m a 10.000 km)", "Un ser humano de dos metros de estatura de pie sobre el planeta Tierra esférico y azul flotando en el espacio negro."),
-               ("El Sistema Solar y la Nube de Oort (10¹³ m)", "El Sol en el centro gobernando las órbitas de los 8 planetas hasta los confines helados de los cometas interestelares."),
-               ("La Galaxia Vía Láctea (10²¹ m)", "Una majestuosa espiral de 100.000 años luz de diámetro habitada por más de 200.000 millones de estrellas girando en torno a un agujero negro supermasivo."),
-               ("El Universo Observable y Filamentos (10²⁶ m)", "La red cósmica titánica de filamentos de materia oscura y supercúmulos galácticos abarcando 93.000 millones de años luz.")
-           ],
-           'Asegúrate de que las potencias de 10 y los nombres de las galaxias estén estrictamente en español castellano sin palabras en inglés.')
+    # =========================================================================
+    # LOTE 3 (SESIONES 21 A 30): MICRO-APLICACIONES INTERACTIVAS SENIORS (+65)
+    # =========================================================================
+    add_senior_microapp(
+        '[NIV-021]',
+        'Los 7 Escalones de la Escala del Universo',
+        'Micro-aplicación interactiva de perspectiva cósmica y serenidad cotidiana para personas mayores (+65). Permite recorrer los 7 órdenes de magnitud del universo: desde el mundo subatómico y las células biológicas, hasta la escala humana del hogar, los planetas y las galaxias, enseñando a relativizar las prisas y disfrutar del milagro de la vida.',
+        'Actúa como un divulgador científico humanista y docente para personas mayores (+65).\nExplícame en 3 puntos cómo conectar la inmensidad de los 7 órdenes de magnitud del cosmos con la serenidad de la vida cotidiana en la jubilación, sin fórmulas matemáticas complejas.',
+        'Genera en un único archivo HTML la aplicación completa: con diseño oscuro accesible, deslizador de zoom cósmico (potencias de 10), tipografía grande (17px), reflexiones de paz mental y sin tecnicismos en inglés.',
+        '• 7 Escalones Cósmicos: 1. Reino Cuántico (Quarks y Planck), 2. El Átomo y las Moléculas del Agua, 3. La Célula Biológica y el ADN, 4. La Escala Humana y el Hogar (1m - 100m), 5. La Tierra y el Sistema Solar, 6. La Galaxia Vía Láctea, 7. El Universo Observable y Filamentos.\n• Controles: Selector de escalón (1 a 7), selector de potencias de 10 (-35 a +26) y conmutador de enfoque ("Cotidiano" vs. "Filosófico").\n• KPIs en tiempo real: Dimensión real, tiempo de viaje de la luz, metáfora familiar comprensible e índice de serenidad.\n• Filosofía senior: Enseña a valorar el momento presente frente a las preocupaciones efímeras.',
+        'SIMULADOR_ESCALA_UNIVERSO_SENIORS.html',
+        'Explorador Escala del Universo (+65)'
+    )
 
-    add_it('[NIV-022]', 'La Escala de Kardashev (Los 5 Niveles de Civilización Energética)',
-           'Grado de avance de una civilización inteligente según el aprovechamiento energético desde el Tipo 0.7 fósil actual hasta el dominio de galaxias.',
-           5, 'Una mega-estructura futurista 3D de enjambres de espejos orbitales Esfera de Dyson absorbiendo la luz total de una estrella.',
-           [
-               ("Civilización Tipo 0.7 (Humanidad Actual)", "Una civilización extrayendo combustibles fósiles de la corteza terrestre quemando carbón y petróleo con consumo de 10¹³ Vatios."),
-               ("Civilización Tipo I (Dominio Planetario Total)", "Una humanidad futura controlando el 100% de la energía solar y climática del planeta de forma segura con fusión nuclear a 10¹⁶ Vatios."),
-               ("Civilización Tipo II (Dominio Estelar - Esfera de Dyson)", "Ingeniería espacial colosal que envuelve al Sol con satélites recolectores capturando toda su emisión energética radiante a 10²⁶ Vatios."),
-               ("Civilización Tipo III (Dominio Galáctico)", "Una especie interestelar que ha colonizado miles de sistemas estelares aprovechando la energía de agujeros negros en la Vía Láctea a 10³⁶ Vatios."),
-               ("Civilización Tipo IV (Dominio Universal)", "Seres cósmicos hipotéticos capaces de manipular la energía oscura y las leyes físicas de múltiples universos simultáneos.")
-           ],
-           'Ilustra en el Peldaño 2 la Tierra rodeada por un escudo transparente luminoso de energía solar limpia con textos en español.')
+    add_senior_microapp(
+        '[NIV-022]',
+        'Los 5 Niveles de Energía, Escala Kardashev y Consumo en el Hogar',
+        'Herramienta interactiva pedagógica que conecta la evolución energética de la humanidad y la escala Kardashev (desde el fuego de leña hasta el dominio solar) con la optimización práctica del recibo de la luz en el hogar de los jubilados: ajuste de potencia contratada, horas valle y prevención de cobros abusivos.',
+        'Actúa como un orientador energético y pedagogo cercano para personas mayores (+65).\nExplícame en 3 viñetas cómo ayudar a una persona mayor a entender su recibo de electricidad, ajustar la potencia y ahorrar sin pasar frío en invierno.',
+        'Genera la aplicación interactiva en HTML con una escala de 5 niveles de civilización energética, simulador de potencia doméstica (kW), cálculo de ahorro anual en euros y consejos contra seguros innecesarios.',
+        '• 5 Niveles Energéticos: 1. Biológico y Leña (la mesa camilla ancestral), 2. Fósil y Carbón (revolución industrial), 3. Red Eléctrica Actual (Tipo 0.73), 4. Dominio Planetario Limpio (Autoconsumo solar y fusión), 5. Dominio Estelar (Esfera de Dyson).\n• Calculadora doméstica: Potencia contratada (2.3 a 6.9 kW), porcentaje de uso en horas valle (lavadora/lavavajillas) y bombillas LED.\n• Métricas de ahorro: Factura mensual estimada en euros y cálculo de ahorro familiar anual (80 € a 180 €/año).\n• Escudo legal: Consejos para dar de baja servicios de mantenimiento no solicitados en la factura.',
+        'SIMULADOR_ENERGIA_KARDASHEV_HOGAR_SENIORS.html',
+        'Optimizador Energía y Kardashev (+65)'
+    )
 
-    add_it('[NIV-023]', 'Los 7 Niveles de Temperatura en el Cosmos',
-           'Espectro de agitación térmica molecular desde el Cero Absoluto Kelvin hasta el estallido nuclear de 100 millones de grados en supernovas.',
-           7, 'Un termómetro cósmico de cristal 3D congelado en su base con hielo azul e irguiéndose ardiente con plasma incandescente de supernova en la cumbre.',
-           [
-               ("Cero Absoluto (-273.15 °C / 0 Kelvin)", "Inmovilidad molecular teórica total y condensados cuánticos donde la materia pierde toda resistencia eléctrica en laboratorios ultrafríos."),
-               ("Radiación de Fondo Cósmico (-270 °C / 2.7 Kelvin)", "El frío gélido y oscuro del espacio interestelar iluminado únicamente por el eco térmico remanente del Big Bang primordial."),
-               ("Temperatura Ambiente Biológica (0 °C a 40 °C)", "El estrecho margen térmico donde el agua fluye líquida, las encimas respiran y florece la vida en el planeta Tierra."),
-               ("Lava Volcánica Fundida (1.200 °C)", "Ríos ardorosos de roca magmática fundida brotando de los cráteres volcánicos en el manto basáltico de la corteza terrestre."),
-               ("Superficie del Sol - Fotosfera (5.500 °C)", "El océano de plasma amarillo hirviendo donde los campos magnéticos retuercen destellos solares gigantes en nuestra estrella."),
-               ("Núcleo Estelar Solar (15 Millones de °C)", "El horno termonuclear central donde la inmensa presión gravitatoria fusiona átomos de hidrógeno en helio liberando luz y calor."),
-               ("Explosión de Supernova (100 Millones de °C)", "La muerte titánica de una estrella masiva forjando en su estallido térmico todos los elementos pesados como el oro, la plata y el hierro.")
-           ],
-           'Dibuja en el Peldaño 4 un volcán erupcionando lava roja brillante sobre rocas oscuras con rótulos en castellano.')
+    add_senior_microapp(
+        '[NIV-023]',
+        'Los 7 Niveles de Temperatura en el Cosmos y Confort Térmico en el Hogar',
+        'Termómetro comparativo interactivo desde los límites térmicos del cosmos hasta el confort del hogar senior: cómo regular el termostato a 21 °C para proteger el corazón, ahorrar un 7% por cada grado en la factura y prevenir la deshidratación y golpes de calor en verano.',
+        'Actúa como un médico especialista en salud ambiental y geriatría preventiva.\nExplícame en 3 viñetas cómo diseñar un simulador que ayude a una persona mayor a mantener 21 °C en casa, ahorrar calefacción y proteger su tensión arterial.',
+        'Genera el archivo HTML interactivo con un termómetro dinámico, semáforo de salud cardiovascular (frío vs calor), cálculo de desviación en la factura de calefacción y consejos estacionales.',
+        '• 7 Niveles Térmicos: 1. Cero Absoluto (-273 °C), 2. Fondo Cósmico Espacial (-270 °C), 3. Ola de Frío Invernal (-5 °C a 5 °C), 4. Confort Térmico Saludable (19 °C a 22 °C, ideal 21 °C), 5. Ola de Calor Veraniega (38 °C a 44 °C), 6. Lava y Fotosfera Solar (1.200 °C a 5.500 °C), 7. Núcleo Solar y Supernovas (15 a 100 Millones °C).\n• Lógica médica: Alerta sobre vasoconstricción y subidas de tensión en invierno, y pérdida de sed en olas de calor veraniegas.\n• Desviación de gasto: Cada grado por encima de 21 °C en invierno encarece un 7% la factura.',
+        'SIMULADOR_TEMPERATURA_CONFORT_HOGAR_SENIORS.html',
+        'Termómetro Confort y Salud (+65)'
+    )
 
-    add_it('[NIV-024]', 'Los 6 Niveles de la Gravedad en el Espacio-Tiempo',
-           'Curvatura del espacio-tiempo de Einstein desde la ingravidez orbital y gravedad lunar hasta la densidad aplastante de enanas blancas y agujeros negros.',
-           6, 'Una rejilla elástica de espacio-tiempo en 3D curvada dramáticamente por una esfera negra brillante atrapando un haz de luz láser dorada.',
-           [
-               ("Microgravedad Orbital (0 g)", "Astronautas y esferas de agua flotando libremente dentro de la Estación Espacial Internacional en caída libre orbital perpetua."),
-               ("Gravedad Lunar y Marciana (0.16 g a 0.38 g)", "Un astronauta dando grandes saltos a cámara lenta sobre el polvo grisáceo del cráter lunar con un traje espacial ligero."),
-               ("Gravedad Terrestre Estándar (1 g - 9.8 m/s²)", "El ancla evolutiva que mantiene a nuestros cuerpos en el suelo, da fuerza a nuestros huesos y sostiene la atmósfera que respiramos."),
-               ("Gravedad de Gigante Gaseoso - Júpiter (2.5 g)", "Una atmósfera masiva y aplastante de hidrógeno donde un humano pesaría casi tres veces más, imposibilitando el caminar."),
-               ("Gravedad de Enana Blanca (300.000 g)", "El remanente estelar ultradenso del tamaño de la Tierra pero con la masa del Sol, donde una cucharada de materia pesa toneladas."),
-               ("Agujero Negro y Singularidad Infinita", "Un abismo cósmico cuya atracción gravitatoria es tan colosal que ni siquiera las partículas de luz fotones pueden escapar de su horizonte.")
-           ],
-           'Añade en el Peldaño 2 un astronauta con bandera española en la Luna y textos en castellano estricto.')
+    add_senior_microapp(
+        '[NIV-024]',
+        'Los 6 Niveles de Gravedad en el Cosmos, Equilibrio y Prevención de Caídas',
+        'Simulador interactivo de gravedad cósmica y salud muscular: calcula el peso real del usuario en 6 mundos (Luna, Marte, Tierra, Júpiter...) y ofrece un plan de equilibrio, fuerza de cuádriceps y revisión del hogar para prevenir tropiezos y caídas en mayores.',
+        'Actúa como un médico fisioterapeuta y divulgador científico para adultos mayores (+65).\nExplícame en 3 viñetas cómo estructurar una báscula cósmica que calcule el peso en otros planetas y enseñe ejercicios sencillos de equilibrio para casa.',
+        'Crea la aplicación en HTML con un selector de peso en kg, visualizador de gravedad cósmica, el test de la silla (levantarse 5 veces) y checklist de seguridad en el hogar.',
+        '• 6 Mundos Gravitatorios: 1. Microgravedad Orbital (0 g - Estación Espacial), 2. Luna (0.166 g), 3. Marte (0.38 g), 4. Tierra Estándar (1.0 g = 9.8 m/s²), 5. Júpiter (2.53 g), 6. Enana Blanca y Agujero Negro (> 300.000 g).\n• Báscula Cósmica: Calcula el peso exacto en cada astro al deslizar el peso corporal del usuario (45 a 110 kg).\n• Prevención de caídas: Ejercicio de la silla para fortalecer cuádriceps, zapatillas con suela antideslizante y fijación de alfombras con cinta de doble cara.',
+        'SIMULADOR_GRAVEDAD_EQUILIBRIO_SENIORS.html',
+        'Báscula Cósmica y Equilibrio (+65)'
+    )
 
-    add_it('[NIV-025]', 'Los 5 Niveles de Velocidad y Cinética en el Universo',
-           'Movimiento y desplazamiento cósmico desde la deriva milimétrica de placas tectónicas hasta la velocidad límite infranqueable del fotón de luz.',
-           5, 'Un rayo fotónico relampagueante de luz blanca y azul en 3D atravesando un reloj de arena interestelar, simbolizando que a la velocidad de la luz el tiempo se detiene.',
-           [
-               ("Deriva Tectónica (3 cm por año)", "El lentísimo y silencioso empuje de continentes separándose a la misma velocidad milimétrica a la que crecen las uñas humanas."),
-               ("Velocidad del Sonido - Mach 1 (1.235 km/h)", "Un avión supersónico rompiendo la barrera del sonido con un cono blanco de condensación de vapor en el cielo azul."),
-               ("Velocidad de Escape Terrestre (11.2 km/s)", "El cohete espacial rugiendo con fuego blanco al superar la fuerza de atracción gravitatoria para salir hacia el espacio exterior lunar."),
-               ("Sondas Interplanetarias y Viento Solar (500 km/h a 70 km/s)", "La sonda espacial Parker Solar Probe alcanzando velocidades récord vertiginosas al sumergirse cerca de la corona solar abrasadora."),
-               ("El Límite Absoluto - La Luz (300.000 km/s)", "Los fotones electromagnéticos viajando por el vacío cósmico, capaces de dar la vuelta a la Tierra más de 7 veces en un solo segundo.")
-           ],
-           'Ilustra en el Peldaño 2 un avión supersónico con el cono de vapor de agua y rótulos en español.')
+    add_senior_microapp(
+        '[NIV-025]',
+        'Los 5 Niveles de Velocidad en el Universo y el Elogio de la Lentitud Serena',
+        'Herramienta interactiva de reflexión y salud cardiovascular: contrapone las velocidades vertiginosas del cosmos con el valor del paso humano consciente (4 km/h) en la jubilación, midiendo los beneficios del paseo diario y desterrando las prisas innecesarias.',
+        'Actúa como un médico cardiólogo y filósofo humanista para personas mayores (+65).\nExplícame en 3 viñetas cómo estructurar una calculadora del paseo diario que mida distancia y minutos activos y fomente caminar sin prisas.',
+        'Genera la aplicación interactiva en HTML con calculadora de pasos diarios (2.000 a 12.000), estimación de km y tiempo, comparador con 5 niveles de velocidad cósmica y reflexiones sobre el derecho a la calma.',
+        '• 5 Niveles de Velocidad: 1. Deriva Tectónica Continental (3 cm/año), 2. El Paso Humano Consciente (4 km/h = 1.1 m/s), 3. Transporte Terrestre y Vehicular (50 a 120 km/h), 4. Velocidad de Escape y Sondas Espaciales (11 a 70 km/s), 5. La Velocidad de la Luz (300.000 km/s).\n• Calculadora del paseo: Conversión de pasos a kilómetros reales (zancada de 0.70 m) y minutos al aire libre.\n• Decálogo de la lentitud serena: No correr tras el autobús, saborear las comidas y pasear mirando el entorno.',
+        'SIMULADOR_VELOCIDAD_RITMO_VIDA_SENIORS.html',
+        'Simulador Velocidad y Calma (+65)'
+    )
 
-    add_it('[NIV-026]', 'Los 6 Niveles del Espectro Electromagnético y Frecuencia',
-           'Clasificación ondulatoria desde las ondas de radio inofensivas de telecomunicaciones y luz visible hasta los fotones ionizantes de Rayos X y Gamma.',
-           6, 'Un prisma óptico de cristal purísimo en 3D que recibe un haz de luz solar e irradia un abanico deslumbrante de frecuencias.',
-           [
-               ("Ondas de Radio y Telecomunicaciones", "Antenas gigantes de telecomunicación transmitiendo señales de radio AM/FM, Wi-Fi y telefonía móvil celular sin dañar los tejidos celulares."),
-               ("Microondas y Radar Meteorológico", "Radares giratorios en aeropuertos penetrando las nubes y hornos domésticos agitando moléculas de agua para calentar alimentos."),
-               ("Infrarrojo y Calor Térmico", "Cámaras de visión nocturna militar mostrando la silueta cálida de animales y pérdida de calor por las ventanas de los edificios."),
-               ("Luz Visible y Ojo Humano (400 a 700 nm)", "El estrecho arcoíris de colores del rojo al violeta que nuestros ojos biológicos han evolucionado para percibir con nitidez bajo el sol."),
-               ("Ultravioleta (UV) e Ionización Solar", "Los rayos invisibles del sol que estimulan la síntesis biológica de vitamina D en la piel pero pueden causar quemaduras si falta el filtro de ozono."),
-               ("Rayos X y Rayos Gamma Ultra-Energéticos", "Radiaciones ionizantes de altísimo poder penetrante utilizadas en radiografías óseas médicas e irradiadas por púlsares cósmicos lejanos.")
-           ],
-           'Dibuja en el Peldaño 4 un ojo humano realista mirando un arcoíris brillante con textos en castellano.')
+    add_senior_microapp(
+        '[NIV-026]',
+        'Los 6 Niveles del Espectro Electromagnético, Luz, Ondas y Salud',
+        'Guía interactiva divulgativa y científica que disipa con rigor médico los bulos sobre las radiaciones: explica la diferencia entre ondas no ionizantes (radio, TV, Wi-Fi, móvil) 100% seguras y radiaciones ionizantes médicas, junto con pautas de iluminación y protección visual para seniors.',
+        'Actúa como un médico oftalmólogo y físico divulgador para personas mayores (+65).\nExplícame en 3 viñetas cómo desmontar con ciencia tranquila el miedo al Wi-Fi y dar consejos prácticos de iluminación y cuidado de la vista en la madurez.',
+        'Genera el código HTML interactivo con un selector de las 6 franjas del espectro, semáforo de seguridad (ionizante vs no ionizante), desmitificador de bulos y consejos de luz cálida nocturna para dormir bien.',
+        '• 6 Franjas del Espectro: 1. Ondas de Radio, TV y Wi-Fi (No ionizante, totalmente segura), 2. Microondas (Calor molecular inofensivo), 3. Infrarrojo (Calor térmico reconfortante y fisioterapia), 4. Luz Visible (Iluminación óptima para lectura), 5. Ultravioleta (Vitamina D y protección con gafas UV400), 6. Rayos X y Gamma (Diagnóstico médico hospitalario regulado).\n• Detector de mitos: Certificación de la OMS sobre la inocuidad de las redes Wi-Fi y telefonía en el hogar.\n• Cuidado visual: Uso de bombillas LED cálidas (3000K) en el salón para no fatigar la vista.',
+        'SIMULADOR_ESPECTRO_ELECTROMAGNETICO_SALUD_SENIORS.html',
+        'Guía Espectro, Ondas y Salud (+65)'
+    )
 
-    add_it('[NIV-027]', 'Los 5 Niveles del Tiempo Biológico, Geológico y Cósmico',
-           'Duración temporal desde los milisegundos del impulso nervioso o el ciclo circadiano hasta las eras geológicas y la edad del universo.',
-           5, 'Un reloj astronómico en 3D con esferas giratorias de engranajes dorados, donde el segundero es una neurona palpitando y las horas son galaxias rotando.',
-           [
-               ("Tiempo Neuronal e Impulso (Milisegundos)", "El brevísimo instante en que una sinapsis descarga electricidad para permitir que parpadeemos o reaccionemos ante un estímulo veloz."),
-               ("El Ciclo Circadiano y Día Solar (24 Horas)", "El ritmo biológico maestro regulado por la luz del Sol, gobernando los ciclos de sueño-vigilia, hormonas y temperatura corporal en mamíferos."),
-               ("La Vida Humana y Longevidad (80 a 100 Años)", "Una biografía personal completa, desde la infancia curiosa hasta la sabiduría del anciano, atravesando décadas de aprendizaje y legado familiar."),
-               ("Tiempo Geológico y Evolución (Millones de Años)", "El lento alzamiento de la cordillera del Himalaya por choque de placas y la evolución paulatina de los dinosaurios a las aves modernas."),
-               ("Tiempo Cosmológico y Edad Cósmica (13.800 Millones de Años)", "El gran calendario cósmico desde el estallido inicial del Big Bang hasta la formación gradual de galaxias, sistemas solares y planetas rocosos.")
-           ],
-           'Ilustra en el Peldaño 3 un árbol genealógico con un niño, un adulto y un anciano con rótulos en español.')
+    add_senior_microapp(
+        '[NIV-027]',
+        'Los 5 Niveles del Tiempo: De los Segundos al Legado Familiar y la Edad Cósmica',
+        'Micro-aplicación interactiva de perspectiva temporal y plenitud vital para personas mayores: calcula el tesoro de días vividos, latidos cardíacos y órbitas al Sol cumplidas, invitando a disfrutar del tiempo libre sin culpas y a transmitir vivencias a las nuevas generaciones.',
+        'Actúa como un orientador vital y pedagogo humanista para personas mayores (+65).\nExplícame en 3 viñetas cómo diseñar una calculadora del tiempo vivido que valore los días y latidos cumplidos, y regale serenidad para saborear la jubilación sin prisas.',
+        'Genera la aplicación en HTML con selector de edad (60 a 95 años), cálculo de días y latidos acumulados, comparador de 5 escalas temporales (del milisegundo a la edad cósmica) y reflexiones de plenitud.',
+        '• 5 Escalas del Tiempo: 1. Instante Biológico y Sinapsis (Milisegundos), 2. Ciclo Circadiano y Día Solar (24 Horas), 3. Biografía Humana y Longevidad (80 a 100 Años), 4. Tiempo Geológico y Evolución (Millones de Años), 5. Tiempo Cósmico (13.800 Millones de Años).\n• Calculadora del Legado: Introduce los años cumplidos y muestra los días vividos (ej: 25.000 días), los latidos del corazón y las vueltas dadas al Sol.\n• Mensaje tranquilizador: El descanso y la contemplación en la jubilación son derechos ganados con honor tras décadas de trabajo.',
+        'SIMULADOR_TIEMPO_LEGADO_SENIORS.html',
+        'Calculadora de Tiempo y Legado (+65)'
+    )
 
-    add_it('[NIV-028]', 'Los 6 Niveles de Presión Físico-Química',
-           'Fuerza barométrica ejercida por la materia desde el vacío espacial casi absoluto hasta la presión atmosférica, Fosa de las Marianas y estrellas de neutrones.',
-           6, 'Una prensa hidráulica cósmica en 3D de titanio brillante comprimiendo un trozo de carbón negro hasta transformarlo en un diamante puro resplandeciente.',
-           [
-               ("Vacío Intergaláctico (0 Atmósferas)", "El silencio absoluto del espacio exterior donde los líquidos hervirían y se congelarían al instante por falta de presión atmosférica."),
-               ("Presión Atmosférica Terrestre (1 Atmósfera al nivel del mar)", "El peso invisible del mar de aire que respiramos presionado suavemente sobre cada centímetro de nuestro cuerpo en equilibrio biológico perfecto."),
-               ("Olla a Presión e Ingeniería Bucéica (2 a 50 Atmósferas)", "Buzos con botellas de aire comprimido descendiendo en arrecifes de coral y ollas de cocina acelerando la cocción elevando el punto de ebullición."),
-               ("Fosa Abisal de las Marianas (1.100 Atmósferas)", "El fondo oceánico más profundo de la Tierra a 11 km bajo el agua, donde la presión colosal aplastaría instantáneamente el casco de un submarino convencional."),
-               ("Manto Terrestre y Síntesis de Diamantes (70.000 Atmósferas)", "El corazón caliente subterráneo de la Tierra donde el carbono cristaliza lentamente bajo un peso geológico titánico convirtiéndose en diamantes eternos."),
-               ("Presión de Degeneración Cuántica en Estrellas de Neutrones", "La presión nuclear inimaginable que empaqueta una estrella entera del tamaño del Sol en una esfera perfecta de tan solo 20 kilómetros de diámetro.")
-           ],
-           'Dibuja en el Peldaño 4 el submarino batiscrafo explorando el fondo oscuro del océano con faros de luz y rótulos en español.')
+    add_senior_microapp(
+        '[NIV-028]',
+        'Los 6 Niveles de Presión Físico-Química, Clima y Tensión Arterial',
+        'Simulador interactivo que une la física barométrica con la salud cardiovascular cotidiana: explica por qué las bajadas de presión antes de llover provocan molestias articulares reales y proporciona un tensiómetro interactivo con semáforo médico oficial para el control en casa.',
+        'Actúa como un médico internista y divulgador meteorológico para personas mayores (+65).\nExplícame en 3 viñetas cómo diseñar un tensiómetro interactivo con semáforo médico y explicación científica clara de por qué nos duele la rodilla cuando cambia el tiempo.',
+        'Genera el archivo HTML interactivo con deslizadores de tensión sistólica y diastólica en mmHg, semáforo de salud arterial, barómetro del clima y consejos para medirse la tensión correctamente.',
+        '• 6 Niveles de Presión: 1. Vacío Intergaláctico (0 Atm), 2. Presión Atmosférica Terrestre (1 Atm = 1.013 hPa = 760 mmHg), 3. Borrascas y Dolores Articulares (Meteoropatía con 985 hPa), 4. Presión en Olla Express Doméstica (2 a 3 Atm), 5. Fosa Abisal de las Marianas (1.100 Atm), 6. Presión Cuántica en Estrellas de Neutrones (> 10²⁸ Atm).\n• Tensiómetro interactivo: Evaluación médica de valores sistólicos y diastólicos (Óptima < 120/80, Normal < 130/85, Seguimiento < 140/90, Consulta > 140/90).\n• Pautas médicas: Medir la tensión sentados, en silencio tras 5 minutos de reposo, y cocinar con especias para reducir la sal.',
+        'SIMULADOR_PRESION_CLIMA_TENSION_SENIORS.html',
+        'Tensiómetro y Presión Barométrica (+65)'
+    )
 
-    add_it('[NIV-029]', 'Los 5 Niveles de los Estados Físicos de la Materia',
-           'Estructura termodinámica atómica y molecular desde el condensado de Bose-Einstein ultrafrío hasta el cristal sólido, el líquido, el gas y el plasma estelar.',
-           5, 'Una esfera mágica elemental en 3D dividida en sectores donde conviven hielo cristalino sólido, agua en ondas, vapor suave y un arco de plasma morado eléctrico.',
-           [
-               ("Condensado Cuántico de Bose-Einstein (Frío Extremo)", "Átomos sobre-enfriados cerca del Cero Absoluto perdiendo su identidad individual y comportándose como una sola super-partícula cuántica ondulante."),
-               ("Estado Sólido Cristalino (Enlaces Rígidos)", "Moléculas sólidamente trabadas en una red geométrica perfecta fijas en su posición, dando forma y dureza a minerales, hielo y metales."),
-               ("Estado Líquido Fluido (Enlaces Flexibles)", "Moléculas de agua resbalando libremente unas sobre otras, adaptándose a la forma exacta de cualquier recipiente y manteniendo coherencia celular vital."),
-               ("Estado Gaseoso Expansivo (Alta Cinética)", "Átomos muy separados rebotando a gran velocidad por todo el volumen disponible, formando la atmósfera, nubes y vientos del planeta."),
-               ("Estado Plasma Ionizado (Altísima Energía y Electrificación)", "Gas supercalentado en el que los electrones son arrancados de sus núcleos, generando tormentas solares, rayos de tormenta y auroras boreales coloridas.")
-           ],
-           'Ilustra en el Peldaño 5 una aurora boreal verde brillante sobre un cielo estrellado con rótulos en castellano.')
+    add_senior_microapp(
+        '[NIV-029]',
+        'Los 5 Estados de la Materia, el Ciclo del Agua y la Hidratación Saludable',
+        'Herramienta interactiva de divulgación física y salud nutricional: explica los 5 estados de la materia (sólido, líquido, gas, plasma y condensado) y establece un planificador diario de hidratación pautada para personas mayores, superando la pérdida biológica de la sensación de sed.',
+        'Actúa como un médico nefrólogo y divulgador de ciencias naturales para personas mayores (+65).\nExplícame en 3 viñetas cómo diseñar un contador de vasos de agua que ayude a prevenir mareos y cuide los riñones en la madurez.',
+        'Genera la aplicación interactiva en HTML con contador de vasos diarios (litros totales), semáforo de función renal y lucidez mental, comparador de los 5 estados físicos y pauta horaria de consumo de líquidos.',
+        '• 5 Estados de la Materia: 1. Condensado Cuántico Bose-Einstein (Frío extremo cuántico), 2. Estado Sólido Cristalino (Hielo, minerales y huesos), 3. Estado Líquido Fluido (El agua de la vida y la sangre), 4. Estado Gaseoso Expansivo (Vapor, aire y respiración), 5. Estado Plasma Ionizado (El Sol y relámpagos).\n• Planificador de hidratación: Contador de 1 a 10 vasos diarios (1.5L a 2.0L recomendados) con diagnóstico de alerta mental y salud renal.\n• Alerta médica para mayores: Explicación de por qué los osmorreceptores atenúan la sed en la madurez y la necesidad de beber agua de forma pautada.',
+        'SIMULADOR_ESTADOS_MATERIA_HIDRATACION_SENIORS.html',
+        'Planificador de Hidratación y Materia (+65)'
+    )
 
-    add_it('[NIV-030]', 'Los 6 Niveles de Radioactividad e Impacto Ionizante',
-           'Taxonomía biológica de la radiación ionizante desde el fondo natural y radiografías médicas controladas hasta la terapia oncológica y accidentes nucleares.',
-           6, 'El símbolo universal de radiación de tres aspas en 3D color amarillo oro y negro rodeado de un aura protectora azul de blindaje de plomo.',
-           [
-               ("Radiación de Fondo Natural (0.003 Sieverts por año)", "La inofensiva y constante radiación que emana del potasio en un plátano, el granito de las montañas y los rayos cósmicos filtrados por la atmósfera."),
-               ("Diagnóstico Médico por Rayos X (Dosis Minúscula)", "Una radiografía ósea de tórax o brazo controlada al milímetro por médicos para detectar fracturas sin peligro de daño biológico celular."),
-               ("Tomografía TAC y Vuelos de Altura (Dosis Acumulativa)", "Escáneres corporales 3D de alta definición en hospitales y radiación cósmica que absorben los pilotos al volar sobre 10.000 metros de altitud."),
-               ("Radioterapia Oncológica Localizada (Destrucción Dirigida)", "Haces de protones o rayos X de alta energía enfocados quirúrgicamente con exactitud micrométrica para quemar y destruir células cancerígenas."),
-               ("Síndrome de Irradiación Aguda (Exposición Grave)", "Daño celular sistémico en médula ósea y tracto digestivo tras estar en contacto accidental sin blindaje con fuentes radiactivas industriales."),
-               ("Fusión del Núcleo Nuclear - Chernóbil (Zona Letal)", "El colapso térmico descontrolado de un reactor liberando isótopos de cesio y yodo que inutilizan biológicamente una región durante siglos.")
-           ],
-           'Añade en el Peldaño 2 un médico con bata blanca mirando una placa de radiografía limpia de un brazo con textos en español.')
+    add_senior_microapp(
+        '[NIV-030]',
+        'Los 6 Niveles de Radioactividad, Pruebas Médicas y Tranquilidad Senior',
+        'Comparador interactivo y tranquilizador de dosis de radiación: desmitifica con ciencia rigurosa el miedo a las pruebas médicas de rayos X y TAC, demostrando que una radiografía equivale a unos pocos días de vida natural en la Tierra y aporta un inmenso beneficio diagnóstico para la salud.',
+        'Actúa como un médico especialista en radiología y pedagogía sanitaria para personas mayores (+65).\nExplícame en 3 viñetas cómo diseñar un comparador en microSieverts que tranquilice a una persona mayor y desmitifique el miedo infundado a las pruebas médicas de rayos X.',
+        'Genera la aplicación interactiva en HTML con selector de los 6 niveles de radiación, comparador de dosis en microSieverts (µSv), equivalencia en días de vida cotidiana en la naturaleza y mensajes de confianza médica.',
+        '• 6 Niveles de Radiación: 1. Fondo Natural y Alimentos (0.1 µSv por plátano / 2.4 mSv al año en la Tierra), 2. Vuelos en Avión y Radiación Cósmica (20 a 40 µSv por vuelo transatlántico), 3. Radiografías de Diagnóstico Médico (5 a 20 µSv en tórax o dental), 4. Tomografía Computarizada (TAC) (3 a 6 mSv supervisados), 5. Radioterapia Oncológica Dirigida (Tratamiento curativo de precisión), 6. Accidentes Industriales Nucleares (> 1.000 mSv, Chernóbil / no aplicable a medicina).\n• Comparador en microSieverts: Una radiografía de tórax (20 µSv) equivale a solo 3 días paseando por el campo.\n• Tranquilidad sanitaria: Mensaje claro para no aplazar ni rechazar placas recetadas por el médico.',
+        'SIMULADOR_RADIOACTIVIDAD_MEDICINA_SENIORS.html',
+        'Comparador de Radiación y Medicina (+65)'
+    )
 
     # GRUPO D: ESCALAS Y NIVELES DEL MUNDO BIOLÓGICO Y ECOLÓGICO (NIV-031 a NIV-040)
     add_it('[NIV-031]', 'Los 6 Estratos de Profundidad del Océano y Adaptación',

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
 import re
+import shutil
 from reportlab.lib.pagesizes import A4
 from reportlab.lib import colors
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
@@ -29,7 +30,17 @@ LEGACY_NIV_NAMES = {
     17: "9. NIV-017_Los 5 Niveles de Empatía e Inteligencia Emocional.pdf",
     18: "9. NIV-018_Los 6 Niveles de Disciplina y Formación de Hábitos.pdf",
     19: "9. NIV-019_Los 5 Niveles de la Comunicación y Lenguaje Biológico.pdf",
-    20: "9. NIV-020_Los 6 Niveles de Creatividad e Innovación Humana.pdf"
+    20: "9. NIV-020_Los 6 Niveles de Creatividad e Innovación Humana.pdf",
+    21: "9. NIV-021_La Escala del Universo (De lo Subatómico a lo Macroscópico).pdf",
+    22: "9. NIV-022_La Escala de Kardashev (Los 5 Niveles de Civilización Energética).pdf",
+    23: "9. NIV-023_Los 7 Niveles de Temperatura en el Cosmos.pdf",
+    24: "9. NIV-024_Los 6 Niveles de la Gravedad en el Espacio-Tiempo.pdf",
+    25: "9. NIV-025_Los 5 Niveles de Velocidad y Cinética en el Universo.pdf",
+    26: "9. NIV-026_Los 6 Niveles del Espectro Electromagnético y Frecuencia.pdf",
+    27: "9. NIV-027_Los 5 Niveles del Tiempo Biológico, Geológico y Cósmico.pdf",
+    28: "9. NIV-028_Los 6 Niveles de Presión Físico-Química.pdf",
+    29: "9. NIV-029_Los 5 Niveles de los Estados Físicos de la Materia.pdf",
+    30: "9. NIV-030_Los 6 Niveles de Radioactividad e Impacto Ionizante.pdf"
 }
 
 def create_niv_fichas():

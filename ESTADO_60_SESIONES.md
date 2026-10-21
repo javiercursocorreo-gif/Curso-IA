@@ -10,7 +10,7 @@ Este documento registra el avance del plan de actualización por lotes bajo la *
 | :--- | :--- | :---: | :---: | :---: | :---: |
 | **LOTE 1** | Sesiones 01 a 10 | 🟢 **COMPLETADO** | **10 / 10** | 3D Lungs / Corazón / Luna / Motor / T-Rex / Molar | **10 / 10 Listas** |
 | **LOTE 2** | Sesiones 11 a 20 | 🟢 **COMPLETADO** | **10 / 10** | Stradivarius / Helix / ADN / Júpiter / Partenón | **10 / 10 Listas** |
-| **LOTE 3** | Sesiones 21 a 30 | ⚪ Pendiente | 0 / 10 | 11 Dimensiones ... | Pendiente |
+| **LOTE 3** | Sesiones 21 a 30 | 🟢 **COMPLETADO** | **10 / 10** | 11 Dimensiones del Universo 3D | **10 / 10 Listas** |
 | **LOTE 4** | Sesiones 31 a 40 | ⚪ Pendiente | 0 / 10 | Por auditar | Pendiente |
 | **LOTE 5** | Sesiones 41 a 50 | ⚪ Pendiente | 0 / 10 | Por auditar | Pendiente |
 | **LOTE 6** | Sesiones 51 a 60 | ⚪ Pendiente | 0 / 10 | Por auditar | Pendiente |
@@ -156,5 +156,70 @@ Este documento registra el avance del plan de actualización por lotes bajo la *
 
 ---
 
-## 🎯 PRÓXIMO PASO: LOTE 3 (SESIONES 21 A 30)
-En cuanto se ejecute el `[COMANDO 47]` en la terminal externa, el proyecto queda listo para abordar el **LOTE 3 (Sesiones 21 a 30)**.
+## 📋 DETALLE DEL LOTE 3 (SESIONES 21 A 30) — 100% COMPLETADO
+
+### 🔹 Sesión 21:
+- **Micro-App `[NIV-021]`:** `21_SIMULADOR_ESCALA_UNIVERSO_SENIORS.html`
+  - *Tema:* Los 7 Escalones de la Escala del Universo (De lo Subatómico a la Serenidad Vital).
+  - *Características:* Deslizador de zoom cósmico (potencias de 10: -35 a +26), metáforas cotidianas familiares, tiempo de viaje de la luz y reflexiones de perspectiva serena para relativizar las prisas diarias.
+  - *Triple Salvaguarda:* Semilla lista + Plano Técnico listo + App Oficial desplegada en `21_Sesion/`.
+
+### 🔹 Sesión 22:
+- **Micro-App `[NIV-022]`:** `22_SIMULADOR_ENERGIA_KARDASHEV_HOGAR_SENIORS.html`
+  - *Tema:* Los 5 Niveles de Energía, Escala Kardashev y Consumo Inteligente en el Hogar.
+  - *Características:* Simulador de potencia doméstica (kW), horas valle, bombillas LED, cálculo de ahorro anual en euros (80 € a 180 €/año) y consejos para dar de baja servicios abusivos no contratados.
+  - *Triple Salvaguarda:* Semilla lista + Plano Técnico listo + App Oficial desplegada en `22_Sesion/`.
+
+### 🔹 Sesión 23:
+- **Micro-App `[NIV-023]`:** `23_SIMULADOR_TEMPERATURA_CONFORT_HOGAR_SENIORS.html`
+  - *Tema:* Los 7 Niveles de Temperatura en el Cosmos y Confort Térmico en el Hogar.
+  - *Características:* Termostato a 21 °C, semáforo cardiovascular (frío vs calor), cálculo del 7% de ahorro por cada grado y protocolo de prevención de golpes de calor e hipotermia en mayores.
+  - *Triple Salvaguarda:* Semilla lista + Plano Técnico listo + App Oficial desplegada en `23_Sesion/`.
+
+### 🔹 Sesión 24:
+- **Micro-App `[NIV-024]`:** `24_SIMULADOR_GRAVEDAD_EQUILIBRIO_SENIORS.html`
+  - *Tema:* Los 6 Niveles de Gravedad en el Cosmos, Equilibrio y Prevención de Caídas.
+  - *Características:* Báscula cósmica en 6 mundos (Luna, Marte, Tierra, Júpiter...), el test de la silla (levantarse 5 veces) para cuádriceps y checklist de seguridad antideslizante en el hogar.
+  - *Triple Salvaguarda:* Semilla lista + Plano Técnico listo + App Oficial desplegada en `24_Sesion/`.
+- **Laboratorio `[COD-024]`:** Las 11 Dimensiones del Universo 3D (Teoría M y Supercuerdas).
+
+### 🔹 Sesión 25:
+- **Micro-App `[NIV-025]`:** `25_SIMULADOR_VELOCIDAD_RITMO_VIDA_SENIORS.html`
+  - *Tema:* Los 5 Niveles de Velocidad en el Universo y el Elogio de la Lentitud Serena.
+  - *Características:* Calculadora de caminata diaria (pasos, km y minutos a 4 km/h), comparador de velocidades cósmicas y decálogo para saborear la jubilación sin prisas innecesarias.
+  - *Triple Salvaguarda:* Semilla lista + Plano Técnico listo + App Oficial desplegada en `25_Sesion/`.
+
+### 🔹 Sesión 26:
+- **Micro-App `[NIV-026]`:** `26_SIMULADOR_ESPECTRO_ELECTROMAGNETICO_SALUD_SENIORS.html`
+  - *Tema:* Los 6 Niveles del Espectro Electromagnético, Luz, Ondas y Salud.
+  - *Características:* Desmitificación médica del Wi-Fi y móviles (radiación no ionizante 100% segura), pautas de iluminación cálida (3000K) para lectura y protección ocular con gafas UV400.
+  - *Triple Salvaguarda:* Semilla lista + Plano Técnico listo + App Oficial desplegada en `26_Sesion/`.
+
+### 🔹 Sesión 27:
+- **Micro-App `[NIV-027]`:** `27_SIMULADOR_TIEMPO_LEGADO_SENIORS.html`
+  - *Tema:* Los 5 Niveles del Tiempo: De los Segundos al Legado Familiar y la Edad Cósmica.
+  - *Características:* Calculadora de días vividos, latidos del corazón acumulados, órbitas al Sol y valoración del legado de amor y experiencia transmitido a los nietos.
+  - *Triple Salvaguarda:* Semilla lista + Plano Técnico listo + App Oficial desplegada en `27_Sesion/`.
+
+### 🔹 Sesión 28:
+- **Micro-App `[NIV-028]`:** `28_SIMULADOR_PRESION_CLIMA_TENSION_SENIORS.html`
+  - *Tema:* Los 6 Niveles de Presión Físico-Química, Clima y Tensión Arterial.
+  - *Características:* Explicación científica de por qué avisa la rodilla cuando baja la presión (borrasca) y tensiómetro interactivo con semáforo médico oficial (120/80 mmHg).
+  - *Triple Salvaguarda:* Semilla lista + Plano Técnico listo + App Oficial desplegada en `28_Sesion/`.
+
+### 🔹 Sesión 29:
+- **Micro-App `[NIV-029]`:** `29_SIMULADOR_ESTADOS_MATERIA_HIDRATACION_SENIORS.html`
+  - *Tema:* Los 5 Estados de la Materia, el Ciclo del Agua y la Hidratación Saludable.
+  - *Características:* Planificador de 6 a 8 vasos de agua al día (1.5L a 2.0L), alerta médica sobre la pérdida de la sensación de sed con la edad y protección renal.
+  - *Triple Salvaguarda:* Semilla lista + Plano Técnico listo + App Oficial desplegada en `29_Sesion/`.
+
+### 🔹 Sesión 30:
+- **Micro-App `[NIV-030]`:** `30_SIMULADOR_RADIOACTIVIDAD_MEDICINA_SENIORS.html`
+  - *Tema:* Los 6 Niveles de Radioactividad, Pruebas Médicas y Tranquilidad Senior.
+  - *Características:* Comparador de dosis en microSieverts (µSv), equivalencia de una placa de tórax con 3 días en el campo y mensaje tranquilizador para no rechazar pruebas recetadas.
+  - *Triple Salvaguarda:* Semilla lista + Plano Técnico listo + App Oficial desplegada en `30_Sesion/`.
+
+---
+
+## 🎯 PRÓXIMO PASO: LOTE 4 (SESIONES 31 A 40)
+En cuanto se ejecute el `[COMANDO 48]` en la terminal externa, el proyecto queda listo para abordar el **LOTE 4 (Sesiones 31 a 40)**.

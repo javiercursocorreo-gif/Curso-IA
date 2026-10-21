@@ -115,6 +115,56 @@ NIV_CONFIG = {
         "file": "SIMULADOR_CREATIVIDAD_INNOVACION_SENIORS.html",
         "title": "Los 6 Niveles de Creatividad, Curiosidad e Innovación Vital",
         "btn": "🎨 Abrir Diagnóstico Creatividad y Legado (+65) ↗"
+    },
+    21: {
+        "file": "SIMULADOR_ESCALA_UNIVERSO_SENIORS.html",
+        "title": "Los 7 Escalones de la Escala del Universo",
+        "btn": "🔭 Abrir Explorador Escala del Universo (+65) ↗"
+    },
+    22: {
+        "file": "SIMULADOR_ENERGIA_KARDASHEV_HOGAR_SENIORS.html",
+        "title": "Los 5 Niveles de Energía, Escala Kardashev y Consumo en el Hogar",
+        "btn": "⚡ Abrir Optimizador Energía y Kardashev (+65) ↗"
+    },
+    23: {
+        "file": "SIMULADOR_TEMPERATURA_CONFORT_HOGAR_SENIORS.html",
+        "title": "Los 7 Niveles de Temperatura en el Cosmos y Confort Térmico en el Hogar",
+        "btn": "🌡️ Abrir Termómetro Confort y Salud (+65) ↗"
+    },
+    24: {
+        "file": "SIMULADOR_GRAVEDAD_EQUILIBRIO_SENIORS.html",
+        "title": "Los 6 Niveles de Gravedad en el Cosmos, Equilibrio y Prevención de Caídas",
+        "btn": "🪐 Abrir Báscula Cósmica y Equilibrio (+65) ↗"
+    },
+    25: {
+        "file": "SIMULADOR_VELOCIDAD_RITMO_VIDA_SENIORS.html",
+        "title": "Los 5 Niveles de Velocidad en el Universo y el Elogio de la Lentitud Serena",
+        "btn": "🚶‍♂️ Abrir Simulador Velocidad y Calma (+65) ↗"
+    },
+    26: {
+        "file": "SIMULADOR_ESPECTRO_ELECTROMAGNETICO_SALUD_SENIORS.html",
+        "title": "Los 6 Niveles del Espectro Electromagnético, Luz, Ondas y Salud",
+        "btn": "📻 Abrir Guía Espectro, Ondas y Salud (+65) ↗"
+    },
+    27: {
+        "file": "SIMULADOR_TIEMPO_LEGADO_SENIORS.html",
+        "title": "Los 5 Niveles del Tiempo: De los Segundos al Legado Familiar y la Edad Cósmica",
+        "btn": "⏳ Abrir Calculadora de Tiempo y Legado (+65) ↗"
+    },
+    28: {
+        "file": "SIMULADOR_PRESION_CLIMA_TENSION_SENIORS.html",
+        "title": "Los 6 Niveles de Presión Físico-Química, Clima y Tensión Arterial",
+        "btn": "🩺 Abrir Tensiómetro y Presión Barométrica (+65) ↗"
+    },
+    29: {
+        "file": "SIMULADOR_ESTADOS_MATERIA_HIDRATACION_SENIORS.html",
+        "title": "Los 5 Estados de la Materia, el Ciclo del Agua y la Hidratación Saludable",
+        "btn": "💧 Abrir Planificador de Hidratación y Materia (+65) ↗"
+    },
+    30: {
+        "file": "SIMULADOR_RADIOACTIVIDAD_MEDICINA_SENIORS.html",
+        "title": "Los 6 Niveles de Radioactividad, Pruebas Médicas y Tranquilidad Senior",
+        "btn": "☢️ Abrir Comparador de Radiación y Medicina (+65) ↗"
     }
 }
 
@@ -209,7 +259,7 @@ def main():
     print("=== Sincronizando Tarjetas Interactivas [NIV] en Mapas de Sesión ===")
     print(f"Ruta SESSIONS_DIR: {SESSIONS_DIR} (Existe: {os.path.exists(SESSIONS_DIR)})")
     count = 0
-    for s_num in range(1, 21):
+    for s_num in range(1, 31):
         s_folder = f"{s_num:02d}_Sesion"
         s_path = os.path.join(SESSIONS_DIR, s_folder)
         if not os.path.exists(s_path):
