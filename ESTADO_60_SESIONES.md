@@ -13,7 +13,7 @@ Este documento registra el avance del plan de actualización por lotes bajo la *
 | **LOTE 3** | Sesiones 21 a 30 | 🟢 **COMPLETADO** | **10 / 10** | 11 Dimensiones del Universo 3D | **10 / 10 Listas** |
 | **LOTE 4** | Sesiones 31 a 40 | 🟢 **COMPLETADO** | **10 / 10** | Biología, Salud & Confort (+65) | **10 / 10 Listas** |
 | **LOTE 5** | Sesiones 41 a 50 | 🟢 **COMPLETADO** | **10 / 10** | Tecnología, Conectividad & Vida Digital (+65) | **10 / 10 Listas** |
-| **LOTE 6** | Sesiones 51 a 60 | ⚪ Pendiente | 0 / 10 | Por auditar | Pendiente |
+| **LOTE 6** | Sesiones 51 a 60 | 🟢 **COMPLETADO** | **10 / 10** | Hábitat, Movilidad, Salud & Legado (+65) | **10 / 10 Listas** |
 
 ---
 
@@ -349,5 +349,74 @@ Este documento registra el avance del plan de actualización por lotes bajo la *
 
 ---
 
-## 🎯 PRÓXIMO PASO: LOTE 6 (SESIONES 51 A 60)
-Con el Lote 5 culminado, el proyecto avanza hacia la recta final con el **LOTE 6 (Sesiones 51 a 60)**: Historia, arquitectura monumental, ingeniería sanitaria, agricultura y legado del libro y civilización humana.
+## 📋 DETALLE DEL LOTE 6 (SESIONES 51 A 60) — 100% COMPLETADO (RECTA FINAL DEL PROYECTO)
+
+### 🔹 Sesión 51:
+- **Micro-App `[NIV-051]`:** `51_SIMULADOR_ARQUITECTURA_HOGAR_ACCESIBLE_SENIORS.html`
+  - *Tema:* Los 6 Niveles de Altura, Escaleras y Accesibilidad: Diseñar un Hogar sin Barreras.
+  - *Características:* Cota cero absoluta (plato de ducha enrasado sin bordillo, eliminación del 70% de caídas domésticas), rampas antideslizantes < 6% de pendiente, escalera con doble pasamanos continuo, ascensor bajado a cota cero en el portal y hábitat universal (+65).
+  - *Triple Salvaguarda:* Semilla lista + Plano Técnico listo + App Oficial desplegada en `51_Sesion/`.
+
+### 🔹 Sesión 52:
+- **Micro-App `[NIV-052]`:** `52_SIMULADOR_CIUDAD_AMIGABLE_URBANISMO_SENIORS.html`
+  - *Tema:* Los 5 Niveles de la Ciudad Amigable con las Personas Mayores: Calles, Bancos y Vida de Barrio.
+  - *Características:* Urbanismo accesible según la OMS: bancos ergonómicos con respaldo cada 150-200 metros bajo árboles para descansar y socializar, semáforos con tiempo amplio (>25 segundos), ciudad de los 15 minutos (servicios a menos de 400 m) y pasos sobreelevados.
+  - *Triple Salvaguarda:* Semilla lista + Plano Técnico listo + App Oficial desplegada en `52_Sesion/`.
+
+### 🔹 Sesión 53:
+- **Micro-App `[NIV-053]`:** `53_SIMULADOR_MOVILIDAD_TRANSPORTE_SEGURO_SENIORS.html`
+  - *Tema:* Los 6 Niveles de Movilidad, Transporte Público y Conducción Segura en la Madurez.
+  - *Características:* Caminar con calzado antideslizante, autobús de piso bajo arrodillado (kneeling) con abono bonificado, Servicio Atendo gratuito de Renfe en trenes, conducción autorregulada de día bajo el sol y ahorro de hasta 3.100 €/año al prescindir del coche y usar taxi/transporte.
+  - *Triple Salvaguarda:* Semilla lista + Plano Técnico listo + App Oficial desplegada en `53_Sesion/`.
+
+### 🔹 Sesión 54:
+- **Micro-App `[NIV-054]`:** `54_SIMULADOR_AGUA_POTABLE_HIDRATACION_SENIORS.html`
+  - *Tema:* Los 5 Niveles del Agua en el Hogar: Calidad del Grifo, Ahorro e Hidratación Saludable.
+  - *Características:* Alerta contra la deshidratación silenciosa (pérdida biológica de sed en mayores), garantía de pureza del agua municipal en España (>40 controles diarios, ahorro de 320 €/año vs garrafas plásticas), rutina de los 7 vasos, grifo termostático a 38°C y aireadores perlizadores al 50%.
+  - *Triple Salvaguarda:* Semilla lista + Plano Técnico listo + App Oficial desplegada en `54_Sesion/`.
+
+### 🔹 Sesión 55:
+- **Micro-App `[NIV-055]`:** `55_SIMULADOR_MEDICINA_PREVENTIVA_SALUD_SENIORS.html`
+  - *Tema:* Los 6 Niveles de la Medicina Preventiva: Revisiones, Vacunación y Relación con el Médico de Cabecera.
+  - *Características:* La regla de la libreta con 2 dudas apuntadas para la consulta, calendario vacunal completo (gripe, neumococo, herpes zóster), chequeo mensual de tensión, cribado de sangre oculta en heces para colon y desmitificación de cirugía rápida de cataratas con gotas en 15 minutos.
+  - *Triple Salvaguarda:* Semilla lista + Plano Técnico listo + App Oficial desplegada en `55_Sesion/`.
+
+### 🔹 Sesión 56:
+- **Micro-App `[NIV-056]`:** `56_SIMULADOR_AGRICULTURA_HUERTA_ALIMENTACION_SENIORS.html`
+  - *Tema:* Los 5 Niveles de la Huerta Tradicional, Alimentos de Temporada y Consumo de Proximidad.
+  - *Características:* Rueda estacional de alimentos en España (tomates en verano, alcachofas en invierno con ahorro del 38% y máximo sabor), mercado de abastos con trato humano de confianza, puchero de legumbres tradicional y macetohuerto de hierbas aromáticas en balcón como terapia activa.
+  - *Triple Salvaguarda:* Semilla lista + Plano Técnico listo + App Oficial desplegada en `56_Sesion/`.
+
+### 🔹 Sesión 57:
+- **Micro-App `[NIV-057]`:** `57_SIMULADOR_MATERIALES_REFORMAS_HOGAR_SENIORS.html`
+  - *Tema:* Los 6 Niveles del Mantenimiento Seguro del Hogar: Materiales, Reformas y Confort Térmico.
+  - *Características:* Suelos antideslizantes certificados Clase 3 en baños y cocinas, ventanas de doble cristal Climalit (ahorro del 35% en calefacción y eliminación de ruidos), pinturas minerales al agua sin COVs, enchufes a 75 cm de altura y subvenciones públicas de hasta el 80% para ducha llana.
+  - *Triple Salvaguarda:* Semilla lista + Plano Técnico listo + App Oficial desplegada en `57_Sesion/`.
+
+### 🔹 Sesión 58:
+- **Micro-App `[NIV-058]`:** `58_SIMULADOR_ASTRONOMIA_EXPLORACION_COSMOS_SENIORS.html`
+  - *Tema:* Los 5 Niveles de Astronomía Cotidiana, Fases Lunares y Maravilla del Cosmos para Seniors.
+  - *Características:* Identificación de la Estrella Polar y Venus a simple vista, la regla mnemotécnica de la Luna mentirosa (forma de C mengua, forma de D crece), prismáticos ligeros 7x50 con apoyo para ver cráteres y satélites de Júpiter sin cargar telescopios pesados, y serenidad cósmica.
+  - *Triple Salvaguarda:* Semilla lista + Plano Técnico listo + App Oficial desplegada en `58_Sesion/`.
+
+### 🔹 Sesión 59:
+- **Micro-App `[NIV-059]`:** `59_SIMULADOR_CONSERVACION_ALIMENTOS_DESPENSA_SENIORS.html`
+  - *Tema:* Los 6 Niveles de la Despensa Saludable: Conservación de Alimentos, Fechas de Caducidad y Congelación Segura.
+  - *Características:* Diferenciación crítica entre caducidad estricta (carnes/pescados) y consumo preferente (conservas de legumbres y pasta totalmente seguras), organización térmica del frigorífico (2°C abajo a 7°C cajón), descongelación lenta en nevera y cocina de aprovechamiento casera.
+  - *Triple Salvaguarda:* Semilla lista + Plano Técnico listo + App Oficial desplegada en `59_Sesion/`.
+
+### 🔹 Sesión 60:
+- **Micro-App `[NIV-060]`:** `60_SIMULADOR_HISTORIA_LIBRO_LEGADO_SABIDURIA_SENIORS.html`
+  - *Tema:* Los 5 Niveles de la Lectura Activa, Memoria y el Legado Escrito de la Historia Personal.
+  - *Características:* Lectura diaria de 30 minutos como gimnasio cerebral (reduce el estrés un 68%), libros de letra grande en bibliotecas municipales, lector de tinta electrónica (e-reader ligero de 170 g con tamaño de texto ajustable), audiolibros narrados y cuaderno de memorias familiares para los nietos.
+  - *Triple Salvaguarda:* Semilla lista + Plano Técnico listo + App Oficial desplegada en `60_Sesion/`.
+
+---
+
+## 🏆 CULMINACIÓN HISTÓRICA DEL PROYECTO: 60 SESIONES (100% COMPLETADAS)
+- **Las 60 Sesiones cuentan con la Triple Salvaguarda Pedagógica completa:**
+  - ✅ Nivel 1: Prompt Semilla Humano en 2 Pasos.
+  - ✅ Nivel 2: Plano Maestro Técnico Detallado (anexo de ingeniería).
+  - ✅ Nivel 3: Simulador Oficial depurado, interactivo y accesible desplegado en Classroom y GitHub Pages.
+- **60 Micro-Aplicaciones Seniors `[NIV-001]` a `[NIV-060]` en funcionamiento autónomo, accesible y de alta dignidad para personas mayores (+65).**
+- **Laboratorios 3D de alta fidelidad científica (Babylon.js) integrados y operativos.**

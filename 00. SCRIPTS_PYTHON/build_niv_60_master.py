@@ -627,130 +627,117 @@ def get_niv_items():
         'Guía WhatsApp y Convivencia Serena (+65)'
     )
 
-    # GRUPO F: HISTORIA, ARQUITECTURA Y CIVILIZACIÓN (NIV-051 a NIV-060)
-    add_it('[NIV-051]', 'Los 6 Niveles de Altura en la Arquitectura Humana',
-           'Ingeniería estructural contra la gravedad desde chozas neolíticas, la Pirámide de Guiza apilada por gravedad y catedrales góticas de arbotante, hasta el rascacielos de acero, ascensor eléctrico, Burj Khalifa de 828m y megatorre vertical de 2 km.',
-           6, 'La esbelta aguja del rascacielos Burj Khalifa de Dubái en 3D perforando las nubes sobre un cielo estrellado mostrando prodigio estructural en viento alto.',
-           [
-               ("Choza Neolítica y Estructura de Madera (5 a 10 metros)", "Aldeanos prehistóricos entrelazando troncos y barro con tejados de paja en viviendas de un solo piso limitadas por la resistencia de los árboles del entorno."),
-               ("Pirámide de Guiza - Piedra Apilada por Gravedad (146 metros)", "La maravilla del mundo antiguo construida en Egipto apilando millones de bloques de piedra caliza maciza sin espacio interior habitable para resistir el paso del tiempo."),
-               ("Catedral Gótica - Arbotantes y Bóvedas de Piedra (160 metros)", "Maestros canteros medievales inventando arcos apuntados y arbotantes exteriores para aligerar los muros y abrir enormes ventanales de vitrales celestiales."),
-               ("El Rascacielos de Acero e Invención del Ascensor (Siglo XX - 300m)", "El Empire State y la Escuela de Chicago usando jaulas estructurales de vigas de acero soldadas y ascensores eléctricos rápidos para superar al ladrillo."),
-               ("Super-Rascacielos - Burj Khalifa (828 metros / Casi 1 km)", "Torres modernas con núcleo de hormigón de ultra-alta resistencia y contrafuertes aerodinámicos en forma de Y para soportar vientos huracanados a altitud de nubes."),
-               ("Mega-Estructura Vertical de Dos Kilómetros (El Futuro Urbano)", "Proyectos arquitectónicos visionarios con ascensores magnéticos sin cables y ecosistemas urbanos completos albergando a 100.000 personas en una sola torre bioclimática.")
-           ],
-           'Dibuja en el Peldaño 3 una catedral gótica medieval con vitrales de colores e imponentes arbotantes de piedra con rótulos en español.')
+    # =========================================================================
+    # LOTE 6 (SESIONES 51 A 60): MICRO-APLICACIONES INTERACTIVAS SENIORS (+65)
+    # =========================================================================
+    add_senior_microapp(
+        '[NIV-051]',
+        'Los 6 Niveles de Altura, Escaleras y Accesibilidad: Diseñar un Hogar sin Barreras',
+        'Guía interactiva de accesibilidad y arquitectura para la autonomía de los mayores: enseña a eliminar resaltes peligrosos en el suelo, sustituir la bañera por un plato de ducha enrasado a cota cero, colocar doble pasamanos continuo en escaleras y aprovechar las subvenciones comunitarias para bajar los ascensores a nivel de calle sin peldaños previos.',
+        'Actúa como un arquitecto técnico y terapeuta ocupacional especializado en diseño accesible para personas mayores (+65).\nExplícame en 3 viñetas cómo diseñar un simulador interactivo en HTML que enseñe a eliminar barreras arquitectónicas en el hogar, sustituyendo la bañera por ducha a cota cero y adaptando desniveles con rampas suaves.',
+        'Genera la aplicación interactiva en HTML con selector de vivienda (piso cota cero, portal con escalones, chalet), deslizador de altura de resaltes (0-25 cm), semáforo de riesgo de caídas domésticas y guía de ayudas públicas para reformas de accesibilidad.',
+        '• 6 Niveles de Accesibilidad: 1. Cota Cero Absoluta (Plato de ducha enrasado al nivel del suelo sin bordillo ni escalón alguno), 2. Bordillo con Rampa Suave (Rampas antideslizantes con pendiente inferior al 6%), 3. Escalera Segura con Doble Pasamanos (Pasamanos continuo a ambos lados e iluminación peldaño a peldaño), 4. Silla Salvaescaleras Motorizada (Mecanismo electromecánico suave para subir plantas sin sobreesfuerzo articular), 5. Ascensor a Cota Cero en Portal (Bajar el ascensor comunitario a nivel de calle eliminando peldaños previos), 6. Hábitat Universal Pleno (+65) (Puertas de 82 cm para andador/silla y giro de 1,5 metros).\n• La Regla de Oro de la Cota Cero: El 70% de las caídas domésticas ocurren por tropezar con bordillos de ducha o alfombrillas sueltas.\n• Subvenciones: Ayudas autonómicas y municipales financian hasta el 80% de la adaptación.',
+        'SIMULADOR_ARQUITECTURA_HOGAR_ACCESIBLE_SENIORS.html',
+        'Accesibilidad y Hogar sin Barreras (+65)'
+    )
 
-    add_it('[NIV-052]', 'Los 5 Niveles de Urbanismo y Ciudad en la Historia',
-           'Evolución del asentamiento colectivo desde la aldea neolítica autogestionada, la polis clásica amurallada, metrópolis industrial del carbón del siglo XIX y megaciudadas modernas, hasta la eco-ciudad bioclimática circular verde de cero residuos.',
-           5, 'Una eco-ciudad futurista verde en 3D con rascacielos cubiertos de jardines verticales colgantes, canales de agua purificada limpia y monorraíles magnéticos silenciosos.',
-           [
-               ("Aldea Agrícola Neolítica Autosuficiente", "Pequeños asentamientos de 100 personas alrededor de cultivos de trigo y ganado fluvial, donde todos los habitantes colaboraban directamente en la cosecha común."),
-               ("Ciudad-Estado Amurallada Antigua y Clásica", "Urbs romanas o polis griegas con ágora central, templo, teatro, murallas defensivas de piedra e incipiente división del trabajo artesanal y comercial."),
-               ("Metrópolis Industrial Densa del Siglo XIX", "Ciudades coronadas por chimeneas soltando humo de carbón, con barrios obreros densos cerca de ferrocarriles y fábricas de textiles bulliciosas."),
-               ("Megaciudad Conectada Contemporánea (10 a 30 Millones)", "Ecosistemas urbanos masivos como Tokio o Nueva York con redes de metro subterráneo interminables, autopistas elevadas y distritos financieros de cristal."),
-               ("Eco-Ciudad Verde y Circular Inteligente (El Modelo Regenerativo)", "Urbanismo bioclimático del siglo XXI sin residuos, donde los tejados cosechan energía solar, el agua pluvial se recicla al 100% y los huertos alimentan el vecindario.")
-           ],
-           'Ilustra en el Peldaño 5 una calle peatonal verde con árboles altos y paneles solares limpios con textos en castellano.')
+    add_senior_microapp(
+        '[NIV-052]',
+        'Los 5 Niveles de la Ciudad Amigable con las Personas Mayores: Calles, Bancos y Vida de Barrio',
+        'Herramienta de urbanismo participativo según el estándar de la OMS: evalúa la amabilidad del barrio analizando la presencia de bancos con respaldo cada 150-200 metros para descansar con dignidad, tiempos semafóricos adaptados a paso tranquilo, aceras anchas sin coches aparcados y la vitalidad del comercio de proximidad a menos de 400 metros.',
+        'Actúa como un sociólogo urbano y consultor de la Red Mundial de Ciudades Amigables con las Personas Mayores (OMS).\nExplícame en 3 viñetas cómo crear una herramienta interactiva en HTML que evalúe si un vecindario es accesible y seguro para salir a pasear, valorando bancos, semáforos y tiendas cercanas.',
+        'Genera la aplicación interactiva en HTML con simulador de radio de paseo (15 minutos), comprobador de amabilidad del barrio (bancos con respaldo, pasos rebajados, fuentes potables) y decálogo OMS de convivencia comunitaria.',
+        '• 5 Niveles de Amabilidad Urbana: 1. Ciudad Barrera (Aceras estrechas rotas y semáforos de menos de 12 segundos), 2. Urbanismo Básico sin Confort (Aceras continuas pero sin asientos de descanso ni fuentes), 3. Ciudad de Proximidad / 15 Minutos (Farmacia, frutería y centro de salud a menos de 400 m a pie), 4. Entorno Verde con Bancos cada 150 m (Bancos ergonómicos con respaldo y apoyabrazos para levantarse fácilmente bajo árboles de sombra), 5. Ciudad Amigable y Cuidadora (Pasos sobreelevados, baños públicos limpios y comerciantes con paciencia y trato humano).\n• El Banco como Medicina Social: Poder sentarse 3 minutos a descansar los gemelos y charlar con vecinos es el mayor antidepresivo natural.\n• Pasos de Peatones: La sobreelevación obliga al coche a frenar y deja el cruce a nivel continuo.',
+        'SIMULADOR_CIUDAD_AMIGABLE_URBANISMO_SENIORS.html',
+        'Ciudad Amigable y Vida de Barrio (+65)'
+    )
 
-    add_it('[NIV-053]', 'Los 6 Niveles del Transporte Terrestre y Velocidad',
-           'Desplazamiento humano terrestre desde la marcha a pie, caravanas de carga y carruaje a caballo sobre calzadas, hasta la locomotora de vapor del siglo XIX, automóvil de autopista, tren bala Maglev japonés de 600 km/h y cápsulas Hyperloop en vacío de 1.000 km/h.',
-           6, 'Un tren de levitación magnética japonés Maglev en 3D flotando milimétricamente sobre vías de imanes azules y rompiendo el viento a 600 kilómetros por hora sin rozar el suelo.',
-           [
-               ("A Pie y Caravana de Carga a Sangre (5 km/h)", "Viajeros y comerciantes recorriendo senderos de tierra durante semanas cargando fardos a la espalda o guiando caravanas de camellos y burros lentos."),
-               ("Carruaje y Caballo con Rueda de Madera (20 km/h)", "Diligencias de correos y enganches de caballos galopando por calzadas romanas o caminos de tierra, el medio terrestre más rápido durante cuatro milenios."),
-               ("Ferrocarril de Vapor de Carbón - Siglo XIX (80 km/h)", "Locomotoras de hierro resoplando vapor a presión por vías férreas continentales que unificaron países enteros y acortaron viajes de meses a pocos días directos."),
-               ("Automóvil de Autopista con Motor y Neumático (120 km/h)", "La democratización de la movilidad individual de gasolina sobre redes pavimentadas de asfalto con neumáticos de caucho y suspensión confortable."),
-               ("Tren Bala de Alta Velocidad y Levitación Maglev (350 a 600 km/h)", "Trenes aerodinámicos en Japón o Europa que no tienen ruedas mecánicas rozando rieles, sino que levitan suspendidos por potentes imanes superconductores."),
-               ("Hyperloop en Tubo al Vacío (1.000 km/h - Mach 0.8)", "Cápsulas de pasajeros viajando dentro de largos tubos subterráneos sellados sin aire ni resistencia atmosférica a velocidades cercanas a las del sonido.")
-           ],
-           'Añade en el Peldaño 2 un carruaje de caballos clásico de madera por un camino rural con rótulos en castellano.')
+    add_senior_microapp(
+        '[NIV-053]',
+        'Los 6 Niveles de Movilidad, Transporte Público y Conducción Segura en la Madurez',
+        'Guía de transporte inteligente y seguridad vial: ayuda a elegir el medio óptimo para cada trayecto, promueve el calzado antideslizante al caminar, enseña a aprovechar el autobús de piso bajo y el Servicio Atendo gratuito de Renfe en trenes, y fomenta la conducción serena y autorregulada de día, desmitificando el paso al taxi como una ganancia de libertad y ahorro económico.',
+        'Actúa como un formador vial y especialista en movilidad sostenible para personas mayores (+65).\nExplícame en 3 viñetas cómo crear una aplicación interactiva en HTML que ayude a elegir el medio de transporte más cómodo y seguro para cada situación, fomentando el transporte público y la conducción autorregulada de día.',
+        'Genera la aplicación interactiva en HTML con selector de trayecto y clima, comparativa económica de mantener coche propio vs usar transporte bonificado y taxis, y guía del Servicio Atendo de ayuda en estaciones de tren.',
+        '• 6 Niveles de Movilidad Serena: 1. Caminar con Seguridad Diaria (Calzado con relieve antideslizante y bastón ergonómico si aporta confianza), 2. Autobús Urbano de Piso Bajo (Rampa arrodillada kneeling y asientos reservados azules), 3. Metro y Tranvía con Ascensores Operativos (Verificación de accesibilidad previa en app municipal), 4. Tren con Servicio Atendo Renfe (Asistencia gratuita para acompañamiento y maletas), 5. Conducción Autorregulada y Serena (Evitar la noche con faros deslumbrantes y preferir mañanas despejadas), 6. Copiloto Feliz y Alternativa del Taxi/VTC (Ahorro de 2.500 a 3.500 €/año en seguro, garaje e ITV usándolos en taxis de puerta a puerta sin estrés).\n• Filosofía Senior: Dejar el coche cuando genera ansiedad no es perder autonomía, sino ganar calidad de vida.',
+        'SIMULADOR_MOVILIDAD_TRANSPORTE_SEGURO_SENIORS.html',
+        'Movilidad y Conducción Segura (+65)'
+    )
 
-    add_it('[NIV-054]', 'Los 5 Niveles de Gestión y Suministro del Agua Potable',
-           'Ingeniería sanitaria desde pozos aldeanos y acueductos romanos por gravedad con pendiente milimétrica calculada, hasta la cloración industrial de las metrópolis, plantas desalinizadoras por ósmosis inversa en el desierto y el ciclo biológico cerrado regenerativo de la Estación Espacial.',
-           5, 'Un acueducto romano clásico de arcos de piedra en 3D del cual brota una cascada de agua cristalina cayendo hacia un moderno módulo de filtración por ósmosis inversa.',
-           [
-               ("Pozos Manuales e Ingenios Aldeanos Primitivos", "Mujeres y aldeanos extrayendo agua con cubos de madera desde pozos o ríos expuestos a contaminación biológica y bacterias causantes de epidemias antiguas."),
-               ("Acueductos Romanos y Canales por Gravedad", "Arquerías monumentales de piedra transportando agua fresca de manantiales lejanos por kilómetros sin bombas mecánicas gracias a una pendiente milimétrica calculada."),
-               ("Red Urbana de Potabilización y Cloración Industrial", "La mayor revolución médica del siglo XX: añadir cloro y filtrar el agua en acueductos de hierro para erradicar el cólera, el tifus y la disentería de las ciudades europeas."),
-               ("Ósmosis Inversa y Desalinización Marina", "Plantas costeras de alta tecnología empujando agua del mar salada a altísima presión a través de membranas semipermeables que retienen la sal para dar agua dulce al desierto."),
-               ("Ciclo Cerrado de Regeneración Biológica Espacial", "El sistema vital de la Estación Espacial Internacional que recupera, filtra y recicla el 98% del sudor y humedad de la respiración de los astronautas convirtiéndolo en agua pura perpetua.")
-           ],
-           'Ilustra en el Peldaño 4 una moderna planta desalinizadora al lado de la playa con tuberías azules y textos en español.')
+    add_senior_microapp(
+        '[NIV-054]',
+        'Los 5 Niveles del Agua en el Hogar: Calidad del Grifo, Ahorro e Hidratación Saludable',
+        'Guía interactiva sobre el agua potable y la salud geriátrica: advierte sobre la pérdida biológica de la sed con la edad y establece la rutina de 6 a 8 vasos diarios repartidos, defiende la pureza del agua municipal frente al coste y peso de las garrafas plásticas, enseña a regular los grifos con tope a 38°C para evitar quemaduras y a instalar aireadores perlizadores para recortar el consumo un 50%.',
+        'Actúa como un médico geriatra e ingeniero sanitario para personas mayores (+65).\nExplícame en 3 viñetas cómo crear una calculadora interactiva en HTML que promueva la hidratación regular sin esperar a tener sed, defienda la seguridad del agua del grifo y prevenga quemaduras con grifería termostática.',
+        'Genera la aplicación interactiva en HTML con planificador de ingesta de líquidos diaria (vasos e infusiones), calculadora de ahorro económico de agua de grifo vs garrafas plásticas y recomendaciones de seguridad antiquemaduras.',
+        '• 5 Niveles de Cultura del Agua: 1. Alerta de Deshidratación Silenciosa (El hipotálamo pierde sensibilidad con la edad; no esperar a tener sed), 2. Garantía Sanitaria del Agua del Grifo (Más de 40 controles analíticos diarios en España; pura, ecológica y económica), 3. Rutina Hidratante de 6 a 8 Vasos (Vaso al despertar, infusiones a media mañana y jarra visible en la mesa), 4. Grifería Termostática Segura (Tope a 38°C para evitar quemaduras accidentales en piel fina), 5. Ahorro con Boquillas Perlizadoras (Filtros de 2 € que reducen el gasto un 50% con la misma fuerza de chorro).\n• Salud y Espalda: Cargar garrafas de 5 litros daña la columna; el agua de red en España es de altísima calidad sanitaria.',
+        'SIMULADOR_AGUA_POTABLE_HIDRATACION_SENIORS.html',
+        'Calidad del Agua e Hidratación (+65)'
+    )
 
-    add_it('[NIV-055]', 'Los 6 Niveles de la Medicina y Cirugía a lo Largo de los Siglos',
-           'Evolución del arte de curar desde la trepanación neolítica e ilustración anatómica de Vesalio, pasando por el milagro médico de la anestesia, antisepsia y descubrimiento de la penicilina en 1928, hasta la cirugía mínimamente invasiva por laparoscopia y el brazo robótico Da Vinci nanométrica.',
-           6, 'El brazo robótico médico Da Vinci de cuatro pinzas quirúrgicas en 3D operando con exactitud nanométrica dentro de una gota de sangre sin tocar el tejido sano adyacente.',
-           [
-               ("Trepanación y Herbolaria Empírica Antigua", "Chamanes y médicos neolíticos perforando agujeros en el cráneo con pedernales para liberar malos espíritus o aplicando emplastos de hierbas silvestres en heridas abiertas."),
-               ("Anatomía Renacentista e Ilustración Científica", "Andréas Vesalio y Leonardo da Vinci diseccionando cuerpos para dibujar por primera vez con exactitud la musculatura, nervios y el sistema circulatorio real humano."),
-               ("Anestesia y Antisepsia del Siglo XIX (La Gran Revolución)", "El fin del dolor insoportable con éter y la orden quirúrgica de lavarse las manos con fenol para esterilizar instrumentos, reduciendo las muertes por infección hospitalaria."),
-               ("La Penicilina y el Imperio de los Antibióticos (1928)", "El descubrimiento de Alexander Fleming del hongo Penicillium que destruye bacterias mortales, salvando a cientos de millones de personas de morir por una simple pulmonía o corte."),
-               ("Cirugía Mínimamente Invasiva por Laparoscopia", "Cirujanos operando órganos internos observando una pantalla 4K a través de incisiones minúsculas de un centímetro con cámaras de fibra óptica sin abrir el abdomen."),
-               ("Cirugía Robótica Nanométrica y Terapia Génica Molecular", "Bisturís asistidos por IA eliminando tumores con precisión microscópica inalcanzable por el pulso humano y edición del ADN con CRISPR para curar enfermedades hereditarias.")
-           ],
-           'Dibuja en el Peldaño 3 a un cirujano del siglo XIX lavándose las manos en una pila de agua limpia antes de operar con rótulos en castellano.')
+    add_senior_microapp(
+        '[NIV-055]',
+        'Los 6 Niveles de la Medicina Preventiva: Revisiones, Vacunación y Relación con el Médico de Cabecera',
+        'Guía de medicina preventiva y cuidado integral del adulto mayor: fomenta el estilo de vida activo y la dieta mediterránea, enseña el método de la libreta con 2 preguntas escritas para la consulta del médico de cabecera, resume el calendario vacunal oficial (gripe, neumococo, herpes zóster), programa chequeos de tensión arterial y cribados de colon, y desmitifica cirugías ambulatorias modernas como cataratas.',
+        'Actúa como un especialista en medicina preventiva y médico de atención primaria para personas mayores (+65).\nExplícame en 3 viñetas cómo crear una guía interactiva en HTML que recuerde las revisiones periódicas, el calendario vacunal del adulto mayor y pautas para aprovechar al máximo la consulta con el médico de cabecera.',
+        'Genera la aplicación interactiva en HTML con lista interactiva de chequeos médicos recomendados por edad, calendario vacunal del adulto mayor, bloc de notas para la consulta médica y desmitificación de cirugías ambulatorias modernas.',
+        '• 6 Niveles de Salud Preventiva: 1. Autocuidado y Dieta Serena (Paseos de 40 min y dieta mediterránea de legumbres y verduras), 2. Consulta con Libreta de Dudas (Anotar preguntas antes de entrar para salir sin dudas), 3. Calendario Vacunal Oficial (Gripe anual, neumococo, herpes zóster y refuerzos estacionales), 4. Chequeos Periódicos Programados (Tensión mensual, analítica anual y revisión ocular/auditiva), 5. Detección Precoz y Cribados (Sangre oculta en heces a partir de 50 años y revisiones periódicas), 6. Cirugías Mínimamente Invasivas (Operaciones de cataratas con gotas en 15 minutos sin ingreso).\n• Alianza con tu Médico: La atención primaria es el mayor escudo de longevidad; consultar con confianza y serenidad.',
+        'SIMULADOR_MEDICINA_PREVENTIVA_SALUD_SENIORS.html',
+        'Medicina Preventiva y Revisiones (+65)'
+    )
 
-    add_it('[NIV-056]', 'Los 5 Niveles de Producción y Agricultura Humana',
-           'Obtención alimentaria desde el nomadismo recolector-cazador de la prehistoria, el descubrimiento de semillas de la Revolución Agrícola Neolítica y tractor de acero, hasta la Revolución Verde de fijación de nitrógeno Haber-Bosch y la moderna granja vertical hidropónica LED automatizada por IA.',
-           5, 'Un invernadero vertical hidropónico en 3D iluminado con luces LED fucsia y azul, donde crecen lechugas y fresas sin tierra y consumiendo un 95% menos de agua que en el campo.',
-           [
-               ("Recolección y Caza Itinerante (Nomadismo Prehistórico)", "Pequeños clanes de humanos prehistóricos recolectando bayas silvestres y cazando venados con lanzas de sílex moviéndose constantemente tras el alimento."),
-               ("Revolución Agrícola Neolítica y Riego Ancestral", "El primer gran asentamiento humano plantando semillas de trigo, domesticando ovejas y canalizando arroyos en Mesopotamia y Egipto hace 10.000 años."),
-               ("Mecanización e Industrialización del Tractor (Siglo XX)", "Tractores con motor diésel y cosechadoras mecánicas de acero labrando miles de hectáreas por día sustituyendo el trabajo agotador de mil bueyes y arados manuales."),
-               ("La Revolución Verde - Fertilizantes y Agronomía Química", "La síntesis de nitrógeno por el método Haber-Bosch y semillas híbridas resistentes que multiplicaron por 4 la cosecha mundial de cereales evitando hambrunas globales."),
-               ("Agricultura Vertical de Precisión por IA e Hidroponía", "Granjas urbanas de varios pisos en ambiente controlado por sensores sin pesticidas ni clima externo, cultivando alimentos frescos a 100 metros del consumidor en todo el año.")
-           ],
-           'Ilustra en el Peldaño 3 un gran tractor verde cosechando trigo dorado en un campo soleado con textos en español castellano.')
+    add_senior_microapp(
+        '[NIV-056]',
+        'Los 5 Niveles de la Huerta Tradicional, Alimentos de Temporada y Consumo de Proximidad',
+        'Guía de nutrición tradicional y economía del hogar: explica por qué consumir frutas y verduras de temporada en España multiplica el sabor y los nutrientes reduciendo la factura un 40%, apoya la compra en mercados municipales de abastos con trato humano de confianza y anima a iniciar un macetohuerto de hierbas aromáticas en balcón como ejercicio físico y placer sensorial.',
+        'Actúa como un agrónomo divulgador y experto en nutrición mediterránea para personas mayores (+65).\nExplícame en 3 viñetas cómo diseñar una herramienta interactiva en HTML que muestre el calendario de frutas y verduras de temporada en España, defendiendo el mercado municipal y el cultivo en macetas de balcón.',
+        'Genera la aplicación interactiva en HTML con rueda estacional de alimentos de temporada (primavera a invierno), comparativa de sabor y ahorro en la cesta de la compra, y guía para iniciar un macetohuerto de hierbas aromáticas en el balcón.',
+        '• 5 Niveles de Sabiduría Agrícola: 1. Ultraprocesados Industriales (Sal y grasas saturadas que sobrecargan la tensión), 2. Frescos de Cadena Larga (Madurados en cámaras frigoríficas con pérdida de sabor y sobreprecio), 3. Alimentos de Temporada en España (Alcachofas y naranjas en invierno, tomates y melón en verano: más vitaminas y 40% más baratos), 4. Mercado Tradicional y Comercio de Barrio (El frutero te aconseja la pieza en su punto justo y mantiene la vida comunitaria), 5. Macetohuerto en Balcón (Macetas de romero, perejil o tomates cherry: ejercicio suave y estímulo para la mente).\n• La Tradición Culinaria: El puchero de legumbres 2 o 3 veces por semana es salud digestiva y ahorro familiar.',
+        'SIMULADOR_AGRICULTURA_HUERTA_ALIMENTACION_SENIORS.html',
+        'Huerta Tradicional y Temporada (+65)'
+    )
 
-    add_it('[NIV-057]', 'Los 6 Niveles de Resistencia y Materiales Estructurales',
-           'Ciencia de materiales según tenacidad y compresión: adobes primitivos secados al sol, sillería megalítica y mármoles clásicos, hierro fundido, acero estructural con hormigón armado, aleaciones de titanio aeroespacial e indestructibles nanotubos de carbono y grafeno molecular cuántico.',
-           6, 'Una estructura celular hexagonal de grafeno purísimo en 3D de color negro brillante y transparente doscientas veces más fuerte que el acero arquitectónico pero más ligero que el papel.',
-           [
-               ("Barro, Adobe Cocido y Madera Primitiva", "Ladrillos secados al sol de arcilla con paja y troncos de roble cortados, materiales accesibles en la naturaleza pero de baja resistencia a la humedad y fuego."),
-               ("Piedra Tallada Megalítica y Mármol Clásico", "Bloques de granito y caliza maciza cortados con cincel capaces de soportar enormes cargas de compresión por milenios en templos griegos y murallas incas."),
-               ("Hierro Forjado y Bronce de Aleación", "Metales fundidos en hornos de carbón a alta temperatura que aportaron por primera vez tenacidad flexible para espadas, arados resistentes y rejas de arcos."),
-               ("Acero Estructural y Hormigón Armado del Siglo XX", "Aleación de hierro con carbono reforzando el interior del hormigón, permitiendo construir puentes colgantes gigantescos y rascacielos sismorresistentes."),
-               ("Aleaciones Aeroespaciales de Titanio y Fibra de Carbono", "Materiales ultraligeros que no se oxidan jamás ni pierden forma bajo temperaturas extremas de fricción supersónica en aviones de combate y cohetes orbitales."),
-               ("Nanotubos de Carbono y Grafeno Molecular (El Límite Físico)", "Cilindros y láminas de una sola capa de átomos de carbono unidos en enlaces covalentes indestructibles, la única materia capaz de sostener un Ascensor Espacial desde la órbita.")
-           ],
-           'Dibuja en el Peldaño 2 las grandes piedras talladas encajadas sin cemento de los muros incas de Cuzco con rótulos en español.')
+    add_senior_microapp(
+        '[NIV-057]',
+        'Los 6 Niveles del Mantenimiento Seguro del Hogar: Materiales, Reformas y Confort Térmico',
+        'Simulador de mantenimiento preventivo y reformas amigables: alerta sobre pavimentos resbaladizos tipo terrazo pulido, promueve suelos antideslizantes Clase 2/3 en baños, aislamiento con ventanas de doble acristalamiento Climalit para ahorrar calefacción y eliminar ruidos, pinturas ecológicas sin olores (cero COVs), colocación de enchufes a 70 cm del suelo y tramitación de subvenciones de accesibilidad.',
+        'Actúa como un arquitecto de interiores y perito en reformas seguras para personas mayores (+65).\nExplícame en 3 viñetas cómo crear una calculadora interactiva en HTML que oriente sobre materiales antideslizantes, aislamiento térmico con doble acristalamiento y colocación ergonómica de enchufes para el confort diario.',
+        'Genera la aplicación interactiva en HTML con simulador de reformas prioritarias en el hogar, test de aislamiento de ventanas y pavimento antideslizante, y guía de subvenciones públicas para accesibilidad y eficiencia.',
+        '• 6 Niveles de Confort Seguro: 1. Pavimentos Deslizantes de Alto Riesgo (Terrazo brillante o mármol que resbalan con una gota de agua), 2. Suelos Antideslizantes Certificados (Clase 2 o 3 mate rugoso seguro en baño y cocina), 3. Ventanas con Doble Cristal Climalit (Aislamiento térmico que ahorra el 35% en calefacción y quita ruidos de la calle), 4. Pinturas Ecológicas al Agua (Sin compuestos químicos volátiles irritantes), 5. Enchufes a 70 cm e Iluminación LED (Evitar agacharse al suelo protegiendo la espalda lumbar), 6. Subvenciones Públicas de Rehabilitación (Ayudas oficiales para costear el cambio de bañera por ducha).\n• Ergonomía en Casa: Pequeños cambios en materiales aportan una seguridad inestimable.',
+        'SIMULADOR_MATERIALES_REFORMAS_HOGAR_SENIORS.html',
+        'Mantenimiento del Hogar y Reformas (+65)'
+    )
 
-    add_it('[NIV-058]', 'Los 5 Niveles de Exploración Espacial Humana',
-           'Conquista humana del cosmos: desde el bip orbital del Sputnik y el vuelo suborbital valiente de Gagarin, el paso inmortal de Neil Armstrong en el Apolo 11 y la habitación continua en microgravedad de la ISS, hasta las bases polares lunares Artemis y cúpulas bioclimáticas permanentes de colonización en Marte.',
-           5, 'Una base de colonización cúpula sobre la superficie roja de Marte en 3D con invernaderos solares transparentes y rovers de exploración interplanetaria moviéndose entre los cráteres.',
-           [
-               ("Vuelo Suborbital y Primeros Satélites en Órbita Baja (Años 50-60)", "El Sputnik soviético emitiendo su bip en el cielo y el primer vuelo valiente de Yuri Gagarin completando una sola vuelta en torno a la Tierra en caída libre de 90 minutos."),
-               ("Aterrizaje Lunar Tripulado - Apolo 11 (1969 - 380.000 km)", "Neil Armstrong dejando la primera huella de bota humana sobre el regolito lunar y regresando a casa sano y salvo con rocas extraterrestres de la Luna."),
-               ("Estación Espacial Habitada en Microgravedad Continua (ISS)", "Laboratorio orbital multi-nacional a 400 km de altura donde astronautas viven y trabajan durante 6 meses continuados realizando experimentos biológicos sin gravedad terrestre."),
-               ("Base Permanente en el Polo Sur de la Luna (Programa Artemis)", "Módulos habitables soterrados en cuevas lunares alimentados por energía nuclear para extraer agua helada de los cráteres oscuros y fabricar combustible de cohete."),
-               ("Colonización Interplanetaria y Base en Marte (El Salto Multi-Planeta)", "Una sociedad humana independiente habitando cúpulas presurizadas sobre el planeta rojo a 56 millones de kilómetros de la Tierra, cultivando sus alimentos en suelo marciano.")
-           ],
-           'Ilustra en el Peldaño 2 el módulo lunar Eagle plateado posado en la superficie de la Luna con la Tierra azul al fondo en español.')
+    add_senior_microapp(
+        '[NIV-058]',
+        'Los 5 Niveles de Astronomía Cotidiana, Fases Lunares y Maravilla del Cosmos para Seniors',
+        'Guía de contemplación del cielo y asombro nocturno: enseña a identificar la Estrella Polar, Venus y Orión a simple vista desde la terraza, explica la regla mnemotécnica de las fases lunares ("la luna es mentirosa: en forma de C mengua, en forma de D crece"), anima al uso de prismáticos ligeros 7x50 para ver cráteres sin telescopios pesados y promueve la serenidad cósmica como fuente de paz mental.',
+        'Actúa como un astrónomo divulgador y docente para personas mayores (+65).\nExplícame en 3 viñetas cómo crear una guía interactiva en HTML para observar la Luna y las estrellas a simple vista o con prismáticos ligeros, explicando las fases lunares con trucos mnemotécnicos sencillos.',
+        'Genera la aplicación interactiva en HTML con simulador de fases lunares (regla de la C y la D), guía de estrellas y planetas visibles a simple vista desde el balcón y pautas ergonómicas para disfrutar del cielo nocturno sin sobrecargar el cuello.',
+        '• 5 Niveles de Contemplación Cósmica: 1. El Cielo a Simple Vista (Reconocer la Estrella Polar para situar el norte y el brillo de Venus al atardecer), 2. El Baile de las Fases Lunares (Regla mnemotécnica de la C y la D en el ciclo de 29,5 días), 3. Prismáticos Ligeros 7x50 con Apoyo Cómodo (Descubrir los mares lunares y satélites de Júpiter sin trípodes pesados), 4. Estrellas Fugaces en el Pueblo (Las Perseidas en agosto con tumbona y manta tibia), 5. Serenidad Cósmica en la Madurez (Contemplar la inmensidad del universo aporta paz y demuestra que la curiosidad no envejece jamás).\n• Equipamiento Práctico: Unos prismáticos de mano apoyados en la barandilla superan en comodidad a cualquier telescopio complejo.',
+        'SIMULADOR_ASTRONOMIA_EXPLORACION_COSMOS_SENIORS.html',
+        'Astronomía Cotidiana y Cosmos (+65)'
+    )
 
-    add_it('[NIV-059]', 'Los 6 Niveles de Conservación de Alimentos en la Humanidad',
-           'Biotecnología de preservación de cosechas contra bacterias: salazón primitivo al sol y fermentación probiótica en tinajas antiguas, enlatado hermético al vacío de Nicolás Appert para marineros, pasteurización de Pasteur, refrigeración eléctrica del hogar y criogenia por liofilización espacial al vacío.',
-           6, 'Una cápsula de liofilización al vacío en 3D donde fresas y raciones espaciales conservan su forma, color y nutrientes en un 100% durante 25 años continuados sin estropearse.',
-           [
-               ("Secado al Sol y Salazón Primitivo (Deshidratación Natural)", "Aldeanos prehistóricos secando tiras de carne al sol y cubriendo pescado con sal marina para extraer el agua celular interior y matar las bacterias por ósmosis."),
-               ("Fermentación Controlada en Vasijas de Barro (Vino, Queso y Yogur)", "La genialidad ancestral de utilizar bacterias lácticas o levaduras benéficas controladas para acidificar el alimento, produciendo pan y yogur que no se pudre al instante."),
-               ("Enlatado Hermético al Vacío - Nicolás Appert (Siglo XIX)", "Alimentos hervidos y sellados en latas de hojalata sin aire en su interior para alimentar a los ejércitos de Napoleón y marineros sin riesgo de escorbuto ni putrefacción."),
-               ("Pasteurización Científica y Esterilización Térmica (Louis Pasteur)", "Calentar la leche y caldos a temperaturas controladas exactas de 72 °C para fulminar gérmenes patógenos sin destruir el sabor ni las vitaminas."),
-               ("Refrigeración y Congelación Eléctrica Doméstica (Siglo XX)", "El frigorífico en la cocina de cada hogar bajando la temperatura para adormecer el metabolismo bacteriano, permitiendo comer pescado y frutas frescas a miles de kilómetros del origen."),
-               ("Liofilización Criogénica por Sublimación en Vacío (Comida Espacial)", "Congelar el alimento a -50 °C y someterlo a vacío para que el hielo pase directamente de sólido a vapor, preservando su estructura molecular ligera por décadas.")
-           ],
-           'Dibuja en el Peldaño 3 latas de conservas antiguas de hojalata cerradas herméticamente con textos exactos en español.')
+    add_senior_microapp(
+        '[NIV-059]',
+        'Los 6 Niveles de la Despensa Saludable: Conservación de Alimentos, Fechas de Caducidad y Congelación Segura',
+        'Guía práctica de seguridad alimentaria y orden doméstico: distingue con claridad la fecha de caducidad estricta del consumo preferente para evitar tirar comida buena, enseña a organizar el frigorífico por zonas térmicas (carnes abajo a 2°C, verduras al cajón a 7°C), explica el protocolo de descongelar siempre dentro de la nevera con 24 horas de antelación y fomenta la cocina de aprovechamiento casera.',
+        'Actúa como un especialista en seguridad alimentaria y divulgador culinario para personas mayores (+65).\nExplícame en 3 viñetas cómo crear una guía interactiva en HTML que aclare la diferencia entre fecha de caducidad y consumo preferente, enseñe a colocar los alimentos en la nevera y descongelar con seguridad.',
+        'Genera la aplicación interactiva en HTML con clasificador interactivo de alimentos según su método de conservación (despensa, frío, congelador), semáforo de caducidad vs consumo preferente y protocolo higiénico de descongelación en nevera.',
+        '• 6 Niveles de Despensa Segura: 1. Caducidad vs Consumo Preferente (Caducidad por seguridad estricta en frescos; Consumo preferente en conservas/pasta que duran meses sin riesgo), 2. Conservas Tradicionales en Vidrio (Fondo de despensa saludable de legumbres y pescado que dura años sin frío), 3. Organización Térmica del Frigorífico (Carnes y pescados a 2°C en bandeja inferior, platos cocinados al centro a 4°C y verduras en cajón templado), 4. Congelación en Porciones y Descongelación en Nevera (Descongelar despacio dentro de la nevera; nunca sobre la encimera al aire), 5. Recipientes de Cristal con Cinta y Fecha (Identificar sobras para consumir en 48-72 h), 6. Cocina de Aprovechamiento (+65) (Croquetas, caldos y purés caseros con desperdicio cero).\n• Ahorro Doméstico: Evitar tirar botes de conservas perfectamente sanos ahorra más de 200 € al año.',
+        'SIMULADOR_CONSERVACION_ALIMENTOS_DESPENSA_SENIORS.html',
+        'Despensa Saludable y Conservación (+65)'
+    )
 
-    add_it('[NIV-060]', 'Los 5 Niveles de Evolución del Libro y el Conocimiento Escrito',
-           'Soporte del pensamiento humano: tablillas de arcilla cuneiforme pesadas en Mesopotamia y rollos de papiro/pergaminos copiados por monjes en monasterios durante años, la revolución de la imprenta de tipos móviles de Gutenberg (1440), e-readers de tinta electrónica y la biblioteca neuronal universal en red y grafos IA.',
-           5, 'Una imprenta clásica de madera del siglo XV de Gutenberg en 3D cuyos pliegos de papel impreso salen volando en el aire transformándose en tabletas luminosas de tinta electrónica e interfaces neuronales.',
-           [
-               ("Tablillas de Arcilla Cuneiforme en Mesopotamia (Hace 5.000 Años)", "Escribas sumerios presionando cuñas de caña sobre tabletas pesadas de barro húmedo cocido al sol para llevar la contabilidad de granos de trigo y reyes antiguos."),
-               ("Rollo de Papiro y Códice Pergamino en Monasterios", "Monjes medievales pasando años enteros de su vida copiando con pluma de ave un solo ejemplar de la Biblia o filosofía griega sobre costosas pieles de oveja raspadas."),
-               ("La Imprenta de Tipos Móviles de Gutenberg (1440 - La Revolución)", "Letras individuales de plomo en una prensa mecánica que bajó el coste de un libro en un 99%, permitiendo que millones de ciudadanos aprendieran a leer en Europa."),
-               ("Libro Digital y Tinta Electrónica - E-reader (Siglo XXI)", "Una pantalla ligera sin brillo ocular que almacena 10.000 libros completos en una sola mano, pesando lo mismo que un solo cuaderno de papel."),
-               ("Biblioteca Neuronal Conectada e Interfaz de Grafos por IA", "El conocimiento universal indexado y sintetizado por algoritmos interconectados, donde el estudiante consulta y conversa en tiempo real con la sabiduría total de la humanidad en segundos.")
-           ],
-           'Ilustra en el Peldaño 2 a un monje medieval sentado con una vela copiando un libro antiguo con textos en castellano estricto.')
+    add_senior_microapp(
+        '[NIV-060]',
+        'Los 5 Niveles de la Lectura Activa, Memoria y el Legado Escrito de la Historia Personal',
+        'Guía interactiva sobre el placer de las letras, estimulación cognitiva y memoria viva: explica los beneficios cerebrales de leer 30 minutos al día, fomenta el uso de libros de letra grande (Large Print) y la visita a la biblioteca municipal de barrio, desmitifica el lector de tinta electrónica (e-reader) que permite agrandar la letra y no pesa, y anima a redactar un cuaderno de memorias con anécdotas y recetas para los nietos.',
+        'Actúa como un pedagogo humanista y bibliotecario divulgador para personas mayores (+65).\nExplícame en 3 viñetas cómo crear una herramienta interactiva en HTML que motive la lectura diaria, recomiende libros de letra grande o e-readers que no pesan y anime a escribir un cuaderno de memorias familiares.',
+        'Genera la aplicación interactiva en HTML con planificador de lectura diaria y estimulación de memoria, comparativa ergonómica de formatos (papel, tinta electrónica, audiolibro) y plantilla guiada para escribir los recuerdos familiares.',
+        '• 5 Niveles del Libro y la Memoria: 1. Lectura como Gimnasio Cerebral (Leer 30 min al día reduce el estrés un 68% y mantiene vivo el vocabulario), 2. Papel de Letra Grande y Biblioteca de Barrio (Préstamo gratuito y socialización en clubes de lectura), 3. E-reader con Pantalla de Tinta Electrónica (Letra ajustable al tamaño óptimo y peso ligero de 170 g para no cansar las manos), 4. Audiolibros con Voz Humana Cálida (Novelas y biografías narradas para escuchar paseando o descansando en el sillón), 5. El Legado Escrito de la Vida para los Nietos (Plasmar anécdotas de juventud, recetas y valores familiares: el mayor tesoro imborrable para las generaciones futuras).\n• El Saber no Envejece: Mantener la mente activa leyendo y escribiendo es la mayor garantía de vitalidad y serenidad.',
+        'SIMULADOR_HISTORIA_LIBRO_LEGADO_SABIDURIA_SENIORS.html',
+        'Lectura Activa y Legado Personal (+65)'
+    )
 
     return items

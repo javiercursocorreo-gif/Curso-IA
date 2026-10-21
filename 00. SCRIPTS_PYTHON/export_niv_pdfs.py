@@ -60,7 +60,17 @@ LEGACY_NIV_NAMES = {
     47: "9. NIV-047_Los 6 Niveles de Inmersión Virtual y Realidad Extendida (XR).pdf",
     48: "9. NIV-048_Los 5 Niveles de Eficiencia Termodinámica y Energética en Motores.pdf",
     49: "9. NIV-049_Los 6 Niveles de Capacidad y Supercómputo Mundial.pdf",
-    50: "9. NIV-050_Los 5 Niveles de Evolución de las Redes e Internet (Web 1.0 a Web3).pdf"
+    50: "9. NIV-050_Los 5 Niveles de Evolución de las Redes e Internet (Web 1.0 a Web3).pdf",
+    51: "9. NIV-051_Los 6 Niveles de Altura en la Arquitectura Humana.pdf",
+    52: "9. NIV-052_Los 5 Niveles de Urbanismo y Ciudad en la Historia.pdf",
+    53: "9. NIV-053_Los 6 Niveles del Transporte Terrestre y Velocidad.pdf",
+    54: "9. NIV-054_Los 5 Niveles de Gestión y Suministro del Agua Potable.pdf",
+    55: "9. NIV-055_Los 6 Niveles de la Medicina y Cirugía a lo Largo de los Siglos.pdf",
+    56: "9. NIV-056_Los 5 Niveles de Producción y Agricultura Humana.pdf",
+    57: "9. NIV-057_Los 6 Niveles de Resistencia y Materiales Estructurales.pdf",
+    58: "9. NIV-058_Los 5 Niveles de Exploración Espacial Humana.pdf",
+    59: "9. NIV-059_Los 6 Niveles de Conservación de Alimentos en la Humanidad.pdf",
+    60: "9. NIV-060_Los 5 Niveles de Evolución del Libro y el Conocimiento Escrito.pdf"
 }
 
 def create_niv_fichas():

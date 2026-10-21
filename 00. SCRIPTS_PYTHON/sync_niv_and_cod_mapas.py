@@ -265,6 +265,56 @@ NIV_CONFIG = {
         "file": "SIMULADOR_COMUNICACION_WHATSAPP_CONVIVENCIA_SENIORS.html",
         "title": "Los 5 Niveles de Comunicación Digital: WhatsApp Familiar, Grupos y Convivencia Serena",
         "btn": "💬 Abrir Guía WhatsApp y Convivencia Serena (+65) ↗"
+    },
+    51: {
+        "file": "SIMULADOR_ARQUITECTURA_HOGAR_ACCESIBLE_SENIORS.html",
+        "title": "Los 6 Niveles de Altura, Escaleras y Accesibilidad: Diseñar un Hogar sin Barreras",
+        "btn": "🏛️ Abrir Arquitectura y Hogar sin Barreras (+65) ↗"
+    },
+    52: {
+        "file": "SIMULADOR_CIUDAD_AMIGABLE_URBANISMO_SENIORS.html",
+        "title": "Los 5 Niveles de la Ciudad Amigable con las Personas Mayores: Calles, Bancos y Vida de Barrio",
+        "btn": "🌳 Abrir Ciudad Amigable y Espacios Públicos (+65) ↗"
+    },
+    53: {
+        "file": "SIMULADOR_MOVILIDAD_TRANSPORTE_SEGURO_SENIORS.html",
+        "title": "Los 6 Niveles de Movilidad, Transporte Público y Conducción Segura en la Madurez",
+        "btn": "🚌 Abrir Movilidad y Transporte Seguro (+65) ↗"
+    },
+    54: {
+        "file": "SIMULADOR_AGUA_POTABLE_HIDRATACION_SENIORS.html",
+        "title": "Los 5 Niveles del Agua en el Hogar: Calidad del Grifo, Ahorro e Hidratación Saludable",
+        "btn": "💧 Abrir Calidad del Agua e Hidratación (+65) ↗"
+    },
+    55: {
+        "file": "SIMULADOR_MEDICINA_PREVENTIVA_SALUD_SENIORS.html",
+        "title": "Los 6 Niveles de la Medicina Preventiva: Revisiones, Vacunación y Relación con el Médico de Cabecera",
+        "btn": "🩺 Abrir Medicina Preventiva y Revisiones (+65) ↗"
+    },
+    56: {
+        "file": "SIMULADOR_AGRICULTURA_HUERTA_ALIMENTACION_SENIORS.html",
+        "title": "Los 5 Niveles de la Huerta Tradicional, Alimentos de Temporada y Consumo de Proximidad",
+        "btn": "🍅 Abrir Huerta Tradicional y Temporada (+65) ↗"
+    },
+    57: {
+        "file": "SIMULADOR_MATERIALES_REFORMAS_HOGAR_SENIORS.html",
+        "title": "Los 6 Niveles del Mantenimiento Seguro del Hogar: Materiales, Reformas y Confort Térmico",
+        "btn": "🔨 Abrir Mantenimiento del Hogar y Reformas (+65) ↗"
+    },
+    58: {
+        "file": "SIMULADOR_ASTRONOMIA_EXPLORACION_COSMOS_SENIORS.html",
+        "title": "Los 5 Niveles de Astronomía Cotidiana, Fases Lunares y Maravilla del Cosmos para Seniors",
+        "btn": "🔭 Abrir Astronomía Cotidiana y Cosmos (+65) ↗"
+    },
+    59: {
+        "file": "SIMULADOR_CONSERVACION_ALIMENTOS_DESPENSA_SENIORS.html",
+        "title": "Los 6 Niveles de la Despensa Saludable: Conservación de Alimentos, Fechas de Caducidad y Congelación Segura",
+        "btn": "🥫 Abrir Despensa Saludable y Conservación (+65) ↗"
+    },
+    60: {
+        "file": "SIMULADOR_HISTORIA_LIBRO_LEGADO_SABIDURIA_SENIORS.html",
+        "title": "Los 5 Niveles de la Lectura Activa, Memoria y el Legado Escrito de la Historia Personal",
+        "btn": "📖 Abrir Lectura Activa y Legado Personal (+65) ↗"
     }
 }
 
