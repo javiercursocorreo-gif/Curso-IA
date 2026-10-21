@@ -9,7 +9,7 @@ Este documento registra el avance del plan de actualización por lotes bajo la *
 | Lote | Rango de Sesiones | Estado | Micro-Apps [NIV] | Laboratorios [COD] | Triple Salvaguarda |
 | :--- | :--- | :---: | :---: | :---: | :---: |
 | **LOTE 1** | Sesiones 01 a 10 | 🟢 **COMPLETADO** | **10 / 10** | 3D Lungs / Corazón / Luna / Motor / T-Rex / Molar | **10 / 10 Listas** |
-| **LOTE 2** | Sesiones 11 a 20 | ⚪ Pendiente | 0 / 10 | Stradivarius / Helix / ADN / Júpiter / Partenón | Pendiente |
+| **LOTE 2** | Sesiones 11 a 20 | 🟢 **COMPLETADO** | **10 / 10** | Stradivarius / Helix / ADN / Júpiter / Partenón | **10 / 10 Listas** |
 | **LOTE 3** | Sesiones 21 a 30 | ⚪ Pendiente | 0 / 10 | 11 Dimensiones ... | Pendiente |
 | **LOTE 4** | Sesiones 31 a 40 | ⚪ Pendiente | 0 / 10 | Por auditar | Pendiente |
 | **LOTE 5** | Sesiones 41 a 50 | ⚪ Pendiente | 0 / 10 | Por auditar | Pendiente |
@@ -87,5 +87,74 @@ Este documento registra el avance del plan de actualización por lotes bajo la *
 
 ---
 
-## 🎯 PRÓXIMO PASO: LOTE 2 (SESIONES 11 A 20)
-En cuanto se ejecute el comando final correlativo de terminal para el Lote 1, el proyecto queda preparado para abordar el Lote 2 (Sesiones 11 a 20).
+## 📋 DETALLE DEL LOTE 2 (SESIONES 11 A 20) — 100% COMPLETADO
+
+### 🔹 Sesión 11:
+- **Micro-App `[NIV-011]`:** `11_SIMULADOR_INTELIGENCIA_COGNITIVA_SENIORS.html`
+  - *Tema:* Los 7 Niveles de Inteligencia Cognitiva y Sabiduría en la Madurez.
+  - *Características:* Evaluación de neuroplasticidad, paseos diarios, lectura, vida social y cálculo del Índice de Reserva Cognitiva (0-100).
+  - *Triple Salvaguarda:* Semilla lista + Plano Técnico listo + App Oficial desplegada en `11_Sesion/`.
+- **Laboratorio `[COD-011]`:** Violín Stradivarius 3D (The Gould 1693, Met Museum).
+
+### 🔹 Sesión 12:
+- **Micro-App `[NIV-012]`:** `12_SIMULADOR_CONCIENCIA_ALERTA_NEUROLOGICA_SENIORS.html`
+  - *Tema:* Los 6 Niveles de Conciencia, Ritmos Circadianos y Alerta Serena.
+  - *Características:* Calidad de sueño reparador, hidratación matinal, luz solar y siestas cortas de 20 minutos.
+  - *Triple Salvaguarda:* Semilla lista + Plano Técnico listo + App Oficial desplegada en `12_Sesion/`.
+- **Laboratorio `[COD-012]`:** Nebulosa Helix 3D (NASA / Hubble / Spitzer).
+
+### 🔹 Sesión 13:
+- **Micro-App `[NIV-013]`:** `13_SIMULADOR_MEMORIA_RETENCION_BIOLOGICA_SENIORS.html`
+  - *Tema:* Los 5 Niveles de Memoria Práctica y Retención Cotidiana.
+  - *Características:* Desmitificación de despistes benignos, sitio fijo para llaves/gafas, libreta de notas y memoria fotográfica familiar.
+  - *Triple Salvaguarda:* Semilla lista + Plano Técnico listo + App Oficial desplegada en `13_Sesion/`.
+- **Laboratorio `[COD-013]`:** Doble Hélice de ADN 3D (Estructura Genética Oficial).
+
+### 🔹 Sesión 14:
+- **Micro-App `[NIV-014]`:** `14_SIMULADOR_TOMA_DECISIONES_SESGOS_SENIORS.html`
+  - *Tema:* Los 6 Niveles de Toma de Decisiones y Filtro de Sesgos Mentales.
+  - *Características:* Regla de las 24 horas ante compras impulsivas, consulta familiar y escudo protector ante presiones comerciales.
+  - *Triple Salvaguarda:* Semilla lista + Plano Técnico listo + App Oficial desplegada en `14_Sesion/`.
+- **Laboratorio `[COD-014]`:** Júpiter y Auroras Boreales 3D (NASA / Cassini / Hubble).
+
+### 🔹 Sesión 15:
+- **Micro-App `[NIV-015]`:** `15_SIMULADOR_RESILIENCIA_SALUD_MENTAL_SENIORS.html`
+  - *Tema:* Los 5 Niveles de Resiliencia Emocional y Fortaleza Interior.
+  - *Características:* Afrontamiento de la soledad, gratitud diaria, conexión vecinal y aceptación sosegada de los cambios de la vida.
+  - *Triple Salvaguarda:* Semilla lista + Plano Técnico listo + App Oficial desplegada en `15_Sesion/`.
+- **Laboratorio `[COD-015]`:** Partenón de Atenas y Proporción Áurea 3D.
+
+### 🔹 Sesión 16:
+- **Micro-App `[NIV-016]`:** `16_SIMULADOR_PREVENCION_ADICCIONES_HABITOS_SENIORS.html`
+  - *Tema:* Los 6 Niveles de Prevención de Adicciones, Hábitos y Fármacos.
+  - *Características:* Seguridad farmacológica, pastillero semanal, supervisión médica, equilibrio entre televisión y actividades al aire libre.
+  - *Triple Salvaguarda:* Semilla lista + Plano Técnico listo + App Oficial desplegada en `16_Sesion/`.
+
+### 🔹 Sesión 17:
+- **Micro-App `[NIV-017]`:** `17_SIMULADOR_EMPATIA_INTELIGENCIA_EMOCIONAL_SENIORS.html`
+  - *Tema:* Los 5 Niveles de Empatía, Vínculo Familiar e Inteligencia Emocional.
+  - *Características:* Escucha activa, límites cariñosos con los nietos sin sobrecargas, perdón de agravios pasados y serenidad en el hogar.
+  - *Triple Salvaguarda:* Semilla lista + Plano Técnico listo + App Oficial desplegada en `17_Sesion/`.
+
+### 🔹 Sesión 18:
+- **Micro-App `[NIV-018]`:** `18_SIMULADOR_DISCIPLINA_HABITOS_VIDA_SENIORS.html`
+  - *Tema:* Los 6 Niveles de Disciplina Serena y Hábitos de Longevidad Activa.
+  - *Características:* Paseo diario de 30-45 minutos, movilidad articular, alimentación mediterránea sin rigideces y constancia alegre.
+  - *Triple Salvaguarda:* Semilla lista + Plano Técnico listo + App Oficial desplegada en `18_Sesion/`.
+
+### 🔹 Sesión 19:
+- **Micro-App `[NIV-019]`:** `19_SIMULADOR_COMUNICACION_LENGUAJE_SENIORS.html`
+  - *Tema:* Los 5 Niveles de Comunicación y Lenguaje Claro para Mayores.
+  - *Características:* Hoja de notas con 3 dudas antes de ir al médico, asertividad bancaria tranquila ("Por favor, explíquemelo despacio") y cercanía con la familia.
+  - *Triple Salvaguarda:* Semilla lista + Plano Técnico listo + App Oficial desplegada en `19_Sesion/`.
+
+### 🔹 Sesión 20:
+- **Micro-App `[NIV-020]`:** `20_SIMULADOR_CREATIVIDAD_INNOVACION_SENIORS.html`
+  - *Tema:* Los 6 Niveles de Creatividad, Curiosidad e Innovación Vital.
+  - *Características:* Curiosidad por la IA y novedades, hobbies manuales/artesanales, transmisión del legado y memorias familiares a los nietos.
+  - *Triple Salvaguarda:* Semilla lista + Plano Técnico listo + App Oficial desplegada en `20_Sesion/`.
+
+---
+
+## 🎯 PRÓXIMO PASO: LOTE 3 (SESIONES 21 A 30)
+En cuanto se ejecute el `[COMANDO 43]` en la terminal externa, el proyecto queda listo para abordar el **LOTE 3 (Sesiones 21 a 30)**.

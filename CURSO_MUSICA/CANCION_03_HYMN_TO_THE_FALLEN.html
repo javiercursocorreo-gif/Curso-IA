@@ -1252,18 +1252,61 @@
 
     /* ==========================================================================
        MODO ATRIL ACTIVO: EVITAR APAGADO AUTOMÁTICO DE PANTALLA EN IPAD
+       Sistema Híbrido: WakeLock API + Loop de Vídeo Canvas (compatible con HTTP)
+       Incluye Protección de Batería con Reposo Inteligente tras 15 min de inactividad
        ========================================================================== */
     let wakeLockInstance = null;
+    let videoKeepAwake = null;
+    const TIEMPO_INACTIVIDAD_MS = 15 * 60 * 1000; // 15 minutos de inactividad
+    let temporizadorInactividad = null;
+    let modoReposoActivo = false;
 
-    async function activarModoAtrilSinApagado() {
+    function activarModoAtrilSinApagado() {
+        if (modoReposoActivo) return;
+
+        // 1. Método Estándar W3C WakeLock (funciona en HTTPS)
         if ('wakeLock' in navigator) {
             try {
-                wakeLockInstance = await navigator.wakeLock.request('screen');
-                console.log('☀️ Modo Atril: Pantalla mantenida siempre encendida');
-            } catch(e) {
-                console.warn('WakeLock bloqueado o no disponible:', e);
-            }
+                navigator.wakeLock.request('screen').then(lock => {
+                    wakeLockInstance = lock;
+                    console.log('☀️ WakeLock nativo activo');
+                }).catch(e => {});
+            } catch(e) {}
         }
+
+        // 2. Método Infalible iOS / iPadOS para HTTP: Reproductor invisible de Canvas
+        try {
+            if (!videoKeepAwake) {
+                videoKeepAwake = document.createElement('video');
+                videoKeepAwake.setAttribute('playsinline', '');
+                videoKeepAwake.setAttribute('webkit-playsinline', '');
+                videoKeepAwake.setAttribute('muted', '');
+                videoKeepAwake.setAttribute('loop', '');
+                videoKeepAwake.muted = true;
+                videoKeepAwake.style.position = 'fixed';
+                videoKeepAwake.style.top = '-50px';
+                videoKeepAwake.style.left = '-50px';
+                videoKeepAwake.style.width = '1px';
+                videoKeepAwake.style.height = '1px';
+                videoKeepAwake.style.opacity = '0.001';
+                videoKeepAwake.style.pointerEvents = 'none';
+
+                const canvas = document.createElement('canvas');
+                canvas.width = 4;
+                canvas.height = 4;
+                const ctx = canvas.getContext('2d');
+                ctx.fillStyle = '#000000';
+                ctx.fillRect(0, 0, 4, 4);
+
+                if (canvas.captureStream) {
+                    videoKeepAwake.srcObject = canvas.captureStream(1);
+                }
+                document.body.appendChild(videoKeepAwake);
+            }
+            if (videoKeepAwake && videoKeepAwake.paused) {
+                videoKeepAwake.play().catch(() => {});
+            }
+        } catch(e) {}
     }
 
     function liberarModoAtril() {
@@ -1273,10 +1316,38 @@
                 wakeLockInstance = null;
             } catch(e){}
         }
+        if (videoKeepAwake) {
+            try {
+                videoKeepAwake.pause();
+            } catch(e){}
+        }
     }
 
+    function reiniciarTemporizadorInactividad() {
+        if (modoReposoActivo) {
+            modoReposoActivo = false;
+            activarModoAtrilSinApagado();
+        }
+        if (temporizadorInactividad) clearTimeout(temporizadorInactividad);
+        temporizadorInactividad = setTimeout(() => {
+            modoReposoActivo = true;
+            console.log('💤 15 minutos sin uso: liberando pantalla para ahorrar batería');
+            liberarModoAtril();
+        }, TIEMPO_INACTIVIDAD_MS);
+    }
+
+    // Reiniciar inactividad con cualquier toque, scroll o tecla
+    ['touchstart', 'touchend', 'mousedown', 'keydown', 'scroll'].forEach(evt => {
+        document.addEventListener(evt, () => {
+            reiniciarTemporizadorInactividad();
+            activarModoAtrilSinApagado();
+        }, { passive: true });
+    });
+
+    // Re-activar si el usuario cambia de app y regresa a la ficha
     document.addEventListener('visibilitychange', () => {
         if (document.visibilityState === 'visible') {
+            reiniciarTemporizadorInactividad();
             activarModoAtrilSinApagado();
         } else {
             liberarModoAtril();
@@ -1284,16 +1355,13 @@
     });
 
     window.addEventListener('DOMContentLoaded', () => {
+        reiniciarTemporizadorInactividad();
         activarModoAtrilSinApagado();
         // En iOS / Web MIDI Browser, retrasar 350ms para permitir que el puente CoreMIDI se registre
         setTimeout(() => {
             conectarMIDI();
         }, 350);
     });
-
-    document.addEventListener('touchstart', () => {
-        if (!wakeLockInstance) activarModoAtrilSinApagado();
-    }, { once: true });
 
     window.addEventListener('beforeunload', () => {
         liberarModoAtril();
