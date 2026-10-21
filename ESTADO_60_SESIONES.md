@@ -157,4 +157,4 @@ Este documento registra el avance del plan de actualización por lotes bajo la *
 ---
 
 ## 🎯 PRÓXIMO PASO: LOTE 3 (SESIONES 21 A 30)
-En cuanto se ejecute el `[COMANDO 45]` en la terminal externa, el proyecto queda listo para abordar el **LOTE 3 (Sesiones 21 a 30)**.
+En cuanto se ejecute el `[COMANDO 47]` en la terminal externa, el proyecto queda listo para abordar el **LOTE 3 (Sesiones 21 a 30)**.

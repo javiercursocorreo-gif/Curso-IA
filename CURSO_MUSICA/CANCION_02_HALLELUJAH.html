@@ -373,11 +373,11 @@
     
     <!-- BARRA DE NAVEGACIÓN -->
     <div class="nav-bar">
-        <a class="btn-back" href="REPERTORIO_KORG_EK50.html?v=94">
+        <a class="btn-back" href="REPERTORIO_KORG_EK50.html?v=95">
             ⬅ Volver a la Lista de Canciones
         </a>
         <div style="display:flex; align-items:center; gap:8px;">
-            <button onclick="window.location.href='CANCION_02_HALLELUJAH.html?t='+Date.now()" style="background:#0284c7; color:#fff; border:none; padding:6px 12px; border-radius:8px; font-size:0.8rem; font-weight:800; cursor:pointer;" title="Pulsa aquí en el iPad para limpiar la caché y ver la última versión">🔄 Recargar v94</button>
+            <button onclick="window.location.href='CANCION_02_HALLELUJAH.html?t='+Date.now()" style="background:#0284c7; color:#fff; border:none; padding:6px 12px; border-radius:8px; font-size:0.8rem; font-weight:800; cursor:pointer;" title="Pulsa aquí en el iPad para limpiar la caché y ver la última versión">🔄 Recargar v95</button>
             <div class="midi-bar">
                 <span id="midi-dot" class="status-dot"></span>
                 <span id="midi-label">Iniciando MIDI...</span>
@@ -869,29 +869,28 @@
             enviarMidiGlobal([0xB0 | 15, 0x20, 2]);
             enviarMidiGlobal([0xC0 | 15, 9]); // Estilo 042
 
-            // Cargar el procesador DSP maestro con reverberación de gran sala de concierto (Set 1)
-            // Esto activa el motor DSP de reverberación profunda y eco ambiental en el hardware del Korg
+            // Cargar el Keyboard Set oficial No. 29 ("Harmonica") en Canales 1 y 16
+            // Muestra en la pantalla del Korg: "Harmonica" y configura el DSP de armónica
             enviarMidiGlobal([0xB0 | 0, 0x00, 33]);
-            enviarMidiGlobal([0xB0 | 0, 0x20, 0]);
-            enviarMidiGlobal([0xC0 | 0, 0]);
+            enviarMidiGlobal([0xB0 | 0, 0x20, 2]);
+            enviarMidiGlobal([0xC0 | 0, 8]);
 
             enviarMidiGlobal([0xB0 | 15, 0x00, 33]);
-            enviarMidiGlobal([0xB0 | 15, 0x20, 0]);
-            enviarMidiGlobal([0xC0 | 15, 0]);
+            enviarMidiGlobal([0xB0 | 15, 0x20, 2]);
+            enviarMidiGlobal([0xC0 | 15, 8]);
 
-            await new Promise(r => setTimeout(r, 45));
+            await new Promise(r => setTimeout(r, 50));
 
-            // 2. Upper 1 = Sweet Harmonica (nº 091) con VIBRATO EXPRESIVO y ECO DE GRAN SALA
+            // 2. Upper 1 = Sweet Harmonica auténtica (LSB 22, PC 1 = nº 091) con VIBRATO y ECO
             enviarMidiGlobal([0xB0 | 0, 0x00, 121]);
-            enviarMidiGlobal([0xB0 | 0, 0x20, 1]);   // LSB 1 = Sweet Harmonica (muestra con vibrato natural dulce)
-            enviarMidiGlobal([0xC0 | 0, 21]);        // Harmonica
-            enviarMidiGlobal([0xB0 | 0, 0x07, 120]); // Volumen potente
+            enviarMidiGlobal([0xB0 | 0, 0x20, 22]);  // LSB 22 = Familia oficial Harmonica Korg (NO acordeón)
+            enviarMidiGlobal([0xC0 | 0, 1]);         // PC 1 = Sweet Harm. (Armónica dulce con vibrato nativo)
+            enviarMidiGlobal([0xB0 | 0, 0x07, 122]); // Volumen potente
             enviarMidiGlobal([0xB0 | 0, 0x0B, 127]); // Expresión 100%
-            enviarMidiGlobal([0xB0 | 0, 0x01, 52]);  // CC 01 = Modulación / Vibrato activo (para que vibre expresivamente)
-            enviarMidiGlobal([0xB0 | 0, 0x4D, 70]);  // CC 77 = Profundidad de vibrato acústico
-            enviarMidiGlobal([0xB0 | 0, 0x5B, 95]);  // CC 91 = Reverb Send (Eco de gran sala de concierto)
-            enviarMidiGlobal([0xB0 | 0, 0x5D, 50]);  // CC 93 = Chorus / Delay Send (Ambiente estéreo)
-            enviarMidiGlobal([0xB0 | 0, 0x48, 76]);  // CC 72 = Release suave para sostener la nota
+            enviarMidiGlobal([0xB0 | 0, 0x5B, 110]); // CC 91 = Reverb Send (Eco acústico amplio)
+            enviarMidiGlobal([0xB0 | 0, 0x5D, 65]);  // CC 93 = Chorus/Delay Send (Ambiente estéreo)
+            enviarMidiGlobal([0xB0 | 0, 0x01, 35]);  // CC 01 = Vibrato suave para sostener la oscilación
+            enviarMidiGlobal([0xB0 | 0, 0x48, 76]);  // CC 72 = Release suave
 
             // Upper 2 y 3 silenciados
             enviarMidiGlobal([0xB0 | 1, 0x07, 0]);
@@ -910,7 +909,7 @@
 
             // TOTALMENTE SILENCIOSO: Cambia la configuración sin disparar ráfagas de notas
             const nombres = salidas.map(o=>o.name).join(', ') || (midiOutput ? midiOutput.name : 'USB');
-            if (log) log.innerHTML = `🎵 <b>1. Armónica Dulce con Vibrato + Eco + Lower: Voces</b> listo en <b>${nombres}</b> (Melodía: Armónica con Vibrato y Eco · Izquierda: Voces · ⏱️ <b>56 BPM</b>). ¡Toca el teclado!`;
+            if (log) log.innerHTML = `🎵 <b>1. Armónica (Harmonica / Sweet Harm.) + Eco + Lower: Voces</b> listo en <b>${nombres}</b> (Pantalla: <b>Harmonica</b> · Melodía con Vibrato y Eco · Izquierda: Voces · ⏱️ <b>56 BPM</b>). ¡Toca el teclado!`;
         } catch(e) {
             if (log) log.innerHTML = `⚠️ Error enviando al Korg: ${e.message}`;
         }

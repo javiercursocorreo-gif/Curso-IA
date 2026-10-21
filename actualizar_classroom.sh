@@ -235,7 +235,7 @@ cp "SIMULADORES_INTERACTIVOS/01_SIMULADORES/24_SIMULADOR_11_DIMENSIONES_UNIVERSO
 cp -r "SIMULADORES_INTERACTIVOS/01_SIMULADORES/cards_11d" "CLASES/EXPORTACION_FICHAS_CLASSROOM_PDF/100. [SESSIONS] TERNAS_LISTAS_PARA_CLASSROOM/24_Sesion/" 2>/dev/null || true
 
 echo "=== 2A. Regenerando Fichas Didácticas PDF [NIV] con la Triple Salvaguarda Pedagógica (S01 a S20)... ==="
-pip3 install --quiet reportlab 2>/dev/null || true
+python3 -m pip install --quiet reportlab 2>/dev/null || pip3 install --quiet reportlab 2>/dev/null || true
 python3 "00. SCRIPTS_PYTHON/export_niv_pdfs.py"
 
 echo "=== 2B. Sincronizando tarjetas interactivas [NIV] en todos los mapas de sesión (MAPA_SESION_XX.html)... ==="

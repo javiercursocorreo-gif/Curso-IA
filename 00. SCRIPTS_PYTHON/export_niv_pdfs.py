@@ -9,8 +9,35 @@ from reportlab.lib.units import cm
 
 import build_niv_60_master as build_niv
 
+LEGACY_NIV_NAMES = {
+    1: "9. NIV-001_Los 7 Niveles de Riqueza y Libertad Financiera.pdf",
+    2: "9. NIV-002_Los 6 Niveles de las Pirámides y Fraudes Financieros Históricos.pdf",
+    3: "9. NIV-003_Los 5 Niveles del Poder Geopolítico y Hegemonía Mundial.pdf",
+    4: "9. NIV-004_Los 6 Niveles de Aporte de Valor en una Empresa.pdf",
+    5: "9. NIV-005_Los 5 Niveles de la Evolución del Dinero.pdf",
+    6: "9. NIV-006_Los 6 Niveles del Poder Adquisitivo y Coste de Vida Global.pdf",
+    7: "9. NIV-007_Los 5 Niveles de Automatización del Trabajo Humano.pdf",
+    8: "9. NIV-008_Los 6 Niveles de Persuasión e Influencia de Masas.pdf",
+    9: "9. NIV-009_Los 5 Niveles de Seguridad Ciudadana y Prevención Urbana.pdf",
+    10: "9. NIV-010_Los 6 Niveles de Alfabetización Financiera Personal.pdf",
+    11: "9. NIV-011_Los 7 Niveles de Inteligencia Cognitiva y Conciencia.pdf",
+    12: "9. NIV-012_Los 6 Niveles de Conciencia y Alerta Neurológica.pdf",
+    13: "9. NIV-013_Los 5 Niveles de la Memoria y Retención Biológica.pdf",
+    14: "9. NIV-014_Los 6 Niveles de Toma de Decisiones y Sesgos Cognitivos.pdf",
+    15: "9. NIV-015_Los 5 Niveles de Resiliencia y Salud Mental.pdf",
+    16: "9. NIV-016_Los 6 Niveles de Adicción y Dependencia Neuroquímica.pdf",
+    17: "9. NIV-017_Los 5 Niveles de Empatía e Inteligencia Emocional.pdf",
+    18: "9. NIV-018_Los 6 Niveles de Disciplina y Formación de Hábitos.pdf",
+    19: "9. NIV-019_Los 5 Niveles de la Comunicación y Lenguaje Biológico.pdf",
+    20: "9. NIV-020_Los 6 Niveles de Creatividad e Innovación Humana.pdf"
+}
+
 def create_niv_fichas():
-    base_out_dir = "/Users/externo/Library/Mobile Documents/com~apple~CloudDocs/PERSONAL/CLASES DE TECNOLOGÍA/CURSO-IA/CLASES/EXPORTACION_FICHAS_CLASSROOM_PDF/[NIV] BLOQUE_10_ESCALAFONES_Y_NIVELES_CULTURA101"
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    base_repo_dir = os.path.abspath(os.path.join(script_dir, ".."))
+    classroom_dir = os.path.join(base_repo_dir, "CLASES", "EXPORTACION_FICHAS_CLASSROOM_PDF")
+    base_out_dir = os.path.join(classroom_dir, "[NIV] BLOQUE_10_ESCALAFONES_Y_NIVELES_CULTURA101")
+    sessions_dir = os.path.join(classroom_dir, "100. [SESSIONS] TERNAS_LISTAS_PARA_CLASSROOM")
     
     lote1 = os.path.join(base_out_dir, "Lote_01_al_20")
     lote2 = os.path.join(base_out_dir, "Lote_21_al_40")
@@ -249,17 +276,21 @@ def create_niv_fichas():
         print(f"[{idx}/60] Generado: {file_name}")
 
         # Copiar también a la carpeta de sesión correspondiente
-        sessions_dir = os.path.join(os.path.dirname(base_out_dir), "100. [SESSIONS] TERNAS_LISTAS_PARA_CLASSROOM")
         sess_name = f"{idx:02d}_Sesion" if idx < 60 else "60_Sesion_Cierre"
         sess_folder = os.path.join(sessions_dir, sess_name)
-        if os.path.exists(sess_folder):
-            # Eliminar cualquier ficha NIV anterior en la carpeta
-            for ef in os.listdir(sess_folder):
-                if ef.startswith("9. NIV-") or ef.startswith("9. [NIV-"):
-                    try: os.remove(os.path.join(sess_folder, ef))
-                    except Exception: pass
-            dst_sess_pdf = os.path.join(sess_folder, f"9. NIV-{idx:03d}_{clean_title}.pdf")
-            shutil.copy2(file_path, dst_sess_pdf)
+        os.makedirs(sess_folder, exist_ok=True)
+        
+        # 1. Copia principal con el nombre nuevo normalizado
+        dst_sess_pdf = os.path.join(sess_folder, f"9. NIV-{idx:03d}_{clean_title}.pdf")
+        shutil.copy2(file_path, dst_sess_pdf)
+        
+        # 2. Copia de compatibilidad total con el nombre legado (garantiza cero 404 en Classroom y cachés)
+        if idx in LEGACY_NIV_NAMES:
+            legacy_pdf = os.path.join(sess_folder, LEGACY_NIV_NAMES[idx])
+            shutil.copy2(file_path, legacy_pdf)
+            print(f"  ✓ Replicado en {sess_name}: {os.path.basename(dst_sess_pdf)} (+ copia de compatibilidad)")
+        else:
+            print(f"  ✓ Replicado en {sess_name}: {os.path.basename(dst_sess_pdf)}")
         
     print(f"\n¡Éxito total! Las 60 fichas PDF [NIV] han sido exportadas y distribuidas en las 60 sesiones.")
 

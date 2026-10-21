@@ -11,7 +11,8 @@ import os
 import re
 import urllib.parse
 
-BASE_DIR = "/Users/externo/Library/Mobile Documents/com~apple~CloudDocs/PERSONAL/CLASES DE TECNOLOGÍA/CURSO-IA"
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+BASE_DIR = os.path.abspath(os.path.join(SCRIPT_DIR, ".."))
 SESSIONS_DIR = os.path.join(BASE_DIR, "CLASES", "EXPORTACION_FICHAS_CLASSROOM_PDF", "100. [SESSIONS] TERNAS_LISTAS_PARA_CLASSROOM")
 
 NIV_CONFIG = {
@@ -206,11 +207,13 @@ def update_map_html(content, session_num, session_path=None):
 
 def main():
     print("=== Sincronizando Tarjetas Interactivas [NIV] en Mapas de Sesión ===")
+    print(f"Ruta SESSIONS_DIR: {SESSIONS_DIR} (Existe: {os.path.exists(SESSIONS_DIR)})")
     count = 0
     for s_num in range(1, 21):
         s_folder = f"{s_num:02d}_Sesion"
         s_path = os.path.join(SESSIONS_DIR, s_folder)
         if not os.path.exists(s_path):
+            print(f"  ⚠ Saltando carpeta no encontrada: {s_path}")
             continue
             
         for map_name in [f"MAPA_SESION_{s_num:02d}.html", f"MAPA_CLASE_SESION_{s_num:02d}.html"]:
