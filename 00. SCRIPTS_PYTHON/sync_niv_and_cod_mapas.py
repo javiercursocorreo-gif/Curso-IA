@@ -215,6 +215,56 @@ NIV_CONFIG = {
         "file": "SIMULADOR_CUIDADO_PIEL_CICATRIZACION_SENIORS.html",
         "title": "Los 5 Niveles de Regeneración Cutánea, Cuidado de la Piel y Cicatrización",
         "btn": "🧴 Abrir Guía Cuidado de la Piel y Cicatrización (+65) ↗"
+    },
+    41: {
+        "file": "SIMULADOR_CONECTIVIDAD_WIFI_HOGAR_SENIORS.html",
+        "title": "Los 6 Niveles de Conectividad Digital, Wi-Fi del Hogar y Videollamadas Familiares",
+        "btn": "📶 Abrir Simulador Wi-Fi y Videollamadas (+65) ↗"
+    },
+    42: {
+        "file": "SIMULADOR_CIBERSEGURIDAD_CONTRASENAS_2FA_SENIORS.html",
+        "title": "Los 5 Niveles de Blindaje Digital: Contraseñas Fuertes, Verificación en Dos Pasos y Privacidad",
+        "btn": "🔐 Abrir Blindaje de Contraseñas y 2FA (+65) ↗"
+    },
+    43: {
+        "file": "SIMULADOR_ACCESIBILIDAD_PANTALLAS_TEXTO_SENIORS.html",
+        "title": "Los 6 Niveles de Resolución, Tamaño de Letra y Accesibilidad en Pantallas",
+        "btn": "🔍 Abrir Guía Accesibilidad y Pantallas (+65) ↗"
+    },
+    44: {
+        "file": "SIMULADOR_COPIAS_SEGURIDAD_FOTOS_NUBE_SENIORS.html",
+        "title": "Los 5 Niveles del Archivo Digital: Copias de Seguridad, Fotos Familiares y la Nube",
+        "btn": "☁️ Abrir Copias de Seguridad y Recuerdos (+65) ↗"
+    },
+    45: {
+        "file": "SIMULADOR_BATERIA_CONSUMO_DISPOSITIVOS_SENIORS.html",
+        "title": "Los 6 Niveles de Energía en Dispositivos: Cuidado de Baterías, Cargadores y Autonomía",
+        "btn": "🔋 Abrir Guía Baterías y Autonomía (+65) ↗"
+    },
+    46: {
+        "file": "SIMULADOR_ROBOTICA_ASISTENTES_HOGAR_SENIORS.html",
+        "title": "Los 5 Niveles de la Robótica Doméstica: Robots Aspiradores, Sensores y Asistencia Vital",
+        "btn": "🤖 Abrir Robótica y Asistentes del Hogar (+65) ↗"
+    },
+    47: {
+        "file": "SIMULADOR_VIAJES_VIRTUALES_ESTIMULACION_SENIORS.html",
+        "title": "Los 6 Niveles de Exploración Virtual, Viajes sin Salir de Casa y Estimulación Sensorial",
+        "btn": "🌍 Abrir Viajes Virtuales y Estimulación (+65) ↗"
+    },
+    48: {
+        "file": "SIMULADOR_EFICIENCIA_ELECTRODOMESTICOS_FACTURA_SENIORS.html",
+        "title": "Los 5 Niveles de Eficiencia en Electrodomésticos: Ahorro de Luz y Manejo Sencillo",
+        "btn": "⚡ Abrir Calculadora Eficiencia Electrodomésticos (+65) ↗"
+    },
+    49: {
+        "file": "SIMULADOR_TRAMITES_DIGITALES_CERTIFICADO_SENIORS.html",
+        "title": "Los 6 Niveles de Trámites Digitales: Certificado Digital, Cl@ve y Citas Médicas sin Colas",
+        "btn": "🏛️ Abrir Trámites Digitales y Cl@ve Pin (+65) ↗"
+    },
+    50: {
+        "file": "SIMULADOR_COMUNICACION_WHATSAPP_CONVIVENCIA_SENIORS.html",
+        "title": "Los 5 Niveles de Comunicación Digital: WhatsApp Familiar, Grupos y Convivencia Serena",
+        "btn": "💬 Abrir Guía WhatsApp y Convivencia Serena (+65) ↗"
     }
 }
 

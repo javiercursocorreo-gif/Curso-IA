@@ -514,131 +514,118 @@ def get_niv_items():
         'Guía Cuidado de la Piel y Cicatrización (+65)'
     )
 
-    # GRUPO E: TECNOLOGÍA, COMPUTACIÓN E INMERSIÓN (NIV-041 a NIV-050)
-    add_it('[NIV-041]', 'Los 6 Niveles de Conectividad y Velocidad Digital',
-           'Evolución de telecomunicaciones desde el módem telefónico analógico de los 90, ADSL, fibra óptica y 5G hasta satélites Starlink LEO y la inminente red cuántica fotónica.',
-           6, 'Un cable de fibra óptica cuántica tridimensional con el núcleo brillante de pura luz azul deslumbrante enviando terabits instantáneos a un satélite orbital.',
-           [
-               ("Módem Telefónico Analógico 56 kbps (Años 90)", "Un viejo ordenador de escritorio emitiendo el característico pitido electrónico al conectar por cable de cobre telefónico tardando minutos en abrir una foto."),
-               ("Banda Ancha ADSL y Cable de Cobre (Años 2000)", "Hogares conectados sin bloquear la línea de teléfono fija, permitiendo las primeras descargas de canciones MP3 y navegación fluida por páginas web."),
-               ("Fibra Óptica hasta el Hogar - FTTH (1 Gbps)", "Haces fotónicos viajando por filamentos de vidrio purísimo a la velocidad de la luz permitiendo videollamadas 4K sin interrupciones ni latencia percibida."),
-               ("Red Móvil Celular 5G Masiva (Conectividad Total)", "Antenas urbanas inteligentes conectando millones de sensores, coches autónomos, farolas y teléfonos móviles simultáneamente con latencia de un milisegundo."),
-               ("Constelaciones Orbitales por Satélite (Starlink / LEO)", "Miles de pequeños satélites en órbita baja interconectados con rayos láser en el vacío espacial dando internet veloz a la selva más remota y mitad del océano."),
-               ("Internet Cuántico y Enredo Fotónico (El Futuro Infranqueable)", "Redes que transmiten información cuántica instantánea inhackeable mediante fotones entrelazados donde cualquier intento de espionaje destruye la señal al momento.")
-           ],
-           'Dibuja en el Peldaño 5 una red de satélites girando alrededor del globo terráqueo azul con rayos de luz y rótulos en castellano.')
+    # =========================================================================
+    # LOTE 5 (SESIONES 41 A 50): MICRO-APLICACIONES INTERACTIVAS SENIORS (+65)
+    # =========================================================================
+    add_senior_microapp(
+        '[NIV-041]',
+        'Los 6 Niveles de Conectividad Digital, Wi-Fi del Hogar y Videollamadas Familiares',
+        'Guía interactiva de conectividad doméstica para personas mayores: explica de la vieja red telefónica de cobre a la fibra óptica y Wi-Fi de alta cobertura, enseña a ubicar el router sobre una mesita despejada (sin esconderlo en cajones ni tras muros de carga) para hablar con los nietos por videollamada sin cortes de imagen ni voz de robot, y proporciona la regla de oro de los 30 segundos para reiniciar el router con tranquilidad.',
+        'Actúa como un técnico de telecomunicaciones y pedagogo digital para personas mayores (+65).\nExplícame en 3 viñetas cómo diseñar un simulador interactivo en HTML que muestre por qué la Wi-Fi no llega bien a todas las habitaciones y enseñe a colocar el router en alto para hablar con los nietos por videollamada sin cortes.',
+        'Genera la aplicación interactiva en HTML con selector de estancia del router (salón, pasillo, escondido), grosor de tabiques, medidor de cobertura Wi-Fi y velocidad de fibra, y el protocolo paso a paso de los 30 segundos para reiniciar el router con tranquilidad.',
+        '• 6 Niveles de Cobertura: 1. Zona Ciega / Sin Señal (Router oculto en muebles o muros gruesos), 2. Señal Débil / Inestable (1 barra, voz entrecortada de robot), 3. Conectividad Básica (Lectura de prensa y WhatsApp fluido), 4. Conexión Óptima de Fibra (Videollamada HD con nietos sin interrupciones), 5. Cobertura Total con Repetidor (Pasillo intermedio cubriendo terraza y dormitorios), 6. Red Simétrica de Alta Velocidad (Múltiples dispositivos familiares a la vez).\n• Regla de los 30 segundos: Desenchufar de la pared, contar despacio hasta 30 para vaciar la memoria interna y volver a conectar; soluciona el 90% de los fallos cotidianos.\n• Recomendaciones de ubicación: En alto sobre un mueble, despejado, lejos de microondas o espejos grandes que rebotan la señal.',
+        'SIMULADOR_CONECTIVIDAD_WIFI_HOGAR_SENIORS.html',
+        'Simulador Wi-Fi y Videollamadas (+65)'
+    )
 
-    add_it('[NIV-042]', 'Los 5 Niveles de Ciberseguridad y Blindaje Informático',
-           'Protección de datos y redes desde contraseñas simples vulnerables, cifrado SSL HTTPS y autenticación biométrica 2FA hasta enclaves de hardware TPM y post-cuántica.',
-           5, 'Un candado de seguridad cibernética en 3D forjado en titanio plateado con un escáner biométrico de iris brillante en su centro, bloqueando un ataque de virus rojos.',
-           [
-               ("Contraseña Simple en Texto Plano (Peligro Crítico)", "Un usuario escribiendo palabras vulnerables como 123456 o el nombre de su mascota en una web sin cifrar, fácilmente interceptadas por hackers basales."),
-               ("Cifrado Simétrico y Conexión Segura (SSL / HTTPS)", "El candado verde en la barra del navegador que encripta la comunicación entre tu ordenador y el banco usando algoritmos matemáticos estándar."),
-               ("Autenticación Multifactor Biométrica (2FA)", "Verificación de seguridad en dos pasos combinando algo que sabes (contraseña), algo que tienes (teléfono móvil) y algo que eres (huella dactilar o rostro)."),
-               ("Enclaves de Hardware Seguros (Chip TPM / Encriptación Total)", "Procesadores con una cámara acorazada física independiente aislada del resto del ordenador donde se guardan claves de cifrado inalcanzables por virus."),
-               ("Criptografía Post-Cuántica e Inmutabilidad (Blockchain Segura)", "Algoritmos matemáticos ultra-robustos diseñados específicamente para resistir el descifrado masivo por supercomputadoras cuánticas del futuro.")
-           ],
-           'Ilustra en el Peldaño 3 un teléfono móvil mostrando una huella dactilar verde brillante en la pantalla con textos en castellano.')
+    add_senior_microapp(
+        '[NIV-042]',
+        'Los 5 Niveles de Blindaje Digital: Contraseñas Fuertes, Verificación en Dos Pasos y Privacidad',
+        'Herramienta interactiva de ciberseguridad práctica y tranquilidad para mayores: sustituye las contraseñas imposibles de memorizar por el método de "Frases Llave Memorables" en español (4 palabras familiares fáciles de recordar pero imposibles de hackear), fomenta el uso de la huella dactilar en el móvil (biometría que no se olvida en casa) y advierte con firmeza de la regla sagrada del código SMS del banco que jamás se debe dictar por teléfono.',
+        'Actúa como un experto en ciberseguridad bancaria y docente para personas mayores (+65).\nExplícame en 3 viñetas cómo diseñar una herramienta interactiva en HTML que enseñe a crear contraseñas memorables mediante frases en español sin agobios y alerte de no compartir jamás el código SMS del banco.',
+        'Genera la aplicación interactiva en HTML con comprobador de frases llave en tiempo real, generador de contraseñas memorables en español, interruptor de biometría (huella dactilar), medidor de tiempo de descifrado y advertencia antifraude telefónico.',
+        '• 5 Niveles de Blindaje: 1. Peligro Crítico (Claves tipo 123456 o cumpleaños: hackeo en 1 seg), 2. Seguridad Básica Vulnerable (Palabra con número al final), 3. Frase Llave Memorable (Ej: "MiNietoLucasNacioEn2021!": descifrado requeriría 400 años), 4. Doble Factor 2FA (Frase llave + Huella dactilar en el móvil), 5. Blindaje Absoluto y Paz Mental (Gestor seguro, libreta física en cajón de casa y desconfianza total ante llamadas del supuesto banco).\n• Regla de Oro Bancaria: Ningún empleado bancario legítimo te pedirá nunca por teléfono o SMS tus claves ni el código recibido por SMS. Ante la duda, colgar de inmediato.\n• La Libreta Física Segura: Anotar contraseñas en una libreta de papel guardada en un cajón en casa es 100% seguro frente a hackers de internet.',
+        'SIMULADOR_CIBERSEGURIDAD_CONTRASENAS_2FA_SENIORS.html',
+        'Blindaje de Contraseñas y 2FA (+65)'
+    )
 
-    add_it('[NIV-043]', 'Los 6 Niveles de Resolución Visual e Imagen Digital',
-           'Evolución de pantallas desde el píxel primitivo 8-bit de tubo CRT de los 80, definición analógica SD, Full-HD y 4K hasta 8K inmersivo y pantallas retina 16K.',
-           6, 'Un ojo humano fotorrealista en 3D mirando a través de una lente cristalina que enfoca y transforma un mosaico de grandes píxeles cuadrados en una imagen 8K perfecta.',
-           [
-               ("Píxel Gráfico Primitivo 8-Bit (Años 80)", "Videojuegos clásicos retro con personajes formados por bloques cuadrados visibles multicolor en monitores de tubo CRT con líneas de escaneo palpables."),
-               ("Definición Estándar SD - 480p (Televisión Analógica)", "La calidad de imagen del VHS y las emisiones de televisión de los años 90 en pantallas cuadradas de relación de aspecto 4:3."),
-               ("Alta Definición Full-HD 1080p (El Estándar Digital)", "Televisores planos panorámicos 16:9 y discos Blu-ray revelando por primera vez detalles precisos de textura, gotas de sudor y cabello en películas de cine."),
-               ("Ultra-HD 4K Cinematográfico (8 Millones de Píxeles)", "El estándar de las plataformas de streaming actuales y cámaras profesionales, mostrando colores HDR profundos y nitidez milimétrica en grandes pantallas modernas."),
-               ("Resolución 8K e Inmersión Total (33 Millones de Píxeles)", "Paneles hiper-densos donde los píxeles individuales son tan diminutos que el ojo humano no puede distinguirlos ni pegando la nariz a la pantalla."),
-               ("Resolución Retina Microscópica y Holografía 16K", "La barrera biológica final del nervio óptico humano en gafas de realidad mixta donde la luz digital se funde de manera absoluta con la percepción real.")
-           ],
-           'Añade en el Peldaño 1 un personaje de videojuego clásico de bloques tipo pixel-art con rótulos en castellano.')
+    add_senior_microapp(
+        '[NIV-043]',
+        'Los 6 Niveles de Resolución, Tamaño de Letra y Accesibilidad en Pantallas',
+        'Simulador de ergonomía visual y accesibilidad digital adaptado a personas mayores: enseña a ajustar el tamaño de texto del móvil y tablet (de 14px a 22px) para leer periódicos y prospectos sin cansar la vista ni forzar las cervicales, muestra el modo alto contraste blanco/negro y el filtro cálido ámbar nocturno para conciliar el sueño, y explica cómo activar la lupa integrada de la cámara con un solo toque.',
+        'Actúa como un oftalmólogo geriátrico y diseñador de accesibilidad digital para personas mayores (+65).\nExplícame en 3 viñetas cómo crear una guía interactiva en HTML que demuestre la importancia de agrandar la letra en el móvil (a 20-22px) y activar el modo cálido nocturno para no cansar la vista.',
+        'Genera la aplicación interactiva en HTML con deslizador de tamaño de letra en tiempo real (14px a 26px), caja de previsualización de mensajes, selector de contraste alto y filtro ámbar, y medidor de fatiga visual geriátrica.',
+        '• 6 Niveles de Confort Visual: 1. Texto Diminuto de Fábrica (14px: picor de ojos y cefaleas), 2. Tamaño Básico (16px: aún requiere entrecerrar los ojos con presbicia), 3. Confort Estándar (18-20px: lectura natural a 40 cm), 4. Accesibilidad Óptima Senior (22px: lectura relajada sin buscar las gafas de cerca), 5. Modo Contraste Alto + Filtro Ámbar (Protección del sueño frente a luz azul), 6. Accesibilidad Plena (Lupa con luz activada con 3 toques para prospectos y cartas).\n• Prevención de fatiga visual: Regla 20-20-20 (cada 20 minutos mirar a 20 pies / 6 metros durante 20 segundos para relajar el músculo ciliar ocular).\n• Higiene postural: Sostener la pantalla a la altura del pecho sin doblar el cuello hacia abajo para no sobrecargar las vértebras cervicales.',
+        'SIMULADOR_ACCESIBILIDAD_PANTALLAS_TEXTO_SENIORS.html',
+        'Guía Accesibilidad y Pantallas (+65)'
+    )
 
-    add_it('[NIV-044]', 'Los 5 Niveles del Almacenamiento de Información Humana',
-           'Retención del conocimiento histórico desde tablillas de arcilla, pergaminos, tarjetas perforadas mecánicas y discos duros HDD/SSD flash hasta almacenamiento biológico de ADN molecular.',
-           5, 'Un microchip SSD moderno en 3D del cual emerge una doble hélice de ADN brillante y luminosa, mostrando la convergencia entre silicio y densidad biológica.',
-           [
-               ("Tablilla de Arcilla y Pergamino Físico", "Escribas antiguos grabando caracteres cuneiformes en arcilla húmeda o monjes copiando códices a mano en monasterios con durabilidad física limitada."),
-               ("Tarjetas Perforadas de Papel (Inicios del Siglo XX)", "Las primeras computadoras electromecánicas leyendo agujeros perforados en cartulinas de cartón para procesar los censos de población de 1900."),
-               ("Discos Magnéticos Mecánicos (HDD y Cintas de Carretes)", "Carretes giratorios de cintas magnéticas de los 60 y discos duros con agujas lectoras microscópicas almacenando megabytes y gigabytes girando a miles de revoluciones."),
-               ("Memoria Flash de Estado Sólido (SSD y NVMe)", "Chips de silicio sin piezas móviles que guardan terabytes de datos al instante mediante impulsos eléctricos en compuertas microscópicas en teléfonos y portátiles veloces."),
-               ("Almacenamiento Biológico en ADN Molecular", "Ingeniería biotecnológica que codifica todos los libros, música y películas de la humanidad en los 4 pares de bases moleculares del ADN humano dentro de una probeta.")
-           ],
-           'Ilustra en el Peldaño 3 un disco duro antiguo con su aguja de lectura metálica brillante y textos en español.')
+    add_senior_microapp(
+        '[NIV-044]',
+        'Los 5 Niveles del Archivo Digital: Copias de Seguridad, Fotos Familiares y la Nube',
+        'Guía pedagógica para preservar el patrimonio fotográfico y recuerdos familiares: explica qué es "la nube" sin jerga técnica (como una caja fuerte privada que no se moja ni se quema), enseña a configurar la copia automática nocturna por Wi-Fi de Google Fotos o iCloud para que no gaste datos, y fomenta la maravillosa costumbre de imprimir una vez al año un álbum en papel para hojear en el salón.',
+        'Actúa como un archivero digital y pedagogo familiar para personas mayores (+65).\nExplícame en 3 viñetas cómo crear una herramienta interactiva en HTML que explique qué es la nube con metáforas sencillas y enseñe a activar la copia automática de fotos familiares para no perder los recuerdos.',
+        'Genera la aplicación interactiva en HTML con calculadora de fotos protegidas, selector de sistemas de respaldo (móvil, pendrive, nube, álbum impreso), explicación tranquilizadora de la nube y medidor de riesgo de pérdida por extravío del teléfono.',
+        '• 5 Niveles del Archivo: 1. Riesgo Crítico (Fotos solo en la memoria del móvil; si cae al agua se pierden recuerdos de años), 2. Copia Manual Ocasional (Pendrive una vez al año), 3. Copia Automática en la Nube (Subida silenciosa con Wi-Fi mientras se carga el móvil de noche), 4. Doble Bóveda Digital + Álbum en Papel (Nube + 50 fotos impresas al año), 5. Legado Familiar Inmortal (Álbumes organizados por años compartidos con hijos y nietos).\n• Explicación de la Nube: Si se cambia de teléfono o se avería, introduciendo el correo y la contraseña todas las fotos reaparecen intactas en el nuevo dispositivo.\n• Ahorro de datos: Configurar "Sincronizar solo con Wi-Fi" evita cualquier consumo de datos de la tarifa mensual.',
+        'SIMULADOR_COPIAS_SEGURIDAD_FOTOS_NUBE_SENIORS.html',
+        'Copias de Seguridad y Recuerdos (+65)'
+    )
 
-    add_it('[NIV-045]', 'Los 6 Niveles de Miniaturización del Transistor y Ley de Moore',
-           'Evolución del interruptor electrónico desde la gran válvula de vacío caliente de los años 40, el transistor discreto y circuito integrado hasta compuertas FinFET 2nm y límite cuántico atómico.',
-           6, 'Una lupa de nanotecnología en 3D enfocando sobre la cabeza de un alfiler de metal para mostrar millones de transistores de silicio fotolitografiados por láser EUV.',
-           [
-               ("Válvula de Vacío de Vidrio (Años 40 - ENIAC)", "Tubos de cristal calientes del tamaño de bombillas que consumían electricidad masiva y se fundían constantemente en el primer ordenador gigante del mundo."),
-               ("Transistor de Silicio Discreto (1947 - Bell Labs)", "El primer interruptor semiconductor sólido de tres patas de alambre metálico que reemplazó a las frágiles válvulas revolucionando la electrónica portátil del siglo XX."),
-               ("El Circuito Integrado de Silicio - Microchip (Años 70)", "El microprocesador 4004 de Intel empaquetando 2.300 transistores juntos en una pastilla milimétrica para impulsar las primeras calculadoras y ordenadores de hogar."),
-               ("Litografía en Nanómetros - 14 nm a 7 nm (Años 2010)", "Miles de millones de transistores microscópicos empaquetados en cada chip de smartphone con compuertas tridimensionales FinFET ultra-eficientes."),
-               ("Microarquitectura de 2 Nanómetros (El Presente Límite)", "Transistores tan inconcebiblemente diminutos que el grosor de su compuerta es de apenas unas docenas de átomos de silicio ordenados por láser EUV."),
-               ("El Límite Cuántico Atómico y Electrónica Molecular", "La barrera física insuperable donde los electrones saltan por efecto túnel cuántico entre átomos, obligando al paso inevitable a la computación cuántica fotónica.")
-           ],
-           'Dibuja en el Peldaño 1 una gran válvula de vidrio antigua encendida con luz naranja caliente y rótulos en castellano.')
+    add_senior_microapp(
+        '[NIV-045]',
+        'Los 6 Niveles de Energía en Dispositivos: Cuidado de Baterías, Cargadores y Autonomía',
+        'Micro-aplicación interactiva de autonomía y seguridad eléctrica doméstica: enseña a mantener el teléfono con carga suficiente para salir de paseo o al médico con serenidad, desmiente el viejo mito de descargar la batería al 0%, enseña la zona de salud del 20% al 80%, y previene accidentes identificando cables deshilachados y cargadores homologados con sello CE.',
+        'Actúa como un ingeniero de hardware y especialista en seguridad doméstica para personas mayores (+65).\nExplícame en 3 viñetas cómo crear una herramienta interactiva en HTML que enseñe a cuidar la batería del móvil, desmitifique viejos bulos y advierta de los riesgos de cables pelados o dejar el móvil cargando bajo la almohada.',
+        'Genera la aplicación interactiva en HTML con simulador de porcentaje de batería, estimador de horas de autonomía según pantalla y linterna, comprobador de seguridad de cargadores homologados CE y desmentido de bulos de baterías de litio.',
+        '• 6 Niveles de Carga: 1. Alerta Crítica (< 15%: riesgo inminente de apagado, activar ahorro de batería y apagar linterna), 2. Reserva de Emergencia (15-25%: llamadas urgentes breves), 3. Autonomía Media de Recados (25-50%: paseos de 3-4 horas), 4. Zona de Oro de Batería de Litio (50-80%: máxima durabilidad en años), 5. Carga Completa para Excursiones (80-100%: días largos fuera), 6. Cuidado Inteligente Homologado (Cargador CE frío sobre mesita ventilada).\n• Desmentido de Bulos: Las baterías actuales de iones de litio no tienen "efecto memoria"; se pueden enchufar en cualquier momento sin esperar a que se agoten.\n• Prevención de Incendios: Nunca dejar cargando el teléfono bajo la almohada ni en sofás blandos; desechar cables con cables de cobre visibles.',
+        'SIMULADOR_BATERIA_CONSUMO_DISPOSITIVOS_SENIORS.html',
+        'Guía Baterías y Autonomía (+65)'
+    )
 
-    add_it('[NIV-046]', 'Los 5 Niveles de la Robótica y Autonomía Mecánica',
-           'Autonomía de máquinas de movimiento desde autómatas mecánicos de cuerda sin sensores y brazos industriales de cadena de montaje hasta humanoides bípedos adaptativos y enjambres IA.',
-           5, 'Un robot humanoide blanco y elegante en 3D de articulaciones ágiles y rostro con visor LED azul, caminando con perfecto equilibrio dinámico por escaleras del mundo real.',
-           [
-               ("Autómata de Relojería y Engranajes (Siglo XVIII)", "Muñecos mecánicos clásicos de cuerda y levas de madera que escribían notas o tocaban instrumentos con trayectorias estrictamente pre-grabadas sin visión."),
-               ("Brazo Industrial Programado de Cadenas de Montaje", "Robots amarillos pesados en fábricas de coches repitiendo soldaduras a milímetro exacto en jaulas de seguridad aisladas para no dañar a trabajadores cercanos."),
-               ("Robot Móvil con Sensores LiDAR y Navegación (AGV)", "Robots aspiradores y carretillas autónomas de almacenes que escanean la habitación con rayos láser por infrarrojos para trazar mapas y esquivar obstáculos."),
-               ("Robot Humanoide Adaptativo Bi-pedal (Atlas / Optimus)", "Máquinas de piernas y brazos antropomórficos manteniendo equilibrio dinámico ante empujones, subiendo escaleras y utilizando herramientas con manos de 5 dedos."),
-               ("Enjambres Robóticos Autónomos con IA Distributiva", "Cientos de drones y robots coordinándose en red sin un control centralizado como un bando de pájaros para construir puentes o rescatar víctimas.")
-           ],
-           'Ilustra en el Peldaño 4 un robot humanoide blanco recogiendo suavemente una manzana roja con su mano articulada en castellano.')
+    add_senior_microapp(
+        '[NIV-046]',
+        'Los 5 Niveles de la Robótica Doméstica: Robots Aspiradores, Sensores y Asistencia Vital',
+        'Simulador de ayudas técnicas y autonomía en el hogar: muestra cómo un robot aspirador y friegasuelos evita lumbalgias y mareos al limpiar debajo de muebles y camas, cómo las luces con sensor de paso en el pasillo impiden caídas nocturnas, y cómo los relojes con detección de caídas y botón SOS garantizan independencia y tranquilidad para vivir en el propio hogar.',
+        'Actúa como un terapeuta ocupacional y pedagogo en gerontotecnología para personas mayores (+65).\nExplícame en 3 viñetas cómo diseñar un simulador interactivo en HTML que muestre cómo los robots aspiradores y sensores de luz nocturna evitan dolores de espalda y tropiezos en casa.',
+        'Genera la aplicación interactiva en HTML con checklist de equipamiento doméstico (sensores nocturnos, robot aspirador, avisos por voz, reloj SOS), calculadora de horas de esfuerzo físico ahorradas y medidor de autonomía e independencia en el hogar.',
+        '• 5 Niveles de Ayuda Doméstica: 1. Esfuerzo Físico Manual Completo (Barrer agachándose, riesgo de lumbagos y mareos), 2. Luces Nocturnas con Sensor de Paso (Pilotos en pasillo y baño que se iluminan al poner el pie en el suelo), 3. Limpieza Automatizada con Robot Aspirador (Suelo limpio mientras sales a pasear, ahorrando 18h al mes), 4. Asistente de Voz y Recordatorios (Avisos de pastillas y música por la voz), 5. Escudo de Autonomía Plena (Reloj con detección de caídas conectado a teleasistencia 24h).\n• Filosofía de la Tecnología Asistencial: Herramientas al servicio del ser humano para prolongar la estancia en el hogar propio con confort, dignidad y seguridad.\n• Ahorro muscular: Evitar levantar muebles pesados o estirarse en posturas forzadas protege discos lumbares y caderas.',
+        'SIMULADOR_ROBOTICA_ASISTENTES_HOGAR_SENIORS.html',
+        'Robótica y Asistentes del Hogar (+65)'
+    )
 
-    add_it('[NIV-047]', 'Los 6 Niveles de Inmersión Virtual y Realidad Extendida (XR)',
-           'Interfaz con mundos digitales desde pantalla 2D plana tradicional, gafas 3D anaglifo, cascos VR cerrados inmersivos, Realidad Mixta passthrough y lentillas de retina hasta conexión BCI neuronal directa.',
-           6, 'Unas gafas de realidad mixta futuristas en 3D flotando en el centro proyectando hologramas luminosos interactivos de planetas flotando en medio del salón de una casa real.',
-           [
-               ("Pantalla Plana Bidimensional 2D (El Monitor Estándar)", "El usuario sentado frente al rectángulo de cristal de un ordenador o televisión mirando mundos virtuales a través de un marco delimitado sin profundidad real."),
-               ("Gafas Estereoscópicas 3D de Cine (Anaglifo y Polarizado)", "Lentes con filtros rojos/azules o polarizados que engañan a cada ojo enviando imágenes ligeramente desplazadas para dar ilusión de relieve emergente en el cine."),
-               ("Realidad Virtual Inmersiva de Casco - VR (6DoF)", "El usuario con un visor cerrado que bloquea la luz exterior rodeado en 360 grados por un mundo digital artificial con mandos de movimiento en las manos."),
-               ("Realidad Mixta y Passthrough Fotorrealista (MR / AR)", "Cámaras de ultra-alta definición en el visor capturando el salón real del usuario y superponiendo hologramas digitales interactivos anclados en su mesa de trabajo."),
-               ("Lentillas Inteligentes de Retina Holográfica (Sin Gafas)", "Micro-lentes oculares transparentes imperceptibles que proyectan fotones directamente en la mácula ocular con información continua y traducción instantánea."),
-               ("Interfaz Cerebro-Computadora Directa (Inmersión Neuronal)", "Conexión cortical por bio-sensores sin pantalla donde el cerebro experimenta mundos virtuales enviando tacto, olor y sonido directamente a la corteza sensorial.")
-           ],
-           'Dibuja en el Peldaño 4 un joven con gafas futuristas tocando con su mano un planeta Saturno holográfico flotante en castellano.')
+    add_senior_microapp(
+        '[NIV-047]',
+        'Los 6 Niveles de Exploración Virtual, Viajes sin Salir de Casa y Estimulación Sensorial',
+        'Guía interactiva de reminiscencia y exploración cultural: enseña a utilizar Street View para pasear virtualmente por las calles del pueblo natal, visitar museos como el Prado o la Alhambra con zoom fotorrealista para contemplar cuadros sin prisas, y compartir viajes en la televisión del salón con los nietos narrando anécdotas de la infancia para reforzar la memoria y el vínculo afectivo.',
+        'Actúa como un neuropsicólogo y divulgador cultural para personas mayores (+65).\nExplícame en 3 viñetas cómo crear una herramienta interactiva en HTML que anime a los mayores a pasear por su pueblo natal y visitar museos desde la pantalla del salón, explicando los beneficios de la reminiscencia para la memoria.',
+        'Genera la aplicación interactiva en HTML con selector de destinos virtuales (calles del pueblo, museos, naturaleza), selección de pantalla (tablet, televisor), medidor de estimulación cognitiva y guía para compartir recuerdos con los nietos.',
+        '• 6 Niveles de Viaje Virtual: 1. Álbum en Papel Estático, 2. Búsqueda Guiada de Fotos Actuales en Internet, 3. Paseo Callejero en 360° (Street View por las esquinas y plazas de la juventud), 4. Visita Virtual a Museos (Salas del Prado con zoom microscópico en obras maestras), 5. Sonidos de la Naturaleza y Calma Inmersiva (Olas del mar y bosques que reducen la ansiedad), 6. Viaje Compartido Intergeneracional (Enseñar en la tele a los nietos el pueblo natal).\n• Beneficio neurocognitivo: La evocación de recuerdos episódicos tempranos refuerza la plasticidad sináptica y mejora el estado de ánimo.\n• Uso relajado: Sesiones de 20 a 30 minutos sentado en el sillón con buena iluminación ambiental.',
+        'SIMULADOR_VIAJES_VIRTUALES_ESTIMULACION_SENIORS.html',
+        'Viajes Virtuales y Estimulación (+65)'
+    )
 
-    add_it('[NIV-048]', 'Los 5 Niveles de Eficiencia Termodinámica y Energética en Motores',
-           'Conversión de energía en trabajo mecánico desde la máquina de vapor del siglo XVIII (10% eficiencia), motor de gasolina e híbridos hasta motores eléctricos magnéticos (95%) y superconductores sin pérdida.',
-           5, 'Un rotor de motor eléctrico magnético súper-eficiente en 3D girando a alta velocidad dentro de un campo magnético luminoso azul eléctrico sin rozamiento ni pérdida por calor.',
-           [
-               ("Máquina de Vapor de Carbón Primitiva (10% Eficiencia)", "Locomotoras antiguas quemando toneladas de carbón mineral donde el 90% del calor se disipa inútil al aire y solo un 10% empuja los pistones de las ruedas."),
-               ("Motor de Combustión Interna de Gasolina (30% Eficiencia)", "El motor de cuatro tiempos del automóvil del siglo XX quemando gasolina en cilindros perdiendo la mayor parte de la energía por el escape en gases calientes."),
-               ("Turbina Aeronáutica y Ciclo Combinado de Gas (50% Eficiencia)", "Motores de reacción en aviones y grandes centrales eléctricas que aprovechan los gases de escape calientes para mover segundas turbinas de vapor en cascada térmica."),
-               ("Motor Eléctrico Magnético Sin Escobillas (95% Eficiencia)", "El motor de un coche eléctrico o tren bala donde los campos electromagnéticos convierten casi toda la electricidad de la batería directamente en movimiento rotatorio frío."),
-               ("Superconductor Cuántico y Levitación (100% Eficiencia Teórica)", "Bobinas enfriadas a temperaturas criogénicas por donde la corriente eléctrica fluye eternamente sin resistencia, fricción cero ni pérdida térmica.")
-           ],
-           'Ilustra en el Peldaño 1 una locomotora de vapor antigua soltando humo negro con flechas rojas de pérdida de calor en castellano.')
+    add_senior_microapp(
+        '[NIV-048]',
+        'Los 5 Niveles de Eficiencia en Electrodomésticos: Ahorro de Luz y Manejo Sencillo',
+        'Calculadora de economía doméstica y uso eficiente de la energía: desmitifica el programa "Eco" de la lavadora y lavavajillas (demostrando por qué lavar a 30°C ahorra el 60% de electricidad al no calentar agua con resistencias), enseña a desactivar el consumo fantasma de televisores con regletas de botón (ahorro de hasta 45 € al año) y ajusta el frigorífico a 4°C para no generar escarcha innecesaria.',
+        'Actúa como un asesor energético y divulgador de economía doméstica para personas mayores (+65).\nExplícame en 3 viñetas cómo crear una calculadora interactiva en HTML que explique cómo usar el programa Eco de la lavadora y apagar las regletas para recortar la factura de la luz sin pasar frío ni complicaciones.',
+        'Genera la aplicación interactiva en HTML con calculadora de ahorro eléctrico anual en euros, selector de programas de lavado (eco vs caliente), ajuste óptimo del frigorífico a 4°C, semáforo de etiquetas energéticas y explicación del consumo fantasma (standby).',
+        '• 5 Niveles de Eficiencia: 1. Despilfarro Involuntario (Lavados a 60°C con media carga y standby permanente), 2. Hábitos Básicos (Apagar luces y tapar cacerolas al hervir), 3. Uso Inteligente del Programa Eco (Lavado a 30°C con ahorro del 60% en luz protegiendo la ropa), 4. Regletas con Interruptor y Termostato a 21°C (Cero consumo fantasma en televisor ahorrando 45 €/año), 5. Eficiencia Máxima con Tecnología Inverter (Aparatos clase A/B y bombillas LED cálidas en toda la casa).\n• La Ciencia del Modo Eco: El 85% de la electricidad de una lavadora se destina a la resistencia para calentar el agua; el modo Eco lava con agua tibia y más tiempo, gastando una fracción de kilovatios.\n• Frigorífico Saludable: 4°C en la zona de refrigeración y -18°C en el congelador garantizan seguridad alimentaria sin sobrecostes.',
+        'SIMULADOR_EFICIENCIA_ELECTRODOMESTICOS_FACTURA_SENIORS.html',
+        'Calculadora Eficiencia Electrodomésticos (+65)'
+    )
 
-    add_it('[NIV-049]', 'Los 6 Niveles de Capacidad y Supercómputo Mundial',
-           'Potencia de cálculo matemática medido en FLOPS desde el ábaco, Pascalina mecánica, mainframes electromecánicos y Cray-1 vectorial hasta el clúster ExaFLOP Frontier y procesadores cuánticos de superposición.',
-           6, 'Un candelabro de refrigeración de computadora cuántica en 3D forjado en tubos de oro y cobre dorado suspendido en el vacío procesando algoritmos cuánticos en frío absoluto.',
-           [
-               ("Ábaco y Calculadora Mecánica de Engranajes (Siglo XVII)", "El ábaco de cuentas de madera y la Pascalina con ruedas numéricas dentadas giradas a mano para sumar y restar cifras contables sin electricidad."),
-               ("El Mainframe Electrónico a Válvulas (Años 50 - MegaFLOP)", "Habitaciones enteras llenas de armarios metálicos procesando miles de operaciones por segundo para calcular las tablas balísticas y el censo mundial."),
-               ("El Superordenador Vectorial (Años 80 - GigaFLOP)", "La famosa supercomputadora Cray-1 con su forma cilíndrica rodeada de sofás de cuero refrigerada por freón para simular aerodinámica aeroespacial."),
-               ("Clústeres Masivos de Servidores en Nube (Años 2010 - PetaFLOP)", "Centros de datos inmensos con miles de racks de servidores conectados por fibra óptica en paralelo resolviendo simulaciones biomédicas y redes sociales globales."),
-               ("Supercómputo ExaFLOP - Frontier (El Límite de Silicio Actual)", "La supercomputadora más potente del mundo realizando más de un trillón (10¹⁸) de cálculos matemáticos en un solo segundo continuado."),
-               ("Computación Cuántica de Qubits Lógicos (La Revolución Exponencial)", "Procesadores que aprovechan la superposición cuántica para evaluar todas las soluciones posibles de una molécula compleja simultáneamente al instante en un ciclo.")
-           ],
-           'Añade en el Peldaño 5 una fila de armarios negros de servidores con luces parpadeantes azules y textos en español.')
+    add_senior_microapp(
+        '[NIV-049]',
+        'Los 6 Niveles de Trámites Digitales: Certificado Digital, Cl@ve y Citas Médicas sin Colas',
+        'Guía de soberanía ciudadana y alfabetización administrativa: enseña a pedir cita en el centro de salud en 30 segundos con la aplicación móvil oficial de la comunidad autónoma, a descargar el justificante de la pensión o vida laboral mediante el sistema Cl@ve Pin con código al móvil por SMS (sin instalaciones engorrosas), y enseña a identificar las webs oficiales seguras del Estado que terminan siempre en ".gob.es".',
+        'Actúa como un mediador administrativo y pedagogo de alfabetización digital para personas mayores (+65).\nExplícame en 3 viñetas cómo diseñar un simulador interactivo en HTML que enseñe a pedir cita médica y descargar certificados de pensión mediante Cl@ve Pin sin necesidad de hacer colas en ventanilla.',
+        'Genera la aplicación interactiva en HTML con simulador de trámites frecuentes (cita médica, justificante de pensión, empadronamiento), comparador de métodos de acceso (presencial vs Cl@ve SMS vs Certificado Digital), calculadora de horas ahorradas en colas y filtro de webs oficiales seguras (.gob.es).',
+        '• 6 Niveles de Autonomía: 1. Dependencia Presencial Total (Madrugar a las 7:30 para colas en ventanilla bajo el frío), 2. Cita Telefónica Automatizada (Esperas en línea y contestadores saturados), 3. Cita Médica por App Móvil (Gestión en 30 segundos sentado en el sofá con tarjeta sanitaria), 4. Sistema Cl@ve Pin por SMS (Acceso a la Seguridad Social con código de 3 letras al móvil), 5. Certificado Digital Instalado (Descargas oficiales de empadronamiento y pensión con un clic), 6. Soberanía Digital y Serenidad (Gestión autónoma de derechos ciudadanos).\n• Identificación de Webs Oficiales: Todas las páginas oficiales de Ministerios y Seguridad Social terminan en ".gob.es"; nunca pagar a intermediarios comerciales por pedir citas gratuitas.\n• Salud y Comodidad: Evitar desplazamientos bajo lluvia o heladas de invierno protege contra resfriados y caídas en aceras.',
+        'SIMULADOR_TRAMITES_DIGITALES_CERTIFICADO_SENIORS.html',
+        'Trámites Digitales y Cl@ve Pin (+65)'
+    )
 
-    add_it('[NIV-050]', 'Los 5 Niveles de Evolución de las Redes e Internet (Web 1.0 a Web3)',
-           'Arquitectura de la web desde el directorio estático de lectura de los años 90, redes sociales interactivas Web 2.0 y economía de atención predictiva IA hasta la soberanía criptográfica Web3 y Metaverso persistente.',
-           5, 'Una red esférica tridimensional luminosa conectando nodos ciudadanos mundiales sin servidores bancarios centrales simbolizando inmutabilidad Web3 descentralizada.',
-           [
-               ("Web 1.0 - El Directorio Estático de Lectura (1991 - 2004)", "Páginas web de texto plano y enlaces azules creadas por programadores donde el usuario común solo era un lector pasivo que consultaba información sin poder opinar."),
-               ("Web 2.0 - La Red Social Interactiva y de Blogs (2004 - 2012)", "El nacimiento de YouTube, Wikipedia y las primeras redes sociales donde cualquier ciudadano podía subir vídeos, comentar y compartir su propia voz al mundo."),
-               ("Web Algorítmica y Móvil de Atención (2012 - Presente)", "El smartphone en el bolsillo con feeds adictivos infinitos impulsados por Inteligencia Artificial que aprenden exactamente qué te gusta para retener tu mirada ante anuncios."),
-               ("Web3 - Descentralización, Criptografía y Propiedad Digital", "Redes sin servidores corporativos centrales donde el usuario es el dueño criptográfico real de sus datos, identidades digitales e intercambios mediante blockchain."),
-               ("El Metaverso Espacial y Neuro-Inmersivo del Futuro", "Un internet tridimensional persistente donde entramos corporalmente con avatares o hologramas para estudiar, trabajar y comerciar dentro de espacios digitales.")
-           ],
-           'Ilustra en el Peldaño 1 un viejo navegador con página web gris de texto plano con rótulos en castellano.')
+    add_senior_microapp(
+        '[NIV-050]',
+        'Los 5 Niveles de Comunicación Digital: WhatsApp Familiar, Grupos y Convivencia Serena',
+        'Guía interactiva de convivencia digital y comunicación positiva: enseña el gran truco del micrófono del teclado para dictar mensajes con la voz sin tener que teclear despacio en pantalla pequeña, explica cómo "Silenciar grupos para siempre" para disfrutar de la tranquilidad sin ruidos molestos y sin que nadie se entere, y facilita un detector de bulos y cadenas alarmistas para mantener las conversaciones limpias de bulos.',
+        'Actúa como un pedagogo de convivencia digital y relaciones familiares para personas mayores (+65).\nExplícame en 3 viñetas cómo crear una guía interactiva en HTML que enseñe a silenciar grupos ruidosos de WhatsApp sin salirse, dictar mensajes por voz y no reenviar cadenas o noticias falsas.',
+        'Genera la aplicación interactiva en HTML con simulador de dictado por voz frente al teclado tradicional, botón interactivo para "Silenciar grupo para siempre", detector de cadenas de mensajes falsos y decálogo de convivencia serena en WhatsApp.',
+        '• 5 Niveles de Convivencia: 1. Agobio Sonoro y Saturación (Grupos sonando a todas horas y angustia por responder), 2. Escritura Tecla a Tecla con Fatiga (Borrar errores repetidamente en pantalla pequeña), 3. Comunicación Cómoda por Dictado de Voz (Hablar con soltura y que el móvil escriba solo con ortografía), 4. Grupos Silenciados para Siempre (Paz mental absoluta; los mensajes se leen solo cuando apetece), 5. Sabiduría Digital y Cariño Familiar (Cero cadenas alarmistas, fotos de momentos bonitos y llamadas de voz reconfortantes).\n• Filtro Antibulados: Si un mensaje pide "Reenvía a todos tus contactos o cerrarán WhatsApp" o promete regalos gratis, es 100% un engaño; no reenviar jamás.\n• Filosofía Senior: El teléfono está para servirte y acercarte a tus seres queridos, no para estresarte; no existe ninguna obligación de contestar de inmediato.',
+        'SIMULADOR_COMUNICACION_WHATSAPP_CONVIVENCIA_SENIORS.html',
+        'Guía WhatsApp y Convivencia Serena (+65)'
+    )
 
     # GRUPO F: HISTORIA, ARQUITECTURA Y CIVILIZACIÓN (NIV-051 a NIV-060)
     add_it('[NIV-051]', 'Los 6 Niveles de Altura en la Arquitectura Humana',
