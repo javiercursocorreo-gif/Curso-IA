@@ -401,131 +401,118 @@ def get_niv_items():
         'Comparador de Radiación y Medicina (+65)'
     )
 
-    # GRUPO D: ESCALAS Y NIVELES DEL MUNDO BIOLÓGICO Y ECOLÓGICO (NIV-031 a NIV-040)
-    add_it('[NIV-031]', 'Los 6 Estratos de Profundidad del Océano y Adaptación',
-           'Viaje batimétrico por zonas marinas desde la epipelágica fótica superficial hasta la batipelágica bioluminiscente, abisal helada y quimiotróficos hadales.',
-           6, 'Un batiscafo de exploración oceanográfica en 3D de esfera de titanio amarillo con potentes focos LED iluminando un calamar gigante abisal.',
-           [
-               ("Zona Epipelágica - Luz Solar (0 a 200 metros)", "El océano superficial y cálido bañado por el sol donde abunda el fitoplancton, los arrecifes de coral coloridos, delfines y tiburones veloces."),
-               ("Zona Mesopelágica - Penumbra (200 a 1.000 metros)", "El reino de las sombras del atardecer perpetuo donde viven el pez espada, calamares y bancos de krill realizando migraciones verticales diarias."),
-               ("Zona Batipelágica - Oscuridad (1.000 a 4.000 metros)", "Tiniebla absoluta donde los peces lucio y rape abisal encienden señuelos de bioluminiscencia química para atraer presas con dientes afilados."),
-               ("Zona Abisopelágica - Abismo Helado (4.000 a 6.000 metros)", "El inmenso fondo fangoso marino cubierto por nieve marina orgánica, habitado por pepinos de mar y arañas marinas gigantes."),
-               ("Zona Hadal - Fosas de las Marianas (6.000 a 11.000 metros)", "Las trincheras tectónicas más profundas de la Tierra en una oscuridad congelada y bajo 1.100 atmósferas de presión brutal."),
-               ("Ecosistemas Quimiotróficos de Chimeneas Térmicas", "Gusanos tubo gigantes de 2 metros de largo prosperando en total ausencia de sol, alimentándose de azufre y calor volcánico en las profundidades.")
-           ],
-           'Dibuja en el Peldaño 3 un pez abisal con una linterna brillante en su cabeza atrayendo pececillos con textos en castellano.')
+    # =========================================================================
+    # LOTE 4 (SESIONES 31 A 40): MICRO-APLICACIONES INTERACTIVAS SENIORS (+65)
+    # =========================================================================
+    add_senior_microapp(
+        '[NIV-031]',
+        'Los 6 Estratos del Océano, Respiración Pulmonar y Calma Mental',
+        'Guía interactiva que combina la batimetría marina (desde la superficie fótica soleada hasta las fosas abisales) con ejercicios de respiración diafragmática consciente (técnica 4-7-8) para reducir la ansiedad, estabilizar pulsaciones, facilitar el sueño y oxigenar el cerebro en personas mayores.',
+        'Actúa como un médico neumólogo y pedagogo de relajación para personas mayores (+65).\nExplícame en 3 viñetas cómo diseñar una guía interactiva en HTML que use las profundidades del mar como metáfora para enseñar la respiración pausada (técnica 4-7-8) y oxigenar el cuerpo.',
+        'Genera la aplicación interactiva en HTML con selector de los 6 estratos marinos, guía animada de respiración (inhalar 4s, retener 7s, exhalar 8s), contador de ciclos y consejos para calmar palpitaciones y dormir mejor.',
+        '• 6 Estratos Marinos: 1. Zona Epipelágica (0-200m, Sol y brisa marina), 2. Zona Mesopelágica (200-1000m, Penumbra y serenidad), 3. Zona Batipelágica (1000-4000m, Silencio profundo), 4. Zona Abisal (4000-6000m, Calma absoluta), 5. Fosa Hadal (6000-11000m, Presión controlada y paz interior), 6. Chimeneas Hidrotermales (Calor vital y regeneración).\n• Animador de respiración: Círculo expansivo/contráctil con temporizador (Inhalar 4s - Retener 7s - Exhalar 8s).\n• Indicadores: Frecuencia cardíaca estimada, nivel de oxígeno y reducción de estrés (%).\n• Pautas médicas: No forzar si hay EPOC o mareo, sentarse cómodo con la espalda apoyada y realizar 4 ciclos antes de dormir.',
+        'SIMULADOR_PROFUNDIDAD_OCEANO_RESPIRACION_SENIORS.html',
+        'Respiración y Calma Marina (+65)'
+    )
 
-    add_it('[NIV-032]', 'Los 5 Niveles de Organización Ecológica (Trofo-Dinámica)',
-           'Cadena alimentaria y flujo de energía según la Ley del 10% desde productores primarios fotosintéticos hasta herbívoros, superdepredadores ápice y descomponedores.',
-           5, 'Un águila imperial dorada majestuosa en 3D con las alas desplegadas en la cúspide de una pirámide verde viva repleta de vegetación y mamíferos en equilibrio.',
-           [
-               ("Productores Primarios Fotosintéticos", "Praderas frondosas, bosques densos y fitoplancton marino capturando la energía solar para sintetizar materia orgánica alimentaria viva."),
-               ("Herbívoros y Consumidores Primarios", "Ciervos, cebras, orugas y conejos alimentándose directamente de plantas y convirtiendo la celulosa vegetal en proteína animal accesible."),
-               ("Depredadores Secundarios (Carnívoros Pequeños)", "Zorros veloces, ranas insectívoras, aves rapaces medianas y halcones que controlan las poblaciones de roedores e insectos herbívoros."),
-               ("Superdepredadores Ápice (La Cúspide Trófica)", "Leones en la sabana, lobos pardos en el bosque, orcas en el mar y águilas calvas regulando el equilibrio general de todo el ecosistema desde lo alto."),
-               ("Descomponedores y Recicladores del Suelo", "Hongos de sombrero, lombrices de tierra y bacterias invisibles que descomponen los restos orgánicos devolviendo minerales puros al suelo forestal para iniciar el ciclo.")
-           ],
-           'Ilustra en el Peldaño 5 hongos coloridos y lombrices trabajando el suelo fértil oscuro con rótulos en español.')
+    add_senior_microapp(
+        '[NIV-032]',
+        'Los 5 Niveles de la Pirámide Nutricional y Digestión Saludable Senior',
+        'Herramienta interactiva de nutrición clínica adaptada a mayores de 65 años: organiza los 5 niveles de alimentos según su facilidad de asimilación gástrica, aporte de proteína magra para no perder músculo, fibra soluble contra el estreñimiento y recetas tradicionales digestivas.',
+        'Actúa como un médico geriatra y nutricionista clínico para personas mayores (+65).\nExplícame en 3 viñetas cómo diseñar un semáforo interactivo en HTML que clasifique los alimentos diarios según lo bien que sientan al estómago y el aporte proteico que necesitan los mayores.',
+        'Genera la aplicación interactiva en HTML con 5 escalones nutricionales, calculadora de raciones de proteína diaria (pescado, huevos, legumbres suaves), balance de hidratación y fibra, y platos tradicionales recomendados.',
+        '• 5 Escalones: 1. Base Hidratante y Caldos (Agua, infusiones, caldos desgrasados), 2. Frutas Maduras y Verduras Cocidas (Purés, compotas, calabacín, manzana asada), 3. Proteínas Nobles de Fácil Masticación (Pescado blanco, tortilla, legumbres pasadas por pasapurés), 4. Cereales Integrales y Aceite de Oliva Virgen Extra (Pan de masa madre, arroz, AOVE crudo), 5. Moderación Absoluta (Embutidos grasos, fritos pesados y azúcares industriales).\n• Calculadora de proteína: Deslizador de peso corporal (50-100 kg) calculando el gramaje ideal (1.0 a 1.2 g de proteína/kg/día para evitar sarcopenia).\n• Consejos digestivos: Masticar despacio (20 veces por bocado), cenar 2 horas antes de acostarse y pasear 10 minutos tras la comida.',
+        'SIMULADOR_NUTRICION_DIGESTION_SALUDABLE_SENIORS.html',
+        'Guía Nutrición y Digestión (+65)'
+    )
 
-    add_it('[NIV-033]', 'Los 6 Niveles de Organización Biológica Celular',
-           'Jerarquía biológica pluricelular desde la biomolécula inerte y el organelo mitocondrial hasta células especializadas, tejidos, órganos y sistemas completos.',
-           6, 'Una figura anatómica humana translúcida y deportiva en 3D en la cima, revelando en su interior engranajes relucientes de su corazón, redes vasculares y células en armonía.',
-           [
-               ("Biomoléculas y Átomo de Carbono", "El armazón de proteínas, fosfolípidos, azúcares y nucleótidos de ADN formados por átomos de carbono, hidrógeno y oxígeno enlazados."),
-               ("Organelo Celular (La Central Energética)", "La mitocondria celular respirando y quemando glucosa con oxígeno para fabricar moléculas de ATP que dan energía pura al organismo."),
-               ("Célula Especializada y Membrana", "Una neurona estrellada, un glóbulo rojo bicóncavo o una célula muscular estriada, siendo la unidad mínima dotada de vida autónoma."),
-               ("Tejido Biológico Cohesivo", "Millones de células especializadas idénticas unidas firmemente para formar el tejido óseo resistente, el músculo cardíaco o la piel protectora."),
-               ("Órgano Funcional Especializado", "El corazón palpitando como bomba muscular doble o el estómago segregando ácidos para cumplir una función vital concreta en el cuerpo."),
-               ("Sistema o Aparato Corporal Completo", "El sistema cardiovascular completo de corazón, arterias, venas y capilares transportando oxígeno y nutrientes a los 30 billones de células de una persona.")
-           ],
-           'Dibuja en el Peldaño 2 una mitocondria brillante de color naranja cortada por la mitad mostrando sus pliegues internos con rótulos en castellano.')
+    add_senior_microapp(
+        '[NIV-033]',
+        'Los 6 Niveles de Vitalidad Celular, Mitocondrias y Masa Muscular',
+        'Simulador clínico de prevención de la sarcopenia y fragilidad en mayores: evalúa la fuerza de piernas y agarre, enseña ejercicios sencillos con botellas de agua o levantarse de la silla, y explica cómo las mitocondrias se reactivan con el movimiento diario a cualquier edad.',
+        'Actúa como un fisioterapeuta geriátrico y médico rehabilitador para personas mayores (+65).\nExplícame en 3 viñetas cómo diseñar una herramienta interactiva en HTML que evalúe la fuerza muscular cotidiana y anime a hacer ejercicios suaves de fuerza en casa sin máquinas de gimnasio.',
+        'Genera el archivo HTML interactivo con el test de levantarse de la silla (5 repeticiones), selector de 6 niveles de vitalidad mitocondrial, rutina guiada de ejercicios con botellas de agua y consejos de seguridad.',
+        '• 6 Niveles de Vitalidad: 1. Reposo Prolongado / Sedentarismo Crónico, 2. Movilidad Básica Doméstica, 3. Caminante Habitual (Paseos llanos), 4. Fuerza Funcional Activa (Sube escaleras con soltura), 5. Autonomía Robusta (Carga compras y cuida el jardín), 6. Plenitud y Reserva Funcional Óptima.\n• Test de la Silla interactivo: Cronómetro para medir el tiempo en levantarse y sentarse 5 veces (< 11 seg = Excelente, 11-14 seg = Normal, > 15 seg = Necesita refuerzo).\n• Rutina sin riesgos: Sentadillas con silla detrás, elevación de talones para gemelos y flexiones de brazos apoyados contra la pared.',
+        'SIMULADOR_VITALIDAD_MUSCULAR_SARCOPENIA_SENIORS.html',
+        'Test Vitalidad y Fuerza Muscular (+65)'
+    )
 
-    add_it('[NIV-034]', 'Los 5 Niveles de Longevidad Biológica y Envejecimiento',
-           'Esperanza de vida evolutiva desde efímeras insectiles de 24 horas y ratones veloces hasta humanos centenarios de Zonas Azules y medusas biológicamente inmortales.',
-           5, 'El árbol de la vida milenario en 3D cuyas raíces doradas se enlazan con un reloj de arena cósmico, simbolizando la extensión biológica celular.',
-           [
-               ("Vida Efímera Ultracorta (Horas a Días)", "El insecto efímera eclosionando del agua, volando, reproduciéndose al atardecer y muriendo en menos de 24 horas continuas sin boca para comer."),
-               ("Metabolismo Veloz y Vida Corta (2 a 10 Años)", "Ratones de campo, colibríes de altísima frecuencia cardíaca y perros que viven intensamente quemando su energía metabólica en una década."),
-               ("Longevidad Humana y Centenarios (80 a 110 Años)", "Seres humanos ancianos y sabios en las Zonas Azules manteniendo agilidad y salud mental gracias a dieta comunitaria y movimiento activo."),
-               ("Gigantes Marinos y Matusalenes (200 a 400 Años)", "La ballena de Groenlandia y el tiburón de Groenlandia nadando lentamente en aguas árticas heladas con metabolismos pausados y células súper-reparadoras."),
-               ("Inmortalidad Biológica (Reversión Celular)", "La pequeña medusa Turritopsis dohrnii que, al envejecer o ser dañada, revierte sus células adultas de nuevo a estado de pólipo juvenil reanudando su vida indefinidamente.")
-           ],
-           'Ilustra en el Peldaño 4 un gran tiburón de Groenlandia nadando pacíficamente entre bloques de hielo azul marino con textos en castellano.')
+    add_senior_microapp(
+        '[NIV-034]',
+        'Los 5 Pilares de la Longevidad Activa: El Secreto de las Zonas Azules',
+        'Calculadora del estilo de vida centenario basada en las 5 Zonas Azules del mundo (Okinawa, Cerdeña, Icaria, Nicoya y Loma Linda): evalúa el propósito de levantarse cada mañana (Ikigai), la red de amigos y vecinos, el movimiento natural constante, la alimentación frugal y la serenidad mental.',
+        'Actúa como un epidemiólogo social y divulgador de las Zonas Azules para personas mayores (+65).\nExplícame en 3 viñetas cómo diseñar una calculadora en HTML que mida los 5 hábitos de los pueblos más longevos del mundo y los traslade a la vida de un jubilado en España.',
+        'Genera la aplicación interactiva en HTML con selector de los 5 pilares de longevidad, puntuación de 0 a 100 de Índice Zona Azul, mapa interactivo de las 5 regiones y compromisos cotidianos alcanzables.',
+        '• 5 Pilares: 1. Moverse con Naturalidad (Caminar a los recados, cuidar plantas), 2. Propósito de Vida / Ikigai (Tener un motivo ilusionante cada mañana), 3. Bajar el Ritmo (Siesta breve, tertulia con amigos), 4. Regla del 80% (Hara Hachi Bu: comer hasta no estar saciado del todo), 5. Tribu y Familia (Poner a los seres queridos en primer lugar).\n• Índice de Longevidad: Puntuación de 0 a 100 puntos con semáforo y diagnóstico afectuoso.\n• Metáforas de Cerdeña y Okinawa adaptadas a las costumbres de nuestros mayores (el café con los amigos, el paseo de la tarde y la comida familiar).',
+        'SIMULADOR_ZONAS_AZULES_LONGEVIDAD_SENIORS.html',
+        'Calculadora Zonas Azules y Longevidad (+65)'
+    )
 
-    add_it('[NIV-035]', 'Los 6 Estratos de Altura en el Bosque Tropical',
-           'Estratificación de la biodiversidad en selvas pluviales luchando por luz solar desde el suelo fúngico al subbosque, dosel principal y ceibas emergentes de 60m.',
-           6, 'Una gran ceiba amazónica gigantesca en 3D cortada en sección vertical, mostrando desde sus raíces tabulares subterráneas de micelio hasta la copa superior dorada bañada por el sol.',
-           [
-               ("Suelo Forestal y Red de Micelio (0 a 1 metro)", "El suelo oscuro y húmedo alfombrado por hojarasca en descomposición, donde escarabajos, tapires y millones de hongos reciclan los nutrientes en silencio."),
-               ("Subbosque de Arbustos y Helechos (1 a 5 metros)", "Plantas de grandes hojas anchas evolucionadas para capturar los escasos rayos de sol que logran filtrarse, hogar de jaguares y ranas venenosas."),
-               ("Dosel Inferior y Lianas (5 a 20 metros)", "El estrato intermedio repleto de troncos jóvenes y lianas leñosas retorcidas por donde trepan ágilmente osos hormigueros, serpientes boa y monos nocturnos."),
-               ("Dosel Principal Continuo (20 a 40 metros)", "El techo verde denso y entrelazado del bosque donde florece el 80% de la vida selvática con tucanes coloridos, monos aulladores, perezosos y orquídeas epífitas."),
-               ("Árboles Emergentes Gigantes (40 a 60 metros)", "Las torres solitarias de ceibas y castaños superando el techo forestal para recibir el viento fuerte y el sol directo, nido del águila arpía."),
-               ("Atmósfera Superior y Lluvia de Transpiración", "La nube de vapor de agua y oxígeno puro que los millones de hojas forestales liberan al cielo ecuatorial, creando los ríos voladores del planeta.")
-           ],
-           'Dibuja en el Peldaño 4 un perezoso simpático colgando boca abajo de una rama verde al lado de un tucán de pico naranja con rótulos en español.')
+    add_senior_microapp(
+        '[NIV-035]',
+        'Los 6 Estratos del Bosque, Paseos Verdes y Baños de Bosque (Shinrin-Yoku)',
+        'Aplicación médica y pedagógica de salud natural: explica cómo el contacto con árboles y parques reduce el cortisol, regula la tensión arterial y estimula las defensas gracias a los fitoncidas vegetales. Incluye un planificador de salidas a parques urbanos, jardines y senderos accesibles.',
+        'Actúa como un médico naturista y pedagogo ambiental para personas mayores (+65).\nExplícame en 3 viñetas cómo estructurar una guía interactiva en HTML que explique con base científica por qué pasear bajo los árboles mejora la salud y ayude a planificar paseos agradables.',
+        'Genera el archivo HTML interactivo con los 6 niveles del ecosistema forestal, medidor de beneficios médicos (reducción de tensión y estrés), planificador de paseos semanales y pautas para caminar con calzado cómodo.',
+        '• 6 Niveles Forestales: 1. Asfalto y Ciudad sin Árboles (Mayor fatiga y ruido), 2. Plazas y Jardines de Barrio (Primer alivio visual), 3. Parques Urbanos Frondosos (Fitoncidas y sombra fresca), 4. Dehesas y Pinares Accesibles (Inmersión en naturaleza llana), 5. Bosques Maduros y Valles Húmedos (Máxima pureza de aire y calma), 6. Cumbres y Miradores Panorámicos (Perspectiva y expansión espiritual).\n• Beneficios clínicos demostrados: Reducción del cortisol salival en un 16%, descenso de 5 mmHg en la tensión sistólica y mejora de la calidad del sueño.\n• Protocolo del paseo sereno: 40 minutos a paso suave, respirar profundo por la nariz, escuchar a los pájaros y sentarse en un banco a contemplar.',
+        'SIMULADOR_BANOS_BOSQUE_NATURALEZA_SENIORS.html',
+        'Guía Baños de Bosque y Salud (+65)'
+    )
 
-    add_it('[NIV-036]', 'Los 5 Niveles de Toxicidad y Veneno Biológico',
-           'Armas bioquímicas naturales desde los pelos urticantes leves defensivos hasta hemotoxinas de víbora, neurotoxinas paralizantes y batracotoxina letal instantánea.',
-           5, 'Una gota de veneno cristalina y verde esmeralda en 3D cayendo sobre un modelo molecular celular, ilustrando la precisión bio-quirúrgica de las toxinas.',
-           [
-               ("Irritantes Leves y Pelo Urticante", "Orugas difusas y ortigas liberando ácido fórmico en la piel de los depredadores para causar picor molesto y una advertencia clara de no tocar."),
-               ("Hemotoxinas Coagulantes y Destructoras", "Víboras cascabel inyectando veneno por colmillos huecos que destruye los glóbulos rojos, rompe capilares y causa inflamación severa."),
-               ("Citotoxinas Necróticas Celulares", "Arañas reclusa parda o violinista cuyo veneno disuelve localmente el tejido celular en el punto de picadura mediante enzimas digestivas potentes."),
-               ("Neurotoxinas Bloqueadoras Sinápticas", "Cobras reales, mambas negras y pulpos de anillos azules disparando péptidos que paralizan el sistema nervioso muscular impidiendo la respiración instantáneamente."),
-               ("Toxinas Letales Instantáneas de Contacto", "La pequeña rana dorada venenosa de Colombia cuya secreción cutánea de batracotoxina pura puede detener el corazón de 10 hombres adultos con un solo roce.")
-           ],
-           'Ilustra en el Peldaño 5 una pequeña rana amarilla brillante sobre una hoja verde húmeda del bosque con textos en castellano estricto.')
+    add_senior_microapp(
+        '[NIV-036]',
+        'El Radar de Toxicidad en el Hogar: Químicos de Limpieza, Humos y Prevención',
+        'Guía interactiva de prevención y seguridad doméstica vital para mayores: advierte del peligro mortal de mezclar lejía con amoníaco o salfumán (gas cloramina tóxico), enseña a ventilar adecuadamente braseros, estufas de butano y calderas (intoxicación silenciosa por monóxido de carbono CO) y proporciona un escáner de símbolos de peligro con soluciones ecológicas seguras (vinagre y bicarbonato).',
+        'Actúa como un jefe de bomberos y toxicólogo médico especializado en el hogar de personas mayores (+65).\nExplícame en 3 viñetas cómo diseñar un detector interactivo en HTML que alerte de las mezclas peligrosas de limpieza y de los humos invisibles en casa.',
+        'Genera la aplicación interactiva en HTML con matriz de mezclas prohibidas (lejía + amoníaco, etc.), semáforo de monóxido de carbono en calefacción, alternativas de limpieza natural segura y botón de urgencia toxicológica (91 562 04 20).',
+        '• Matriz de Mezclas Prohibidas: Lejía + Amoníaco = Vapores de cloramina (asfixia pulmonar inmediata), Lejía + Vinagre/Salfumán = Gas cloro letal, Lejía + Alcohol = Cloroformo tóxico.\n• Semáforo de Calefacción y CO: La "muerte dulce" del monóxido de carbono: llama azul (correcta) vs llama amarilla/naranja (mala combustión peligrosa), ventilación obligatoria de rejillas.\n• Alternativas domésticas 100% seguras: Vinagre blanco para la cal, bicarbonato para fregar fregaderos y jabón neutro tradicional.\n• Directorio de Emergencias: Instituto Nacional de Toxicología (91 562 04 20) y 112 visible en tipografía gigante.',
+        'SIMULADOR_TOXICIDAD_HOGAR_PREVENCION_SENIORS.html',
+        'Radar Seguridad Doméstica y Tóxicos (+65)'
+    )
 
-    add_it('[NIV-037]', 'Los 6 Niveles de Adaptación Térmica Biológica',
-           'Termorregulación biológica desde la ectotermia reptiliana y endotermia caliente hasta la hibernación, estivación, tardígrados en criptobiosis e hipertermófilos.',
-           6, 'Un escudo térmico biológico en 3D mitad hielo ártico azul brillante y mitad fuego volcánico rojo ardiente, representando la resiliencia en todos los climas.',
-           [
-               ("Ectotermia y Sangre Fría (Reptiles)", "Lagartos y serpientes tomando el sol matutino sobre rocas calientes para elevar su temperatura corporal inerte y poder moverse a cazar presas veloces."),
-               ("Endotermia y Sangre Caliente (Mamíferos y Aves)", "Pingüinos antárticos y osos polares generando calor metabólico interno constante a 37 °C abrigados con grasa gruesa y capas de plumas aislantes impermeables."),
-               ("Hibernación Metabólica Invernal", "Osos pardos y marmotas bajando sus latidos a 5 pulsaciones por minuto y durmiendo 5 meses dentro de cuevas nevadas consumiendo su reserva de grasa invernal."),
-               ("Estivación y Tolerancia al Desierto", "Caracoles del desierto y peces pulmonados enterrándose en barro seco durante meses calurosos sin agua, sellando su concha para evitar deshidratación total."),
-               ("Criptobiosis y Animación Suspendida (Tardígrados)", "El minúsculo oso de agua perdiendo el 99% de su agua interior y cristalizando sus proteínas para sobrevivir al vacío espacial y a -200 °C de temperatura cósmica."),
-               ("Hipertermófilos en Calderas Volcánicas", "Arqueobacterias extremófilas prosperando felices en estanques de ácido hirviendo a 120 °C del Parque Yellowstone, con enzimas súper-estables termo-resistentes.")
-           ],
-           'Dibuja en el Peldaño 5 un tardígrado simpático microscópico flotando en su cápsula protectora redonda con rótulos en castellano.')
+    add_senior_microapp(
+        '[NIV-037]',
+        'Los 6 Niveles de Termorregulación Corporal, Abrigarse Bien y Evitar Caídas por Frío',
+        'Micro-aplicación interactiva de confort térmico y salud geriátrica: explica por qué el cuerpo de los mayores pierde grasa subcutánea y siente más frío en manos y pies, enseña a vestirse por capas (método cebolla), a mantener la casa a 21 °C sin despilfarrar y a evitar el agarrotamiento articular matutino que provoca tropiezos.',
+        'Actúa como un médico geriatra y especialista en medicina del confort doméstico para personas mayores (+65).\nExplícame en 3 viñetas cómo diseñar una herramienta interactiva en HTML que enseñe a regular la temperatura del hogar y protegerse del frío sin riesgos de caídas ni braseros peligrosos.',
+        'Genera el archivo HTML interactivo con termómetro de confort (18 °C a 24 °C), selector de los 6 niveles de respuesta térmica corporal, recomendador de ropa por capas y protocolo para salir a la calle en días fríos.',
+        '• 6 Niveles Térmicos: 1. Hipotermia y Frío Severo (< 16 °C en casa: riesgo cardiovascular y agarrotamiento), 2. Ambiente Fresco (17-19 °C: requiere chaqueta y zapatillas abrigadas), 3. Confort Óptimo de Salud (20-21 °C: equilibrio perfecto según el Ministerio de Sanidad), 4. Ambiente Agradable (22-23 °C: ideal para lectura y reposo), 5. Calor Excesivo (24-26 °C: reseca vías respiratorias y encarece la factura), 6. Riesgo de Golpe de Calor (> 27 °C en verano: deshidratación urgente).\n• Técnica de la cebolla: 1ª capa transpirable (algodón), 2ª capa térmica (jersey de lana o forro polar ligero), 3ª capa cortavientos para la calle.\n• Protección de zonas clave: Calcetines de lana sin costuras opresivas, guantes finos y bufanda tapando garganta y boca para no inhalar aire helado directo.',
+        'SIMULADOR_TERMORREGULACION_CONFORT_SENIORS.html',
+        'Guía Termorregulación y Confort (+65)'
+    )
 
-    add_it('[NIV-038]', 'Los 5 Niveles de Fuerza y Capacidad de Carga Animal',
-           'Biomecánica muscular de fuerza absoluta en grandes paquidermos y gorilas frente al prodigio de la fuerza relativa récord en hormigas y escarabajo hércules.',
-           5, 'Un escarabajo hércules gigante en 3D sosteniendo en sus cuernos robustos una pesa dorada descomunal, simbolizando el prodigio biomecánico en la escala minúscula.',
-           [
-               ("Fuerza Absoluta Colosal (El Elefante Africano)", "Un mamut o elefante adulto levantando troncos de árboles de 300 kilos con su trompa muscular y empujando obstáculos pesados en la selva."),
-               ("Fuerza Muscular en Primates (El Gorila Espalda Plateada)", "Un macho gorila de 200 kilos destrozando ramas de bambú gruesas con una fuerza en sus brazos 6 veces superior a la de un levantador olímpico humano."),
-               ("Potencia Aerodinámica y Carga (El Águila Arpía)", "Una rapaz amazónica con garras del tamaño de las de un oso pardo arrancando a un mono o perezoso pesado de las ramas del árbol en vuelo directo."),
-               ("Fuerza Relativa Asombrosa (La Hormiga Tejedora)", "Una hormiga obrera minúscula levantando con sus mandíbulas una hoja verde o una presa que pesa 50 veces más que su propio cuerpo esbelto."),
-               ("El Récord Biológico de Tracción (Escarabajo Hércules y Pelotero)", "Un escarabajo con cuernos de coraza empujando o levantando cargas equivalentes a 850 veces su propio peso corporal sin sufrir daño estructural en su exoesqueleto.")
-           ],
-           'Ilustra en el Peldaño 4 una hormiga roja levantando una hoja verde gigante sobre su cabeza con textos en español castellano.')
+    add_senior_microapp(
+        '[NIV-038]',
+        'Calculadora de Ergonomía y Esfuerzo Doméstico: Cuidar Espalda y Articulaciones',
+        'Simulador de biomecánica postural y cuidado de la columna para la vida cotidiana: enseña cómo doblar rodillas al agacharse a por un paquete, la ventaja de empujar un carro de 4 ruedas en vez de arrastrarlo con dos, cómo repartir las bolsas de la compra en ambas manos y la altura correcta para planchar o barrer sin sufrir lumbalgias ni ciáticas.',
+        'Actúa como un traumatólogo y fisioterapeuta ergonómico para personas mayores (+65).\nExplícame en 3 viñetas cómo crear una calculadora interactiva en HTML que muestre cuánto sufre la columna lumbar según la postura adoptada en tareas de la casa y enseñe a evitar lesiones.',
+        'Genera el archivo HTML interactivo con calculadora de carga lumbar en kg (según postura recta vs doblada), comparador de 5 tareas cotidianas (carro de la compra, fregar el suelo, planchar, levantar peso), y decálogo visual de higiene postural.',
+        '• Calculadora de Presión Discal en L5-S1: Levantar 5 kg con piernas flexionadas = 50 kg de presión en columna; levantar los mismos 5 kg con piernas rectas y lomo doblado = ¡180 kg de sobrecarga discal peligrosa!\n• 5 Situaciones Cotidianas: 1. Carro de la compra (Empujar con 4 ruedas reduce el esfuerzo un 60%), 2. Bolsas de la compra (Dividir 8 kg en dos bolsas de 4 kg para equilibrar la pelvis), 3. Barrer y Fregar (Mango largo que llegue a la altura de la nariz sin arquear la espalda), 4. Planchar (Apoyar un pie en un taburete bajo para descansar la zona lumbar), 5. Hacer la cama (Arrodillarse o flexionar piernas en lugar de doblar la cintura a plomo).\n• Semáforo de advertencia: Mensajes claros en verde (postura segura) y rojo (postura lesiva).',
+        'SIMULADOR_ERGONOMIA_COLUMNA_ARTICULACIONES_SENIORS.html',
+        'Calculadora Ergonomía y Columna (+65)'
+    )
 
-    add_it('[NIV-039]', 'Los 6 Niveles de Camuflaje y Cripsis en la Naturaleza',
-           'Invisibilidad biológica por homocromía estacional, rayas disruptivas, mimetismo de hoja, cripsis de textura y camuflaje neuronal instantáneo de cromatóforos en pulpos.',
-           6, 'Un pulpo mímico de arrecife en 3D transformando la mitad izquierda de su piel en roca rugosa grisácea y su mitad derecha en coral rojo brillante.',
-           [
-               ("Mimetismo de Color Simple (Homocromía)", "Una liebre ártica o zorro de las nieves cambiando su pelaje marrón de verano por un manto blanco inmaculado al llegar las primeras nevadas del invierno."),
-               ("Contraste Disruptivo de Contornos", "Las rayas blancas y negras de una cebra deslumbrando al león en la sabana y rompiendo la silueta individual del cuerpo cuando corre en manada."),
-               ("Mimetismo de Forma (Hoja y Rama)", "El insecto palo inmóvil como una ramita seca y el insecto hoja imitando las nervaduras verdosas de un arbusto de la selva para ser invisible."),
-               ("Cripsis de Textura y Rugosidad Corporal", "El pez piedra o lagarto diablo espinoso cuya piel rugosa llena de bultos parece un trozo exacto de roca volcánica o coral muerto cubierto de algas."),
-               ("Aposematismo y Falso Engaño Mímico (Batesiano)", "La mosca cernícalo inofensiva imitando las rayas amarillas y negras de una avispa venenosa para asustar a los pájaros depredadores sin tener aguijón real."),
-               ("Camuflaje Óptico Activo en Tiempo Real (Cefalópodos)", "Pulpos y sepias contrayendo millones de sacos de color cromatóforos bajo el mando directo de su cerebro para cambiar de color y textura en 200 milisegundos.")
-           ],
-           'Dibuja en el Peldaño 3 un insecto hoja de color verde esmeralda idéntico a la hoja del árbol en el que está posado con textos en castellano.')
+    add_senior_microapp(
+        '[NIV-039]',
+        'Guía Interactiva de Iluminación Accesible, Contraste y Cuidado Ocular',
+        'Micro-aplicación interactiva de ergonomía visual y seguridad ambiental para personas mayores: calcula la necesidad de lúmenes reales (una persona de 70 años necesita hasta el triple de luz que una de 20 para leer con la misma nitidez), enseña a contrastar los bordes de los escalones e interruptores para no tropezar, y desmitifica los cuidados de cataratas, vista cansada (presbicia) y sequedad ocular.',
+        'Actúa como un médico oftalmólogo y diseñador de accesibilidad para personas mayores (+65).\nExplícame en 3 viñetas cómo diseñar un simulador interactivo en HTML que muestre cuánta luz necesita un hogar senior para leer y caminar seguro sin tropezar por sombras o reflejos.',
+        'Genera el archivo HTML interactivo con simulador de luminosidad por estancia (salón, cocina, pasillo, lectura), recomendador de bombillas LED cálidas (3000K, sin parpadeos), contraste visual antideslumbrante y consejos oftalmológicos preventivos.',
+        '• Fisiología visual geriátrica: A los 65 años el cristalino se vuelve más opaco y la pupila responde más lenta; se necesitan 500-750 lux para lectura confortable sin forzar la vista ni producir dolor de cabeza.\n• Niveles de Iluminación Recomendados: 1. Pasillo y Escaleras (200-300 lux con luces nocturnas guía automáticas para ir al baño), 2. Salón y Estar (300-400 lux luz difusa), 3. Cocina y Baño (500 lux para manipular cuchillos y medicamentos sin error), 4. Rincón de Lectura y Labores (750 lux con foco directo orientable desde atrás/lateral).\n• Prevención de Tropiezos: Cinta adhesiva de alto contraste en el borde de escalones, interruptores con piloto luminoso visible en la oscuridad y eliminación de alfombras resbaladizas sin base de goma.\n• Salud ocular diaria: Uso de lágrimas artificiales sin conservantes si hay ojo seco por la calefacción y revisión anual de graduación y tensión ocular.',
+        'SIMULADOR_ILUMINACION_CUIDADO_OCULAR_SENIORS.html',
+        'Simulador Iluminación y Cuidado Ocular (+65)'
+    )
 
-    add_it('[NIV-040]', 'Los 5 Niveles de Regeneración Celular en el Reino Animal',
-           'Capacidad biológica regenerativa desde la cicatrización fibrosa humana y crecimiento hepático hasta la regeneración de extremidades en ajolote y planaria total.',
-           5, 'Un ajolote mexicano rosado en 3D en el centro regenerando su pata delantera y sus branquias plumosas con destellos de luz celular dorada resplandeciente.',
-           [
-               ("Cicatrización Superficial y Fibrosis (Ser Humano)", "La piel humana curando un corte epidérmico mediante coágulo de plaquetas y costra, dejando una cicatriz de colágeno fibroso sin regenerar folículos ni sudor."),
-               ("Regeneración Hepática y Ósea (Poder Oculto Humano)", "El hígado humano regenerando hasta el 70% de su masa perdida tras una cirugía gracias al crecimiento celular compensatorio en un par de semanas."),
-               ("Regeneración de Colas y Extremidades Simples", "La lagartija o salamanquesa desprendiendo voluntariamente su cola para distraer al halcón depredador y haciendo crecer una nueva cola ósea en dos meses."),
-               ("Regeneración de Órganos Complejos y Cerebro (Ajolote y Pez Cebra)", "El ajolote reconstruyendo una pata amputada completa con huesos, músculos, nervios y hasta partes cortadas de su propio corazón o médula espinal."),
-               ("Regeneración Corporal Total desde Fragmentos (Planaria y Estrella de Mar)", "El gusano planaria cortado en 10 trozos diminutos, donde cada trocito regenera por completo una cabeza, ojos y cuerpo de un animal entero funcional.")
-           ],
-           'Ilustra en el Peldaño 4 al simpático ajolote mexicano rosado sonriendo bajo el agua limpia con rótulos exactos en español.')
+    add_senior_microapp(
+        '[NIV-040]',
+        'Los 5 Niveles de Regeneración Cutánea, Cuidado de la Piel y Cicatrización',
+        'Guía interactiva de dermatología preventiva y cuidados de la piel en la madurez: explica cómo la piel madura se vuelve más fina ("piel de cebolla" o fragilidad capilar), enseña a aplicar cremas hidratantes con urea al 10%, a desinfectar y proteger pequeños rasguños con apósitos de silicona que no rasgan al retirar, y facilita el método clínico ABCD para vigilar pecas y manchas solares con serenidad.',
+        'Actúa como un médico dermatólogo y enfermero geriátrico para personas mayores (+65).\nExplícame en 3 viñetas cómo diseñar una herramienta interactiva en HTML que enseñe a cuidar la piel frágil de las piernas y brazos, curar rozaduras sin dolor y vigilar manchas solares sin alarmismo.',
+        'Genera el archivo HTML interactivo con los 5 niveles de salud de la piel madura, guía de hidratación diaria (urea), protocolo de cura en 3 pasos para heridas leves, y la regla ABCD de lunares explicada de forma sencilla.',
+        '• 5 Niveles de la Piel Madura: 1. Sequedad Severa y Prurito (Picor por falta de lípidos y jabones agresivos), 2. Piel Fina / Fragilidad Capilar (Moratones por roces cotidianos leves), 3. Piel Hidratada y Protegida (Elasticidad recuperada con crema diaria), 4. Cicatrización Eficaz y Limpia (Cura adecuada sin arrancar costras), 5. Piel Blindada y Equilibrada (Barrera cutánea íntegra con protección solar).\n• Regla ABCD de Lunares: A de Asimetría, B de Bordes irregulares, C de Color no homogéneo, D de Diámetro mayor a 6 mm (tamaño de la goma de un lápiz). Si cambia, se consulta al médico de cabecera con total tranquilidad.\n• Pautas de higiene geriátrica: Duchas templadas (no agua ardiendo), geles syndet "sin jabón", secado suave con toalla a toques (sin frotar con fuerza) y aplicación de crema hidratante en los 3 minutos posteriores a la ducha.',
+        'SIMULADOR_CUIDADO_PIEL_CICATRIZACION_SENIORS.html',
+        'Guía Cuidado de la Piel y Cicatrización (+65)'
+    )
 
     # GRUPO E: TECNOLOGÍA, COMPUTACIÓN E INMERSIÓN (NIV-041 a NIV-050)
     add_it('[NIV-041]', 'Los 6 Niveles de Conectividad y Velocidad Digital',

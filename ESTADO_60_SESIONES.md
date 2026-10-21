@@ -11,7 +11,7 @@ Este documento registra el avance del plan de actualización por lotes bajo la *
 | **LOTE 1** | Sesiones 01 a 10 | 🟢 **COMPLETADO** | **10 / 10** | 3D Lungs / Corazón / Luna / Motor / T-Rex / Molar | **10 / 10 Listas** |
 | **LOTE 2** | Sesiones 11 a 20 | 🟢 **COMPLETADO** | **10 / 10** | Stradivarius / Helix / ADN / Júpiter / Partenón | **10 / 10 Listas** |
 | **LOTE 3** | Sesiones 21 a 30 | 🟢 **COMPLETADO** | **10 / 10** | 11 Dimensiones del Universo 3D | **10 / 10 Listas** |
-| **LOTE 4** | Sesiones 31 a 40 | ⚪ Pendiente | 0 / 10 | Por auditar | Pendiente |
+| **LOTE 4** | Sesiones 31 a 40 | 🟢 **COMPLETADO** | **10 / 10** | Biología, Salud & Confort (+65) | **10 / 10 Listas** |
 | **LOTE 5** | Sesiones 41 a 50 | ⚪ Pendiente | 0 / 10 | Por auditar | Pendiente |
 | **LOTE 6** | Sesiones 51 a 60 | ⚪ Pendiente | 0 / 10 | Por auditar | Pendiente |
 
@@ -221,5 +221,69 @@ Este documento registra el avance del plan de actualización por lotes bajo la *
 
 ---
 
-## 🎯 PRÓXIMO PASO: LOTE 4 (SESIONES 31 A 40)
-En cuanto se ejecute el `[COMANDO 48]` en la terminal externa, el proyecto queda listo para abordar el **LOTE 4 (Sesiones 31 a 40)**.
+## 📋 DETALLE DEL LOTE 4 (SESIONES 31 A 40) — 100% COMPLETADO
+
+### 🔹 Sesión 31:
+- **Micro-App `[NIV-031]`:** `31_SIMULADOR_PROFUNDIDAD_OCEANO_RESPIRACION_SENIORS.html`
+  - *Tema:* Los 6 Estratos del Océano, Respiración Pulmonar y Calma Mental.
+  - *Características:* Batimetría marina (de 0 a 11.000 m) unida a la técnica diafragmática 4-7-8, círculo animado de respiración, reducción de pulsaciones y oxigenación para conciliar el sueño y calmar palpitaciones.
+  - *Triple Salvaguarda:* Semilla lista + Plano Técnico listo + App Oficial desplegada en `31_Sesion/`.
+
+### 🔹 Sesión 32:
+- **Micro-App `[NIV-032]`:** `32_SIMULADOR_NUTRICION_DIGESTION_SALUDABLE_SENIORS.html`
+  - *Tema:* Los 5 Niveles de la Pirámide Nutricional y Digestión Saludable Senior.
+  - *Características:* Clasificación según digestibilidad estomacal, calculadora de proteína noble (1.1 g/kg para blindar contra la sarcopenia), fibra blanda contra el estreñimiento y recetas tradicionales reconfortantes.
+  - *Triple Salvaguarda:* Semilla lista + Plano Técnico listo + App Oficial desplegada en `32_Sesion/`.
+
+### 🔹 Sesión 33:
+- **Micro-App `[NIV-033]`:** `33_SIMULADOR_VITALIDAD_MUSCULAR_SARCOPENIA_SENIORS.html`
+  - *Tema:* Los 6 Niveles de Vitalidad Celular, Mitocondrias y Masa Muscular.
+  - *Características:* Cronómetro interactivo para el Test de la Silla (5 repeticiones), evaluación de autonomía funcional, rutina con botellas de agua y activación mitocondrial diaria.
+  - *Triple Salvaguarda:* Semilla lista + Plano Técnico listo + App Oficial desplegada en `33_Sesion/`.
+
+### 🔹 Sesión 34:
+- **Micro-App `[NIV-034]`:** `34_SIMULADOR_ZONAS_AZULES_LONGEVIDAD_SENIORS.html`
+  - *Tema:* Los 5 Pilares de la Longevidad Activa: El Secreto de las Zonas Azules.
+  - *Características:* Calculadora del estilo de vida centenario (Cerdeña, Okinawa, Icaria, Nicoya), puntuación de Índice Zona Azul (0-100), propósito matinal (Ikigai), siesta de 20 min y regla del 80% (Hara Hachi Bu).
+  - *Triple Salvaguarda:* Semilla lista + Plano Técnico listo + App Oficial desplegada en `34_Sesion/`.
+
+### 🔹 Sesión 35:
+- **Micro-App `[NIV-035]`:** `35_SIMULADOR_BANOS_BOSQUE_NATURALEZA_SENIORS.html`
+  - *Tema:* Los 6 Estratos del Bosque, Paseos Verdes y Baños de Bosque (Shinrin-Yoku).
+  - *Características:* Calculadora de beneficios clínicos del paseo en parques: reducción demostrada del cortisol (-16%), descenso de tensión arterial (-5 mmHg) y refuerzo de células defensivas por fitoncidas vegetales.
+  - *Triple Salvaguarda:* Semilla lista + Plano Técnico listo + App Oficial desplegada en `35_Sesion/`.
+
+### 🔹 Sesión 36:
+- **Micro-App `[NIV-036]`:** `36_SIMULADOR_TOXICIDAD_HOGAR_PREVENCION_SENIORS.html`
+  - *Tema:* El Radar de Toxicidad en el Hogar: Químicos de Limpieza, Humos y Prevención.
+  - *Características:* Matriz de mezclas prohibidas (lejía + amoníaco = cloramina mortal; lejía + salfumán = cloro gas), semáforo de monóxido de carbono (llama azul vs naranja) y alternativas ecológicas seguras (vinagre y bicarbonato).
+  - *Triple Salvaguarda:* Semilla lista + Plano Técnico listo + App Oficial desplegada en `36_Sesion/`.
+
+### 🔹 Sesión 37:
+- **Micro-App `[NIV-037]`:** `37_SIMULADOR_TERMORREGULACION_CONFORT_SENIORS.html`
+  - *Tema:* Los 6 Niveles de Termorregulación Corporal, Abrigarse Bien y Evitar Caídas por Frío.
+  - *Características:* Termostato a 21 °C, cálculo del 7% de ahorro por grado, prevención de la rigidez articular matutina causante de tropiezos y método de vestimenta por capas (técnica de la cebolla).
+  - *Triple Salvaguarda:* Semilla lista + Plano Técnico listo + App Oficial desplegada en `37_Sesion/`.
+
+### 🔹 Sesión 38:
+- **Micro-App `[NIV-038]`:** `38_SIMULADOR_ERGONOMIA_COLUMNA_ARTICULACIONES_SENIORS.html`
+  - *Tema:* Calculadora de Ergonomía y Esfuerzo Doméstico: Cuidar Espalda y Articulaciones.
+  - *Características:* Demostración biomecánica de la presión lumbar en L5-S1 (5 kg doblado = 180 kg vs 50 kg flexionando piernas), el carro de 4 ruedas que se empuja, mangos largos de escoba y reparto simétrico de bolsas.
+  - *Triple Salvaguarda:* Semilla lista + Plano Técnico listo + App Oficial desplegada en `38_Sesion/`.
+
+### 🔹 Sesión 39:
+- **Micro-App `[NIV-039]`:** `39_SIMULADOR_ILUMINACION_CUIDADO_OCULAR_SENIORS.html`
+  - *Tema:* Guía Interactiva de Iluminación Accesible, Contraste y Cuidado Ocular.
+  - *Características:* Demostración de por qué a los 70 años se necesita el triple de luz para leer sin dolor de cabeza (600 lux), bombillas LED cálidas de 3000K, luces nocturnas piloto para ir al baño y contraste en escalones.
+  - *Triple Salvaguarda:* Semilla lista + Plano Técnico listo + App Oficial desplegada en `39_Sesion/`.
+
+### 🔹 Sesión 40:
+- **Micro-App `[NIV-040]`:** `40_SIMULADOR_CUIDADO_PIEL_CICATRIZACION_SENIORS.html`
+  - *Tema:* Los 5 Niveles de Regeneración Cutánea, Cuidado de la Piel y Cicatrización.
+  - *Características:* Protocolo para piel madura ('piel de cebolla'), crema hidratante con urea al 10%, cura de heridas en 3 pasos con apósitos de silicona que no tiran y la regla diagnóstica ABCD de pecas y lunares.
+  - *Triple Salvaguarda:* Semilla lista + Plano Técnico listo + App Oficial desplegada en `40_Sesion/`.
+
+---
+
+## 🎯 PRÓXIMO PASO: LOTE 5 (SESIONES 41 A 50)
+En cuanto se ejecute el `[COMANDO 57]` en la terminal externa, el proyecto queda listo para abordar el **LOTE 5 (Sesiones 41 a 50)** (Tecnología, conectividad y herramientas prácticas del mundo digital).

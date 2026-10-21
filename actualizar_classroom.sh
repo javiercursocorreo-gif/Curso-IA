@@ -281,7 +281,12 @@ mkdir -p "CLASES/EXPORTACION_FICHAS_CLASSROOM_PDF/100. [SESSIONS] TERNAS_LISTAS_
 cp "SIMULADORES_INTERACTIVOS/01_SIMULADORES/30_SIMULADOR_RADIOACTIVIDAD_MEDICINA_SENIORS.html" "CLASES/EXPORTACION_FICHAS_CLASSROOM_PDF/100. [SESSIONS] TERNAS_LISTAS_PARA_CLASSROOM/30_Sesion/30_SIMULADOR_RADIOACTIVIDAD_MEDICINA_SENIORS.html" 2>/dev/null || true
 cp "SIMULADORES_INTERACTIVOS/01_SIMULADORES/30_SIMULADOR_RADIOACTIVIDAD_MEDICINA_SENIORS.html" "CLASES/EXPORTACION_FICHAS_CLASSROOM_PDF/100. [SESSIONS] TERNAS_LISTAS_PARA_CLASSROOM/30_Sesion/SIMULADOR_RADIOACTIVIDAD_MEDICINA_SENIORS.html" 2>/dev/null || true
 
-echo "=== 2A. Regenerando Fichas Didácticas PDF [NIV] con la Triple Salvaguarda Pedagógica (S01 a S30)... ==="
+# ==============================================================================
+# LOTE 4: SESIONES 31 A 40 (MICRO-APPS SENIORS +65)
+# ==============================================================================
+python3 "00. SCRIPTS_PYTHON/generate_niv_lote4_htmls.py"
+
+echo "=== 2A. Regenerando Fichas Didácticas PDF [NIV] con la Triple Salvaguarda Pedagógica (S01 a S40)... ==="
 python3 -m pip install --quiet reportlab 2>/dev/null || pip3 install --quiet reportlab 2>/dev/null || true
 python3 "00. SCRIPTS_PYTHON/export_niv_pdfs.py"
 
@@ -290,17 +295,21 @@ python3 "00. SCRIPTS_PYTHON/sync_niv_and_cod_mapas.py"
 
 echo "=== 3. Guardando cambios y sincronizando con GitHub... ==="
 git add -A
-git commit -m "feat(lote3): despliegue 10 micro-apps [NIV] adaptadas a mayores 65+, triple salvaguarda y sincronizacion mapas classroom s21-s30" || true
+git commit -m "feat(lote4): despliegue 10 micro-apps [NIV] adaptadas a mayores 65+, triple salvaguarda y sincronizacion mapas classroom s31-s40" || true
 git push origin main
 
 echo "=== 4. Abriendo simuladores oficiales en Google Chrome... ==="
 TS=$(date +%s)
 DIR="$(pwd)"
-open -a "Google Chrome" "file://${DIR}/SIMULADORES_INTERACTIVOS/01_SIMULADORES/21_SIMULADOR_ESCALA_UNIVERSO_SENIORS.html?v=$TS"
-open -a "Google Chrome" "file://${DIR}/SIMULADORES_INTERACTIVOS/01_SIMULADORES/22_SIMULADOR_ENERGIA_KARDASHEV_HOGAR_SENIORS.html?v=$TS"
-open -a "Google Chrome" "file://${DIR}/SIMULADORES_INTERACTIVOS/01_SIMULADORES/23_SIMULADOR_TEMPERATURA_CONFORT_HOGAR_SENIORS.html?v=$TS"
-open -a "Google Chrome" "file://${DIR}/SIMULADORES_INTERACTIVOS/01_SIMULADORES/24_SIMULADOR_GRAVEDAD_EQUILIBRIO_SENIORS.html?v=$TS"
-open -a "Google Chrome" "file://${DIR}/SIMULADORES_INTERACTIVOS/01_SIMULADORES/27_SIMULADOR_TIEMPO_LEGADO_SENIORS.html?v=$TS"
-open -a "Google Chrome" "file://${DIR}/SIMULADORES_INTERACTIVOS/01_SIMULADORES/28_SIMULADOR_PRESION_CLIMA_TENSION_SENIORS.html?v=$TS"
+open -a "Google Chrome" "file://${DIR}/SIMULADORES_INTERACTIVOS/01_SIMULADORES/31_SIMULADOR_PROFUNDIDAD_OCEANO_RESPIRACION_SENIORS.html?v=$TS"
+open -a "Google Chrome" "file://${DIR}/SIMULADORES_INTERACTIVOS/01_SIMULADORES/32_SIMULADOR_NUTRICION_DIGESTION_SALUDABLE_SENIORS.html?v=$TS"
+open -a "Google Chrome" "file://${DIR}/SIMULADORES_INTERACTIVOS/01_SIMULADORES/33_SIMULADOR_VITALIDAD_MUSCULAR_SARCOPENIA_SENIORS.html?v=$TS"
+open -a "Google Chrome" "file://${DIR}/SIMULADORES_INTERACTIVOS/01_SIMULADORES/34_SIMULADOR_ZONAS_AZULES_LONGEVIDAD_SENIORS.html?v=$TS"
+open -a "Google Chrome" "file://${DIR}/SIMULADORES_INTERACTIVOS/01_SIMULADORES/35_SIMULADOR_BANOS_BOSQUE_NATURALEZA_SENIORS.html?v=$TS"
+open -a "Google Chrome" "file://${DIR}/SIMULADORES_INTERACTIVOS/01_SIMULADORES/36_SIMULADOR_TOXICIDAD_HOGAR_PREVENCION_SENIORS.html?v=$TS"
+open -a "Google Chrome" "file://${DIR}/SIMULADORES_INTERACTIVOS/01_SIMULADORES/37_SIMULADOR_TERMORREGULACION_CONFORT_SENIORS.html?v=$TS"
+open -a "Google Chrome" "file://${DIR}/SIMULADORES_INTERACTIVOS/01_SIMULADORES/38_SIMULADOR_ERGONOMIA_COLUMNA_ARTICULACIONES_SENIORS.html?v=$TS"
+open -a "Google Chrome" "file://${DIR}/SIMULADORES_INTERACTIVOS/01_SIMULADORES/39_SIMULADOR_ILUMINACION_CUIDADO_OCULAR_SENIORS.html?v=$TS"
+open -a "Google Chrome" "file://${DIR}/SIMULADORES_INTERACTIVOS/01_SIMULADORES/40_SIMULADOR_CUIDADO_PIEL_CICATRIZACION_SENIORS.html?v=$TS"
 
 echo "=== COMPLETADO CON EXITO ==="

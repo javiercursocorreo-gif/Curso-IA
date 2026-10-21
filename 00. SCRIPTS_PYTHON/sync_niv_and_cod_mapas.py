@@ -165,6 +165,56 @@ NIV_CONFIG = {
         "file": "SIMULADOR_RADIOACTIVIDAD_MEDICINA_SENIORS.html",
         "title": "Los 6 Niveles de Radioactividad, Pruebas Médicas y Tranquilidad Senior",
         "btn": "☢️ Abrir Comparador de Radiación y Medicina (+65) ↗"
+    },
+    31: {
+        "file": "SIMULADOR_PROFUNDIDAD_OCEANO_RESPIRACION_SENIORS.html",
+        "title": "Los 6 Estratos del Océano, Respiración Pulmonar y Calma Mental",
+        "btn": "🌊 Abrir Respiración y Calma Marina (+65) ↗"
+    },
+    32: {
+        "file": "SIMULADOR_NUTRICION_DIGESTION_SALUDABLE_SENIORS.html",
+        "title": "Los 5 Niveles de la Pirámide Nutricional y Digestión Saludable Senior",
+        "btn": "🥗 Abrir Guía Nutrición y Digestión (+65) ↗"
+    },
+    33: {
+        "file": "SIMULADOR_VITALIDAD_MUSCULAR_SARCOPENIA_SENIORS.html",
+        "title": "Los 6 Niveles de Vitalidad Celular, Mitocondrias y Masa Muscular",
+        "btn": "💪 Abrir Test Vitalidad y Fuerza Muscular (+65) ↗"
+    },
+    34: {
+        "file": "SIMULADOR_ZONAS_AZULES_LONGEVIDAD_SENIORS.html",
+        "title": "Los 5 Pilares de la Longevidad Activa: El Secreto de las Zonas Azules",
+        "btn": "🌱 Abrir Calculadora Zonas Azules y Longevidad (+65) ↗"
+    },
+    35: {
+        "file": "SIMULADOR_BANOS_BOSQUE_NATURALEZA_SENIORS.html",
+        "title": "Los 6 Estratos del Bosque, Paseos Verdes y Baños de Bosque (Shinrin-Yoku)",
+        "btn": "🌲 Abrir Guía Baños de Bosque y Salud (+65) ↗"
+    },
+    36: {
+        "file": "SIMULADOR_TOXICIDAD_HOGAR_PREVENCION_SENIORS.html",
+        "title": "El Radar de Toxicidad en el Hogar: Químicos de Limpieza, Humos y Prevención",
+        "btn": "⚠️ Abrir Radar Seguridad Doméstica y Tóxicos (+65) ↗"
+    },
+    37: {
+        "file": "SIMULADOR_TERMORREGULACION_CONFORT_SENIORS.html",
+        "title": "Los 6 Niveles de Termorregulación Corporal, Abrigarse Bien y Evitar Caídas por Frío",
+        "btn": "🧣 Abrir Guía Termorregulación y Confort (+65) ↗"
+    },
+    38: {
+        "file": "SIMULADOR_ERGONOMIA_COLUMNA_ARTICULACIONES_SENIORS.html",
+        "title": "Calculadora de Ergonomía y Esfuerzo Doméstico: Cuidar Espalda y Articulaciones",
+        "btn": "🛒 Abrir Calculadora Ergonomía y Columna (+65) ↗"
+    },
+    39: {
+        "file": "SIMULADOR_ILUMINACION_CUIDADO_OCULAR_SENIORS.html",
+        "title": "Guía Interactiva de Iluminación Accesible, Contraste y Cuidado Ocular",
+        "btn": "💡 Abrir Simulador Iluminación y Cuidado Ocular (+65) ↗"
+    },
+    40: {
+        "file": "SIMULADOR_CUIDADO_PIEL_CICATRIZACION_SENIORS.html",
+        "title": "Los 5 Niveles de Regeneración Cutánea, Cuidado de la Piel y Cicatrización",
+        "btn": "🧴 Abrir Guía Cuidado de la Piel y Cicatrización (+65) ↗"
     }
 }
 
@@ -259,7 +309,7 @@ def main():
     print("=== Sincronizando Tarjetas Interactivas [NIV] en Mapas de Sesión ===")
     print(f"Ruta SESSIONS_DIR: {SESSIONS_DIR} (Existe: {os.path.exists(SESSIONS_DIR)})")
     count = 0
-    for s_num in range(1, 31):
+    for s_num in range(1, 41):
         s_folder = f"{s_num:02d}_Sesion"
         s_path = os.path.join(SESSIONS_DIR, s_folder)
         if not os.path.exists(s_path):

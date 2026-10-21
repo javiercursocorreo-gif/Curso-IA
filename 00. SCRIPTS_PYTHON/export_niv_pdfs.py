@@ -40,7 +40,17 @@ LEGACY_NIV_NAMES = {
     27: "9. NIV-027_Los 5 Niveles del Tiempo Biológico, Geológico y Cósmico.pdf",
     28: "9. NIV-028_Los 6 Niveles de Presión Físico-Química.pdf",
     29: "9. NIV-029_Los 5 Niveles de los Estados Físicos de la Materia.pdf",
-    30: "9. NIV-030_Los 6 Niveles de Radioactividad e Impacto Ionizante.pdf"
+    30: "9. NIV-030_Los 6 Niveles de Radioactividad e Impacto Ionizante.pdf",
+    31: "9. NIV-031_Los 6 Estratos de Profundidad del Océano y Adaptación.pdf",
+    32: "9. NIV-032_Los 5 Niveles de Organización Ecológica (Trofo-Dinámica).pdf",
+    33: "9. NIV-033_Los 6 Niveles de Organización Biológica Celular.pdf",
+    34: "9. NIV-034_Los 5 Niveles de Longevidad Biológica y Envejecimiento.pdf",
+    35: "9. NIV-035_Los 6 Estratos de Altura en el Bosque Tropical.pdf",
+    36: "9. NIV-036_Los 5 Niveles de Toxicidad y Veneno Biológico.pdf",
+    37: "9. NIV-037_Los 6 Niveles de Adaptación Térmica Biológica.pdf",
+    38: "9. NIV-038_Los 5 Niveles de Fuerza y Capacidad de Carga Animal.pdf",
+    39: "9. NIV-039_Los 6 Niveles de Camuflaje y Cripsis en la Naturaleza.pdf",
+    40: "9. NIV-040_Los 5 Niveles de Regeneración Celular en el Reino Animal.pdf"
 }
 
 def create_niv_fichas():
