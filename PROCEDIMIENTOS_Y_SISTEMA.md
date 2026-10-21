@@ -29,11 +29,11 @@ Este documento registra los procedimientos operativos, configuraciones de sistem
 * Marca la casilla superior: **☑️ "Enable Triggers"** *(Activar disparadores)*.
 * Haz clic en el botón **`+`** (abajo a la izquierda) para añadir un disparador:
   * **Nombre del disparador:** `Antigravity / CPU Activa`
-* En la lista de criterios (**Criteria**), haz clic en **`+`** y añade:
-  * **Processor (CPU):**
-    * Selecciona: *"When CPU usage is above: 5%"* (o 10%).
-* En las opciones de finalización (**Session End**):
-  * Marca: *"End session when criteria are not met for: 5 minutes"* *(Finalizar sesión cuando la CPU esté inactiva durante 5 minutos)*.
+* En la lista de criterios (**Criteria**), haz clic en el botón **`+`** y selecciona la penúltima opción:
+  * **CPU Utilization:**
+    * Configura: *"When CPU utilization is above: 10%"* (o 5%).
+* En las opciones de finalización (**Session End** abajo):
+  * Marca: *"End session after CPU is idle for: 5 minutes"* *(Finalizar sesión cuando la CPU esté inactiva durante 5 minutos)*.
 * Guarda y cierra las preferencias.
 
 ---
