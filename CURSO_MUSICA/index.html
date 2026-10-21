@@ -199,6 +199,59 @@
             if (favIcon) favIcon.href = pngUrl;
         } catch(e) {}
     });
+
+    /* Modo Atril Híbrido con Reposo Inteligente a los 15 minutos */
+    let wakeLockInstance = null;
+    let videoKeepAwake = null;
+    const TIEMPO_INACTIVIDAD_MS = 15 * 60 * 1000;
+    let temporizadorInactividad = null;
+    let modoReposoActivo = false;
+
+    function activarModoAtril() {
+        if (modoReposoActivo) return;
+        if ('wakeLock' in navigator) {
+            try { navigator.wakeLock.request('screen').then(l => wakeLockInstance = l).catch(()=>{}); } catch(e){}
+        }
+        try {
+            if (!videoKeepAwake) {
+                videoKeepAwake = document.createElement('video');
+                videoKeepAwake.setAttribute('playsinline', '');
+                videoKeepAwake.setAttribute('webkit-playsinline', '');
+                videoKeepAwake.setAttribute('muted', '');
+                videoKeepAwake.setAttribute('loop', '');
+                videoKeepAwake.muted = true;
+                videoKeepAwake.style.position = 'fixed';
+                videoKeepAwake.style.top = '-50px';
+                videoKeepAwake.style.left = '-50px';
+                videoKeepAwake.style.width = '1px';
+                videoKeepAwake.style.height = '1px';
+                videoKeepAwake.style.opacity = '0.001';
+                videoKeepAwake.style.pointerEvents = 'none';
+                const c = document.createElement('canvas'); c.width = 4; c.height = 4;
+                const ctx = c.getContext('2d'); ctx.fillStyle = '#000'; ctx.fillRect(0,0,4,4);
+                if (c.captureStream) videoKeepAwake.srcObject = c.captureStream(1);
+                document.body.appendChild(videoKeepAwake);
+            }
+            if (videoKeepAwake && videoKeepAwake.paused) videoKeepAwake.play().catch(()=>{});
+        } catch(e){}
+    }
+    function reiniciarInactividad() {
+        if (modoReposoActivo) { modoReposoActivo = false; activarModoAtril(); }
+        if (temporizadorInactividad) clearTimeout(temporizadorInactividad);
+        temporizadorInactividad = setTimeout(() => {
+            modoReposoActivo = true;
+            if (wakeLockInstance) { try { wakeLockInstance.release(); } catch(e){} wakeLockInstance = null; }
+            if (videoKeepAwake) { try { videoKeepAwake.pause(); } catch(e){} }
+        }, TIEMPO_INACTIVIDAD_MS);
+    }
+    ['touchstart', 'mousedown', 'keydown', 'scroll'].forEach(evt => {
+        document.addEventListener(evt, () => { reiniciarInactividad(); activarModoAtril(); }, { passive: true });
+    });
+    document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') { reiniciarInactividad(); activarModoAtril(); }
+        else { if (videoKeepAwake) videoKeepAwake.pause(); }
+    });
+    window.addEventListener('DOMContentLoaded', () => { reiniciarInactividad(); activarModoAtril(); });
 </script>
 </body>
 </html>
