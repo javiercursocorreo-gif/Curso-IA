@@ -62,6 +62,32 @@
     - **Sociedades de Ingeniería Mecánica y Archivos Técnicos (SAE, ISO, esquemas de corte fidedignos de automoción):** Fotografía y planos de sección real de ingeniería mecánica.
   - Los activos obtenidos de estas fuentes deben respaldarse en Base64 en `03_ASSETS_3D_Y_DATOS/` para garantizar funcionamiento autónomo y 100% offline sin dependencias externas.
 
+## Metodología Didáctica: La Triple Salvaguarda Pedagógica (Terna de Seguridad Total)
+- **Las Tres Capas de Seguridad en Cada Sesión:**
+  Para evitar que la variabilidad de Gemini o fallos técnicos en los PCs dejen rezagado a ningún alumno en el aula, toda sesión debe articularse bajo la Triple Salvaguarda:
+  1. **Nivel 1 (Experiencia Activa): El Prompt Semilla en 2 Pasos:**
+     - En lenguaje humano natural, conceptual y sin jerga técnica (4 a 6 líneas).
+     - El alumno define el "QUÉ" y pide a la IA que explique en 3 viñetas su enfoque antes de entregar el código HTML.
+  2. **Nivel 2 (Red Intermedia): El Prompt Maestro Técnico Detallado:**
+     - El plano de especificaciones exhaustivo de ingeniería de software incluido en el anexo de la ficha como respaldo técnico si Gemini duda.
+  3. **Nivel 3 (Garantía Total): La App / Simulador Oficial Terminado:**
+     - El archivo HTML oficial completo, 100% depurado, probado y desplegado en Classroom y GitHub Pages. Si a un alumno se le corta o bloquea su IA, abre directamente el enlace oficial y sigue la clase sin frustración.
+
+## Estándar de la Etiqueta [NIV]: Micro-Aplicaciones de Diagnóstico y Vida Real
+- **Naturaleza de la Etiqueta [NIV]:**
+  - La etiqueta `[NIV]` aloja Micro-Aplicaciones interactivas de utilidad práctica cotidiana organizadas por escalas o niveles (Jubilación y finanzas familiares, radar de fraudes y estafas para seniors, semáforo de salud/nutrición).
+- **Adaptación a Personas Mayores (Seniors 65+):**
+  - **Lenguaje cercano:** Prohibidos anglicismos y jerga fría de Silicon Valley (nada de FIRE, cashflow, ratios). Usar "Pensión mensual", "Gastos de la casa", "Ahorros de toda la vida", "Viviendas e inmuebles".
+  - **Lógica Matemática Realista:** Considerar siempre que la pensión es vitalicia y que los ahorros no se tocan si la pensión cubre los gastos (cero contradicciones de tiempo). Incluir el patrimonio inmobiliario como escudo familiar.
+  - **Diseño Accesible:** Tipografía grande (16px - 18px), alto contraste, botones amplios y mensajes tranquilizadores.
+
+## Ejecución por Lotes de 10 Sesiones y Bitácora Maestra
+- **Trabajo Autónomo y Desatendido por Lotes:**
+  - El trabajo de actualización de las 60 sesiones se aborda en 6 lotes de 10 sesiones (Lote 1: 01-10, Lote 2: 11-20, etc.).
+  - El asistente trabaja en silencio, sin interrupciones intermedias al usuario, registrando cada avance en `ESTADO_60_SESIONES.md`.
+  - Al finalizar cada lote, entrega un único comando de terminal limpio y numerado para sincronizar GitHub y desplegar Classroom.
+
+
 
 
 
