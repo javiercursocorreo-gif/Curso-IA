@@ -9,6 +9,7 @@ los botones interactivos hacia las Micro-Apps de Seniors (+65) y los Simuladores
 
 import os
 import re
+import urllib.parse
 
 BASE_DIR = "/Users/externo/Library/Mobile Documents/com~apple~CloudDocs/PERSONAL/CLASES DE TECNOLOGÍA/CURSO-IA"
 SESSIONS_DIR = os.path.join(BASE_DIR, "CLASES", "EXPORTACION_FICHAS_CLASSROOM_PDF", "100. [SESSIONS] TERNAS_LISTAS_PARA_CLASSROOM")
@@ -116,7 +117,7 @@ NIV_CONFIG = {
     }
 }
 
-def update_map_html(content, session_num):
+def update_map_html(content, session_num, session_path=None):
     # 1. Actualizar tarjeta NIV si la sesión tiene micro-app configurada
     if session_num in NIV_CONFIG:
         cfg = NIV_CONFIG[session_num]
@@ -124,8 +125,47 @@ def update_map_html(content, session_num):
         sim_title = cfg["title"]
         sim_btn = cfg["btn"]
         
-        # Buscar el bloque actual de NIV (sea file-card o file-card-special)
-        # Patrón para enlace simple previo
+        # 1A. Buscar el archivo PDF real en la carpeta de la sesión
+        pdf_file = None
+        if session_path and os.path.exists(session_path):
+            for f in sorted(os.listdir(session_path)):
+                if f.startswith(f"9. NIV-{session_num:03d}") and f.endswith(".pdf"):
+                    pdf_file = f
+                    break
+        
+        if not pdf_file:
+            # Fallback determinista usando la misma regla de export_niv_pdfs.py
+            clean_title = re.sub(r'[^A-Za-z0-9_ -]', '', sim_title).strip().replace(' ', '_')
+            clean_title = re.sub(r'_+', '_', clean_title)[:40].rstrip('_')
+            pdf_file = f"9. NIV-{session_num:03d}_{clean_title}.pdf"
+            
+        pdf_href = urllib.parse.quote(pdf_file)
+        
+        # 1B. Si ya es una tarjeta especial, actualizar enlaces hacia el PDF real
+        pattern_btn_pdf = re.compile(
+            r'<a href="[^"]*NIV[^"]*\.pdf"[^>]*?class="btn-launch-interactive"[^>]*?>\s*'
+            r'📄[^<]*?</a>',
+            re.IGNORECASE | re.DOTALL
+        )
+        new_btn_pdf = (
+            f'<a href="{pdf_href}" target="_blank" class="btn-launch-interactive" '
+            f'style="margin-top:6px; background: rgba(30, 41, 59, 0.85); border-color: rgba(255, 255, 255, 0.15); '
+            f'font-weight: 600; font-size: 0.78rem;" title="Abrir Ficha Técnica y Prompts en PDF">\n'
+            f'                            📄 Ver Ficha Técnica y Prompts (PDF) ↗\n'
+            f'                        </a>'
+        )
+        content = pattern_btn_pdf.sub(new_btn_pdf, content)
+
+        pattern_special_top = re.compile(
+            r'(<div class="file-card file-card-special"[^>]*background:\s*rgba\(16,\s*185,\s*129[^>]*>\s*)'
+            r'<a href="[^"]*"\s*target="_blank"\s*class="file-card-special-top"[^>]*?>',
+            re.IGNORECASE
+        )
+        def repl_top(m):
+            return m.group(1) + f'<a href="{pdf_href}" target="_blank" class="file-card-special-top" title="Abrir Ficha Técnica Didáctica (PDF)">'
+        content = pattern_special_top.sub(repl_top, content)
+
+        # 1C. Si es un enlace simple previo, convertir a tarjeta especial completa
         pattern_simple = re.compile(
             r'<a href="([^"]*NIV[^"]*\.pdf)" target="_blank" class="file-card">\s*'
             r'<div class="file-left">\s*'
@@ -139,10 +179,9 @@ def update_map_html(content, session_num):
         )
         
         def repl_simple(m):
-            pdf_href = m.group(1)
             step_num = m.group(2)
             return f"""<div class="file-card file-card-special" style="background: rgba(16, 185, 129, 0.08); border-color: rgba(16, 185, 129, 0.35);">
-                        <a href="{sim_file}" target="_blank" class="file-card-special-top" title="Abrir Micro-App {sim_title}">
+                        <a href="{pdf_href}" target="_blank" class="file-card-special-top" title="Abrir Ficha Técnica Didáctica (PDF)">
                             <div class="file-left">
                                 <span class="file-num">{step_num}</span>
                                 <span class="file-tag" style="background: rgba(16, 185, 129, 0.25); color: #6ee7b7; border: 1px solid rgba(16, 185, 129, 0.5);">MICRO-APP</span>
@@ -156,8 +195,8 @@ def update_map_html(content, session_num):
                         <a href="{sim_file}" target="_blank" class="btn-launch-interactive" style="background: linear-gradient(135deg, #059669 0%, #10b981 100%); border-color: #34d399; box-shadow: 0 0 14px rgba(16, 185, 129, 0.4);" title="Abrir Micro-App Oficial">
                             {sim_btn}
                         </a>
-                        <a href="{pdf_href}" target="_blank" class="btn-launch-interactive" style="margin-top:6px; background: rgba(30, 41, 59, 0.85); border-color: rgba(255, 255, 255, 0.15); font-weight: 600; font-size: 0.78rem;" title="Abrir Ficha Teórica en PDF">
-                            📄 Ver Ficha Teórica de Consulta (PDF) ↗
+                        <a href="{pdf_href}" target="_blank" class="btn-launch-interactive" style="margin-top:6px; background: rgba(30, 41, 59, 0.85); border-color: rgba(255, 255, 255, 0.15); font-weight: 600; font-size: 0.78rem;" title="Abrir Ficha Técnica y Prompts en PDF">
+                            📄 Ver Ficha Técnica y Prompts (PDF) ↗
                         </a>
                     </div>"""
                     
@@ -180,7 +219,7 @@ def main():
                 try:
                     with open(map_file, 'r', encoding='utf-8') as f:
                         old_html = f.read()
-                    new_html = update_map_html(old_html, s_num)
+                    new_html = update_map_html(old_html, s_num, s_path)
                     if new_html != old_html:
                         with open(map_file, 'w', encoding='utf-8') as f:
                             f.write(new_html)

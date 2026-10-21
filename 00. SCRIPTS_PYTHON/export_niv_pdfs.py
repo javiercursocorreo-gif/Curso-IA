@@ -98,8 +98,10 @@ def create_niv_fichas():
         else:
             dest_dir = lote3
             
+        # Limpieza de título para nombre de archivo seguro
         clean_code = re.sub(r'[^A-Za-z0-9_-]', '', id_code)
-        clean_title = re.sub(r'[^A-Za-z0-9_-]', '_', title)[:35]
+        clean_title = re.sub(r'[^A-Za-z0-9_ -]', '', title).strip().replace(' ', '_')
+        clean_title = re.sub(r'_+', '_', clean_title)[:40].rstrip('_')
         file_name = f"{clean_code}_{clean_title}.pdf"
         file_path = os.path.join(dest_dir, file_name)
         
@@ -242,9 +244,6 @@ def create_niv_fichas():
                     ('VALIGN', (0,0), (-1,-1), 'TOP'),
                 ])
             ]))
-        
-        doc.build(story)
-        print(f"[{idx}/60] Generado: {file_name}")
         
         doc.build(story)
         print(f"[{idx}/60] Generado: {file_name}")
