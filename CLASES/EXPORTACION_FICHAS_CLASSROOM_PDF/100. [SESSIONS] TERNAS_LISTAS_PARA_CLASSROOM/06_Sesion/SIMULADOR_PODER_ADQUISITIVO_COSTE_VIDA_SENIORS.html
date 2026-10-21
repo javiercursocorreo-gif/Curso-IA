@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sesión 06 • Micro-App [NIV-006]: Calculadora de Poder Adquisitivo y Cesta Real para Mayores</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-base: #060913;
+            --bg-card: rgba(15, 23, 42, 0.92);
+            --border: rgba(255, 255, 255, 0.12);
+            --primary: #10b981;
+            --primary-glow: rgba(16, 185, 129, 0.35);
+            --gold: #f59e0b;
+            --cyan: #38bdf8;
+            --rose: #f43f5e;
+            --purple: #a855f7;
+            --text-main: #f8fafc;
+            --text-sub: #cbd5e1;
+            --font-sans: 'Inter', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            font-family: var(--font-sans);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            background-image: radial-gradient(circle at 50% 0%, rgba(16, 185, 129, 0.12) 0%, transparent 65%);
+            font-size: 17px;
+        }
+
+        header {
+            background: rgba(15, 23, 42, 0.98);
+            border-bottom: 1px solid var(--border);
+            padding: 16px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            backdrop-filter: blur(14px);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .brand-box {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+        .brand-badge {
+            background: rgba(16, 185, 129, 0.18);
+            color: var(--primary);
+            border: 1px solid rgba(16, 185, 129, 0.45);
+            font-family: var(--font-mono);
+            font-size: 0.88rem;
+            font-weight: 800;
+            padding: 5px 12px;
+            border-radius: 8px;
+        }
+        h1 {
+            font-size: 1.35rem;
+            font-weight: 800;
+            color: #ffffff;
+            letter-spacing: -0.01em;
+        }
+
+        .app-container {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 460px 1fr;
+            gap: 28px;
+            max-width: 1480px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 28px;
+        }
+
+        .calculator-panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 26px;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            backdrop-filter: blur(14px);
+            box-shadow: 0 12px 35px rgba(0,0,0,0.5);
+            height: fit-content;
+        }
+        .panel-title {
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .panel-sub {
+            font-size: 0.88rem;
+            color: var(--text-sub);
+            margin-top: 4px;
+            line-height: 1.4;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .input-label-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.90rem;
+            font-weight: 700;
+            color: #f1f5f9;
+        }
+        .input-val-badge {
+            font-family: var(--font-mono);
+            font-size: 1.02rem;
+            font-weight: 800;
+            color: var(--primary);
+            background: rgba(16, 185, 129, 0.12);
+            padding: 3px 10px;
+            border-radius: 6px;
+            border: 1px solid rgba(16, 185, 129, 0.35);
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: #1e293b;
+            outline: none;
+            -webkit-appearance: none;
+            cursor: pointer;
+            accent-color: var(--primary);
+        }
+
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 10px;
+        }
+        .kpi-card {
+            background: rgba(0, 0, 0, 0.45);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 14px;
+            text-align: center;
+        }
+        .kpi-val {
+            font-family: var(--font-mono);
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: #ffffff;
+        }
+        .kpi-lbl {
+            font-size: 0.78rem;
+            color: #94a3b8;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-top: 4px;
+        }
+
+        .dashboard-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 22px;
+        }
+
+        .status-hero {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.18) 0%, rgba(15, 23, 42, 0.95) 100%);
+            border: 2px solid var(--primary);
+            border-radius: 22px;
+            padding: 26px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 0 35px var(--primary-glow);
+            position: relative;
+        }
+        .status-hero-left {
+            max-width: 72%;
+        }
+        .status-badge {
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            font-weight: 800;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 6px;
+            display: inline-block;
+        }
+        .status-title {
+            font-size: 1.7rem;
+            font-weight: 900;
+            color: #ffffff;
+            letter-spacing: -0.02em;
+            line-height: 1.2;
+            margin-bottom: 10px;
+        }
+        .status-desc {
+            font-size: 0.96rem;
+            color: #cbd5e1;
+            line-height: 1.6;
+        }
+        .status-circle-box {
+            width: 105px;
+            height: 105px;
+            border-radius: 50%;
+            border: 4px solid var(--primary);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.6);
+            box-shadow: 0 0 25px var(--primary-glow);
+            flex-shrink: 0;
+        }
+        .status-circle-num {
+            font-family: var(--font-mono);
+            font-size: 2.2rem;
+            font-weight: 900;
+            color: var(--primary);
+            line-height: 1;
+        }
+        .status-circle-sub {
+            font-size: 0.7rem;
+            color: #94a3b8;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+
+        .steps-container {
+            display: flex;
+            flex-direction: column-reverse;
+            gap: 12px;
+        }
+        .step-card {
+            background: var(--bg-card);
+            border: 1.5px solid var(--border);
+            border-radius: 16px;
+            padding: 18px 22px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.3s ease;
+        }
+        .step-card.active {
+            border-color: var(--primary);
+            background: linear-gradient(90deg, rgba(16, 185, 129, 0.15) 0%, rgba(15, 23, 42, 0.95) 100%);
+            box-shadow: 0 0 25px var(--primary-glow);
+            transform: translateX(6px);
+        }
+        .step-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .step-num-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: rgba(255,255,255,0.06);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-mono);
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: #94a3b8;
+        }
+        .step-card.active .step-num-icon {
+            background: var(--primary);
+            color: #060913;
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.5);
+        }
+        .step-info-title {
+            font-size: 1.05rem;
+            font-weight: 800;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .step-info-desc {
+            font-size: 0.88rem;
+            color: var(--text-sub);
+            margin-top: 4px;
+            line-height: 1.4;
+        }
+        .step-req {
+            font-family: var(--font-mono);
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: #94a3b8;
+            background: rgba(0,0,0,0.3);
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px solid rgba(255,255,255,0.08);
+            white-space: nowrap;
+        }
+
+        .action-plan-box {
+            background: rgba(16, 185, 129, 0.12);
+            border: 1.5px solid rgba(16, 185, 129, 0.4);
+            border-radius: 16px;
+            padding: 20px 24px;
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+        }
+        .action-icon {
+            font-size: 2rem;
+            line-height: 1;
+        }
+        .action-title {
+            font-size: 1.05rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 6px;
+        }
+        .action-text {
+            font-size: 0.92rem;
+            color: #e2e8f0;
+            line-height: 1.5;
+        }
+
+        .btn-action {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: #ffffff;
+            font-weight: 800;
+            font-size: 0.92rem;
+            padding: 10px 20px;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4);
+            transition: all 0.2s ease;
+        }
+        .btn-action:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.6);
+        }
+
+        @media (max-width: 1024px) {
+            .app-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="brand-box">
+            <span class="brand-badge">[NIV-006] PODER ADQUISITIVO</span>
+            <h1>Calculadora de Poder Adquisitivo y Cesta de la Compra Real</h1>
+        </div>
+        <div style="display:flex; align-items:center; gap:16px;">
+            <button class="btn-action" onclick="openPromptModal()">
+                🌱 Ver Prompt Semilla
+            </button>
+            <div style="font-size:0.85rem; color:var(--text-sub); font-family:var(--font-mono);">Economía Práctica Doméstica 65+</div>
+        </div>
+    </header>
+
+    <div class="app-container">
+
+        <aside class="calculator-panel">
+            <div>
+                <div class="panel-title">
+                    <span>🛒</span>
+                    <span>Tu Cesta y Suministros del Mes</span>
+                </div>
+                <div class="panel-sub">Ajusta tus gastos reales para ver el desahogo de tu pensión</div>
+            </div>
+
+            <!-- PENSIÓN -->
+            <div class="input-group">
+                <div class="input-label-row">
+                    <span>💶 Pensión Mensual Neta</span>
+                    <span class="input-val-badge" id="lblPension">1.750 €</span>
+                </div>
+                <input type="range" id="rngPension" min="600" max="3200" step="25" value="1750" oninput="updateSimulation()">
+            </div>
+
+            <!-- COMIDA -->
+            <div class="input-group">
+                <div class="input-label-row">
+                    <span>🥩 Comida, Fruta y Supermercado</span>
+                    <span class="input-val-badge" id="lblFood" style="color:var(--rose);">380 €</span>
+                </div>
+                <input type="range" id="rngFood" min="150" max="800" step="10" value="380" oninput="updateSimulation()">
+            </div>
+
+            <!-- SUMINISTROS CASA -->
+            <div class="input-group">
+                <div class="input-label-row">
+                    <span>💡 Luz, Agua, Calefacción y Comunidad</span>
+                    <span class="input-val-badge" id="lblUtilities" style="color:var(--gold);">220 €</span>
+                </div>
+                <input type="range" id="rngUtilities" min="80" max="600" step="10" value="220" oninput="updateSimulation()">
+            </div>
+
+            <!-- SALUD Y FARMACIA -->
+            <div class="input-group">
+                <div class="input-label-row">
+                    <span>💊 Farmacia, Dentista y Salud</span>
+                    <span class="input-val-badge" id="lblHealth" style="color:var(--cyan);">90 €</span>
+                </div>
+                <input type="range" id="rngHealth" min="20" max="400" step="10" value="90" oninput="updateSimulation()">
+            </div>
+
+            <!-- OCIO Y NIETOS -->
+            <div class="input-group">
+                <div class="input-label-row">
+                    <span>☕ Ocio, Cafés, Salidas y Nietos</span>
+                    <span class="input-val-badge" id="lblLeisure" style="color:var(--purple);">160 €</span>
+                </div>
+                <input type="range" id="rngLeisure" min="20" max="500" step="10" value="160" oninput="updateSimulation()">
+            </div>
+
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-val" id="valNetBalance" style="color:var(--primary);">+900 €</div>
+                    <div class="kpi-lbl">Sobra al Mes</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-val" id="valCoveragePct">206%</div>
+                    <div class="kpi-lbl">Cobertura Gastos</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-val" id="valTotalCost" style="color:var(--rose);">850 €</div>
+                    <div class="kpi-lbl">Gasto Total Mes</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-val" id="valLevelRank" style="color:var(--primary);">NIVEL 5</div>
+                    <div class="kpi-lbl">Nivel de Desahogo</div>
+                </div>
+            </div>
+        </aside>
+
+        <main class="dashboard-panel">
+
+            <div class="status-hero" id="statusHero">
+                <div class="status-hero-left">
+                    <span class="status-badge" id="heroBadge">TU SITUACIÓN FAMILIAR</span>
+                    <div class="status-title" id="heroTitle">Nivel 5: Desahogo Confortable</div>
+                    <div class="status-desc" id="heroDesc">
+                        Tu pensión cubre sobradamente todos los recibos y la cesta de la compra de calidad. Tienes margen amplio para viajar con el IMSERSO, disfrutar de salidas y darte caprichos familiares sin mirar la cuenta.
+                    </div>
+                </div>
+                <div class="status-circle-box" id="heroCircle">
+                    <span class="status-circle-num" id="heroNum">5</span>
+                    <span class="status-circle-sub">NIVEL</span>
+                </div>
+            </div>
+
+            <div class="steps-container">
+
+                <div class="step-card" id="step-6">
+                    <div class="step-left">
+                        <div class="step-num-icon">6</div>
+                        <div>
+                            <div class="step-info-title">
+                                <span>Plenitud y Capacidad de Ayuda Familiar</span>
+                                <span style="font-size:0.85rem; color:var(--purple);">👑 Abundancia Plena</span>
+                            </div>
+                            <div class="step-info-desc">Gastas menos de la mitad de tu pensión. Tienes margen sobrado para ayudar a los hijos en compras o estudios de nietos.</div>
+                        </div>
+                    </div>
+                    <div class="step-right">
+                        <div class="step-req">Sobra > 50%</div>
+                    </div>
+                </div>
+
+                <div class="step-card active" id="step-5">
+                    <div class="step-left">
+                        <div class="step-num-icon">5</div>
+                        <div>
+                            <div class="step-info-title">
+                                <span>Desahogo Confortable</span>
+                                <span style="font-size:0.85rem; color:var(--primary);">🏖️ Calidad de Vida</span>
+                            </div>
+                            <div class="step-info-desc">Sobra un colchón mensual generoso. Todos los gastos de alimentación, farmacia y suministros cubiertos con holgura.</div>
+                        </div>
+                    </div>
+                    <div class="step-right">
+                        <div class="step-req">Sobra ≥ 500 €/mes</div>
+                    </div>
+                </div>
+
+                <div class="step-card" id="step-4">
+                    <div class="step-left">
+                        <div class="step-num-icon">4</div>
+                        <div>
+                            <div class="step-info-title">
+                                <span>Estabilidad Tranquila</span>
+                                <span style="font-size:0.85rem; color:var(--cyan);">🌱 Sin Ahogos</span>
+                            </div>
+                            <div class="step-info-desc">La pensión da para vivir bien, salir a tomar el aperitivo con los amigos y guardar entre 150 € y 400 € al mes.</div>
+                        </div>
+                    </div>
+                    <div class="step-right">
+                        <div class="step-req">Sobra 150-499 €</div>
+                    </div>
+                </div>
+
+                <div class="step-card" id="step-3">
+                    <div class="step-left">
+                        <div class="step-num-icon">3</div>
+                        <div>
+                            <div class="step-info-title">
+                                <span>Equilibrio Justo</span>
+                                <span style="font-size:0.85rem; color:var(--gold);">⚖️ A Ras</span>
+                            </div>
+                            <div class="step-info-desc">Los ingresos cubren los gastos del mes pero apenas sobra nada para imprevistos. No hay deudas pero hay que vigilar.</div>
+                        </div>
+                    </div>
+                    <div class="step-right">
+                        <div class="step-req">Sobra 0-149 €</div>
+                    </div>
+                </div>
+
+                <div class="step-card" id="step-2">
+                    <div class="step-left">
+                        <div class="step-num-icon">2</div>
+                        <div>
+                            <div class="step-info-title">
+                                <span>Cuidado Extremo</span>
+                                <span style="font-size:0.85rem; color:var(--rose);">⚠️ Ajustado</span>
+                            </div>
+                            <div class="step-info-desc">Falta un poco de dinero cada mes y hay que privarse de salidas o recurrir a pequeños ahorros para pagar suministros.</div>
+                        </div>
+                    </div>
+                    <div class="step-right">
+                        <div class="step-req">Déficit < 150 €</div>
+                    </div>
+                </div>
+
+                <div class="step-card" id="step-1">
+                    <div class="step-left">
+                        <div class="step-num-icon">1</div>
+                        <div>
+                            <div class="step-info-title">
+                                <span>Ahogo y Asfixia Presupuestaria</span>
+                                <span style="font-size:0.85rem; color:var(--rose);">🚨 Asistencia</span>
+                            </div>
+                            <div class="step-info-desc">La pensión mínima no alcanza para alimentación y suministros esenciales. Se requiere bono social térmico y ayudas públicas.</div>
+                        </div>
+                    </div>
+                    <div class="step-right">
+                        <div class="step-req">Déficit Severo</div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="action-plan-box">
+                <div class="action-icon">💡</div>
+                <div>
+                    <div class="action-title" id="actionTitle">Tu Gran Consejo de Tranquilidad Presupuestaria</div>
+                    <div class="action-text" id="actionDesc">
+                        Tu economía doméstica disfruta de una <strong>excelente salud</strong>. La clave de tu tranquilidad reside en que no tienes cargas de hipoteca ni alquiler, permitiendo que tu pensión rinda al máximo en alimentación saludable y bienestar.
+                    </div>
+                </div>
+            </div>
+
+        </main>
+
+    </div>
+
+    <div id="promptModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.85); backdrop-filter:blur(10px); z-index:100; align-items:center; justify-content:center; padding:20px;" onclick="closePromptModal(event)">
+        <div style="background:#0b1120; border:2px solid #10b981; border-radius:20px; max-width:850px; width:100%; max-height:90vh; overflow-y:auto; padding:28px; box-shadow:0 0 50px rgba(16,185,129,0.3); display:flex; flex-direction:column; gap:20px;" onclick="event.stopPropagation()">
+            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:14px;">
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <span style="font-size:1.6rem;">🌱</span>
+                    <strong style="font-size:1.2rem; color:#ffffff;">Triple Salvaguarda Pedagógica • Sesión 06</strong>
+                </div>
+                <button onclick="closePromptModal()" style="background:transparent; border:none; color:#94a3b8; font-size:1.4rem; cursor:pointer;">✕</button>
+            </div>
+
+            <div style="background:rgba(16,185,129,0.08); border:1px solid rgba(16,185,129,0.3); border-radius:14px; padding:16px;">
+                <div style="font-family:var(--font-mono); font-size:0.82rem; font-weight:800; color:#10b981; margin-bottom:8px;">PASO 1: EL PROMPT SEMILLA HUMANO</div>
+                <div style="background:#030712; border:1px solid rgba(255,255,255,0.1); border-radius:10px; padding:14px; font-family:var(--font-mono); font-size:0.86rem; color:#a7f3d0; line-height:1.6; user-select:all;">
+Actúa como un economista familiar y asesor para personas mayores.<br>
+Quiero crear una aplicación interactiva en HTML que mida el poder adquisitivo y el desahogo de la pensión frente a los gastos reales de la casa:<br>
+1. Pensión mensual neta.<br>
+2. Gasto en supermercado y comida fresca.<br>
+3. Luz, agua, calefacción y comunidad.<br>
+4. Farmacia y dentista.<br>
+5. Ocio con amigos y regalos a nietos.<br><br>
+Escribe el prompt maestro para desarrollar una calculadora visual que muestre en cuál de los 6 escalones de desahogo se encuentra el jubilado y le ofrezca un diagnóstico tranquilizador.
+                </div>
+            </div>
+
+            <div style="background:rgba(56,189,248,0.08); border:1px solid rgba(56,189,248,0.3); border-radius:14px; padding:16px;">
+                <div style="font-family:var(--font-mono); font-size:0.82rem; font-weight:800; color:#38bdf8; margin-bottom:8px;">PASO 2: EL PLANO MAESTRO TÉCNICO (INGENIERÍA)</div>
+                <div style="background:#030712; border:1px solid rgba(255,255,255,0.1); border-radius:10px; padding:14px; font-family:var(--font-mono); font-size:0.84rem; color:#bae6fd; line-height:1.6; user-select:all;">
+Crea una aplicación web interactiva autocontenida en un único archivo HTML (con CSS3 y JavaScript moderno) titulada "Calculadora de Poder Adquisitivo Senior".<br>
+Requisitos:<br>
+1. Panel Izquierdo: 5 sliders dinámicos (Pensión neta, alimentación, suministros, farmacia y ocio) y 4 tarjetas KPI con saldo mensual neto, tasa de cobertura y nivel de desahogo.<br>
+2. Panel Central: Hero dinámico con título semafórico, indicador visual del escalón y consejo de economía doméstica sin privaciones absurdas.<br>
+3. Visualización vertical de los 6 niveles de holgura económica iluminando el nivel alcanzado.<br>
+4. Diseño accesible: Letra grande (16-18px), modo oscuro descansado y ausencia de jerga financiera anglosajona.
+                </div>
+            </div>
+
+            <div style="background:rgba(245,158,11,0.08); border:1px solid rgba(245,158,11,0.3); border-radius:14px; padding:16px;">
+                <div style="font-family:var(--font-mono); font-size:0.82rem; font-weight:800; color:#f59e0b; margin-bottom:8px;">PASO 3: GARANTÍA TOTAL DEL SIMULADOR</div>
+                <p style="font-size:0.88rem; color:#cbd5e1; line-height:1.5;">Esta aplicación oficial terminada representa la garantía de la Triple Salvaguarda Pedagógica.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function updateSimulation() {
+            const pension = parseInt(document.getElementById('rngPension').value);
+            const food = parseInt(document.getElementById('rngFood').value);
+            const utilities = parseInt(document.getElementById('rngUtilities').value);
+            const health = parseInt(document.getElementById('rngHealth').value);
+            const leisure = parseInt(document.getElementById('rngLeisure').value);
+
+            document.getElementById('lblPension').innerText = pension.toLocaleString('es-ES') + " €";
+            document.getElementById('lblFood').innerText = food.toLocaleString('es-ES') + " €";
+            document.getElementById('lblUtilities').innerText = utilities.toLocaleString('es-ES') + " €";
+            document.getElementById('lblHealth').innerText = health.toLocaleString('es-ES') + " €";
+            document.getElementById('lblLeisure').innerText = leisure.toLocaleString('es-ES') + " €";
+
+            const totalExpenses = food + utilities + health + leisure;
+            const netBalance = pension - totalExpenses;
+            const coverage = Math.round((pension / totalExpenses) * 100);
+
+            document.getElementById('valTotalCost').innerText = totalExpenses.toLocaleString('es-ES') + " €";
+            document.getElementById('valCoveragePct').innerText = coverage + "%";
+
+            const sign = netBalance >= 0 ? "+" : "";
+            document.getElementById('valNetBalance').innerText = `${sign}${netBalance.toLocaleString('es-ES')} €`;
+            document.getElementById('valNetBalance').style.color = netBalance >= 0 ? "var(--primary)" : "var(--rose)";
+
+            let lvl = 3;
+            if (netBalance < -150) lvl = 1;
+            else if (netBalance < 0) lvl = 2;
+            else if (netBalance < 150) lvl = 3;
+            else if (netBalance < 500) lvl = 4;
+            else if (netBalance < (pension * 0.5)) lvl = 5;
+            else lvl = 6;
+
+            document.getElementById('valLevelRank').innerText = "NIVEL " + lvl;
+            document.getElementById('heroNum').innerText = lvl;
+
+            const lvlData = {
+                1: { title: "Nivel 1: Ahogo y Asfixia Presupuestaria", desc: "La pensión no es suficiente para los gastos básicos. Es prioritario solicitar el Bono Social Eléctrico y consultar las ayudas municipales de mayores.", color: "#f43f5e" },
+                2: { title: "Nivel 2: Cuidado Extremo y Ajuste", desc: "Terminas el mes en números justos o con pequeño déficit. Revisar contratos de luz y comprar marcas blancas te devolverá el equilibrio.", color: "#f43f5e" },
+                3: { title: "Nivel 3: Equilibrio Justo", desc: "Cubres el 100% de los gastos pero te queda poco margen para imprevistos dentales o de casa. Hay estabilidad pero conviene prudencia.", color: "#f59e0b" },
+                4: { title: "Nivel 4: Estabilidad Tranquila", desc: "Te sobran entre 150 € y 499 € al mes. Puedes ahorrar poco a poco, disfrutar de cafés con amigos y mantener la despensa bien surtida.", color: "#38bdf8" },
+                5: { title: "Nivel 5: Desahogo Confortable", desc: "Tu pensión te permite vivir con notable calidad de vida: viajar, mantener tu casa impecable y disfrutar de tus nietos sin angustias.", color: "#10b981" },
+                6: { title: "Nivel 6: Plenitud y Capacidad de Ayuda Familiar", desc: "Te sobra más de la mitad de tu pensión cada mes. Tienes una economía sólida que te permite ser un puntal de apoyo generoso para toda la familia.", color: "#a855f7" }
+            };
+
+            const cur = lvlData[lvl];
+            document.getElementById('heroTitle').innerText = cur.title;
+            document.getElementById('heroDesc').innerText = cur.desc;
+
+            const activeColor = cur.color;
+            document.getElementById('statusHero').style.borderColor = activeColor;
+            document.getElementById('statusHero').style.boxShadow = `0 0 35px ${activeColor}40`;
+            document.getElementById('heroCircle').style.borderColor = activeColor;
+            document.getElementById('heroCircle').style.boxShadow = `0 0 25px ${activeColor}50`;
+            document.getElementById('heroNum').style.color = activeColor;
+            document.getElementById('heroBadge').style.color = activeColor;
+
+            for (let i = 1; i <= 6; i++) {
+                const el = document.getElementById('step-' + i);
+                if (el) {
+                    if (i === lvl) {
+                        el.className = "step-card active";
+                        el.style.borderColor = activeColor;
+                    } else {
+                        el.className = "step-card";
+                        el.style.borderColor = "var(--border)";
+                    }
+                }
+            }
+        }
+
+        function openPromptModal() {
+            document.getElementById('promptModal').style.display = 'flex';
+        }
+
+        function closePromptModal(e) {
+            if (e && e.target !== e.currentTarget && e.target.tagName !== 'BUTTON') return;
+            document.getElementById('promptModal').style.display = 'none';
+        }
+
+        window.onload = updateSimulation;
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sesión 02 • Micro-App [NIV-002]: Radar Antifraude y Detección de Estafas para Mayores</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-base: #060913;
+            --bg-card: rgba(15, 23, 42, 0.92);
+            --border: rgba(255, 255, 255, 0.12);
+            --primary: #10b981;
+            --primary-glow: rgba(16, 185, 129, 0.35);
+            --gold: #f59e0b;
+            --cyan: #38bdf8;
+            --rose: #f43f5e;
+            --purple: #a855f7;
+            --text-main: #f8fafc;
+            --text-sub: #cbd5e1;
+            --font-sans: 'Inter', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            font-family: var(--font-sans);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            background-image: radial-gradient(circle at 50% 0%, rgba(244, 63, 94, 0.12) 0%, transparent 65%);
+            font-size: 17px;
+        }
+
+        header {
+            background: rgba(15, 23, 42, 0.98);
+            border-bottom: 1px solid var(--border);
+            padding: 16px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            backdrop-filter: blur(14px);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .brand-box {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+        .brand-badge {
+            background: rgba(244, 63, 94, 0.18);
+            color: var(--rose);
+            border: 1px solid rgba(244, 63, 94, 0.45);
+            font-family: var(--font-mono);
+            font-size: 0.88rem;
+            font-weight: 800;
+            padding: 5px 12px;
+            border-radius: 8px;
+        }
+        h1 {
+            font-size: 1.35rem;
+            font-weight: 800;
+            color: #ffffff;
+            letter-spacing: -0.01em;
+        }
+
+        .app-container {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 460px 1fr;
+            gap: 28px;
+            max-width: 1480px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 28px;
+        }
+
+        .calculator-panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 26px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            backdrop-filter: blur(14px);
+            box-shadow: 0 12px 35px rgba(0,0,0,0.5);
+            height: fit-content;
+        }
+        .panel-title {
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .panel-sub {
+            font-size: 0.88rem;
+            color: var(--text-sub);
+            margin-top: 4px;
+            line-height: 1.4;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .input-label-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.92rem;
+            font-weight: 700;
+            color: #f1f5f9;
+        }
+        .input-val-badge {
+            font-family: var(--font-mono);
+            font-size: 1.05rem;
+            font-weight: 800;
+            color: var(--rose);
+            background: rgba(244, 63, 94, 0.12);
+            padding: 4px 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(244, 63, 94, 0.35);
+        }
+
+        select, input[type="range"] {
+            width: 100%;
+            border-radius: 8px;
+            outline: none;
+            cursor: pointer;
+        }
+        select {
+            background: #1e293b;
+            color: #f8fafc;
+            border: 1px solid rgba(255,255,255,0.2);
+            padding: 10px 14px;
+            font-size: 0.95rem;
+            font-family: var(--font-sans);
+        }
+        input[type="range"] {
+            height: 8px;
+            background: #1e293b;
+            -webkit-appearance: none;
+            accent-color: var(--rose);
+        }
+
+        .check-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 10px;
+            padding: 10px 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .check-item:hover {
+            border-color: rgba(255,255,255,0.25);
+            background: rgba(255,255,255,0.04);
+        }
+        .check-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--primary);
+            cursor: pointer;
+        }
+        .check-item-text {
+            font-size: 0.88rem;
+            color: #e2e8f0;
+            font-weight: 500;
+        }
+
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 10px;
+        }
+        .kpi-card {
+            background: rgba(0, 0, 0, 0.45);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 14px;
+            text-align: center;
+        }
+        .kpi-val {
+            font-family: var(--font-mono);
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: #ffffff;
+        }
+        .kpi-lbl {
+            font-size: 0.78rem;
+            color: #94a3b8;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-top: 4px;
+        }
+
+        .dashboard-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 22px;
+        }
+
+        .status-hero {
+            background: linear-gradient(135deg, rgba(244, 63, 94, 0.18) 0%, rgba(15, 23, 42, 0.95) 100%);
+            border: 2px solid var(--rose);
+            border-radius: 22px;
+            padding: 26px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 0 35px rgba(244, 63, 94, 0.3);
+            position: relative;
+        }
+        .status-hero-left {
+            max-width: 72%;
+        }
+        .status-badge {
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            font-weight: 800;
+            color: var(--rose);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 6px;
+            display: inline-block;
+        }
+        .status-title {
+            font-size: 1.7rem;
+            font-weight: 900;
+            color: #ffffff;
+            letter-spacing: -0.02em;
+            line-height: 1.2;
+            margin-bottom: 10px;
+        }
+        .status-desc {
+            font-size: 0.96rem;
+            color: #cbd5e1;
+            line-height: 1.6;
+        }
+        .status-circle-box {
+            width: 105px;
+            height: 105px;
+            border-radius: 50%;
+            border: 4px solid var(--rose);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.6);
+            box-shadow: 0 0 25px rgba(244, 63, 94, 0.4);
+            flex-shrink: 0;
+        }
+        .status-circle-num {
+            font-family: var(--font-mono);
+            font-size: 2.2rem;
+            font-weight: 900;
+            color: var(--rose);
+            line-height: 1;
+        }
+        .status-circle-sub {
+            font-size: 0.7rem;
+            color: #94a3b8;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+
+        .steps-container {
+            display: flex;
+            flex-direction: column-reverse;
+            gap: 12px;
+        }
+        .step-card {
+            background: var(--bg-card);
+            border: 1.5px solid var(--border);
+            border-radius: 16px;
+            padding: 18px 22px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.3s ease;
+        }
+        .step-card.active {
+            border-color: var(--rose);
+            background: linear-gradient(90deg, rgba(244, 63, 94, 0.15) 0%, rgba(15, 23, 42, 0.95) 100%);
+            box-shadow: 0 0 25px rgba(244, 63, 94, 0.25);
+            transform: translateX(6px);
+        }
+        .step-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .step-num-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: rgba(255,255,255,0.06);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-mono);
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: #94a3b8;
+        }
+        .step-card.active .step-num-icon {
+            background: var(--rose);
+            color: #ffffff;
+            box-shadow: 0 0 15px rgba(244, 63, 94, 0.5);
+        }
+        .step-info-title {
+            font-size: 1.05rem;
+            font-weight: 800;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .step-info-desc {
+            font-size: 0.88rem;
+            color: var(--text-sub);
+            margin-top: 4px;
+            line-height: 1.4;
+        }
+        .step-req {
+            font-family: var(--font-mono);
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: #94a3b8;
+            background: rgba(0,0,0,0.3);
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px solid rgba(255,255,255,0.08);
+            white-space: nowrap;
+        }
+
+        .action-plan-box {
+            background: rgba(16, 185, 129, 0.12);
+            border: 1.5px solid rgba(16, 185, 129, 0.4);
+            border-radius: 16px;
+            padding: 20px 24px;
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+        }
+        .action-icon {
+            font-size: 2rem;
+            line-height: 1;
+        }
+        .action-title {
+            font-size: 1.05rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 6px;
+        }
+        .action-text {
+            font-size: 0.92rem;
+            color: #e2e8f0;
+            line-height: 1.5;
+        }
+
+        .btn-action {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: #ffffff;
+            font-weight: 800;
+            font-size: 0.92rem;
+            padding: 10px 20px;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4);
+            transition: all 0.2s ease;
+        }
+        .btn-action:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.6);
+        }
+
+        @media (max-width: 1024px) {
+            .app-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="brand-box">
+            <span class="brand-badge">[NIV-002] RADAR ANTIFRAUDE</span>
+            <h1>Radar de Detección de Estafas y Chiringuitos para Mayores</h1>
+        </div>
+        <div style="display:flex; align-items:center; gap:16px;">
+            <button class="btn-action" onclick="openPromptModal()">
+                🌱 Ver Prompt Semilla
+            </button>
+            <div style="font-size:0.85rem; color:var(--text-sub); font-family:var(--font-mono);">Seguridad y Ciberblindaje Senior</div>
+        </div>
+    </header>
+
+    <div class="app-container">
+
+        <aside class="calculator-panel">
+            <div>
+                <div class="panel-title">
+                    <span>🛡️</span>
+                    <span>Analizador de Sospechas</span>
+                </div>
+                <div class="panel-sub">Selecciona un mensaje o llamada que hayas recibido para evaluarlo</div>
+            </div>
+
+            <div class="input-group">
+                <div class="input-label-row">
+                    <span>📱 Caso o Mensaje Recibido</span>
+                </div>
+                <select id="selCase" onchange="updateSimulation()">
+                    <option value="sms_correos">SMS de Correos: "Paquete retenido por 1,45 €"</option>
+                    <option value="hijo_apuros">WhatsApp: "Mamá, se me rompió el móvil, escríbeme aquí"</option>
+                    <option value="falso_banco">Llamada del "Banco": "Detectado cargo indebido, dime clave"</option>
+                    <option value="falso_gas">Revisores del gas que llaman al timbre sin cita previa</option>
+                    <option value="chiringuito_ia">Anuncio web: "Gana 2.500 € a la semana con IA e inversión"</option>
+                    <option value="timo_amor">Amistad por Facebook/WhatsApp que pide dinero para visitarte</option>
+                    <option value="comercial_luz">Comercial de luz que pide ver tu factura para 'descuento'</option>
+                    <option value="banco_oficial">SMS de tu banco avisando de tu nómina sin pedir enlaces</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <div class="input-label-row">
+                    <span>⏱️ Nivel de Urgencia que te Meten</span>
+                    <span class="input-val-badge" id="lblUrgency">Máxima</span>
+                </div>
+                <input type="range" id="rngUrgency" min="1" max="5" step="1" value="5" oninput="updateSimulation()">
+            </div>
+
+            <div>
+                <div class="input-label-row" style="margin-bottom:8px;">
+                    <span>🔒 Tus Hábitos de Seguridad</span>
+                </div>
+                <div style="display:flex; flex-direction:column; gap:8px;">
+                    <label class="check-item">
+                        <input type="checkbox" id="chkNoPass" checked onchange="updateSimulation()">
+                        <span class="check-item-text">Nunca digo contraseñas ni códigos SMS por teléfono</span>
+                    </label>
+                    <label class="check-item">
+                        <input type="checkbox" id="chkNoLink" checked onchange="updateSimulation()">
+                        <span class="check-item-text">No pincho enlaces raros que me mandan por SMS</span>
+                    </label>
+                    <label class="check-item">
+                        <input type="checkbox" id="chkAskFamily" checked onchange="updateSimulation()">
+                        <span class="check-item-text">Si dudo, pregunto a un hijo o llamo al 017 de INCIBE</span>
+                    </label>
+                    <label class="check-item">
+                        <input type="checkbox" id="chkNoDoor" onchange="updateSimulation()">
+                        <span class="check-item-text">No abro la puerta a revisores que no tengan cita oficial</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-val" id="valDefense">95%</div>
+                    <div class="kpi-lbl">Blindaje Personal</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-val" id="valDangerLevel" style="color:var(--rose);">NIVEL 5</div>
+                    <div class="kpi-lbl">Riesgo del Caso</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-val" id="valActionPhone" style="color:var(--primary); font-size:1.1rem;">017 / 091</div>
+                    <div class="kpi-lbl">Teléfono Gratuito</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-val" id="valGoldenRule" style="font-size:0.95rem; color:var(--cyan);">COLGAR</div>
+                    <div class="kpi-lbl">Regla de Oro</div>
+                </div>
+            </div>
+        </aside>
+
+        <main class="dashboard-panel">
+
+            <div class="status-hero" id="statusHero">
+                <div class="status-hero-left">
+                    <span class="status-badge" id="heroBadge">DIAGNÓSTICO DEL RADAR</span>
+                    <div class="status-title" id="heroTitle">Nivel 5: Intento de Estafa Flagrante</div>
+                    <div class="status-desc" id="heroDesc">
+                        Este mensaje busca asustarte con falsas prisas para robarte los datos de tu tarjeta bancaria. Correos NUNCA te cobrará tasas por SMS ni te pedirá enlaces para liberar paquetes.
+                    </div>
+                </div>
+                <div class="status-circle-box" id="heroCircle">
+                    <span class="status-circle-num" id="heroNum">5</span>
+                    <span class="status-circle-sub">NIVEL</span>
+                </div>
+            </div>
+
+            <div class="steps-container">
+
+                <div class="step-card" id="step-6">
+                    <div class="step-left">
+                        <div class="step-num-icon">6</div>
+                        <div>
+                            <div class="step-info-title">
+                                <span>Chiringuito Financiero o Timo Piramidal</span>
+                                <span style="font-size:0.85rem; color:var(--rose);">🚨 Peligro Máximo</span>
+                            </div>
+                            <div class="step-info-desc">Promesas de rentabilidad mágica, falsos robots de inversión y plataformas no registradas en la CNMV. Roban todos los ahorros.</div>
+                        </div>
+                    </div>
+                    <div class="step-right">
+                        <div class="step-req">Robo de Patrimonio</div>
+                    </div>
+                </div>
+
+                <div class="step-card active" id="step-5">
+                    <div class="step-left">
+                        <div class="step-num-icon">5</div>
+                        <div>
+                            <div class="step-info-title">
+                                <span>Suplantación de Identidad (Phishing / Vishing)</span>
+                                <span style="font-size:0.85rem; color:var(--rose);">⚠️ Fraude Activo</span>
+                            </div>
+                            <div class="step-info-desc">Se hacen pasar por tu banco, la Seguridad Social, Correos o la Agencia Tributaria pidiendo claves o tarjetas.</div>
+                        </div>
+                    </div>
+                    <div class="step-right">
+                        <div class="step-req">Robo de Claves</div>
+                    </div>
+                </div>
+
+                <div class="step-card" id="step-4">
+                    <div class="step-left">
+                        <div class="step-num-icon">4</div>
+                        <div>
+                            <div class="step-info-title">
+                                <span>Engaño Emocional o Falso Pariente</span>
+                                <span style="font-size:0.85rem; color:var(--gold);">🎭 Manipulación</span>
+                            </div>
+                            <div class="step-info-desc">El "hijo con teléfono roto" o "amigo extranjero". Apelan a tu cariño y preocupación para pedir transferencias urgentes.</div>
+                        </div>
+                    </div>
+                    <div class="step-right">
+                        <div class="step-req">Urgencia Familiar</div>
+                    </div>
+                </div>
+
+                <div class="step-card" id="step-3">
+                    <div class="step-left">
+                        <div class="step-num-icon">3</div>
+                        <div>
+                            <div class="step-info-title">
+                                <span>Venta Agresiva y Puerta Fría</span>
+                                <span style="font-size:0.85rem; color:var(--cyan);">🚪 Precaución</span>
+                            </div>
+                            <div class="step-info-desc">Comerciales no solicitados de luz, gas o telefonía que buscan cambiarte de contrato con letra pequeña o engaños.</div>
+                        </div>
+                    </div>
+                    <div class="step-right">
+                        <div class="step-req">No Dar Facturas</div>
+                    </div>
+                </div>
+
+                <div class="step-card" id="step-2">
+                    <div class="step-left">
+                        <div class="step-num-icon">2</div>
+                        <div>
+                            <div class="step-info-title">
+                                <span>Publicidad Comercial Legítima</span>
+                                <span style="font-size:0.85rem; color:var(--primary);">📢 Oferta Habitual</span>
+                            </div>
+                            <div class="step-info-desc">Anuncios de tiendas conocidas con condiciones claras y sin pedirte dinero de forma oculta ni datos confidenciales.</div>
+                        </div>
+                    </div>
+                    <div class="step-right">
+                        <div class="step-req">Consumo Normal</div>
+                    </div>
+                </div>
+
+                <div class="step-card" id="step-1">
+                    <div class="step-left">
+                        <div class="step-num-icon">1</div>
+                        <div>
+                            <div class="step-info-title">
+                                <span>Comunicación Oficial y Verificada</span>
+                                <span style="font-size:0.85rem; color:var(--primary);">🛡️ 100% Seguro</span>
+                            </div>
+                            <div class="step-info-desc">Notificaciones informativas de tu banco o entidades públicas que NO contienen enlaces ni te solicitan claves personales.</div>
+                        </div>
+                    </div>
+                    <div class="step-right">
+                        <div class="step-req">Sin Enlaces</div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="action-plan-box">
+                <div class="action-icon">💡</div>
+                <div>
+                    <div class="action-title" id="actionTitle">Tu Protocolo de Defensa Inmediata</div>
+                    <div class="action-text" id="actionDesc">
+                        <strong>Regla de Oro:</strong> Ante la menor duda, cuelga el teléfono o borra el mensaje. Tu banco de verdad JAMÁS te pedirá contraseñas por teléfono. Si tienes dudas, llama gratis al <strong>017 (Línea de Ayuda en Ciberseguridad de INCIBE)</strong>.
+                    </div>
+                </div>
+            </div>
+
+        </main>
+
+    </div>
+
+    <div id="promptModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.85); backdrop-filter:blur(10px); z-index:100; align-items:center; justify-content:center; padding:20px;" onclick="closePromptModal(event)">
+        <div style="background:#0b1120; border:2px solid #f43f5e; border-radius:20px; max-width:850px; width:100%; max-height:90vh; overflow-y:auto; padding:28px; box-shadow:0 0 50px rgba(244,63,94,0.3); display:flex; flex-direction:column; gap:20px;" onclick="event.stopPropagation()">
+            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:14px;">
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <span style="font-size:1.6rem;">🌱</span>
+                    <strong style="font-size:1.2rem; color:#ffffff;">Triple Salvaguarda Pedagógica • Sesión 02</strong>
+                </div>
+                <button onclick="closePromptModal()" style="background:transparent; border:none; color:#94a3b8; font-size:1.4rem; cursor:pointer;">✕</button>
+            </div>
+
+            <div style="background:rgba(244,63,94,0.08); border:1px solid rgba(244,63,94,0.3); border-radius:14px; padding:16px;">
+                <div style="font-family:var(--font-mono); font-size:0.82rem; font-weight:800; color:#f43f5e; margin-bottom:8px;">PASO 1: EL PROMPT SEMILLA HUMANO</div>
+                <div style="background:#030712; border:1px solid rgba(255,255,255,0.1); border-radius:10px; padding:14px; font-family:var(--font-mono); font-size:0.86rem; color:#fca5a5; line-height:1.6; user-select:all;">
+Actúa como un experto en ciberseguridad policial y pedagogía para mayores.<br>
+Quiero crear una aplicación interactiva en un solo archivo HTML para que las personas mayores aprendan a detectar fraudes y estafas en el móvil:<br>
+1. SMS falsos de Correos y paquetería.<br>
+2. El timo del falso hijo en apuros por WhatsApp.<br>
+3. Llamadas suplantando al banco pidiendo claves.<br>
+4. Falsos revisores de la luz y gas en casa.<br>
+5. Chiringuitos de falsas inversiones milagrosas.<br><br>
+Escribe el prompt técnico maestro para que un programador construya un simulador con selector de casos, semáforo de peligro, consejos claros y botón de ayuda oficial al 017.
+                </div>
+            </div>
+
+            <div style="background:rgba(56,189,248,0.08); border:1px solid rgba(56,189,248,0.3); border-radius:14px; padding:16px;">
+                <div style="font-family:var(--font-mono); font-size:0.82rem; font-weight:800; color:#38bdf8; margin-bottom:8px;">PASO 2: EL PLANO MAESTRO TÉCNICO (INGENIERÍA)</div>
+                <div style="background:#030712; border:1px solid rgba(255,255,255,0.1); border-radius:10px; padding:14px; font-family:var(--font-mono); font-size:0.84rem; color:#bae6fd; line-height:1.6; user-select:all;">
+Crea una aplicación web interactiva autocontenida en un único archivo HTML (con CSS3 y JavaScript moderno) titulada "Radar Antifraude Senior".<br>
+Requisitos:<br>
+1. Panel Izquierdo: Selector desplegable con 8 casos de estafas frecuentes, slider de urgencia percibida (1 a 5) y checklist de 4 hábitos de ciberblindaje.<br>
+2. Panel Central: Hero dinámico con color semafórico, indicador visual del nivel de riesgo (del 1 al 6), explicación psicológica del engaño y número gratuito de socorro (017 INCIBE / 091 Policía).<br>
+3. Visualización de los 6 escalones de riesgo: Desde comunicación oficial hasta timo piramidal, iluminando el escalón correspondiente.<br>
+4. Diseño accesible: Letra grande (16-18px), modo oscuro de alto contraste y tono tranquilizador sin alarmismos innecesarios.
+                </div>
+            </div>
+
+            <div style="background:rgba(16,185,129,0.08); border:1px solid rgba(16,185,129,0.3); border-radius:14px; padding:16px;">
+                <div style="font-family:var(--font-mono); font-size:0.82rem; font-weight:800; color:#10b981; margin-bottom:8px;">PASO 3: GARANTÍA TOTAL DEL SIMULADOR</div>
+                <p style="font-size:0.88rem; color:#cbd5e1; line-height:1.5;">Esta aplicación oficial que estás utilizando representa el resultado 100% terminado y verificado de la ejecución del Plano Maestro.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const CASES = {
+            sms_correos: { level: 5, title: "Nivel 5: Intento de Estafa Flagrante (SMS Falso)", desc: "Este mensaje busca asustarte con que tienes un paquete bloqueado para que pinches el enlace y pongas tu tarjeta. Correos NUNCA pide dinero por SMS para liberar paquetes normales. ¡Bórralo!", action: "Borra el SMS inmediatamente. Jamás pinches en el enlace." },
+            hijo_apuros: { level: 4, title: "Nivel 4: Falso Pariente en Apuros (Manipulación Emocional)", desc: "Te escriben desde un número desconocido haciéndose pasar por tu hijo o nieto, diciendo que se le ha roto el móvil y necesita dinero urgente. Es un timo muy frecuente para robarte por Bizum o transferencia.", action: "Llama inmediatamente a tu hijo o pariente a su número de teléfono de siempre antes de hacer nada." },
+            falso_banco: { level: 5, title: "Nivel 5: Suplantación Telefónica del Banco (Vishing)", desc: "Te llama alguien muy serio diciendo que son del departamento de seguridad de tu banco y que hay un cargo extraño. Te piden que les leas el código SMS que te acaba de llegar. ¡ES UNA TRAMPA!", action: "Cuelga de inmediato. Tu banco NUNCA te pedirá códigos ni claves secretas por teléfono." },
+            falso_gas: { level: 3, title: "Nivel 3: Venta a Puerta Fría o Falsa Revisión", desc: "Se presentan en casa dos personas con chalecos diciendo que vienen a revisar la caldera o el gas y te exigen cientos de euros en mano. La distribuidora oficial siempre avisa por carta con antelación y se cobra en la factura del banco.", action: "No abras la puerta. Exige que te manden la notificación por escrito a través de tu compañía habitual." },
+            chiringuito_ia: { level: 6, title: "Nivel 6: Chiringuito Financiero y Cripto-Engaño", desc: "Anuncios en internet con fotos manipuladas de famosos prometiendo que con 250 € ganarás miles de euros a la semana. En cuanto ingresas el dinero, se lo quedan todo y te piden más para 'desbloquear beneficios'.", action: "No metas ni un euro. Consulta siempre si la entidad está autorizada en la web de la CNMV." },
+            timo_amor: { level: 4, title: "Nivel 4: Timo del Falso Amigo o Romance Online", desc: "Alguien que has conocido por internet te hace creer que siente gran afecto por ti durante semanas, pero de pronto le ocurre una tragedia económica o médica y te pide dinero para viajar a verte.", action: "Jamás envíes dinero ni compartas tus cuentas con personas que no conozcas físicamente de toda la vida." },
+            comercial_luz: { level: 3, title: "Nivel 3: Comercial Agresivo de Energía", desc: "Te llaman a la hora de comer o tocan al timbre pidiéndote una factura de luz para 'aplicarte un descuento del gobierno'. Lo que quieren es cambiarte de compañía sin que te enteres de la letra pequeña.", action: "Diles educadamente 'No me interesa' y no les muestres jamás tus facturas ni tu número de cuenta." },
+            banco_oficial: { level: 1, title: "Nivel 1: Comunicación Verificada y Segura", desc: "Mensajes informativos que solo te comunican el abono de tu pensión o extractos mensuales, sin incluir ningún enlace web para pinchar ni pedirte contraseñas.", action: "Es una notificación rutinaria normal. No requiere ninguna acción por tu parte." }
+        };
+
+        function updateSimulation() {
+            const caseKey = document.getElementById('selCase').value;
+            const cData = CASES[caseKey];
+            const urgency = parseInt(document.getElementById('rngUrgency').value);
+            
+            const urgLabels = ["Muy baja", "Baja", "Media", "Alta", "Máxima"];
+            document.getElementById('lblUrgency').innerText = urgLabels[urgency - 1];
+
+            let checks = 0;
+            if (document.getElementById('chkNoPass').checked) checks++;
+            if (document.getElementById('chkNoLink').checked) checks++;
+            if (document.getElementById('chkAskFamily').checked) checks++;
+            if (document.getElementById('chkNoDoor').checked) checks++;
+            const defensePct = 40 + (checks * 15);
+            document.getElementById('valDefense').innerText = defensePct + "%";
+            document.getElementById('valDangerLevel').innerText = "NIVEL " + cData.level;
+
+            const lvl = cData.level;
+            document.getElementById('heroNum').innerText = lvl;
+            document.getElementById('heroTitle').innerText = cData.title;
+            document.getElementById('heroDesc').innerText = cData.desc;
+            document.getElementById('actionDesc').innerHTML = `<strong>Acción recomendada:</strong> ${cData.action} Recuerda que el teléfono <strong>017 (INCIBE)</strong> es gratuito y confidencial.`;
+
+            const colorsMap = {
+                1: "#10b981",
+                2: "#10b981",
+                3: "#38bdf8",
+                4: "#f59e0b",
+                5: "#f43f5e",
+                6: "#f43f5e"
+            };
+            const activeColor = colorsMap[lvl];
+            document.getElementById('statusHero').style.borderColor = activeColor;
+            document.getElementById('statusHero').style.boxShadow = `0 0 35px ${activeColor}40`;
+            document.getElementById('heroCircle').style.borderColor = activeColor;
+            document.getElementById('heroCircle').style.boxShadow = `0 0 25px ${activeColor}50`;
+            document.getElementById('heroNum').style.color = activeColor;
+            document.getElementById('heroBadge').style.color = activeColor;
+
+            for (let i = 1; i <= 6; i++) {
+                const el = document.getElementById('step-' + i);
+                if (el) {
+                    if (i === lvl) {
+                        el.className = "step-card active";
+                        el.style.borderColor = activeColor;
+                    } else {
+                        el.className = "step-card";
+                        el.style.borderColor = "var(--border)";
+                    }
+                }
+            }
+        }
+
+        function openPromptModal() {
+            const m = document.getElementById('promptModal');
+            m.style.display = 'flex';
+        }
+
+        function closePromptModal(e) {
+            if (e && e.target !== e.currentTarget && e.target.tagName !== 'BUTTON') return;
+            document.getElementById('promptModal').style.display = 'none';
+        }
+
+        window.onload = updateSimulation;
+    </script>
+</body>
+</html>
+
