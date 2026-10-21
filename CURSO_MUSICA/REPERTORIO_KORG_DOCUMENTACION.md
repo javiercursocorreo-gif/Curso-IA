@@ -2,7 +2,7 @@
 > **Proyecto:** Sistema de Atril Digital, Control Web MIDI y Repertorio Pedagógico Interactivo  
 > **Ubicación:** `CURSO_MUSICA/` · **Repositorio:** `CURSO-IA`  
 > **Dispositivo Principal:** Teclado Korg EK-50 Entertainer Keyboard conectado a iPad / Mac  
-> **Versión del Sistema:** v83 (Activación Silenciosa de Sonidos + Volumen Equilibrado)
+> **Versión del Sistema:** v96 (Harmonica Oficial GM PC 22 con Vibrato, Eco y Lower Voces + Protocolo de Encendido y Servidor 8888)
 
 ---
 
@@ -70,7 +70,7 @@ El Korg EK-50 se conecta al iPad o Mac mediante un cable USB estándar (USB tipo
 * **Tonalidad:** Fa Mayor ($F$).
 * **Compás y Tempo:** Compás 12/8 (o 6/8 Balada) a **56 BPM** ($\♩. = 56$).
 * **Estilo Korg EK-50 Asignado:** **`042`** (MSB 32, LSB 2, PC 9).
-* **Melodía Oficial Asignada:** **`STS Armónica`** (Harmonica acústica GM PC 21 en Upper 1).
+* **Melodía Oficial Asignada:** **`STS Armónica`** (Harmonica acústica GM PC 22 en Upper 1 con Vibrato CC01=50, CC77=68, Eco CC91=115 y Lower Voces PC 52).
 * **Sonidos Escénicos:**
   * Opción 1: `STS Armónica (Melodía Principal) + Estilo 042`: Armónica protagonista con 56 BPM.
   * Opción 2: `Armónica & Piano (Capa Dual) + Estilo 042`: Armónica en Upper 1 con fondo de Grand Piano acústico en Upper 2.
@@ -194,11 +194,41 @@ Esta sección recopila los descubrimientos críticos de ingeniería realizados d
 
 ### 6.6. Calibración de Volúmenes Digitales
 * **Problema:** Enviar volumen máximo (`CC7 = 127`) saturaba el preamplificador digital del teclado, perdiendo rango dinámico.
-* **Solución:** Fijar volúmenes equilibrados estándar: voz principal solista a `100`, capas secundarias a `75–80` y expresión a `127`.
+* **Solución:** Fijar volúmenes equilibrados estándar: voz principal solista a `100–120`, capas secundarias a `75–80` y expresión a `127`.
 
 ### 6.7. El Ciclo de Despliegue en GitHub Pages y Rompe-Caché
 * **Problema:** La lentitud de propagación de GitHub Pages (60 a 120 segundos) hacía creer que el iPad no se actualizaba.
 * **Solución:** Distintivo de versión correlativo (`vXX`) visible en la barra y botón de recarga con marca de tiempo dinámica (`?t=Date.now()`). En cuanto la pantalla muestra la versión actual, el usuario tiene la certeza absoluta de que el código activo es el último generado.
+
+### 6.8. Saturación de Buffer USB y Congelación de Arranque (Power Off See You & Botones Parpadeantes)
+* **Problema:** El Korg EK-50 se quedaba bloqueado con todos los botones parpadeando al encenderlo, o no se apagaba mostrando permanentemente "Power Off See You".
+* **Causa:** 
+  1. Un temporizador infinito enviaba pulsos de reloj MIDI (`0xF8`) cada 25–40 ms, saturando el búfer USB del Korg.
+  2. Si el teclado se enciende con el cable USB ya conectado al iPad y la página web activa, CoreMIDI interroga al Korg antes de que su procesador termine de cargar la ROM, entrando en bucle de calibración de emergencia.
+* **Solución:**
+  1. Se eliminó la emisión continua de `0xF8`: el tempo se fija en el estilo de acompañamiento y el canal USB queda completamente silencioso en reposo.
+  2. **Protocolo de encendido oficial:** Enceder siempre el Korg EK-50 primero (esperar 5 segundos a que la pantalla quede fija) y luego conectar el cable USB / abrir el atril en el iPad.
+
+### 6.9. Servidor Local Wi-Fi de Alta Velocidad (Puerto 8888)
+* **Problema:** Depender de GitHub Pages obligaba a esperar 1 a 2 minutos en cada iteración de prueba.
+* **Solución:** Creación del script ejecutable `INICIAR_SERVIDOR_LOCAL.command` en el Mac. Lanza un servidor Python en el puerto `8888` sirviendo la carpeta `CURSO_MUSICA/`. El iPad accede al instante a través de `http://192.168.1.130:8888/` con latencia cero y actualización en 0 segundos.
+
+### 6.10. Modo Atril Híbrido Anti-Apagado con Reposo Inteligente a los 5 Minutos
+* **Problema:** El iPad entraba en modo reposo y apagaba la pantalla a mitad de la interpretación musical, pero mantener la pantalla encendida indefinidamente agotaba la batería si el usuario se alejaba del atril.
+* **Solución:** Motor híbrido `WakeLock API` + `Canvas Video Loop` (100% compatible con HTTP y Safari/MIDIWeb). Mantiene la pantalla encendida mientras se toca y apaga automáticamente el motor tras **5 minutos de inactividad total** para ahorrar batería. Cualquier toque en pantalla o tecla reinicia el contador.
+
+### 6.11. Activación Física de Capas en Panel (Upper 1 + Upper 2 Auto)
+* **Problema:** Al enviar sonidos a Upper 2 (Canal 2), el teclado no los reproducía si el botón físico `[UPPER 2]` del panel frontal del Korg estaba apagado.
+* **Solución:** En el botón 2 (*Voces & Strings*), se inyecta el comando del Keyboard Set 61 (*The Strings*), que enciende físicamente los botones `[UPPER 1]` y `[UPPER 2]` en el panel frontal del Korg de forma 100% automática.
+
+### 6.12. Anatomía de la Armónica y el Eco en Korg EK-50 (Mapeo General MIDI)
+* **Problema:** Intentos de forzar presets internos del Korg mediante bancos extendidos provocaban caídas a *Accordion* o *GrandPiano* en la pantalla, perdiéndose el eco y el vibrato.
+* **Causa:** En General MIDI estándar (0–127), el patch 21 corresponde a *Accordion* (acordeón), mientras que la verdadera *Harmonica* se ubica en el patch **22**.
+* **Solución Definitiva (v96):**
+  1. **Banco y Sonido Oficial:** `Bank 0, LSB 0, PC 22`. El teclado selecciona de forma nativa e indestructible la **Harmonica** oficial y su pantalla LCD muestra fielmente **`Harmonica`**.
+  2. **Vibrato Expresivo:** Inyección de `CC 01 = 50` (Modulación / Vibrato LFO) y `CC 77 = 68` (Profundidad) para que cada nota oscile con calidez y dulzura natural.
+  3. **Eco y Reverberación:** Envío de `CC 91 = 115` (Reverb Send) y `CC 93 = 60` (Chorus/Ambiente espacial), logrando la amplitud de sala de concierto que el tema requiere.
+  4. **Acompañamiento en Lower (Mano Izquierda):** Canal 4 configurado con `Choir Aahs` (PC 52, vol 115, Reverb CC91=90) para que la mano izquierda toque acordes arropados por un coro celestial.
 
 ---
 *Manual redactado y sellado para el proyecto CURSO-IA / CURSO_MUSICA. Todos los derechos reservados.*
