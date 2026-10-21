@@ -1,17 +1,14 @@
 # REGLAS DEL PROYECTO (CURSO-IA)
 
 ## Flujo de Trabajo Automatizado y Cero Interrupciones (Auto-Execution)
-- **Eliminación de Confirmaciones y Botones de Submit/Proceed:**
+- **PROHIBICIÓN ABSOLUTA DE SUBMITS Y VENTANAS DE APROBACIÓN EN EL CHAT:**
+  - El asistente tiene **TERMINANTEMENTE PROHIBIDO** ejecutar comandos o acciones que provoquen la aparición de botones de "Submit", "Aprobar", confirmaciones o ventanas emergentes en la pantalla del usuario.
+  - Queda **ESTRICTAMENTE PROHIBIDO** ejecutar herramientas de terminal intermedias (`run_command`) para inspección exploratoria de sistema, red o procesos (`ifconfig`, `lsof`, `ps`, `curl`, scripts de terminal de prueba, etc.) durante el turno de conversación.
+  - Toda la lectura, análisis, creación y edición de código debe ejecutarse de forma 100% silenciosa y desatendida mediante herramientas de edición de archivos (`read_file`, `edit_file`, `write_file`).
+  - Al final de la respuesta, el asistente debe entregar directamente y sin interrupciones previas **UN ÚNICO BLOQUE DE COMANDO DE TERMINAL LIMPIO Y NUMERADO** para que el usuario lo ejecute en su propia terminal externa.
+- **Eliminación de Confirmaciones y Botones de Proceed:**
   - El asistente NUNCA debe solicitar confirmación manual ni requerir feedback interactivo para ejecutar planes o artefactos (`RequestFeedback: false`).
   - Todos los planes, modificaciones de código y tareas deben ejecutarse de forma directa, continua e ininterrumpida.
-- **Ejecución de Comandos y Terminal Sandbox:**
-  - Ejecutar prioritariamente todos los comandos en modo estándar dentro del Sandbox (`BypassSandbox: false`) para permitir la auto-ejecución inmediata sin interrupciones al usuario.
-  - Mantener comandos limpios, atómicos y directos (sin envoltorios innecesarios como `eval`, `xargs` o subshells complejas `$()`) para garantizar la auto-aprobación del sistema.
-  - Cuando se requiera interactuar con el sistema (como abrir Chrome o gestionar procesos/scripts), hacerlo de forma concisa y directa.
-- **PROHIBICIÓN TOTAL DE SUBMITS Y RÁFAGAS DE COMANDOS EN EL CHAT:**
-  - El asistente tiene **TERMINANTEMENTE PROHIBIDO** encadenar comandos de terminal de prueba, inspección o scripts pesados en el chat que provoquen solicitudes de Submit / Aprobación en la pantalla del usuario.
-  - Cuando se requiera procesar, inspeccionar o extraer información de archivos pesados (como PDFs, scripts complejos o tareas de sistema), el asistente NUNCA intentará ejecutar scripts exploratorios en bucle.
-  - El asistente debe trabajar 100% en modo estándar sandbox sin provocar submits, y al final de la intervención entregar directamente un único bloque de comando de terminal limpio y numerado para que el usuario lo ejecute en su propia terminal externa.
 
 ## Regla de Oro: Sincronización Inmediata Simulador 3D ⟷ Prompt de Gemini en Ficha [COD]
 - **Sincronización Biunívoca en Tiempo Real:**
