@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sesión 13 • Micro-App [NIV-013]: Los 5 Niveles de la Memoria y Retención Biológica</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-base: #060913;
+            --bg-card: rgba(15, 23, 42, 0.92);
+            --border: rgba(255, 255, 255, 0.12);
+            --primary: #10b981;
+            --primary-glow: rgba(16, 185, 129, 0.35);
+            --cyan: #38bdf8;
+            --gold: #f59e0b;
+            --purple: #a855f7;
+            --rose: #f43f5e;
+            --text-main: #f8fafc;
+            --text-sub: #cbd5e1;
+            --font-sans: 'Inter', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            font-family: var(--font-sans);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            background-image: radial-gradient(circle at 50% 0%, rgba(16, 185, 129, 0.14) 0%, transparent 65%);
+            font-size: 17px;
+        }
+
+        header {
+            background: rgba(15, 23, 42, 0.98);
+            border-bottom: 1px solid var(--border);
+            padding: 16px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            backdrop-filter: blur(14px);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+        .brand-box {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+        .brand-badge {
+            background: rgba(16, 185, 129, 0.18);
+            color: var(--primary);
+            border: 1px solid rgba(16, 185, 129, 0.45);
+            font-family: var(--font-mono);
+            font-size: 0.88rem;
+            font-weight: 800;
+            padding: 5px 12px;
+            border-radius: 8px;
+        }
+        h1 {
+            font-size: 1.35rem;
+            font-weight: 800;
+            color: #ffffff;
+            letter-spacing: -0.01em;
+        }
+
+        .app-container {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 470px 1fr;
+            gap: 28px;
+            max-width: 1520px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 28px;
+        }
+
+        .calculator-panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 26px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            backdrop-filter: blur(14px);
+            box-shadow: 0 12px 35px rgba(0,0,0,0.5);
+            height: fit-content;
+        }
+        .panel-title {
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .panel-sub {
+            font-size: 0.88rem;
+            color: var(--text-sub);
+            margin-top: 4px;
+            line-height: 1.4;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .input-label-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.92rem;
+            font-weight: 700;
+            color: #f1f5f9;
+        }
+        .input-val-badge {
+            font-family: var(--font-mono);
+            font-size: 1.05rem;
+            font-weight: 800;
+            color: var(--primary);
+            background: rgba(16, 185, 129, 0.12);
+            padding: 4px 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(16, 185, 129, 0.35);
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: #1e293b;
+            outline: none;
+            -webkit-appearance: none;
+            cursor: pointer;
+            accent-color: var(--primary);
+        }
+
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 10px;
+        }
+        .kpi-card {
+            background: rgba(0, 0, 0, 0.45);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 14px;
+            text-align: center;
+        }
+        .kpi-val {
+            font-family: var(--font-mono);
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: #ffffff;
+        }
+        .kpi-lbl {
+            font-size: 0.78rem;
+            color: #94a3b8;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-top: 4px;
+        }
+
+        .dashboard-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 22px;
+        }
+
+        .status-hero {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.18) 0%, rgba(15, 23, 42, 0.95) 100%);
+            border: 2px solid var(--primary);
+            border-radius: 22px;
+            padding: 26px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 0 35px rgba(16, 185, 129, 0.3);
+            position: relative;
+        }
+        .status-hero-left {
+            max-width: 72%;
+        }
+        .status-badge {
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            font-weight: 800;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 6px;
+            display: inline-block;
+        }
+        .status-title {
+            font-size: 1.7rem;
+            font-weight: 900;
+            color: #ffffff;
+            letter-spacing: -0.02em;
+            line-height: 1.2;
+            margin-bottom: 10px;
+        }
+        .status-desc {
+            font-size: 0.96rem;
+            color: #cbd5e1;
+            line-height: 1.6;
+        }
+        .status-circle-box {
+            width: 105px;
+            height: 105px;
+            border-radius: 50%;
+            border: 4px solid var(--primary);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.6);
+            box-shadow: 0 0 25px rgba(16, 185, 129, 0.4);
+            flex-shrink: 0;
+        }
+        .status-circle-num {
+            font-family: var(--font-mono);
+            font-size: 2.2rem;
+            font-weight: 900;
+            color: var(--primary);
+            line-height: 1;
+        }
+        .status-circle-sub {
+            font-size: 0.7rem;
+            color: #94a3b8;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+
+        .steps-container {
+            display: flex;
+            flex-direction: column-reverse;
+            gap: 12px;
+        }
+        .step-card {
+            background: var(--bg-card);
+            border: 1.5px solid var(--border);
+            border-radius: 16px;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            opacity: 0.5;
+        }
+        .step-card.active {
+            opacity: 1;
+            transform: scale(1.02) translateX(8px);
+            border-color: var(--primary);
+            background: linear-gradient(90deg, rgba(16, 185, 129, 0.22) 0%, rgba(15, 23, 42, 0.98) 100%);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.35);
+        }
+        .step-card.completed {
+            opacity: 0.85;
+            border-color: rgba(16, 185, 129, 0.4);
+        }
+        .step-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .step-num-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-mono);
+            font-size: 1.2rem;
+            font-weight: 900;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            flex-shrink: 0;
+        }
+        .step-card.active .step-num-icon {
+            background: var(--primary);
+            color: #060913;
+            border-color: var(--primary);
+            box-shadow: 0 0 18px var(--primary);
+        }
+        .step-card.completed .step-num-icon {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--primary);
+            border-color: var(--primary);
+        }
+        .step-info-title {
+            font-size: 1.05rem;
+            font-weight: 800;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .step-info-desc {
+            font-size: 0.88rem;
+            color: var(--text-sub);
+            margin-top: 3px;
+        }
+        .step-right {
+            text-align: right;
+            flex-shrink: 0;
+        }
+        .step-req {
+            font-family: var(--font-mono);
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: var(--primary);
+            background: rgba(16, 185, 129, 0.1);
+            padding: 5px 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .action-plan-box {
+            background: rgba(15, 23, 42, 0.85);
+            border: 1.5px dashed rgba(16, 185, 129, 0.4);
+            border-radius: 18px;
+            padding: 22px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .action-icon {
+            font-size: 2.4rem;
+            background: rgba(16, 185, 129, 0.12);
+            border-radius: 16px;
+            width: 62px;
+            height: 62px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .action-title {
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 4px;
+        }
+        .action-text {
+            font-size: 0.94rem;
+            color: #cbd5e1;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="brand-box">
+            <span class="brand-badge">[NIV-013]</span>
+            <div>
+                <h1>Los 5 Niveles de la Memoria y Retención Biológica</h1>
+                <div style="font-size:0.85rem; color:#94a3b8; margin-top:2px;">Desmitificando los Olvidos Cotidianos y Fortaleciendo el Recuerdo en Mayores de 65 años</div>
+            </div>
+        </div>
+        <div style="display:flex; align-items:center; gap:12px;">
+            <button onclick="openPromptModal()" style="background:rgba(16,185,129,0.15); border:1px solid rgba(16,185,129,0.4); color:var(--primary); padding:8px 16px; border-radius:10px; font-weight:700; cursor:pointer; font-size:0.9rem;">
+                📘 Ver Método Pedagógico (Triple Salvaguarda)
+            </button>
+            <a href="SIMULADOR_ADN_GENETICO_3D.html" style="background:#1e293b; color:#ffffff; text-decoration:none; padding:8px 16px; border-radius:10px; font-weight:700; font-size:0.9rem; border:1px solid rgba(255,255,255,0.2);">
+                🧬 Ver ADN Genético 3D [COD-013]
+            </a>
+        </div>
+    </header>
+
+    <div class="app-container">
+
+        <!-- PANEL DE HÁBITOS DE MEMORIA -->
+        <aside class="calculator-panel">
+            <div>
+                <div class="panel-title">
+                    <span>📚</span>
+                    <span>Tus Técnicas de Retención y Orden</span>
+                </div>
+                <div class="panel-sub">
+                    Olvidar el nombre de un actor o dónde dejamos las gafas son despistes de atención absolutamente normales a cualquier edad, no pérdida de memoria.
+                </div>
+            </div>
+
+            <!-- 1. USO DE LIBRETA O AGENDA -->
+            <div class="input-group">
+                <div class="input-label-row">
+                    <span>📝 Libreta de Notas o Calendario en la Pared</span>
+                    <span class="input-val-badge" id="lblNotebook">Diario</span>
+                </div>
+                <input type="range" id="rngNotebook" min="1" max="5" step="1" value="4" oninput="updateSimulation()">
+            </div>
+
+            <!-- 2. LUGAR FIJO PARA LAS COSAS -->
+            <div class="input-group">
+                <div class="input-label-row">
+                    <span>🔑 Sitio Fijo para Llaves, Gafas y Teléfono</span>
+                    <span class="input-val-badge" id="lblOrder" style="color:var(--cyan);">Casi Siempre</span>
+                </div>
+                <input type="range" id="rngOrder" min="1" max="5" step="1" value="4" oninput="updateSimulation()">
+            </div>
+
+            <!-- 3. MEMORIA NARRATIVA (CONTAR ANÉCDOTAS) -->
+            <div class="input-group">
+                <div class="input-label-row">
+                    <span>🗣️ Charlar de Recuerdos y Anécdotas de Vida</span>
+                    <span class="input-val-badge" id="lblStories" style="color:var(--gold);">Frecuente</span>
+                </div>
+                <input type="range" id="rngStories" min="1" max="5" step="1" value="4" oninput="updateSimulation()">
+            </div>
+
+            <!-- 4. PASEO OXIGENANTE -->
+            <div class="input-group">
+                <div class="input-label-row">
+                    <span>🚶 Caminata para Oxigenar el Hipocampo</span>
+                    <span class="input-val-badge" id="lblWalk" style="color:var(--primary);">35 min</span>
+                </div>
+                <input type="range" id="rngWalk" min="0" max="90" step="5" value="35" oninput="updateSimulation()">
+            </div>
+
+            <!-- 5. NIVEL DE PRISAS Y ESTRÉS -->
+            <div class="input-group">
+                <div class="input-label-row">
+                    <span>⏳ Nivel de Calma (Sin Prisas al Salir de Casa)</span>
+                    <span class="input-val-badge" id="lblCalm" style="color:var(--purple);">Sosegado</span>
+                </div>
+                <input type="range" id="rngCalm" min="1" max="5" step="1" value="4" oninput="updateSimulation()">
+            </div>
+
+            <!-- RESUMEN DE SALUD DE MEMORIA -->
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-val" id="valMemoryIndex" style="color:var(--primary);">86 / 100</div>
+                    <div class="kpi-lbl">Índice de Retención</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-val" id="valBenignText" style="color:var(--primary);">100% BENIGNOS</div>
+                    <div class="kpi-lbl">Tipo de Olvidos</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-val" id="valNarrativePower" style="color:var(--gold);">RIQUÍSIMA</div>
+                    <div class="kpi-lbl">Memoria Narrativa</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-val" id="valIndependence" style="color:var(--cyan);">ABSOLUTA</div>
+                    <div class="kpi-lbl">Independencia</div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- PANEL CENTRAL CON LOS 5 NIVELES -->
+        <main class="dashboard-panel">
+
+            <!-- HERO DIAGNÓSTICO -->
+            <div class="status-hero" id="statusHero">
+                <div class="status-hero-left">
+                    <span class="status-badge" id="heroBadge">DIAGNÓSTICO TRANQUILIZADOR</span>
+                    <div class="status-title" id="heroTitle">Nivel 4: Memoria Funcional y Autónoma</div>
+                    <div class="status-desc" id="heroDesc">
+                        Tus recuerdos profundos están intactos y te manejas perfectamente con tus rutinas. Tus despistes ocasionales son de atención (por pensar en otra cosa a la vez), exactamente como le pasa a una persona de 25 años.
+                    </div>
+                </div>
+                <div class="status-circle-box" id="heroCircle">
+                    <span class="status-circle-num" id="heroNum">4</span>
+                    <span class="status-circle-sub">ESCALA</span>
+                </div>
+            </div>
+
+            <!-- LOS 5 NIVELES DE MEMORIA -->
+            <div class="steps-container">
+
+                <!-- NIVEL 5 -->
+                <div class="step-card" id="step-5">
+                    <div class="step-left">
+                        <div class="step-num-icon">5</div>
+                        <div>
+                            <div class="step-info-title">
+                                <span>Memoria Autobiográfica Viva y Narrativa</span>
+                                <span style="font-size:0.85rem; color:var(--purple);">👑 Tesoro de Experiencias</span>
+                            </div>
+                            <div class="step-info-desc">Capacidad brillante para evocar detalles de juventud, nombres de familiares, historias orales y recetas tradicionales sin dudar.</div>
+                        </div>
+                    </div>
+                    <div class="step-right">
+                        <div class="step-req">Índice ≥ 85 pts</div>
+                    </div>
+                </div>
+
+                <!-- NIVEL 4 -->
+                <div class="step-card active" id="step-4">
+                    <div class="step-left">
+                        <div class="step-num-icon">4</div>
+                        <div>
+                            <div class="step-info-title">
+                                <span>Memoria Funcional y Autónoma</span>
+                                <span style="font-size:0.85rem; color:var(--primary);">🛡️ Independencia Total</span>
+                            </div>
+                            <div class="step-info-desc">Manejo perfecto del dinero, recetas del médico y citas de la casa. Apoyo inteligente en la libreta para no recargar la cabeza.</div>
+                        </div>
+                    </div>
+                    <div class="step-right">
+                        <div class="step-req">Índice ≥ 70 pts</div>
+                    </div>
+                </div>
+
+                <!-- NIVEL 3 -->
+                <div class="step-card completed" id="step-3">
+                    <div class="step-left">
+                        <div class="step-num-icon">3</div>
+                        <div>
+                            <div class="step-info-title">
+                                <span>Despistes Cotidianos de Atención (Benignos)</span>
+                                <span style="font-size:0.85rem; color:var(--cyan);">👓 Absolutamente Normal</span>
+                            </div>
+                            <div class="step-info-desc">Buscar las gafas teniéndolas puestas o ir a la cocina y dudar a qué ibas. Sucede por falta de foco en el momento, cero gravedad.</div>
+                        </div>
+                    </div>
+                    <div class="step-right">
+                        <div class="step-req">Índice ≥ 50 pts</div>
+                    </div>
+                </div>
+
+                <!-- NIVEL 2 -->
+                <div class="step-card completed" id="step-2">
+                    <div class="step-left">
+                        <div class="step-num-icon">2</div>
+                        <div>
+                            <div class="step-info-title">
+                                <span>Olvidos por Sobrecarga de Tareas</span>
+                                <span style="font-size:0.85rem; color:var(--gold);">⚠️ Estrés y Desorden</span>
+                            </div>
+                            <div class="step-info-desc">Hacer varias cosas deprisa provoca que no registremos dónde dejamos las cosas. Solución: una cosa cada vez y sin prisas.</div>
+                        </div>
+                    </div>
+                    <div class="step-right">
+                        <div class="step-req">Índice ≥ 30 pts</div>
+                    </div>
+                </div>
+
+                <!-- NIVEL 1 -->
+                <div class="step-card completed" id="step-1">
+                    <div class="step-left">
+                        <div class="step-num-icon">1</div>
+                        <div>
+                            <div class="step-info-title">
+                                <span>Alerta Preventiva y Apoyo Familiar</span>
+                                <span style="font-size:0.85rem; color:var(--rose);">🚨 Consulta Médica</span>
+                            </div>
+                            <div class="step-info-desc">Dificultades reiteradas para recordar calles muy conocidas o nombres de personas íntimas. Conviene consultar con cariño al médico de familia.</div>
+                        </div>
+                    </div>
+                    <div class="step-right">
+                        <div class="step-req">Índice < 30 pts</div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- PLAN DE ACCIÓN TRANQUILIZADOR -->
+            <div class="action-plan-box">
+                <div class="action-icon">💡</div>
+                <div>
+                    <div class="action-title" id="actionTitle">El Truco de los Maestros: Un Sitio para Cada Cosa</div>
+                    <div class="action-text" id="actionDesc">
+                        Los despistes no se curan con pastillas milagro, se resuelven con orden y sosiego. Deja una bandejita en el recibidor solo para las llaves y la cartera: al llegar a casa, deposítalas siempre allí sin pensar. La mente descansará liberada de esa tarea.
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- MODAL TRIPLE SALVAGUARDA -->
+    <div id="promptModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.85); backdrop-filter:blur(10px); z-index:100; align-items:center; justify-content:center; padding:20px;" onclick="closePromptModal(event)">
+        <div style="background:#0b1120; border:2px solid #10b981; border-radius:20px; max-width:850px; width:100%; max-height:90vh; overflow-y:auto; padding:28px; box-shadow:0 0 50px rgba(168,85,247,0.3); display:flex; flex-direction:column; gap:20px;" onclick="event.stopPropagation()">
+            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:14px;">
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <span style="font-size:1.6rem;">🌱</span>
+                    <strong style="font-size:1.2rem; color:#ffffff;">La Triple Salvaguarda Pedagógica (Sesión 13 • [NIV-013])</strong>
+                </div>
+                <button onclick="closePromptModal()" style="background:transparent; border:none; color:#94a3b8; font-size:1.4rem; cursor:pointer;">✕</button>
+            </div>
+
+            <!-- PASO 1 -->
+            <div style="background:rgba(16,185,129,0.08); border:1px solid rgba(16,185,129,0.3); border-radius:14px; padding:16px;">
+                <div style="font-family:var(--font-mono); font-size:0.82rem; font-weight:800; color:#10b981; margin-bottom:8px;">PASO 1: EL PROMPT SEMILLA HUMANO</div>
+                <p style="font-size:0.9rem; color:#cbd5e1; line-height:1.5; margin-bottom:10px;">El alumno plantea la necesidad de desmitificar los olvidos con lenguaje cercano:</p>
+                <div style="background:#030712; border:1px solid rgba(255,255,255,0.1); border-radius:10px; padding:14px; font-family:var(--font-mono); font-size:0.86rem; color:#10b981; line-height:1.6; user-select:all;">
+Actúa como neuropsicólogo y pedagogo experto en mayores.<br>
+Quiero crear una aplicación interactiva en HTML para seniors que explique los 5 niveles de la memoria y tranquilice a los alumnos sobre los olvidos benignos:<br>
+1. Alerta médica preventiva / 2. Sobrecarga por prisas / 3. Despistes benignos cotidianos / 4. Memoria funcional autónoma / 5. Memoria autobiográfica sabia.<br><br>
+Escribe el plano de especificaciones detallando cómo el uso de una libreta de notas y un sitio fijo para las cosas aportan tranquilidad absoluta.
+                </div>
+            </div>
+
+            <!-- PASO 2 -->
+            <div style="background:rgba(56,189,248,0.08); border:1px solid rgba(56,189,248,0.3); border-radius:14px; padding:16px;">
+                <div style="font-family:var(--font-mono); font-size:0.82rem; font-weight:800; color:#38bdf8; margin-bottom:8px;">PASO 2: EL PLANO MAESTRO TÉCNICO</div>
+                <p style="font-size:0.9rem; color:#cbd5e1; line-height:1.5;">La IA estructura los 5 niveles visuales, los diagnósticos amables y la diferenciación clara entre despiste de atención y olvido real.</p>
+            </div>
+
+            <!-- PASO 3 -->
+            <div style="background:rgba(245,158,11,0.08); border:1px solid rgba(245,158,11,0.3); border-radius:14px; padding:16px;">
+                <div style="font-family:var(--font-mono); font-size:0.82rem; font-weight:800; color:#f59e0b; margin-bottom:8px;">PASO 3: LA APP OFICIAL TERMINADA</div>
+                <p style="font-size:0.9rem; color:#cbd5e1; line-height:1.5;">Garantía de aula: acceso inmediato al simulador oficial probado para evitar pérdidas de tiempo si falla la conexión.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openPromptModal() { document.getElementById("promptModal").style.display = "flex"; }
+        function closePromptModal() { document.getElementById("promptModal").style.display = "none"; }
+
+        function updateSimulation() {
+            const notebook = parseInt(document.getElementById("rngNotebook").value);
+            const order = parseInt(document.getElementById("rngOrder").value);
+            const stories = parseInt(document.getElementById("rngStories").value);
+            const walk = parseInt(document.getElementById("rngWalk").value);
+            const calm = parseInt(document.getElementById("rngCalm").value);
+
+            // Textos
+            const fMap = ["Casi Nunca", "Rara vez", "A Veces", "Casi Siempre", "Siempre / Diario"];
+            document.getElementById("lblNotebook").innerText = fMap[notebook - 1];
+            document.getElementById("lblOrder").innerText = fMap[order - 1];
+            document.getElementById("lblStories").innerText = fMap[stories - 1];
+            document.getElementById("lblWalk").innerText = walk + " min";
+            
+            const cMap = ["Con Muchas Prisas", "Acelerado", "Normal", "Sosegado", "Paz Total"];
+            document.getElementById("lblCalm").innerText = cMap[calm - 1];
+
+            // Puntuación
+            let score = 0;
+            score += (notebook / 5) * 22;
+            score += (order / 5) * 22;
+            score += (stories / 5) * 20;
+            score += Math.min(20, (walk / 45) * 20);
+            score += (calm / 5) * 16;
+            score = Math.round(Math.min(100, Math.max(10, score)));
+
+            // KPIs
+            document.getElementById("valMemoryIndex").innerText = score + " / 100";
+            
+            let level = 1;
+            if (score >= 85) level = 5;
+            else if (score >= 70) level = 4;
+            else if (score >= 50) level = 3;
+            else if (score >= 30) level = 2;
+            else level = 1;
+
+            for (let i = 1; i <= 5; i++) {
+                const el = document.getElementById("step-" + i);
+                if (el) {
+                    el.classList.remove("active", "completed");
+                    if (i === level) el.classList.add("active");
+                    else if (i < level) el.classList.add("completed");
+                }
+            }
+
+            document.getElementById("heroNum").innerText = level;
+            const heroTitle = document.getElementById("heroTitle");
+            const heroDesc = document.getElementById("heroDesc");
+            const actionDesc = document.getElementById("actionDesc");
+
+            const levelData = {
+                5: {
+                    title: "Nivel 5: Memoria Autobiográfica Viva y Narrativa",
+                    desc: "Tu mente atesora vivencias, nombres y relatos con una lucidez admirable. Eres la memoria viva de la familia y disfrutas compartiendo recuerdos sin titubeos.",
+                    action: "Anímate a escribir o dictar al móvil un cuaderno con tus anécdotas de juventud. Es el mayor regalo de sabiduría y cariño para tus nietos."
+                },
+                4: {
+                    title: "Nivel 4: Memoria Funcional y Autónoma",
+                    desc: "Tus recuerdos profundos están intactos y te manejas perfectamente con tus rutinas. Tus despistes ocasionales son de atención (por pensar en otra cosa a la vez), exactamente como le pasa a una persona de 25 años.",
+                    action: "Sigue apoyándote en la libreta o calendario para citas médicas. Es el método que usan los cirujanos y pilotos: descargar la memoria para vivir con serenidad."
+                },
+                3: {
+                    title: "Nivel 3: Despistes Cotidianos de Atención (Benignos)",
+                    desc: "Buscar las gafas teniéndolas puestas o entrar a una habitación y dudar a qué ibas. Sucede por falta de foco en el momento presente, cero gravedad.",
+                    action: "Cuando vayas a salir o cambiar de cuarto, haz una pausa de 3 segundos, respira hondo y di en voz alta: 'Voy a buscar las tijeras'. Fijarás la intención al instante."
+                },
+                2: {
+                    title: "Nivel 2: Olvidos por Sobrecarga de Tareas",
+                    desc: "Hacer varias cosas a la vez con prisas provoca que la memoria de trabajo no registre la información. No es que se borre, es que nunca llegó a grabarse.",
+                    action: "Baja una marcha. Haz una sola cosa cada vez y reserva un rincón fijo en la casa para dejar la cartera, llaves y teléfono siempre juntos."
+                },
+                1: {
+                    title: "Nivel 1: Alerta Preventiva y Apoyo Familiar",
+                    desc: "Dificultades reiteradas para orientarse en lugares muy conocidos o recordar datos muy familiares. Conviene valorarlo con serenidad y afecto.",
+                    action: "Habla con tranquilidad con tus hijos o tu médico de cabecera. Una revisión rutinaria de tensión, tiroides y vitaminas ayuda enormemente a despejar dudas."
+                }
+            };
+
+            heroTitle.innerText = levelData[level].title;
+            heroDesc.innerText = levelData[level].desc;
+            actionDesc.innerText = levelData[level].action;
+        }
+
+        updateSimulation();
+    </script>
+</body>
+</html>
