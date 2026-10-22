@@ -79,11 +79,15 @@
   - **Lógica Matemática Realista:** Considerar siempre que la pensión es vitalicia y que los ahorros no se tocan si la pensión cubre los gastos (cero contradicciones de tiempo). Incluir el patrimonio inmobiliario como escudo familiar.
   - **Diseño Accesible:** Tipografía grande (16px - 18px), alto contraste, botones amplios y mensajes tranquilizadores.
 
-## Ejecución por Lotes de 10 Sesiones y Bitácora Maestra
-- **Trabajo Autónomo y Desatendido por Lotes:**
-  - El trabajo de actualización de las 60 sesiones se aborda en 6 lotes de 10 sesiones (Lote 1: 01-10, Lote 2: 11-20, etc.).
-  - El asistente trabaja en silencio, sin interrupciones intermedias al usuario, registrando cada avance en `ESTADO_60_SESIONES.md`.
-  - Al finalizar cada lote, entrega un único comando de terminal limpio y numerado para sincronizar GitHub y desplegar Classroom.
+## Módulo Especializado de Música y Web MIDI (CURSO_MUSICA)
+- Para cualquier trabajo en el módulo `CURSO_MUSICA/` (Atril Digital, Korg EK-50, Web MIDI, partituras y canciones), rigen de forma prioritaria las reglas de oro y arquitectura establecidas en `CURSO_MUSICA/AGENTS.md` y `CURSO_MUSICA/GEMINI.md`:
+  - Cero intervención manual del usuario en el teclado Korg EK-50 (todo automatizado por Web MIDI).
+  - Sincronización obligatoria en cada turno con la carpeta espejo de iCloud: `/Users/externo/Library/Mobile Documents/com~apple~CloudDocs/PERSONAL/CLASES DE TECNOLOGÍA/CURSO MUSICA`.
+  - Validación local en Google Chrome (soporte nativo Web MIDI en macOS).
+  - Protocolo anti-bloqueo USB (prohibición de `0xF8` en reposo; encendido secuencial de Korg primero 5s).
+  - Mapeo General MIDI estricto (Harmonica = PC 22; Acordeón = PC 21; inyección de Vibrato CC1/CC77 y Reverb CC91=115).
+  - Activación física de capas en panel frontal mediante Keyboard Set 61 (The Strings).
+
 
 
 
