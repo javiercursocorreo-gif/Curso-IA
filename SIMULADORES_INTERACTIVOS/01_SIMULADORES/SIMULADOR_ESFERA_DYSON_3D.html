@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sesión 22 • Simulador 3D: Esfera de Dyson & Megaestructuras Kardashev [COD-022]</title>
+    <!-- Babylon.js Motor 3D Oficial CDN -->
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+    <!-- Respaldo Científico en Base64 Autónomo -->
+    <script src="../03_ASSETS_3D_Y_DATOS/dyson_sphere_b64.js"></script>
+    <script src="../../SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/dyson_sphere_b64.js"></script>
+    <script src="../../../../SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/dyson_sphere_b64.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-base: #04060e;
+            --bg-panel: rgba(10, 16, 30, 0.94);
+            --border: rgba(245, 158, 11, 0.4);
+            --primary: #f59e0b;
+            --primary-glow: #fbbf24;
+            --cyan: #38bdf8;
+            --emerald: #34d399;
+            --text-main: #f8fafc;
+            --text-sub: #cbd5e1;
+            --font-title: 'Cinzel', serif;
+            --font-sans: 'Inter', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+        body {
+            background-color: var(--bg-base); color: var(--text-main);
+            font-family: var(--font-sans); height: 100vh; width: 100vw;
+            overflow: hidden; display: flex; flex-direction: column; font-size: 14px;
+        }
+        header {
+            background: linear-gradient(180deg, rgba(15, 18, 30, 0.98) 0%, rgba(15, 18, 30, 0.88) 100%);
+            backdrop-filter: blur(14px); border-bottom: 1px solid var(--border);
+            padding: 10px 24px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; z-index: 40;
+        }
+        .brand-box { display: flex; align-items: center; gap: 14px; }
+        .badge-pill {
+            background: rgba(245, 158, 11, 0.15); border: 1px solid var(--primary);
+            color: var(--primary-glow); font-family: var(--font-mono); font-weight: 800;
+            font-size: 0.82rem; padding: 4px 10px; border-radius: 6px;
+        }
+        .title-text h1 {
+            font-family: var(--font-title); font-size: 1.15rem; font-weight: 800; color: #fff;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .title-text p { font-size: 0.78rem; color: var(--text-sub); margin-top: 1px; }
+        .header-actions { display: flex; align-items: center; gap: 10px; }
+        .btn-header {
+            background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15);
+            color: var(--text-main); padding: 6px 14px; border-radius: 8px; font-size: 0.8rem;
+            font-weight: 700; cursor: pointer; transition: all 0.2s ease;
+        }
+        .btn-header:hover { background: rgba(245, 158, 11, 0.2); border-color: var(--primary); color: var(--primary-glow); }
+        .workspace { flex: 1; position: relative; overflow: hidden; display: flex; }
+        #renderCanvas { width: 100%; height: 100%; outline: none; display: block; }
+        .controls-panel {
+            position: absolute; top: 18px; left: 18px; width: 340px;
+            background: var(--bg-panel); border: 1px solid var(--border);
+            border-radius: 14px; padding: 18px; backdrop-filter: blur(14px);
+            z-index: 20; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+        .panel-section-title {
+            font-family: var(--font-mono); font-size: 0.8rem; font-weight: 800;
+            color: var(--primary); text-transform: uppercase; margin-bottom: 12px;
+            display: flex; align-items: center; gap: 6px;
+        }
+        .btn-action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 16px; }
+        .btn-action {
+            background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.12);
+            color: var(--text-sub); padding: 8px 10px; border-radius: 8px; font-size: 0.8rem;
+            font-weight: 700; cursor: pointer; transition: all 0.2s ease; text-align: center;
+        }
+        .btn-action.active, .btn-action:hover {
+            background: rgba(245, 158, 11, 0.25); border-color: var(--primary); color: #fff;
+        }
+        .kpi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+        .kpi-card { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 8px 10px; }
+        .kpi-val { font-family: var(--font-mono); font-size: 1.0rem; font-weight: 800; color: #fff; }
+        .kpi-label { font-size: 0.72rem; color: var(--text-sub); margin-top: 2px; }
+        .info-panel {
+            position: absolute; bottom: 20px; right: 20px; width: 380px;
+            background: var(--bg-panel); border: 1px solid var(--border);
+            border-radius: 14px; padding: 18px; backdrop-filter: blur(14px);
+            z-index: 20; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+        .info-title { font-family: var(--font-title); font-size: 1.15rem; font-weight: 700; color: var(--primary-glow); margin-bottom: 8px; }
+        .info-body { font-size: 0.84rem; line-height: 1.5; color: var(--text-sub); margin-bottom: 12px; }
+        .info-quote { font-style: italic; font-size: 0.78rem; color: var(--cyan); border-left: 2px solid var(--cyan); padding-left: 10px; margin-bottom: 12px; }
+        .audio-btn {
+            background: linear-gradient(135deg, #d97706 0%, #f59e0b 100%);
+            border: none; color: #020617; font-weight: 800; font-size: 0.82rem;
+            padding: 8px 14px; border-radius: 8px; width: 100%; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .photo-viewer-modal {
+            position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(8px);
+            display: none; align-items: center; justify-content: center; z-index: 100;
+        }
+        .photo-container {
+            background: #0a0f1d; border: 1px solid var(--primary); border-radius: 14px;
+            max-width: 900px; width: 92%; overflow: hidden; box-shadow: 0 0 40px rgba(245, 158, 11, 0.35);
+        }
+        .photo-container img { width: 100%; height: auto; display: block; }
+        .photo-caption { padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; background: #060b18; }
+        .close-photo-btn { background: var(--primary); color: #020617; border: none; padding: 6px 16px; border-radius: 8px; font-weight: 800; cursor: pointer; }
+        footer {
+            background: rgba(15, 18, 30, 0.98); border-top: 1px solid var(--border);
+            padding: 8px 24px; font-size: 0.78rem; color: var(--text-sub);
+            display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="brand-box">
+            <span class="badge-pill">[COD-022]</span>
+            <div class="title-text">
+                <h1>☀️ Esfera de Dyson & Megaestructuras Kardashev 3D</h1>
+                <p>Freeman Dyson (1960) • Civilizaciones Tipo II • Captura de 3.828 × 10^26 Watts a 1 UA</p>
+            </div>
+        </div>
+        <div class="header-actions">
+            <button class="btn-header" onclick="openAtlasViewer()">📷 Esquema SETI SVG</button>
+            <button class="btn-header" onclick="resetCamera()">🎯 Centrar</button>
+        </div>
+    </header>
+
+    <div class="workspace">
+        <canvas id="renderCanvas"></canvas>
+
+        <div class="controls-panel">
+            <div class="panel-section-title">🛰️ Enjambre Colector (Dyson Swarm)</div>
+            <div class="btn-action-grid">
+                <button class="btn-action active" id="btnSwarm" onclick="toggleSwarm()">Enjambre: ACTIVO</button>
+                <button class="btn-action" id="btnBeams" onclick="toggleBeams()">Rayos Colectores: ON</button>
+                <button class="btn-action" id="btnRings" onclick="toggleRings()">Anillos Órbitales</button>
+                <button class="btn-action" id="btnThermal" onclick="toggleThermal()">Firma IR Térmica</button>
+            </div>
+
+            <div class="panel-section-title">🏛️ Escala de Kardashev</div>
+            <div class="btn-action-grid">
+                <button class="btn-action" onclick="setKardashev(1)">Tipo I (10^16 W)</button>
+                <button class="btn-action active" onclick="setKardashev(2)">Tipo II (10^26 W)</button>
+            </div>
+
+            <div class="panel-section-title">📊 Balance Energético</div>
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-val" id="kpiPower">3.83 × 10^26 W</div>
+                    <div class="kpi-label">Potencia Capturada</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-val" id="kpiRadius">1.00 UA</div>
+                    <div class="kpi-label">Radio del Enjambre</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-val">120.000</div>
+                    <div class="kpi-label">Satélites Espejo</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-val">300 K (27 °C)</div>
+                    <div class="kpi-label">Firma Residual IR</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="info-panel">
+            <div class="info-title" id="infoTitle">Enjambre de Dyson (Dyson Swarm)</div>
+            <div class="info-body" id="infoBody">Un enjambre de millones de colectores solares ligeros orbitando a 1 Unidad Astronómica permite rodear la estrella sin sufrir las tensiones mecánicas de una esfera sólida rígida, capturando toda su emisión energética.</div>
+            <div class="info-quote" id="infoQuote">"Una civilización avanzada es limitada únicamente por la energía de su estrella central." — Freeman Dyson</div>
+            <button class="audio-btn" onclick="speakCurrentInfo()">🔊 Escuchar Explicación Astrofísica</button>
+        </div>
+    </div>
+
+    <div class="photo-viewer-modal" id="photoModal">
+        <div class="photo-container">
+            <img id="atlasImg" src="" alt="Esquema Esfera de Dyson">
+            <div class="photo-caption">
+                <span style="color: #cbd5e1; font-size: 0.82rem;">Astrofísica Teórica • SETI • Civilización Kardashev Tipo II</span>
+                <button class="close-photo-btn" onclick="closeAtlasViewer()">Cerrar Esquema</button>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <span>☀️ Curso de Inteligencia Artificial • Metodología de la Triple Salvaguarda Pedagógica</span>
+        <span>Motor 3D: Babylon.js PBR • Megaestructuras Energéticas</span>
+    </footer>
+
+    <script>
+        const canvas = document.getElementById("renderCanvas");
+        const engine = new BABYLON.Engine(canvas, true);
+        let scene, camera;
+        let starMesh, swarmRings = [], beamMeshGroup;
+        let showSwarm = true, showBeams = true, showRings = true, showThermal = false;
+
+        function createScene() {
+            scene = new BABYLON.Scene(engine);
+            scene.clearColor = new BABYLON.Color4(0.015, 0.02, 0.04, 1.0);
+
+            camera = new BABYLON.ArcRotateCamera("Camera", -Math.PI / 2.3, Math.PI / 2.6, 42, BABYLON.Vector3.Zero(), scene);
+            camera.attachControl(canvas, true);
+            camera.lowerRadiusLimit = 12;
+            camera.upperRadiusLimit = 80;
+
+            const sunLight = new BABYLON.PointLight("sunLight", BABYLON.Vector3.Zero(), scene);
+            sunLight.intensity = 3.5;
+            sunLight.diffuse = new BABYLON.Color3(1.0, 0.9, 0.6);
+
+            const hemiLight = new BABYLON.HemisphericLight("ambient", new BABYLON.Vector3(0, 1, 0), scene);
+            hemiLight.intensity = 0.35;
+
+            // 1. Estrella Central (Sol)
+            starMesh = BABYLON.MeshBuilder.CreateSphere("centralStar", { diameter: 7, segments: 48 }, scene);
+            const starMat = new BABYLON.StandardMaterial("starMat", scene);
+            starMat.emissiveColor = new BABYLON.Color3(1.0, 0.65, 0.1);
+            starMat.diffuseColor = new BABYLON.Color3(1.0, 0.9, 0.3);
+            starMesh.material = starMat;
+
+            // Partículas de Corona Solar
+            const coronaSys = new BABYLON.ParticleSystem("corona", 1000, scene);
+            coronaSys.particleTexture = new BABYLON.Texture("https://raw.githubusercontent.com/BabylonJS/Babylon.js/master/packages/tools/playground/public/textures/flare.png", scene);
+            coronaSys.emitter = starMesh;
+            coronaSys.minSize = 0.3; coronaSys.maxSize = 1.0;
+            coronaSys.minLifeTime = 1.0; coronaSys.maxLifeTime = 2.0;
+            coronaSys.emitRate = 200;
+            coronaSys.blendMode = BABYLON.ParticleSystem.BLENDMODE_ADD;
+            coronaSys.createSphereEmitter(3.6);
+            coronaSys.color1 = new BABYLON.Color4(1.0, 0.6, 0.1, 0.8);
+            coronaSys.color2 = new BABYLON.Color4(1.0, 0.9, 0.3, 0.8);
+            coronaSys.colorDead = new BABYLON.Color4(0.8, 0.2, 0.0, 0.0);
+            coronaSys.start();
+
+            // 2. Anillos y Enjambre de Dyson
+            const swarmColors = [
+                new BABYLON.Color3(0.22, 0.74, 0.97),
+                new BABYLON.Color3(0.98, 0.75, 0.15),
+                new BABYLON.Color3(0.20, 0.83, 0.60),
+                new BABYLON.Color3(0.75, 0.52, 0.99)
+            ];
+
+            for (let i = 0; i < 4; i++) {
+                const ringGroup = new BABYLON.TransformNode("ringGroup_" + i, scene);
+                ringGroup.rotation.x = (i * 0.45) - 0.7;
+                ringGroup.rotation.z = i * 0.35;
+
+                // Anillo orbital guía
+                const torus = BABYLON.MeshBuilder.CreateTorus("torus_" + i, { diameter: 18 + i * 4, thickness: 0.06, tessellation: 64 }, scene);
+                torus.parent = ringGroup;
+                const torusMat = new BABYLON.StandardMaterial("torusMat_" + i, scene);
+                torusMat.diffuseColor = swarmColors[i];
+                torusMat.emissiveColor = swarmColors[i].scale(0.3);
+                torus.material = torusMat;
+
+                // Satélites colectores hexagonales
+                const count = 16 + i * 4;
+                const radius = (18 + i * 4) / 2;
+                for (let j = 0; j < count; j++) {
+                    const angle = (j / count) * Math.PI * 2;
+                    const sat = BABYLON.MeshBuilder.CreateCylinder("sat_" + i + "_" + j, { diameter: 0.9, height: 0.08, tessellation: 6 }, scene);
+                    sat.position = new BABYLON.Vector3(Math.cos(angle) * radius, 0, Math.sin(angle) * radius);
+                    sat.parent = ringGroup;
+                    const satMat = new BABYLON.PBRMaterial("satMat_" + i + "_" + j, scene);
+                    satMat.albedoColor = swarmColors[i];
+                    satMat.metallic = 0.9;
+                    satMat.roughness = 0.2;
+                    sat.material = satMat;
+                }
+                swarmRings.push(ringGroup);
+            }
+
+            // Rayos de transferencia de energía
+            beamMeshGroup = new BABYLON.TransformNode("beamMeshGroup", scene);
+            for (let b = 0; b < 6; b++) {
+                const beam = BABYLON.MeshBuilder.CreateCylinder("beam_" + b, { diameterTop: 0.05, diameterBottom: 0.4, height: 12 }, scene);
+                beam.position = new BABYLON.Vector3(0, 0, 0);
+                beam.rotation.x = Math.PI / 2;
+                beam.rotation.z = (b / 6) * Math.PI * 2;
+                beam.parent = beamMeshGroup;
+                const bMat = new BABYLON.StandardMaterial("bMat_" + b, scene);
+                bMat.emissiveColor = new BABYLON.Color3(0.2, 0.75, 1.0);
+                bMat.alpha = 0.45;
+                beam.material = bMat;
+            }
+
+            scene.registerBeforeRender(() => {
+                swarmRings.forEach((r, idx) => {
+                    r.rotation.y += (idx % 2 === 0 ? 0.003 : -0.003) * (idx + 1);
+                });
+                beamMeshGroup.rotation.y += 0.01;
+            });
+
+            return scene;
+        }
+
+        function toggleSwarm() {
+            showSwarm = !showSwarm;
+            swarmRings.forEach(r => r.setEnabled(showSwarm));
+            document.getElementById("btnSwarm").textContent = `Enjambre: ${showSwarm ? 'ACTIVO' : 'PAUSADO'}`;
+        }
+
+        function toggleBeams() {
+            showBeams = !showBeams;
+            beamMeshGroup.setEnabled(showBeams);
+            document.getElementById("btnBeams").textContent = `Rayos Colectores: ${showBeams ? 'ON' : 'OFF'}`;
+        }
+
+        function toggleRings() {
+            showRings = !showRings;
+            swarmRings.forEach(r => {
+                r.getChildren().forEach(c => {
+                    if (c.name.startsWith("torus")) c.isVisible = showRings;
+                });
+            });
+        }
+
+        function toggleThermal() {
+            showThermal = !showThermal;
+            starMesh.material.emissiveColor = showThermal ? new BABYLON.Color3(0.8, 0.1, 0.5) : new BABYLON.Color3(1.0, 0.65, 0.1);
+            document.getElementById("infoTitle").textContent = showThermal ? "Firma Infrarroja Residual (SETI)" : "Enjambre de Dyson (Dyson Swarm)";
+            document.getElementById("infoBody").textContent = showThermal ? "Según las leyes de la termodinámica, toda energía recolectada debe ser finalmente disipada como calor. Una esfera de Dyson brilla intensamente en el infrarrojo medio (~300 K), firma primordial buscada por los telescopios espaciales." : "Un enjambre de millones de colectores solares ligeros orbitando a 1 Unidad Astronómica permite rodear la estrella capturando toda su emisión energética sin tensiones mecánicas.";
+        }
+
+        function setKardashev(type) {
+            if (type === 1) {
+                document.getElementById("kpiPower").textContent = "1.00 × 10^16 W";
+                document.getElementById("infoTitle").textContent = "Civilización Kardashev Tipo I";
+                document.getElementById("infoBody").textContent = "Domina toda la energía solar y térmica que incide sobre la Tierra (~10^16 W). La humanidad actual ronda el nivel 0.73.";
+            } else {
+                document.getElementById("kpiPower").textContent = "3.83 × 10^26 W";
+                document.getElementById("infoTitle").textContent = "Civilización Kardashev Tipo II";
+                document.getElementById("infoBody").textContent = "Aprovecha el 100% de la producción energética de una estrella completa mediante un enjambre de Dyson a 1 UA.";
+            }
+        }
+
+        function resetCamera() {
+            camera.alpha = -Math.PI / 2.3; camera.beta = Math.PI / 2.6; camera.radius = 42;
+            camera.target = BABYLON.Vector3.Zero();
+        }
+
+        function speakCurrentInfo() {
+            if (!('speechSynthesis' in window)) return;
+            window.speechSynthesis.cancel();
+            const text = `${document.getElementById("infoTitle").textContent}. ${document.getElementById("infoBody").textContent}`;
+            const u = new SpeechSynthesisUtterance(text);
+            u.lang = 'es-ES'; u.rate = 0.95;
+            window.speechSynthesis.speak(u);
+        }
+
+        function openAtlasViewer() {
+            const modal = document.getElementById("photoModal");
+            const img = document.getElementById("atlasImg");
+            img.src = window.DYSON_SVG_B64 || "";
+            modal.style.display = "flex";
+        }
+
+        function closeAtlasViewer() {
+            document.getElementById("photoModal").style.display = "none";
+        }
+
+        scene = createScene();
+        engine.runRenderLoop(() => { scene.render(); });
+        window.addEventListener("resize", () => { engine.resize(); });
+    </script>
+</body>
+</html>
+

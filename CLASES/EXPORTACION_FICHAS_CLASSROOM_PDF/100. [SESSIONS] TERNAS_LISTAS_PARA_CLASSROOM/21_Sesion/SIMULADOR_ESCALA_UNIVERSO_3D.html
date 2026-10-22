@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sesión 21 • Simulador 3D: Escala Cósmica — Del Quark a los Filamentos Galácticos [COD-021]</title>
+    <!-- Babylon.js Motor 3D Oficial CDN -->
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+    <!-- Respaldo Científico en Base64 Autónomo -->
+    <script src="../03_ASSETS_3D_Y_DATOS/cosmic_scale_b64.js"></script>
+    <script src="../../SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/cosmic_scale_b64.js"></script>
+    <script src="../../../../SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/cosmic_scale_b64.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-base: #03050c;
+            --bg-panel: rgba(10, 16, 30, 0.94);
+            --border: rgba(56, 189, 248, 0.35);
+            --primary: #38bdf8;
+            --emerald: #34d399;
+            --amber: #fbbf24;
+            --purple: #c084fc;
+            --rose: #f43f5e;
+            --text-main: #f8fafc;
+            --text-sub: #cbd5e1;
+            --font-title: 'Cinzel', serif;
+            --font-sans: 'Inter', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            font-family: var(--font-sans);
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            font-size: 14px;
+        }
+        header {
+            background: linear-gradient(180deg, rgba(8, 14, 28, 0.98) 0%, rgba(8, 14, 28, 0.88) 100%);
+            backdrop-filter: blur(14px);
+            border-bottom: 1px solid var(--border);
+            padding: 10px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+            z-index: 40;
+        }
+        .brand-box { display: flex; align-items: center; gap: 14px; }
+        .badge-pill {
+            background: rgba(56, 189, 248, 0.15);
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            font-family: var(--font-mono);
+            font-weight: 800;
+            font-size: 0.82rem;
+            padding: 4px 10px;
+            border-radius: 6px;
+        }
+        .title-text h1 {
+            font-family: var(--font-title);
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .title-text p { font-size: 0.78rem; color: var(--text-sub); margin-top: 1px; }
+        .header-actions { display: flex; align-items: center; gap: 10px; }
+        .btn-header {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: var(--text-main);
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .btn-header:hover { background: rgba(56, 189, 248, 0.2); border-color: var(--primary); color: var(--primary); }
+        .workspace { flex: 1; position: relative; overflow: hidden; display: flex; }
+        #renderCanvas { width: 100%; height: 100%; outline: none; display: block; }
+        .controls-panel {
+            position: absolute; top: 18px; left: 18px; width: 330px;
+            background: var(--bg-panel); border: 1px solid var(--border);
+            border-radius: 14px; padding: 18px; backdrop-filter: blur(14px);
+            z-index: 20; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+        .panel-section-title {
+            font-family: var(--font-mono); font-size: 0.8rem; font-weight: 800;
+            color: var(--primary); text-transform: uppercase; margin-bottom: 12px;
+            display: flex; align-items: center; gap: 6px;
+        }
+        .slider-box { margin-bottom: 16px; }
+        .slider-label-row { display: flex; justify-content: space-between; font-size: 0.82rem; margin-bottom: 6px; }
+        .scale-slider {
+            width: 100%; -webkit-appearance: none; height: 8px; border-radius: 4px;
+            background: linear-gradient(90deg, #38bdf8 0%, #34d399 35%, #fbbf24 60%, #c084fc 100%);
+            outline: none; cursor: pointer;
+        }
+        .scale-slider::-webkit-slider-thumb {
+            -webkit-appearance: none; width: 22px; height: 22px; border-radius: 50%;
+            background: #ffffff; border: 3px solid #38bdf8; cursor: pointer;
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.8);
+        }
+        .scale-presets-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 16px; }
+        .btn-preset {
+            background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.12);
+            color: var(--text-sub); padding: 7px 10px; border-radius: 8px; font-size: 0.78rem;
+            cursor: pointer; transition: all 0.2s ease; text-align: left;
+        }
+        .btn-preset.active, .btn-preset:hover {
+            background: rgba(56, 189, 248, 0.2); border-color: var(--primary); color: #fff;
+        }
+        .kpi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .kpi-card { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 8px 10px; }
+        .kpi-val { font-family: var(--font-mono); font-size: 1.05rem; font-weight: 800; color: #fff; }
+        .kpi-label { font-size: 0.72rem; color: var(--text-sub); margin-top: 2px; }
+        .info-panel {
+            position: absolute; bottom: 20px; right: 20px; width: 380px;
+            background: var(--bg-panel); border: 1px solid var(--border);
+            border-radius: 14px; padding: 18px; backdrop-filter: blur(14px);
+            z-index: 20; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+        .info-title { font-family: var(--font-title); font-size: 1.15rem; font-weight: 700; color: var(--amber); margin-bottom: 8px; }
+        .info-body { font-size: 0.84rem; line-height: 1.5; color: var(--text-sub); margin-bottom: 12px; }
+        .info-quote { font-style: italic; font-size: 0.78rem; color: var(--primary); border-left: 2px solid var(--primary); padding-left: 10px; margin-bottom: 12px; }
+        .audio-btn {
+            background: linear-gradient(135deg, #0284c7 0%, #38bdf8 100%);
+            border: none; color: #020617; font-weight: 800; font-size: 0.82rem;
+            padding: 8px 14px; border-radius: 8px; width: 100%; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .photo-viewer-modal {
+            position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(8px);
+            display: none; align-items: center; justify-content: center; z-index: 100;
+        }
+        .photo-container {
+            background: #0a0f1d; border: 1px solid var(--primary); border-radius: 14px;
+            max-width: 900px; width: 92%; overflow: hidden; box-shadow: 0 0 40px rgba(56, 189, 248, 0.35);
+        }
+        .photo-container img { width: 100%; height: auto; display: block; }
+        .photo-caption { padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; background: #060b18; }
+        .close-photo-btn { background: var(--primary); color: #020617; border: none; padding: 6px 16px; border-radius: 8px; font-weight: 800; cursor: pointer; }
+        footer {
+            background: rgba(8, 14, 28, 0.98); border-top: 1px solid var(--border);
+            padding: 8px 24px; font-size: 0.78rem; color: var(--text-sub);
+            display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="brand-box">
+            <span class="badge-pill">[COD-021]</span>
+            <div class="title-text">
+                <h1>🌌 Escala Cósmica 3D: Del Quark a los Filamentos Galácticos</h1>
+                <p>Astrofísica Computacional • Potencias de 10 • 61 Órdenes de Magnitud (10^-35 m a 10^26 m)</p>
+            </div>
+        </div>
+        <div class="header-actions">
+            <button class="btn-header" onclick="openAtlasViewer()">📷 Infografía SVG</button>
+            <button class="btn-header" onclick="resetCamera()">🎯 Centrar</button>
+        </div>
+    </header>
+
+    <div class="workspace">
+        <canvas id="renderCanvas"></canvas>
+
+        <div class="controls-panel">
+            <div class="panel-section-title">🔭 Zoom Logarítmico Cósmico</div>
+            <div class="slider-box">
+                <div class="slider-label-row">
+                    <span id="scaleExpText" style="font-family: var(--font-mono); font-weight: 800; color: #fff;">10^0 m (Humano)</span>
+                    <span id="scaleNameText" style="color: var(--primary);">Ser Humano</span>
+                </div>
+                <input type="range" min="0" max="15" value="8" step="1" class="scale-slider" id="scaleSlider" oninput="onScaleChange(this.value)">
+            </div>
+
+            <div class="panel-section-title">⚡ Escalas Principales</div>
+            <div class="scale-presets-grid">
+                <button class="btn-preset" onclick="setPreset(0)">10^-35 m Planck</button>
+                <button class="btn-preset" onclick="setPreset(2)">10^-15 m Protón</button>
+                <button class="btn-preset" onclick="setPreset(4)">10^-9 m ADN</button>
+                <button class="btn-preset active" onclick="setPreset(8)">10^0 m Humano</button>
+                <button class="btn-preset" onclick="setPreset(9)">10^7 m Tierra</button>
+                <button class="btn-preset" onclick="setPreset(13)">10^21 m Vía Láctea</button>
+                <button class="btn-preset" onclick="setPreset(15)">10^26 m Cosmos</button>
+            </div>
+
+            <div class="panel-section-title">📊 Parámetros Físicos</div>
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-val" id="kpiSize">1.70 m</div>
+                    <div class="kpi-label">Dimensión Física</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-val" id="kpiRealm">Antrópico</div>
+                    <div class="kpi-label">Dominio Físico</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="info-panel">
+            <div class="info-title" id="infoTitle">Ser Humano Adulto</div>
+            <div class="info-body" id="infoBody">Estructura biológica compuesta por 37 billones de células conscientes de su propia existencia cósmica, situada en la mitad logarítmica exacta entre la longitud de Planck y el Universo Observable.</div>
+            <div class="info-quote" id="infoQuote">"Somos polvo de estrellas contemplando las estrellas." — Carl Sagan</div>
+            <button class="audio-btn" onclick="speakCurrentInfo()">🔊 Escuchar Explicación Científica</button>
+        </div>
+    </div>
+
+    <div class="photo-viewer-modal" id="photoModal">
+        <div class="photo-container">
+            <img id="atlasImg" src="" alt="Infografía Escala Cósmica">
+            <div class="photo-caption">
+                <span style="color: #cbd5e1; font-size: 0.82rem;">Astrofísica Computacional • NASA & CERN • Potencias de 10</span>
+                <button class="close-photo-btn" onclick="closeAtlasViewer()">Cerrar Infografía</button>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <span>🌌 Curso de Inteligencia Artificial • Metodología de la Triple Salvaguarda Pedagógica</span>
+        <span>Motor 3D: Babylon.js PBR • Astrofísica de Potencias de 10</span>
+    </footer>
+
+    <script>
+        const canvas = document.getElementById("renderCanvas");
+        const engine = new BABYLON.Engine(canvas, true);
+        let scene, camera;
+        let objectsGroup;
+        let sphereMesh, ringsMesh, particleSys;
+
+        const SCALES = (window.COSMIC_SCALE_DATA && window.COSMIC_SCALE_DATA.orders) || [
+            { exp: -35, name: "Longitud de Planck", size: "1.6 × 10^-35 m", desc: "Escala mínima del espacio-tiempo.", realm: "Física Cuántica" },
+            { exp: -18, name: "Quarks Up & Down", size: "10^-18 m", desc: "Partículas elementales indivisibles.", realm: "Modelo Estándar" },
+            { exp: -15, name: "Protón / Núcleo", size: "1.75 × 10^-15 m", desc: "Núcleo atómico unido por fuerza fuerte.", realm: "Física Nuclear" },
+            { exp: -10, name: "Átomo de Hidrógeno", size: "10^-10 m (1 Å)", desc: "Protón central y orbital electrónico.", realm: "Química Cuántica" },
+            { exp: -9, name: "Doble Hélice de ADN", size: "2 nm ancho", desc: "El código químico de la vida.", realm: "Biología Molecular" },
+            { exp: -7, name: "Virus Bacteriófago", size: "200 nm", desc: "Cápside icosaédrica microscópica.", realm: "Microbiología" },
+            { exp: -5, name: "Glóbulo Rojo", size: "7.5 µm", desc: "Célula transportadora de oxígeno.", realm: "Fisiología Médica" },
+            { exp: -3, name: "Grano de Arena", size: "1 mm", desc: "Mundo táctil visible a simple vista.", realm: "Mundo Cotidiano" },
+            { exp: 0, name: "Ser Humano", size: "1.70 m", desc: "Estructura biológica de 37 billones de células.", realm: "Escala Antrópica" },
+            { exp: 7, name: "Planeta Tierra", size: "12.742 km", desc: "Hogar de la biósfera y océanos líquidos.", realm: "Geofísica Planetaria" },
+            { exp: 9, name: "El Sol", size: "1.392.000 km", desc: "Estrella G2V de fusión termonuclear.", realm: "Astrofísica Estelar" },
+            { exp: 13, name: "Sistema Solar", size: "~100 UA", desc: "Dominio heliosférico hasta el Cinturón de Kuiper.", realm: "Astronomía" },
+            { exp: 16, name: "Año Luz (Próxima Centauri)", size: "9.46 × 10^15 m", desc: "Distancia interestelar a nuestra vecina.", realm: "Astrofísica" },
+            { exp: 21, name: "Vía Láctea", size: "100.000 a.l.", desc: "Galaxia espiral barrada con Sgr A* en el centro.", realm: "Cosmología Galáctica" },
+            { exp: 23, name: "Cúmulo de Virgo", size: "10 millones a.l.", desc: "Supercúmulo gravitatorio del Grupo Local.", realm: "Cosmología Extragaláctica" },
+            { exp: 26, name: "Universo Observable", size: "93.000 millones a.l.", desc: "La red de filamentos cósmicos completa.", realm: "Cosmología Fundamental" }
+        ];
+
+        let currentIndex = 8;
+
+        function createScene() {
+            scene = new BABYLON.Scene(engine);
+            scene.clearColor = new BABYLON.Color4(0.012, 0.02, 0.045, 1.0);
+
+            camera = new BABYLON.ArcRotateCamera("Camera", -Math.PI / 2, Math.PI / 2.5, 30, BABYLON.Vector3.Zero(), scene);
+            camera.attachControl(canvas, true);
+            camera.lowerRadiusLimit = 10;
+            camera.upperRadiusLimit = 60;
+
+            const sunLight = new BABYLON.DirectionalLight("sun", new BABYLON.Vector3(0.5, -1, 0.7), scene);
+            sunLight.intensity = 2.2;
+            const hemiLight = new BABYLON.HemisphericLight("hemi", new BABYLON.Vector3(0, 1, 0), scene);
+            hemiLight.intensity = 0.6;
+            hemiLight.diffuse = new BABYLON.Color3(0.4, 0.6, 0.9);
+
+            objectsGroup = new BABYLON.TransformNode("objectsGroup", scene);
+
+            // Esfera central con material PBR
+            sphereMesh = BABYLON.MeshBuilder.CreateSphere("centralObject", { diameter: 8, segments: 64 }, scene);
+            sphereMesh.parent = objectsGroup;
+
+            const mat = new BABYLON.PBRMaterial("sphereMat", scene);
+            mat.albedoColor = new BABYLON.Color3(0.22, 0.74, 0.97);
+            mat.roughness = 0.3;
+            mat.metallic = 0.4;
+            mat.emissiveColor = new BABYLON.Color3(0.05, 0.15, 0.25);
+            sphereMesh.material = mat;
+
+            // Anillos orbitales concéntricos decorativos
+            ringsMesh = BABYLON.MeshBuilder.CreateTorus("orbitalRing1", { diameter: 14, thickness: 0.15, tessellation: 64 }, scene);
+            ringsMesh.parent = objectsGroup;
+            const ringMat = new BABYLON.StandardMaterial("ringMat", scene);
+            ringMat.diffuseColor = new BABYLON.Color3(0.98, 0.75, 0.15);
+            ringMat.emissiveColor = new BABYLON.Color3(0.3, 0.2, 0.05);
+            ringsMesh.material = ringMat;
+
+            // Partículas cósmicas circundantes
+            const pSphere = BABYLON.MeshBuilder.CreateSphere("particleEmitter", { diameter: 0.1 }, scene);
+            pSphere.parent = objectsGroup;
+            pSphere.isVisible = false;
+            particleSys = new BABYLON.ParticleSystem("particles", 1500, scene);
+            particleSys.particleTexture = new BABYLON.Texture("https://raw.githubusercontent.com/BabylonJS/Babylon.js/master/packages/tools/playground/public/textures/flare.png", scene);
+            particleSys.emitter = pSphere;
+            particleSys.minSize = 0.1;
+            particleSys.maxSize = 0.4;
+            particleSys.minLifeTime = 2.0;
+            particleSys.maxLifeTime = 4.0;
+            particleSys.emitRate = 300;
+            particleSys.blendMode = BABYLON.ParticleSystem.BLENDMODE_ADD;
+            particleSys.createSphereEmitter(12);
+            particleSys.color1 = new BABYLON.Color4(0.22, 0.74, 0.97, 0.8);
+            particleSys.color2 = new BABYLON.Color4(0.75, 0.52, 0.99, 0.8);
+            particleSys.colorDead = new BABYLON.Color4(0, 0, 0, 0.0);
+            particleSys.start();
+
+            scene.registerBeforeRender(() => {
+                objectsGroup.rotation.y += 0.005;
+                ringsMesh.rotation.x = Math.sin(Date.now() * 0.001) * 0.2;
+            });
+
+            return scene;
+        }
+
+        function onScaleChange(val) {
+            currentIndex = parseInt(val);
+            updateUI();
+        }
+
+        function setPreset(idx) {
+            currentIndex = idx;
+            document.getElementById("scaleSlider").value = idx;
+            document.querySelectorAll(".btn-preset").forEach((b, i) => {
+                b.classList.toggle("active", i === idx);
+            });
+            updateUI();
+        }
+
+        function updateUI() {
+            const item = SCALES[currentIndex];
+            document.getElementById("scaleExpText").textContent = `10^${item.exp} m (${item.name})`;
+            document.getElementById("scaleNameText").textContent = item.name;
+            document.getElementById("kpiSize").textContent = item.size;
+            document.getElementById("kpiRealm").textContent = item.realm.split(" ")[0];
+
+            document.getElementById("infoTitle").textContent = `${item.name} (10^${item.exp} m)`;
+            document.getElementById("infoBody").textContent = item.desc;
+
+            // Variación visual de color según reino
+            const colors = [
+                new BABYLON.Color3(0.5, 0.3, 0.9), // Cuántica
+                new BABYLON.Color3(0.2, 0.7, 0.9), // Atómica
+                new BABYLON.Color3(0.2, 0.8, 0.5), // Biología
+                new BABYLON.Color3(0.9, 0.7, 0.2), // Humano
+                new BABYLON.Color3(0.2, 0.5, 0.9), // Planeta
+                new BABYLON.Color3(0.9, 0.4, 0.2), // Sol
+                new BABYLON.Color3(0.7, 0.4, 0.9)  // Cosmos
+            ];
+            const c = colors[Math.min(Math.floor(currentIndex / 2.5), colors.length - 1)];
+            sphereMesh.material.albedoColor = c;
+            sphereMesh.material.emissiveColor = c.scale(0.25);
+        }
+
+        function resetCamera() {
+            camera.alpha = -Math.PI / 2;
+            camera.beta = Math.PI / 2.5;
+            camera.radius = 30;
+            camera.target = BABYLON.Vector3.Zero();
+        }
+
+        function speakCurrentInfo() {
+            if (!('speechSynthesis' in window)) return;
+            window.speechSynthesis.cancel();
+            const text = `${document.getElementById("infoTitle").textContent}. ${document.getElementById("infoBody").textContent}`;
+            const u = new SpeechSynthesisUtterance(text);
+            u.lang = 'es-ES';
+            u.rate = 0.95;
+            window.speechSynthesis.speak(u);
+        }
+
+        function openAtlasViewer() {
+            const modal = document.getElementById("photoModal");
+            const img = document.getElementById("atlasImg");
+            img.src = window.COSMIC_SCALE_SVG_B64 || "";
+            modal.style.display = "flex";
+        }
+
+        function closeAtlasViewer() {
+            document.getElementById("photoModal").style.display = "none";
+        }
+
+        scene = createScene();
+        updateUI();
+
+        engine.runRenderLoop(() => { scene.render(); });
+        window.addEventListener("resize", () => { engine.resize(); });
+    </script>
+</body>
+</html>
+

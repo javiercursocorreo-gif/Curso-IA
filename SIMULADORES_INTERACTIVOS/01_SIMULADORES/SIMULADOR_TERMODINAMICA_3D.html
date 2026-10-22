@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sesión 23 • Simulador 3D: Termodinámica Molecular — Cero Absoluto a la Fusión [COD-023]</title>
+    <!-- Babylon.js Motor 3D Oficial CDN -->
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+    <!-- Respaldo Científico en Base64 Autónomo -->
+    <script src="../03_ASSETS_3D_Y_DATOS/thermodynamics_b64.js"></script>
+    <script src="../../SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/thermodynamics_b64.js"></script>
+    <script src="../../../../SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/thermodynamics_b64.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-base: #030612;
+            --bg-panel: rgba(10, 16, 30, 0.94);
+            --border: rgba(56, 189, 248, 0.35);
+            --primary: #38bdf8;
+            --emerald: #34d399;
+            --amber: #fbbf24;
+            --orange: #f97316;
+            --purple: #c084fc;
+            --text-main: #f8fafc;
+            --text-sub: #cbd5e1;
+            --font-title: 'Cinzel', serif;
+            --font-sans: 'Inter', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+        body {
+            background-color: var(--bg-base); color: var(--text-main);
+            font-family: var(--font-sans); height: 100vh; width: 100vw;
+            overflow: hidden; display: flex; flex-direction: column; font-size: 14px;
+        }
+        header {
+            background: linear-gradient(180deg, rgba(8, 14, 28, 0.98) 0%, rgba(8, 14, 28, 0.88) 100%);
+            backdrop-filter: blur(14px); border-bottom: 1px solid var(--border);
+            padding: 10px 24px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; z-index: 40;
+        }
+        .brand-box { display: flex; align-items: center; gap: 14px; }
+        .badge-pill {
+            background: rgba(56, 189, 248, 0.15); border: 1px solid var(--primary);
+            color: var(--primary); font-family: var(--font-mono); font-weight: 800;
+            font-size: 0.82rem; padding: 4px 10px; border-radius: 6px;
+        }
+        .title-text h1 {
+            font-family: var(--font-title); font-size: 1.15rem; font-weight: 800; color: #fff;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .title-text p { font-size: 0.78rem; color: var(--text-sub); margin-top: 1px; }
+        .header-actions { display: flex; align-items: center; gap: 10px; }
+        .btn-header {
+            background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15);
+            color: var(--text-main); padding: 6px 14px; border-radius: 8px; font-size: 0.8rem;
+            font-weight: 700; cursor: pointer; transition: all 0.2s ease;
+        }
+        .btn-header:hover { background: rgba(56, 189, 248, 0.2); border-color: var(--primary); color: var(--primary); }
+        .workspace { flex: 1; position: relative; overflow: hidden; display: flex; }
+        #renderCanvas { width: 100%; height: 100%; outline: none; display: block; }
+        .controls-panel {
+            position: absolute; top: 18px; left: 18px; width: 340px;
+            background: var(--bg-panel); border: 1px solid var(--border);
+            border-radius: 14px; padding: 18px; backdrop-filter: blur(14px);
+            z-index: 20; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+        .panel-section-title {
+            font-family: var(--font-mono); font-size: 0.8rem; font-weight: 800;
+            color: var(--primary); text-transform: uppercase; margin-bottom: 12px;
+            display: flex; align-items: center; gap: 6px;
+        }
+        .slider-box { margin-bottom: 16px; }
+        .slider-label-row { display: flex; justify-content: space-between; font-size: 0.82rem; margin-bottom: 6px; }
+        .temp-slider {
+            width: 100%; -webkit-appearance: none; height: 8px; border-radius: 4px;
+            background: linear-gradient(90deg, #38bdf8 0%, #34d399 30%, #fbbf24 60%, #f97316 85%, #c084fc 100%);
+            outline: none; cursor: pointer;
+        }
+        .temp-slider::-webkit-slider-thumb {
+            -webkit-appearance: none; width: 22px; height: 22px; border-radius: 50%;
+            background: #ffffff; border: 3px solid #38bdf8; cursor: pointer;
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.8);
+        }
+        .preset-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 16px; }
+        .btn-preset {
+            background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.12);
+            color: var(--text-sub); padding: 7px 10px; border-radius: 8px; font-size: 0.78rem;
+            cursor: pointer; transition: all 0.2s ease; text-align: left;
+        }
+        .btn-preset.active, .btn-preset:hover {
+            background: rgba(56, 189, 248, 0.2); border-color: var(--primary); color: #fff;
+        }
+        .kpi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .kpi-card { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 8px 10px; }
+        .kpi-val { font-family: var(--font-mono); font-size: 1.05rem; font-weight: 800; color: #fff; }
+        .kpi-label { font-size: 0.72rem; color: var(--text-sub); margin-top: 2px; }
+        .info-panel {
+            position: absolute; bottom: 20px; right: 20px; width: 380px;
+            background: var(--bg-panel); border: 1px solid var(--border);
+            border-radius: 14px; padding: 18px; backdrop-filter: blur(14px);
+            z-index: 20; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+        .info-title { font-family: var(--font-title); font-size: 1.15rem; font-weight: 700; color: var(--amber); margin-bottom: 8px; }
+        .info-body { font-size: 0.84rem; line-height: 1.5; color: var(--text-sub); margin-bottom: 12px; }
+        .info-quote { font-style: italic; font-size: 0.78rem; color: var(--primary); border-left: 2px solid var(--primary); padding-left: 10px; margin-bottom: 12px; }
+        .audio-btn {
+            background: linear-gradient(135deg, #0284c7 0%, #38bdf8 100%);
+            border: none; color: #020617; font-weight: 800; font-size: 0.82rem;
+            padding: 8px 14px; border-radius: 8px; width: 100%; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .photo-viewer-modal {
+            position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(8px);
+            display: none; align-items: center; justify-content: center; z-index: 100;
+        }
+        .photo-container {
+            background: #0a0f1d; border: 1px solid var(--primary); border-radius: 14px;
+            max-width: 900px; width: 92%; overflow: hidden; box-shadow: 0 0 40px rgba(56, 189, 248, 0.35);
+        }
+        .photo-container img { width: 100%; height: auto; display: block; }
+        .photo-caption { padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; background: #060b18; }
+        .close-photo-btn { background: var(--primary); color: #020617; border: none; padding: 6px 16px; border-radius: 8px; font-weight: 800; cursor: pointer; }
+        footer {
+            background: rgba(8, 14, 28, 0.98); border-top: 1px solid var(--border);
+            padding: 8px 24px; font-size: 0.78rem; color: var(--text-sub);
+            display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="brand-box">
+            <span class="badge-pill">[COD-023]</span>
+            <div class="title-text">
+                <h1>🔥 Termodinámica Molecular: Cero Absoluto a la Fusión 3D</h1>
+                <p>NIST Physical Data • Ecuación de Boltzmann • De 0 K (-273,15 °C) a 15 Millones de Kelvin</p>
+            </div>
+        </div>
+        <div class="header-actions">
+            <button class="btn-header" onclick="openAtlasViewer()">📷 Gráfica Boltzmann SVG</button>
+            <button class="btn-header" onclick="resetCamera()">🎯 Centrar</button>
+        </div>
+    </header>
+
+    <div class="workspace">
+        <canvas id="renderCanvas"></canvas>
+
+        <div class="controls-panel">
+            <div class="panel-section-title">🌡️ Termostato Universal (Kelvin)</div>
+            <div class="slider-box">
+                <div class="slider-label-row">
+                    <span id="tempKText" style="font-family: var(--font-mono); font-weight: 800; color: #fff;">294.15 K</span>
+                    <span id="tempCText" style="color: var(--primary);">21.0 °C (Hogar)</span>
+                </div>
+                <input type="range" min="0" max="7" value="4" step="1" class="temp-slider" id="tempSlider" oninput="onTempChange(this.value)">
+            </div>
+
+            <div class="panel-section-title">⚡ Hitos Térmicos</div>
+            <div class="preset-grid">
+                <button class="btn-preset" onclick="setPreset(0)">0 K Cero Absoluto</button>
+                <button class="btn-preset" onclick="setPreset(1)">2.73 K Fondo Cósmico</button>
+                <button class="btn-preset" onclick="setPreset(2)">77 K Nitrógeno Líq.</button>
+                <button class="btn-preset" onclick="setPreset(3)">273 K Hielo (0 °C)</button>
+                <button class="btn-preset active" onclick="setPreset(4)">294 K Hogar (21 °C)</button>
+                <button class="btn-preset" onclick="setPreset(5)">373 K Vapor (100 °C)</button>
+                <button class="btn-preset" onclick="setPreset(6)">5778 K Fotosfera Sol</button>
+                <button class="btn-preset" onclick="setPreset(7)">15 MK Fusión Solar</button>
+            </div>
+
+            <div class="panel-section-title">📊 Parámetros Cinéticos</div>
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-val" id="kpiSpeed">460 m/s</div>
+                    <div class="kpi-label">Velocidad Cuadrática (v_rms)</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-val" id="kpiState">Gas Atmosférico</div>
+                    <div class="kpi-label">Estado de la Materia</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="info-panel">
+            <div class="info-title" id="infoTitle">Confort Térmico del Hogar (21 °C / 294 K)</div>
+            <div class="info-body" id="infoBody">A 21 °C, las moléculas de oxígeno y nitrógeno del aire se desplazan a unos 460 m/s (más rápidas que el sonido), colisionando miles de millones de veces por segundo. Esta temperatura minimiza el estrés cardiovascular en personas mayores.</div>
+            <div class="info-quote" id="infoQuote">"El calor no es una sustancia misteriosa; es simplemente el movimiento microscópico incesante de los átomos." — Ludwig Boltzmann</div>
+            <button class="audio-btn" onclick="speakCurrentInfo()">🔊 Escuchar Explicación Física</button>
+        </div>
+    </div>
+
+    <div class="photo-viewer-modal" id="photoModal">
+        <div class="photo-container">
+            <img id="atlasImg" src="" alt="Gráfica de Termodinámica">
+            <div class="photo-caption">
+                <span style="color: #cbd5e1; font-size: 0.82rem;">NIST • Dinámica Molecular • Distribución de Maxwell-Boltzmann</span>
+                <button class="close-photo-btn" onclick="closeAtlasViewer()">Cerrar Gráfica</button>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <span>🔥 Curso de Inteligencia Artificial • Metodología de la Triple Salvaguarda Pedagógica</span>
+        <span>Motor 3D: Babylon.js PBR • Termodinámica Cuántica & Molecular</span>
+    </footer>
+
+    <script>
+        const canvas = document.getElementById("renderCanvas");
+        const engine = new BABYLON.Engine(canvas, true);
+        let scene, camera;
+        let chamberBox, atoms = [];
+        let currentIdx = 4;
+
+        const BENCHMARKS = (window.THERMO_DATA && window.THERMO_DATA.benchmarks) || [
+            { tempK: 0, tempC: -273.15, name: "Cero Absoluto (0 K)", desc: "Inmovilidad cinética total. Los átomos cesan toda vibración térmica ordinaria.", state: "Condensado Bose-Einstein", speedMs: 0 },
+            { tempK: 2.73, tempC: -270.42, name: "Fondo Cósmico de Microondas (CMB)", desc: "La temperatura residual del Big Bang en el vacío intergaláctico.", state: "Criogenia Extrema", speedMs: 130 },
+            { tempK: 77.36, tempC: -195.79, name: "Nitrógeno Líquido", desc: "Criogenia para preservación biológica; colisiones moleculares muy lentas.", state: "Líquido Criogénico", speedMs: 380 },
+            { tempK: 273.15, tempC: 0.0, name: "Punto de Congelación del Agua", desc: "Formación de la red cristalina rígida hexagonal de puentes de hidrógeno.", state: "Sólido Cristalino", speedMs: 440 },
+            { tempK: 294.15, tempC: 21.0, name: "Confort Térmico del Hogar (21 °C)", desc: "Temperatura ideal recomendada para la salud y calma vascular en mayores.", state: "Gas Atmosférico", speedMs: 460 },
+            { tempK: 373.15, tempC: 100.0, name: "Ebullición del Agua", desc: "Transición de fase líquida a gaseosa con gran aumento de entropía.", state: "Vapor de Agua", speedMs: 520 },
+            { tempK: 5778, tempC: 5505, name: "Superficie Solar (Fotosfera)", desc: "Incandescencia estelar amarilla emitiendo el espectro solar continuo.", state: "Gas Ionizado", speedMs: 2050 },
+            { tempK: 15000000, tempC: 14999727, name: "Núcleo Solar (Fusión Protón-Protón)", desc: "Plasma donde los choques vencen la repulsión de Coulomb fusionando hidrógeno.", state: "Plasma de Fusión", speedMs: 600000 }
+        ];
+
+        function createScene() {
+            scene = new BABYLON.Scene(engine);
+            scene.clearColor = new BABYLON.Color4(0.015, 0.02, 0.04, 1.0);
+
+            camera = new BABYLON.ArcRotateCamera("Camera", -Math.PI / 2.2, Math.PI / 2.6, 32, BABYLON.Vector3.Zero(), scene);
+            camera.attachControl(canvas, true);
+            camera.lowerRadiusLimit = 12;
+            camera.upperRadiusLimit = 60;
+
+            const sunLight = new BABYLON.DirectionalLight("dirLight", new BABYLON.Vector3(0.5, -1, 0.7), scene);
+            sunLight.intensity = 2.0;
+
+            const hemiLight = new BABYLON.HemisphericLight("hemiLight", new BABYLON.Vector3(0, 1, 0), scene);
+            hemiLight.intensity = 0.6;
+
+            // Cámara de cuarzo transparente
+            chamberBox = BABYLON.MeshBuilder.CreateBox("chamber", { size: 14 }, scene);
+            const chamberMat = new BABYLON.PBRMaterial("chamberMat", scene);
+            chamberMat.alpha = 0.12;
+            chamberMat.roughness = 0.1;
+            chamberMat.metallic = 0.1;
+            chamberMat.albedoColor = new BABYLON.Color3(0.3, 0.7, 0.9);
+            chamberBox.material = chamberMat;
+
+            // Crear 60 átomos esféricos en la cámara
+            const atomColors = [
+                new BABYLON.Color3(0.2, 0.7, 0.9), // Frío cian
+                new BABYLON.Color3(0.3, 0.8, 0.5), // Verde
+                new BABYLON.Color3(0.9, 0.7, 0.2), // Ámbar
+                new BABYLON.Color3(0.9, 0.4, 0.1), // Naranja
+                new BABYLON.Color3(0.8, 0.3, 0.9)  // Fusión plasma
+            ];
+
+            const atomMat = new BABYLON.PBRMaterial("atomMat", scene);
+            atomMat.albedoColor = atomColors[2];
+            atomMat.emissiveColor = atomColors[2].scale(0.3);
+            atomMat.roughness = 0.3;
+
+            for (let i = 0; i < 60; i++) {
+                const a = BABYLON.MeshBuilder.CreateSphere("atom_" + i, { diameter: 0.9, segments: 16 }, scene);
+                a.position = new BABYLON.Vector3(
+                    (Math.random() - 0.5) * 12,
+                    (Math.random() - 0.5) * 12,
+                    (Math.random() - 0.5) * 12
+                );
+                a.vx = (Math.random() - 0.5) * 0.1;
+                a.vy = (Math.random() - 0.5) * 0.1;
+                a.vz = (Math.random() - 0.5) * 0.1;
+                a.material = atomMat;
+                atoms.push(a);
+            }
+
+            scene.registerBeforeRender(() => {
+                const speedFactor = currentIdx === 0 ? 0 : Math.pow(currentIdx + 1, 1.3) * 0.015;
+                atoms.forEach(a => {
+                    a.position.x += a.vx * speedFactor * 25;
+                    a.position.y += a.vy * speedFactor * 25;
+                    a.position.z += a.vz * speedFactor * 25;
+
+                    // Rebote elástico contra las paredes de la cámara (+-6)
+                    const limit = 6.2;
+                    if (Math.abs(a.position.x) > limit) { a.vx *= -1; a.position.x = Math.sign(a.position.x) * limit; }
+                    if (Math.abs(a.position.y) > limit) { a.vy *= -1; a.position.y = Math.sign(a.position.y) * limit; }
+                    if (Math.abs(a.position.z) > limit) { a.vz *= -1; a.position.z = Math.sign(a.position.z) * limit; }
+                });
+                chamberBox.rotation.y += 0.001;
+            });
+
+            return scene;
+        }
+
+        function onTempChange(val) {
+            currentIdx = parseInt(val);
+            updateUI();
+        }
+
+        function setPreset(idx) {
+            currentIdx = idx;
+            document.getElementById("tempSlider").value = idx;
+            document.querySelectorAll(".btn-preset").forEach((b, i) => {
+                b.classList.toggle("active", i === idx);
+            });
+            updateUI();
+        }
+
+        function updateUI() {
+            const b = BENCHMARKS[currentIdx];
+            document.getElementById("tempKText").textContent = `${b.tempK} K`;
+            document.getElementById("tempCText").textContent = `${b.tempC} °C (${b.name.split(" ")[0]})`;
+            document.getElementById("kpiSpeed").textContent = `${b.speedMs} m/s`;
+            document.getElementById("kpiState").textContent = b.state;
+
+            document.getElementById("infoTitle").textContent = b.name;
+            document.getElementById("infoBody").textContent = b.desc;
+
+            // Ajustar color de átomos según temperatura
+            const colors = [
+                new BABYLON.Color3(0.2, 0.7, 0.95), // 0 K Azul cian hielo
+                new BABYLON.Color3(0.2, 0.5, 0.9),  // CMB
+                new BABYLON.Color3(0.2, 0.8, 0.6),  // 77K
+                new BABYLON.Color3(0.4, 0.8, 0.8),  // 273K
+                new BABYLON.Color3(0.9, 0.7, 0.2),  // 294K Ámbar
+                new BABYLON.Color3(0.95, 0.5, 0.1), // 373K Naranja
+                new BABYLON.Color3(0.95, 0.2, 0.1), // 5778K Rojo-amarillo
+                new BABYLON.Color3(0.8, 0.3, 0.95)  // 15MK Violeta plasma
+            ];
+            const c = colors[currentIdx];
+            if (atoms.length > 0 && atoms[0].material) {
+                atoms[0].material.albedoColor = c;
+                atoms[0].material.emissiveColor = c.scale(currentIdx >= 6 ? 0.6 : 0.2);
+            }
+        }
+
+        function resetCamera() {
+            camera.alpha = -Math.PI / 2.2; camera.beta = Math.PI / 2.6; camera.radius = 32;
+            camera.target = BABYLON.Vector3.Zero();
+        }
+
+        function speakCurrentInfo() {
+            if (!('speechSynthesis' in window)) return;
+            window.speechSynthesis.cancel();
+            const text = `${document.getElementById("infoTitle").textContent}. ${document.getElementById("infoBody").textContent}`;
+            const u = new SpeechSynthesisUtterance(text);
+            u.lang = 'es-ES'; u.rate = 0.95;
+            window.speechSynthesis.speak(u);
+        }
+
+        function openAtlasViewer() {
+            const modal = document.getElementById("photoModal");
+            const img = document.getElementById("atlasImg");
+            img.src = window.THERMO_SVG_B64 || "";
+            modal.style.display = "flex";
+        }
+
+        function closeAtlasViewer() {
+            document.getElementById("photoModal").style.display = "none";
+        }
+
+        scene = createScene();
+        updateUI();
+
+        engine.runRenderLoop(() => { scene.render(); });
+        window.addEventListener("resize", () => { engine.resize(); });
+    </script>
+</body>
+</html>
+

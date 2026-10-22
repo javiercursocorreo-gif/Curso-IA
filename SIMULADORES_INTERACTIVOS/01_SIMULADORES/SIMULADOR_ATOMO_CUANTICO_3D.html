@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sesión 27 • Simulador 3D: Estructura del Átomo & Orbitales Cuánticos [COD-027]</title>
+    <!-- Babylon.js Motor 3D Oficial CDN -->
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+    <!-- Respaldo Científico en Base64 Autónomo -->
+    <script src="../03_ASSETS_3D_Y_DATOS/quantum_atom_b64.js"></script>
+    <script src="../../SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/quantum_atom_b64.js"></script>
+    <script src="../../../../SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/quantum_atom_b64.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-base: #030612;
+            --bg-panel: rgba(8, 14, 28, 0.94);
+            --border: rgba(56, 189, 248, 0.35);
+            --primary: #38bdf8;
+            --amber: #fbbf24;
+            --rose: #f43f5e;
+            --purple: #c084fc;
+            --text-main: #f8fafc;
+            --text-sub: #cbd5e1;
+            --font-title: 'Cinzel', serif;
+            --font-sans: 'Inter', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+        body {
+            background-color: var(--bg-base); color: var(--text-main);
+            font-family: var(--font-sans); height: 100vh; width: 100vw;
+            overflow: hidden; display: flex; flex-direction: column; font-size: 14px;
+        }
+        header {
+            background: linear-gradient(180deg, rgba(8, 14, 28, 0.98) 0%, rgba(8, 14, 28, 0.88) 100%);
+            backdrop-filter: blur(14px); border-bottom: 1px solid var(--border);
+            padding: 10px 24px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; z-index: 40;
+        }
+        .brand-box { display: flex; align-items: center; gap: 14px; }
+        .badge-pill {
+            background: rgba(56, 189, 248, 0.15); border: 1px solid var(--primary);
+            color: var(--primary); font-family: var(--font-mono); font-weight: 800;
+            font-size: 0.82rem; padding: 4px 10px; border-radius: 6px;
+        }
+        .title-text h1 {
+            font-family: var(--font-title); font-size: 1.15rem; font-weight: 800; color: #fff;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .title-text p { font-size: 0.78rem; color: var(--text-sub); margin-top: 1px; }
+        .header-actions { display: flex; align-items: center; gap: 10px; }
+        .btn-header {
+            background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15);
+            color: var(--text-main); padding: 6px 14px; border-radius: 8px; font-size: 0.8rem;
+            font-weight: 700; cursor: pointer; transition: all 0.2s ease;
+        }
+        .btn-header:hover { background: rgba(56, 189, 248, 0.2); border-color: var(--primary); color: var(--primary); }
+        .workspace { flex: 1; position: relative; overflow: hidden; display: flex; }
+        #renderCanvas { width: 100%; height: 100%; outline: none; display: block; }
+        .controls-panel {
+            position: absolute; top: 18px; left: 18px; width: 340px;
+            background: var(--bg-panel); border: 1px solid var(--border);
+            border-radius: 14px; padding: 18px; backdrop-filter: blur(14px);
+            z-index: 20; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+        .panel-section-title {
+            font-family: var(--font-mono); font-size: 0.8rem; font-weight: 800;
+            color: var(--primary); text-transform: uppercase; margin-bottom: 12px;
+            display: flex; align-items: center; gap: 6px;
+        }
+        .btn-action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 16px; }
+        .btn-action {
+            background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.12);
+            color: var(--text-sub); padding: 8px 10px; border-radius: 8px; font-size: 0.8rem;
+            font-weight: 700; cursor: pointer; transition: all 0.2s ease; text-align: center;
+        }
+        .btn-action.active, .btn-action:hover {
+            background: rgba(56, 189, 248, 0.25); border-color: var(--primary); color: #fff;
+        }
+        .kpi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .kpi-card { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 8px 10px; }
+        .kpi-val { font-family: var(--font-mono); font-size: 1.05rem; font-weight: 800; color: #fff; }
+        .kpi-label { font-size: 0.72rem; color: var(--text-sub); margin-top: 2px; }
+        .info-panel {
+            position: absolute; bottom: 20px; right: 20px; width: 380px;
+            background: var(--bg-panel); border: 1px solid var(--border);
+            border-radius: 14px; padding: 18px; backdrop-filter: blur(14px);
+            z-index: 20; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+        .info-title { font-family: var(--font-title); font-size: 1.15rem; font-weight: 700; color: var(--amber); margin-bottom: 8px; }
+        .info-body { font-size: 0.84rem; line-height: 1.5; color: var(--text-sub); margin-bottom: 12px; }
+        .info-quote { font-style: italic; font-size: 0.78rem; color: var(--primary); border-left: 2px solid var(--primary); padding-left: 10px; margin-bottom: 12px; }
+        .audio-btn {
+            background: linear-gradient(135deg, #0284c7 0%, #38bdf8 100%);
+            border: none; color: #020617; font-weight: 800; font-size: 0.82rem;
+            padding: 8px 14px; border-radius: 8px; width: 100%; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .photo-viewer-modal {
+            position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(8px);
+            display: none; align-items: center; justify-content: center; z-index: 100;
+        }
+        .photo-container {
+            background: #0a0f1d; border: 1px solid var(--primary); border-radius: 14px;
+            max-width: 900px; width: 92%; overflow: hidden; box-shadow: 0 0 40px rgba(56, 189, 248, 0.35);
+        }
+        .photo-container img { width: 100%; height: auto; display: block; }
+        .photo-caption { padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; background: #060b18; }
+        .close-photo-btn { background: var(--primary); color: #020617; border: none; padding: 6px 16px; border-radius: 8px; font-weight: 800; cursor: pointer; }
+        footer {
+            background: rgba(8, 14, 28, 0.98); border-top: 1px solid var(--border);
+            padding: 8px 24px; font-size: 0.78rem; color: var(--text-sub);
+            display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="brand-box">
+            <span class="badge-pill">[COD-027]</span>
+            <div class="title-text">
+                <h1>⚛️ Estructura del Átomo & Orbitales Cuánticos 3D</h1>
+                <p>Ecuación de Schrödinger • Armónicos Esféricos • Nubes de Densidad de Probabilidad |ψ|²</p>
+            </div>
+        </div>
+        <div class="header-actions">
+            <button class="btn-header" onclick="openAtlasViewer()">📷 Esquema Cuántico SVG</button>
+            <button class="btn-header" onclick="resetCamera()">🎯 Centrar</button>
+        </div>
+    </header>
+
+    <div class="workspace">
+        <canvas id="renderCanvas"></canvas>
+
+        <div class="controls-panel">
+            <div class="panel-section-title">🔮 Selector de Orbital Atómico</div>
+            <div class="btn-action-grid">
+                <button class="btn-action active" onclick="setOrbital('1s')">Orbital 1s (Esfera)</button>
+                <button class="btn-action" onclick="setOrbital('2s')">Orbital 2s (Nodo)</button>
+                <button class="btn-action" onclick="setOrbital('2pz')">Orbital 2pz (Lóbulos)</button>
+                <button class="btn-action" onclick="setOrbital('2px')">Orbital 2px</button>
+                <button class="btn-action" onclick="setOrbital('3d_z2')">Orbital 3d z² (Toroide)</button>
+                <button class="btn-action" onclick="setOrbital('3d_xy')">Orbital 3d xy (Trébol)</button>
+            </div>
+
+            <div class="panel-section-title">📊 Números Cuánticos</div>
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-val" id="kpiN">n = 1</div>
+                    <div class="kpi-label">Principal (Nivel de Energía)</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-val" id="kpiL">l = 0 (s)</div>
+                    <div class="kpi-label">Momento Angular (Forma)</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-val" id="kpiM">m = 0</div>
+                    <div class="kpi-label">Magnético (Orientación)</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-val">± 1/2</div>
+                    <div class="kpi-label">Espín del Electrón (s)</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="info-panel">
+            <div class="info-title" id="infoTitle">Orbital 1s (Esférico Cuántico)</div>
+            <div class="info-body" id="infoBody">El estado fundamental del átomo de hidrógeno. Posee simetría esférica perfecta con máxima densidad de probabilidad cerca del núcleo atómico. En mecánica cuántica, los electrones no siguen trayectorias planetarias, sino que habitan en una nube probabilística descrita por la función de onda de Schrödinger.</div>
+            <div class="info-quote" id="infoQuote">"Aquellos que no quedan desconcertados la primera vez que escuchan sobre la mecánica cuántica, es que no la han entendido." — Niels Bohr</div>
+            <button class="audio-btn" onclick="speakCurrentInfo()">🔊 Escuchar Explicación Cuántica</button>
+        </div>
+    </div>
+
+    <div class="photo-viewer-modal" id="photoModal">
+        <div class="photo-container">
+            <img id="atlasImg" src="" alt="Orbitales Cuánticos">
+            <div class="photo-caption">
+                <span style="color: #cbd5e1; font-size: 0.82rem;">Ecuación de Schrödinger • Química Cuántica • Densidad |ψ|²</span>
+                <button class="close-photo-btn" onclick="closeAtlasViewer()">Cerrar Esquema</button>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <span>⚛️ Curso de Inteligencia Artificial • Metodología de la Triple Salvaguarda Pedagógica</span>
+        <span>Motor 3D: Babylon.js PBR • Química & Física Cuántica</span>
+    </footer>
+
+    <script>
+        const canvas = document.getElementById("renderCanvas");
+        const engine = new BABYLON.Engine(canvas, true);
+        let scene, camera;
+        let nucleusGroup, orbitalGroup;
+
+        function createScene() {
+            scene = new BABYLON.Scene(engine);
+            scene.clearColor = new BABYLON.Color4(0.012, 0.016, 0.035, 1.0);
+
+            camera = new BABYLON.ArcRotateCamera("Camera", -Math.PI / 2.3, Math.PI / 2.6, 26, BABYLON.Vector3.Zero(), scene);
+            camera.attachControl(canvas, true);
+            camera.lowerRadiusLimit = 8;
+            camera.upperRadiusLimit = 50;
+
+            const sunLight = new BABYLON.DirectionalLight("sunLight", new BABYLON.Vector3(0.5, -1, 0.7), scene);
+            sunLight.intensity = 2.0;
+            const hemiLight = new BABYLON.HemisphericLight("hemiLight", new BABYLON.Vector3(0, 1, 0), scene);
+            hemiLight.intensity = 0.5;
+
+            // 1. Núcleo Atómico Central (Protones Rojos y Neutrones Grises)
+            nucleusGroup = new BABYLON.TransformNode("nucleusGroup", scene);
+            const pMat = new BABYLON.PBRMaterial("pMat", scene);
+            pMat.albedoColor = new BABYLON.Color3(0.95, 0.2, 0.3);
+            pMat.roughness = 0.3;
+            const nMat = new BABYLON.PBRMaterial("nMat", scene);
+            nMat.albedoColor = new BABYLON.Color3(0.6, 0.65, 0.75);
+            nMat.roughness = 0.4;
+
+            for (let i = 0; i < 6; i++) {
+                const p = BABYLON.MeshBuilder.CreateSphere("p_" + i, { diameter: 0.9, segments: 16 }, scene);
+                p.position = new BABYLON.Vector3((Math.random() - 0.5) * 1.2, (Math.random() - 0.5) * 1.2, (Math.random() - 0.5) * 1.2);
+                p.material = (i % 2 === 0) ? pMat : nMat;
+                p.parent = nucleusGroup;
+            }
+
+            orbitalGroup = new BABYLON.TransformNode("orbitalGroup", scene);
+            buildOrbitalMesh("1s");
+
+            scene.registerBeforeRender(() => {
+                orbitalGroup.rotation.y += 0.005;
+                nucleusGroup.rotation.x += 0.003;
+            });
+
+            return scene;
+        }
+
+        function clearOrbitalMesh() {
+            orbitalGroup.getChildren().slice().forEach(c => c.dispose());
+        }
+
+        function buildOrbitalMesh(type) {
+            clearOrbitalMesh();
+
+            const cianMat = new BABYLON.PBRMaterial("cianMat", scene);
+            cianMat.albedoColor = new BABYLON.Color3(0.22, 0.74, 0.97);
+            cianMat.emissiveColor = new BABYLON.Color3(0.08, 0.25, 0.4);
+            cianMat.alpha = 0.45;
+            cianMat.roughness = 0.2;
+
+            const amberMat = new BABYLON.PBRMaterial("amberMat", scene);
+            amberMat.albedoColor = new BABYLON.Color3(0.98, 0.75, 0.15);
+            amberMat.emissiveColor = new BABYLON.Color3(0.35, 0.2, 0.05);
+            amberMat.alpha = 0.45;
+            amberMat.roughness = 0.2;
+
+            if (type === "1s") {
+                const s = BABYLON.MeshBuilder.CreateSphere("orb1s", { diameter: 7, segments: 32 }, scene);
+                s.material = cianMat;
+                s.parent = orbitalGroup;
+            } else if (type === "2s") {
+                const s1 = BABYLON.MeshBuilder.CreateSphere("orb2s_in", { diameter: 4, segments: 32 }, scene);
+                s1.material = amberMat;
+                s1.parent = orbitalGroup;
+                const s2 = BABYLON.MeshBuilder.CreateSphere("orb2s_out", { diameter: 10, segments: 32 }, scene);
+                s2.material = cianMat;
+                s2.parent = orbitalGroup;
+            } else if (type === "2pz") {
+                const l1 = BABYLON.MeshBuilder.CreateSphere("lobeZ1", { diameterX: 3.5, diameterY: 6, diameterZ: 3.5 }, scene);
+                l1.position.y = 3.2;
+                l1.material = cianMat;
+                l1.parent = orbitalGroup;
+                const l2 = BABYLON.MeshBuilder.CreateSphere("lobeZ2", { diameterX: 3.5, diameterY: 6, diameterZ: 3.5 }, scene);
+                l2.position.y = -3.2;
+                l2.material = amberMat;
+                l2.parent = orbitalGroup;
+            } else if (type === "2px") {
+                const l1 = BABYLON.MeshBuilder.CreateSphere("lobeX1", { diameterX: 6, diameterY: 3.5, diameterZ: 3.5 }, scene);
+                l1.position.x = 3.2;
+                l1.material = cianMat;
+                l1.parent = orbitalGroup;
+                const l2 = BABYLON.MeshBuilder.CreateSphere("lobeX2", { diameterX: 6, diameterY: 3.5, diameterZ: 3.5 }, scene);
+                l2.position.x = -3.2;
+                l2.material = amberMat;
+                l2.parent = orbitalGroup;
+            } else if (type === "3d_z2") {
+                const l1 = BABYLON.MeshBuilder.CreateSphere("lobeDz1", { diameterX: 3, diameterY: 6.5, diameterZ: 3 }, scene);
+                l1.position.y = 3.3; l1.material = cianMat; l1.parent = orbitalGroup;
+                const l2 = BABYLON.MeshBuilder.CreateSphere("lobeDz2", { diameterX: 3, diameterY: 6.5, diameterZ: 3 }, scene);
+                l2.position.y = -3.3; l2.material = cianMat; l2.parent = orbitalGroup;
+                const donut = BABYLON.MeshBuilder.CreateTorus("donutD", { diameter: 6, thickness: 1.2, tessellation: 32 }, scene);
+                donut.rotation.x = Math.PI / 2; donut.material = amberMat; donut.parent = orbitalGroup;
+            } else if (type === "3d_xy") {
+                for (let k = 0; k < 4; k++) {
+                    const l = BABYLON.MeshBuilder.CreateSphere("clover_" + k, { diameterX: 3.2, diameterY: 3.2, diameterZ: 5 }, scene);
+                    const angle = (k / 4) * Math.PI * 2 + Math.PI / 4;
+                    l.position.x = Math.cos(angle) * 3.5;
+                    l.position.z = Math.sin(angle) * 3.5;
+                    l.material = (k % 2 === 0) ? cianMat : amberMat;
+                    l.parent = orbitalGroup;
+                }
+            }
+        }
+
+        function setOrbital(type) {
+            buildOrbitalMesh(type);
+            document.querySelectorAll(".controls-panel .btn-action").forEach(b => {
+                b.classList.toggle("active", b.textContent.includes(type.split("_")[0]));
+            });
+
+            if (type === "1s") {
+                document.getElementById("kpiN").textContent = "n = 1";
+                document.getElementById("kpiL").textContent = "l = 0 (s)";
+                document.getElementById("kpiM").textContent = "m = 0";
+                document.getElementById("infoTitle").textContent = "Orbital 1s (Esférico Cuántico)";
+                document.getElementById("infoBody").textContent = "Estado fundamental con simetría esférica perfecta y máxima probabilidad cerca del núcleo atómico.";
+            } else if (type === "2s") {
+                document.getElementById("kpiN").textContent = "n = 2";
+                document.getElementById("kpiL").textContent = "l = 0 (s)";
+                document.getElementById("kpiM").textContent = "m = 0";
+                document.getElementById("infoTitle").textContent = "Orbital 2s (Con Nodo Radial Esférico)";
+                document.getElementById("infoBody").textContent = "Presenta una superficie nodal esférica interior donde la probabilidad de encontrar al electrón es exactamente cero.";
+            } else if (type === "2pz") {
+                document.getElementById("kpiN").textContent = "n = 2";
+                document.getElementById("kpiL").textContent = "l = 1 (p)";
+                document.getElementById("kpiM").textContent = "m = 0";
+                document.getElementById("infoTitle").textContent = "Orbital 2pz (Lóbulos Bipolares)";
+                document.getElementById("infoBody").textContent = "Dos lóbulos orientados sobre el eje vertical Z: el lóbulo superior (azul) tiene fase positiva y el inferior (ámbar) fase negativa.";
+            } else if (type === "2px") {
+                document.getElementById("kpiN").textContent = "n = 2";
+                document.getElementById("kpiL").textContent = "l = 1 (p)";
+                document.getElementById("kpiM").textContent = "m = 1";
+                document.getElementById("infoTitle").textContent = "Orbital 2px (Eje Horizontal X)";
+                document.getElementById("infoBody").textContent = "Dos lóbulos alineados sobre el eje X, perpendiculares a los orbitales 2py y 2pz.";
+            } else if (type === "3d_z2") {
+                document.getElementById("kpiN").textContent = "n = 3";
+                document.getElementById("kpiL").textContent = "l = 2 (d)";
+                document.getElementById("kpiM").textContent = "m = 0";
+                document.getElementById("infoTitle").textContent = "Orbital 3d z² (Lóbulos y Toroide)";
+                document.getElementById("infoBody").textContent = "Estructura cuántica con dos lóbulos verticales y un anillo toroidal ecuatorial que absorbe la fase complementaria.";
+            } else {
+                document.getElementById("kpiN").textContent = "n = 3";
+                document.getElementById("kpiL").textContent = "l = 2 (d)";
+                document.getElementById("kpiM").textContent = "m = -2";
+                document.getElementById("infoTitle").textContent = "Orbital 3d xy (Trébol Cuatrilobulado)";
+                document.getElementById("infoBody").textContent = "Cuatro lóbulos simétricos en el plano horizontal, esenciales en la química de los metales de transición.";
+            }
+        }
+
+        function resetCamera() {
+            camera.alpha = -Math.PI / 2.3; camera.beta = Math.PI / 2.6; camera.radius = 26;
+            camera.target = BABYLON.Vector3.Zero();
+        }
+
+        function speakCurrentInfo() {
+            if (!('speechSynthesis' in window)) return;
+            window.speechSynthesis.cancel();
+            const text = `${document.getElementById("infoTitle").textContent}. ${document.getElementById("infoBody").textContent}`;
+            const u = new SpeechSynthesisUtterance(text);
+            u.lang = 'es-ES'; u.rate = 0.95;
+            window.speechSynthesis.speak(u);
+        }
+
+        function openAtlasViewer() {
+            const modal = document.getElementById("photoModal");
+            const img = document.getElementById("atlasImg");
+            img.src = window.QUANTUM_ATOM_SVG_B64 || "";
+            modal.style.display = "flex";
+        }
+
+        function closeAtlasViewer() {
+            document.getElementById("photoModal").style.display = "none";
+        }
+
+        scene = createScene();
+        engine.runRenderLoop(() => { scene.render(); });
+        window.addEventListener("resize", () => { engine.resize(); });
+    </script>
+</body>
+</html>
+

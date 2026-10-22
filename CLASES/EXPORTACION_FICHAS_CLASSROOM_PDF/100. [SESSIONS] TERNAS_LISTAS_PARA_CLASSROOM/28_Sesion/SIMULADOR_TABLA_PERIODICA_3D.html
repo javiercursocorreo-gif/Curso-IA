@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sesión 28 • Simulador 3D: Tabla Periódica & Enlaces Químicos [COD-028]</title>
+    <!-- Babylon.js Motor 3D Oficial CDN -->
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+    <!-- Respaldo Científico en Base64 Autónomo -->
+    <script src="../03_ASSETS_3D_Y_DATOS/periodic_table_b64.js"></script>
+    <script src="../../SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/periodic_table_b64.js"></script>
+    <script src="../../../../SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/periodic_table_b64.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-base: #030614;
+            --bg-panel: rgba(8, 14, 28, 0.94);
+            --border: rgba(56, 189, 248, 0.35);
+            --primary: #38bdf8;
+            --amber: #fbbf24;
+            --emerald: #34d399;
+            --rose: #f43f5e;
+            --text-main: #f8fafc;
+            --text-sub: #cbd5e1;
+            --font-title: 'Cinzel', serif;
+            --font-sans: 'Inter', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+        body {
+            background-color: var(--bg-base); color: var(--text-main);
+            font-family: var(--font-sans); height: 100vh; width: 100vw;
+            overflow: hidden; display: flex; flex-direction: column; font-size: 14px;
+        }
+        header {
+            background: linear-gradient(180deg, rgba(8, 14, 28, 0.98) 0%, rgba(8, 14, 28, 0.88) 100%);
+            backdrop-filter: blur(14px); border-bottom: 1px solid var(--border);
+            padding: 10px 24px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; z-index: 40;
+        }
+        .brand-box { display: flex; align-items: center; gap: 14px; }
+        .badge-pill {
+            background: rgba(56, 189, 248, 0.15); border: 1px solid var(--primary);
+            color: var(--primary); font-family: var(--font-mono); font-weight: 800;
+            font-size: 0.82rem; padding: 4px 10px; border-radius: 6px;
+        }
+        .title-text h1 {
+            font-family: var(--font-title); font-size: 1.15rem; font-weight: 800; color: #fff;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .title-text p { font-size: 0.78rem; color: var(--text-sub); margin-top: 1px; }
+        .header-actions { display: flex; align-items: center; gap: 10px; }
+        .btn-header {
+            background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15);
+            color: var(--text-main); padding: 6px 14px; border-radius: 8px; font-size: 0.8rem;
+            font-weight: 700; cursor: pointer; transition: all 0.2s ease;
+        }
+        .btn-header:hover { background: rgba(56, 189, 248, 0.2); border-color: var(--primary); color: var(--primary); }
+        .workspace { flex: 1; position: relative; overflow: hidden; display: flex; }
+        #renderCanvas { width: 100%; height: 100%; outline: none; display: block; }
+        .controls-panel {
+            position: absolute; top: 18px; left: 18px; width: 340px;
+            background: var(--bg-panel); border: 1px solid var(--border);
+            border-radius: 14px; padding: 18px; backdrop-filter: blur(14px);
+            z-index: 20; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+        .panel-section-title {
+            font-family: var(--font-mono); font-size: 0.8rem; font-weight: 800;
+            color: var(--primary); text-transform: uppercase; margin-bottom: 12px;
+            display: flex; align-items: center; gap: 6px;
+        }
+        .btn-action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 16px; }
+        .btn-action {
+            background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.12);
+            color: var(--text-sub); padding: 8px 10px; border-radius: 8px; font-size: 0.8rem;
+            font-weight: 700; cursor: pointer; transition: all 0.2s ease; text-align: center;
+        }
+        .btn-action.active, .btn-action:hover {
+            background: rgba(56, 189, 248, 0.25); border-color: var(--primary); color: #fff;
+        }
+        .kpi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .kpi-card { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 8px 10px; }
+        .kpi-val { font-family: var(--font-mono); font-size: 1.05rem; font-weight: 800; color: #fff; }
+        .kpi-label { font-size: 0.72rem; color: var(--text-sub); margin-top: 2px; }
+        .info-panel {
+            position: absolute; bottom: 20px; right: 20px; width: 380px;
+            background: var(--bg-panel); border: 1px solid var(--border);
+            border-radius: 14px; padding: 18px; backdrop-filter: blur(14px);
+            z-index: 20; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+        .info-title { font-family: var(--font-title); font-size: 1.15rem; font-weight: 700; color: var(--amber); margin-bottom: 8px; }
+        .info-body { font-size: 0.84rem; line-height: 1.5; color: var(--text-sub); margin-bottom: 12px; }
+        .info-quote { font-style: italic; font-size: 0.78rem; color: var(--primary); border-left: 2px solid var(--primary); padding-left: 10px; margin-bottom: 12px; }
+        .audio-btn {
+            background: linear-gradient(135deg, #0284c7 0%, #38bdf8 100%);
+            border: none; color: #020617; font-weight: 800; font-size: 0.82rem;
+            padding: 8px 14px; border-radius: 8px; width: 100%; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .photo-viewer-modal {
+            position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(8px);
+            display: none; align-items: center; justify-content: center; z-index: 100;
+        }
+        .photo-container {
+            background: #0a0f1d; border: 1px solid var(--primary); border-radius: 14px;
+            max-width: 900px; width: 92%; overflow: hidden; box-shadow: 0 0 40px rgba(56, 189, 248, 0.35);
+        }
+        .photo-container img { width: 100%; height: auto; display: block; }
+        .photo-caption { padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; background: #060b18; }
+        .close-photo-btn { background: var(--primary); color: #020617; border: none; padding: 6px 16px; border-radius: 8px; font-weight: 800; cursor: pointer; }
+        footer {
+            background: rgba(8, 14, 28, 0.98); border-top: 1px solid var(--border);
+            padding: 8px 24px; font-size: 0.78rem; color: var(--text-sub);
+            display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="brand-box">
+            <span class="badge-pill">[COD-028]</span>
+            <div class="title-text">
+                <h1>🧪 Tabla Periódica & Enlaces Químicos 3D</h1>
+                <p>IUPAC • Geometría Molecular VSEPR • Enlace Covalente Polar H2O, Tetraédrico CH4 & Red Iónica NaCl</p>
+            </div>
+        </div>
+        <div class="header-actions">
+            <button class="btn-header" onclick="openAtlasViewer()">📷 Bloques IUPAC SVG</button>
+            <button class="btn-header" onclick="resetCamera()">🎯 Centrar</button>
+        </div>
+    </header>
+
+    <div class="workspace">
+        <canvas id="renderCanvas"></canvas>
+
+        <div class="controls-panel">
+            <div class="panel-section-title">🔬 Geometría Molecular 3D</div>
+            <div class="btn-action-grid">
+                <button class="btn-action active" onclick="setMolecule('h2o')">Agua (H2O Polar)</button>
+                <button class="btn-action" onclick="setMolecule('ch4')">Metano (CH4 Tetraedro)</button>
+                <button class="btn-action" onclick="setMolecule('nacl')">Sal (NaCl Iónico)</button>
+                <button class="btn-action" onclick="setMolecule('helix')">Espiral Periódica</button>
+            </div>
+
+            <div class="panel-section-title">📊 Parámetros del Enlace</div>
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-val" id="kpiBondType">Covalente Polar</div>
+                    <div class="kpi-label">Tipo de Enlace Químico</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-val" id="kpiAngle">104.5°</div>
+                    <div class="kpi-label">Ángulo de Enlace VSEPR</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-val">118</div>
+                    <div class="kpi-label">Elementos IUPAC</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-val">4 Bloques</div>
+                    <div class="kpi-label">s, p, d, f</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="info-panel">
+            <div class="info-title" id="infoTitle">Molécula de Agua (H2O): Enlace Covalente Polar</div>
+            <div class="info-body" id="infoBody">El átomo central de oxígeno comparte electrones con dos hidrógenos. Debido a los dos pares de electrones libres solitarios del oxígeno, la geometría molecular se comprime a un ángulo exacto de 104.5°, generando el momento dipolar vital que hace del agua el disolvente universal de la vida.</div>
+            <div class="info-quote" id="infoQuote">"En la naturaleza nada existe aislado; cada enlace químico es un puente de energía compartida." — Linus Pauling</div>
+            <button class="audio-btn" onclick="speakCurrentInfo()">🔊 Escuchar Explicación Química</button>
+        </div>
+    </div>
+
+    <div class="photo-viewer-modal" id="photoModal">
+        <div class="photo-container">
+            <img id="atlasImg" src="" alt="Tabla Periódica IUPAC">
+            <div class="photo-caption">
+                <span style="color: #cbd5e1; font-size: 0.82rem;">IUPAC • Bloques Electrónicos s, p, d, f • Teoría VSEPR</span>
+                <button class="close-photo-btn" onclick="closeAtlasViewer()">Cerrar Esquema</button>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <span>🧪 Curso de Inteligencia Artificial • Metodología de la Triple Salvaguarda Pedagógica</span>
+        <span>Motor 3D: Babylon.js PBR • Química Molecular Tridimensional</span>
+    </footer>
+
+    <script>
+        const canvas = document.getElementById("renderCanvas");
+        const engine = new BABYLON.Engine(canvas, true);
+        let scene, camera;
+        let moleculeGroup;
+
+        function createScene() {
+            scene = new BABYLON.Scene(engine);
+            scene.clearColor = new BABYLON.Color4(0.012, 0.016, 0.035, 1.0);
+
+            camera = new BABYLON.ArcRotateCamera("Camera", -Math.PI / 2.3, Math.PI / 2.5, 24, BABYLON.Vector3.Zero(), scene);
+            camera.attachControl(canvas, true);
+            camera.lowerRadiusLimit = 8;
+            camera.upperRadiusLimit = 55;
+
+            const sunLight = new BABYLON.DirectionalLight("sunLight", new BABYLON.Vector3(0.5, -1, 0.7), scene);
+            sunLight.intensity = 2.2;
+            const hemiLight = new BABYLON.HemisphericLight("hemiLight", new BABYLON.Vector3(0, 1, 0), scene);
+            hemiLight.intensity = 0.55;
+
+            moleculeGroup = new BABYLON.TransformNode("moleculeGroup", scene);
+            buildMolecule("h2o");
+
+            scene.registerBeforeRender(() => {
+                moleculeGroup.rotation.y += 0.005;
+            });
+
+            return scene;
+        }
+
+        function clearMolecule() {
+            moleculeGroup.getChildren().slice().forEach(c => c.dispose());
+        }
+
+        function buildMolecule(type) {
+            clearMolecule();
+
+            if (type === "h2o") {
+                // Oxígeno central
+                const o = BABYLON.MeshBuilder.CreateSphere("o", { diameter: 3.2, segments: 32 }, scene);
+                o.position = new BABYLON.Vector3(0, 0.8, 0);
+                const oMat = new BABYLON.PBRMaterial("oMat", scene);
+                oMat.albedoColor = new BABYLON.Color3(0.95, 0.2, 0.2);
+                oMat.roughness = 0.3;
+                o.material = oMat;
+                o.parent = moleculeGroup;
+
+                // Dos Hidrógenos
+                const h1 = BABYLON.MeshBuilder.CreateSphere("h1", { diameter: 1.8, segments: 24 }, scene);
+                h1.position = new BABYLON.Vector3(-2.6, -1.2, 0);
+                const hMat = new BABYLON.PBRMaterial("hMat", scene);
+                hMat.albedoColor = new BABYLON.Color3(0.95, 0.95, 0.95);
+                hMat.roughness = 0.2;
+                h1.material = hMat;
+                h1.parent = moleculeGroup;
+
+                const h2 = BABYLON.MeshBuilder.CreateSphere("h2", { diameter: 1.8, segments: 24 }, scene);
+                h2.position = new BABYLON.Vector3(2.6, -1.2, 0);
+                h2.material = hMat;
+                h2.parent = moleculeGroup;
+
+                // Enlaces cilíndricos
+                createBond(o.position, h1.position);
+                createBond(o.position, h2.position);
+            } else if (type === "ch4") {
+                // Carbono central
+                const c = BABYLON.MeshBuilder.CreateSphere("c", { diameter: 3.4, segments: 32 }, scene);
+                const cMat = new BABYLON.PBRMaterial("cMat", scene);
+                cMat.albedoColor = new BABYLON.Color3(0.2, 0.25, 0.35);
+                c.material = cMat; c.parent = moleculeGroup;
+
+                const hMat = new BABYLON.PBRMaterial("hMat", scene);
+                hMat.albedoColor = new BABYLON.Color3(0.95, 0.95, 0.95);
+
+                const hCoords = [
+                    new BABYLON.Vector3(0, 3.2, 0),
+                    new BABYLON.Vector3(2.8, -1.1, 1.4),
+                    new BABYLON.Vector3(-2.8, -1.1, 1.4),
+                    new BABYLON.Vector3(0, -1.1, -3.1)
+                ];
+                hCoords.forEach((pos, idx) => {
+                    const h = BABYLON.MeshBuilder.CreateSphere("h_" + idx, { diameter: 1.8 }, scene);
+                    h.position = pos; h.material = hMat; h.parent = moleculeGroup;
+                    createBond(c.position, pos);
+                });
+            } else if (type === "nacl") {
+                // Red cristalina cúbica centrada
+                for (let x = -1; x <= 1; x++) {
+                    for (let y = -1; y <= 1; y++) {
+                        for (let z = -1; z <= 1; z++) {
+                            const isNa = (x + y + z) % 2 === 0;
+                            const atom = BABYLON.MeshBuilder.CreateSphere("ion", { diameter: isNa ? 1.6 : 2.4 }, scene);
+                            atom.position = new BABYLON.Vector3(x * 3.2, y * 3.2, z * 3.2);
+                            const mat = new BABYLON.PBRMaterial("mat", scene);
+                            mat.albedoColor = isNa ? new BABYLON.Color3(0.65, 0.35, 0.95) : new BABYLON.Color3(0.2, 0.8, 0.4);
+                            atom.material = mat;
+                            atom.parent = moleculeGroup;
+                        }
+                    }
+                }
+            } else {
+                // Espiral de los elementos
+                for (let e = 1; e <= 36; e++) {
+                    const angle = e * 0.45;
+                    const r = 2 + e * 0.25;
+                    const atom = BABYLON.MeshBuilder.CreateSphere("elem_" + e, { diameter: 1.0 }, scene);
+                    atom.position = new BABYLON.Vector3(Math.cos(angle) * r, (e - 18) * 0.35, Math.sin(angle) * r);
+                    const mat = new BABYLON.PBRMaterial("emat_" + e, scene);
+                    mat.albedoColor = new BABYLON.Color3(0.2 + (e / 36) * 0.7, 0.7, 0.9);
+                    atom.material = mat;
+                    atom.parent = moleculeGroup;
+                }
+            }
+        }
+
+        function createBond(posA, posB) {
+            const dist = BABYLON.Vector3.Distance(posA, posB);
+            const bond = BABYLON.MeshBuilder.CreateCylinder("bond", { diameter: 0.4, height: dist }, scene);
+            bond.position = BABYLON.Vector3.Center(posA, posB);
+            bond.lookAt(posB);
+            bond.rotation.x += Math.PI / 2;
+            const bMat = new BABYLON.PBRMaterial("bMat", scene);
+            bMat.albedoColor = new BABYLON.Color3(0.5, 0.6, 0.7);
+            bMat.metallic = 0.5;
+            bond.material = bMat;
+            bond.parent = moleculeGroup;
+        }
+
+        function setMolecule(type) {
+            buildMolecule(type);
+            document.querySelectorAll(".controls-panel .btn-action").forEach(b => {
+                b.classList.toggle("active", b.textContent.toLowerCase().includes(type));
+            });
+
+            if (type === "h2o") {
+                document.getElementById("kpiBondType").textContent = "Covalente Polar";
+                document.getElementById("kpiAngle").textContent = "104.5°";
+                document.getElementById("infoTitle").textContent = "Agua (H2O): Enlace Covalente Polar";
+                document.getElementById("infoBody").textContent = "Dos enlaces covalentes fuertemente polares comprimidos por los dos pares solitarios del oxígeno a 104.5°, creando la polaridad que sustenta la vida acuática y celular.";
+            } else if (type === "ch4") {
+                document.getElementById("kpiBondType").textContent = "Covalente Apolar";
+                document.getElementById("kpiAngle").textContent = "109.5°";
+                document.getElementById("infoTitle").textContent = "Metano (CH4): Simetría Tetraédrica";
+                document.getElementById("infoBody").textContent = "Hibridación orbital sp³ del carbono con 4 enlaces idénticos orientados hacia los vértices de un tetraedro regular de 109.5°, anulando el momento dipolar total.";
+            } else if (type === "nacl") {
+                document.getElementById("kpiBondType").textContent = "Iónico Electroestático";
+                document.getElementById("kpiAngle").textContent = "90.0° (Cúbico)";
+                document.getElementById("infoTitle").textContent = "Cloruro de Sodio (NaCl): Red Iónica Cristalina";
+                document.getElementById("infoBody").textContent = "Atracción electrostática pura entre cationes Na+ (violeta) y aniones Cl- (verde) organizados en una red cristalina tridimensional cúbica muy estable.";
+            } else {
+                document.getElementById("kpiBondType").textContent = "Periodicidad IUPAC";
+                document.getElementById("kpiAngle").textContent = "Espiral Continua";
+                document.getElementById("infoTitle").textContent = "Espiral Periódica de los Elementos";
+                document.getElementById("infoBody").textContent = "Representación tridimensional helicoidal alternativa donde la ley periódica de Mendeléyev se despliega continuamente según el número atómico Z creciente sin saltos artificiales.";
+            }
+        }
+
+        function resetCamera() {
+            camera.alpha = -Math.PI / 2.3; camera.beta = Math.PI / 2.5; camera.radius = 24;
+            camera.target = BABYLON.Vector3.Zero();
+        }
+
+        function speakCurrentInfo() {
+            if (!('speechSynthesis' in window)) return;
+            window.speechSynthesis.cancel();
+            const text = `${document.getElementById("infoTitle").textContent}. ${document.getElementById("infoBody").textContent}`;
+            const u = new SpeechSynthesisUtterance(text);
+            u.lang = 'es-ES'; u.rate = 0.95;
+            window.speechSynthesis.speak(u);
+        }
+
+        function openAtlasViewer() {
+            const modal = document.getElementById("photoModal");
+            const img = document.getElementById("atlasImg");
+            img.src = window.PERIODIC_SVG_B64 || "";
+            modal.style.display = "flex";
+        }
+
+        function closeAtlasViewer() {
+            document.getElementById("photoModal").style.display = "none";
+        }
+
+        scene = createScene();
+        engine.runRenderLoop(() => { scene.render(); });
+        window.addEventListener("resize", () => { engine.resize(); });
+    </script>
+</body>
+</html>
+

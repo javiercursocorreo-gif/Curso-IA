@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sesión 30 • Simulador 3D: Computación Cuántica, Qubits & Esfera de Bloch [COD-030]</title>
+    <!-- Babylon.js Motor 3D Oficial CDN -->
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+    <!-- Respaldo Científico en Base64 Autónomo -->
+    <script src="../03_ASSETS_3D_Y_DATOS/bloch_sphere_b64.js"></script>
+    <script src="../../SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/bloch_sphere_b64.js"></script>
+    <script src="../../../../SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/bloch_sphere_b64.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-base: #030514;
+            --bg-panel: rgba(8, 14, 28, 0.94);
+            --border: rgba(56, 189, 248, 0.35);
+            --primary: #38bdf8;
+            --amber: #fbbf24;
+            --emerald: #34d399;
+            --purple: #c084fc;
+            --rose: #f43f5e;
+            --text-main: #f8fafc;
+            --text-sub: #cbd5e1;
+            --font-title: 'Cinzel', serif;
+            --font-sans: 'Inter', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+        body {
+            background-color: var(--bg-base); color: var(--text-main);
+            font-family: var(--font-sans); height: 100vh; width: 100vw;
+            overflow: hidden; display: flex; flex-direction: column; font-size: 14px;
+        }
+        header {
+            background: linear-gradient(180deg, rgba(8, 14, 28, 0.98) 0%, rgba(8, 14, 28, 0.88) 100%);
+            backdrop-filter: blur(14px); border-bottom: 1px solid var(--border);
+            padding: 10px 24px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; z-index: 40;
+        }
+        .brand-box { display: flex; align-items: center; gap: 14px; }
+        .badge-pill {
+            background: rgba(56, 189, 248, 0.15); border: 1px solid var(--primary);
+            color: var(--primary); font-family: var(--font-mono); font-weight: 800;
+            font-size: 0.82rem; padding: 4px 10px; border-radius: 6px;
+        }
+        .title-text h1 {
+            font-family: var(--font-title); font-size: 1.15rem; font-weight: 800; color: #fff;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .title-text p { font-size: 0.78rem; color: var(--text-sub); margin-top: 1px; }
+        .header-actions { display: flex; align-items: center; gap: 10px; }
+        .btn-header {
+            background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15);
+            color: var(--text-main); padding: 6px 14px; border-radius: 8px; font-size: 0.8rem;
+            font-weight: 700; cursor: pointer; transition: all 0.2s ease;
+        }
+        .btn-header:hover { background: rgba(56, 189, 248, 0.2); border-color: var(--primary); color: var(--primary); }
+        .workspace { flex: 1; position: relative; overflow: hidden; display: flex; }
+        #renderCanvas { width: 100%; height: 100%; outline: none; display: block; }
+        .controls-panel {
+            position: absolute; top: 18px; left: 18px; width: 340px;
+            background: var(--bg-panel); border: 1px solid var(--border);
+            border-radius: 14px; padding: 18px; backdrop-filter: blur(14px);
+            z-index: 20; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+        .panel-section-title {
+            font-family: var(--font-mono); font-size: 0.8rem; font-weight: 800;
+            color: var(--primary); text-transform: uppercase; margin-bottom: 12px;
+            display: flex; align-items: center; gap: 6px;
+        }
+        .btn-action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 16px; }
+        .btn-action {
+            background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.12);
+            color: var(--text-sub); padding: 8px 10px; border-radius: 8px; font-size: 0.8rem;
+            font-weight: 700; cursor: pointer; transition: all 0.2s ease; text-align: center;
+        }
+        .btn-action.active, .btn-action:hover {
+            background: rgba(56, 189, 248, 0.25); border-color: var(--primary); color: #fff;
+        }
+        .kpi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .kpi-card { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 8px 10px; }
+        .kpi-val { font-family: var(--font-mono); font-size: 1.05rem; font-weight: 800; color: #fff; }
+        .kpi-label { font-size: 0.72rem; color: var(--text-sub); margin-top: 2px; }
+        .info-panel {
+            position: absolute; bottom: 20px; right: 20px; width: 380px;
+            background: var(--bg-panel); border: 1px solid var(--border);
+            border-radius: 14px; padding: 18px; backdrop-filter: blur(14px);
+            z-index: 20; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+        .info-title { font-family: var(--font-title); font-size: 1.15rem; font-weight: 700; color: var(--amber); margin-bottom: 8px; }
+        .info-body { font-size: 0.84rem; line-height: 1.5; color: var(--text-sub); margin-bottom: 12px; }
+        .info-quote { font-style: italic; font-size: 0.78rem; color: var(--primary); border-left: 2px solid var(--primary); padding-left: 10px; margin-bottom: 12px; }
+        .audio-btn {
+            background: linear-gradient(135deg, #0284c7 0%, #38bdf8 100%);
+            border: none; color: #020617; font-weight: 800; font-size: 0.82rem;
+            padding: 8px 14px; border-radius: 8px; width: 100%; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .photo-viewer-modal {
+            position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(8px);
+            display: none; align-items: center; justify-content: center; z-index: 100;
+        }
+        .photo-container {
+            background: #0a0f1d; border: 1px solid var(--primary); border-radius: 14px;
+            max-width: 900px; width: 92%; overflow: hidden; box-shadow: 0 0 40px rgba(56, 189, 248, 0.35);
+        }
+        .photo-container img { width: 100%; height: auto; display: block; }
+        .photo-caption { padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; background: #060b18; }
+        .close-photo-btn { background: var(--primary); color: #020617; border: none; padding: 6px 16px; border-radius: 8px; font-weight: 800; cursor: pointer; }
+        footer {
+            background: rgba(8, 14, 28, 0.98); border-top: 1px solid var(--border);
+            padding: 8px 24px; font-size: 0.78rem; color: var(--text-sub);
+            display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="brand-box">
+            <span class="badge-pill">[COD-030]</span>
+            <div class="title-text">
+                <h1>💻 Computación Cuántica, Qubits & Esfera de Bloch 3D</h1>
+                <p>Félix Bloch (1946) • Puertas Lógicas Cuánticas (X, Y, Z, Hadamard H) • Superposición Coherente |ψ⟩</p>
+            </div>
+        </div>
+        <div class="header-actions">
+            <button class="btn-header" onclick="openAtlasViewer()">📷 Diagrama Bloch SVG</button>
+            <button class="btn-header" onclick="resetCamera()">🎯 Centrar</button>
+        </div>
+    </header>
+
+    <div class="workspace">
+        <canvas id="renderCanvas"></canvas>
+
+        <div class="controls-panel">
+            <div class="panel-section-title">🚪 Puertas Lógicas Cuánticas</div>
+            <div class="btn-action-grid">
+                <button class="btn-action" onclick="applyGate('H')">Hadamard (H)</button>
+                <button class="btn-action" onclick="applyGate('X')">NOT (Pauli-X)</button>
+                <button class="btn-action" onclick="applyGate('Z')">Fase (Pauli-Z)</button>
+                <button class="btn-action" onclick="applyGate('reset')">Reset |0⟩</button>
+            </div>
+
+            <div class="panel-section-title">🎲 Medición Cuántica</div>
+            <div class="btn-action-grid">
+                <button class="btn-action" style="grid-column: span 2; background: linear-gradient(135deg, #7c3aed, #c084fc); color: #fff;" onclick="measureQubit()">
+                    ⚡ Realizar Medición Proyectiva
+                </button>
+            </div>
+
+            <div class="panel-section-title">📊 Probabilidades Cuánticas</div>
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-val" id="kpiP0">100%</div>
+                    <div class="kpi-label">P(|0⟩) Base Clásica 0</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-val" id="kpiP1">0%</div>
+                    <div class="kpi-label">P(|1⟩) Base Clásica 1</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-val" id="kpiTheta">θ = 0.0°</div>
+                    <div class="kpi-label">Ángulo Polar (θ)</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-val" id="kpiPhi">φ = 0.0°</div>
+                    <div class="kpi-label">Fase Azimutal (φ)</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="info-panel">
+            <div class="info-title" id="infoTitle">Estado Base Fundamental |0⟩ (Polo Norte)</div>
+            <div class="info-body" id="infoBody">El qubit apunta directamente al polo norte de la esfera de Bloch (θ = 0). La probabilidad de medir el valor clásico 0 es del 100%. A diferencia de los bits clásicos que solo pueden ser 0 o 1, un qubit puede ocupar cualquier punto de la superficie esférica.</div>
+            <div class="info-quote" id="infoQuote">"Un ordenador cuántico no prueba combinaciones una a una: explora todas las ramas causales simultáneamente."</div>
+            <button class="audio-btn" onclick="speakCurrentInfo()">🔊 Escuchar Explicación de Computación Cuántica</button>
+        </div>
+    </div>
+
+    <div class="photo-viewer-modal" id="photoModal">
+        <div class="photo-container">
+            <img id="atlasImg" src="" alt="Esfera de Bloch">
+            <div class="photo-caption">
+                <span style="color: #cbd5e1; font-size: 0.82rem;">Computación Cuántica • Esfera de Bloch • Puertas Cuánticas Unitarias</span>
+                <button class="close-photo-btn" onclick="closeAtlasViewer()">Cerrar Diagrama</button>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <span>💻 Curso de Inteligencia Artificial • Metodología de la Triple Salvaguarda Pedagógica</span>
+        <span>Motor 3D: Babylon.js PBR • Computación Cuántica & Qubits</span>
+    </footer>
+
+    <script>
+        const canvas = document.getElementById("renderCanvas");
+        const engine = new BABYLON.Engine(canvas, true);
+        let scene, camera;
+        let blochSphereMesh, vectorArrowGroup;
+        let theta = 0, phi = 0; // Estado inicial |0>
+
+        function createScene() {
+            scene = new BABYLON.Scene(engine);
+            scene.clearColor = new BABYLON.Color4(0.012, 0.016, 0.035, 1.0);
+
+            camera = new BABYLON.ArcRotateCamera("Camera", -Math.PI / 2.3, Math.PI / 2.6, 26, BABYLON.Vector3.Zero(), scene);
+            camera.attachControl(canvas, true);
+            camera.lowerRadiusLimit = 10;
+            camera.upperRadiusLimit = 55;
+
+            const sunLight = new BABYLON.DirectionalLight("sunLight", new BABYLON.Vector3(0.5, -1, 0.7), scene);
+            sunLight.intensity = 2.0;
+            const hemiLight = new BABYLON.HemisphericLight("hemiLight", new BABYLON.Vector3(0, 1, 0), scene);
+            hemiLight.intensity = 0.55;
+
+            // 1. Esfera de Bloch Translúcida PBR
+            blochSphereMesh = BABYLON.MeshBuilder.CreateSphere("blochSphere", { diameter: 14, segments: 48 }, scene);
+            const sphereMat = new BABYLON.PBRMaterial("sphereMat", scene);
+            sphereMat.alpha = 0.18;
+            sphereMat.albedoColor = new BABYLON.Color3(0.2, 0.6, 0.9);
+            sphereMat.roughness = 0.2;
+            blochSphereMesh.material = sphereMat;
+
+            // Anillos Guía (Ecuador X-Y y Meridianos)
+            const eqRing = BABYLON.MeshBuilder.CreateTorus("eqRing", { diameter: 14, thickness: 0.08, tessellation: 64 }, scene);
+            const eqMat = new BABYLON.StandardMaterial("eqMat", scene);
+            eqMat.emissiveColor = new BABYLON.Color3(0.2, 0.7, 0.9);
+            eqRing.material = eqMat;
+
+            // Ejes Cartesianos (X, Y, Z)
+            const zAxis = BABYLON.MeshBuilder.CreateCylinder("zAxis", { diameter: 0.12, height: 16 }, scene);
+            const zMat = new BABYLON.StandardMaterial("zMat", scene);
+            zMat.emissiveColor = new BABYLON.Color3(0.9, 0.95, 1.0);
+            zAxis.material = zMat;
+
+            // Marcadores de Polos |0> y |1>
+            const p0Sphere = BABYLON.MeshBuilder.CreateSphere("p0", { diameter: 0.8 }, scene);
+            p0Sphere.position.y = 7;
+            const p0Mat = new BABYLON.StandardMaterial("p0Mat", scene);
+            p0Mat.emissiveColor = new BABYLON.Color3(0.22, 0.74, 0.97);
+            p0Sphere.material = p0Mat;
+
+            const p1Sphere = BABYLON.MeshBuilder.CreateSphere("p1", { diameter: 0.8 }, scene);
+            p1Sphere.position.y = -7;
+            const p1Mat = new BABYLON.StandardMaterial("p1Mat", scene);
+            p1Mat.emissiveColor = new BABYLON.Color3(0.95, 0.25, 0.35);
+            p1Sphere.material = p1Mat;
+
+            // 2. Vector de Estado Cuántico |ψ⟩
+            vectorArrowGroup = new BABYLON.TransformNode("vectorArrowGroup", scene);
+
+            const arrowShaft = BABYLON.MeshBuilder.CreateCylinder("shaft", { diameter: 0.25, height: 7 }, scene);
+            arrowShaft.position.y = 3.5;
+            arrowShaft.parent = vectorArrowGroup;
+
+            const arrowHead = BABYLON.MeshBuilder.CreateCylinder("head", { diameterTop: 0, diameterBottom: 0.9, height: 1.4 }, scene);
+            arrowHead.position.y = 7;
+            arrowHead.parent = vectorArrowGroup;
+
+            const arrowMat = new BABYLON.StandardMaterial("arrowMat", scene);
+            arrowMat.emissiveColor = new BABYLON.Color3(0.98, 0.75, 0.15);
+            arrowShaft.material = arrowMat;
+            arrowHead.material = arrowMat;
+
+            updateVectorOrientation();
+            return scene;
+        }
+
+        function updateVectorOrientation() {
+            // Conversión de ángulos esféricos (theta, phi) a rotación tridimensional en Babylon.js
+            vectorArrowGroup.rotation.z = -theta;
+            vectorArrowGroup.rotation.y = phi;
+
+            const p0 = Math.pow(Math.cos(theta / 2), 2);
+            const p1 = Math.pow(Math.sin(theta / 2), 2);
+
+            document.getElementById("kpiP0").textContent = `${(p0 * 100).toFixed(1)}%`;
+            document.getElementById("kpiP1").textContent = `${(p1 * 100).toFixed(1)}%`;
+            document.getElementById("kpiTheta").textContent = `θ = ${(theta * 180 / Math.PI).toFixed(1)}°`;
+            document.getElementById("kpiPhi").textContent = `φ = ${(phi * 180 / Math.PI).toFixed(1)}°`;
+        }
+
+        function applyGate(gate) {
+            if (gate === 'H') {
+                // Puerta Hadamard: de |0> pasa a superposición ecuatorial |+> (theta = pi/2)
+                theta = Math.PI / 2; phi = 0;
+                document.getElementById("infoTitle").textContent = "Puerta Hadamard (H): Superposición Pura |+⟩";
+                document.getElementById("infoBody").textContent = "Crea una superposición equiprobable perfecta (50% |0⟩ y 50% |1⟩). Es la puerta fundacional de todos los algoritmos cuánticos como Grover y Shor.";
+            } else if (gate === 'X') {
+                // NOT Cuántica: invierte el polo (theta = pi si era 0, o 0 si era pi)
+                theta = (Math.abs(theta) < 0.1) ? Math.PI : 0;
+                document.getElementById("infoTitle").textContent = "Puerta NOT Cuántica (Pauli-X)";
+                document.getElementById("infoBody").textContent = "Rotación de 180° en torno al eje X: invierte el estado |0⟩ al estado excitado |1⟩ y viceversa.";
+            } else if (gate === 'Z') {
+                // Puerta de Fase Z
+                phi += Math.PI;
+                document.getElementById("infoTitle").textContent = "Puerta de Fase (Pauli-Z)";
+                document.getElementById("infoBody").textContent = "Gira el vector de estado 180° alrededor del eje vertical Z, invirtiendo la fase relativa sin cambiar las probabilidades de medición.";
+            } else {
+                theta = 0; phi = 0;
+                document.getElementById("infoTitle").textContent = "Estado Base Fundamental |0⟩ (Reset)";
+                document.getElementById("infoBody").textContent = "El qubit se restablece en su estado de mínima energía (polo norte).";
+            }
+            updateVectorOrientation();
+        }
+
+        function measureQubit() {
+            const p0 = Math.pow(Math.cos(theta / 2), 2);
+            const result = Math.random() < p0 ? 0 : 1;
+
+            theta = result === 0 ? 0 : Math.PI;
+            phi = 0;
+            updateVectorOrientation();
+
+            document.getElementById("infoTitle").textContent = `⚡ Colapso Proyectivo: Medido |${result}⟩`;
+            document.getElementById("infoBody").textContent = `La medición cuántica destruyó la superposición coherente. El qubit ha colapsado de forma irreversible al estado clásico |${result}⟩ con un valor determinista.`;
+        }
+
+        function resetCamera() {
+            camera.alpha = -Math.PI / 2.3; camera.beta = Math.PI / 2.6; camera.radius = 26;
+            camera.target = BABYLON.Vector3.Zero();
+        }
+
+        function speakCurrentInfo() {
+            if (!('speechSynthesis' in window)) return;
+            window.speechSynthesis.cancel();
+            const text = `${document.getElementById("infoTitle").textContent}. ${document.getElementById("infoBody").textContent}`;
+            const u = new SpeechSynthesisUtterance(text);
+            u.lang = 'es-ES'; u.rate = 0.95;
+            window.speechSynthesis.speak(u);
+        }
+
+        function openAtlasViewer() {
+            const modal = document.getElementById("photoModal");
+            const img = document.getElementById("atlasImg");
+            img.src = window.BLOCH_SVG_B64 || "";
+            modal.style.display = "flex";
+        }
+
+        function closeAtlasViewer() {
+            document.getElementById("photoModal").style.display = "none";
+        }
+
+        scene = createScene();
+        engine.runRenderLoop(() => { scene.render(); });
+        window.addEventListener("resize", () => { engine.resize(); });
+    </script>
+</body>
+</html>
+

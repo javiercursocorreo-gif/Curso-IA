@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sesión 24 • Simulador 3D: Las 11 Dimensiones del Universo & Calabi-Yau [COD-024]</title>
+    <!-- Babylon.js Motor 3D Oficial CDN -->
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+    <!-- Respaldo Científico en Base64 Autónomo -->
+    <script src="../03_ASSETS_3D_Y_DATOS/dimensions11_calabiyau_b64.js"></script>
+    <script src="../../SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/dimensions11_calabiyau_b64.js"></script>
+    <script src="../../../../SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/dimensions11_calabiyau_b64.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-base: #03040c;
+            --bg-panel: rgba(10, 16, 30, 0.94);
+            --border: rgba(192, 132, 252, 0.4);
+            --primary: #c084fc;
+            --primary-glow: #e9d5ff;
+            --cyan: #38bdf8;
+            --emerald: #34d399;
+            --amber: #fbbf24;
+            --text-main: #f8fafc;
+            --text-sub: #cbd5e1;
+            --font-title: 'Cinzel', serif;
+            --font-sans: 'Inter', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+        body {
+            background-color: var(--bg-base); color: var(--text-main);
+            font-family: var(--font-sans); height: 100vh; width: 100vw;
+            overflow: hidden; display: flex; flex-direction: column; font-size: 14px;
+        }
+        header {
+            background: linear-gradient(180deg, rgba(16, 12, 30, 0.98) 0%, rgba(16, 12, 30, 0.88) 100%);
+            backdrop-filter: blur(14px); border-bottom: 1px solid var(--border);
+            padding: 10px 24px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; z-index: 40;
+        }
+        .brand-box { display: flex; align-items: center; gap: 14px; }
+        .badge-pill {
+            background: rgba(192, 132, 252, 0.15); border: 1px solid var(--primary);
+            color: var(--primary); font-family: var(--font-mono); font-weight: 800;
+            font-size: 0.82rem; padding: 4px 10px; border-radius: 6px;
+        }
+        .title-text h1 {
+            font-family: var(--font-title); font-size: 1.15rem; font-weight: 800; color: #fff;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .title-text p { font-size: 0.78rem; color: var(--text-sub); margin-top: 1px; }
+        .header-actions { display: flex; align-items: center; gap: 10px; }
+        .btn-header {
+            background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15);
+            color: var(--text-main); padding: 6px 14px; border-radius: 8px; font-size: 0.8rem;
+            font-weight: 700; cursor: pointer; transition: all 0.2s ease;
+        }
+        .btn-header:hover { background: rgba(192, 132, 252, 0.2); border-color: var(--primary); color: var(--primary-glow); }
+        .workspace { flex: 1; position: relative; overflow: hidden; display: flex; }
+        #renderCanvas { width: 100%; height: 100%; outline: none; display: block; }
+        .controls-panel {
+            position: absolute; top: 18px; left: 18px; width: 340px;
+            background: var(--bg-panel); border: 1px solid var(--border);
+            border-radius: 14px; padding: 18px; backdrop-filter: blur(14px);
+            z-index: 20; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+        .panel-section-title {
+            font-family: var(--font-mono); font-size: 0.8rem; font-weight: 800;
+            color: var(--primary); text-transform: uppercase; margin-bottom: 12px;
+            display: flex; align-items: center; gap: 6px;
+        }
+        .btn-action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 16px; }
+        .btn-action {
+            background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.12);
+            color: var(--text-sub); padding: 8px 10px; border-radius: 8px; font-size: 0.8rem;
+            font-weight: 700; cursor: pointer; transition: all 0.2s ease; text-align: center;
+        }
+        .btn-action.active, .btn-action:hover {
+            background: rgba(192, 132, 252, 0.25); border-color: var(--primary); color: #fff;
+        }
+        .kpi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .kpi-card { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 8px 10px; }
+        .kpi-val { font-family: var(--font-mono); font-size: 1.05rem; font-weight: 800; color: #fff; }
+        .kpi-label { font-size: 0.72rem; color: var(--text-sub); margin-top: 2px; }
+        .info-panel {
+            position: absolute; bottom: 20px; right: 20px; width: 380px;
+            background: var(--bg-panel); border: 1px solid var(--border);
+            border-radius: 14px; padding: 18px; backdrop-filter: blur(14px);
+            z-index: 20; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+        .info-title { font-family: var(--font-title); font-size: 1.15rem; font-weight: 700; color: var(--primary-glow); margin-bottom: 8px; }
+        .info-body { font-size: 0.84rem; line-height: 1.5; color: var(--text-sub); margin-bottom: 12px; }
+        .info-quote { font-style: italic; font-size: 0.78rem; color: var(--cyan); border-left: 2px solid var(--cyan); padding-left: 10px; margin-bottom: 12px; }
+        .audio-btn {
+            background: linear-gradient(135deg, #7c3aed 0%, #c084fc 100%);
+            border: none; color: #ffffff; font-weight: 800; font-size: 0.82rem;
+            padding: 8px 14px; border-radius: 8px; width: 100%; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .photo-viewer-modal {
+            position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(8px);
+            display: none; align-items: center; justify-content: center; z-index: 100;
+        }
+        .photo-container {
+            background: #0a0f1d; border: 1px solid var(--primary); border-radius: 14px;
+            max-width: 900px; width: 92%; overflow: hidden; box-shadow: 0 0 40px rgba(192, 132, 252, 0.35);
+        }
+        .photo-container img { width: 100%; height: auto; display: block; }
+        .photo-caption { padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; background: #060b18; }
+        .close-photo-btn { background: var(--primary); color: #020617; border: none; padding: 6px 16px; border-radius: 8px; font-weight: 800; cursor: pointer; }
+        footer {
+            background: rgba(16, 12, 30, 0.98); border-top: 1px solid var(--border);
+            padding: 8px 24px; font-size: 0.78rem; color: var(--text-sub);
+            display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="brand-box">
+            <span class="badge-pill">[COD-024]</span>
+            <div class="title-text">
+                <h1>🌀 Las 11 Dimensiones del Universo & Calabi-Yau 3D</h1>
+                <p>Teoría M (Edward Witten, CERN) • 6 Dimensiones Compactificadas • Modos Vibracionales de Supercuerdas</p>
+            </div>
+        </div>
+        <div class="header-actions">
+            <button class="btn-header" onclick="openAtlasViewer()">📷 Sección Calabi-Yau SVG</button>
+            <button class="btn-header" onclick="resetCamera()">🎯 Centrar</button>
+        </div>
+    </header>
+
+    <div class="workspace">
+        <canvas id="renderCanvas"></canvas>
+
+        <div class="controls-panel">
+            <div class="panel-section-title">🌌 Estructura Dimensional</div>
+            <div class="btn-action-grid">
+                <button class="btn-action" onclick="setDimView(3)">3D Macroscópico</button>
+                <button class="btn-action" onclick="setDimView(4)">4D Espacio-Tiempo</button>
+                <button class="btn-action active" onclick="setDimView(6)">6D Calabi-Yau</button>
+                <button class="btn-action" onclick="setDimView(11)">11D Teoría M (Total)</button>
+            </div>
+
+            <div class="panel-section-title">🎻 Supercuerdas Vibracionales</div>
+            <div class="btn-action-grid">
+                <button class="btn-action active" id="btnStrings" onclick="toggleStrings()">Cuerdas: ON</button>
+                <button class="btn-action" id="btnHyper" onclick="toggleHyperRotation()">Giro 4D: ACTIVO</button>
+            </div>
+
+            <div class="panel-section-title">📊 Geometría Diferencial</div>
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-val" id="kpiDim">11 Dimensiones</div>
+                    <div class="kpi-label">Espacio Total M</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-val">10^-35 m</div>
+                    <div class="kpi-label">Escala de Planck</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-val">SU(3)</div>
+                    <div class="kpi-label">Grupo de Holonomía</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-val">-6 (3 Familias)</div>
+                    <div class="kpi-label">Característica Euler</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="info-panel">
+            <div class="info-title" id="infoTitle">Variedad de Calabi-Yau (6D Compactificadas)</div>
+            <div class="info-body" id="infoBody">Para que la física cuántica sea compatible con la gravedad einsteiniana, el universo requiere 6 dimensiones espaciales adicionales compactificadas en una variedad de Calabi-Yau a escala de Planck (10^-35 m). La geometría de estas curvas determina la masa y carga de todas las partículas elementales.</div>
+            <div class="info-quote" id="infoQuote">"La música del cosmos no es metafórica: las partículas son las notas y las supercuerdas son los instrumentos." — Edward Witten</div>
+            <button class="audio-btn" onclick="speakCurrentInfo()">🔊 Escuchar Explicación de Física Teórica</button>
+        </div>
+    </div>
+
+    <div class="photo-viewer-modal" id="photoModal">
+        <div class="photo-container">
+            <img id="atlasImg" src="" alt="Variedad de Calabi-Yau">
+            <div class="photo-caption">
+                <span style="color: #cbd5e1; font-size: 0.82rem;">CERN • Teoría de Supercuerdas • Geometría Compleja de Calabi-Yau</span>
+                <button class="close-photo-btn" onclick="closeAtlasViewer()">Cerrar Sección</button>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <span>🌀 Curso de Inteligencia Artificial • Metodología de la Triple Salvaguarda Pedagógica</span>
+        <span>Motor 3D: Babylon.js PBR • Geometría Cuántica de 11 Dimensiones</span>
+    </footer>
+
+    <script>
+        const canvas = document.getElementById("renderCanvas");
+        const engine = new BABYLON.Engine(canvas, true);
+        let scene, camera;
+        let calabiYauMesh, stringsGroup;
+        let hyperRotating = true, stringsVisible = true;
+
+        function createScene() {
+            scene = new BABYLON.Scene(engine);
+            scene.clearColor = new BABYLON.Color4(0.012, 0.015, 0.035, 1.0);
+
+            camera = new BABYLON.ArcRotateCamera("Camera", -Math.PI / 2.3, Math.PI / 2.5, 34, BABYLON.Vector3.Zero(), scene);
+            camera.attachControl(canvas, true);
+            camera.lowerRadiusLimit = 14;
+            camera.upperRadiusLimit = 70;
+
+            const sunLight = new BABYLON.DirectionalLight("sunLight", new BABYLON.Vector3(0.5, -1, 0.7), scene);
+            sunLight.intensity = 2.2;
+            const hemiLight = new BABYLON.HemisphericLight("hemiLight", new BABYLON.Vector3(0, 1, 0), scene);
+            hemiLight.intensity = 0.55;
+            hemiLight.diffuse = new BABYLON.Color3(0.7, 0.5, 0.9);
+
+            // Proyección paramétrica 3D de una superficie de Calabi-Yau (Toroide cruzado)
+            const paths = [];
+            const stepsU = 48, stepsV = 48;
+            for (let i = 0; i <= stepsU; i++) {
+                const u = (i / stepsU) * Math.PI * 2;
+                const path = [];
+                for (let j = 0; j <= stepsV; j++) {
+                    const v = (j / stepsV) * Math.PI * 2;
+                    // Proyección matemática de sección Calabi-Yau tridimensional
+                    const r = 6 + Math.sin(3 * u) * Math.cos(2 * v) * 2.5;
+                    const x = r * Math.cos(u);
+                    const y = (Math.sin(2 * u) + Math.cos(3 * v)) * 3.5;
+                    const z = r * Math.sin(u) * Math.cos(v);
+                    path.push(new BABYLON.Vector3(x, y, z));
+                }
+                paths.push(path);
+            }
+
+            calabiYauMesh = BABYLON.MeshBuilder.CreateRibbon("calabiYau", { pathArray: paths, closeArray: true, sideOrientation: BABYLON.Mesh.DOUBLESIDE }, scene);
+            const cyMat = new BABYLON.PBRMaterial("cyMat", scene);
+            cyMat.albedoColor = new BABYLON.Color3(0.65, 0.35, 0.95);
+            cyMat.emissiveColor = new BABYLON.Color3(0.18, 0.08, 0.35);
+            cyMat.roughness = 0.25;
+            cyMat.metallic = 0.6;
+            cyMat.alpha = 0.88;
+            calabiYauMesh.material = cyMat;
+
+            // Grupo de cuerdas microscópicas vibrantes (Supercuerdas cerradas y abiertas)
+            stringsGroup = new BABYLON.TransformNode("stringsGroup", scene);
+            for (let s = 0; s < 12; s++) {
+                const stringRing = BABYLON.MeshBuilder.CreateTorus("str_" + s, { diameter: 2.2 + s * 0.4, thickness: 0.08, tessellation: 32 }, scene);
+                stringRing.position = new BABYLON.Vector3(
+                    (Math.random() - 0.5) * 8,
+                    (Math.random() - 0.5) * 6,
+                    (Math.random() - 0.5) * 8
+                );
+                stringRing.parent = stringsGroup;
+                const sMat = new BABYLON.StandardMaterial("sMat_" + s, scene);
+                sMat.emissiveColor = new BABYLON.Color3(0.2, 0.8, 1.0);
+                stringRing.material = sMat;
+            }
+
+            scene.registerBeforeRender(() => {
+                if (hyperRotating) {
+                    calabiYauMesh.rotation.y += 0.006;
+                    calabiYauMesh.rotation.x = Math.sin(Date.now() * 0.0008) * 0.35;
+                    stringsGroup.rotation.y -= 0.01;
+                }
+            });
+
+            return scene;
+        }
+
+        function setDimView(dim) {
+            if (dim === 3) {
+                calabiYauMesh.scaling = new BABYLON.Vector3(0.3, 0.3, 0.3);
+                document.getElementById("infoTitle").textContent = "3D Macroscópico Observable";
+                document.getElementById("infoBody").textContent = "Las 3 dimensiones espaciales extendidas (longitud, anchura y altura) que percibimos a simple vista en nuestra vida diaria.";
+            } else if (dim === 4) {
+                calabiYauMesh.scaling = new BABYLON.Vector3(0.6, 0.6, 0.6);
+                document.getElementById("infoTitle").textContent = "4D Espacio-Tiempo Relativista";
+                document.getElementById("infoBody").textContent = "La unificación einsteiniana del espacio 3D con la flecha del tiempo (ct), formando el tejido continuo sobre el que se propaga la luz.";
+            } else if (dim === 6) {
+                calabiYauMesh.scaling = new BABYLON.Vector3(1.0, 1.0, 1.0);
+                document.getElementById("infoTitle").textContent = "6D Calabi-Yau Compactificadas";
+                document.getElementById("infoBody").textContent = "Las 6 dimensiones microscópicas compactificadas en la escala de Planck donde vibran las cuerdas que originan la materia y las fuerzas.";
+            } else {
+                calabiYauMesh.scaling = new BABYLON.Vector3(1.2, 1.2, 1.2);
+                document.getElementById("infoTitle").textContent = "11D Teoría M (Supergravedad)";
+                document.getElementById("infoBody").textContent = "La síntesis total descubierta por Edward Witten en 1995: 11 dimensiones que engloban a las branas y unifican las 5 teorías de supercuerdas.";
+            }
+        }
+
+        function toggleStrings() {
+            stringsVisible = !stringsVisible;
+            stringsGroup.setEnabled(stringsVisible);
+            document.getElementById("btnStrings").textContent = `Cuerdas: ${stringsVisible ? 'ON' : 'OFF'}`;
+        }
+
+        function toggleHyperRotation() {
+            hyperRotating = !hyperRotating;
+            document.getElementById("btnHyper").textContent = `Giro 4D: ${hyperRotating ? 'ACTIVO' : 'PAUSADO'}`;
+        }
+
+        function resetCamera() {
+            camera.alpha = -Math.PI / 2.3; camera.beta = Math.PI / 2.5; camera.radius = 34;
+            camera.target = BABYLON.Vector3.Zero();
+        }
+
+        function speakCurrentInfo() {
+            if (!('speechSynthesis' in window)) return;
+            window.speechSynthesis.cancel();
+            const text = `${document.getElementById("infoTitle").textContent}. ${document.getElementById("infoBody").textContent}`;
+            const u = new SpeechSynthesisUtterance(text);
+            u.lang = 'es-ES'; u.rate = 0.95;
+            window.speechSynthesis.speak(u);
+        }
+
+        function openAtlasViewer() {
+            const modal = document.getElementById("photoModal");
+            const img = document.getElementById("atlasImg");
+            img.src = window.DIMENSIONS_SVG_B64 || "";
+            modal.style.display = "flex";
+        }
+
+        function closeAtlasViewer() {
+            document.getElementById("photoModal").style.display = "none";
+        }
+
+        scene = createScene();
+        engine.runRenderLoop(() => { scene.render(); });
+        window.addEventListener("resize", () => { engine.resize(); });
+    </script>
+</body>
+</html>
+
