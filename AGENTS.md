@@ -79,6 +79,11 @@
   - **Lógica Matemática Realista:** Considerar siempre que la pensión es vitalicia y que los ahorros no se tocan si la pensión cubre los gastos (cero contradicciones de tiempo). Incluir el patrimonio inmobiliario como escudo familiar.
   - **Diseño Accesible:** Tipografía grande (16px - 18px), alto contraste, botones amplios y mensajes tranquilizadores.
 
+## Regla de Oro: Actualización Obligatoria e Inmediata de Documentación ante Todo Aprendizaje Nuevo
+- **Sincronización del Conocimiento en Tiempo Real:**
+  - Cada vez que se descubra, depure, aprenda o ajuste una nueva técnica, comportamiento de hardware, solución de bug o parámetro técnico en cualquier módulo del proyecto, el asistente DEBE actualizar simultánea e inmediatamente en ese mismo turno toda la documentación técnica correspondiente (`.md` y `.html`), bitácoras y archivos de reglas (`AGENTS.md` y `GEMINI.md`).
+  - Queda terminantemente prohibido dejar descubrimientos o lecciones aprendidas aisladas en el chat sin que queden permanentemente selladas y versionadas en la documentación oficial.
+
 ## Módulo Especializado de Música y Web MIDI (CURSO_MUSICA)
 - Para cualquier trabajo en el módulo `CURSO_MUSICA/` (Atril Digital, Korg EK-50, Web MIDI, partituras y canciones), rigen de forma prioritaria las reglas de oro y arquitectura establecidas en `CURSO_MUSICA/AGENTS.md` y `CURSO_MUSICA/GEMINI.md`:
   - Cero intervención manual del usuario en el teclado Korg EK-50 (todo automatizado por Web MIDI).

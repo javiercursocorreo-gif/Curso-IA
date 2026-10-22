@@ -10,14 +10,22 @@
   - El asistente NUNCA debe solicitar confirmación manual ni requerir feedback interactivo para ejecutar planes o artefactos (`RequestFeedback: false`).
   - Todos los planes, modificaciones de código y tareas deben ejecutarse de forma directa, continua e ininterrumpida.
 
-## 2. Regla de Oro de Despliegue y Sincronización Tripartita
+## 2. Regla de Oro: Actualización Obligatoria e Inmediata de la Documentación ante Todo Aprendizaje Nuevo
+- **Sincronización del Conocimiento en Tiempo Real:**
+  - Cada vez que se descubra, depure, aprenda o ajuste una nueva técnica, comportamiento de hardware, solución de bug, parámetro MIDI o estándar en el proyecto, el asistente DEBE actualizar simultánea e inmediatamente en ese mismo turno toda la documentación técnica correspondiente:
+    1. El manual maestro en Markdown (`REPERTORIO_KORG_DOCUMENTACION.md`).
+    2. El visor interactivo web (`REPERTORIO_KORG_DOCUMENTACION.html`).
+    3. Las reglas de agentes y asistentes (`AGENTS.md` y `GEMINI.md`).
+  - Queda terminantemente prohibido dejar descubrimientos, lecciones aprendidas o detalles técnicos aislados en la conversación del chat sin que queden permanentemente sellados y versionados en la documentación oficial del repositorio.
+
+## 3. Regla de Oro de Despliegue y Sincronización Tripartita
 - **Sincronización Inmediata en Cada Turno (Mac ⟷ iCloud iPad ⟷ GitHub):**
   - Todo cambio, corrección, nueva canción o ajuste en `CURSO_MUSICA/` DEBE incluir siempre e indefectiblemente en el bloque de terminal:
     1. Copia recursiva y silenciosa hacia la carpeta espejo de iCloud para el iPad:  
        `cp -R "CURSO_MUSICA/"* "/Users/externo/Library/Mobile Documents/com~apple~CloudDocs/PERSONAL/CLASES DE TECNOLOGÍA/CURSO MUSICA/" 2>/dev/null || true`
     2. Control de versiones y despliegue a GitHub (`git add -A`, `git commit -m "..."`, `git push origin main`).
 - **Formato Estándar y Numeración Correlativa Obligatoria de Comandos en Terminal:**
-  - **Título en Canvas / Chat:** Cada bloque entregado debe llevar su numeración correlativa secuencial (ej. `### 💻 [COMANDO 121] - Título Descriptivo`).
+  - **Título en Canvas / Chat:** Cada bloque entregado debe llevar su numeración correlativa secuencial (ej. `### 💻 [COMANDO 122] - Título Descriptivo`).
   - **Título y Numeración Correlativa DENTRO del Script:** El encabezado con `#` y los mensajes `echo` deben llevar exactamente la misma numeración correlativa:
     ```bash
     # ==============================================================================
@@ -29,7 +37,7 @@
     echo "=== [COMANDO XX] FINALIZADO CON ÉXITO ==="
     ```
 
-## 3. Validación Visual e Interacción Inmediata en Navegador
+## 4. Validación Visual e Interacción Inmediata en Navegador
 - **Lanzamiento Local en Google Chrome:**
   - Dado que Google Chrome en macOS ofrece soporte nativo y completo para la **Web MIDI API** con el cable USB del Korg EK-50, en cada turno donde se ajuste o cree una canción, el comando de terminal debe lanzar automáticamente dicho archivo en Google Chrome:  
     `open -a "Google Chrome" "CURSO_MUSICA/CANCION_XX.html"`
@@ -37,7 +45,7 @@
   - **Vía Rápida Local (Wi-Fi 0 segundos):** Mediante el servidor local Python en el puerto 8888 (`INICIAR_SERVIDOR_LOCAL.command`), accesible en el iPad desde `http://192.168.1.130:8888/`.
   - **Vía Web MIDI por Cable USB en iPad:** Ejecutando la URL en la app `Web MIDI Browser` (App Store) con `{ sysex: false }`.
 
-## 4. Reglas de Oro del Control Web MIDI para Korg EK-50
+## 5. Reglas de Oro del Control Web MIDI para Korg EK-50
 - **Regla 1: CERO Intervención Manual en el Hardware del Teclado:**
   - El usuario NUNCA debe verse obligado a activar capas, presionar botones físicos de efectos, girar perillas ni buscar números de sonido en menús del teclado.
   - TODO (estilos, capas Upper 1/2/3, división Lower, transposición, volúmenes, efectos de reverberación, modulación/vibrato y tempo) debe configurarse al 100% de forma desatendida mediante mensajes Web MIDI enviados desde la interfaz táctil.
@@ -69,7 +77,7 @@
 - **Regla 9: Modo Atril Anti-Apagado Inteligente (5 Minutos de Reposo):**
   - Implementación híbrida `WakeLock API` + `Canvas Video Loop` para mantener el iPad encendido mientras se toca, liberando el bloqueo de pantalla tras 5 minutos de inactividad total para proteger la batería.
 
-## 5. Resumen de Canales MIDI del Korg EK-50
+## 6. Resumen de Canales MIDI del Korg EK-50
 | Canal MIDI | Sección Korg | Función en el Repertorio | Configuración Estándar |
 |:---|:---|:---|:---|
 | **Canal 1 (0)** | **Upper 1** | Voz melódica principal (mano derecha) | Vol 118–127, Expr 127, Reverb 115, Vibrato CC1=50 / CC77=68 |
@@ -78,7 +86,7 @@
 | **Canal 4 (3)** | **Lower** | Mano izquierda (zona de acompañamiento split) | Vol 115, PC 52 (Choir Aahs), Reverb 90 |
 | **Canal 16 (15)**| **Style / KbdSet**| Control de Estilos de Acompañamiento | MSB 32, LSB 2, PC según estilo (ej. PC 9 = Estilo 042) |
 
-## 6. Bitácora de Aprendizaje y Trampas Técnicas Resueltas
+## 7. Bitácora de Aprendizaje y Trampas Técnicas Resueltas
 - **Lección 6.1 (SysEx en iOS):** Usar siempre `{ sysex: false }` para evitar bloqueos de seguridad en WebKit / Web MIDI Browser.
 - **Lección 6.2 (Retardo CoreMIDI 350ms):** Esperar 350 ms tras DOMContentLoaded para permitir que iOS inicialice el enlace físico USB.
 - **Lección 6.3 (Falso Verde):** No confiar en entradas detectadas; exigir `outputs.length > 0` para activar el estado verde de conexión.

@@ -1,6 +1,8 @@
 # 📊 BITÁCORA MAESTRA DE DESPLIEGUE: 60 SESIONES (CURSO-IA)
 
-Este documento registra el avance del plan de actualización por lotes bajo la **Triple Salvaguarda Pedagógica (Prompt Semilla ➔ Plano Maestro ➔ App Oficial Terminada)** y la incorporación de Micro-Apps para la etiqueta `[NIV]`.
+Este documento registra el avance del plan de actualización por lotes bajo la **Triple Salvaguarda Pedagógica (Prompt Semilla ➔ Plano Maestro ➔ App Oficial Terminada)**, la incorporación de Micro-Apps para la etiqueta `[NIV]` y el catálogo maestro de simulaciones 3D de la etiqueta `[COD]`.
+
+> 📘 **Índice Maestro de Simulaciones 3D [COD]:** Consulta [`INDICE_SIMULACIONES_INTERACTIVAS_3D_COD.md`](INDICE_SIMULACIONES_INTERACTIVAS_3D_COD.md) y su cuadro de mando interactivo [`INDICE_SIMULACIONES_INTERACTIVAS_3D_COD.html`](INDICE_SIMULACIONES_INTERACTIVAS_3D_COD.html) para el mapa completo de las 60 sesiones bajo motor Babylon.js y modelos científicos reales (NIH, NASA, Met Museum, Khronos).
 
 ---
 
