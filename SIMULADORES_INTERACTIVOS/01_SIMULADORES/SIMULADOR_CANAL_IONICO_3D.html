@@ -3,546 +3,690 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sesión 36 • Neurotoxina y Bloqueo de Canales Iónicos de Sodio 3D [COD-036]</title>
-    <!-- Protein Data Bank (PDB 6A95) • Canal Nav1.7 • Tetrodotoxina (TTX) • Hodgkin-Huxley -->
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+    <title>Sesión 36 • Neurotoxina y Bloqueo de Canales Iónicos de Sodio 3D [[COD-036]]</title>
+    <!-- Babylon.js CDN Oficial -->
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+    <!-- Modelo Científico en Base64 (Multi-Fallback) -->
+    <script src="ionchannel_b64.js"></script>
+    <script src="../../../../SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/ionchannel_b64.js"></script>
+    <script src="../03_ASSETS_3D_Y_DATOS/ionchannel_b64.js"></script>
+    <script src="https://javiercursocorreo-gif.github.io/Curso-IA/SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/ionchannel_b64.js"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-base: #06020e;
-            --bg-panel: rgba(16, 6, 32, 0.94);
-            --border: rgba(168, 85, 247, 0.35);
-            --primary: #c084fc;
-            --primary-glow: rgba(192, 132, 252, 0.4);
-            --cyan: #38bdf8;
-            --amber: #fbbf24;
-            --rose: #f43f5e;
+            --bg-base: #060913;
+            --bg-panel: rgba(15, 23, 42, 0.92);
+            --border: rgba(255, 255, 255, 0.12);
+            --accent: #38bdf8;
+            --accent-glow: rgba(56, 189, 248, 0.35);
             --text-main: #f8fafc;
             --text-sub: #cbd5e1;
-            --font-title: 'Cinzel', serif;
-            --font-sans: 'Inter', sans-serif;
-            --font-mono: 'JetBrains Mono', monospace;
+            --text-muted: #94a3b8;
+            --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            --font-mono: 'JetBrains Mono', ui-monospace, monospace;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+        }
+
         body {
             background-color: var(--bg-base);
             color: var(--text-main);
             font-family: var(--font-sans);
-            height: 100vh;
             width: 100vw;
+            height: 100vh;
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            font-size: 14px;
         }
 
+        /* 3D VIEWPORT */
+        #renderCanvas {
+            width: 100%;
+            height: 100%;
+            touch-action: none;
+            outline: none;
+            display: block;
+        }
+
+        /* HEADER HUD */
         header {
-            background: linear-gradient(180deg, rgba(14, 4, 28, 0.98) 0%, rgba(14, 4, 28, 0.88) 100%);
+            position: absolute;
+            top: 18px;
+            left: 20px;
+            right: 20px;
+            z-index: 20;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            pointer-events: none;
+        }
+
+        .brand-card {
+            background: var(--bg-panel);
             backdrop-filter: blur(14px);
-            border-bottom: 1px solid var(--border);
-            padding: 10px 24px;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 12px 20px;
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            flex-shrink: 0;
-            z-index: 40;
+            gap: 14px;
+            box-shadow: 0 14px 35px rgba(0,0,0,0.6);
+            pointer-events: auto;
         }
-        .brand-box { display: flex; align-items: center; gap: 14px; }
-        .badge-pill {
-            background: rgba(192, 132, 252, 0.15);
-            border: 1px solid var(--primary);
-            color: var(--primary);
+
+        .brand-badge {
+            background: var(--accent-glow);
+            border: 1px solid var(--accent);
+            color: var(--accent);
             font-family: var(--font-mono);
             font-weight: 800;
-            font-size: 0.82rem;
-            padding: 4px 10px;
-            border-radius: 6px;
+            font-size: 0.85rem;
+            padding: 5px 10px;
+            border-radius: 8px;
+            letter-spacing: 0.05em;
         }
-        .title-text h1 {
-            font-family: var(--font-title);
+
+        .brand-title {
             font-size: 1.15rem;
             font-weight: 800;
-            color: #fff;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            letter-spacing: -0.01em;
+            color: #ffffff;
         }
-        .title-text p { font-size: 0.78rem; color: var(--text-sub); margin-top: 1px; }
 
-        .header-actions { display: flex; align-items: center; gap: 10px; }
+        .brand-sub {
+            font-size: 0.76rem;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+            pointer-events: auto;
+        }
+
         .btn-header {
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            color: var(--text-main);
-            padding: 6px 14px;
-            border-radius: 8px;
+            background: var(--bg-panel);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border);
+            color: var(--text-sub);
+            padding: 9px 14px;
+            border-radius: 10px;
             font-size: 0.8rem;
             font-weight: 700;
             cursor: pointer;
             transition: all 0.2s ease;
-        }
-        .btn-header:hover { background: rgba(192, 132, 252, 0.2); border-color: var(--primary); color: #fff; }
-
-        .workspace { flex: 1; position: relative; overflow: hidden; display: flex; }
-
-        .viewer-container {
-            flex: 1;
-            position: relative;
-            background: radial-gradient(circle at center, #1b0a36 0%, #06020e 100%);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
             display: flex;
             align-items: center;
-            justify-content: center;
-            overflow: hidden;
+            gap: 6px;
         }
 
-        #channelCanvas {
-            max-width: 96%;
-            max-height: 92%;
-            border-radius: 14px;
-            box-shadow: 0 15px 45px rgba(0, 0, 0, 0.9);
-            border: 1px solid rgba(192, 132, 252, 0.25);
-            background: #080314;
-            cursor: grab;
+        .btn-header:hover {
+            background: rgba(30, 41, 59, 0.95);
+            border-color: var(--accent);
+            color: #ffffff;
+            transform: translateY(-1px);
         }
-        #channelCanvas:active { cursor: grabbing; }
 
-        .controls-panel {
+        .btn-header.active {
+            background: var(--accent-glow);
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        /* FLOATING SIDEBAR (CONTROLS) */
+        .sidebar-left {
             position: absolute;
-            top: 18px;
+            top: 86px;
             left: 20px;
-            width: 350px;
+            width: 320px;
+            max-height: calc(100vh - 106px);
             background: var(--bg-panel);
+            backdrop-filter: blur(16px);
             border: 1px solid var(--border);
-            border-radius: 14px;
+            border-radius: 16px;
             padding: 18px;
-            backdrop-filter: blur(14px);
-            z-index: 20;
-            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6);
             display: flex;
             flex-direction: column;
             gap: 14px;
-            max-height: calc(100vh - 120px);
+            z-index: 20;
             overflow-y: auto;
+            box-shadow: 0 16px 40px rgba(0,0,0,0.6);
+        }
+
+        .sidebar-left::-webkit-scrollbar {
+            width: 4px;
+        }
+        .sidebar-left::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.2);
+            border-radius: 4px;
         }
 
         .panel-sec-title {
             font-size: 0.78rem;
-            font-family: var(--font-mono);
-            color: var(--primary);
+            font-weight: 800;
             text-transform: uppercase;
             letter-spacing: 0.08em;
+            color: var(--accent);
             display: flex;
             align-items: center;
             justify-content: space-between;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-            padding-bottom: 5px;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            padding-bottom: 6px;
+            margin-top: 4px;
         }
 
-        .slider-group { display: flex; flex-direction: column; gap: 6px; }
-        .slider-label {
+        .slider-wrap {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .slider-head {
             display: flex;
             justify-content: space-between;
-            font-size: 0.82rem;
+            align-items: center;
+            font-size: 0.8rem;
+            font-weight: 600;
             color: var(--text-sub);
         }
-        .slider-val { font-family: var(--font-mono); color: #fff; font-weight: 700; }
+
+        .slider-val {
+            font-family: var(--font-mono);
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: var(--accent);
+            background: rgba(255,255,255,0.06);
+            padding: 2px 7px;
+            border-radius: 6px;
+        }
+
         input[type="range"] {
             width: 100%;
             height: 6px;
-            border-radius: 3px;
-            background: #1e293b;
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.15);
             outline: none;
+            -webkit-appearance: none;
+            accent-color: var(--accent);
             cursor: pointer;
-            accent-color: var(--primary);
         }
 
-        .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .btn-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
         .btn-action {
-            background: rgba(192, 132, 252, 0.12);
-            border: 1px solid rgba(192, 132, 252, 0.35);
-            color: #fff;
-            padding: 9px 10px;
-            border-radius: 8px;
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(255,255,255,0.12);
+            color: #e2e8f0;
             font-size: 0.78rem;
             font-weight: 700;
+            padding: 8px 10px;
+            border-radius: 8px;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.15s ease;
             text-align: center;
         }
-        .btn-action:hover { background: rgba(192, 132, 252, 0.28); border-color: var(--primary); }
-        .btn-action.active { background: var(--primary); color: #080314; font-weight: 800; }
-        .btn-action.danger { background: rgba(244, 63, 94, 0.15); border-color: #f43f5e; color: #fca5a5; }
-        .btn-action.danger:hover { background: #f43f5e; color: #fff; }
 
-        .telemetry-card {
+        .btn-action:hover {
+            background: rgba(51, 65, 85, 0.9);
+            border-color: var(--accent);
+            color: #ffffff;
+        }
+
+        .btn-action.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #060913;
+            box-shadow: 0 0 14px var(--accent-glow);
+        }
+
+        /* BOTTOM TELEMETRY DOCK */
+        .telemetry-dock {
             position: absolute;
             bottom: 20px;
+            left: 360px;
             right: 20px;
-            width: 320px;
+            height: 90px;
             background: var(--bg-panel);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 16px;
             backdrop-filter: blur(14px);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 10px 22px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
             z-index: 20;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+            box-shadow: 0 14px 35px rgba(0,0,0,0.6);
+        }
+
+        .kpi-group {
+            display: flex;
+            gap: 24px;
+            align-items: center;
+        }
+
+        .kpi-card {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 3px;
         }
-        .kpi-row { display: flex; justify-content: space-between; align-items: center; }
-        .kpi-name { font-size: 0.78rem; color: var(--text-sub); }
-        .kpi-val { font-family: var(--font-mono); font-size: 0.88rem; font-weight: 700; color: #fff; }
-        .status-badge {
-            padding: 4px 10px;
-            border-radius: 6px;
-            font-size: 0.74rem;
+
+        .kpi-label {
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+        }
+
+        .kpi-value {
+            font-family: var(--font-mono);
+            font-size: 1.1rem;
             font-weight: 800;
-            text-align: center;
+            color: #ffffff;
         }
-        .status-healthy { background: rgba(52, 211, 153, 0.2); color: #6ee7b7; border: 1px solid #34d399; }
-        .status-warning { background: rgba(251, 191, 36, 0.2); color: #fde68a; border: 1px solid #fbbf24; }
-        .status-danger { background: rgba(244, 63, 94, 0.2); color: #fda4af; border: 1px solid #f43f5e; }
+
+        .kpi-pill {
+            display: inline-block;
+            font-size: 0.7rem;
+            font-weight: 800;
+            padding: 2px 8px;
+            border-radius: 9999px;
+            margin-top: 2px;
+        }
+        .pill-healthy { background: rgba(16, 185, 129, 0.2); color: #6ee7b7; border: 1px solid #10b981; }
+        .pill-warn { background: rgba(251, 191, 36, 0.2); color: #fde68a; border: 1px solid #fbbf24; }
+        .pill-danger { background: rgba(244, 63, 94, 0.2); color: #fda4af; border: 1px solid #f43f5e; }
+
+        .chart-box {
+            flex: 1;
+            max-width: 320px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .chart-head {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: var(--accent);
+            text-transform: uppercase;
+        }
+
+        #dockCanvas {
+            width: 100%;
+            height: 48px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 6px;
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+
+        /* LOADING SPINNER */
+        #loadingOverlay {
+            position: absolute;
+            inset: 0;
+            background: var(--bg-base);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            transition: opacity 0.5s ease;
+        }
+
+        .spinner {
+            width: 48px;
+            height: 48px;
+            border: 4px solid rgba(255,255,255,0.1);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
+
+    <div id="loadingOverlay">
+        <div class="spinner"></div>
+        <div style="font-weight:700; color:var(--text-sub); font-size:0.95rem;">Cargando Laboratorio 3D • Neurotoxina y Bloqueo de Canales Iónicos de Sodio...</div>
+        <div style="font-size:0.75rem; color:var(--text-muted);">PDB 6A95 Cryo-EM 3.2Å</div>
+    </div>
+
     <header>
-        <div class="brand-box">
-            <span class="badge-pill">[COD-036]</span>
-            <div class="title-text">
-                <h1>⚡ Bloqueo de Canales Iónicos de Sodio 3D</h1>
-                <p>Protein Data Bank (PDB 6A95) • Canal Nav1.7 • Tetrodotoxina (TTX Pez Globo) • Hodgkin-Huxley</p>
+        <div class="brand-card">
+            <span class="brand-badge">[COD-036]</span>
+            <div>
+                <div class="brand-title">Neurotoxina y Bloqueo de Canales Iónicos de Sodio 3D</div>
+                <div class="brand-sub">Sensor S4, Filtro DEKA y Tetrodotoxina (TTX) • PDB 6A95 Cryo-EM 3.2Å</div>
             </div>
         </div>
         <div class="header-actions">
-            <button class="btn-header" id="btnAudioToggle">🔊 Audio Sináptico: ON</button>
-            <button class="btn-header" id="btnVoiceGuide">🗣️ Guía por Voz</button>
-            <button class="btn-header" id="btnResetView">🎯 Centrar Vista</button>
+            <button class="btn-header" id="btnAudio">🔊 Audio: ON</button>
+            <button class="btn-header" id="btnVoice">🗣️ Guía por Voz</button>
+            <button class="btn-header" id="btnRotate">🔄 Giro: ON</button>
+            <button class="btn-header" id="btnReset">🎯 Centrar</button>
         </div>
     </header>
 
-    <div class="workspace">
-        <div class="viewer-container">
-            <canvas id="channelCanvas" width="900" height="650"></canvas>
+    <aside class="sidebar-left">
+        
+        <div class="panel-sec-title"><span>Potencial y Neurotoxina</span><span>Hodgkin-Huxley</span></div>
+        <div class="slider-wrap">
+            <div class="slider-head"><span>Potencial de Membrana (Vm)</span><span class="slider-val" id="valVm">-70 mV</span></div>
+            <input type="range" id="rngVm" min="-90" max="40" step="2" value="-70">
         </div>
-
-        <div class="controls-panel">
-            <div class="panel-sec-title">
-                <span>Electroestimulación Neuronal</span>
-                <span>⚡ VOLTAJE</span>
-            </div>
-
-            <div class="slider-group">
-                <div class="slider-label">
-                    <span>Voltaje de Membrana (Vm)</span>
-                    <span class="slider-val" id="valVm">-70 mV (Reposo)</span>
-                </div>
-                <input type="range" id="rngVm" min="-90" max="40" step="1" value="-70">
-            </div>
-
-            <div class="panel-sec-title">
-                <span>Neurotoxinas y Fármacos</span>
-                <span>🧪 TOXICOLOGÍA</span>
-            </div>
-
-            <div class="btn-group">
-                <button class="btn-action danger" id="btnTTX">🐡 Tetrodotoxina (TTX)</button>
-                <button class="btn-action" id="btnLido">💉 Lidocaína</button>
-            </div>
-
-            <div class="btn-group">
-                <button class="btn-action active" id="btnActionPulse">⚡ Disparo Acción</button>
-                <button class="btn-action" id="btnWashout">🚿 Lavado Fisiológico</button>
-            </div>
+        <div class="slider-wrap">
+            <div class="slider-head"><span>Concentración TTX</span><span class="slider-val" id="valTTX">0 nM</span></div>
+            <input type="range" id="rngTTX" min="0" max="100" step="5" value="0">
         </div>
+        <div class="slider-wrap">
+            <div class="slider-head"><span>Gradiente [Na⁺] Extracelular</span><span class="slider-val" id="valNa">145 mM</span></div>
+            <input type="range" id="rngNa" min="50" max="160" step="5" value="145">
+        </div>
+    
+        
+        <div class="panel-sec-title"><span>Canal Nav1.7</span><span>PDB 6A95</span></div>
+        <div class="btn-grid">
+            <button class="btn-action" id="btnSpike">⚡ Disparo Espiga</button>
+            <button class="btn-action" id="btnBlockTTX" style="border-color:#f43f5e; color:#fda4af;">🐡 Inyectar TTX</button>
+        </div>
+        <div class="btn-grid" style="margin-top:8px;">
+            <button class="btn-action" id="btnWashout">💧 Lavado TTX</button>
+            <button class="btn-action active" id="btnRestVm">⏸️ Reposo -70mV</button>
+        </div>
+    
+    </aside>
 
-        <div class="telemetry-card">
-            <div class="panel-sec-title">
-                <span>Osciloscopio Celular</span>
-                <span>Hodgkin-Huxley</span>
+    <div class="telemetry-dock">
+        <div class="kpi-group">
+            
+        <div class="kpi-card">
+            <span class="kpi-label">Corriente de Sodio (I_Na)</span>
+            <span class="kpi-value" id="kpiINa">0.0 pA</span>
+            <span class="kpi-pill pill-healthy" id="pillNav">Canal en Reposo</span>
+        </div>
+        <div class="kpi-card">
+            <span class="kpi-label">Apertura Poro DEKA</span>
+            <span class="kpi-value" id="kpiPo">0.02 Po</span>
+        </div>
+    
+        </div>
+        <div class="chart-box">
+            <div class="chart-head">
+                <span>Registro Patch-Clamp</span>
+                <span id="chartLiveVal">-70 mV</span>
             </div>
-            <div class="kpi-row">
-                <span class="kpi-name">Conductancia de Sodio:</span>
-                <span class="kpi-val" id="kpiGNa">0.05 mS/cm²</span>
-            </div>
-            <div class="kpi-row">
-                <span class="kpi-name">Corriente Iónica (INa):</span>
-                <span class="kpi-val" id="kpiINa">0.0 µA</span>
-            </div>
-            <div class="kpi-row">
-                <span class="kpi-name">Conformación del Canal:</span>
-                <span class="kpi-val" id="kpiConf">Cerrado en Reposo</span>
-            </div>
-            <div class="kpi-row">
-                <span class="kpi-name">Estado de Conducción:</span>
-                <span class="status-badge status-healthy" id="kpiStatus">Neurona Funcional</span>
-            </div>
+            <canvas id="dockCanvas" width="300" height="48"></canvas>
         </div>
     </div>
 
+    <canvas id="renderCanvas"></canvas>
+
     <script>
-        const canvas = document.getElementById('channelCanvas');
-        const ctx = canvas.getContext('2d');
-
-        let state = {
-            vm: -70,
-            toxin: 'none',
-            isOpen: false,
-            rotX: -0.2,
-            rotY: 0.35,
-            zoom: 1.0,
-            audioEnabled: true
-        };
-
+        // WEB AUDIO PROCEDURAL SINTETIZADO (CERO DEPENDENCIAS EXTERNAS)
         let audioCtx = null;
-        function playSpikeAudio() {
-            if (!state.audioEnabled) return;
+        let isAudioPlaying = true;
+        function initAudio() {
             try {
                 if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
                 if (audioCtx.state === 'suspended') audioCtx.resume();
-                const osc = audioCtx.createOscillator();
-                const gain = audioCtx.createGain();
-                osc.type = 'sawtooth';
-                osc.frequency.setValueAtTime(880, audioCtx.currentTime);
-                osc.frequency.exponentialRampToValueAtTime(220, audioCtx.currentTime + 0.12);
-                gain.gain.setValueAtTime(0.04, audioCtx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.12);
-                osc.connect(gain);
-                gain.connect(audioCtx.destination);
-                osc.start();
-                osc.stop(audioCtx.currentTime + 0.12);
             } catch(e) {}
         }
 
-        function speak(text) {
+        function playSciPing(freq = 440, duration = 0.25, type = 'sine') {
+            if (!isAudioPlaying) return;
+            initAudio();
+            if (!audioCtx) return;
+            try {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = type;
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.04, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + duration);
+            } catch(e) {}
+        }
+
+        // SÍNTESIS DE VOZ PEDAGÓGICA EN ESPAÑOL
+        function speakNarrative(text) {
             if ('speechSynthesis' in window) {
                 window.speechSynthesis.cancel();
                 const u = new SpeechSynthesisUtterance(text);
                 u.lang = 'es-ES';
-                u.rate = 1.05;
+                u.rate = 1.02;
                 window.speechSynthesis.speak(u);
             }
         }
 
-        let isDragging = false;
-        let lastMouse = { x: 0, y: 0 };
-        canvas.addEventListener('mousedown', (e) => {
-            isDragging = true;
-            lastMouse = { x: e.clientX, y: e.clientY };
-        });
-        window.addEventListener('mouseup', () => isDragging = false);
-        window.addEventListener('mousemove', (e) => {
-            if (!isDragging) return;
-            const dx = e.clientX - lastMouse.x;
-            const dy = e.clientY - lastMouse.y;
-            state.rotY += dx * 0.008;
-            state.rotX += dy * 0.008;
-            lastMouse = { x: e.clientX, y: e.clientY };
-        });
-        canvas.addEventListener('wheel', (e) => {
-            e.preventDefault();
-            state.zoom *= e.deltaY > 0 ? 0.95 : 1.05;
-            state.zoom = Math.max(0.6, Math.min(2.2, state.zoom));
+        // BOTONES DE CABECERA
+        document.getElementById('btnAudio').addEventListener('click', function() {
+            isAudioPlaying = !isAudioPlaying;
+            this.innerText = isAudioPlaying ? '🔊 Audio: ON' : '🔇 Audio: OFF';
+            this.classList.toggle('active', isAudioPlaying);
         });
 
-        // Loop de renderizado 3D de Canal Nav y Poro DEKA
-        let t = 0;
-        function render() {
-            t += 0.02;
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        document.getElementById('btnVoice').addEventListener('click', function() {
+            speakNarrative("Bienvenido al Canal de Sodio Nav1.7. Observa cómo el sensor de voltaje S4 activa la entrada de sodio y cómo la neurotoxina tetrodotoxina del pez globo tapona físicamente el filtro DEKA.");
+        });
 
-            const cx = canvas.width / 2;
-            const cy = canvas.height / 2;
+        // INICIALIZACIÓN DE BABYLON.JS
+        const canvas = document.getElementById("renderCanvas");
+        const engine = new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true });
+        let autoRotate = true;
+        let modelMeshRoot = null;
+        let isModelLoaded = false;
+        let fixedBaseScale = 1.0;
 
-            const cosY = Math.cos(state.rotY);
-            const sinY = Math.sin(state.rotY);
-            const cosX = Math.cos(state.rotX);
-            const sinX = Math.sin(state.rotX);
+        const createScene = function() {
+            const scene = new BABYLON.Scene(engine);
+            scene.clearColor = new BABYLON.Color4(0.024, 0.035, 0.067, 1.0); // #060913
 
-            function project(x, y, z) {
-                let x1 = x * cosY + z * sinY;
-                let z1 = -x * sinY + z * cosY;
-                let y2 = y * cosX - z1 * sinX;
-                let z2 = y * sinX + z1 * cosX;
-                const fov = 450;
-                const scale = (fov / (fov + z2 + 300)) * state.zoom;
-                return { x: cx + x1 * scale, y: cy + y2 * scale, z: z2, scale: scale };
-            }
+            // CÁMARA ORBITAL MÉDICO-CIENTÍFICA
+            const camera = new BABYLON.ArcRotateCamera("Camera", -Math.PI / 2, Math.PI / 2.5, 6.0, new BABYLON.Vector3(0, 0, 0), scene);
+            camera.attachControl(canvas, true);
+            camera.wheelPrecision = 45;
+            camera.lowerRadiusLimit = 2.2;
+            camera.upperRadiusLimit = 16.0;
 
-            // Bicapa lipídica neuronal (plano transversal)
-            ctx.save();
-            const pMemL = project(-220, 0, 0);
-            const pMemR = project(220, 0, 0);
-            ctx.strokeStyle = 'rgba(56, 189, 248, 0.4)';
-            ctx.lineWidth = 16 * state.zoom;
-            ctx.beginPath();
-            ctx.moveTo(pMemL.x, pMemL.y);
-            ctx.lineTo(pMemR.x, pMemR.y);
-            ctx.stroke();
+            // ILUMINACIÓN CLÍNICA PBR
+            const hemiLight = new BABYLON.HemisphericLight("hemiLight", new BABYLON.Vector3(0, 1, 0), scene);
+            hemiLight.intensity = 0.85;
+            hemiLight.diffuse = new BABYLON.Color3(0.9, 0.95, 1.0);
+            hemiLight.groundColor = new BABYLON.Color3(0.1, 0.15, 0.25);
 
-            ctx.font = 'bold 11px JetBrains Mono';
-            ctx.fillStyle = '#38bdf8';
-            ctx.fillText("MEDIO EXTRACELULAR [Na⁺ = 145 mM]", cx - 160, cy - 140 * state.zoom);
-            ctx.fillStyle = '#c084fc';
-            ctx.fillText("CITOSOL AXONAL [Na⁺ = 12 mM]", cx - 140, cy + 180 * state.zoom);
-            ctx.restore();
+            const keyLight = new BABYLON.DirectionalLight("keyLight", new BABYLON.Vector3(-1, -2, 1), scene);
+            keyLight.position = new BABYLON.Vector3(5, 8, -5);
+            keyLight.intensity = 1.2;
 
-            // Canal de Sodio Nav (4 dominios pseudotetraméricos I, II, III, IV alrededor del poro central)
-            const numDomains = 4;
-            const poreRadius = (state.isOpen && state.toxin === 'none') ? 38 : 16;
-            for (let d = 0; d < numDomains; d++) {
-                const ang = (Math.PI * 2 / numDomains) * d + 0.4;
-                const dx = Math.cos(ang) * poreRadius * 2.2;
-                const dz = Math.sin(ang) * poreRadius * 2.2;
+            const fillLight = new BABYLON.PointLight("fillLight", new BABYLON.Vector3(-5, -2, -4), scene);
+            fillLight.diffuse = new BABYLON.Color3(56, 189, 248);
+            fillLight.intensity = 0.8;
 
-                const pTop = project(dx, -70, dz);
-                const pMid = project(dx * 0.8, 0, dz * 0.8);
-                const pBot = project(dx, 70, dz);
+            const glow = new BABYLON.GlowLayer("glow", scene);
+            glow.intensity = 0.35;
 
-                // Hélice de proteína transmembrana
-                ctx.beginPath();
-                ctx.moveTo(pTop.x, pTop.y);
-                ctx.lineTo(pMid.x, pMid.y);
-                ctx.lineTo(pBot.x, pBot.y);
-                ctx.strokeStyle = '#c084fc';
-                ctx.lineWidth = 20 * state.zoom;
-                ctx.lineCap = 'round';
-                ctx.stroke();
+            // CARGA ROBUSTA MULTI-RUTA (Base64 -> Local -> CDN)
+            const candidateSources = [
+                (window.IONCHANNEL_GLB_B64 && window.IONCHANNEL_GLB_B64.length > 500) ? window.IONCHANNEL_GLB_B64 : null,
+                "ionchannel_b64.js",
+                "../../../../SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/ionchannel_b64.js",
+                "../03_ASSETS_3D_Y_DATOS/ionchannel_b64.js",
+                "https://javiercursocorreo-gif.github.io/Curso-IA/SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/ionchannel_b64.js"
+            ].filter(Boolean);
 
-                // Sensor de voltaje S4 (cargas positivas arginina)
-                const pS4 = project(dx * 1.3, -20, dz * 1.3);
-                ctx.beginPath();
-                ctx.arc(pS4.x, pS4.y, 6 * state.zoom, 0, Math.PI * 2);
-                ctx.fillStyle = '#38bdf8';
-                ctx.fill();
-            }
-
-            // Neurotoxina Tetrodotoxina (TTX) encajada en el filtro DEKA exterior
-            if (state.toxin === 'ttx') {
-                const pTTX = project(0, -68, 0);
-                ctx.beginPath();
-                ctx.arc(pTTX.x, pTTX.y, 22 * state.zoom, 0, Math.PI * 2);
-                ctx.fillStyle = 'rgba(244, 63, 94, 0.95)';
-                ctx.fill();
-                ctx.strokeStyle = '#fff';
-                ctx.lineWidth = 2;
-                ctx.stroke();
-
-                ctx.font = 'bold 10px JetBrains Mono';
-                ctx.fillStyle = '#fff';
-                ctx.fillText("TTX (Oclusión Poro)", pTTX.x - 55, pTTX.y - 18);
-            } else if (state.toxin === 'lido') {
-                const pLido = project(0, 35, 0);
-                ctx.beginPath();
-                ctx.arc(pLido.x, pLido.y, 16 * state.zoom, 0, Math.PI * 2);
-                ctx.fillStyle = 'rgba(251, 191, 36, 0.95)';
-                ctx.fill();
-                ctx.font = 'bold 9px JetBrains Mono';
-                ctx.fillStyle = '#080314';
-                ctx.fillText("Lidocaína", pLido.x - 24, pLido.y + 3);
-            }
-
-            // Iones de Sodio Na⁺ fluyendo a través del canal si está abierto y sin toxina
-            if (state.isOpen && state.toxin === 'none') {
-                ctx.fillStyle = '#38bdf8';
-                for (let i = 0; i < 15; i++) {
-                    const py = -110 + ((t * 180 + i * 22) % 220);
-                    const prIon = project(Math.sin(i) * 6, py, Math.cos(i) * 6);
-                    ctx.beginPath();
-                    ctx.arc(prIon.x, prIon.y, 3.5 * state.zoom, 0, Math.PI * 2);
-                    ctx.fill();
+            let currentSrcIdx = 0;
+            function loadScientificMesh() {
+                if (currentSrcIdx >= candidateSources.length) {
+                    document.getElementById("loadingOverlay").innerHTML = '<div style="color:#ef4444;font-weight:700;">Simulación activa con modelo procedural</div>';
+                    setTimeout(() => {
+                        document.getElementById("loadingOverlay").style.opacity = "0";
+                        setTimeout(() => document.getElementById("loadingOverlay").style.display = "none", 400);
+                    }, 600);
+                    return;
                 }
+                const source = candidateSources[currentSrcIdx];
+                BABYLON.SceneLoader.ImportMesh("", "", source, scene, function(meshes) {
+                    const overlay = document.getElementById("loadingOverlay");
+                    overlay.style.opacity = "0";
+                    setTimeout(() => overlay.style.display = "none", 400);
+
+                    modelMeshRoot = new BABYLON.TransformNode("modelRoot", scene);
+                    meshes.forEach(m => {
+                        if (m.parent === null) {
+                            m.parent = modelMeshRoot;
+                        }
+                    });
+
+                    const hierarchy = modelMeshRoot.getHierarchyBoundingVectors();
+                    const center = hierarchy.max.add(hierarchy.min).scale(0.5);
+                    const size = hierarchy.max.subtract(hierarchy.min);
+                    const maxDim = Math.max(size.x, size.y, size.z);
+
+                    if (maxDim > 0) {
+                        fixedBaseScale = 2.8 / maxDim;
+                        modelMeshRoot.scaling = new BABYLON.Vector3(fixedBaseScale, fixedBaseScale, fixedBaseScale);
+                        modelMeshRoot.position = center.scale(-fixedBaseScale);
+                    }
+                    camera.target = new BABYLON.Vector3(0, 0, 0);
+                    isModelLoaded = true;
+                }, null, function(scene, msg) {
+                    console.warn("Fallo fuente:", source, msg);
+                    currentSrcIdx++;
+                    loadScientificMesh();
+                }, ".glb");
             }
+            loadScientificMesh();
 
-            requestAnimationFrame(render);
-        }
-        render();
-
-        function updateTelemetry() {
-            state.isOpen = state.vm > -50;
-            const gNaEl = document.getElementById('kpiGNa');
-            const iNaEl = document.getElementById('kpiINa');
-            const confEl = document.getElementById('kpiConf');
-            const statusEl = document.getElementById('kpiStatus');
-
-            if (state.toxin === 'ttx') {
-                gNaEl.innerText = '0.00 mS/cm² (Bloqueado)';
-                iNaEl.innerText = '0.0 µA';
-                confEl.innerText = 'Poro Ocluido por TTX';
-                statusEl.className = 'status-badge status-danger';
-                statusEl.innerText = '🚨 Parálisis Respiratoria Flácida';
-            } else if (state.toxin === 'lido') {
-                gNaEl.innerText = '0.02 mS/cm²';
-                iNaEl.innerText = '0.1 µA';
-                confEl.innerText = 'Inactivación por Anestésico';
-                statusEl.className = 'status-badge status-warning';
-                statusEl.innerText = '💉 Bloqueo Anestésico Reversible';
-            } else if (state.isOpen) {
-                gNaEl.innerText = '32.4 mS/cm²';
-                iNaEl.innerText = '-4.2 µA (Influjo Masivo)';
-                confEl.innerText = 'Abierto Conductor (DEKA)';
-                statusEl.className = 'status-badge status-healthy';
-                statusEl.innerText = '⚡ Despolarización Neuronal';
-            } else {
-                gNaEl.innerText = '0.05 mS/cm²';
-                iNaEl.innerText = '0.0 µA';
-                confEl.innerText = 'Cerrado en Reposo (-70 mV)';
-                statusEl.className = 'status-badge status-healthy';
-                statusEl.innerText = 'Potencial de Reposo Normal';
-            }
-        }
-        setInterval(updateTelemetry, 250);
-
-        document.getElementById('rngVm').addEventListener('input', (e) => {
-            state.vm = parseInt(e.target.value);
-            document.getElementById('valVm').innerText = `${state.vm} mV`;
-            if (state.vm > -50 && state.toxin === 'none') playSpikeAudio();
-        });
-
-        document.getElementById('btnTTX').addEventListener('click', () => {
-            state.toxin = 'ttx';
-            speak("Tetrodotoxina aplicada. La molécula de TTX actúa como un tapón estéreo-específico rígido con carga positiva que bloquea el filtro exterior DEKA de los canales Nav, aboliendo los potenciales de acción y causando asfixia por parálisis diafragmática.");
-        });
-
-        document.getElementById('btnLido').addEventListener('click', () => {
-            state.toxin = 'lido';
-            speak("Anestésico local lidocaína aplicado. Bloquea el canal dependiente de voltaje desde el lado intracelular, bloqueando la conducción de las fibras del dolor.");
-        });
-
-        document.getElementById('btnActionPulse').addEventListener('click', () => {
-            state.vm = 30;
+            // SETUP ESPECÍFICO ADICIONAL
+            
+        document.getElementById('btnSpike').addEventListener('click', () => {
             document.getElementById('rngVm').value = 30;
-            document.getElementById('valVm').innerText = '+30 mV (Pico Despolarización)';
-            if (state.toxin === 'none') playSpikeAudio();
+            document.getElementById('valVm').innerText = '+30 mV';
+            playSciPing(850, 0.06, 'sawtooth');
             setTimeout(() => {
-                state.vm = -70;
                 document.getElementById('rngVm').value = -70;
-                document.getElementById('valVm').innerText = '-70 mV (Reposo)';
-            }, 600);
+                document.getElementById('valVm').innerText = '-70 mV';
+            }, 300);
         });
-
+        document.getElementById('btnBlockTTX').addEventListener('click', () => {
+            document.getElementById('rngTTX').value = 80;
+            document.getElementById('valTTX').innerText = '80 nM';
+            playSciPing(220, 0.3, 'square');
+        });
         document.getElementById('btnWashout').addEventListener('click', () => {
-            state.toxin = 'none';
-            state.vm = -70;
-            document.getElementById('rngVm').value = -70;
-            document.getElementById('valVm').innerText = '-70 mV (Reposo)';
-            speak("Lavado tisular completado. Neurotoxinas eliminadas, restableciendo la conductancia normal del canal Nav.");
+            document.getElementById('rngTTX').value = 0;
+            document.getElementById('valTTX').innerText = '0 nM';
+            playSciPing(600, 0.15);
+        });
+    
+
+            document.getElementById('btnReset').addEventListener('click', function() {
+                camera.radius = 6.0;
+                camera.alpha = -Math.PI / 2;
+                camera.beta = Math.PI / 2.5;
+                camera.target = new BABYLON.Vector3(0, 0, 0);
+                playSciPing(600, 0.15);
+            });
+
+            document.getElementById('btnRotate').addEventListener('click', function() {
+                autoRotate = !autoRotate;
+                this.innerText = autoRotate ? '🔄 Giro: ON' : '⏸️ Giro: OFF';
+                this.classList.toggle('active', autoRotate);
+            });
+
+            return scene;
+        };
+
+        const scene = createScene();
+
+        // RENDER LOOP
+        let lastTime = performance.now();
+        engine.runRenderLoop(function() {
+            const now = performance.now();
+            const dt = (now - lastTime) / 1000;
+            lastTime = now;
+
+            if (autoRotate && modelMeshRoot) {
+                modelMeshRoot.rotation.y += 0.0035;
+            }
+
+            
+        const vm = parseFloat(document.getElementById('rngVm').value);
+        const ttx = parseFloat(document.getElementById('rngTTX').value);
+        const openProb = vm > -40 ? Math.max(0, (1 - ttx / 100) * 0.95) : 0.02;
+        const ina = (openProb * (vm - 55) * -1.2).toFixed(1);
+        document.getElementById('kpiINa').innerText = (ttx > 60 ? '0.0' : ina) + ' pA';
+        document.getElementById('kpiPo').innerText = openProb.toFixed(2) + ' Po';
+
+        const pill = document.getElementById('pillNav');
+        if (ttx > 50) {
+            pill.className = 'kpi-pill pill-danger';
+            pill.innerText = 'Poro Bloqueado por TTX';
+        } else if (vm > -40) {
+            pill.className = 'kpi-pill pill-warn';
+            pill.innerText = 'Despolarización / Influx Na⁺';
+        } else {
+            pill.className = 'kpi-pill pill-healthy';
+            pill.innerText = 'Reposo (-70 mV)';
+        }
+    
+
+            updateDockChart(dt);
+            scene.render();
         });
 
-        document.getElementById('btnAudioToggle').addEventListener('click', (e) => {
-            state.audioEnabled = !state.audioEnabled;
-            e.target.innerText = state.audioEnabled ? '🔊 Audio Sináptico: ON' : '🔈 Audio: OFF';
-        });
+        window.addEventListener("resize", () => engine.resize());
 
-        document.getElementById('btnVoiceGuide').addEventListener('click', () => {
-            speak("Bienvenido al simulador tridimensional del Canal de Sodio Dependiente de Voltaje Nav1.7. Observa cómo la tetrodotoxina bloquea el flujo iónico e interrumpe el impulso nervioso.");
-        });
+        // TELEMETRÍA EN TIEMPO REAL (DOCK CANVAS)
+        const dockCanvas = document.getElementById("dockCanvas");
+        const dCtx = dockCanvas.getContext("2d");
+        const chartHistory = [];
+        let chartPhase = 0;
 
-        document.getElementById('btnResetView').addEventListener('click', () => {
-            state.rotX = -0.2;
-            state.rotY = 0.35;
-            state.zoom = 1.0;
+        function updateDockChart(dt) {
+            chartPhase += dt;
+            
+        const vm = parseFloat(document.getElementById('rngVm').value);
+        const ttx = parseFloat(document.getElementById('rngTTX').value);
+        const v = ttx > 50 ? 5 : (vm > -40 ? 35 : 8);
+        chartHistory.push(v);
+        if (chartHistory.length > 50) chartHistory.shift();
+
+        dCtx.clearRect(0, 0, dockCanvas.width, dockCanvas.height);
+        dCtx.strokeStyle = '#38bdf8';
+        dCtx.lineWidth = 2;
+        dCtx.beginPath();
+        chartHistory.forEach((pt, idx) => {
+            const x = (idx / 50) * dockCanvas.width;
+            const y = dockCanvas.height - (pt / 40) * dockCanvas.height;
+            if (idx === 0) dCtx.moveTo(x, y);
+            else dCtx.lineTo(x, y);
         });
+        dCtx.stroke();
+        document.getElementById('chartLiveVal').innerText = vm + ' mV';
+    
+        }
     </script>
 </body>
 </html>

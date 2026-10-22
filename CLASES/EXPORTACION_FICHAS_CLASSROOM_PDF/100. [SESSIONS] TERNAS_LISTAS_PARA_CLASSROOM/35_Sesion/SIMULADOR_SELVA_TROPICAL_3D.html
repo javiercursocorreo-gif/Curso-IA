@@ -3,589 +3,672 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sesión 35 • Bioma de Selva Tropical: Estratos de Altura 3D [COD-035]</title>
-    <!-- Smithsonian Tropical Research Institute (STRI) • Perfil de 50m • Dosel (Canopy) • Ríos Voladores -->
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+    <title>Sesión 35 • Bioma de Selva Tropical: Estratos y Microclimas 3D [[COD-035]]</title>
+    <!-- Babylon.js CDN Oficial -->
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+    <!-- Modelo Científico en Base64 (Multi-Fallback) -->
+    <script src="rainforest_b64.js"></script>
+    <script src="../../../../SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/rainforest_b64.js"></script>
+    <script src="../03_ASSETS_3D_Y_DATOS/rainforest_b64.js"></script>
+    <script src="https://javiercursocorreo-gif.github.io/Curso-IA/SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/rainforest_b64.js"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-base: #010d06;
-            --bg-panel: rgba(4, 24, 14, 0.94);
-            --border: rgba(52, 211, 153, 0.35);
-            --primary: #34d399;
-            --primary-glow: rgba(52, 211, 153, 0.4);
-            --amber: #fbbf24;
-            --cyan: #38bdf8;
+            --bg-base: #060913;
+            --bg-panel: rgba(15, 23, 42, 0.92);
+            --border: rgba(255, 255, 255, 0.12);
+            --accent: #22c55e;
+            --accent-glow: rgba(34, 197, 94, 0.35);
             --text-main: #f8fafc;
             --text-sub: #cbd5e1;
-            --font-title: 'Cinzel', serif;
-            --font-sans: 'Inter', sans-serif;
-            --font-mono: 'JetBrains Mono', monospace;
+            --text-muted: #94a3b8;
+            --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            --font-mono: 'JetBrains Mono', ui-monospace, monospace;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+        }
+
         body {
             background-color: var(--bg-base);
             color: var(--text-main);
             font-family: var(--font-sans);
-            height: 100vh;
             width: 100vw;
+            height: 100vh;
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            font-size: 14px;
         }
 
+        /* 3D VIEWPORT */
+        #renderCanvas {
+            width: 100%;
+            height: 100%;
+            touch-action: none;
+            outline: none;
+            display: block;
+        }
+
+        /* HEADER HUD */
         header {
-            background: linear-gradient(180deg, rgba(2, 20, 10, 0.98) 0%, rgba(2, 20, 10, 0.88) 100%);
+            position: absolute;
+            top: 18px;
+            left: 20px;
+            right: 20px;
+            z-index: 20;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            pointer-events: none;
+        }
+
+        .brand-card {
+            background: var(--bg-panel);
             backdrop-filter: blur(14px);
-            border-bottom: 1px solid var(--border);
-            padding: 10px 24px;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 12px 20px;
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            flex-shrink: 0;
-            z-index: 40;
+            gap: 14px;
+            box-shadow: 0 14px 35px rgba(0,0,0,0.6);
+            pointer-events: auto;
         }
-        .brand-box { display: flex; align-items: center; gap: 14px; }
-        .badge-pill {
-            background: rgba(52, 211, 153, 0.15);
-            border: 1px solid var(--primary);
-            color: var(--primary);
+
+        .brand-badge {
+            background: var(--accent-glow);
+            border: 1px solid var(--accent);
+            color: var(--accent);
             font-family: var(--font-mono);
             font-weight: 800;
-            font-size: 0.82rem;
-            padding: 4px 10px;
-            border-radius: 6px;
+            font-size: 0.85rem;
+            padding: 5px 10px;
+            border-radius: 8px;
+            letter-spacing: 0.05em;
         }
-        .title-text h1 {
-            font-family: var(--font-title);
+
+        .brand-title {
             font-size: 1.15rem;
             font-weight: 800;
-            color: #fff;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            letter-spacing: -0.01em;
+            color: #ffffff;
         }
-        .title-text p { font-size: 0.78rem; color: var(--text-sub); margin-top: 1px; }
 
-        .header-actions { display: flex; align-items: center; gap: 10px; }
+        .brand-sub {
+            font-size: 0.76rem;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+            pointer-events: auto;
+        }
+
         .btn-header {
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            color: var(--text-main);
-            padding: 6px 14px;
-            border-radius: 8px;
+            background: var(--bg-panel);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border);
+            color: var(--text-sub);
+            padding: 9px 14px;
+            border-radius: 10px;
             font-size: 0.8rem;
             font-weight: 700;
             cursor: pointer;
             transition: all 0.2s ease;
-        }
-        .btn-header:hover { background: rgba(52, 211, 153, 0.2); border-color: var(--primary); color: #fff; }
-
-        .workspace { flex: 1; position: relative; overflow: hidden; display: flex; }
-
-        .viewer-container {
-            flex: 1;
-            position: relative;
-            background: radial-gradient(circle at center, #072a15 0%, #010d06 100%);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
             display: flex;
             align-items: center;
-            justify-content: center;
-            overflow: hidden;
+            gap: 6px;
         }
 
-        #jungleCanvas {
-            max-width: 96%;
-            max-height: 92%;
-            border-radius: 14px;
-            box-shadow: 0 15px 45px rgba(0, 0, 0, 0.9);
-            border: 1px solid rgba(52, 211, 153, 0.25);
-            background: #021208;
-            cursor: grab;
+        .btn-header:hover {
+            background: rgba(30, 41, 59, 0.95);
+            border-color: var(--accent);
+            color: #ffffff;
+            transform: translateY(-1px);
         }
-        #jungleCanvas:active { cursor: grabbing; }
 
-        .controls-panel {
+        .btn-header.active {
+            background: var(--accent-glow);
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        /* FLOATING SIDEBAR (CONTROLS) */
+        .sidebar-left {
             position: absolute;
-            top: 18px;
+            top: 86px;
             left: 20px;
-            width: 350px;
+            width: 320px;
+            max-height: calc(100vh - 106px);
             background: var(--bg-panel);
+            backdrop-filter: blur(16px);
             border: 1px solid var(--border);
-            border-radius: 14px;
+            border-radius: 16px;
             padding: 18px;
-            backdrop-filter: blur(14px);
-            z-index: 20;
-            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6);
             display: flex;
             flex-direction: column;
             gap: 14px;
-            max-height: calc(100vh - 120px);
+            z-index: 20;
             overflow-y: auto;
+            box-shadow: 0 16px 40px rgba(0,0,0,0.6);
+        }
+
+        .sidebar-left::-webkit-scrollbar {
+            width: 4px;
+        }
+        .sidebar-left::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.2);
+            border-radius: 4px;
         }
 
         .panel-sec-title {
             font-size: 0.78rem;
-            font-family: var(--font-mono);
-            color: var(--primary);
+            font-weight: 800;
             text-transform: uppercase;
             letter-spacing: 0.08em;
+            color: var(--accent);
             display: flex;
             align-items: center;
             justify-content: space-between;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-            padding-bottom: 5px;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            padding-bottom: 6px;
+            margin-top: 4px;
         }
 
-        .slider-group { display: flex; flex-direction: column; gap: 6px; }
-        .slider-label {
+        .slider-wrap {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .slider-head {
             display: flex;
             justify-content: space-between;
-            font-size: 0.82rem;
+            align-items: center;
+            font-size: 0.8rem;
+            font-weight: 600;
             color: var(--text-sub);
         }
-        .slider-val { font-family: var(--font-mono); color: #fff; font-weight: 700; }
+
+        .slider-val {
+            font-family: var(--font-mono);
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: var(--accent);
+            background: rgba(255,255,255,0.06);
+            padding: 2px 7px;
+            border-radius: 6px;
+        }
+
         input[type="range"] {
             width: 100%;
             height: 6px;
-            border-radius: 3px;
-            background: #1e293b;
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.15);
             outline: none;
+            -webkit-appearance: none;
+            accent-color: var(--accent);
             cursor: pointer;
-            accent-color: var(--primary);
         }
 
-        .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .btn-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
         .btn-action {
-            background: rgba(52, 211, 153, 0.12);
-            border: 1px solid rgba(52, 211, 153, 0.35);
-            color: #fff;
-            padding: 9px 10px;
-            border-radius: 8px;
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(255,255,255,0.12);
+            color: #e2e8f0;
             font-size: 0.78rem;
             font-weight: 700;
+            padding: 8px 10px;
+            border-radius: 8px;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.15s ease;
             text-align: center;
         }
-        .btn-action:hover { background: rgba(52, 211, 153, 0.28); border-color: var(--primary); }
-        .btn-action.active { background: var(--primary); color: #010d06; font-weight: 800; }
 
-        .telemetry-card {
+        .btn-action:hover {
+            background: rgba(51, 65, 85, 0.9);
+            border-color: var(--accent);
+            color: #ffffff;
+        }
+
+        .btn-action.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #060913;
+            box-shadow: 0 0 14px var(--accent-glow);
+        }
+
+        /* BOTTOM TELEMETRY DOCK */
+        .telemetry-dock {
             position: absolute;
             bottom: 20px;
+            left: 360px;
             right: 20px;
-            width: 320px;
+            height: 90px;
             background: var(--bg-panel);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 16px;
             backdrop-filter: blur(14px);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 10px 22px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
             z-index: 20;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+            box-shadow: 0 14px 35px rgba(0,0,0,0.6);
+        }
+
+        .kpi-group {
+            display: flex;
+            gap: 24px;
+            align-items: center;
+        }
+
+        .kpi-card {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 3px;
         }
-        .kpi-row { display: flex; justify-content: space-between; align-items: center; }
-        .kpi-name { font-size: 0.78rem; color: var(--text-sub); }
-        .kpi-val { font-family: var(--font-mono); font-size: 0.88rem; font-weight: 700; color: #fff; }
-        .status-badge {
-            padding: 4px 10px;
-            border-radius: 6px;
-            font-size: 0.74rem;
+
+        .kpi-label {
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+        }
+
+        .kpi-value {
+            font-family: var(--font-mono);
+            font-size: 1.1rem;
             font-weight: 800;
-            text-align: center;
+            color: #ffffff;
         }
-        .status-healthy { background: rgba(52, 211, 153, 0.2); color: #6ee7b7; border: 1px solid #34d399; }
-        .status-canopy { background: rgba(56, 189, 248, 0.2); color: #7dd3fc; border: 1px solid #38bdf8; }
-        .status-floor { background: rgba(251, 191, 36, 0.2); color: #fde68a; border: 1px solid #fbbf24; }
+
+        .kpi-pill {
+            display: inline-block;
+            font-size: 0.7rem;
+            font-weight: 800;
+            padding: 2px 8px;
+            border-radius: 9999px;
+            margin-top: 2px;
+        }
+        .pill-healthy { background: rgba(16, 185, 129, 0.2); color: #6ee7b7; border: 1px solid #10b981; }
+        .pill-warn { background: rgba(251, 191, 36, 0.2); color: #fde68a; border: 1px solid #fbbf24; }
+        .pill-danger { background: rgba(244, 63, 94, 0.2); color: #fda4af; border: 1px solid #f43f5e; }
+
+        .chart-box {
+            flex: 1;
+            max-width: 320px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .chart-head {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: var(--accent);
+            text-transform: uppercase;
+        }
+
+        #dockCanvas {
+            width: 100%;
+            height: 48px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 6px;
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+
+        /* LOADING SPINNER */
+        #loadingOverlay {
+            position: absolute;
+            inset: 0;
+            background: var(--bg-base);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            transition: opacity 0.5s ease;
+        }
+
+        .spinner {
+            width: 48px;
+            height: 48px;
+            border: 4px solid rgba(255,255,255,0.1);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
+
+    <div id="loadingOverlay">
+        <div class="spinner"></div>
+        <div style="font-weight:700; color:var(--text-sub); font-size:0.95rem;">Cargando Laboratorio 3D • Bioma de Selva Tropical: Estratos y Microclimas...</div>
+        <div style="font-size:0.75rem; color:var(--text-muted);">Smithsonian Tropical Research Institute</div>
+    </div>
+
     <header>
-        <div class="brand-box">
-            <span class="badge-pill">[COD-035]</span>
-            <div class="title-text">
-                <h1>🌴 Bioma de Selva Tropical: Estratos de Altura 3D</h1>
-                <p>Smithsonian Tropical Research Institute (STRI) • Perfil Vertical de 50 Metros • Dosel Arbóreo (Canopy) • Ríos Voladores</p>
+        <div class="brand-card">
+            <span class="brand-badge">[COD-035]</span>
+            <div>
+                <div class="brand-title">Bioma de Selva Tropical: Estratos y Microclimas 3D</div>
+                <div class="brand-sub">Árbol Gigante Ceiba pentandra y Ríos Voladores • Smithsonian Tropical Research Institute</div>
             </div>
         </div>
         <div class="header-actions">
-            <button class="btn-header" id="btnAudioToggle">🔊 Sonidos Selva: ON</button>
-            <button class="btn-header" id="btnVoiceGuide">🗣️ Guía por Voz</button>
-            <button class="btn-header" id="btnResetView">🎯 Centrar Vista</button>
+            <button class="btn-header" id="btnAudio">🔊 Audio: ON</button>
+            <button class="btn-header" id="btnVoice">🗣️ Guía por Voz</button>
+            <button class="btn-header" id="btnRotate">🔄 Giro: ON</button>
+            <button class="btn-header" id="btnReset">🎯 Centrar</button>
         </div>
     </header>
 
-    <div class="workspace">
-        <div class="viewer-container">
-            <canvas id="jungleCanvas" width="900" height="650"></canvas>
+    <aside class="sidebar-left">
+        
+        <div class="panel-sec-title"><span>Perfil de Altura</span><span>50 Metros</span></div>
+        <div class="slider-wrap">
+            <div class="slider-head"><span>Cota de Altura (Z)</span><span class="slider-val" id="valZ">25 m (Dosel)</span></div>
+            <input type="range" id="rngZ" min="0" max="50" step="1" value="25">
         </div>
-
-        <div class="controls-panel">
-            <div class="panel-sec-title">
-                <span>Elevador Bioclimático</span>
-                <span>📶 ALTÍMETRO</span>
-            </div>
-
-            <div class="slider-group">
-                <div class="slider-label">
-                    <span>Cota de Altura (Z)</span>
-                    <span class="slider-val" id="valAlt">32 m (Dosel / Canopy)</span>
-                </div>
-                <input type="range" id="rngAlt" min="0" max="50" step="1" value="32">
-            </div>
-
-            <div class="panel-sec-title">
-                <span>Fenómenos Atmosféricos</span>
-                <span>🌧️ METEOROLOGÍA</span>
-            </div>
-
-            <div class="btn-group">
-                <button class="btn-action" id="btnRain">🌧️ Lluvia Monzónica</button>
-                <button class="btn-action active" id="btnRivers">☁️ Ríos Voladores</button>
-            </div>
-
-            <div class="btn-group">
-                <button class="btn-action" id="btnCanopyJump">🐒 Salto al Dosel</button>
-                <button class="btn-action" id="btnFloorJump">🐜 Suelo Húmedo</button>
-            </div>
+        <div class="slider-wrap">
+            <div class="slider-head"><span>Radiación Solar Incidente</span><span class="slider-val" id="valSun">1600 µmol</span></div>
+            <input type="range" id="rngSun" min="200" max="2200" step="50" value="1600">
         </div>
+        <div class="slider-wrap">
+            <div class="slider-head"><span>Humedad Relativa</span><span class="slider-val" id="valHum">88 %</span></div>
+            <input type="range" id="rngHum" min="50" max="100" step="1" value="88">
+        </div>
+    
+        
+        <div class="panel-sec-title"><span>Estratos Biológicos</span><span>STRI</span></div>
+        <div class="btn-grid">
+            <button class="btn-action" id="btnFloor">🍂 Suelo (1% Luz)</button>
+            <button class="btn-action active" id="btnCanopy">🌿 Dosel (80% Bio)</button>
+        </div>
+        <div class="btn-grid" style="margin-top:8px;">
+            <button class="btn-action" id="btnEmergent">🌲 Emergente (50m)</button>
+            <button class="btn-action" id="btnRain">🌧️ Río Volador</button>
+        </div>
+    
+    </aside>
 
-        <div class="telemetry-card">
-            <div class="panel-sec-title">
-                <span>Microclima In-Situ (STRI)</span>
-                <span>Torre de Grúa Biológica</span>
+    <div class="telemetry-dock">
+        <div class="kpi-group">
+            
+        <div class="kpi-card">
+            <span class="kpi-label">Luz PAR en Estrato</span>
+            <span class="kpi-value" id="kpiPAR">65 %</span>
+            <span class="kpi-pill pill-healthy" id="pillRain">Estrato Canopy</span>
+        </div>
+        <div class="kpi-card">
+            <span class="kpi-label">Evapotranspiración</span>
+            <span class="kpi-value" id="kpiTrans">1.200 L/árbol/día</span>
+        </div>
+    
+        </div>
+        <div class="chart-box">
+            <div class="chart-head">
+                <span>Perfil de Luz PAR</span>
+                <span id="chartLiveVal">25 m</span>
             </div>
-            <div class="kpi-row">
-                <span class="kpi-name">Estrato Actual:</span>
-                <span class="status-badge status-canopy" id="kpiStratum">Dosel Continuo (Canopy)</span>
-            </div>
-            <div class="kpi-row">
-                <span class="kpi-name">Radiación Solar (PAR):</span>
-                <span class="kpi-val" id="kpiPAR">68 % (1.350 µmol)</span>
-            </div>
-            <div class="kpi-row">
-                <span class="kpi-name">Humedad Relativa:</span>
-                <span class="kpi-val" id="kpiHum">78 %</span>
-            </div>
-            <div class="kpi-row">
-                <span class="kpi-name">Temperatura:</span>
-                <span class="kpi-val" id="kpiTemp">28.4 °C</span>
-            </div>
-            <div class="kpi-row">
-                <span class="kpi-name">Viento:</span>
-                <span class="kpi-val" id="kpiWind">6.2 km/h</span>
-            </div>
+            <canvas id="dockCanvas" width="300" height="48"></canvas>
         </div>
     </div>
 
+    <canvas id="renderCanvas"></canvas>
+
     <script>
-        const canvas = document.getElementById('jungleCanvas');
-        const ctx = canvas.getContext('2d');
-
-        let state = {
-            alt: 32,
-            rain: false,
-            rivers: true,
-            rotX: -0.15,
-            rotY: 0.3,
-            zoom: 1.0,
-            audioEnabled: true
-        };
-
+        // WEB AUDIO PROCEDURAL SINTETIZADO (CERO DEPENDENCIAS EXTERNAS)
         let audioCtx = null;
-        function playJungleSounds() {
-            if (!state.audioEnabled) return;
+        let isAudioPlaying = true;
+        function initAudio() {
             try {
                 if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
                 if (audioCtx.state === 'suspended') audioCtx.resume();
+            } catch(e) {}
+        }
+
+        function playSciPing(freq = 440, duration = 0.25, type = 'sine') {
+            if (!isAudioPlaying) return;
+            initAudio();
+            if (!audioCtx) return;
+            try {
                 const osc = audioCtx.createOscillator();
                 const gain = audioCtx.createGain();
-                osc.type = 'triangle';
-                osc.frequency.setValueAtTime(1200 + Math.random() * 800, audioCtx.currentTime);
-                gain.gain.setValueAtTime(0.015, audioCtx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
+                osc.type = type;
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.04, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
                 osc.connect(gain);
                 gain.connect(audioCtx.destination);
                 osc.start();
-                osc.stop(audioCtx.currentTime + 0.3);
+                osc.stop(audioCtx.currentTime + duration);
             } catch(e) {}
         }
-        setInterval(playJungleSounds, 1800);
 
-        function speak(text) {
+        // SÍNTESIS DE VOZ PEDAGÓGICA EN ESPAÑOL
+        function speakNarrative(text) {
             if ('speechSynthesis' in window) {
                 window.speechSynthesis.cancel();
                 const u = new SpeechSynthesisUtterance(text);
                 u.lang = 'es-ES';
-                u.rate = 1.05;
+                u.rate = 1.02;
                 window.speechSynthesis.speak(u);
             }
         }
 
-        let isDragging = false;
-        let lastMouse = { x: 0, y: 0 };
-        canvas.addEventListener('mousedown', (e) => {
-            isDragging = true;
-            lastMouse = { x: e.clientX, y: e.clientY };
-        });
-        window.addEventListener('mouseup', () => isDragging = false);
-        window.addEventListener('mousemove', (e) => {
-            if (!isDragging) return;
-            const dx = e.clientX - lastMouse.x;
-            const dy = e.clientY - lastMouse.y;
-            state.rotY += dx * 0.008;
-            state.rotX += dy * 0.008;
-            lastMouse = { x: e.clientX, y: e.clientY };
-        });
-        canvas.addEventListener('wheel', (e) => {
-            e.preventDefault();
-            state.zoom *= e.deltaY > 0 ? 0.95 : 1.05;
-            state.zoom = Math.max(0.6, Math.min(2.0, state.zoom));
+        // BOTONES DE CABECERA
+        document.getElementById('btnAudio').addEventListener('click', function() {
+            isAudioPlaying = !isAudioPlaying;
+            this.innerText = isAudioPlaying ? '🔊 Audio: ON' : '🔇 Audio: OFF';
+            this.classList.toggle('active', isAudioPlaying);
         });
 
-        // Loop de renderizado 3D de la Torre de Selva Tropical
-        let t = 0;
-        function render() {
-            t += 0.02;
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        document.getElementById('btnVoice').addEventListener('click', function() {
+            speakNarrative("Bienvenido a los Estratos de la Selva Tropical. Descubre cómo la luz solar se extingue del cien por ciento en las copas emergentes a menos del uno por ciento en el suelo sombrío.");
+        });
 
-            const cx = canvas.width / 2;
-            const cy = canvas.height / 2;
+        // INICIALIZACIÓN DE BABYLON.JS
+        const canvas = document.getElementById("renderCanvas");
+        const engine = new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true });
+        let autoRotate = true;
+        let modelMeshRoot = null;
+        let isModelLoaded = false;
+        let fixedBaseScale = 1.0;
 
-            const cosY = Math.cos(state.rotY);
-            const sinY = Math.sin(state.rotY);
-            const cosX = Math.cos(state.rotX);
-            const sinX = Math.sin(state.rotX);
+        const createScene = function() {
+            const scene = new BABYLON.Scene(engine);
+            scene.clearColor = new BABYLON.Color4(0.024, 0.035, 0.067, 1.0); // #060913
 
-            function project(x, y, z) {
-                let x1 = x * cosY + z * sinY;
-                let z1 = -x * sinY + z * cosY;
-                let y2 = y * cosX - z1 * sinX;
-                let z2 = y * sinX + z1 * cosX;
-                const fov = 450;
-                const scale = (fov / (fov + z2 + 300)) * state.zoom;
-                return { x: cx + x1 * scale, y: cy + y2 * scale, z: z2, scale: scale };
-            }
+            // CÁMARA ORBITAL MÉDICO-CIENTÍFICA
+            const camera = new BABYLON.ArcRotateCamera("Camera", -Math.PI / 2, Math.PI / 2.5, 6.0, new BABYLON.Vector3(0, 0, 0), scene);
+            camera.attachControl(canvas, true);
+            camera.wheelPrecision = 45;
+            camera.lowerRadiusLimit = 2.2;
+            camera.upperRadiusLimit = 16.0;
 
-            // Los 4 Estratos ecológicos verticales (0 a 50m)
-            // Y: 0 m = 190 px (Suelo) -> 50 m = -190 px (Emergente)
-            const hScale = (m) => 190 - (m / 50.0) * 380;
+            // ILUMINACIÓN CLÍNICA PBR
+            const hemiLight = new BABYLON.HemisphericLight("hemiLight", new BABYLON.Vector3(0, 1, 0), scene);
+            hemiLight.intensity = 0.85;
+            hemiLight.diffuse = new BABYLON.Color3(0.9, 0.95, 1.0);
+            hemiLight.groundColor = new BABYLON.Color3(0.1, 0.15, 0.25);
 
-            // 1. Suelo del bosque (0 a 5m)
-            const pFloorL = project(-180, hScale(0), 0);
-            const pFloorR = project(180, hScale(0), 0);
-            ctx.strokeStyle = '#3f2e18';
-            ctx.lineWidth = 18 * state.zoom;
-            ctx.beginPath();
-            ctx.moveTo(pFloorL.x, pFloorL.y);
-            ctx.lineTo(pFloorR.x, pFloorR.y);
-            ctx.stroke();
+            const keyLight = new BABYLON.DirectionalLight("keyLight", new BABYLON.Vector3(-1, -2, 1), scene);
+            keyLight.position = new BABYLON.Vector3(5, 8, -5);
+            keyLight.intensity = 1.2;
 
-            // 2. Tronco central majestuoso (Ceiba pentandra con raíces tabulares)
-            const pTrunkBot = project(0, hScale(0), 0);
-            const pTrunkTop = project(0, hScale(48), 0);
-            ctx.beginPath();
-            ctx.moveTo(pTrunkBot.x, pTrunkBot.y);
-            ctx.lineTo(pTrunkTop.x, pTrunkTop.y);
-            ctx.strokeStyle = '#523a22';
-            ctx.lineWidth = 22 * state.zoom;
-            ctx.stroke();
+            const fillLight = new BABYLON.PointLight("fillLight", new BABYLON.Vector3(-5, -2, -4), scene);
+            fillLight.diffuse = new BABYLON.Color3(34, 197, 94);
+            fillLight.intensity = 0.8;
 
-            // Raíces tabulares (buttress roots) en el suelo
-            const pRoot1 = project(-50, hScale(0), 20);
-            const pRoot2 = project(50, hScale(0), -20);
-            ctx.beginPath();
-            ctx.moveTo(pTrunkBot.x, pTrunkBot.y);
-            ctx.lineTo(pRoot1.x, pRoot1.y);
-            ctx.moveTo(pTrunkBot.x, pTrunkBot.y);
-            ctx.lineTo(pRoot2.x, pRoot2.y);
-            ctx.strokeStyle = '#3f2e18';
-            ctx.lineWidth = 10 * state.zoom;
-            ctx.stroke();
+            const glow = new BABYLON.GlowLayer("glow", scene);
+            glow.intensity = 0.35;
 
-            // 3. Estrato del Sotobosque / Understory (5 - 20 m)
-            for (let u = 0; u < 5; u++) {
-                const uy = hScale(8 + u * 2.5);
-                const ux = (u % 2 === 0 ? -60 : 60);
-                const pLeaf = project(ux, uy, Math.sin(u) * 30);
-                ctx.beginPath();
-                ctx.arc(pLeaf.x, pLeaf.y, (14 + u * 2) * state.zoom, 0, Math.PI * 2);
-                ctx.fillStyle = 'rgba(16, 185, 129, 0.7)';
-                ctx.fill();
-            }
+            // CARGA ROBUSTA MULTI-RUTA (Base64 -> Local -> CDN)
+            const candidateSources = [
+                (window.RAINFOREST_GLB_B64 && window.RAINFOREST_GLB_B64.length > 500) ? window.RAINFOREST_GLB_B64 : null,
+                "rainforest_b64.js",
+                "../../../../SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/rainforest_b64.js",
+                "../03_ASSETS_3D_Y_DATOS/rainforest_b64.js",
+                "https://javiercursocorreo-gif.github.io/Curso-IA/SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/rainforest_b64.js"
+            ].filter(Boolean);
 
-            // 4. Dosel Continuo / Canopy (20 - 40 m) - Techo denso con 80% biodiversidad
-            for (let c = 0; c < 8; c++) {
-                const cyNode = hScale(25 + Math.sin(c) * 8);
-                const cxNode = Math.cos(c * 0.8) * 110;
-                const czNode = Math.sin(c * 0.8) * 60;
-                const pCanopy = project(cxNode, cyNode, czNode);
-                ctx.beginPath();
-                ctx.arc(pCanopy.x, pCanopy.y, 34 * state.zoom, 0, Math.PI * 2);
-                ctx.fillStyle = 'rgba(5, 150, 105, 0.85)';
-                ctx.fill();
-                ctx.strokeStyle = 'rgba(52, 211, 153, 0.6)';
-                ctx.lineWidth = 1.5;
-                ctx.stroke();
-            }
-
-            // 5. Estrato Emergente (40 - 50 m) - Cúpula de Ceiba al viento
-            const pEmergent = project(0, hScale(48), 0);
-            ctx.beginPath();
-            ctx.arc(pEmergent.x, pEmergent.y, 45 * state.zoom, 0, Math.PI * 2);
-            ctx.fillStyle = 'rgba(52, 211, 153, 0.9)';
-            ctx.fill();
-            ctx.strokeStyle = '#fff';
-            ctx.lineWidth = 2;
-            ctx.stroke();
-
-            // Marcador visual de altura del elevador del usuario
-            const curY = hScale(state.alt);
-            const pElev = project(0, curY, 0);
-            ctx.beginPath();
-            ctx.arc(pElev.x, pElev.y, 8 * state.zoom, 0, Math.PI * 2);
-            ctx.fillStyle = '#fbbf24';
-            ctx.fill();
-            ctx.strokeStyle = '#fff';
-            ctx.lineWidth = 2;
-            ctx.stroke();
-
-            // Línea de referencia del elevador
-            ctx.setLineDash([4, 4]);
-            ctx.strokeStyle = '#fbbf24';
-            ctx.lineWidth = 1;
-            ctx.beginPath();
-            ctx.moveTo(pElev.x - 70, pElev.y);
-            ctx.lineTo(pElev.x + 70, pElev.y);
-            ctx.stroke();
-            ctx.setLineDash([]);
-
-            // Ríos voladores: vapor de agua y nubes orográficas flotando
-            if (state.rivers) {
-                ctx.fillStyle = 'rgba(255, 255, 255, 0.12)';
-                for (let r = 0; r < 6; r++) {
-                    const ry = hScale(35 + Math.sin(t + r) * 6);
-                    const rx = -120 + ((t * 40 + r * 60) % 240);
-                    ctx.beginPath();
-                    ctx.arc(cx + rx, cy + ry * 0.4, 28 + r * 5, 0, Math.PI * 2);
-                    ctx.fill();
+            let currentSrcIdx = 0;
+            function loadScientificMesh() {
+                if (currentSrcIdx >= candidateSources.length) {
+                    document.getElementById("loadingOverlay").innerHTML = '<div style="color:#ef4444;font-weight:700;">Simulación activa con modelo procedural</div>';
+                    setTimeout(() => {
+                        document.getElementById("loadingOverlay").style.opacity = "0";
+                        setTimeout(() => document.getElementById("loadingOverlay").style.display = "none", 400);
+                    }, 600);
+                    return;
                 }
+                const source = candidateSources[currentSrcIdx];
+                BABYLON.SceneLoader.ImportMesh("", "", source, scene, function(meshes) {
+                    const overlay = document.getElementById("loadingOverlay");
+                    overlay.style.opacity = "0";
+                    setTimeout(() => overlay.style.display = "none", 400);
+
+                    modelMeshRoot = new BABYLON.TransformNode("modelRoot", scene);
+                    meshes.forEach(m => {
+                        if (m.parent === null) {
+                            m.parent = modelMeshRoot;
+                        }
+                    });
+
+                    const hierarchy = modelMeshRoot.getHierarchyBoundingVectors();
+                    const center = hierarchy.max.add(hierarchy.min).scale(0.5);
+                    const size = hierarchy.max.subtract(hierarchy.min);
+                    const maxDim = Math.max(size.x, size.y, size.z);
+
+                    if (maxDim > 0) {
+                        fixedBaseScale = 2.8 / maxDim;
+                        modelMeshRoot.scaling = new BABYLON.Vector3(fixedBaseScale, fixedBaseScale, fixedBaseScale);
+                        modelMeshRoot.position = center.scale(-fixedBaseScale);
+                    }
+                    camera.target = new BABYLON.Vector3(0, 0, 0);
+                    isModelLoaded = true;
+                }, null, function(scene, msg) {
+                    console.warn("Fallo fuente:", source, msg);
+                    currentSrcIdx++;
+                    loadScientificMesh();
+                }, ".glb");
+            }
+            loadScientificMesh();
+
+            // SETUP ESPECÍFICO ADICIONAL
+            
+        document.getElementById('rngZ').addEventListener('input', (e) => {
+            const z = parseInt(e.target.value);
+            let name = 'Suelo';
+            if (z > 40) name = 'Emergente';
+            else if (z > 20) name = 'Dosel (Canopy)';
+            else if (z > 5) name = 'Sotobosque';
+            document.getElementById('valZ').innerText = z + ' m (' + name + ')';
+            playSciPing(300 + z * 10, 0.05);
+        });
+        document.getElementById('btnFloor').addEventListener('click', () => {
+            document.getElementById('rngZ').value = 1;
+            document.getElementById('valZ').innerText = '1 m (Suelo)';
+        });
+        document.getElementById('btnEmergent').addEventListener('click', () => {
+            document.getElementById('rngZ').value = 48;
+            document.getElementById('valZ').innerText = '48 m (Emergente)';
+        });
+    
+
+            document.getElementById('btnReset').addEventListener('click', function() {
+                camera.radius = 6.0;
+                camera.alpha = -Math.PI / 2;
+                camera.beta = Math.PI / 2.5;
+                camera.target = new BABYLON.Vector3(0, 0, 0);
+                playSciPing(600, 0.15);
+            });
+
+            document.getElementById('btnRotate').addEventListener('click', function() {
+                autoRotate = !autoRotate;
+                this.innerText = autoRotate ? '🔄 Giro: ON' : '⏸️ Giro: OFF';
+                this.classList.toggle('active', autoRotate);
+            });
+
+            return scene;
+        };
+
+        const scene = createScene();
+
+        // RENDER LOOP
+        let lastTime = performance.now();
+        engine.runRenderLoop(function() {
+            const now = performance.now();
+            const dt = (now - lastTime) / 1000;
+            lastTime = now;
+
+            if (autoRotate && modelMeshRoot) {
+                modelMeshRoot.rotation.y += 0.0035;
             }
 
-            // Lluvia monzónica
-            if (state.rain) {
-                ctx.strokeStyle = 'rgba(56, 189, 248, 0.6)';
-                ctx.lineWidth = 1.2;
-                for (let k = 0; k < 25; k++) {
-                    const rx = cx - 180 + ((t * 200 + k * 35) % 360);
-                    const ry = (t * 400 + k * 45) % canvas.height;
-                    ctx.beginPath();
-                    ctx.moveTo(rx, ry);
-                    ctx.lineTo(rx - 4, ry + 16);
-                    ctx.stroke();
-                }
-            }
+            
+        const z = parseInt(document.getElementById('rngZ').value);
+        const par = Math.min(100, Math.round(Math.pow(z / 50, 1.8) * 100));
+        document.getElementById('kpiPAR').innerText = par + ' %';
+    
 
-            requestAnimationFrame(render);
+            updateDockChart(dt);
+            scene.render();
+        });
+
+        window.addEventListener("resize", () => engine.resize());
+
+        // TELEMETRÍA EN TIEMPO REAL (DOCK CANVAS)
+        const dockCanvas = document.getElementById("dockCanvas");
+        const dCtx = dockCanvas.getContext("2d");
+        const chartHistory = [];
+        let chartPhase = 0;
+
+        function updateDockChart(dt) {
+            chartPhase += dt;
+            
+        const z = parseInt(document.getElementById('rngZ').value);
+        const v = Math.pow(z / 50, 1.8) * 35;
+        chartHistory.push(v);
+        if (chartHistory.length > 50) chartHistory.shift();
+
+        dCtx.clearRect(0, 0, dockCanvas.width, dockCanvas.height);
+        dCtx.strokeStyle = '#22c55e';
+        dCtx.lineWidth = 2;
+        dCtx.beginPath();
+        chartHistory.forEach((pt, idx) => {
+            const x = (idx / 50) * dockCanvas.width;
+            const y = dockCanvas.height - (pt / 40) * dockCanvas.height;
+            if (idx === 0) dCtx.moveTo(x, y);
+            else dCtx.lineTo(x, y);
+        });
+        dCtx.stroke();
+        document.getElementById('chartLiveVal').innerText = z + ' m';
+    
         }
-        render();
-
-        function updateTelemetry() {
-            const alt = state.alt;
-            let stratum = "";
-            let par = 0;
-            let hum = 0;
-            let temp = 0;
-            let wind = 0;
-
-            const stratEl = document.getElementById('kpiStratum');
-
-            if (alt >= 40) {
-                stratum = "Estrato Emergente (40-50m)";
-                stratEl.className = 'status-badge status-healthy';
-                par = 100;
-                hum = 62;
-                temp = 32.5;
-                wind = 14.5;
-            } else if (alt >= 20) {
-                stratum = "Dosel Continuo / Canopy (20-40m)";
-                stratEl.className = 'status-badge status-canopy';
-                par = 68;
-                hum = 78;
-                temp = 28.4;
-                wind = 6.2;
-            } else if (alt >= 5) {
-                stratum = "Sotobosque / Understory (5-20m)";
-                stratEl.className = 'status-badge status-floor';
-                par = 15;
-                hum = 88;
-                temp = 25.8;
-                wind = 1.8;
-            } else {
-                stratum = "Suelo Forestal (0-5m)";
-                stratEl.className = 'status-badge status-floor';
-                par = 1.5;
-                hum = 98;
-                temp = 24.1;
-                wind = 0.3;
-            }
-
-            stratEl.innerText = stratum;
-            document.getElementById('kpiPAR').innerText = `${par.toFixed(1)} % (${Math.round(par * 20)} µmol)`;
-            document.getElementById('kpiHum').innerText = `${hum} %`;
-            document.getElementById('kpiTemp').innerText = `${temp.toFixed(1)} °C`;
-            document.getElementById('kpiWind').innerText = `${wind.toFixed(1)} km/h`;
-        }
-        setInterval(updateTelemetry, 250);
-
-        document.getElementById('rngAlt').addEventListener('input', (e) => {
-            state.alt = parseInt(e.target.value);
-            document.getElementById('valAlt').innerText = `${state.alt} m`;
-        });
-
-        document.getElementById('btnCanopyJump').addEventListener('click', () => {
-            state.alt = 32;
-            document.getElementById('rngAlt').value = 32;
-            document.getElementById('valAlt').innerText = '32 m (Dosel / Canopy)';
-            speak("Ascendiendo al dosel continuo a treinta y dos metros. Aquí habita más del ochenta por ciento de la biodiversidad animal y vegetal de la selva tropical.");
-        });
-
-        document.getElementById('btnFloorJump').addEventListener('click', () => {
-            state.alt = 2;
-            document.getElementById('rngAlt').value = 2;
-            document.getElementById('valAlt').innerText = '2 m (Suelo Forestal)';
-            speak("Descendiendo al suelo forestal en penumbra. Apenas el uno punto cinco por ciento de la luz solar logra penetrar, con una humedad relativa cercana a la saturación.");
-        });
-
-        document.getElementById('btnRain').addEventListener('click', () => {
-            state.rain = !state.rain;
-            document.getElementById('btnRain').classList.toggle('active', state.rain);
-            if (state.rain) speak("Lluvia monzónica tropical activada. Las hojas con goteros apicales canalizan el agua hacia el suelo.");
-        });
-
-        document.getElementById('btnRivers').addEventListener('click', () => {
-            state.rivers = !state.rivers;
-            document.getElementById('btnRivers').classList.toggle('active', state.rivers);
-            if (state.rivers) speak("Ríos voladores de la cuenca amazónica. Un árbol adulto evapotranspira hasta mil litros diarios de agua hacia la atmósfera.");
-        });
-
-        document.getElementById('btnAudioToggle').addEventListener('click', (e) => {
-            state.audioEnabled = !state.audioEnabled;
-            e.target.innerText = state.audioEnabled ? '🔊 Sonidos Selva: ON' : '🔈 Sonidos: OFF';
-        });
-
-        document.getElementById('btnVoiceGuide').addEventListener('click', () => {
-            speak("Bienvenido al simulador tridimensional del Bioma de Selva Tropical. Recorre los cincuenta metros de estratificación vertical para comprobar cómo cambian la luz, la humedad y las especies.");
-        });
-
-        document.getElementById('btnResetView').addEventListener('click', () => {
-            state.rotX = -0.15;
-            state.rotY = 0.3;
-            state.zoom = 1.0;
-        });
     </script>
 </body>
 </html>

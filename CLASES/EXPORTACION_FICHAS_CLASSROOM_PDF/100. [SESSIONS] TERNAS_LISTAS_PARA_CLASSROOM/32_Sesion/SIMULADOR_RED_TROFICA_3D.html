@@ -3,583 +3,677 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sesión 32 • Pirámide Trófica y Red Ecológica Fluvial 3D [COD-032]</title>
-    <!-- Dinámica de Biomasa Lindeman (Ley del 10%) • USGS River Ecology • Eutrofización -->
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+    <title>Sesión 32 • Pirámide Trófica y Red Ecológica Fluvial 3D [[COD-032]]</title>
+    <!-- Babylon.js CDN Oficial -->
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+    <!-- Modelo Científico en Base64 (Multi-Fallback) -->
+    <script src="trophic_b64.js"></script>
+    <script src="../../../../SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/trophic_b64.js"></script>
+    <script src="../03_ASSETS_3D_Y_DATOS/trophic_b64.js"></script>
+    <script src="https://javiercursocorreo-gif.github.io/Curso-IA/SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/trophic_b64.js"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-base: #020914;
-            --bg-panel: rgba(6, 18, 36, 0.94);
-            --border: rgba(16, 185, 129, 0.35);
-            --primary: #10b981;
-            --primary-glow: rgba(16, 185, 129, 0.4);
-            --cyan: #38bdf8;
-            --amber: #fbbf24;
-            --rose: #f43f5e;
+            --bg-base: #060913;
+            --bg-panel: rgba(15, 23, 42, 0.92);
+            --border: rgba(255, 255, 255, 0.12);
+            --accent: #10b981;
+            --accent-glow: rgba(16, 185, 129, 0.35);
             --text-main: #f8fafc;
-            --text-sub: #94a3b8;
-            --font-title: 'Cinzel', serif;
-            --font-sans: 'Inter', sans-serif;
-            --font-mono: 'JetBrains Mono', monospace;
+            --text-sub: #cbd5e1;
+            --text-muted: #94a3b8;
+            --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            --font-mono: 'JetBrains Mono', ui-monospace, monospace;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+        }
+
         body {
             background-color: var(--bg-base);
             color: var(--text-main);
             font-family: var(--font-sans);
-            height: 100vh;
             width: 100vw;
+            height: 100vh;
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            font-size: 14px;
         }
 
+        /* 3D VIEWPORT */
+        #renderCanvas {
+            width: 100%;
+            height: 100%;
+            touch-action: none;
+            outline: none;
+            display: block;
+        }
+
+        /* HEADER HUD */
         header {
-            background: linear-gradient(180deg, rgba(4, 15, 30, 0.98) 0%, rgba(4, 15, 30, 0.88) 100%);
+            position: absolute;
+            top: 18px;
+            left: 20px;
+            right: 20px;
+            z-index: 20;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            pointer-events: none;
+        }
+
+        .brand-card {
+            background: var(--bg-panel);
             backdrop-filter: blur(14px);
-            border-bottom: 1px solid var(--border);
-            padding: 10px 24px;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 12px 20px;
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            flex-shrink: 0;
-            z-index: 40;
+            gap: 14px;
+            box-shadow: 0 14px 35px rgba(0,0,0,0.6);
+            pointer-events: auto;
         }
-        .brand-box { display: flex; align-items: center; gap: 14px; }
-        .badge-pill {
-            background: rgba(16, 185, 129, 0.15);
-            border: 1px solid var(--primary);
-            color: var(--primary);
+
+        .brand-badge {
+            background: var(--accent-glow);
+            border: 1px solid var(--accent);
+            color: var(--accent);
             font-family: var(--font-mono);
             font-weight: 800;
-            font-size: 0.82rem;
-            padding: 4px 10px;
-            border-radius: 6px;
+            font-size: 0.85rem;
+            padding: 5px 10px;
+            border-radius: 8px;
+            letter-spacing: 0.05em;
         }
-        .title-text h1 {
-            font-family: var(--font-title);
+
+        .brand-title {
             font-size: 1.15rem;
             font-weight: 800;
-            color: #fff;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            letter-spacing: -0.01em;
+            color: #ffffff;
         }
-        .title-text p { font-size: 0.78rem; color: var(--text-sub); margin-top: 1px; }
 
-        .header-actions { display: flex; align-items: center; gap: 10px; }
+        .brand-sub {
+            font-size: 0.76rem;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+            pointer-events: auto;
+        }
+
         .btn-header {
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            color: var(--text-main);
-            padding: 6px 14px;
-            border-radius: 8px;
+            background: var(--bg-panel);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border);
+            color: var(--text-sub);
+            padding: 9px 14px;
+            border-radius: 10px;
             font-size: 0.8rem;
             font-weight: 700;
             cursor: pointer;
             transition: all 0.2s ease;
-        }
-        .btn-header:hover { background: rgba(16, 185, 129, 0.2); border-color: var(--primary); color: #fff; }
-
-        .workspace { flex: 1; position: relative; overflow: hidden; display: flex; }
-
-        .viewer-container {
-            flex: 1;
-            position: relative;
-            background: radial-gradient(circle at center, #062238 0%, #020914 100%);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
             display: flex;
             align-items: center;
-            justify-content: center;
-            overflow: hidden;
+            gap: 6px;
         }
 
-        #riverCanvas {
-            max-width: 96%;
-            max-height: 92%;
-            border-radius: 14px;
-            box-shadow: 0 15px 45px rgba(0, 0, 0, 0.9);
-            border: 1px solid rgba(16, 185, 129, 0.25);
-            background: #031021;
-            cursor: grab;
+        .btn-header:hover {
+            background: rgba(30, 41, 59, 0.95);
+            border-color: var(--accent);
+            color: #ffffff;
+            transform: translateY(-1px);
         }
-        #riverCanvas:active { cursor: grabbing; }
 
-        .controls-panel {
+        .btn-header.active {
+            background: var(--accent-glow);
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        /* FLOATING SIDEBAR (CONTROLS) */
+        .sidebar-left {
             position: absolute;
-            top: 18px;
+            top: 86px;
             left: 20px;
-            width: 350px;
+            width: 320px;
+            max-height: calc(100vh - 106px);
             background: var(--bg-panel);
+            backdrop-filter: blur(16px);
             border: 1px solid var(--border);
-            border-radius: 14px;
+            border-radius: 16px;
             padding: 18px;
-            backdrop-filter: blur(14px);
-            z-index: 20;
-            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6);
             display: flex;
             flex-direction: column;
             gap: 14px;
-            max-height: calc(100vh - 120px);
+            z-index: 20;
             overflow-y: auto;
+            box-shadow: 0 16px 40px rgba(0,0,0,0.6);
+        }
+
+        .sidebar-left::-webkit-scrollbar {
+            width: 4px;
+        }
+        .sidebar-left::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.2);
+            border-radius: 4px;
         }
 
         .panel-sec-title {
             font-size: 0.78rem;
-            font-family: var(--font-mono);
-            color: var(--primary);
+            font-weight: 800;
             text-transform: uppercase;
             letter-spacing: 0.08em;
+            color: var(--accent);
             display: flex;
             align-items: center;
             justify-content: space-between;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-            padding-bottom: 5px;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            padding-bottom: 6px;
+            margin-top: 4px;
         }
 
-        .slider-group { display: flex; flex-direction: column; gap: 6px; }
-        .slider-label {
+        .slider-wrap {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .slider-head {
             display: flex;
             justify-content: space-between;
-            font-size: 0.82rem;
+            align-items: center;
+            font-size: 0.8rem;
+            font-weight: 600;
             color: var(--text-sub);
         }
-        .slider-val { font-family: var(--font-mono); color: #fff; font-weight: 700; }
+
+        .slider-val {
+            font-family: var(--font-mono);
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: var(--accent);
+            background: rgba(255,255,255,0.06);
+            padding: 2px 7px;
+            border-radius: 6px;
+        }
+
         input[type="range"] {
             width: 100%;
             height: 6px;
-            border-radius: 3px;
-            background: #1e293b;
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.15);
             outline: none;
+            -webkit-appearance: none;
+            accent-color: var(--accent);
             cursor: pointer;
-            accent-color: var(--primary);
         }
 
-        .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .btn-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
         .btn-action {
-            background: rgba(16, 185, 129, 0.12);
-            border: 1px solid rgba(16, 185, 129, 0.35);
-            color: #fff;
-            padding: 9px 10px;
-            border-radius: 8px;
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(255,255,255,0.12);
+            color: #e2e8f0;
             font-size: 0.78rem;
             font-weight: 700;
+            padding: 8px 10px;
+            border-radius: 8px;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.15s ease;
             text-align: center;
         }
-        .btn-action:hover { background: rgba(16, 185, 129, 0.28); border-color: var(--primary); }
-        .btn-action.active { background: var(--primary); color: #020914; font-weight: 800; }
-        .btn-action.danger { background: rgba(244, 63, 94, 0.15); border-color: #f43f5e; color: #fca5a5; }
-        .btn-action.danger:hover { background: #f43f5e; color: #fff; }
 
-        .telemetry-card {
+        .btn-action:hover {
+            background: rgba(51, 65, 85, 0.9);
+            border-color: var(--accent);
+            color: #ffffff;
+        }
+
+        .btn-action.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #060913;
+            box-shadow: 0 0 14px var(--accent-glow);
+        }
+
+        /* BOTTOM TELEMETRY DOCK */
+        .telemetry-dock {
             position: absolute;
             bottom: 20px;
+            left: 360px;
             right: 20px;
-            width: 320px;
+            height: 90px;
             background: var(--bg-panel);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 16px;
             backdrop-filter: blur(14px);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 10px 22px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
             z-index: 20;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+            box-shadow: 0 14px 35px rgba(0,0,0,0.6);
+        }
+
+        .kpi-group {
+            display: flex;
+            gap: 24px;
+            align-items: center;
+        }
+
+        .kpi-card {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 3px;
         }
-        .kpi-row { display: flex; justify-content: space-between; align-items: center; }
-        .kpi-name { font-size: 0.78rem; color: var(--text-sub); }
-        .kpi-val { font-family: var(--font-mono); font-size: 0.88rem; font-weight: 700; color: #fff; }
-        .status-badge {
-            padding: 4px 10px;
-            border-radius: 6px;
-            font-size: 0.74rem;
+
+        .kpi-label {
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+        }
+
+        .kpi-value {
+            font-family: var(--font-mono);
+            font-size: 1.1rem;
             font-weight: 800;
-            text-align: center;
+            color: #ffffff;
         }
-        .status-healthy { background: rgba(16, 185, 129, 0.2); color: #6ee7b7; border: 1px solid #10b981; }
-        .status-warning { background: rgba(251, 191, 36, 0.2); color: #fde68a; border: 1px solid #fbbf24; }
-        .status-danger { background: rgba(244, 63, 94, 0.2); color: #fda4af; border: 1px solid #f43f5e; }
+
+        .kpi-pill {
+            display: inline-block;
+            font-size: 0.7rem;
+            font-weight: 800;
+            padding: 2px 8px;
+            border-radius: 9999px;
+            margin-top: 2px;
+        }
+        .pill-healthy { background: rgba(16, 185, 129, 0.2); color: #6ee7b7; border: 1px solid #10b981; }
+        .pill-warn { background: rgba(251, 191, 36, 0.2); color: #fde68a; border: 1px solid #fbbf24; }
+        .pill-danger { background: rgba(244, 63, 94, 0.2); color: #fda4af; border: 1px solid #f43f5e; }
+
+        .chart-box {
+            flex: 1;
+            max-width: 320px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .chart-head {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: var(--accent);
+            text-transform: uppercase;
+        }
+
+        #dockCanvas {
+            width: 100%;
+            height: 48px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 6px;
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+
+        /* LOADING SPINNER */
+        #loadingOverlay {
+            position: absolute;
+            inset: 0;
+            background: var(--bg-base);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            transition: opacity 0.5s ease;
+        }
+
+        .spinner {
+            width: 48px;
+            height: 48px;
+            border: 4px solid rgba(255,255,255,0.1);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
+
+    <div id="loadingOverlay">
+        <div class="spinner"></div>
+        <div style="font-weight:700; color:var(--text-sub); font-size:0.95rem;">Cargando Laboratorio 3D • Pirámide Trófica y Red Ecológica Fluvial...</div>
+        <div style="font-size:0.75rem; color:var(--text-muted);">USGS River Ecology</div>
+    </div>
+
     <header>
-        <div class="brand-box">
-            <span class="badge-pill">[COD-032]</span>
-            <div class="title-text">
-                <h1>🏞️ Pirámide Trófica y Red Ecológica Fluvial 3D</h1>
-                <p>Dinámica de Lindeman (Ley del 10%) • USGS River Ecology • Flujo de Energía (kcal/m²/año) • Bioacumulación</p>
+        <div class="brand-card">
+            <span class="brand-badge">[COD-032]</span>
+            <div>
+                <div class="brand-title">Pirámide Trófica y Red Ecológica Fluvial 3D</div>
+                <div class="brand-sub">Ley del 10% de Lindeman y Disipación Metabólica • USGS River Ecology</div>
             </div>
         </div>
         <div class="header-actions">
-            <button class="btn-header" id="btnAudioToggle">🔊 Sonido Río: ON</button>
-            <button class="btn-header" id="btnVoiceGuide">🗣️ Guía por Voz</button>
-            <button class="btn-header" id="btnResetView">🎯 Centrar Vista</button>
+            <button class="btn-header" id="btnAudio">🔊 Audio: ON</button>
+            <button class="btn-header" id="btnVoice">🗣️ Guía por Voz</button>
+            <button class="btn-header" id="btnRotate">🔄 Giro: ON</button>
+            <button class="btn-header" id="btnReset">🎯 Centrar</button>
         </div>
     </header>
 
-    <div class="workspace">
-        <div class="viewer-container">
-            <canvas id="riverCanvas" width="900" height="650"></canvas>
+    <aside class="sidebar-left">
+        
+        <div class="panel-sec-title"><span>Dinámica de Biomasa</span><span>Lindeman 10%</span></div>
+        <div class="slider-wrap">
+            <div class="slider-head"><span>Biomasa Productores (T1)</span><span class="slider-val" id="valT1">1000 g/m²</span></div>
+            <input type="range" id="rngT1" min="200" max="2500" step="50" value="1000">
         </div>
-
-        <div class="controls-panel">
-            <div class="panel-sec-title">
-                <span>Parámetros de Entrada Ecológica</span>
-                <span>⚡ ENERGÍA</span>
-            </div>
-
-            <div class="slider-group">
-                <div class="slider-label">
-                    <span>Radiación Solar Fotosintética</span>
-                    <span class="slider-val" id="valSolar">20.000 kcal/m²</span>
-                </div>
-                <input type="range" id="rngSolar" min="5000" max="40000" step="1000" value="20000">
-            </div>
-
-            <div class="slider-group">
-                <div class="slider-label">
-                    <span>Eficiencia de Lindeman (%)</span>
-                    <span class="slider-val" id="valEff">10.0 %</span>
-                </div>
-                <input type="range" id="rngEff" min="5.0" max="20.0" step="0.5" value="10.0">
-            </div>
-
-            <div class="slider-group">
-                <div class="slider-label">
-                    <span>Concentración Nitratos/Fósforo</span>
-                    <span class="slider-val" id="valNutr">2.4 mg/L</span>
-                </div>
-                <input type="range" id="rngNutr" min="0.5" max="15.0" step="0.5" value="2.4">
-            </div>
-
-            <div class="panel-sec-title">
-                <span>Impactos Antrópicos y Modos</span>
-                <span>🧪 PERTURBACIÓN</span>
-            </div>
-
-            <div class="btn-group">
-                <button class="btn-action danger" id="btnEutro">⚠️ Eutrofización</button>
-                <button class="btn-action danger" id="btnOverfish">🎣 Sobrepesca</button>
-            </div>
-
-            <div class="btn-group">
-                <button class="btn-action" id="btnBiomagn">☢️ Bioacumulación</button>
-                <button class="btn-action active" id="btnResetEco">🌿 Restaurar</button>
-            </div>
+        <div class="slider-wrap">
+            <div class="slider-head"><span>Eficiencia Ecológica</span><span class="slider-val" id="valEff">10.0 %</span></div>
+            <input type="range" id="rngEff" min="5.0" max="20.0" step="0.5" value="10.0">
         </div>
+        <div class="slider-wrap">
+            <div class="slider-head"><span>Caudal Fluvial</span><span class="slider-val" id="valFlow">14.5 m³/s</span></div>
+            <input type="range" id="rngFlow" min="2.0" max="40.0" step="1.0" value="14.5">
+        </div>
+        <div class="slider-wrap">
+            <div class="slider-head"><span>Nutrientes N/P (Eutrofización)</span><span class="slider-val" id="valNP">0.8 ppm</span></div>
+            <input type="range" id="rngNP" min="0.1" max="5.0" step="0.1" value="0.8">
+        </div>
+    
+        
+        <div class="panel-sec-title"><span>Escenarios Fluviales</span><span>USGS</span></div>
+        <div class="btn-grid">
+            <button class="btn-action active" id="btnEquil">⚖️ Equilibrio</button>
+            <button class="btn-action" id="btnEutro" style="border-color:#fbbf24; color:#fde68a;">🌿 Eutrofización</button>
+        </div>
+        <div class="btn-grid" style="margin-top:8px;">
+            <button class="btn-action" id="btnSpill" style="border-color:#f43f5e; color:#fda4af;">⚠️ Vertido</button>
+            <button class="btn-action" id="btnRest">🐟 Repoblación</button>
+        </div>
+    
+    </aside>
 
-        <div class="telemetry-card">
-            <div class="panel-sec-title">
-                <span>Telemetría de la Red Trófica</span>
-                <span>USGS / Lindeman</span>
+    <div class="telemetry-dock">
+        <div class="kpi-group">
+            
+        <div class="kpi-card">
+            <span class="kpi-label">Biomasa Depredador (Trucha)</span>
+            <span class="kpi-value" id="kpiApex">1.00 g/m²</span>
+            <span class="kpi-pill pill-healthy" id="pillTrophic">Ecosistema Estable</span>
+        </div>
+        <div class="kpi-card">
+            <span class="kpi-label">Disipación Metabólica</span>
+            <span class="kpi-value" id="kpiHeat">90.0 %</span>
+        </div>
+    
+        </div>
+        <div class="chart-box">
+            <div class="chart-head">
+                <span>Eficiencia Energética</span>
+                <span id="chartLiveVal">10.0 %</span>
             </div>
-            <div class="kpi-row">
-                <span class="kpi-name">Productores (Diatomeas):</span>
-                <span class="kpi-val" id="kpiL1">20.000 kcal</span>
-            </div>
-            <div class="kpi-row">
-                <span class="kpi-name">Consumidores 1° (Efímeras):</span>
-                <span class="kpi-val" id="kpiL2">2.000 kcal</span>
-            </div>
-            <div class="kpi-row">
-                <span class="kpi-name">Consumidores 2° (Truchas):</span>
-                <span class="kpi-val" id="kpiL3">200 kcal</span>
-            </div>
-            <div class="kpi-row">
-                <span class="kpi-name">Ápice (Nutria Fluvial):</span>
-                <span class="kpi-val" id="kpiL4">20 kcal</span>
-            </div>
-            <div class="kpi-row">
-                <span class="kpi-name">Oxígeno Disuelto (DO):</span>
-                <span class="kpi-val" id="kpiDO">8.8 mg/L</span>
-            </div>
-            <div class="kpi-row">
-                <span class="kpi-name">Estado del Ecosistema:</span>
-                <span class="status-badge status-healthy" id="kpiStatus">Equilibrio Trófico</span>
-            </div>
+            <canvas id="dockCanvas" width="300" height="48"></canvas>
         </div>
     </div>
 
+    <canvas id="renderCanvas"></canvas>
+
     <script>
-        const canvas = document.getElementById('riverCanvas');
-        const ctx = canvas.getContext('2d');
-
-        let state = {
-            solar: 20000,
-            eff: 0.10,
-            nutr: 2.4,
-            eutro: false,
-            overfish: false,
-            biomag: false,
-            rotX: -0.25,
-            rotY: 0.4,
-            zoom: 1.0,
-            audioEnabled: true
-        };
-
-        // Web Audio - Flujo de corriente fluvial
+        // WEB AUDIO PROCEDURAL SINTETIZADO (CERO DEPENDENCIAS EXTERNAS)
         let audioCtx = null;
-        function playRiverFlow() {
-            if (!state.audioEnabled) return;
+        let isAudioPlaying = true;
+        function initAudio() {
             try {
                 if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
                 if (audioCtx.state === 'suspended') audioCtx.resume();
-                const bufferSize = audioCtx.sampleRate * 1.5;
-                const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-                const data = buffer.getChannelData(0);
-                for (let i = 0; i < bufferSize; i++) {
-                    data[i] = (Math.random() * 2 - 1) * 0.015;
-                }
-                const noise = audioCtx.createBufferSource();
-                noise.buffer = buffer;
-                const filter = audioCtx.createBiquadFilter();
-                filter.type = 'lowpass';
-                filter.frequency.setValueAtTime(450, audioCtx.currentTime);
-                noise.connect(filter);
-                filter.connect(audioCtx.destination);
-                noise.start();
             } catch(e) {}
         }
-        setInterval(playRiverFlow, 2000);
 
-        function speak(text) {
+        function playSciPing(freq = 440, duration = 0.25, type = 'sine') {
+            if (!isAudioPlaying) return;
+            initAudio();
+            if (!audioCtx) return;
+            try {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = type;
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.04, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + duration);
+            } catch(e) {}
+        }
+
+        // SÍNTESIS DE VOZ PEDAGÓGICA EN ESPAÑOL
+        function speakNarrative(text) {
             if ('speechSynthesis' in window) {
                 window.speechSynthesis.cancel();
                 const u = new SpeechSynthesisUtterance(text);
                 u.lang = 'es-ES';
-                u.rate = 1.05;
+                u.rate = 1.02;
                 window.speechSynthesis.speak(u);
             }
         }
 
-        // Interacción orbital
-        let isDragging = false;
-        let lastMouse = { x: 0, y: 0 };
-        canvas.addEventListener('mousedown', (e) => {
-            isDragging = true;
-            lastMouse = { x: e.clientX, y: e.clientY };
-        });
-        window.addEventListener('mouseup', () => isDragging = false);
-        window.addEventListener('mousemove', (e) => {
-            if (!isDragging) return;
-            const dx = e.clientX - lastMouse.x;
-            const dy = e.clientY - lastMouse.y;
-            state.rotY += dx * 0.008;
-            state.rotX += dy * 0.008;
-            lastMouse = { x: e.clientX, y: e.clientY };
-        });
-        canvas.addEventListener('wheel', (e) => {
-            e.preventDefault();
-            state.zoom *= e.deltaY > 0 ? 0.95 : 1.05;
-            state.zoom = Math.max(0.6, Math.min(2.0, state.zoom));
+        // BOTONES DE CABECERA
+        document.getElementById('btnAudio').addEventListener('click', function() {
+            isAudioPlaying = !isAudioPlaying;
+            this.innerText = isAudioPlaying ? '🔊 Audio: ON' : '🔇 Audio: OFF';
+            this.classList.toggle('active', isAudioPlaying);
         });
 
-        // 4 Niveles Tróficos tridimensionales en pirámide
-        let t = 0;
-        function render() {
-            t += 0.02;
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        document.getElementById('btnVoice').addEventListener('click', function() {
+            speakNarrative("Bienvenido al Simulador de la Red Trófica Fluvial. Analiza cómo la energía solar fijada por las algas se disipa en un noventa por ciento en cada escalón trófico.");
+        });
 
-            const cx = canvas.width / 2;
-            const cy = canvas.height / 2 + 50;
+        // INICIALIZACIÓN DE BABYLON.JS
+        const canvas = document.getElementById("renderCanvas");
+        const engine = new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true });
+        let autoRotate = true;
+        let modelMeshRoot = null;
+        let isModelLoaded = false;
+        let fixedBaseScale = 1.0;
 
-            const cosY = Math.cos(state.rotY);
-            const sinY = Math.sin(state.rotY);
-            const cosX = Math.cos(state.rotX);
-            const sinX = Math.sin(state.rotX);
+        const createScene = function() {
+            const scene = new BABYLON.Scene(engine);
+            scene.clearColor = new BABYLON.Color4(0.024, 0.035, 0.067, 1.0); // #060913
 
-            function project(x, y, z) {
-                let x1 = x * cosY + z * sinY;
-                let z1 = -x * sinY + z * cosY;
-                let y2 = y * cosX - z1 * sinX;
-                let z2 = y * sinX + z1 * cosX;
-                const fov = 450;
-                const scale = (fov / (fov + z2 + 300)) * state.zoom;
-                return { x: cx + x1 * scale, y: cy + y2 * scale, z: z2, scale: scale };
+            // CÁMARA ORBITAL MÉDICO-CIENTÍFICA
+            const camera = new BABYLON.ArcRotateCamera("Camera", -Math.PI / 2, Math.PI / 2.5, 6.0, new BABYLON.Vector3(0, 0, 0), scene);
+            camera.attachControl(canvas, true);
+            camera.wheelPrecision = 45;
+            camera.lowerRadiusLimit = 2.2;
+            camera.upperRadiusLimit = 16.0;
+
+            // ILUMINACIÓN CLÍNICA PBR
+            const hemiLight = new BABYLON.HemisphericLight("hemiLight", new BABYLON.Vector3(0, 1, 0), scene);
+            hemiLight.intensity = 0.85;
+            hemiLight.diffuse = new BABYLON.Color3(0.9, 0.95, 1.0);
+            hemiLight.groundColor = new BABYLON.Color3(0.1, 0.15, 0.25);
+
+            const keyLight = new BABYLON.DirectionalLight("keyLight", new BABYLON.Vector3(-1, -2, 1), scene);
+            keyLight.position = new BABYLON.Vector3(5, 8, -5);
+            keyLight.intensity = 1.2;
+
+            const fillLight = new BABYLON.PointLight("fillLight", new BABYLON.Vector3(-5, -2, -4), scene);
+            fillLight.diffuse = new BABYLON.Color3(16, 185, 129);
+            fillLight.intensity = 0.8;
+
+            const glow = new BABYLON.GlowLayer("glow", scene);
+            glow.intensity = 0.35;
+
+            // CARGA ROBUSTA MULTI-RUTA (Base64 -> Local -> CDN)
+            const candidateSources = [
+                (window.TROPHIC_GLB_B64 && window.TROPHIC_GLB_B64.length > 500) ? window.TROPHIC_GLB_B64 : null,
+                "trophic_b64.js",
+                "../../../../SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/trophic_b64.js",
+                "../03_ASSETS_3D_Y_DATOS/trophic_b64.js",
+                "https://javiercursocorreo-gif.github.io/Curso-IA/SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/trophic_b64.js"
+            ].filter(Boolean);
+
+            let currentSrcIdx = 0;
+            function loadScientificMesh() {
+                if (currentSrcIdx >= candidateSources.length) {
+                    document.getElementById("loadingOverlay").innerHTML = '<div style="color:#ef4444;font-weight:700;">Simulación activa con modelo procedural</div>';
+                    setTimeout(() => {
+                        document.getElementById("loadingOverlay").style.opacity = "0";
+                        setTimeout(() => document.getElementById("loadingOverlay").style.display = "none", 400);
+                    }, 600);
+                    return;
+                }
+                const source = candidateSources[currentSrcIdx];
+                BABYLON.SceneLoader.ImportMesh("", "", source, scene, function(meshes) {
+                    const overlay = document.getElementById("loadingOverlay");
+                    overlay.style.opacity = "0";
+                    setTimeout(() => overlay.style.display = "none", 400);
+
+                    modelMeshRoot = new BABYLON.TransformNode("modelRoot", scene);
+                    meshes.forEach(m => {
+                        if (m.parent === null) {
+                            m.parent = modelMeshRoot;
+                        }
+                    });
+
+                    const hierarchy = modelMeshRoot.getHierarchyBoundingVectors();
+                    const center = hierarchy.max.add(hierarchy.min).scale(0.5);
+                    const size = hierarchy.max.subtract(hierarchy.min);
+                    const maxDim = Math.max(size.x, size.y, size.z);
+
+                    if (maxDim > 0) {
+                        fixedBaseScale = 2.8 / maxDim;
+                        modelMeshRoot.scaling = new BABYLON.Vector3(fixedBaseScale, fixedBaseScale, fixedBaseScale);
+                        modelMeshRoot.position = center.scale(-fixedBaseScale);
+                    }
+                    camera.target = new BABYLON.Vector3(0, 0, 0);
+                    isModelLoaded = true;
+                }, null, function(scene, msg) {
+                    console.warn("Fallo fuente:", source, msg);
+                    currentSrcIdx++;
+                    loadScientificMesh();
+                }, ".glb");
             }
+            loadScientificMesh();
 
-            // Datos de la pirámide elométrica trófica (Lindeman)
-            const levels = [
-                { name: "Productores (Diatomeas)", w: 320, h: 45, y: 80, color: '#10b981', energy: state.solar },
-                { name: "Consumidores 1° (Invertebrados)", w: 220, h: 45, y: 25, color: '#38bdf8', energy: state.solar * state.eff },
-                { name: "Consumidores 2° (Truchas)", w: 140, h: 45, y: -30, color: '#fbbf24', energy: state.solar * Math.pow(state.eff, 2) },
-                { name: "Ápice (Nutria Fluvial)", w: 60, h: 45, y: -85, color: '#f43f5e', energy: state.solar * Math.pow(state.eff, 3) }
-            ];
+            // SETUP ESPECÍFICO ADICIONAL
+            
+        document.getElementById('rngT1').addEventListener('input', (e) => {
+            document.getElementById('valT1').innerText = e.target.value + ' g/m²';
+            playSciPing(400, 0.05);
+        });
+        document.getElementById('rngEff').addEventListener('input', (e) => {
+            document.getElementById('valEff').innerText = parseFloat(e.target.value).toFixed(1) + ' %';
+        });
+        document.getElementById('btnEutro').addEventListener('click', () => {
+            document.getElementById('rngNP').value = 4.2;
+            document.getElementById('valNP').innerText = '4.2 ppm';
+            document.getElementById('rngT1').value = 2200;
+            document.getElementById('valT1').innerText = '2200 g/m²';
+            playSciPing(300, 0.2);
+        });
+    
 
-            // Dibujar cada bloque tridimensional de la pirámide
-            levels.forEach((lvl, idx) => {
-                const hw = lvl.w / 2;
-                const hh = lvl.h / 2;
-                const hd = (lvl.w * 0.7) / 2;
-
-                // 8 vértices del paralelepípedo
-                const v = [
-                    project(-hw, lvl.y - hh, -hd),
-                    project(hw, lvl.y - hh, -hd),
-                    project(hw, lvl.y - hh, hd),
-                    project(-hw, lvl.y - hh, hd),
-                    project(-hw, lvl.y + hh, -hd),
-                    project(hw, lvl.y + hh, -hd),
-                    project(hw, lvl.y + hh, hd),
-                    project(-hw, lvl.y + hh, hd)
-                ];
-
-                // Cara frontal
-                ctx.beginPath();
-                ctx.moveTo(v[3].x, v[3].y);
-                ctx.lineTo(v[2].x, v[2].y);
-                ctx.lineTo(v[6].x, v[6].y);
-                ctx.lineTo(v[7].x, v[7].y);
-                ctx.closePath();
-                ctx.fillStyle = lvl.color;
-                ctx.globalAlpha = 0.85;
-                ctx.fill();
-                ctx.strokeStyle = '#fff';
-                ctx.lineWidth = 1.2;
-                ctx.stroke();
-
-                // Cara superior
-                ctx.beginPath();
-                ctx.moveTo(v[0].x, v[0].y);
-                ctx.lineTo(v[1].x, v[1].y);
-                ctx.lineTo(v[2].x, v[2].y);
-                ctx.lineTo(v[3].x, v[3].y);
-                ctx.closePath();
-                ctx.fillStyle = 'rgba(255, 255, 255, 0.25)';
-                ctx.fill();
-                ctx.stroke();
-
-                // Cara lateral derecha
-                ctx.beginPath();
-                ctx.moveTo(v[2].x, v[2].y);
-                ctx.lineTo(v[1].x, v[1].y);
-                ctx.lineTo(v[5].x, v[5].y);
-                ctx.lineTo(v[6].x, v[6].y);
-                ctx.closePath();
-                ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
-                ctx.fill();
-                ctx.stroke();
-
-                // Texto etiqueta
-                ctx.globalAlpha = 1.0;
-                ctx.font = 'bold 11px JetBrains Mono';
-                ctx.fillStyle = '#fff';
-                const centerPr = project(0, lvl.y, hd + 5);
-                ctx.fillText(`N${4 - idx}: ${Math.round(lvl.energy)} kcal`, centerPr.x - 45, centerPr.y + 4);
+            document.getElementById('btnReset').addEventListener('click', function() {
+                camera.radius = 6.0;
+                camera.alpha = -Math.PI / 2;
+                camera.beta = Math.PI / 2.5;
+                camera.target = new BABYLON.Vector3(0, 0, 0);
+                playSciPing(600, 0.15);
             });
 
-            // Flujo energético ascendente (flechas de partículas que se reducen 90% en cada paso)
-            ctx.fillStyle = '#f8fafc';
-            for (let i = 0; i < 16; i++) {
-                const py = 90 - ((t * 80 + i * 25) % 180);
-                const progress = (90 - py) / 180;
-                const flowWidth = 140 * (1 - progress * 0.7);
-                const px = cx + Math.sin(t * 3 + i) * flowWidth * 0.3;
-                ctx.beginPath();
-                ctx.arc(px, cy + py * state.zoom, 2.5 * (1 - progress * 0.5), 0, Math.PI * 2);
-                ctx.fill();
+            document.getElementById('btnRotate').addEventListener('click', function() {
+                autoRotate = !autoRotate;
+                this.innerText = autoRotate ? '🔄 Giro: ON' : '⏸️ Giro: OFF';
+                this.classList.toggle('active', autoRotate);
+            });
+
+            return scene;
+        };
+
+        const scene = createScene();
+
+        // RENDER LOOP
+        let lastTime = performance.now();
+        engine.runRenderLoop(function() {
+            const now = performance.now();
+            const dt = (now - lastTime) / 1000;
+            lastTime = now;
+
+            if (autoRotate && modelMeshRoot) {
+                modelMeshRoot.rotation.y += 0.0035;
             }
 
-            requestAnimationFrame(render);
+            
+        const t1 = parseFloat(document.getElementById('rngT1').value);
+        const eff = parseFloat(document.getElementById('rngEff').value) / 100;
+        const t2 = t1 * eff;
+        const t3 = t2 * eff;
+        const t4 = t3 * eff;
+        document.getElementById('kpiApex').innerText = t4.toFixed(2) + ' g/m²';
+        document.getElementById('kpiHeat').innerText = ((1 - eff) * 100).toFixed(1) + ' %';
+    
+
+            updateDockChart(dt);
+            scene.render();
+        });
+
+        window.addEventListener("resize", () => engine.resize());
+
+        // TELEMETRÍA EN TIEMPO REAL (DOCK CANVAS)
+        const dockCanvas = document.getElementById("dockCanvas");
+        const dCtx = dockCanvas.getContext("2d");
+        const chartHistory = [];
+        let chartPhase = 0;
+
+        function updateDockChart(dt) {
+            chartPhase += dt;
+            
+        const eff = parseFloat(document.getElementById('rngEff').value);
+        const v = 15 + Math.sin(chartPhase * 3) * 5 + eff;
+        chartHistory.push(v);
+        if (chartHistory.length > 50) chartHistory.shift();
+
+        dCtx.clearRect(0, 0, dockCanvas.width, dockCanvas.height);
+        dCtx.strokeStyle = '#10b981';
+        dCtx.lineWidth = 2;
+        dCtx.beginPath();
+        chartHistory.forEach((pt, idx) => {
+            const x = (idx / 50) * dockCanvas.width;
+            const y = dockCanvas.height - (pt / 40) * dockCanvas.height;
+            if (idx === 0) dCtx.moveTo(x, y);
+            else dCtx.lineTo(x, y);
+        });
+        dCtx.stroke();
+        document.getElementById('chartLiveVal').innerText = eff.toFixed(1) + ' % Efic.';
+    
         }
-        render();
-
-        function updateTelemetry() {
-            const l1 = Math.round(state.solar);
-            const l2 = Math.round(l1 * state.eff);
-            const l3 = Math.round(l2 * state.eff);
-            const l4 = Math.round(l3 * state.eff);
-
-            document.getElementById('kpiL1').innerText = `${l1.toLocaleString()} kcal`;
-            document.getElementById('kpiL2').innerText = `${l2.toLocaleString()} kcal`;
-            document.getElementById('kpiL3').innerText = `${l3.toLocaleString()} kcal`;
-            document.getElementById('kpiL4').innerText = `${l4.toLocaleString()} kcal`;
-
-            let doVal = 9.2 - (state.nutr * 0.45);
-            if (state.eutro) doVal = 2.1;
-            document.getElementById('kpiDO').innerText = `${Math.max(1.0, doVal).toFixed(1)} mg/L`;
-
-            const statusEl = document.getElementById('kpiStatus');
-            if (doVal < 3.0) {
-                statusEl.className = 'status-badge status-danger';
-                statusEl.innerText = '🚨 Anoxia / Colapso Fluvial';
-            } else if (state.overfish || state.nutr > 6.0) {
-                statusEl.className = 'status-badge status-warning';
-                statusEl.innerText = '⚠️ Desequilibrio Ecológico';
-            } else {
-                statusEl.className = 'status-badge status-healthy';
-                statusEl.innerText = 'Equilibrio Trófico Estable';
-            }
-        }
-        setInterval(updateTelemetry, 300);
-
-        document.getElementById('rngSolar').addEventListener('input', (e) => {
-            state.solar = parseInt(e.target.value);
-            document.getElementById('valSolar').innerText = state.solar.toLocaleString() + ' kcal/m²';
-        });
-
-        document.getElementById('rngEff').addEventListener('input', (e) => {
-            state.eff = parseFloat(e.target.value) / 100.0;
-            document.getElementById('valEff').innerText = (state.eff * 100).toFixed(1) + ' %';
-        });
-
-        document.getElementById('rngNutr').addEventListener('input', (e) => {
-            state.nutr = parseFloat(e.target.value);
-            document.getElementById('valNutr').innerText = state.nutr.toFixed(1) + ' mg/L';
-        });
-
-        document.getElementById('btnEutro').addEventListener('click', () => {
-            state.eutro = !state.eutro;
-            state.nutr = state.eutro ? 12.0 : 2.4;
-            document.getElementById('rngNutr').value = state.nutr;
-            document.getElementById('valNutr').innerText = state.nutr.toFixed(1) + ' mg/L';
-            if (state.eutro) speak("Alerta de eutrofización fluvial. El exceso de nitrógeno y fósforo causa una proliferación masiva de algas superficiales, bloqueando la luz y agotando el oxígeno disuelto en el lecho fluvial.");
-        });
-
-        document.getElementById('btnOverfish').addEventListener('click', () => {
-            state.overfish = !state.overfish;
-            if (state.overfish) speak("Sobreexplotación de carnívoros secundarios. La reducción drástica de truchas desencadena una explosión descontrolada de macroinvertebrados herbívoros.");
-        });
-
-        document.getElementById('btnBiomagn').addEventListener('click', () => {
-            state.biomag = !state.biomag;
-            speak("Principio de biomagnificación. Las toxinas no biodegradables como el mercurio se concentran diez veces en cada escalón trófico, alcanzando concentraciones letales en la nutria fluvial.");
-        });
-
-        document.getElementById('btnResetEco').addEventListener('click', () => {
-            state.solar = 20000;
-            state.eff = 0.10;
-            state.nutr = 2.4;
-            state.eutro = false;
-            state.overfish = false;
-            state.biomag = false;
-            document.getElementById('rngSolar').value = 20000;
-            document.getElementById('valSolar').innerText = '20.000 kcal/m²';
-            document.getElementById('rngEff').value = 10.0;
-            document.getElementById('valEff').innerText = '10.0 %';
-            document.getElementById('rngNutr').value = 2.4;
-            document.getElementById('valNutr').innerText = '2.4 mg/L';
-            speak("Ecosistema fluvial restaurado a parámetros basales de equilibrio de Lindeman.");
-        });
-
-        document.getElementById('btnAudioToggle').addEventListener('click', (e) => {
-            state.audioEnabled = !state.audioEnabled;
-            e.target.innerText = state.audioEnabled ? '🔊 Sonido Río: ON' : '🔈 Sonido: OFF';
-        });
-
-        document.getElementById('btnVoiceGuide').addEventListener('click', () => {
-            speak("Bienvenido al simulador de la Pirámide Trófica. Explora cómo el noventa por ciento de la energía química se disipa como calor metabólico entre cada nivel trófico.");
-        });
-
-        document.getElementById('btnResetView').addEventListener('click', () => {
-            state.rotX = -0.25;
-            state.rotY = 0.4;
-            state.zoom = 1.0;
-        });
     </script>
 </body>
 </html>

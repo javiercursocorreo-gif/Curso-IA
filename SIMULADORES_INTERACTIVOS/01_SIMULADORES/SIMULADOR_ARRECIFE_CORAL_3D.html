@@ -3,634 +3,711 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sesión 31 • Arrecife de Coral, Pólipos y Simbiosis Marina 3D [COD-031]</title>
-    <!-- NOAA Coral Reef Watch • Cryo-EM Cnidarios • Grados Días de Calentamiento (DHW) -->
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+    <title>Sesión 31 • Arrecife de Coral, Pólipos y Simbiosis Marina 3D [[COD-031]]</title>
+    <!-- Babylon.js CDN Oficial -->
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+    <!-- Modelo Científico en Base64 (Multi-Fallback) -->
+    <script src="coral_b64.js"></script>
+    <script src="../../../../SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/coral_b64.js"></script>
+    <script src="../03_ASSETS_3D_Y_DATOS/coral_b64.js"></script>
+    <script src="https://javiercursocorreo-gif.github.io/Curso-IA/SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/coral_b64.js"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-base: #010712;
-            --bg-panel: rgba(4, 15, 30, 0.94);
-            --border: rgba(56, 189, 248, 0.35);
-            --primary: #38bdf8;
-            --primary-glow: rgba(56, 189, 248, 0.4);
-            --coral-live: #f43f5e;
-            --coral-bleached: #f8fafc;
-            --zoox: #10b981;
-            --amber: #fbbf24;
+            --bg-base: #060913;
+            --bg-panel: rgba(15, 23, 42, 0.92);
+            --border: rgba(255, 255, 255, 0.12);
+            --accent: #38bdf8;
+            --accent-glow: rgba(56, 189, 248, 0.35);
             --text-main: #f8fafc;
-            --text-sub: #94a3b8;
-            --font-title: 'Cinzel', serif;
-            --font-sans: 'Inter', sans-serif;
-            --font-mono: 'JetBrains Mono', monospace;
+            --text-sub: #cbd5e1;
+            --text-muted: #94a3b8;
+            --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            --font-mono: 'JetBrains Mono', ui-monospace, monospace;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+        }
+
         body {
             background-color: var(--bg-base);
             color: var(--text-main);
             font-family: var(--font-sans);
-            height: 100vh;
             width: 100vw;
+            height: 100vh;
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            font-size: 14px;
         }
 
+        /* 3D VIEWPORT */
+        #renderCanvas {
+            width: 100%;
+            height: 100%;
+            touch-action: none;
+            outline: none;
+            display: block;
+        }
+
+        /* HEADER HUD */
         header {
-            background: linear-gradient(180deg, rgba(2, 10, 24, 0.98) 0%, rgba(2, 10, 24, 0.88) 100%);
+            position: absolute;
+            top: 18px;
+            left: 20px;
+            right: 20px;
+            z-index: 20;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            pointer-events: none;
+        }
+
+        .brand-card {
+            background: var(--bg-panel);
             backdrop-filter: blur(14px);
-            border-bottom: 1px solid var(--border);
-            padding: 10px 24px;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 12px 20px;
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            flex-shrink: 0;
-            z-index: 40;
+            gap: 14px;
+            box-shadow: 0 14px 35px rgba(0,0,0,0.6);
+            pointer-events: auto;
         }
-        .brand-box { display: flex; align-items: center; gap: 14px; }
-        .badge-pill {
-            background: rgba(56, 189, 248, 0.15);
-            border: 1px solid var(--primary);
-            color: var(--primary);
+
+        .brand-badge {
+            background: var(--accent-glow);
+            border: 1px solid var(--accent);
+            color: var(--accent);
             font-family: var(--font-mono);
             font-weight: 800;
-            font-size: 0.82rem;
-            padding: 4px 10px;
-            border-radius: 6px;
+            font-size: 0.85rem;
+            padding: 5px 10px;
+            border-radius: 8px;
+            letter-spacing: 0.05em;
         }
-        .title-text h1 {
-            font-family: var(--font-title);
+
+        .brand-title {
             font-size: 1.15rem;
             font-weight: 800;
-            color: #fff;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            letter-spacing: -0.01em;
+            color: #ffffff;
         }
-        .title-text p { font-size: 0.78rem; color: var(--text-sub); margin-top: 1px; }
 
-        .header-actions { display: flex; align-items: center; gap: 10px; }
+        .brand-sub {
+            font-size: 0.76rem;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+            pointer-events: auto;
+        }
+
         .btn-header {
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            color: var(--text-main);
-            padding: 6px 14px;
-            border-radius: 8px;
+            background: var(--bg-panel);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border);
+            color: var(--text-sub);
+            padding: 9px 14px;
+            border-radius: 10px;
             font-size: 0.8rem;
             font-weight: 700;
             cursor: pointer;
             transition: all 0.2s ease;
-        }
-        .btn-header:hover { background: rgba(56, 189, 248, 0.2); border-color: var(--primary); color: #fff; }
-
-        .workspace { flex: 1; position: relative; overflow: hidden; display: flex; }
-
-        .viewer-container {
-            flex: 1;
-            position: relative;
-            background: radial-gradient(circle at center, #03182e 0%, #010712 100%);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
             display: flex;
             align-items: center;
-            justify-content: center;
-            overflow: hidden;
+            gap: 6px;
         }
 
-        #coralCanvas {
-            max-width: 96%;
-            max-height: 92%;
-            border-radius: 14px;
-            box-shadow: 0 15px 45px rgba(0, 0, 0, 0.9);
-            border: 1px solid rgba(56, 189, 248, 0.25);
-            background: #020b17;
-            cursor: grab;
+        .btn-header:hover {
+            background: rgba(30, 41, 59, 0.95);
+            border-color: var(--accent);
+            color: #ffffff;
+            transform: translateY(-1px);
         }
-        #coralCanvas:active { cursor: grabbing; }
 
-        .controls-panel {
+        .btn-header.active {
+            background: var(--accent-glow);
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        /* FLOATING SIDEBAR (CONTROLS) */
+        .sidebar-left {
             position: absolute;
-            top: 18px;
+            top: 86px;
             left: 20px;
-            width: 350px;
+            width: 320px;
+            max-height: calc(100vh - 106px);
             background: var(--bg-panel);
+            backdrop-filter: blur(16px);
             border: 1px solid var(--border);
-            border-radius: 14px;
+            border-radius: 16px;
             padding: 18px;
-            backdrop-filter: blur(14px);
-            z-index: 20;
-            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6);
             display: flex;
             flex-direction: column;
             gap: 14px;
-            max-height: calc(100vh - 120px);
+            z-index: 20;
             overflow-y: auto;
+            box-shadow: 0 16px 40px rgba(0,0,0,0.6);
+        }
+
+        .sidebar-left::-webkit-scrollbar {
+            width: 4px;
+        }
+        .sidebar-left::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.2);
+            border-radius: 4px;
         }
 
         .panel-sec-title {
             font-size: 0.78rem;
-            font-family: var(--font-mono);
-            color: var(--primary);
+            font-weight: 800;
             text-transform: uppercase;
             letter-spacing: 0.08em;
+            color: var(--accent);
             display: flex;
             align-items: center;
             justify-content: space-between;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-            padding-bottom: 5px;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            padding-bottom: 6px;
+            margin-top: 4px;
         }
 
-        .slider-group { display: flex; flex-direction: column; gap: 6px; }
-        .slider-label {
+        .slider-wrap {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .slider-head {
             display: flex;
             justify-content: space-between;
-            font-size: 0.82rem;
+            align-items: center;
+            font-size: 0.8rem;
+            font-weight: 600;
             color: var(--text-sub);
         }
-        .slider-val { font-family: var(--font-mono); color: #fff; font-weight: 700; }
+
+        .slider-val {
+            font-family: var(--font-mono);
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: var(--accent);
+            background: rgba(255,255,255,0.06);
+            padding: 2px 7px;
+            border-radius: 6px;
+        }
+
         input[type="range"] {
             width: 100%;
             height: 6px;
-            border-radius: 3px;
-            background: #1e293b;
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.15);
             outline: none;
+            -webkit-appearance: none;
+            accent-color: var(--accent);
             cursor: pointer;
-            accent-color: var(--primary);
         }
 
-        .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .btn-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
         .btn-action {
-            background: rgba(56, 189, 248, 0.12);
-            border: 1px solid rgba(56, 189, 248, 0.35);
-            color: #fff;
-            padding: 9px 10px;
-            border-radius: 8px;
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(255,255,255,0.12);
+            color: #e2e8f0;
             font-size: 0.78rem;
             font-weight: 700;
+            padding: 8px 10px;
+            border-radius: 8px;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.15s ease;
             text-align: center;
         }
-        .btn-action:hover { background: rgba(56, 189, 248, 0.28); border-color: var(--primary); }
-        .btn-action.active { background: var(--primary); color: #020712; font-weight: 800; }
-        .btn-action.danger { background: rgba(244, 63, 94, 0.15); border-color: #f43f5e; color: #fca5a5; }
-        .btn-action.danger:hover { background: #f43f5e; color: #fff; }
 
-        .telemetry-card {
+        .btn-action:hover {
+            background: rgba(51, 65, 85, 0.9);
+            border-color: var(--accent);
+            color: #ffffff;
+        }
+
+        .btn-action.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #060913;
+            box-shadow: 0 0 14px var(--accent-glow);
+        }
+
+        /* BOTTOM TELEMETRY DOCK */
+        .telemetry-dock {
             position: absolute;
             bottom: 20px;
+            left: 360px;
             right: 20px;
-            width: 320px;
+            height: 90px;
             background: var(--bg-panel);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 16px;
             backdrop-filter: blur(14px);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 10px 22px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
             z-index: 20;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+            box-shadow: 0 14px 35px rgba(0,0,0,0.6);
+        }
+
+        .kpi-group {
+            display: flex;
+            gap: 24px;
+            align-items: center;
+        }
+
+        .kpi-card {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 3px;
         }
-        .kpi-row { display: flex; justify-content: space-between; align-items: center; }
-        .kpi-name { font-size: 0.78rem; color: var(--text-sub); }
-        .kpi-val { font-family: var(--font-mono); font-size: 0.88rem; font-weight: 700; color: #fff; }
-        .status-badge {
-            padding: 4px 10px;
-            border-radius: 6px;
-            font-size: 0.74rem;
+
+        .kpi-label {
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+        }
+
+        .kpi-value {
+            font-family: var(--font-mono);
+            font-size: 1.1rem;
             font-weight: 800;
-            text-align: center;
+            color: #ffffff;
         }
-        .status-healthy { background: rgba(16, 185, 129, 0.2); color: #6ee7b7; border: 1px solid #10b981; }
-        .status-warning { background: rgba(251, 191, 36, 0.2); color: #fde68a; border: 1px solid #fbbf24; }
-        .status-bleached { background: rgba(244, 63, 94, 0.2); color: #fda4af; border: 1px solid #f43f5e; }
+
+        .kpi-pill {
+            display: inline-block;
+            font-size: 0.7rem;
+            font-weight: 800;
+            padding: 2px 8px;
+            border-radius: 9999px;
+            margin-top: 2px;
+        }
+        .pill-healthy { background: rgba(16, 185, 129, 0.2); color: #6ee7b7; border: 1px solid #10b981; }
+        .pill-warn { background: rgba(251, 191, 36, 0.2); color: #fde68a; border: 1px solid #fbbf24; }
+        .pill-danger { background: rgba(244, 63, 94, 0.2); color: #fda4af; border: 1px solid #f43f5e; }
+
+        .chart-box {
+            flex: 1;
+            max-width: 320px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .chart-head {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: var(--accent);
+            text-transform: uppercase;
+        }
+
+        #dockCanvas {
+            width: 100%;
+            height: 48px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 6px;
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+
+        /* LOADING SPINNER */
+        #loadingOverlay {
+            position: absolute;
+            inset: 0;
+            background: var(--bg-base);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            transition: opacity 0.5s ease;
+        }
+
+        .spinner {
+            width: 48px;
+            height: 48px;
+            border: 4px solid rgba(255,255,255,0.1);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
+
+    <div id="loadingOverlay">
+        <div class="spinner"></div>
+        <div style="font-weight:700; color:var(--text-sub); font-size:0.95rem;">Cargando Laboratorio 3D • Arrecife de Coral, Pólipos y Simbiosis Marina...</div>
+        <div style="font-size:0.75rem; color:var(--text-muted);">NOAA Coral Reef Watch</div>
+    </div>
+
     <header>
-        <div class="brand-box">
-            <span class="badge-pill">[COD-031]</span>
-            <div class="title-text">
-                <h1>🪸 Laboratorio Marino: Arrecife de Coral & Simbiosis 3D</h1>
-                <p>NOAA Coral Reef Watch • Pólipos Cnidarios • Dinámica de Zooxantelas (Symbiodiniaceae) • Grados Días de Calentamiento (DHW)</p>
+        <div class="brand-card">
+            <span class="brand-badge">[COD-031]</span>
+            <div>
+                <div class="brand-title">Arrecife de Coral, Pólipos y Simbiosis Marina 3D</div>
+                <div class="brand-sub">Estructuras de CaCO3 y Dinámica de Zooxantelas • NOAA Coral Reef Watch</div>
             </div>
         </div>
         <div class="header-actions">
-            <button class="btn-header" id="btnAudioToggle">🔊 Audio Ecosistema: ON</button>
-            <button class="btn-header" id="btnVoiceGuide">🗣️ Guía por Voz</button>
-            <button class="btn-header" id="btnResetView">🎯 Centrar Vista</button>
+            <button class="btn-header" id="btnAudio">🔊 Audio: ON</button>
+            <button class="btn-header" id="btnVoice">🗣️ Guía por Voz</button>
+            <button class="btn-header" id="btnRotate">🔄 Giro: ON</button>
+            <button class="btn-header" id="btnReset">🎯 Centrar</button>
         </div>
     </header>
 
-    <div class="workspace">
-        <div class="viewer-container">
-            <canvas id="coralCanvas" width="900" height="650"></canvas>
+    <aside class="sidebar-left">
+        
+        <div class="panel-sec-title"><span>Variables Oceánicas</span><span>NOAA CRW</span></div>
+        <div class="slider-wrap">
+            <div class="slider-head"><span>Temperatura Marina (SST)</span><span class="slider-val" id="valSST">27.0 °C</span></div>
+            <input type="range" id="rngSST" min="24.0" max="33.0" step="0.1" value="27.0">
         </div>
-
-        <div class="controls-panel">
-            <div class="panel-sec-title">
-                <span>Variables Oceánicas (NOAA CRW)</span>
-                <span>🌊 IN-SITU</span>
-            </div>
-
-            <div class="slider-group">
-                <div class="slider-label">
-                    <span>Temperatura del Agua (SST)</span>
-                    <span class="slider-val" id="valTemp">27.0 °C</span>
-                </div>
-                <input type="range" id="rngTemp" min="24.0" max="33.0" step="0.1" value="27.0">
-            </div>
-
-            <div class="slider-group">
-                <div class="slider-label">
-                    <span>Acumulación Térmica (DHW)</span>
-                    <span class="slider-val" id="valDHW">0.0 °C-sem</span>
-                </div>
-                <input type="range" id="rngDHW" min="0" max="16" step="0.5" value="0">
-            </div>
-
-            <div class="slider-group">
-                <div class="slider-label">
-                    <span>Acidificación Oceánica (pH)</span>
-                    <span class="slider-val" id="valPH">8.15 pH</span>
-                </div>
-                <input type="range" id="rngPH" min="7.60" max="8.30" step="0.01" value="8.15">
-            </div>
-
-            <div class="slider-group">
-                <div class="slider-label">
-                    <span>Radiación Solar / UV</span>
-                    <span class="slider-val" id="valUV">450 µmol/m²s</span>
-                </div>
-                <input type="range" id="rngUV" min="100" max="1200" step="25" value="450">
-            </div>
-
-            <div class="panel-sec-title">
-                <span>Modos y Procesos Biológicos</span>
-                <span>🔬 CNIDARIOS</span>
-            </div>
-
-            <div class="btn-group">
-                <button class="btn-action active" id="btnCycle">☀️ Modo Día</button>
-                <button class="btn-action" id="btnFeeding">🦐 Zooplancton</button>
-            </div>
-
-            <div class="btn-group">
-                <button class="btn-action danger" id="btnHeatwave">🔥 Ola de Calor</button>
-                <button class="btn-action" id="btnRecovery">🌿 Recuperación</button>
-            </div>
+        <div class="slider-wrap">
+            <div class="slider-head"><span>Acumulación DHW</span><span class="slider-val" id="valDHW">0.0 °C-sem</span></div>
+            <input type="range" id="rngDHW" min="0" max="16" step="0.5" value="0">
         </div>
+        <div class="slider-wrap">
+            <div class="slider-head"><span>Acidificación Oceánica (pH)</span><span class="slider-val" id="valPH">8.15 pH</span></div>
+            <input type="range" id="rngPH" min="7.60" max="8.30" step="0.01" value="8.15">
+        </div>
+        <div class="slider-wrap">
+            <div class="slider-head"><span>Radiación UV</span><span class="slider-val" id="valUV">450 µmol</span></div>
+            <input type="range" id="rngUV" min="100" max="1200" step="25" value="450">
+        </div>
+    
+        
+        <div class="panel-sec-title"><span>Modos Biológicos</span><span>Simbiosis</span></div>
+        <div class="btn-grid">
+            <button class="btn-action active" id="btnDay">☀️ Modo Día</button>
+            <button class="btn-action" id="btnNight">🌙 Noche / Captura</button>
+        </div>
+        <div class="btn-grid" style="margin-top:8px;">
+            <button class="btn-action" id="btnHeatwave" style="border-color:#f43f5e; color:#fda4af;">🔥 Ola de Calor</button>
+            <button class="btn-action" id="btnRecover">🌿 Recuperación</button>
+        </div>
+    
+    </aside>
 
-        <div class="telemetry-card">
-            <div class="panel-sec-title">
-                <span>Telemetría Arrecifal</span>
-                <span>NOAA / Cryo-EM</span>
+    <div class="telemetry-dock">
+        <div class="kpi-group">
+            
+        <div class="kpi-card">
+            <span class="kpi-label">Densidad Zooxantelas</span>
+            <span class="kpi-value" id="kpiZoox">1.48×10⁶</span>
+            <span class="kpi-pill pill-healthy" id="pillStatus">Normal / Saludable</span>
+        </div>
+        <div class="kpi-card">
+            <span class="kpi-label">Tasa Calcificación</span>
+            <span class="kpi-value" id="kpiCalc">14.2 g/m²</span>
+        </div>
+    
+        </div>
+        <div class="chart-box">
+            <div class="chart-head">
+                <span>Curva Térmica NOAA</span>
+                <span id="chartLiveVal">27.0 °C</span>
             </div>
-            <div class="kpi-row">
-                <span class="kpi-name">Densidad Zooxantelas:</span>
-                <span class="kpi-val" id="kpiZoox">1.48 × 10⁶ cél/cm²</span>
-            </div>
-            <div class="kpi-row">
-                <span class="kpi-name">Tasa Calcificación CaCO₃:</span>
-                <span class="kpi-val" id="kpiCalc">14.2 g/m²/día</span>
-            </div>
-            <div class="kpi-row">
-                <span class="kpi-name">Extensión de Tentáculos:</span>
-                <span class="kpi-val" id="kpiTent">Reposo Diurno</span>
-            </div>
-            <div class="kpi-row">
-                <span class="kpi-name">Estado de Blanqueamiento:</span>
-                <span class="status-badge status-healthy" id="kpiStatus">Normal / Saludable</span>
-            </div>
+            <canvas id="dockCanvas" width="300" height="48"></canvas>
         </div>
     </div>
 
+    <canvas id="renderCanvas"></canvas>
+
     <script>
-        const canvas = document.getElementById('coralCanvas');
-        const ctx = canvas.getContext('2d');
-
-        // Estado científico del arrecife
-        let state = {
-            temp: 27.0,
-            dhw: 0.0,
-            ph: 8.15,
-            uv: 450,
-            isNight: false,
-            feeding: false,
-            zooxHealth: 1.0, // 1.0 = normal, 0.0 = blanqueado total
-            rotX: -0.2,
-            rotY: 0.3,
-            zoom: 1.0,
-            audioEnabled: true
-        };
-
-        // Generar estructura de coral (esqueleto aragonito + pólipos radiales)
-        const polyps = [];
-        const numPolyps = 24;
-        for (let i = 0; i < numPolyps; i++) {
-            const phi = Math.acos(-1 + (2 * i) / numPolyps);
-            const theta = Math.sqrt(numPolyps * Math.PI) * phi;
-            const r = 140 + Math.sin(i * 3.5) * 20;
-            polyps.push({
-                x: r * Math.sin(phi) * Math.cos(theta),
-                y: r * Math.sin(phi) * Math.sin(theta) * 0.7 - 20,
-                z: r * Math.cos(phi),
-                tentacles: 8,
-                phase: Math.random() * Math.PI * 2,
-                size: 14 + Math.random() * 6
-            });
-        }
-
-        // Web Audio Submarino
+        // WEB AUDIO PROCEDURAL SINTETIZADO (CERO DEPENDENCIAS EXTERNAS)
         let audioCtx = null;
-        function playSubAudio() {
-            if (!state.audioEnabled) return;
+        let isAudioPlaying = true;
+        function initAudio() {
             try {
                 if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
                 if (audioCtx.state === 'suspended') audioCtx.resume();
+            } catch(e) {}
+        }
+
+        function playSciPing(freq = 440, duration = 0.25, type = 'sine') {
+            if (!isAudioPlaying) return;
+            initAudio();
+            if (!audioCtx) return;
+            try {
                 const osc = audioCtx.createOscillator();
                 const gain = audioCtx.createGain();
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(80 + Math.random() * 40, audioCtx.currentTime);
-                gain.gain.setValueAtTime(0.02, audioCtx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 1.2);
+                osc.type = type;
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.04, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
                 osc.connect(gain);
                 gain.connect(audioCtx.destination);
                 osc.start();
-                osc.stop(audioCtx.currentTime + 1.2);
+                osc.stop(audioCtx.currentTime + duration);
             } catch(e) {}
         }
-        setInterval(playSubAudio, 2400);
 
-        // Síntesis de voz
-        function speak(text) {
+        // SÍNTESIS DE VOZ PEDAGÓGICA EN ESPAÑOL
+        function speakNarrative(text) {
             if ('speechSynthesis' in window) {
                 window.speechSynthesis.cancel();
                 const u = new SpeechSynthesisUtterance(text);
                 u.lang = 'es-ES';
-                u.rate = 1.05;
+                u.rate = 1.02;
                 window.speechSynthesis.speak(u);
             }
         }
 
-        // Interacción orbital con ratón
-        let isDragging = false;
-        let lastMouse = { x: 0, y: 0 };
-        canvas.addEventListener('mousedown', (e) => {
-            isDragging = true;
-            lastMouse = { x: e.clientX, y: e.clientY };
-        });
-        window.addEventListener('mouseup', () => isDragging = false);
-        window.addEventListener('mousemove', (e) => {
-            if (!isDragging) return;
-            const dx = e.clientX - lastMouse.x;
-            const dy = e.clientY - lastMouse.y;
-            state.rotY += dx * 0.008;
-            state.rotX += dy * 0.008;
-            lastMouse = { x: e.clientX, y: e.clientY };
-        });
-        canvas.addEventListener('wheel', (e) => {
-            e.preventDefault();
-            state.zoom *= e.deltaY > 0 ? 0.95 : 1.05;
-            state.zoom = Math.max(0.6, Math.min(2.2, state.zoom));
+        // BOTONES DE CABECERA
+        document.getElementById('btnAudio').addEventListener('click', function() {
+            isAudioPlaying = !isAudioPlaying;
+            this.innerText = isAudioPlaying ? '🔊 Audio: ON' : '🔇 Audio: OFF';
+            this.classList.toggle('active', isAudioPlaying);
         });
 
-        // Loop de renderizado 3D fotorrealista
-        let t = 0;
-        function render() {
-            t += 0.025;
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        document.getElementById('btnVoice').addEventListener('click', function() {
+            speakNarrative("Bienvenido al Laboratorio del Arrecife de Coral 3D. Observa cómo los pólipos cnidarios segregan carbonato de calcio y cómo la acumulación térmica causa la expulsión de las zooxantelas.");
+        });
 
-            const cx = canvas.width / 2;
-            const cy = canvas.height / 2 + 30;
+        // INICIALIZACIÓN DE BABYLON.JS
+        const canvas = document.getElementById("renderCanvas");
+        const engine = new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true });
+        let autoRotate = true;
+        let modelMeshRoot = null;
+        let isModelLoaded = false;
+        let fixedBaseScale = 1.0;
 
-            // Iluminación cáustica marina submarina
-            const causticAlpha = state.isNight ? 0.04 : 0.15;
-            ctx.save();
-            ctx.fillStyle = `rgba(56, 189, 248, ${causticAlpha})`;
-            for (let i = 0; i < 5; i++) {
-                ctx.beginPath();
-                ctx.arc(cx + Math.sin(t * 0.8 + i) * 260, cy - 120 + Math.cos(t * 0.6 + i) * 100, 80 + i * 20, 0, Math.PI * 2);
-                ctx.fill();
-            }
-            ctx.restore();
+        const createScene = function() {
+            const scene = new BABYLON.Scene(engine);
+            scene.clearColor = new BABYLON.Color4(0.024, 0.035, 0.067, 1.0); // #060913
 
-            // Transformación 3D
-            const cosY = Math.cos(state.rotY);
-            const sinY = Math.sin(state.rotY);
-            const cosX = Math.cos(state.rotX);
-            const sinX = Math.sin(state.rotX);
+            // CÁMARA ORBITAL MÉDICO-CIENTÍFICA
+            const camera = new BABYLON.ArcRotateCamera("Camera", -Math.PI / 2, Math.PI / 2.5, 6.0, new BABYLON.Vector3(0, 0, 0), scene);
+            camera.attachControl(canvas, true);
+            camera.wheelPrecision = 45;
+            camera.lowerRadiusLimit = 2.2;
+            camera.upperRadiusLimit = 16.0;
 
-            function project(p) {
-                // Rot Y
-                let x1 = p.x * cosY + p.z * sinY;
-                let z1 = -p.x * sinY + p.z * cosY;
-                // Rot X
-                let y2 = p.y * cosX - z1 * sinX;
-                let z2 = p.y * sinX + z1 * cosX;
-                const fov = 480;
-                const scale = (fov / (fov + z2 + 300)) * state.zoom;
-                return {
-                    x: cx + x1 * scale,
-                    y: cy + y2 * scale,
-                    z: z2,
-                    scale: scale
-                };
-            }
+            // ILUMINACIÓN CLÍNICA PBR
+            const hemiLight = new BABYLON.HemisphericLight("hemiLight", new BABYLON.Vector3(0, 1, 0), scene);
+            hemiLight.intensity = 0.85;
+            hemiLight.diffuse = new BABYLON.Color3(0.9, 0.95, 1.0);
+            hemiLight.groundColor = new BABYLON.Color3(0.1, 0.15, 0.25);
 
-            // Ordenar pólipos por profundidad Z (Painter's algorithm)
-            const projectedPolyps = polyps.map((p, idx) => ({ ...p, proj: project(p), idx }));
-            projectedPolyps.sort((a, b) => b.proj.z - a.proj.z);
+            const keyLight = new BABYLON.DirectionalLight("keyLight", new BABYLON.Vector3(-1, -2, 1), scene);
+            keyLight.position = new BABYLON.Vector3(5, 8, -5);
+            keyLight.intensity = 1.2;
 
-            // Base de esqueleto pétreo CaCO3
-            ctx.save();
-            const gradBase = ctx.createRadialGradient(cx, cy + 60, 20, cx, cy + 60, 220 * state.zoom);
-            const rBase = Math.floor(220 * (1 - state.zooxHealth) + 120 * state.zooxHealth);
-            const gBase = Math.floor(220 * (1 - state.zooxHealth) + 60 * state.zooxHealth);
-            const bBase = Math.floor(220 * (1 - state.zooxHealth) + 80 * state.zooxHealth);
-            gradBase.addColorStop(0, `rgb(${rBase}, ${gBase}, ${bBase})`);
-            gradBase.addColorStop(1, '#051329');
-            ctx.fillStyle = gradBase;
-            ctx.beginPath();
-            ctx.ellipse(cx, cy + 50, 180 * state.zoom, 110 * state.zoom, 0, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.restore();
+            const fillLight = new BABYLON.PointLight("fillLight", new BABYLON.Vector3(-5, -2, -4), scene);
+            fillLight.diffuse = new BABYLON.Color3(56, 189, 248);
+            fillLight.intensity = 0.8;
 
-            // Dibujar cada pólipo cnidario
-            projectedPolyps.forEach(p => {
-                const pr = p.proj;
-                if (pr.scale <= 0) return;
+            const glow = new BABYLON.GlowLayer("glow", scene);
+            glow.intensity = 0.35;
 
-                // Color dinámico según salud de zooxantelas y blanqueamiento
-                // Zooxantelas saludables = coral marrón-rosado brillante (#e11d48 a #059669)
-                // Blanqueado = blanco lechoso de aragonito (#f1f5f9)
-                const hR = Math.floor(240 * (1 - state.zooxHealth) + 225 * state.zooxHealth);
-                const hG = Math.floor(245 * (1 - state.zooxHealth) + 40 * state.zooxHealth);
-                const hB = Math.floor(250 * (1 - state.zooxHealth) + 90 * state.zooxHealth);
+            // CARGA ROBUSTA MULTI-RUTA (Base64 -> Local -> CDN)
+            const candidateSources = [
+                (window.CORAL_GLB_B64 && window.CORAL_GLB_B64.length > 500) ? window.CORAL_GLB_B64 : null,
+                "coral_b64.js",
+                "../../../../SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/coral_b64.js",
+                "../03_ASSETS_3D_Y_DATOS/coral_b64.js",
+                "https://javiercursocorreo-gif.github.io/Curso-IA/SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/coral_b64.js"
+            ].filter(Boolean);
 
-                // Columna del pólipo
-                ctx.beginPath();
-                ctx.arc(pr.x, pr.y, p.size * pr.scale, 0, Math.PI * 2);
-                ctx.fillStyle = `rgb(${hR}, ${hG}, ${hB})`;
-                ctx.fill();
-                ctx.strokeStyle = `rgba(255, 255, 255, 0.35)`;
-                ctx.lineWidth = 1.5;
-                ctx.stroke();
-
-                // Tentáculos móviles (se extienden de noche o al alimentar)
-                const tentReach = (state.isNight || state.feeding ? 1.6 : 0.6) * pr.scale;
-                const tentCount = p.tentacles;
-                for (let k = 0; k < tentCount; k++) {
-                    const ang = (Math.PI * 2 / tentCount) * k + t * 0.5 + p.phase;
-                    const sway = Math.sin(t * 2 + k + p.phase) * (6 * pr.scale);
-                    const tx = pr.x + Math.cos(ang) * (p.size * pr.scale + 16 * tentReach) + sway;
-                    const ty = pr.y + Math.sin(ang) * (p.size * pr.scale + 16 * tentReach) + sway;
-
-                    ctx.beginPath();
-                    ctx.moveTo(pr.x + Math.cos(ang) * (p.size * pr.scale * 0.8), pr.y + Math.sin(ang) * (p.size * pr.scale * 0.8));
-                    ctx.quadraticCurveTo(pr.x + Math.cos(ang) * 12 * pr.scale + sway, pr.y + Math.sin(ang) * 12 * pr.scale + sway, tx, ty);
-                    ctx.strokeStyle = state.zooxHealth > 0.4 ? `rgba(251, 113, 133, 0.8)` : `rgba(241, 245, 249, 0.7)`;
-                    ctx.lineWidth = 2.2 * pr.scale;
-                    ctx.stroke();
-
-                    // Zooxantelas visibles como puntos verdes fotosintéticos si está sano
-                    if (state.zooxHealth > 0.25 && !state.isNight) {
-                        ctx.beginPath();
-                        ctx.arc(tx, ty, 1.8 * pr.scale, 0, Math.PI * 2);
-                        ctx.fillStyle = `rgba(16, 185, 129, ${state.zooxHealth * 0.9})`;
-                        ctx.fill();
-                    }
+            let currentSrcIdx = 0;
+            function loadScientificMesh() {
+                if (currentSrcIdx >= candidateSources.length) {
+                    document.getElementById("loadingOverlay").innerHTML = '<div style="color:#ef4444;font-weight:700;">Simulación activa con modelo procedural</div>';
+                    setTimeout(() => {
+                        document.getElementById("loadingOverlay").style.opacity = "0";
+                        setTimeout(() => document.getElementById("loadingOverlay").style.display = "none", 400);
+                    }, 600);
+                    return;
                 }
+                const source = candidateSources[currentSrcIdx];
+                BABYLON.SceneLoader.ImportMesh("", "", source, scene, function(meshes) {
+                    const overlay = document.getElementById("loadingOverlay");
+                    overlay.style.opacity = "0";
+                    setTimeout(() => overlay.style.display = "none", 400);
 
-                // Boca / cavidad gastrovascular central
-                ctx.beginPath();
-                ctx.arc(pr.x, pr.y, 3 * pr.scale, 0, Math.PI * 2);
-                ctx.fillStyle = '#1e1b4b';
-                ctx.fill();
+                    modelMeshRoot = new BABYLON.TransformNode("modelRoot", scene);
+                    meshes.forEach(m => {
+                        if (m.parent === null) {
+                            m.parent = modelMeshRoot;
+                        }
+                    });
+
+                    const hierarchy = modelMeshRoot.getHierarchyBoundingVectors();
+                    const center = hierarchy.max.add(hierarchy.min).scale(0.5);
+                    const size = hierarchy.max.subtract(hierarchy.min);
+                    const maxDim = Math.max(size.x, size.y, size.z);
+
+                    if (maxDim > 0) {
+                        fixedBaseScale = 2.8 / maxDim;
+                        modelMeshRoot.scaling = new BABYLON.Vector3(fixedBaseScale, fixedBaseScale, fixedBaseScale);
+                        modelMeshRoot.position = center.scale(-fixedBaseScale);
+                    }
+                    camera.target = new BABYLON.Vector3(0, 0, 0);
+                    isModelLoaded = true;
+                }, null, function(scene, msg) {
+                    console.warn("Fallo fuente:", source, msg);
+                    currentSrcIdx++;
+                    loadScientificMesh();
+                }, ".glb");
+            }
+            loadScientificMesh();
+
+            // SETUP ESPECÍFICO ADICIONAL
+            
+        // Partículas bioluminiscentes de zooxantelas
+        const particleSystem = new BABYLON.ParticleSystem("zooxParticles", 200, scene);
+        particleSystem.emitter = new BABYLON.Vector3(0, 0, 0);
+        particleSystem.minEmitBox = new BABYLON.Vector3(-1.2, -0.2, -1.2);
+        particleSystem.maxEmitBox = new BABYLON.Vector3(1.2, 1.2, 1.2);
+        particleSystem.color1 = new BABYLON.Color4(0.1, 0.8, 0.4, 0.8);
+        particleSystem.color2 = new BABYLON.Color4(0.2, 0.9, 0.6, 0.2);
+        particleSystem.minSize = 0.05;
+        particleSystem.maxSize = 0.12;
+        particleSystem.minLifeTime = 1.5;
+        particleSystem.maxLifeTime = 3.0;
+        particleSystem.emitRate = 40;
+        particleSystem.start();
+
+        // Sliders Listeners
+        document.getElementById('rngSST').addEventListener('input', function(e) {
+            document.getElementById('valSST').innerText = parseFloat(e.target.value).toFixed(1) + ' °C';
+            playSciPing(320 + e.target.value * 15, 0.08);
+        });
+        document.getElementById('rngDHW').addEventListener('input', function(e) {
+            document.getElementById('valDHW').innerText = parseFloat(e.target.value).toFixed(1) + ' °C-sem';
+        });
+        document.getElementById('rngPH').addEventListener('input', function(e) {
+            document.getElementById('valPH').innerText = parseFloat(e.target.value).toFixed(2) + ' pH';
+        });
+        document.getElementById('btnHeatwave').addEventListener('click', function() {
+            document.getElementById('rngSST').value = 31.8;
+            document.getElementById('rngDHW').value = 9.5;
+            document.getElementById('valSST').innerText = '31.8 °C';
+            document.getElementById('valDHW').innerText = '9.5 °C-sem';
+            playSciPing(220, 0.35, 'sawtooth');
+        });
+        document.getElementById('btnRecover').addEventListener('click', function() {
+            document.getElementById('rngSST').value = 27.0;
+            document.getElementById('rngDHW').value = 0.0;
+            document.getElementById('valSST').innerText = '27.0 °C';
+            document.getElementById('valDHW').innerText = '0.0 °C-sem';
+            playSciPing(580, 0.2, 'sine');
+        });
+    
+
+            document.getElementById('btnReset').addEventListener('click', function() {
+                camera.radius = 6.0;
+                camera.alpha = -Math.PI / 2;
+                camera.beta = Math.PI / 2.5;
+                camera.target = new BABYLON.Vector3(0, 0, 0);
+                playSciPing(600, 0.15);
             });
 
-            // Partículas de zooplancton suspendidas
-            if (state.feeding || state.isNight) {
-                ctx.fillStyle = 'rgba(251, 191, 36, 0.75)';
-                for (let j = 0; j < 18; j++) {
-                    const px = cx + Math.sin(t * 0.5 + j * 1.3) * 280;
-                    const py = cy - 80 + Math.cos(t * 0.7 + j * 0.9) * 180;
-                    ctx.beginPath();
-                    ctx.arc(px, py, 2.2, 0, Math.PI * 2);
-                    ctx.fill();
-                }
+            document.getElementById('btnRotate').addEventListener('click', function() {
+                autoRotate = !autoRotate;
+                this.innerText = autoRotate ? '🔄 Giro: ON' : '⏸️ Giro: OFF';
+                this.classList.toggle('active', autoRotate);
+            });
+
+            return scene;
+        };
+
+        const scene = createScene();
+
+        // RENDER LOOP
+        let lastTime = performance.now();
+        engine.runRenderLoop(function() {
+            const now = performance.now();
+            const dt = (now - lastTime) / 1000;
+            lastTime = now;
+
+            if (autoRotate && modelMeshRoot) {
+                modelMeshRoot.rotation.y += 0.0035;
             }
 
-            requestAnimationFrame(render);
+            
+        const sst = parseFloat(document.getElementById('rngSST').value);
+        const dhw = parseFloat(document.getElementById('rngDHW').value);
+        const zoox = Math.max(0.05, 1.48 - (dhw * 0.14)).toFixed(2);
+        document.getElementById('kpiZoox').innerText = zoox + '×10⁶';
+        
+        const pill = document.getElementById('pillStatus');
+        if (dhw > 8 || sst > 31) {
+            pill.className = 'kpi-pill pill-danger';
+            pill.innerText = 'Blanqueamiento Crítico';
+        } else if (dhw > 4 || sst > 29.5) {
+            pill.className = 'kpi-pill pill-warn';
+            pill.innerText = 'Alerta Térmica';
+        } else {
+            pill.className = 'kpi-pill pill-healthy';
+            pill.innerText = 'Saludable / Simbiosis';
         }
-        render();
+    
 
-        // Lógica de telemetría y actualización
-        function updateTelemetry() {
-            // Umbral biológico: > 30.5 °C o DHW > 4 causa expulsión de zooxantelas
-            if (state.temp > 30.5 || state.dhw >= 4.0) {
-                const stress = Math.max((state.temp - 30.5) * 0.2, (state.dhw - 3.5) * 0.08);
-                state.zooxHealth = Math.max(0.05, state.zooxHealth - stress * 0.02);
-            } else if (state.temp <= 28.5 && state.dhw < 2.0) {
-                state.zooxHealth = Math.min(1.0, state.zooxHealth + 0.008);
-            }
+            updateDockChart(dt);
+            scene.render();
+        });
 
-            const dens = (state.zooxHealth * 1.5).toFixed(2);
-            document.getElementById('kpiZoox').innerText = `${dens} × 10⁶ cél/cm²`;
+        window.addEventListener("resize", () => engine.resize());
 
-            // Tasa de calcificación afectada por pH y zooxantelas
-            const phFactor = Math.max(0.2, (state.ph - 7.6) / (8.2 - 7.6));
-            const calc = (14.5 * state.zooxHealth * phFactor).toFixed(1);
-            document.getElementById('kpiCalc').innerText = `${calc} g/m²/día`;
+        // TELEMETRÍA EN TIEMPO REAL (DOCK CANVAS)
+        const dockCanvas = document.getElementById("dockCanvas");
+        const dCtx = dockCanvas.getContext("2d");
+        const chartHistory = [];
+        let chartPhase = 0;
 
-            // Estado NOAA
-            const statusEl = document.getElementById('kpiStatus');
-            if (state.dhw >= 8 || state.zooxHealth < 0.2) {
-                statusEl.className = 'status-badge status-bleached';
-                statusEl.innerText = '🚨 Alerta Nivel 2: Blanqueamiento Masivo';
-            } else if (state.dhw >= 4 || state.zooxHealth < 0.6) {
-                statusEl.className = 'status-badge status-warning';
-                statusEl.innerText = '⚠️ Alerta Nivel 1: Riesgo Térmico';
-            } else {
-                statusEl.className = 'status-badge status-healthy';
-                statusEl.innerText = 'Normal / Simbiosis Estable';
-            }
+        function updateDockChart(dt) {
+            chartPhase += dt;
+            
+        const sst = parseFloat(document.getElementById('rngSST').value);
+        const v = Math.sin(chartPhase * 4) * 8 + (sst - 24) * 4;
+        chartHistory.push(v);
+        if (chartHistory.length > 50) chartHistory.shift();
 
-            document.getElementById('kpiTent').innerText = state.isNight ? 'Expandidos (Captura Activa)' : (state.feeding ? 'Capturando Zooplancton' : 'Reposo Diurno');
+        dCtx.clearRect(0, 0, dockCanvas.width, dockCanvas.height);
+        dCtx.strokeStyle = '#38bdf8';
+        dCtx.lineWidth = 2;
+        dCtx.beginPath();
+        chartHistory.forEach((pt, idx) => {
+            const x = (idx / 50) * dockCanvas.width;
+            const y = dockCanvas.height - (pt / 40) * dockCanvas.height;
+            if (idx === 0) dCtx.moveTo(x, y);
+            else dCtx.lineTo(x, y);
+        });
+        dCtx.stroke();
+        document.getElementById('chartLiveVal').innerText = sst.toFixed(1) + ' °C';
+    
         }
-        setInterval(updateTelemetry, 300);
-
-        // Controladores UI
-        document.getElementById('rngTemp').addEventListener('input', (e) => {
-            state.temp = parseFloat(e.target.value);
-            document.getElementById('valTemp').innerText = state.temp.toFixed(1) + ' °C';
-            if (state.temp > 30.5) state.dhw = Math.min(16, state.dhw + 0.2);
-            document.getElementById('rngDHW').value = state.dhw;
-            document.getElementById('valDHW').innerText = state.dhw.toFixed(1) + ' °C-sem';
-        });
-
-        document.getElementById('rngDHW').addEventListener('input', (e) => {
-            state.dhw = parseFloat(e.target.value);
-            document.getElementById('valDHW').innerText = state.dhw.toFixed(1) + ' °C-sem';
-        });
-
-        document.getElementById('rngPH').addEventListener('input', (e) => {
-            state.ph = parseFloat(e.target.value);
-            document.getElementById('valPH').innerText = state.ph.toFixed(2) + ' pH';
-        });
-
-        document.getElementById('rngUV').addEventListener('input', (e) => {
-            state.uv = parseInt(e.target.value);
-            document.getElementById('valUV').innerText = state.uv + ' µmol/m²s';
-        });
-
-        document.getElementById('btnCycle').addEventListener('click', (e) => {
-            state.isNight = !state.isNight;
-            e.target.innerText = state.isNight ? '🌙 Modo Noche' : '☀️ Modo Día';
-            e.target.classList.toggle('active', !state.isNight);
-        });
-
-        document.getElementById('btnFeeding').addEventListener('click', () => {
-            state.feeding = !state.feeding;
-            document.getElementById('btnFeeding').classList.toggle('active', state.feeding);
-            if (state.feeding) speak("Alimentación cnidaria activada. Los pólipos despliegan sus tentáculos radiales para capturar zooplancton mediante nematocistos.");
-        });
-
-        document.getElementById('btnHeatwave').addEventListener('click', () => {
-            state.temp = 32.2;
-            state.dhw = 9.5;
-            document.getElementById('rngTemp').value = 32.2;
-            document.getElementById('valTemp').innerText = '32.2 °C';
-            document.getElementById('rngDHW').value = 9.5;
-            document.getElementById('valDHW').innerText = '9.5 °C-sem';
-            speak("Alerta NOAA Nivel 2. Ola marina calórica extrema. La fotosíntesis de las zooxantelas colapsa y el pólipo expulsa las algas simbiontes, blanqueando el arrecife.");
-        });
-
-        document.getElementById('btnRecovery').addEventListener('click', () => {
-            state.temp = 26.5;
-            state.dhw = 0.5;
-            state.zooxHealth = 0.95;
-            document.getElementById('rngTemp').value = 26.5;
-            document.getElementById('valTemp').innerText = '26.5 °C';
-            document.getElementById('rngDHW').value = 0.5;
-            document.getElementById('valDHW').innerText = '0.5 °C-sem';
-            speak("Temperatura oceánica restablecida a niveles óptimos. Las microalgas zooxantelas repueblan el tejido de los pólipos restableciendo la simbiosis.");
-        });
-
-        document.getElementById('btnAudioToggle').addEventListener('click', (e) => {
-            state.audioEnabled = !state.audioEnabled;
-            e.target.innerText = state.audioEnabled ? '🔊 Audio Ecosistema: ON' : '🔈 Audio: OFF';
-        });
-
-        document.getElementById('btnVoiceGuide').addEventListener('click', () => {
-            speak("Bienvenido al simulador tridimensional del Arrecife de Coral. Observa la colonia de pólipos y el esqueleto de aragonito. Aumenta la temperatura para presenciar el fenómeno de blanqueamiento.");
-        });
-
-        document.getElementById('btnResetView').addEventListener('click', () => {
-            state.rotX = -0.2;
-            state.rotY = 0.3;
-            state.zoom = 1.0;
-        });
     </script>
 </body>
 </html>

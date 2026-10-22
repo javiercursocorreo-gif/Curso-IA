@@ -3,547 +3,685 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sesión 38 • Columna Vertebral, Discos y Biomecánica Lumbar 3D [COD-038]</title>
-    <!-- NIH 3D TC Lumbar • Biomecánica Chaffin & Nachemson • Disco L5-S1 • Umbral NIOSH -->
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+    <title>Sesión 38 • Columna Vertebral Humana, Discos y Biomecánica 3D [[COD-038]]</title>
+    <!-- Babylon.js CDN Oficial -->
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+    <!-- Modelo Científico en Base64 (Multi-Fallback) -->
+    <script src="spine_b64.js"></script>
+    <script src="../../../../SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/spine_b64.js"></script>
+    <script src="../03_ASSETS_3D_Y_DATOS/spine_b64.js"></script>
+    <script src="https://javiercursocorreo-gif.github.io/Curso-IA/SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/spine_b64.js"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-base: #060812;
-            --bg-panel: rgba(10, 16, 32, 0.94);
-            --border: rgba(56, 189, 248, 0.35);
-            --primary: #38bdf8;
-            --primary-glow: rgba(56, 189, 248, 0.4);
-            --bone: #f8fafc;
-            --disc: #38bdf8;
-            --nerve: #fbbf24;
-            --danger: #f43f5e;
+            --bg-base: #060913;
+            --bg-panel: rgba(15, 23, 42, 0.92);
+            --border: rgba(255, 255, 255, 0.12);
+            --accent: #eab308;
+            --accent-glow: rgba(234, 179, 8, 0.35);
             --text-main: #f8fafc;
             --text-sub: #cbd5e1;
-            --font-title: 'Cinzel', serif;
-            --font-sans: 'Inter', sans-serif;
-            --font-mono: 'JetBrains Mono', monospace;
+            --text-muted: #94a3b8;
+            --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            --font-mono: 'JetBrains Mono', ui-monospace, monospace;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+        }
+
         body {
             background-color: var(--bg-base);
             color: var(--text-main);
             font-family: var(--font-sans);
-            height: 100vh;
             width: 100vw;
+            height: 100vh;
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            font-size: 14px;
         }
 
+        /* 3D VIEWPORT */
+        #renderCanvas {
+            width: 100%;
+            height: 100%;
+            touch-action: none;
+            outline: none;
+            display: block;
+        }
+
+        /* HEADER HUD */
         header {
-            background: linear-gradient(180deg, rgba(8, 14, 28, 0.98) 0%, rgba(8, 14, 28, 0.88) 100%);
+            position: absolute;
+            top: 18px;
+            left: 20px;
+            right: 20px;
+            z-index: 20;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            pointer-events: none;
+        }
+
+        .brand-card {
+            background: var(--bg-panel);
             backdrop-filter: blur(14px);
-            border-bottom: 1px solid var(--border);
-            padding: 10px 24px;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 12px 20px;
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            flex-shrink: 0;
-            z-index: 40;
+            gap: 14px;
+            box-shadow: 0 14px 35px rgba(0,0,0,0.6);
+            pointer-events: auto;
         }
-        .brand-box { display: flex; align-items: center; gap: 14px; }
-        .badge-pill {
-            background: rgba(56, 189, 248, 0.15);
-            border: 1px solid var(--primary);
-            color: var(--primary);
+
+        .brand-badge {
+            background: var(--accent-glow);
+            border: 1px solid var(--accent);
+            color: var(--accent);
             font-family: var(--font-mono);
             font-weight: 800;
-            font-size: 0.82rem;
-            padding: 4px 10px;
-            border-radius: 6px;
+            font-size: 0.85rem;
+            padding: 5px 10px;
+            border-radius: 8px;
+            letter-spacing: 0.05em;
         }
-        .title-text h1 {
-            font-family: var(--font-title);
+
+        .brand-title {
             font-size: 1.15rem;
             font-weight: 800;
-            color: #fff;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            letter-spacing: -0.01em;
+            color: #ffffff;
         }
-        .title-text p { font-size: 0.78rem; color: var(--text-sub); margin-top: 1px; }
 
-        .header-actions { display: flex; align-items: center; gap: 10px; }
+        .brand-sub {
+            font-size: 0.76rem;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+            pointer-events: auto;
+        }
+
         .btn-header {
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            color: var(--text-main);
-            padding: 6px 14px;
-            border-radius: 8px;
+            background: var(--bg-panel);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border);
+            color: var(--text-sub);
+            padding: 9px 14px;
+            border-radius: 10px;
             font-size: 0.8rem;
             font-weight: 700;
             cursor: pointer;
             transition: all 0.2s ease;
-        }
-        .btn-header:hover { background: rgba(56, 189, 248, 0.2); border-color: var(--primary); color: #fff; }
-
-        .workspace { flex: 1; position: relative; overflow: hidden; display: flex; }
-
-        .viewer-container {
-            flex: 1;
-            position: relative;
-            background: radial-gradient(circle at center, #0f1d38 0%, #060812 100%);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
             display: flex;
             align-items: center;
-            justify-content: center;
-            overflow: hidden;
+            gap: 6px;
         }
 
-        #spineCanvas {
-            max-width: 96%;
-            max-height: 92%;
-            border-radius: 14px;
-            box-shadow: 0 15px 45px rgba(0, 0, 0, 0.9);
-            border: 1px solid rgba(56, 189, 248, 0.25);
-            background: #080d1e;
-            cursor: grab;
+        .btn-header:hover {
+            background: rgba(30, 41, 59, 0.95);
+            border-color: var(--accent);
+            color: #ffffff;
+            transform: translateY(-1px);
         }
-        #spineCanvas:active { cursor: grabbing; }
 
-        .controls-panel {
+        .btn-header.active {
+            background: var(--accent-glow);
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        /* FLOATING SIDEBAR (CONTROLS) */
+        .sidebar-left {
             position: absolute;
-            top: 18px;
+            top: 86px;
             left: 20px;
-            width: 350px;
+            width: 320px;
+            max-height: calc(100vh - 106px);
             background: var(--bg-panel);
+            backdrop-filter: blur(16px);
             border: 1px solid var(--border);
-            border-radius: 14px;
+            border-radius: 16px;
             padding: 18px;
-            backdrop-filter: blur(14px);
-            z-index: 20;
-            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6);
             display: flex;
             flex-direction: column;
             gap: 14px;
-            max-height: calc(100vh - 120px);
+            z-index: 20;
             overflow-y: auto;
+            box-shadow: 0 16px 40px rgba(0,0,0,0.6);
+        }
+
+        .sidebar-left::-webkit-scrollbar {
+            width: 4px;
+        }
+        .sidebar-left::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.2);
+            border-radius: 4px;
         }
 
         .panel-sec-title {
             font-size: 0.78rem;
-            font-family: var(--font-mono);
-            color: var(--primary);
+            font-weight: 800;
             text-transform: uppercase;
             letter-spacing: 0.08em;
+            color: var(--accent);
             display: flex;
             align-items: center;
             justify-content: space-between;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-            padding-bottom: 5px;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            padding-bottom: 6px;
+            margin-top: 4px;
         }
 
-        .slider-group { display: flex; flex-direction: column; gap: 6px; }
-        .slider-label {
+        .slider-wrap {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .slider-head {
             display: flex;
             justify-content: space-between;
-            font-size: 0.82rem;
+            align-items: center;
+            font-size: 0.8rem;
+            font-weight: 600;
             color: var(--text-sub);
         }
-        .slider-val { font-family: var(--font-mono); color: #fff; font-weight: 700; }
+
+        .slider-val {
+            font-family: var(--font-mono);
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: var(--accent);
+            background: rgba(255,255,255,0.06);
+            padding: 2px 7px;
+            border-radius: 6px;
+        }
+
         input[type="range"] {
             width: 100%;
             height: 6px;
-            border-radius: 3px;
-            background: #1e293b;
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.15);
             outline: none;
+            -webkit-appearance: none;
+            accent-color: var(--accent);
             cursor: pointer;
-            accent-color: var(--primary);
         }
 
-        .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .btn-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
         .btn-action {
-            background: rgba(56, 189, 248, 0.12);
-            border: 1px solid rgba(56, 189, 248, 0.35);
-            color: #fff;
-            padding: 9px 10px;
-            border-radius: 8px;
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(255,255,255,0.12);
+            color: #e2e8f0;
             font-size: 0.78rem;
             font-weight: 700;
+            padding: 8px 10px;
+            border-radius: 8px;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.15s ease;
             text-align: center;
         }
-        .btn-action:hover { background: rgba(56, 189, 248, 0.28); border-color: var(--primary); }
-        .btn-action.active { background: var(--primary); color: #060812; font-weight: 800; }
-        .btn-action.danger { background: rgba(244, 63, 94, 0.15); border-color: #f43f5e; color: #fca5a5; }
-        .btn-action.danger:hover { background: #f43f5e; color: #fff; }
 
-        .telemetry-card {
+        .btn-action:hover {
+            background: rgba(51, 65, 85, 0.9);
+            border-color: var(--accent);
+            color: #ffffff;
+        }
+
+        .btn-action.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #060913;
+            box-shadow: 0 0 14px var(--accent-glow);
+        }
+
+        /* BOTTOM TELEMETRY DOCK */
+        .telemetry-dock {
             position: absolute;
             bottom: 20px;
+            left: 360px;
             right: 20px;
-            width: 320px;
+            height: 90px;
             background: var(--bg-panel);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 16px;
             backdrop-filter: blur(14px);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 10px 22px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
             z-index: 20;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+            box-shadow: 0 14px 35px rgba(0,0,0,0.6);
+        }
+
+        .kpi-group {
+            display: flex;
+            gap: 24px;
+            align-items: center;
+        }
+
+        .kpi-card {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 3px;
         }
-        .kpi-row { display: flex; justify-content: space-between; align-items: center; }
-        .kpi-name { font-size: 0.78rem; color: var(--text-sub); }
-        .kpi-val { font-family: var(--font-mono); font-size: 0.88rem; font-weight: 700; color: #fff; }
-        .status-badge {
-            padding: 4px 10px;
-            border-radius: 6px;
-            font-size: 0.74rem;
+
+        .kpi-label {
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+        }
+
+        .kpi-value {
+            font-family: var(--font-mono);
+            font-size: 1.1rem;
             font-weight: 800;
-            text-align: center;
+            color: #ffffff;
         }
-        .status-healthy { background: rgba(52, 211, 153, 0.2); color: #6ee7b7; border: 1px solid #34d399; }
-        .status-warning { background: rgba(251, 191, 36, 0.2); color: #fde68a; border: 1px solid #fbbf24; }
-        .status-danger { background: rgba(244, 63, 94, 0.2); color: #fda4af; border: 1px solid #f43f5e; }
+
+        .kpi-pill {
+            display: inline-block;
+            font-size: 0.7rem;
+            font-weight: 800;
+            padding: 2px 8px;
+            border-radius: 9999px;
+            margin-top: 2px;
+        }
+        .pill-healthy { background: rgba(16, 185, 129, 0.2); color: #6ee7b7; border: 1px solid #10b981; }
+        .pill-warn { background: rgba(251, 191, 36, 0.2); color: #fde68a; border: 1px solid #fbbf24; }
+        .pill-danger { background: rgba(244, 63, 94, 0.2); color: #fda4af; border: 1px solid #f43f5e; }
+
+        .chart-box {
+            flex: 1;
+            max-width: 320px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .chart-head {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: var(--accent);
+            text-transform: uppercase;
+        }
+
+        #dockCanvas {
+            width: 100%;
+            height: 48px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 6px;
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+
+        /* LOADING SPINNER */
+        #loadingOverlay {
+            position: absolute;
+            inset: 0;
+            background: var(--bg-base);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            transition: opacity 0.5s ease;
+        }
+
+        .spinner {
+            width: 48px;
+            height: 48px;
+            border: 4px solid rgba(255,255,255,0.1);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
+
+    <div id="loadingOverlay">
+        <div class="spinner"></div>
+        <div style="font-weight:700; color:var(--text-sub); font-size:0.95rem;">Cargando Laboratorio 3D • Columna Vertebral Humana, Discos y Biomecánica...</div>
+        <div style="font-size:0.75rem; color:var(--text-muted);">NIH 3D Orthopedic Tomography</div>
+    </div>
+
     <header>
-        <div class="brand-box">
-            <span class="badge-pill">[COD-038]</span>
-            <div class="title-text">
-                <h1>🦴 Columna Vertebral y Biomecánica Lumbar 3D</h1>
-                <p>NIH 3D Tomografía Ortopédica • Biomecánica de Chaffin & Nachemson • Segmento L3-S1 • Compresión vs Rodillas</p>
+        <div class="brand-card">
+            <span class="brand-badge">[COD-038]</span>
+            <div>
+                <div class="brand-title">Columna Vertebral Humana, Discos y Biomecánica 3D</div>
+                <div class="brand-sub">Segmento Lumbar L3-S1 y Presión Intradiscal de Nachemson • NIH 3D Orthopedic Tomography</div>
             </div>
         </div>
         <div class="header-actions">
-            <button class="btn-header" id="btnAudioToggle">🔊 Audio Alerta: ON</button>
-            <button class="btn-header" id="btnVoiceGuide">🗣️ Guía por Voz</button>
-            <button class="btn-header" id="btnResetView">🎯 Centrar Vista</button>
+            <button class="btn-header" id="btnAudio">🔊 Audio: ON</button>
+            <button class="btn-header" id="btnVoice">🗣️ Guía por Voz</button>
+            <button class="btn-header" id="btnRotate">🔄 Giro: ON</button>
+            <button class="btn-header" id="btnReset">🎯 Centrar</button>
         </div>
     </header>
 
-    <div class="workspace">
-        <div class="viewer-container">
-            <canvas id="spineCanvas" width="900" height="650"></canvas>
+    <aside class="sidebar-left">
+        
+        <div class="panel-sec-title"><span>Biomecánica Ergonómica</span><span>Chaffin L4-L5</span></div>
+        <div class="slider-wrap">
+            <div class="slider-head"><span>Carga Levantada</span><span class="slider-val" id="valLoad">15 kg</span></div>
+            <input type="range" id="rngLoad" min="0" max="50" step="5" value="15">
         </div>
-
-        <div class="controls-panel">
-            <div class="panel-sec-title">
-                <span>Carga y Postura de Levantamiento</span>
-                <span>🏋️ BIOMECÁNICA</span>
-            </div>
-
-            <div class="slider-group">
-                <div class="slider-label">
-                    <span>Peso Levantado (kg)</span>
-                    <span class="slider-val" id="valWeight">15 kg</span>
-                </div>
-                <input type="range" id="rngWeight" min="0" max="35" step="1" value="15">
-            </div>
-
-            <div class="panel-sec-title">
-                <span>Técnica de Levantamiento</span>
-                <span>📐 ERGONOMÍA</span>
-            </div>
-
-            <div class="btn-group">
-                <button class="btn-action active" id="btnPostureKnees">🦵 Flexionando Rodillas</button>
-                <button class="btn-action danger" id="btnPostureBack">⚠️ Doblando Espalda</button>
-            </div>
-
-            <div class="btn-group">
-                <button class="btn-action danger" id="btnHernia">💥 Hernia Discal L5-S1</button>
-                <button class="btn-action" id="btnDecompress">🧘 Descompresión</button>
-            </div>
+        <div class="slider-wrap">
+            <div class="slider-head"><span>Flexión de Espalda</span><span class="slider-val" id="valFlex">30 °</span></div>
+            <input type="range" id="rngFlex" min="0" max="90" step="5" value="30">
         </div>
+        <div class="slider-wrap">
+            <div class="slider-head"><span>Distancia de Carga</span><span class="slider-val" id="valDist">25 cm</span></div>
+            <input type="range" id="rngDist" min="15" max="65" step="5" value="25">
+        </div>
+    
+        
+        <div class="panel-sec-title"><span>Técnica de Carga</span><span>NIOSH</span></div>
+        <div class="btn-grid">
+            <button class="btn-action active" id="btnSafe">🛡️ Espalda Recta</button>
+            <button class="btn-action" id="btnDanger" style="border-color:#f43f5e; color:#fda4af;">⚠️ Flexión 90°</button>
+        </div>
+        <div class="btn-grid" style="margin-top:8px;">
+            <button class="btn-action" id="btnHernia">💥 Simular Hernia</button>
+            <button class="btn-action" id="btnDecompress">🧘 Descompresión</button>
+        </div>
+    
+    </aside>
 
-        <div class="telemetry-card">
-            <div class="panel-sec-title">
-                <span>Telemetría Ortopédica (L5-S1)</span>
-                <span>NIOSH Limit (3.400 N)</span>
+    <div class="telemetry-dock">
+        <div class="kpi-group">
+            
+        <div class="kpi-card">
+            <span class="kpi-label">Compresión L4-L5</span>
+            <span class="kpi-value" id="kpiComp">2.450 N</span>
+            <span class="kpi-pill pill-healthy" id="pillSpine">Bajo Límite NIOSH</span>
+        </div>
+        <div class="kpi-card">
+            <span class="kpi-label">Presión Intradiscal</span>
+            <span class="kpi-value" id="kpiMPa">1.25 MPa</span>
+        </div>
+    
+        </div>
+        <div class="chart-box">
+            <div class="chart-head">
+                <span>Carga Lumbar NIOSH</span>
+                <span id="chartLiveVal">2450 N</span>
             </div>
-            <div class="kpi-row">
-                <span class="kpi-name">Fuerza Compresiva L5-S1:</span>
-                <span class="kpi-val" id="kpiForce">1.180 N (120 kgf)</span>
-            </div>
-            <div class="kpi-row">
-                <span class="kpi-name">Presión Intradiscal:</span>
-                <span class="kpi-val" id="kpiPressure">0.85 MPa</span>
-            </div>
-            <div class="kpi-row">
-                <span class="kpi-name">Raíz Nerviosa Ciática:</span>
-                <span class="kpi-val" id="kpiSciatic">Canal Libre</span>
-            </div>
-            <div class="kpi-row">
-                <span class="kpi-name">Evaluación de Riesgo:</span>
-                <span class="status-badge status-healthy" id="kpiStatus">Zona Segura Ergonómica</span>
-            </div>
+            <canvas id="dockCanvas" width="300" height="48"></canvas>
         </div>
     </div>
 
+    <canvas id="renderCanvas"></canvas>
+
     <script>
-        const canvas = document.getElementById('spineCanvas');
-        const ctx = canvas.getContext('2d');
+        // WEB AUDIO PROCEDURAL SINTETIZADO (CERO DEPENDENCIAS EXTERNAS)
+        let audioCtx = null;
+        let isAudioPlaying = true;
+        function initAudio() {
+            try {
+                if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+            } catch(e) {}
+        }
 
-        let state = {
-            weight: 15,
-            posture: 'knees', // 'knees' o 'back'
-            hernia: false,
-            rotX: -0.15,
-            rotY: 0.35,
-            zoom: 1.0,
-            audioEnabled: true
-        };
+        function playSciPing(freq = 440, duration = 0.25, type = 'sine') {
+            if (!isAudioPlaying) return;
+            initAudio();
+            if (!audioCtx) return;
+            try {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = type;
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.04, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + duration);
+            } catch(e) {}
+        }
 
-        function speak(text) {
+        // SÍNTESIS DE VOZ PEDAGÓGICA EN ESPAÑOL
+        function speakNarrative(text) {
             if ('speechSynthesis' in window) {
                 window.speechSynthesis.cancel();
                 const u = new SpeechSynthesisUtterance(text);
                 u.lang = 'es-ES';
-                u.rate = 1.05;
+                u.rate = 1.02;
                 window.speechSynthesis.speak(u);
             }
         }
 
-        let isDragging = false;
-        let lastMouse = { x: 0, y: 0 };
-        canvas.addEventListener('mousedown', (e) => {
-            isDragging = true;
-            lastMouse = { x: e.clientX, y: e.clientY };
-        });
-        window.addEventListener('mouseup', () => isDragging = false);
-        window.addEventListener('mousemove', (e) => {
-            if (!isDragging) return;
-            const dx = e.clientX - lastMouse.x;
-            const dy = e.clientY - lastMouse.y;
-            state.rotY += dx * 0.008;
-            state.rotX += dy * 0.008;
-            lastMouse = { x: e.clientX, y: e.clientY };
-        });
-        canvas.addEventListener('wheel', (e) => {
-            e.preventDefault();
-            state.zoom *= e.deltaY > 0 ? 0.95 : 1.05;
-            state.zoom = Math.max(0.6, Math.min(2.0, state.zoom));
+        // BOTONES DE CABECERA
+        document.getElementById('btnAudio').addEventListener('click', function() {
+            isAudioPlaying = !isAudioPlaying;
+            this.innerText = isAudioPlaying ? '🔊 Audio: ON' : '🔇 Audio: OFF';
+            this.classList.toggle('active', isAudioPlaying);
         });
 
-        // Loop de renderizado 3D de Vértebras L3, L4, L5 y Sacro S1
-        let t = 0;
-        function render() {
-            t += 0.02;
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        document.getElementById('btnVoice').addEventListener('click', function() {
+            speakNarrative("Bienvenido a la Columna Lumbar 3D. Compara la compresión sobre el disco L4-L5 al levantar peso flexionando las rodillas frente a doblar la espalda.");
+        });
 
-            const cx = canvas.width / 2;
-            const cy = canvas.height / 2;
+        // INICIALIZACIÓN DE BABYLON.JS
+        const canvas = document.getElementById("renderCanvas");
+        const engine = new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true });
+        let autoRotate = true;
+        let modelMeshRoot = null;
+        let isModelLoaded = false;
+        let fixedBaseScale = 1.0;
 
-            const cosY = Math.cos(state.rotY);
-            const sinY = Math.sin(state.rotY);
-            const cosX = Math.cos(state.rotX);
-            const sinX = Math.sin(state.rotX);
+        const createScene = function() {
+            const scene = new BABYLON.Scene(engine);
+            scene.clearColor = new BABYLON.Color4(0.024, 0.035, 0.067, 1.0); // #060913
 
-            function project(x, y, z) {
-                let x1 = x * cosY + z * sinY;
-                let z1 = -x * sinY + z * cosY;
-                let y2 = y * cosX - z1 * sinX;
-                let z2 = y * sinX + z1 * cosX;
-                const fov = 450;
-                const scale = (fov / (fov + z2 + 300)) * state.zoom;
-                return { x: cx + x1 * scale, y: cy + y2 * scale, z: z2, scale: scale };
-            }
+            // CÁMARA ORBITAL MÉDICO-CIENTÍFICA
+            const camera = new BABYLON.ArcRotateCamera("Camera", -Math.PI / 2, Math.PI / 2.5, 6.0, new BABYLON.Vector3(0, 0, 0), scene);
+            camera.attachControl(canvas, true);
+            camera.wheelPrecision = 45;
+            camera.lowerRadiusLimit = 2.2;
+            camera.upperRadiusLimit = 16.0;
 
-            // Vértebras lumbares (L3, L4, L5 y Sacro S1)
-            const vertebrae = [
-                { name: "L3", y: -130, w: 95, h: 42 },
-                { name: "L4", y: -60, w: 105, h: 44 },
-                { name: "L5", y: 15, w: 115, h: 46 },
-                { name: "Sacro S1", y: 95, w: 140, h: 55 }
-            ];
+            // ILUMINACIÓN CLÍNICA PBR
+            const hemiLight = new BABYLON.HemisphericLight("hemiLight", new BABYLON.Vector3(0, 1, 0), scene);
+            hemiLight.intensity = 0.85;
+            hemiLight.diffuse = new BABYLON.Color3(0.9, 0.95, 1.0);
+            hemiLight.groundColor = new BABYLON.Color3(0.1, 0.15, 0.25);
 
-            // Dibujar cada vértebra ósea
-            vertebrae.forEach(v => {
-                const hw = v.w / 2;
-                const hh = v.h / 2;
-                const hd = 50;
+            const keyLight = new BABYLON.DirectionalLight("keyLight", new BABYLON.Vector3(-1, -2, 1), scene);
+            keyLight.position = new BABYLON.Vector3(5, 8, -5);
+            keyLight.intensity = 1.2;
 
-                const pts = [
-                    project(-hw, v.y - hh, -hd), project(hw, v.y - hh, -hd),
-                    project(hw, v.y - hh, hd), project(-hw, v.y - hh, hd),
-                    project(-hw, v.y + hh, -hd), project(hw, v.y + hh, -hd),
-                    project(hw, v.y + hh, hd), project(-hw, v.y + hh, hd)
-                ];
+            const fillLight = new BABYLON.PointLight("fillLight", new BABYLON.Vector3(-5, -2, -4), scene);
+            fillLight.diffuse = new BABYLON.Color3(234, 179, 8);
+            fillLight.intensity = 0.8;
 
-                // Cuerpo vertebral anterior
-                ctx.beginPath();
-                ctx.moveTo(pts[3].x, pts[3].y);
-                ctx.lineTo(pts[2].x, pts[2].y);
-                ctx.lineTo(pts[6].x, pts[6].y);
-                ctx.lineTo(pts[7].x, pts[7].y);
-                ctx.closePath();
-                ctx.fillStyle = '#e2e8f0';
-                ctx.fill();
-                ctx.strokeStyle = '#94a3b8';
-                ctx.lineWidth = 1.2;
-                ctx.stroke();
+            const glow = new BABYLON.GlowLayer("glow", scene);
+            glow.intensity = 0.35;
 
-                // Cara superior trabecular
-                ctx.beginPath();
-                ctx.moveTo(pts[0].x, pts[0].y);
-                ctx.lineTo(pts[1].x, pts[1].y);
-                ctx.lineTo(pts[2].x, pts[2].y);
-                ctx.lineTo(pts[3].x, pts[3].y);
-                ctx.closePath();
-                ctx.fillStyle = '#f8fafc';
-                ctx.fill();
-                ctx.stroke();
+            // CARGA ROBUSTA MULTI-RUTA (Base64 -> Local -> CDN)
+            const candidateSources = [
+                (window.SPINE_GLB_B64 && window.SPINE_GLB_B64.length > 500) ? window.SPINE_GLB_B64 : null,
+                "spine_b64.js",
+                "../../../../SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/spine_b64.js",
+                "../03_ASSETS_3D_Y_DATOS/spine_b64.js",
+                "https://javiercursocorreo-gif.github.io/Curso-IA/SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/spine_b64.js"
+            ].filter(Boolean);
 
-                // Apófisis espinosa posterior (sobresale hacia atrás)
-                const pSpine = project(0, v.y, -hd - 45);
-                const pSpineBase = project(0, v.y, -hd);
-                ctx.beginPath();
-                ctx.moveTo(pSpineBase.x, pSpineBase.y);
-                ctx.lineTo(pSpine.x, pSpine.y);
-                ctx.strokeStyle = '#cbd5e1';
-                ctx.lineWidth = 14 * state.zoom;
-                ctx.stroke();
-
-                ctx.font = 'bold 10px JetBrains Mono';
-                ctx.fillStyle = '#0f172a';
-                ctx.fillText(v.name, pts[3].x + 10, v.y * state.zoom + cy + 4);
-            });
-
-            // Discos intervertebrales (L3-L4, L4-L5, L5-S1)
-            const discs = [
-                { y: -95, w: 90, name: "L3-L4" },
-                { y: -22, w: 100, name: "L4-L5" },
-                { y: 55, w: 110, name: "L5-S1" }
-            ];
-
-            discs.forEach(d => {
-                const isL5S1 = d.name === "L5-S1";
-                const isSeverelyLoaded = isL5S1 && (state.posture === 'back' || state.hernia);
-
-                ctx.beginPath();
-                const pL = project(-d.w / 2, d.y, 25);
-                const pR = project(d.w / 2, d.y, 25);
-                ctx.moveTo(pL.x, pL.y);
-                ctx.lineTo(pR.x, pR.y);
-                ctx.strokeStyle = isSeverelyLoaded ? '#f43f5e' : '#38bdf8';
-                ctx.lineWidth = (isSeverelyLoaded ? 18 : 12) * state.zoom;
-                ctx.lineCap = 'round';
-                ctx.stroke();
-
-                // Protrusión herniaria en L5-S1
-                if (isSeverelyLoaded && (state.hernia || state.weight > 20)) {
-                    const pHernia = project(d.w / 2 + 18, d.y, -15);
-                    ctx.beginPath();
-                    ctx.arc(pHernia.x, pHernia.y, (8 + Math.sin(t * 4) * 2) * state.zoom, 0, Math.PI * 2);
-                    ctx.fillStyle = 'rgba(244, 63, 94, 0.95)';
-                    ctx.fill();
-
-                    // Compresión del nervio ciático amarillo
-                    ctx.beginPath();
-                    ctx.arc(pHernia.x + 8, pHernia.y, 4 * state.zoom, 0, Math.PI * 2);
-                    ctx.fillStyle = '#fbbf24';
-                    ctx.fill();
+            let currentSrcIdx = 0;
+            function loadScientificMesh() {
+                if (currentSrcIdx >= candidateSources.length) {
+                    document.getElementById("loadingOverlay").innerHTML = '<div style="color:#ef4444;font-weight:700;">Simulación activa con modelo procedural</div>';
+                    setTimeout(() => {
+                        document.getElementById("loadingOverlay").style.opacity = "0";
+                        setTimeout(() => document.getElementById("loadingOverlay").style.display = "none", 400);
+                    }, 600);
+                    return;
                 }
+                const source = candidateSources[currentSrcIdx];
+                BABYLON.SceneLoader.ImportMesh("", "", source, scene, function(meshes) {
+                    const overlay = document.getElementById("loadingOverlay");
+                    overlay.style.opacity = "0";
+                    setTimeout(() => overlay.style.display = "none", 400);
+
+                    modelMeshRoot = new BABYLON.TransformNode("modelRoot", scene);
+                    meshes.forEach(m => {
+                        if (m.parent === null) {
+                            m.parent = modelMeshRoot;
+                        }
+                    });
+
+                    const hierarchy = modelMeshRoot.getHierarchyBoundingVectors();
+                    const center = hierarchy.max.add(hierarchy.min).scale(0.5);
+                    const size = hierarchy.max.subtract(hierarchy.min);
+                    const maxDim = Math.max(size.x, size.y, size.z);
+
+                    if (maxDim > 0) {
+                        fixedBaseScale = 2.8 / maxDim;
+                        modelMeshRoot.scaling = new BABYLON.Vector3(fixedBaseScale, fixedBaseScale, fixedBaseScale);
+                        modelMeshRoot.position = center.scale(-fixedBaseScale);
+                    }
+                    camera.target = new BABYLON.Vector3(0, 0, 0);
+                    isModelLoaded = true;
+                }, null, function(scene, msg) {
+                    console.warn("Fallo fuente:", source, msg);
+                    currentSrcIdx++;
+                    loadScientificMesh();
+                }, ".glb");
+            }
+            loadScientificMesh();
+
+            // SETUP ESPECÍFICO ADICIONAL
+            
+        document.getElementById('btnSafe').addEventListener('click', () => {
+            document.getElementById('rngFlex').value = 10;
+            document.getElementById('valFlex').innerText = '10 °';
+            document.getElementById('rngDist').value = 20;
+            playSciPing(520, 0.1);
+        });
+        document.getElementById('btnDanger').addEventListener('click', () => {
+            document.getElementById('rngFlex').value = 90;
+            document.getElementById('valFlex').innerText = '90 °';
+            document.getElementById('rngDist').value = 55;
+            playSciPing(180, 0.35, 'sawtooth');
+        });
+    
+
+            document.getElementById('btnReset').addEventListener('click', function() {
+                camera.radius = 6.0;
+                camera.alpha = -Math.PI / 2;
+                camera.beta = Math.PI / 2.5;
+                camera.target = new BABYLON.Vector3(0, 0, 0);
+                playSciPing(600, 0.15);
             });
 
-            requestAnimationFrame(render);
-        }
-        render();
+            document.getElementById('btnRotate').addEventListener('click', function() {
+                autoRotate = !autoRotate;
+                this.innerText = autoRotate ? '🔄 Giro: ON' : '⏸️ Giro: OFF';
+                this.classList.toggle('active', autoRotate);
+            });
 
-        function updateTelemetry() {
-            const w = state.weight;
-            let force = 0;
-            let press = 0;
-            const forceEl = document.getElementById('kpiForce');
-            const pressEl = document.getElementById('kpiPressure');
-            const sciaticEl = document.getElementById('kpiSciatic');
-            const statusEl = document.getElementById('kpiStatus');
+            return scene;
+        };
 
-            if (state.posture === 'back') {
-                // Brazo de palanca desfavorable de 40 cm -> Momento flexor masivo
-                force = Math.round(1800 + w * 115);
-                press = (0.9 + w * 0.07).toFixed(2);
-            } else {
-                // Rodillas flexionadas, columna recta neutra -> Momento mínimo
-                force = Math.round(750 + w * 28);
-                press = (0.5 + w * 0.025).toFixed(2);
+        const scene = createScene();
+
+        // RENDER LOOP
+        let lastTime = performance.now();
+        engine.runRenderLoop(function() {
+            const now = performance.now();
+            const dt = (now - lastTime) / 1000;
+            lastTime = now;
+
+            if (autoRotate && modelMeshRoot) {
+                modelMeshRoot.rotation.y += 0.0035;
             }
 
-            if (state.hernia) force += 900;
+            
+        const load = parseFloat(document.getElementById('rngLoad').value);
+        const flex = parseFloat(document.getElementById('rngFlex').value);
+        const dist = parseFloat(document.getElementById('rngDist').value);
+        // Ecuación de momento lumbar Chaffin
+        const compN = Math.round(750 + load * 9.8 * (dist / 10) + flex * 35);
+        document.getElementById('kpiComp').innerText = compN.toLocaleString() + ' N';
+        document.getElementById('kpiMPa').innerText = (compN / 1800).toFixed(2) + ' MPa';
 
-            forceEl.innerText = `${force.toLocaleString()} N (${Math.round(force / 9.81)} kgf)`;
-            pressEl.innerText = `${press} MPa`;
-
-            if (force > 3400 || state.hernia) {
-                statusEl.className = 'status-badge status-danger';
-                statusEl.innerText = '🚨 Supera Límite NIOSH (>3.400 N)';
-                sciaticEl.innerText = 'Pinzamiento Nervioso Agudo';
-            } else if (force > 2200) {
-                statusEl.className = 'status-badge status-warning';
-                statusEl.innerText = '⚠️ Fatiga Discal Acumulada';
-                sciaticEl.innerText = 'Canal Estrecho';
-            } else {
-                statusEl.className = 'status-badge status-healthy';
-                statusEl.innerText = 'Zona Ergonómica Segura';
-                sciaticEl.innerText = 'Canal Libre Sin Presión';
-            }
+        const pill = document.getElementById('pillSpine');
+        if (compN > 3400) {
+            pill.className = 'kpi-pill pill-danger';
+            pill.innerText = 'Riesgo Crítico de Hernia (>3400 N)';
+        } else if (compN > 2500) {
+            pill.className = 'kpi-pill pill-warn';
+            pill.innerText = 'Sobrecarga Lumbar';
+        } else {
+            pill.className = 'kpi-pill pill-healthy';
+            pill.innerText = 'Zona Ergonómica Segura';
         }
-        setInterval(updateTelemetry, 250);
+    
 
-        document.getElementById('rngWeight').addEventListener('input', (e) => {
-            state.weight = parseInt(e.target.value);
-            document.getElementById('valWeight').innerText = `${state.weight} kg`;
+            updateDockChart(dt);
+            scene.render();
         });
 
-        document.getElementById('btnPostureKnees').addEventListener('click', () => {
-            state.posture = 'knees';
-            state.hernia = false;
-            document.getElementById('btnPostureKnees').classList.add('active');
-            document.getElementById('btnPostureBack').classList.remove('active');
-            speak("Técnica ergonómica correcta adoptada. Doblar las rodillas a noventa grados y mantener la carga cerca del centro de gravedad reduce la compresión en L5-S1 en más de un setenta por ciento.");
-        });
+        window.addEventListener("resize", () => engine.resize());
 
-        document.getElementById('btnPostureBack').addEventListener('click', () => {
-            state.posture = 'back';
-            document.getElementById('btnPostureBack').classList.add('active');
-            document.getElementById('btnPostureKnees').classList.remove('active');
-            speak("Peligro ergonómico. Levantar la carga doblando la espalda multiplica el brazo de palanca dorsal, disparando la fuerza compresiva en el disco L5-S1 por encima del umbral de lesión de tres mil cuatrocientos Newtons.");
-        });
+        // TELEMETRÍA EN TIEMPO REAL (DOCK CANVAS)
+        const dockCanvas = document.getElementById("dockCanvas");
+        const dCtx = dockCanvas.getContext("2d");
+        const chartHistory = [];
+        let chartPhase = 0;
 
-        document.getElementById('btnHernia').addEventListener('click', () => {
-            state.hernia = true;
-            state.posture = 'back';
-            document.getElementById('btnPostureBack').classList.add('active');
-            document.getElementById('btnPostureKnees').classList.remove('active');
-            speak("Ruptura del anillo fibroso y hernia del núcleo pulposo en L5-S1. El material gelatinoso protruye hacia el canal posterior comprimiendo la raíz del nervio ciático con dolor irradiado.");
-        });
+        function updateDockChart(dt) {
+            chartPhase += dt;
+            
+        const load = parseFloat(document.getElementById('rngLoad').value);
+        const flex = parseFloat(document.getElementById('rngFlex').value);
+        const compN = Math.round(750 + load * 9.8 * 2.5 + flex * 35);
+        const v = Math.min(38, (compN / 5000) * 38);
+        chartHistory.push(v);
+        if (chartHistory.length > 50) chartHistory.shift();
 
-        document.getElementById('btnDecompress').addEventListener('click', () => {
-            state.weight = 0;
-            state.posture = 'knees';
-            state.hernia = false;
-            document.getElementById('rngWeight').value = 0;
-            document.getElementById('valWeight').innerText = '0 kg';
-            document.getElementById('btnPostureKnees').classList.add('active');
-            document.getElementById('btnPostureBack').classList.remove('active');
-            speak("Columna en descompresión axial neutra. El disco intervertebral se rehidrata por imbibición de proteoglicanos.");
+        dCtx.clearRect(0, 0, dockCanvas.width, dockCanvas.height);
+        dCtx.strokeStyle = compN > 3400 ? '#f43f5e' : '#eab308';
+        dCtx.lineWidth = 2;
+        dCtx.beginPath();
+        chartHistory.forEach((pt, idx) => {
+            const x = (idx / 50) * dockCanvas.width;
+            const y = dockCanvas.height - (pt / 40) * dockCanvas.height;
+            if (idx === 0) dCtx.moveTo(x, y);
+            else dCtx.lineTo(x, y);
         });
-
-        document.getElementById('btnAudioToggle').addEventListener('click', (e) => {
-            state.audioEnabled = !state.audioEnabled;
-            e.target.innerText = state.audioEnabled ? '🔊 Audio Alerta: ON' : '🔈 Audio: OFF';
-        });
-
-        document.getElementById('btnVoiceGuide').addEventListener('click', () => {
-            speak("Bienvenido al simulador tridimensional de Columna Vertebral y Biomecánica Lumbar. Comprueba cómo levantar peso flexionando la cintura daña el disco L5-S1.");
-        });
-
-        document.getElementById('btnResetView').addEventListener('click', () => {
-            state.rotX = -0.15;
-            state.rotY = 0.35;
-            state.zoom = 1.0;
-        });
+        dCtx.stroke();
+        document.getElementById('chartLiveVal').innerText = compN + ' N';
+    
+        }
     </script>
 </body>
 </html>
