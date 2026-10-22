@@ -1,0 +1,1163 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laboratorio Anatómico 3D Ultra-Realista • Encéfalo Humano (GLB + Babylon.js)</title>
+    <!-- Babylon.js CDN Oficial y Loaders para GLTF/GLB -->
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+    <!-- Respaldo Base64 Autónomo (6.2 MB) para entornos locales y offline -->
+    <script src="../03_ASSETS_3D_Y_DATOS/brain_b64.js"></script>
+    <script src="https://javiercursocorreo-gif.github.io/Curso-IA/SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/brain_b64.js"></script>
+    <script src="https://javiercursocorreo-gif.github.io/Curso-IA/SIMULADORES_INTERACTIVOS/brain_b64.js"></script>
+    <style>
+        :root {
+            --bg: #030712;
+            --panel: #0d1527;
+            --border: #1e293b;
+            --accent: #38bdf8;
+            --gold: #fbbf24;
+            --emerald: #34d399;
+            --rose: #fb7185;
+            --purple: #c084fc;
+            --slate: #94a3b8;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        html, body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* HEADER */
+        header {
+            background: rgba(13, 21, 39, 0.96);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            padding: 6px 18px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+            z-index: 50;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-icon {
+            font-size: 24px;
+            background: rgba(56, 189, 248, 0.12);
+            border: 1px solid rgba(56, 189, 248, 0.35);
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .header-titles h1 {
+            font-size: 15.5px;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            color: #f8fafc;
+        }
+
+        .header-titles p {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 1px;
+        }
+
+        .header-badges {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .badge {
+            font-size: 10px;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 999px;
+            background: rgba(56, 189, 248, 0.12);
+            color: var(--accent);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .badge-gold {
+            background: rgba(251, 191, 36, 0.14);
+            color: var(--gold);
+            border-color: rgba(251, 191, 36, 0.4);
+        }
+
+        .badge-purple {
+            background: rgba(192, 132, 252, 0.14);
+            color: var(--purple);
+            border-color: rgba(192, 132, 252, 0.4);
+        }
+
+        /* MAIN */
+        main {
+            flex: 1;
+            min-height: 0;
+            padding: 8px 16px 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        /* TOOLBAR */
+        .toolbar {
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 6px 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            flex-shrink: 0;
+            flex-wrap: wrap;
+        }
+
+        .toolbar-group {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+
+        .toolbar-label {
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            letter-spacing: 0.05em;
+            margin-right: 2px;
+        }
+
+        .btn-tool {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-main);
+            font-size: 11px;
+            font-weight: 700;
+            padding: 4px 9px;
+            border-radius: 7px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            transition: all 0.15s ease;
+        }
+
+        .btn-tool:hover {
+            background: rgba(56, 189, 248, 0.16);
+            border-color: var(--accent);
+            color: #ffffff;
+            transform: translateY(-1px);
+        }
+
+        .btn-tool.active {
+            background: rgba(56, 189, 248, 0.25);
+            border-color: var(--accent);
+            color: #38bdf8;
+            box-shadow: 0 0 12px rgba(56, 189, 248, 0.35);
+        }
+
+        .slider-group {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+            padding: 3px 8px;
+        }
+
+        .slider-group span {
+            font-size: 10px;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .slider-group input[type="range"] {
+            width: 65px;
+            cursor: pointer;
+            accent-color: var(--accent);
+        }
+
+        /* 2-COLUMN GRID */
+        .stage-grid {
+            flex: 1;
+            min-height: 0;
+            display: grid;
+            grid-template-columns: 330px 1fr;
+            gap: 10px;
+            align-items: stretch;
+        }
+
+        @media (max-width: 960px) {
+            html, body { overflow-y: auto; height: auto; }
+            .stage-grid { grid-template-columns: 1fr; }
+            .canvas-card { min-height: 520px; }
+        }
+
+        /* SIDEBAR */
+        .sidebar-card {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 12px 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 9px;
+            overflow-y: auto;
+            min-height: 0;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+        }
+
+        .sidebar-card::-webkit-scrollbar {
+            width: 5px;
+        }
+        .sidebar-card::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 4px;
+        }
+
+        .telemetry-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding-bottom: 6px;
+        }
+
+        .telemetry-title {
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--emerald);
+            box-shadow: 0 0 8px var(--emerald);
+        }
+
+        .info-box {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 10px;
+            padding: 9px 11px;
+        }
+
+        .info-box h3 {
+            font-size: 12px;
+            font-weight: 800;
+            color: #f8fafc;
+            margin-bottom: 3px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .info-box p {
+            font-size: 11px;
+            line-height: 1.45;
+            color: #cbd5e1;
+        }
+
+        .metric-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 5px;
+        }
+
+        .metric-item {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 8px;
+            padding: 5px 8px;
+        }
+
+        .metric-label {
+            font-size: 8.5px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            font-weight: 700;
+            letter-spacing: 0.03em;
+        }
+
+        .metric-val {
+            font-size: 11.5px;
+            font-weight: 800;
+            color: #f8fafc;
+            margin-top: 1px;
+            font-family: ui-monospace, monospace;
+        }
+
+        .legend-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 10px;
+            padding: 8px 10px;
+        }
+
+        .legend-card h4 {
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--gold);
+            margin-bottom: 5px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 10.5px;
+            padding: 4px 6px;
+            border-radius: 6px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .legend-item:hover {
+            background: rgba(56, 189, 248, 0.12);
+            color: var(--accent);
+            transform: translateX(2px);
+        }
+
+        .legend-left {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .legend-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        /* 3D CANVAS CARD */
+        .canvas-card {
+            background: radial-gradient(circle at 50% 35%, #0f1c33 0%, #060913 75%, #020408 100%);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            height: 100%;
+            min-height: 480px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+        }
+
+        #renderCanvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+            touch-action: none;
+            outline: none;
+        }
+
+        /* OVERLAY LOADING */
+        #loadingOverlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(6, 9, 19, 0.94);
+            backdrop-filter: blur(8px);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            transition: opacity 0.4s ease;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(56, 189, 248, 0.18);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 0.9s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .canvas-overlay-top {
+            position: absolute;
+            top: 10px;
+            left: 12px;
+            display: flex;
+            gap: 8px;
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        .hud-chip {
+            background: rgba(15, 23, 42, 0.88);
+            backdrop-filter: blur(8px);
+            border: 1px solid var(--border);
+            padding: 4px 9px;
+            border-radius: 8px;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+        }
+
+        .hud-chip span { color: var(--text-muted); }
+        .hud-chip strong { color: var(--accent); }
+
+        .canvas-instructions {
+            position: absolute;
+            bottom: 10px;
+            right: 12px;
+            background: rgba(15, 23, 42, 0.88);
+            backdrop-filter: blur(8px);
+            border: 1px solid var(--border);
+            padding: 5px 12px;
+            border-radius: 8px;
+            font-size: 10.5px;
+            color: var(--text-muted);
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .canvas-instructions span { color: #f8fafc; font-weight: 700; }
+
+        /* LABELS CONTAINER */
+        #labelsContainer {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 15;
+        }
+
+        .brain-label {
+            position: absolute;
+            transform: translate(-50%, -50%);
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 10px;
+            font-weight: 800;
+            pointer-events: auto;
+            cursor: pointer;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.6);
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .brain-label:hover {
+            transform: translate(-50%, -50%) scale(1.12);
+            box-shadow: 0 0 14px currentColor;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-left">
+            <div class="header-icon">🧠</div>
+            <div class="header-titles">
+                <h1>Encéfalo Humano 3D • Escaneo Médico Real PBR (Babylon.js)</h1>
+                <p>Laboratorio Biomédico Digital • Circunvoluciones, Red Sináptica y Lóbulos Corticales</p>
+            </div>
+        </div>
+        <div class="header-badges">
+            <div class="badge badge-gold">⭐ Resonancia Médica GLB</div>
+            <div class="badge badge-purple">⚡ Babylon.js PBR Engine</div>
+            <div class="badge">🎓 Sesión 06 [COD-006]</div>
+        </div>
+    </header>
+
+    <main>
+        <!-- TOOLBAR SUPERIOR -->
+        <div class="toolbar">
+            <div class="toolbar-group">
+                <span class="toolbar-label">Vistas:</span>
+                <button class="btn-tool active" data-view="global" title="Visión panorámica del cerebro completo">🌐 General</button>
+                <button class="btn-tool" data-view="frontal" title="Corteza Prefrontal y Motora">🟦 Frontal</button>
+                <button class="btn-tool" data-view="parietal" title="Corteza Somatosensorial">🟨 Parietal</button>
+                <button class="btn-tool" data-view="temporal" title="Corteza Auditiva y Memoria">🟩 Temporal</button>
+                <button class="btn-tool" data-view="occipital" title="Corteza Visual Primaria">🟥 Occipital</button>
+                <button class="btn-tool" data-view="cerebelo" title="Coordinación Motora y Equilibrio">🟪 Cerebelo</button>
+                <button class="btn-tool" data-view="tronco" title="Tronco Encefálico Vital">⚪ Tronco</button>
+            </div>
+
+            <div class="toolbar-group">
+                <span class="toolbar-label">Hemisferios:</span>
+                <button class="btn-tool" id="btnHemiLeft" title="Enfocar Hemisferio Izquierdo">🔵 Izquierdo</button>
+                <button class="btn-tool" id="btnHemiRight" title="Enfocar Hemisferio Derecho">🟠 Derecho</button>
+                <button class="btn-tool" id="btnHemiTop" title="Vista Superior Axial de Ambos Hemisferios">⬆️ Axial (Cénit)</button>
+            </div>
+
+            <div class="toolbar-group">
+                <span class="toolbar-label">Controles:</span>
+                <button class="btn-tool active" id="btnToggleCortex" title="Mostrar u ocultar tejido cortical">🧠 Corteza</button>
+                <button class="btn-tool active" id="btnToggleSynapse" title="Activar pulsos de sinapsis bioeléctrica">⚡ Sinapsis</button>
+                <button class="btn-tool" id="btnToggleRotate" title="Activar rotación automática suave">🔄 Giro</button>
+                <button class="btn-tool active" id="btnToggleLabels" title="Mostrar nombres anatómicos">🏷️ Pines</button>
+
+                <div class="slider-group" title="Velocidad de los impulsos neuronales bioeléctricos">
+                    <span>Sinapsis:</span>
+                    <input type="range" id="sliderSpeed" min="0.2" max="3.0" step="0.1" value="1.0">
+                    <span id="lblSpeed" style="color: #f8fafc; min-width: 24px;">1.0x</span>
+                </div>
+
+                <div class="slider-group" title="Opacidad del tejido cerebral">
+                    <span>Opacidad:</span>
+                    <input type="range" id="sliderOpacity" min="0.2" max="1.0" step="0.05" value="1.0">
+                    <span id="lblOpacity" style="color: #f8fafc; min-width: 26px;">100%</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- STAGE GRID -->
+        <div class="stage-grid">
+            <div class="sidebar-card">
+                <div class="telemetry-header">
+                    <div class="telemetry-title">
+                        <div class="status-dot"></div>
+                        <span>Fisiología Cerebral</span>
+                    </div>
+                    <span style="font-size: 10px; color: var(--emerald); font-weight: 700;">En Tiempo Real</span>
+                </div>
+
+                <div class="info-box" style="border-color: rgba(56, 189, 248, 0.3); background: rgba(56, 189, 248, 0.04);">
+                    <h3 id="infoTitle" style="color: var(--accent);">🧠 Encéfalo Humano Completo</h3>
+                    <p id="infoDesc">
+                        Estructura principal del sistema nervioso central modelada a partir de escaneo médico de resonancia magnética real (MRI). Sus pliegues (circunvoluciones y surcos) multiplican la superficie cortical y albergan más de 86.000 millones de neuronas conectadas por sinapsis.
+                    </p>
+                </div>
+
+                <div class="metric-grid">
+                    <div class="metric-item">
+                        <div class="metric-label">Neuronas Estimadas</div>
+                        <div class="metric-val" id="metricNeurons">86.000 Millones</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-label">Frecuencia Neuronal</div>
+                        <div class="metric-val" id="metricFreq">40 Hz (Gamma)</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-label">Consumo de Oxígeno</div>
+                        <div class="metric-val">20% del Cuerpo</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-label">Velocidad Axonal</div>
+                        <div class="metric-val">120 m/s (430 km/h)</div>
+                    </div>
+                </div>
+
+                <div class="legend-card">
+                    <h4>Mapa de Regiones y Funciones</h4>
+                    <div class="legend-item" onclick="focusRegion('frontal')">
+                        <div class="legend-left">
+                            <span class="legend-dot" style="background: var(--accent);"></span>
+                            <strong>Lóbulo Frontal</strong>
+                        </div>
+                        <span style="color: var(--text-muted); font-size: 9.5px;">Decisiones & Motor</span>
+                    </div>
+                    <div class="legend-item" onclick="focusRegion('parietal')">
+                        <div class="legend-left">
+                            <span class="legend-dot" style="background: var(--gold);"></span>
+                            <strong>Lóbulo Parietal</strong>
+                        </div>
+                        <span style="color: var(--text-muted); font-size: 9.5px;">Tacto & Espacio</span>
+                    </div>
+                    <div class="legend-item" onclick="focusRegion('temporal')">
+                        <div class="legend-left">
+                            <span class="legend-dot" style="background: var(--emerald);"></span>
+                            <strong>Lóbulo Temporal</strong>
+                        </div>
+                        <span style="color: var(--text-muted); font-size: 9.5px;">Memoria & Lenguaje</span>
+                    </div>
+                    <div class="legend-item" onclick="focusRegion('occipital')">
+                        <div class="legend-left">
+                            <span class="legend-dot" style="background: var(--rose);"></span>
+                            <strong>Lóbulo Occipital</strong>
+                        </div>
+                        <span style="color: var(--text-muted); font-size: 9.5px;">Corteza Visual V1</span>
+                    </div>
+                    <div class="legend-item" onclick="focusRegion('cerebelo')">
+                        <div class="legend-left">
+                            <span class="legend-dot" style="background: var(--purple);"></span>
+                            <strong>Cerebelo</strong>
+                        </div>
+                        <span style="color: var(--text-muted); font-size: 9.5px;">Equilibrio & Precisión</span>
+                    </div>
+                    <div class="legend-item" onclick="focusRegion('tronco')">
+                        <div class="legend-left">
+                            <span class="legend-dot" style="background: var(--slate);"></span>
+                            <strong>Tronco Encefálico</strong>
+                        </div>
+                        <span style="color: var(--text-muted); font-size: 9.5px;">Funciones Vitales</span>
+                    </div>
+                </div>
+
+                <div class="info-box" style="border-color: rgba(52, 211, 153, 0.3); background: rgba(52, 211, 153, 0.04);">
+                    <h3 style="color: #34d399;">💡 Guía Interactiva</h3>
+                    <p style="font-size: 10.5px; color: #94a3b8;">
+                        Arrastra con el ratón para rotar 360°, usa la rueda para acercar el microscopio a las circunvoluciones y pulsa los botones de los lóbulos para orientar la cámara clínica automáticamente.
+                    </p>
+                </div>
+            </div>
+
+            <!-- CANVAS CONTAINER -->
+            <div class="canvas-card" id="canvasCard">
+                <canvas id="renderCanvas"></canvas>
+
+                <!-- OVERLAY DE CARGA -->
+                <div id="loadingOverlay">
+                    <div class="spinner"></div>
+                    <div style="font-size: 13.5px; font-weight: 700; color: #f8fafc; letter-spacing: -0.01em;">
+                        Cargando Escaneo Anatómico Real (MRI 3D)...
+                    </div>
+                    <div style="font-size: 11px; color: var(--text-muted);">
+                        Inicializando motor Babylon.js y decodificando malla cortical
+                    </div>
+                </div>
+
+                <div class="canvas-overlay-top">
+                    <div class="hud-chip">
+                        <span>Región Activa:</span>
+                        <strong id="hudRegion">Visión Panorámica</strong>
+                    </div>
+                    <div class="hud-chip">
+                        <span>Oscilación Eléctrica:</span>
+                        <strong id="hudPulses">40 Hz (Ondas Gamma)</strong>
+                    </div>
+                </div>
+
+                <div class="canvas-instructions">
+                    <span>🖱️ Arrastrar:</span> Rotar 360° |
+                    <span>Rueda:</span> Zoom In/Out |
+                    <span>Click derecho:</span> Desplazar (Pan)
+                </div>
+
+                <div id="labelsContainer"></div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const canvas = document.getElementById("renderCanvas");
+        const container = document.getElementById("canvasCard");
+        const labelsContainer = document.getElementById("labelsContainer");
+        const loadingOverlay = document.getElementById("loadingOverlay");
+
+        // CREACIÓN DEL MOTOR BABYLON.JS
+        const engine = new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true });
+
+        let scene = null;
+        let camera = null;
+        let brainRoot = null;
+        let brainMeshes = [];
+        let isModelLoaded = false;
+        let isAutoRotating = false;
+        let labelsVisible = true;
+        let synapseActive = true;
+        let simSpeed = 1.0;
+        let currentOpacity = 1.0;
+        let currentFocusedRegion = "global";
+
+        // COLORES ANATÓMICOS POR LÓBULO
+        const LOBE_COLORS = {
+            frontal: new BABYLON.Color3(0.22, 0.74, 0.97),
+            parietal: new BABYLON.Color3(0.98, 0.75, 0.14),
+            temporal: new BABYLON.Color3(0.20, 0.83, 0.60),
+            occipital: new BABYLON.Color3(0.98, 0.44, 0.52),
+            cerebelo: new BABYLON.Color3(0.75, 0.52, 0.98),
+            tronco: new BABYLON.Color3(0.65, 0.75, 0.85)
+        };
+
+        // CLASIFICACIÓN ANATÓMICA DE NODOS
+        function classifyNodeLobe(name) {
+            const nl = (name || "").toLowerCase();
+            if (nl.includes("frontal") || nl.includes("orbital") || nl.includes("rectus") || nl.includes("precentral")) return "frontal";
+            if (nl.includes("parietal") || nl.includes("postcentral") || nl.includes("precuneus") || nl.includes("angular") || nl.includes("supramarginal")) return "parietal";
+            if (nl.includes("temporal") || nl.includes("hippocamp") || nl.includes("insula")) return "temporal";
+            if (nl.includes("occipital") || nl.includes("cuneus") || nl.includes("calcarine") || nl.includes("lingual")) return "occipital";
+            if (nl.includes("cerebel") || nl.includes("vermis") || nl.includes("flocculus") || nl.includes("tonsil")) return "cerebelo";
+            if (nl.includes("pons") || nl.includes("medulla") || nl.includes("olive") || nl.includes("pyramid") || nl.includes("midbrain")) return "tronco";
+            return "cortex";
+        }
+
+        // DATOS DIDÁCTICOS DE LOS LÓBULOS Y REGIONES
+        const REGION_DATA = {
+            global: {
+                title: "🧠 Encéfalo Humano Completo",
+                desc: "Escaneo médico de resonancia magnética real (MRI). Muestra el encéfalo bilateral con sus cisuras interhemisféricas, surcos corticales y circunvoluciones que multiplican la densidad neuronal.",
+                neurons: "86.000 Millones",
+                freq: "40 Hz (Gamma)",
+                camAlpha: -Math.PI / 2,
+                camBeta: Math.PI / 2.6,
+                camRadius: 4.8
+            },
+            frontal: {
+                title: "🟦 Lóbulo Frontal (Corteza Prefrontal & Motora)",
+                desc: "Sede ejecutiva del cerebro humano: planifica el futuro, toma decisiones éticas, regula la personalidad, controla los movimientos voluntarios y alberga el área de Broca para el habla.",
+                neurons: "24.000 Millones",
+                freq: "14 - 30 Hz (Beta)",
+                camAlpha: -Math.PI / 2,
+                camBeta: Math.PI / 2.4,
+                camRadius: 4.2
+            },
+            parietal: {
+                title: "🟨 Lóbulo Parietal (Corteza Somatosensorial)",
+                desc: "Integra la información del tacto, temperatura, dolor y presión de todo el cuerpo. Alberga el mapa del homúnculo sensorial y calcula la navegación espacial tridimensional.",
+                neurons: "18.000 Millones",
+                freq: "8 - 13 Hz (Alfa)",
+                camAlpha: -Math.PI / 2.2,
+                camBeta: Math.PI / 3.4,
+                camRadius: 4.3
+            },
+            temporal: {
+                title: "🟩 Lóbulo Temporal (Memoria, Audición & Lenguaje)",
+                desc: "Aloja el hipocampo (fábrica de los recuerdos a largo plazo) y la corteza auditiva primaria. Contiene el área de Wernicke encargada de comprender el significado de las palabras.",
+                neurons: "16.000 Millones",
+                freq: "4 - 8 Hz (Theta)",
+                camAlpha: -0.2,
+                camBeta: Math.PI / 2.4,
+                camRadius: 4.2
+            },
+            occipital: {
+                title: "🟥 Lóbulo Occipital (Corteza Visual Primaria V1)",
+                desc: "Procesa la visión humana: descodifica formas, colores, bordes, profundidad y movimiento a partir de los impulsos recibidos por el nervio óptico desde los ojos.",
+                neurons: "10.000 Millones",
+                freq: "8 - 12 Hz (Alfa)",
+                camAlpha: Math.PI / 2,
+                camBeta: Math.PI / 2.5,
+                camRadius: 4.2
+            },
+            cerebelo: {
+                title: "🟪 Cerebelo («Pequeño Cerebro»)",
+                desc: "Estructura altamente plegada en la base posterior. Contiene más del 50% de las neuronas de todo el encéfalo. Modula el equilibrio, la postura y la motricidad fina de precisión.",
+                neurons: "69.000 Millones",
+                freq: "50 Hz (Gamma Rápido)",
+                camAlpha: Math.PI / 2.3,
+                camBeta: Math.PI / 1.7,
+                camRadius: 4.2
+            },
+            tronco: {
+                title: "⚪ Tronco Encefálico (Mesencéfalo, Protuberancia & Bulbo)",
+                desc: "Conecta el cerebro con la médula espinal. Controla de forma autónoma e involuntaria las funciones vitales del organismo: respiración, ritmo cardíaco, presión arterial y deglución.",
+                neurons: "2.000 Millones",
+                freq: "1 - 4 Hz (Delta)",
+                camAlpha: -Math.PI / 2,
+                camBeta: Math.PI / 1.5,
+                camRadius: 4.2
+            },
+            hemi_left: {
+                title: "🔵 Hemisferio Izquierdo (Lógica y Lenguaje)",
+                desc: "Controla la mitad derecha del cuerpo. Especializado en el razonamiento analítico, la gramática, el lenguaje verbal, las matemáticas y el procesamiento secuencial.",
+                neurons: "43.000 Millones",
+                freq: "Beta & Gamma",
+                camAlpha: Math.PI,
+                camBeta: Math.PI / 2.4,
+                camRadius: 4.3
+            },
+            hemi_right: {
+                title: "🟠 Hemisferio Derecho (Creatividad y Espacio)",
+                desc: "Controla la mitad izquierda del cuerpo. Destaca en la percepción holística, el reconocimiento de rostros, la interpretación emocional, la música y la intuición visual.",
+                neurons: "43.000 Millones",
+                freq: "Alfa & Theta",
+                camAlpha: 0.0,
+                camBeta: Math.PI / 2.4,
+                camRadius: 4.3
+            },
+            hemi_top: {
+                title: "⬆️ Vista Axial Superior (Cisura Interhemisférica)",
+                desc: "Perspectiva cenital que revela la simetría bilateral del encéfalo y la profunda cisura interhemisférica longitudinal que separa los hemisferios izquierdo y derecho.",
+                neurons: "86.000 Millones",
+                freq: "40 Hz",
+                camAlpha: -Math.PI / 2,
+                camBeta: 0.05,
+                camRadius: 4.6
+            }
+        };
+
+        // PINES ANATÓMICOS TRIDIMENSIONALES AJUSTADOS AL CENTRO DEL ENCÉFALO
+        const LABEL_DEFS = [
+            { text: "Lóbulo Frontal", color: "rgba(56, 189, 248, 0.95)", pos: new BABYLON.Vector3(0, 0.5, 1.35), region: 'frontal' },
+            { text: "Lóbulo Parietal", color: "rgba(251, 191, 36, 0.95)", pos: new BABYLON.Vector3(0, 1.35, -0.2), region: 'parietal' },
+            { text: "Lóbulo Temporal", color: "rgba(52, 211, 153, 0.95)", pos: new BABYLON.Vector3(1.35, -0.2, 0.1), region: 'temporal' },
+            { text: "Lóbulo Occipital", color: "rgba(251, 113, 133, 0.95)", pos: new BABYLON.Vector3(0, 0.25, -1.35), region: 'occipital' },
+            { text: "Cerebelo", color: "rgba(192, 132, 252, 0.95)", pos: new BABYLON.Vector3(0.65, -0.75, -0.9), region: 'cerebelo' },
+            { text: "Tronco Encefálico", color: "rgba(203, 213, 225, 0.95)", pos: new BABYLON.Vector3(0, -1.05, -0.1), region: 'tronco' }
+        ];
+
+        let labelElements = [];
+
+        // CONSTRUCCIÓN DE LA ESCENA BABYLON
+        const createScene = function () {
+            const sc = new BABYLON.Scene(engine);
+            sc.clearColor = new BABYLON.Color4(0.015, 0.03, 0.07, 1.0);
+
+            // CÁMARA ORBITAL CLÍNICA
+            camera = new BABYLON.ArcRotateCamera("Camera", -Math.PI / 2, Math.PI / 2.6, 4.8, new BABYLON.Vector3(0, 0, 0), sc);
+            camera.attachControl(canvas, true);
+            camera.wheelPrecision = 40;
+            camera.lowerRadiusLimit = 2.0;
+            camera.upperRadiusLimit = 12.0;
+            camera.minZ = 0.1;
+
+            // ILUMINACIÓN CLÍNICA EQUILIBRADA (SIN SOBREEXPOSICIÓN BLANCA)
+            const hemiLight = new BABYLON.HemisphericLight("hemiLight", new BABYLON.Vector3(0, 1, 0), sc);
+            hemiLight.intensity = 0.95;
+            hemiLight.groundColor = new BABYLON.Color3(0.12, 0.14, 0.20);
+
+            const keyLight = new BABYLON.DirectionalLight("keyLight", new BABYLON.Vector3(3, 5, 4), sc);
+            keyLight.intensity = 1.1;
+            keyLight.diffuse = new BABYLON.Color3(1.0, 0.96, 0.92);
+
+            const fillLight = new BABYLON.DirectionalLight("fillLight", new BABYLON.Vector3(-4, -2, -3), sc);
+            fillLight.intensity = 0.75;
+            fillLight.diffuse = new BABYLON.Color3(0.25, 0.6, 0.95);
+
+            const backLight = new BABYLON.DirectionalLight("backLight", new BABYLON.Vector3(0, 3, -5), sc);
+            backLight.intensity = 0.85;
+            backLight.diffuse = new BABYLON.Color3(0.65, 0.45, 0.85);
+
+            // CARGA DEL ESCANEO ANATÓMICO REAL .GLB (Base64 local con fallback online)
+            const modelSource = (window.BRAIN_GLB_B64) ? window.BRAIN_GLB_B64 : "https://javiercursocorreo-gif.github.io/Curso-IA/SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/brain.glb";
+
+            BABYLON.SceneLoader.ImportMesh("", "", modelSource, sc, function (meshes) {
+                loadingOverlay.style.opacity = "0";
+                setTimeout(() => loadingOverlay.style.display = "none", 400);
+
+                brainRoot = new BABYLON.TransformNode("brainRoot", sc);
+
+                // Filtrar nervios periféricos descendentes y configurar materiales orgánicos
+                meshes.forEach(m => {
+                    const nl = (m.name || "").toLowerCase();
+
+                    // Ocultar nervios largos periféricos que cuelgan del tronco
+                    if (nl.includes("vagus") || nl.includes("accessory") || nl.includes("corticospinal")) {
+                        m.setEnabled(false);
+                        return;
+                    }
+
+                    if (m.parent === null) {
+                        m.parent = brainRoot;
+                    }
+
+                    if (m.material) {
+                        // Clonar material para permitir tintes independientes por lóbulo
+                        m.material = m.material.clone(m.name + "_mat");
+
+                        // ⚠️ ELIMINAR EL EMISSIVE BLANCO HORRIBLE [1,1,1] QUE VENÍA EN EL GLB ORIGINAL
+                        m.material.emissiveColor = new BABYLON.Color3(0, 0, 0);
+                        m.material.roughness = 0.52;
+                        m.material.metallic = 0.05;
+
+                        // Asignar color tisular de corteza si el albedo original es blanco plano
+                        const origAlbedo = m.material.albedoColor;
+                        let baseColor = new BABYLON.Color3(0.85, 0.58, 0.50);
+                        if (origAlbedo && (origAlbedo.r < 0.92 || origAlbedo.g < 0.92 || origAlbedo.b < 0.92)) {
+                            baseColor = origAlbedo.clone();
+                        } else {
+                            m.material.albedoColor = baseColor;
+                        }
+
+                        // Colorear vasos sanguíneos en rojo carmesí
+                        if (nl.includes("artery") || nl.includes("vein") || nl.includes("sinus")) {
+                            baseColor = new BABYLON.Color3(0.82, 0.18, 0.18);
+                            m.material.albedoColor = baseColor;
+                        }
+
+                        const lobeKey = classifyNodeLobe(nl);
+                        m.userData = {
+                            baseAlbedo: baseColor,
+                            lobe: lobeKey,
+                            name: m.name
+                        };
+                    }
+                    brainMeshes.push(m);
+                });
+
+                // CENTRADO Y ESCALADO EXACTO DEL ENCÉFALO (Excluyendo las fibras inferiores)
+                const fixedCenterY = 1.561;
+                const fixedCenterZ = -0.006;
+                const brainHeight = 0.282; // Altura real del encéfalo
+                const scale = 3.6 / brainHeight; // Escalar a ~3.6 unidades estándar de visualización
+
+                brainRoot.scaling = new BABYLON.Vector3(scale, scale, scale);
+                brainRoot.position = new BABYLON.Vector3(0, -fixedCenterY * scale, -fixedCenterZ * scale);
+
+                camera.radius = 4.8;
+                camera.target = new BABYLON.Vector3(0, 0, 0);
+                isModelLoaded = true;
+
+                // CREAR PINES EN EL DOM
+                createLabelPins();
+            }, null, function (sc, message) {
+                console.error("Error al cargar brain.glb:", message);
+                loadingOverlay.innerHTML = '<div style="color:#ef4444;font-weight:700;">Error al cargar el archivo 3D del cerebro</div>';
+            });
+
+            return sc;
+        };
+
+        scene = createScene();
+
+        // CREAR ELEMENTOS DE PINES EN EL DOM
+        function createLabelPins() {
+            labelsContainer.innerHTML = "";
+            labelElements = [];
+
+            LABEL_DEFS.forEach(def => {
+                const badge = document.createElement("div");
+                badge.className = "brain-label";
+                badge.style.background = "rgba(15, 23, 42, 0.90)";
+                badge.style.border = `1.5px solid ${def.color}`;
+                badge.style.color = "#f8fafc";
+                badge.innerHTML = `<span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:${def.color};"></span>${def.text}`;
+                badge.onclick = () => focusRegion(def.region);
+                labelsContainer.appendChild(badge);
+
+                labelElements.push({
+                    element: badge,
+                    pos3D: def.pos
+                });
+            });
+        }
+
+        // PROYECCIÓN 3D A PANTALLA 2D PARA LOS PINES
+        function updateLabels() {
+            if (!labelsVisible || !isModelLoaded) {
+                labelsContainer.style.display = "none";
+                return;
+            }
+            labelsContainer.style.display = "block";
+
+            const w = engine.getRenderWidth();
+            const h = engine.getRenderHeight();
+            const transformMatrix = scene.getTransformMatrix();
+
+            labelElements.forEach(item => {
+                // Posición mundial del pin
+                const worldPos = BABYLON.Vector3.TransformCoordinates(item.pos3D, brainRoot.getWorldMatrix());
+                const proj = BABYLON.Vector3.Project(worldPos, BABYLON.Matrix.Identity(), transformMatrix, camera.viewport.toGlobal(w, h));
+
+                if (proj.z < 0 || proj.z > 1) {
+                    item.element.style.display = "none";
+                } else {
+                    item.element.style.display = "flex";
+                    item.element.style.left = `${proj.x}px`;
+                    item.element.style.top = `${proj.y}px`;
+                }
+            });
+        }
+
+        // RESALTADO DINÁMICO DE LÓBULOS ANATÓMICOS
+        function applyLobeHighlight(targetLobe) {
+            currentFocusedRegion = targetLobe;
+            brainMeshes.forEach(m => {
+                if (!m.material || !m.userData) return;
+                const lobe = m.userData.lobe;
+
+                if (targetLobe === "global") {
+                    // Vista general: restaurar todos los tonos de corteza natural
+                    m.material.albedoColor.copyFrom(m.userData.baseAlbedo);
+                    m.material.emissiveColor = new BABYLON.Color3(0, 0, 0);
+                    m.visibility = currentOpacity;
+                } else if (lobe === targetLobe) {
+                    // Resaltar lóbulo activo con su color de contraste
+                    const c = LOBE_COLORS[targetLobe] || new BABYLON.Color3(0.3, 0.75, 1.0);
+                    m.material.albedoColor = c;
+                    m.material.emissiveColor = c.scale(0.18);
+                    m.visibility = currentOpacity;
+                } else {
+                    // Atenuar ligeramente los demás lóbulos para enfocar la atención
+                    m.material.albedoColor = m.userData.baseAlbedo.scale(0.40);
+                    m.material.emissiveColor = new BABYLON.Color3(0, 0, 0);
+                    m.visibility = currentOpacity * 0.75;
+                }
+            });
+        }
+
+        // NAVEGACIÓN Y ENFOQUE SUAVE DE CÁMARA
+        window.focusRegion = function (regionKey) {
+            const data = REGION_DATA[regionKey];
+            if (!data) return;
+
+            // Actualizar botones activos
+            document.querySelectorAll(".toolbar button[data-view]").forEach(btn => {
+                btn.classList.toggle("active", btn.dataset.view === regionKey);
+            });
+            document.getElementById("btnHemiLeft").classList.toggle("active", regionKey === "hemi_left");
+            document.getElementById("btnHemiRight").classList.toggle("active", regionKey === "hemi_right");
+            document.getElementById("btnHemiTop").classList.toggle("active", regionKey === "hemi_top");
+
+            // Telemetría del HUD
+            document.getElementById("hudRegion").textContent = data.title.split("(")[0].replace(/[^\w\sÁÉÍÓÚáéíóúñÑ]/g, '').trim();
+            document.getElementById("infoTitle").textContent = data.title;
+            document.getElementById("infoDesc").textContent = data.desc;
+            document.getElementById("metricNeurons").textContent = data.neurons;
+            document.getElementById("metricFreq").textContent = data.freq;
+
+            // Resaltar lóbulo anatómico
+            applyLobeHighlight(regionKey);
+
+            // Animación suave de cámara en Babylon.js
+            const animCamAlpha = new BABYLON.Animation("camAlpha", "alpha", 60, BABYLON.Animation.ANIMATIONTYPE_FLOAT, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
+            const animCamBeta = new BABYLON.Animation("camBeta", "beta", 60, BABYLON.Animation.ANIMATIONTYPE_FLOAT, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
+            const animCamRadius = new BABYLON.Animation("camRadius", "radius", 60, BABYLON.Animation.ANIMATIONTYPE_FLOAT, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
+
+            animCamAlpha.setKeys([{ frame: 0, value: camera.alpha }, { frame: 35, value: data.camAlpha }]);
+            animCamBeta.setKeys([{ frame: 0, value: camera.beta }, { frame: 35, value: data.camBeta }]);
+            animCamRadius.setKeys([{ frame: 0, value: camera.radius }, { frame: 35, value: data.camRadius }]);
+
+            scene.beginDirectAnimation(camera, [animCamAlpha, animCamBeta, animCamRadius], 0, 35, false);
+        };
+
+        // EVENTOS DE LA BARRA DE HERRAMIENTAS
+        document.querySelectorAll(".toolbar button[data-view]").forEach(btn => {
+            btn.onclick = () => focusRegion(btn.dataset.view);
+        });
+
+        document.getElementById("btnHemiLeft").onclick = () => focusRegion("hemi_left");
+        document.getElementById("btnHemiRight").onclick = () => focusRegion("hemi_right");
+        document.getElementById("btnHemiTop").onclick = () => focusRegion("hemi_top");
+
+        // Toggle Corteza
+        let cortexVisible = true;
+        document.getElementById("btnToggleCortex").onclick = function () {
+            cortexVisible = !cortexVisible;
+            this.classList.toggle("active", cortexVisible);
+            brainMeshes.forEach(m => {
+                m.visibility = cortexVisible ? currentOpacity : 0.0;
+            });
+        };
+
+        // Toggle Sinapsis Bioeléctrica
+        document.getElementById("btnToggleSynapse").onclick = function () {
+            synapseActive = !synapseActive;
+            this.classList.toggle("active", synapseActive);
+            document.getElementById("hudPulses").textContent = synapseActive ? "40 Hz (Ondas Gamma)" : "Pausados";
+            if (!synapseActive) {
+                // Resetear brillo
+                applyLobeHighlight(currentFocusedRegion);
+            }
+        };
+
+        // Toggle Giro Automático
+        document.getElementById("btnToggleRotate").onclick = function () {
+            isAutoRotating = !isAutoRotating;
+            this.classList.toggle("active", isAutoRotating);
+        };
+
+        // Toggle Pines / Etiquetas
+        document.getElementById("btnToggleLabels").onclick = function () {
+            labelsVisible = !labelsVisible;
+            this.classList.toggle("active", labelsVisible);
+            updateLabels();
+        };
+
+        // Slider Velocidad de Impulsos
+        const sliderSpeed = document.getElementById("sliderSpeed");
+        const lblSpeed = document.getElementById("lblSpeed");
+        sliderSpeed.oninput = (e) => {
+            simSpeed = parseFloat(e.target.value);
+            lblSpeed.textContent = `${simSpeed.toFixed(1)}x`;
+        };
+
+        // Slider Opacidad Cortical
+        const sliderOpacity = document.getElementById("sliderOpacity");
+        const lblOpacity = document.getElementById("lblOpacity");
+        sliderOpacity.oninput = (e) => {
+            currentOpacity = parseFloat(e.target.value);
+            lblOpacity.textContent = `${Math.round(currentOpacity * 100)}%`;
+            brainMeshes.forEach(m => {
+                m.visibility = currentOpacity;
+            });
+        };
+
+        // ONDAS DE SINAPSIS BIOELÉCTRICA LIMPIAS (SIN PARTÍCULAS CUADRADAS NI NIEBLA)
+        let bioPulseTimer = 0;
+        scene.onBeforeRenderObservable.add(() => {
+            if (synapseActive && isModelLoaded) {
+                bioPulseTimer += 0.05 * simSpeed;
+                const waveIntensity = (Math.sin(bioPulseTimer * 4.0) + 1.0) * 0.06; // Pulso bioeléctrico sutil
+
+                // Pulsar suavemente el brillo en los lóbulos activos
+                brainMeshes.forEach((m, idx) => {
+                    if (m.material && m.userData) {
+                        if (currentFocusedRegion === "global") {
+                            // Ondas viajeras por la corteza
+                            const phase = (idx % 12) * 0.35;
+                            const pulse = Math.max(0, Math.sin(bioPulseTimer * 3.0 + phase)) * 0.12;
+                            m.material.emissiveColor = new BABYLON.Color3(pulse * 0.3, pulse * 0.7, pulse * 1.0);
+                        }
+                    }
+                });
+            }
+        });
+
+        // BUCLE PRINCIPAL DE RENDERIZADO
+        engine.runRenderLoop(() => {
+            if (scene) {
+                if (isAutoRotating && brainRoot) {
+                    brainRoot.rotation.y += 0.0035;
+                }
+                scene.render();
+                updateLabels();
+            }
+        });
+
+        // RESIZE RESPONSIVE
+        window.addEventListener("resize", () => {
+            engine.resize();
+        });
+        if (window.ResizeObserver) {
+            new ResizeObserver(() => engine.resize()).observe(container);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sesión 09 • Simulador 3D Real: Tiranosaurio Rex de Museo [COD-009]</title>
+    <!-- Babylon.js CDN Oficial y Loaders para GLTF/GLB -->
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+    <!-- Respaldo Base64 Autónomo para funcionamiento local y offline -->
+    <script src="../03_ASSETS_3D_Y_DATOS/trex_3d_b64.js"></script>
+    <script src="../../SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/trex_3d_b64.js"></script>
+    <script src="../../../../SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/trex_3d_b64.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-base: #07090e;
+            --bg-panel: rgba(15, 20, 32, 0.94);
+            --amber: #f59e0b;
+            --amber-glow: rgba(245, 158, 11, 0.35);
+            --gold: #fbbf24;
+            --cyan: #38bdf8;
+            --emerald: #10b981;
+            --rose: #fb7185;
+            --bone: #e2e8f0;
+            --text-main: #f8fafc;
+            --text-sub: #cbd5e1;
+            --font-sans: 'Inter', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+        html, body {
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            font-family: var(--font-sans);
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            font-size: 16px;
+        }
+
+        /* HEADER */
+        header {
+            background: linear-gradient(180deg, rgba(15, 20, 32, 0.98) 0%, rgba(15, 20, 32, 0.88) 100%);
+            backdrop-filter: blur(14px);
+            border-bottom: 1px solid rgba(245, 158, 11, 0.25);
+            padding: 10px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+            z-index: 50;
+        }
+        .header-title-box {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+        .badge-code {
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--amber);
+            border: 1px solid rgba(245, 158, 11, 0.45);
+            font-family: var(--font-mono);
+            font-size: 0.88rem;
+            font-weight: 800;
+            padding: 4px 10px;
+            border-radius: 8px;
+            letter-spacing: 0.05em;
+        }
+        h1 {
+            font-size: 1.22rem;
+            font-weight: 800;
+            letter-spacing: -0.01em;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .pill-status {
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--gold);
+            border: 1px solid rgba(245, 158, 11, 0.4);
+            font-size: 0.85rem;
+            font-weight: 700;
+            padding: 5px 13px;
+            border-radius: 9999px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* WORKSPACE GRID */
+        .workspace-grid {
+            flex: 1;
+            min-height: 0;
+            display: grid;
+            grid-template-columns: 440px 1fr;
+            background: #020409;
+        }
+
+        /* SIDEBAR PANEL */
+        aside.sidebar-panel {
+            background: var(--bg-panel);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            padding: 20px;
+            gap: 18px;
+            z-index: 20;
+        }
+
+        /* TARJETA LA IDEA FÁCIL */
+        .card-easy-concept {
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.95) 100%);
+            border: 1.5px solid rgba(245, 158, 11, 0.35);
+            border-radius: 14px;
+            padding: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+        }
+        .easy-tag {
+            font-size: 0.78rem;
+            font-weight: 800;
+            color: var(--gold);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .easy-title {
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: #ffffff;
+            line-height: 1.3;
+            margin-bottom: 8px;
+        }
+        .easy-text {
+            font-size: 0.95rem;
+            color: var(--text-sub);
+            line-height: 1.55;
+        }
+        .easy-text strong { color: #ffffff; }
+
+        /* CONTROLES 3D */
+        .control-box {
+            background: rgba(15, 23, 42, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .section-title {
+            font-size: 0.88rem;
+            font-weight: 800;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .btn-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+        .btn-action {
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            color: #ffffff;
+            font-weight: 700;
+            font-size: 0.85rem;
+            padding: 10px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        .btn-action:hover {
+            background: rgba(245, 158, 11, 0.2);
+            border-color: var(--amber);
+        }
+        .btn-action.active {
+            background: rgba(245, 158, 11, 0.35);
+            border-color: var(--amber);
+            box-shadow: 0 0 12px var(--amber-glow);
+        }
+
+        /* MODOS DE ILUMINACIÓN */
+        .mode-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+        .mode-btn {
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-sub);
+            padding: 8px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s;
+        }
+        .mode-btn.active {
+            border-color: var(--amber);
+            background: rgba(245, 158, 11, 0.2);
+            color: var(--gold);
+        }
+
+        /* TELEMETRÍA BIOMECÁNICA */
+        .telemetry-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+        .tele-card {
+            background: rgba(2, 6, 23, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+            padding: 8px 10px;
+        }
+        .tele-label {
+            font-size: 0.72rem;
+            color: #94a3b8;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .tele-val {
+            font-family: var(--font-mono);
+            font-size: 1.05rem;
+            font-weight: 800;
+            color: #ffffff;
+            margin-top: 2px;
+        }
+
+        /* PUNTOS ANATÓMICOS */
+        .part-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .part-item {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+            padding: 10px 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .part-item:hover, .part-item.active {
+            border-color: var(--amber);
+            background: rgba(245, 158, 11, 0.1);
+        }
+        .part-item-title {
+            font-size: 0.88rem;
+            font-weight: 700;
+            color: #ffffff;
+            display: flex;
+            justify-content: space-between;
+        }
+        .part-item-desc {
+            font-size: 0.8rem;
+            color: #94a3b8;
+            margin-top: 4px;
+            line-height: 1.35;
+        }
+
+        /* 3D VIEWPORT */
+        .viewport-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: radial-gradient(circle at 50% 50%, #171c26 0%, #030509 100%);
+        }
+        canvas#renderCanvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+            outline: none;
+        }
+
+        /* OVERLAYS VIEWPORT */
+        .overlay-badge {
+            position: absolute;
+            top: 18px;
+            left: 20px;
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(245, 158, 11, 0.35);
+            padding: 8px 14px;
+            border-radius: 10px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: #f8fafc;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            pointer-events: none;
+            z-index: 10;
+        }
+        .overlay-hint {
+            position: absolute;
+            bottom: 18px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            padding: 6px 16px;
+            border-radius: 9999px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #94a3b8;
+            pointer-events: none;
+            z-index: 10;
+        }
+        .loading-cover {
+            position: absolute;
+            inset: 0;
+            background: #030509;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            z-index: 100;
+            transition: opacity 0.5s ease;
+        }
+        .spinner {
+            width: 48px;
+            height: 48px;
+            border: 4px solid rgba(245, 158, 11, 0.2);
+            border-top-color: var(--amber);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-title-box">
+            <span class="badge-code">[COD-009]</span>
+            <h1>🦖 Simulador 3D Real: Tiranosaurio Rex de Museo</h1>
+        </div>
+        <div class="pill-status">
+            <span>●</span>
+            <span id="txtStatus">Modelo 3D Oficial de Museo • Babylon.js</span>
+        </div>
+    </header>
+
+    <div class="workspace-grid">
+        <aside class="sidebar-panel">
+            <!-- TARJETA LA IDEA FÁCIL -->
+            <div class="card-easy-concept">
+                <div class="easy-tag">💡 La Idea Fácil</div>
+                <div class="easy-title">El Depredador Definitivo</div>
+                <p class="easy-text">
+                    El T-Rex no cazaba a ciegas. Sus ojos miraban al frente con <strong>visión 3D estereoscópica</strong> (calculaba distancias exactas como un halcón), sus fosas nasales olían rastros a kilómetros y sus mandíbulas trituraban huesos de dinosaurios acorazados con <strong>6 toneladas de presión</strong>, haciendo añicos fémures enteros de un solo bocado.
+                </p>
+            </div>
+
+            <!-- CONTROLES 3D -->
+            <div class="control-box">
+                <div class="section-title">
+                    <span>Exhibición de Galería 3D</span>
+                    <span id="lblTurntableState" style="color:var(--amber); font-family:var(--font-mono);">ROTACIÓN ACTIVA</span>
+                </div>
+                <div class="btn-group">
+                    <button class="btn-action active" id="btnTurntable" onclick="toggleTurntable()">⏸ Pausar Giro</button>
+                    <button class="btn-action" onclick="resetCamera()">🎯 Centrar 3D</button>
+                </div>
+            </div>
+
+            <!-- MODOS DE ILUMINACIÓN DE MUSEO -->
+            <div class="control-box">
+                <div class="section-title">Iluminación Paleontológica</div>
+                <div class="mode-grid">
+                    <button class="mode-btn active" id="btnModeMuseum" onclick="setLighting('museum')">Galería Museo</button>
+                    <button class="mode-btn" id="btnModeRaking" onclick="setLighting('raking')">Luz Rasante</button>
+                    <button class="mode-btn" id="btnModeLab" onclick="setLighting('lab')">Luz Laboratorio</button>
+                </div>
+            </div>
+
+            <!-- TELEMETRÍA BIOMECÁNICA -->
+            <div class="control-box">
+                <div class="section-title">Telemetría Anatómica</div>
+                <div class="telemetry-grid">
+                    <div class="tele-card">
+                        <div class="tele-label" id="lblTele1">Fuerza de Mordida</div>
+                        <div class="tele-val" id="valTele1" style="color:var(--rose);">60.000 N</div>
+                    </div>
+                    <div class="tele-card">
+                        <div class="tele-label" id="lblTele2">Presión Maxilar</div>
+                        <div class="tele-val" id="valTele2">6.000 kg/cm²</div>
+                    </div>
+                    <div class="tele-card">
+                        <div class="tele-label" id="lblTele3">Longitud Dental</div>
+                        <div class="tele-val" id="valTele3">30 cm (Sierra)</div>
+                    </div>
+                    <div class="tele-card">
+                        <div class="tele-label" id="lblTele4">Visión Binocular</div>
+                        <div class="tele-val" id="valTele4" style="color:var(--cyan);">55° (3D Real)</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PUNTOS ANATÓMICOS CLAVE -->
+            <div class="control-box">
+                <div class="section-title">Puntos Anatómicos de Inspección</div>
+                <div class="part-list">
+                    <div class="part-item" id="partSpot_head" onclick="focusSpot('head')">
+                        <div class="part-item-title">
+                            <span>1. Mandíbula y Dientes Aserrados</span>
+                            <span style="color:var(--amber);">Esmalte Fósil</span>
+                        </div>
+                        <div class="part-item-desc">Dientes cónicos reforzados con filos de sierra microdentados, diseñados para penetrar carne y quebrar hueso macizo.</div>
+                    </div>
+                    <div class="part-item" id="partSpot_eyes" onclick="focusSpot('eyes')">
+                        <div class="part-item-title">
+                            <span>2. Cuencas Oculares & Visión</span>
+                            <span style="color:var(--cyan);">Órbita Frontal</span>
+                        </div>
+                        <div class="part-item-desc">Hocico estrechado que permitía superposición de ambos ojos, otorgando percepción de profundidad milimétrica para emboscadas.</div>
+                    </div>
+                    <div class="part-item" id="partSpot_neck" onclick="focusSpot('neck')">
+                        <div class="part-item-title">
+                            <span>3. Vértebras Cervicales en 'S'</span>
+                            <span style="color:var(--emerald);">Masa Muscular</span>
+                        </div>
+                        <div class="part-item-desc">Cuello corto y grueso con enorme musculatura para sacudir con violencia presas de varias toneladas de peso.</div>
+                    </div>
+                    <div class="part-item" id="partSpot_body" onclick="focusSpot('body')">
+                        <div class="part-item-title">
+                            <span>4. Postura Bípeda y Equilibrio</span>
+                            <span style="color:var(--gold);">Cola Contrapeso</span>
+                        </div>
+                        <div class="part-item-desc">Columna vertebral horizontal contrapesada por una cola musculosa y maciza para giros rápidos de caza.</div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- VIEWPORT 3D -->
+        <main class="viewport-container">
+            <div class="overlay-badge">
+                <span>🦖</span>
+                <span id="badgeInfo">Tyrannosaurus Rex • Espécimen Fósil 3D de Museo</span>
+            </div>
+            <div class="overlay-hint">🖱️ Arrastra para orbitar 360° • Rueda para zoom • Clic derecho para desplazar</div>
+            <div class="loading-cover" id="loadingCover">
+                <div class="spinner"></div>
+                <div style="font-weight: 700; color: var(--amber); letter-spacing: 0.05em;">CARGANDO MODELO 3D REAL (BABYLON.JS)...</div>
+            </div>
+            <canvas id="renderCanvas"></canvas>
+        </main>
+    </div>
+
+    <script>
+        const canvas = document.getElementById("renderCanvas");
+        const engine = new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true });
+        let scene, camera, rootNode = null;
+        let isTurntable = true;
+        let hemiLight, dirLight1, dirLight2;
+        let allMeshes = [];
+
+        // Landmarks anatómicos del espécimen (calculados en base a la geometría 3D real)
+        let anatomyLandmarks = {
+            head: new BABYLON.Vector3(0, 1.6, 1.5),
+            eyes: new BABYLON.Vector3(0, 1.9, 1.2),
+            neck: new BABYLON.Vector3(0, 1.6, 0.7),
+            body: new BABYLON.Vector3(0, 1.3, 0.0),
+            facingAngle: 0
+        };
+
+        // Fuentes del modelo 3D (Base64 local autónomo + CDN Fallback)
+        const MODEL_URL_RAW = "https://raw.githubusercontent.com/code4fukui/vr-dinosaur-museum/main/dinosaur-trex.glb";
+        const MODEL_LOCAL = "../03_ASSETS_3D_Y_DATOS/trex_3d.glb";
+
+        function createScene() {
+            const sc = new BABYLON.Scene(engine);
+            sc.clearColor = new BABYLON.Color4(0.02, 0.03, 0.06, 1.0);
+
+            // Pedestal sutil de exposición de museo
+            const ground = BABYLON.MeshBuilder.CreateCylinder("pedestal", { diameter: 7.0, height: 0.15 }, sc);
+            ground.position.y = -0.08;
+            const groundMat = new BABYLON.PBRMaterial("groundMat", sc);
+            groundMat.albedoColor = new BABYLON.Color3(0.08, 0.1, 0.15);
+            groundMat.roughness = 0.8;
+            groundMat.metallic = 0.1;
+            ground.material = groundMat;
+
+            // Cámara orbital suave 360° enfocada en el centro anatómico del dinosaurio
+            // Límite de radio mínimo bajado a 0.4 para permitir primeros planos macro de dientes y ojos
+            camera = new BABYLON.ArcRotateCamera("Camera", -Math.PI / 2.2, Math.PI / 2.6, 5.8, new BABYLON.Vector3(0, 1.2, 0), sc);
+            camera.attachControl(canvas, true);
+            camera.wheelPrecision = 20;
+            camera.minZ = 0.05;
+            camera.maxZ = 100;
+            camera.lowerRadiusLimit = 0.4;
+            camera.upperRadiusLimit = 25.0;
+
+            // Iluminación dramática de sala de museo
+            hemiLight = new BABYLON.HemisphericLight("hemiLight", new BABYLON.Vector3(0, 1, 0), sc);
+            hemiLight.intensity = 0.85;
+            hemiLight.groundColor = new BABYLON.Color3(0.05, 0.08, 0.12);
+
+            dirLight1 = new BABYLON.DirectionalLight("dir1", new BABYLON.Vector3(-1, -2, -1), sc);
+            dirLight1.intensity = 1.4;
+            dirLight1.diffuse = new BABYLON.Color3(1.0, 0.95, 0.85);
+
+            dirLight2 = new BABYLON.DirectionalLight("dir2", new BABYLON.Vector3(1, -1, 1), sc);
+            dirLight2.intensity = 0.7;
+            dirLight2.diffuse = new BABYLON.Color3(0.5, 0.7, 0.9);
+
+            loadModel(sc);
+            return sc;
+        }
+
+        function loadModel(sc) {
+            // Cargar Base64 si existe; si no, ir directamente al CDN oficial para evitar bloqueo CORS local
+            let modelSource = (window.TREX_3D_GLB_B64 && window.TREX_3D_GLB_B64.length > 100)
+                ? window.TREX_3D_GLB_B64
+                : MODEL_URL_RAW;
+
+            const tryLoad = (src, isFallback = false) => {
+                BABYLON.SceneLoader.ImportMesh("", "", src, sc, function (meshes, particleSystems, skeletons, animationGroups, transformNodes) {
+                    const cover = document.getElementById("loadingCover");
+                    if (cover) {
+                        cover.style.opacity = "0";
+                        setTimeout(() => cover.style.display = "none", 400);
+                    }
+
+                    allMeshes = meshes;
+                    meshes.forEach(m => {
+                        if (m.material) {
+                            m._origMaterial = m.material;
+                        }
+                    });
+
+                    rootNode = new BABYLON.TransformNode("trexRoot", sc);
+                    const gltfRoot = sc.getNodeByName("__root__");
+                    if (gltfRoot) {
+                        gltfRoot.parent = rootNode;
+                    } else {
+                        meshes.forEach(m => { if (!m.parent) m.parent = rootNode; });
+                        if (transformNodes) transformNodes.forEach(t => { if (!t.parent) t.parent = rootNode; });
+                    }
+
+                    // Forzar cálculo de matrices para bounding box real del espécimen
+                    sc.render();
+                    let min = new BABYLON.Vector3(Infinity, Infinity, Infinity);
+                    let max = new BABYLON.Vector3(-Infinity, -Infinity, -Infinity);
+                    meshes.forEach(m => {
+                        if (m.getBoundingInfo) {
+                            const b = m.getBoundingInfo().boundingBox;
+                            min = BABYLON.Vector3.Minimize(min, b.minimumWorld);
+                            max = BABYLON.Vector3.Maximize(max, b.maximumWorld);
+                        }
+                    });
+
+                    const size = max.subtract(min);
+                    const maxDim = Math.max(size.x, size.y, size.z);
+                    // Escala monumental de museo para llenar majestuosamente el viewport
+                    const scaleFactor = (maxDim > 0.001) ? (5.5 / maxDim) : 7.2;
+                    rootNode.scaling = new BABYLON.Vector3(scaleFactor, scaleFactor, scaleFactor);
+
+                    // Centrar sobre el pedestal de exposición con patas apoyadas en Y=0
+                    const center = min.add(size.scale(0.5));
+                    rootNode.position = new BABYLON.Vector3(-center.x * scaleFactor, -min.y * scaleFactor, -center.z * scaleFactor);
+
+                    // Renderizar para consolidar transformaciones de mundo
+                    sc.render();
+
+                    // Detectar con precisión milimétrica los puntos anatómicos del espécimen
+                    computeAnatomyLandmarks(sc);
+
+                    // Encuadre inicial frontal majestuoso en perspectiva 3/4
+                    const face = anatomyLandmarks.facingAngle;
+                    camera.setTarget(anatomyLandmarks.body);
+                    camera.radius = 6.0;
+                    camera.alpha = face + Math.PI / 4.5;
+                    camera.beta = Math.PI / 2.5;
+
+                }, null, function (scene, message, exception) {
+                    if (!isFallback) {
+                        console.warn("Cargando modelo T-Rex desde CDN oficial de respaldo...");
+                        tryLoad(MODEL_URL_RAW, true);
+                    } else {
+                        console.error("Error cargando modelo T-Rex 3D:", message);
+                    }
+                });
+            };
+
+            tryLoad(modelSource, false);
+        }
+
+        function toggleTurntable() {
+            isTurntable = !isTurntable;
+            const btn = document.getElementById("btnTurntable");
+            const lbl = document.getElementById("lblTurntableState");
+
+            if (isTurntable) {
+                btn.innerHTML = "⏸ Pausar Giro";
+                btn.classList.add("active");
+                lbl.innerText = "ROTACIÓN ACTIVA";
+                lbl.style.color = "var(--amber)";
+            } else {
+                btn.innerHTML = "▶ Reanudar Giro";
+                btn.classList.remove("active");
+                lbl.innerText = "PAUSADO";
+                lbl.style.color = "#94a3b8";
+            }
+        }
+
+        function setLighting(mode) {
+            document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+            const btn = document.getElementById(`btnMode${mode.charAt(0).toUpperCase() + mode.slice(1)}`);
+            if (btn) btn.classList.add('active');
+
+            if (mode === 'museum') {
+                scene.clearColor = new BABYLON.Color4(0.02, 0.03, 0.06, 1.0);
+                hemiLight.intensity = 0.85;
+                hemiLight.diffuse = new BABYLON.Color3(1.0, 0.98, 0.92);
+                hemiLight.groundColor = new BABYLON.Color3(0.05, 0.08, 0.12);
+
+                dirLight1.intensity = 1.4;
+                dirLight1.direction = new BABYLON.Vector3(-1, -2, -1);
+                dirLight1.diffuse = new BABYLON.Color3(1.0, 0.95, 0.85);
+
+                dirLight2.intensity = 0.7;
+                dirLight2.direction = new BABYLON.Vector3(1, -1, 1);
+                dirLight2.diffuse = new BABYLON.Color3(0.5, 0.7, 0.9);
+
+                allMeshes.forEach(m => {
+                    if (m._origMaterial) m.material = m._origMaterial;
+                });
+                document.getElementById("badgeInfo").innerText = "Iluminación: Galería de Museo • Focos Cálidos de Vitrina PBR";
+
+            } else if (mode === 'raking') {
+                // Luz rasante arqueológica lateral extrema para revelar microfisuras y volumen
+                scene.clearColor = new BABYLON.Color4(0.01, 0.015, 0.02, 1.0);
+                hemiLight.intensity = 0.12;
+                hemiLight.diffuse = new BABYLON.Color3(0.2, 0.25, 0.3);
+                hemiLight.groundColor = new BABYLON.Color3(0.01, 0.01, 0.02);
+
+                dirLight1.intensity = 3.2;
+                dirLight1.direction = new BABYLON.Vector3(-3.5, -0.25, 0.8); // Ángulo rasante casi horizontal
+                dirLight1.diffuse = new BABYLON.Color3(1.0, 0.88, 0.65); // Tono rasante cálido de linterna
+
+                dirLight2.intensity = 0.0; // Sin luz de relleno secundaria para maximizar sombras
+
+                allMeshes.forEach(m => {
+                    if (m._origMaterial) m.material = m._origMaterial;
+                });
+                document.getElementById("badgeInfo").innerText = "Iluminación: Luz Rasante Paleontológica • Microrelieves Óseos y Sombras Dramáticas";
+
+            } else if (mode === 'lab') {
+                // Iluminación científica de laboratorio (6500K luz diurna neutra homogénea)
+                scene.clearColor = new BABYLON.Color4(0.015, 0.02, 0.03, 1.0);
+                hemiLight.intensity = 1.35;
+                hemiLight.diffuse = new BABYLON.Color3(0.95, 0.98, 1.0);
+                hemiLight.groundColor = new BABYLON.Color3(0.2, 0.25, 0.3);
+
+                dirLight1.intensity = 1.6;
+                dirLight1.direction = new BABYLON.Vector3(-1, -2, -1);
+                dirLight1.diffuse = new BABYLON.Color3(1.0, 1.0, 1.0);
+
+                dirLight2.intensity = 1.1;
+                dirLight2.direction = new BABYLON.Vector3(1, -1.5, 1);
+                dirLight2.diffuse = new BABYLON.Color3(0.85, 0.9, 1.0);
+
+                allMeshes.forEach(m => {
+                    if (m._origMaterial) m.material = m._origMaterial;
+                });
+                document.getElementById("badgeInfo").innerText = "Iluminación: Laboratorio Paleontológico • Luz Neutra 6500K de Alta Definición";
+            }
+        }
+
+        function animateCamera(targetPos, targetRadius, targetAlpha, targetBeta) {
+            BABYLON.Animation.CreateAndStartAnimation(
+                "camTargetAnim", camera, "target", 60, 24,
+                camera.target.clone(), targetPos,
+                BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT,
+                new BABYLON.CubicEase()
+            );
+            BABYLON.Animation.CreateAndStartAnimation(
+                "camRadiusAnim", camera, "radius", 60, 24,
+                camera.radius, targetRadius,
+                BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT,
+                new BABYLON.CubicEase()
+            );
+            if (targetAlpha !== undefined) {
+                BABYLON.Animation.CreateAndStartAnimation(
+                    "camAlphaAnim", camera, "alpha", 60, 24,
+                    camera.alpha, targetAlpha,
+                    BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT,
+                    new BABYLON.CubicEase()
+                );
+            }
+            if (targetBeta !== undefined) {
+                BABYLON.Animation.CreateAndStartAnimation(
+                    "camBetaAnim", camera, "beta", 60, 24,
+                    camera.beta, targetBeta,
+                    BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT,
+                    new BABYLON.CubicEase()
+                );
+            }
+        }
+
+        function computeAnatomyLandmarks(sc) {
+            if (!allMeshes || allMeshes.length === 0) return;
+
+            let pts = [];
+            allMeshes.forEach(m => {
+                if (!m.getVerticesData) return;
+                const positions = m.getVerticesData(BABYLON.VertexBuffer.PositionKind);
+                if (!positions) return;
+                const wm = m.getWorldMatrix();
+
+                for (let i = 0; i < positions.length; i += 3) {
+                    const localPt = new BABYLON.Vector3(positions[i], positions[i+1], positions[i+2]);
+                    const worldPt = BABYLON.Vector3.TransformCoordinates(localPt, wm);
+                    pts.push(worldPt);
+                }
+            });
+
+            if (pts.length === 0) return;
+
+            let min = new BABYLON.Vector3(Infinity, Infinity, Infinity);
+            let max = new BABYLON.Vector3(-Infinity, -Infinity, -Infinity);
+            pts.forEach(p => {
+                min = BABYLON.Vector3.Minimize(min, p);
+                max = BABYLON.Vector3.Maximize(max, p);
+            });
+
+            const center = min.add(max.subtract(min).scale(0.5));
+            const spanX = max.x - min.x;
+            const spanZ = max.z - min.z;
+            const isAxisZ = (spanZ >= spanX);
+
+            // Discriminador anatómico científico:
+            // La cabeza/cráneo del T-Rex concentra la mayor densidad poligonal (dientes, mandíbula, fenestras)
+            // y una anchura transversal marcadamente mayor que la punta afilada y cónica de la cola.
+            const frac = 0.22;
+            let ptsMinEnd, ptsMaxEnd;
+            if (isAxisZ) {
+                ptsMinEnd = pts.filter(p => p.z < min.z + frac * spanZ);
+                ptsMaxEnd = pts.filter(p => p.z > max.z - frac * spanZ);
+            } else {
+                ptsMinEnd = pts.filter(p => p.x < min.x + frac * spanX);
+                ptsMaxEnd = pts.filter(p => p.x > max.x - frac * spanX);
+            }
+
+            const spanTransMin = isAxisZ 
+                ? (Math.max(...ptsMinEnd.map(p => p.x)) - Math.min(...ptsMinEnd.map(p => p.x)))
+                : (Math.max(...ptsMinEnd.map(p => p.z)) - Math.min(...ptsMinEnd.map(p => p.z)));
+            const spanTransMax = isAxisZ 
+                ? (Math.max(...ptsMaxEnd.map(p => p.x)) - Math.min(...ptsMaxEnd.map(p => p.x)))
+                : (Math.max(...ptsMaxEnd.map(p => p.z)) - Math.min(...ptsMaxEnd.map(p => p.z)));
+
+            const scoreMin = ptsMinEnd.length * spanTransMin;
+            const scoreMax = ptsMaxEnd.length * spanTransMax;
+            const isMaxHead = (scoreMax >= scoreMin);
+
+            // Filtrar vértices del extremo cefálico (cráneo, órbitas y dientes)
+            let headPts = isAxisZ
+                ? (isMaxHead ? pts.filter(p => p.z > max.z - 0.28 * spanZ) : pts.filter(p => p.z < min.z + 0.28 * spanZ))
+                : (isMaxHead ? pts.filter(p => p.x > max.x - 0.28 * spanX) : pts.filter(p => p.x < min.x + 0.28 * spanX));
+
+            if (headPts.length === 0) headPts = isMaxHead ? ptsMaxEnd : ptsMinEnd;
+
+            // 1. MANDÍBULA Y DIENTES (Extremo frontal del hocico a la altura dental)
+            let snoutPt = headPts[0];
+            let bestSnoutDist = -1;
+            headPts.forEach(p => {
+                const distAlongAxis = isAxisZ 
+                    ? (isMaxHead ? (p.z - center.z) : (center.z - p.z))
+                    : (isMaxHead ? (p.x - center.x) : (center.x - p.x));
+                if (distAlongAxis > bestSnoutDist) {
+                    bestSnoutDist = distAlongAxis;
+                    snoutPt = p;
+                }
+            });
+
+            // Centro del cráneo
+            let skullCenter = new BABYLON.Vector3(0, 0, 0);
+            headPts.forEach(p => skullCenter.addInPlace(p));
+            skullCenter.scaleInPlace(1.0 / headPts.length);
+
+            // Calibración exacta de la mandíbula inferior y arcada dental
+            const jawPt = new BABYLON.Vector3(
+                snoutPt.x * 0.85 + skullCenter.x * 0.15,
+                (snoutPt.y + skullCenter.y) * 0.5 - 0.08,
+                snoutPt.z * 0.85 + skullCenter.z * 0.15
+            );
+
+            // 2. CUENCAS OCULARES (Parte superior del cráneo, ligeramente retrasadas del hocico hacia la nuca)
+            const eyePt = new BABYLON.Vector3(
+                skullCenter.x,
+                Math.max(...headPts.map(p => p.y)) - 0.12,
+                skullCenter.z * 0.65 + snoutPt.z * 0.35
+            );
+
+            // 3. CUELLO EN 'S' (Región cervical de conexión entre cráneo y columna)
+            const neckPt = new BABYLON.Vector3(
+                (skullCenter.x + center.x) * 0.5,
+                (skullCenter.y + center.y) * 0.52 + 0.15,
+                (skullCenter.z + center.z) * 0.5
+            );
+
+            // 4. POSTURA BÍPEDA (Centro de masa en cadera / columna horizontal)
+            const bodyPt = new BABYLON.Vector3(center.x, center.y + 0.15, center.z);
+
+            // Vector director del hocico desde el centro del dinosaurio
+            const dirHocico = snoutPt.subtract(center);
+            // Ángulo azimutal de la cámara mirando DIRECTAMENTE DE FRENTE hacia el hocico
+            const facingAngle = Math.atan2(dirHocico.z, dirHocico.x);
+
+            anatomyLandmarks = {
+                head: jawPt,
+                eyes: eyePt,
+                neck: neckPt,
+                body: bodyPt,
+                facingAngle: facingAngle
+            };
+        }
+
+        function focusSpot(spot) {
+            document.querySelectorAll('.part-item').forEach(i => i.classList.remove('active'));
+            const targetBtn = document.getElementById(`partSpot_${spot}`);
+            if (targetBtn) targetBtn.classList.add('active');
+
+            // Pausar el giro de la plataforma para permitir inspección analítica
+            isTurntable = false;
+            const btnT = document.getElementById("btnTurntable");
+            const lblT = document.getElementById("lblTurntableState");
+            if (btnT && lblT) {
+                btnT.innerHTML = "▶ Reanudar Giro";
+                btnT.classList.remove("active");
+                lblT.innerText = "PAUSADO (INSPECCIÓN)";
+                lblT.style.color = "#94a3b8";
+            }
+            if (rootNode) {
+                rootNode.rotation.y = 0; // Alinear con el sistema de coordenadas de referencia
+            }
+
+            const face = anatomyLandmarks.facingAngle;
+
+            if (spot === 'head') {
+                animateCamera(anatomyLandmarks.head, 1.6, face + 0.35, Math.PI / 2.3);
+                document.getElementById("badgeInfo").innerText = "Inspección: 1. Mandíbula y Dientes Aserrados • 60.000 N Triturahuesos";
+                document.getElementById("lblTele1").innerText = "Fuerza de Mordida";
+                document.getElementById("valTele1").innerText = "60.000 N";
+                document.getElementById("lblTele2").innerText = "Presión Maxilar";
+                document.getElementById("valTele2").innerText = "6.000 kg/cm²";
+                document.getElementById("lblTele3").innerText = "Longitud Dental";
+                document.getElementById("valTele3").innerText = "30 cm (Sierra)";
+                document.getElementById("lblTele4").innerText = "Resistencia Oclusión";
+                document.getElementById("valTele4").innerText = "Hueso Macizo";
+
+            } else if (spot === 'eyes') {
+                animateCamera(anatomyLandmarks.eyes, 1.35, face, Math.PI / 2.35);
+                document.getElementById("badgeInfo").innerText = "Inspección: 2. Cuencas Oculares • Visión Estereoscópica 3D (55°)";
+                document.getElementById("lblTele1").innerText = "Visión Binocular";
+                document.getElementById("valTele1").innerText = "55° Estéreo";
+                document.getElementById("lblTele2").innerText = "Profundidad 3D";
+                document.getElementById("valTele2").innerText = "Milimétrica";
+                document.getElementById("lblTele3").innerText = "Superposición";
+                document.getElementById("valTele3").innerText = "Total Frontal";
+                document.getElementById("lblTele4").innerText = "Modo de Caza";
+                document.getElementById("valTele4").innerText = "Emboscada";
+
+            } else if (spot === 'neck') {
+                animateCamera(anatomyLandmarks.neck, 2.2, face + Math.PI / 2.2, Math.PI / 2.4);
+                document.getElementById("badgeInfo").innerText = "Inspección: 3. Cuello en 'S' • Masa Muscular de Sacudida de Presas";
+                document.getElementById("lblTele1").innerText = "Masa Muscular";
+                document.getElementById("valTele1").innerText = "1.200 kg";
+                document.getElementById("lblTele2").innerText = "Estructura Cervical";
+                document.getElementById("valTele2").innerText = "Vértebras en 'S'";
+                document.getElementById("lblTele3").innerText = "Capacidad Sacudida";
+                document.getElementById("valTele3").innerText = "8 Toneladas";
+                document.getElementById("lblTele4").innerText = "Función";
+                document.getElementById("valTele4").innerText = "Torsión y Desgarro";
+
+            } else if (spot === 'body') {
+                animateCamera(anatomyLandmarks.body, 6.2, face + Math.PI / 3.2, Math.PI / 2.5);
+                document.getElementById("badgeInfo").innerText = "Inspección: 4. Postura Bípeda y Cola Contrapeso de 4 Toneladas";
+                document.getElementById("lblTele1").innerText = "Longitud Total";
+                document.getElementById("valTele1").innerText = "12.3 metros";
+                document.getElementById("lblTele2").innerText = "Altura a Cadera";
+                document.getElementById("valTele2").innerText = "4.0 metros";
+                document.getElementById("lblTele3").innerText = "Peso Corporal";
+                document.getElementById("valTele3").innerText = "8.4 toneladas";
+                document.getElementById("lblTele4").innerText = "Equilibrio";
+                document.getElementById("valTele4").innerText = "Cola Dinámica";
+            }
+        }
+
+        function resetCamera() {
+            isTurntable = false;
+            document.querySelectorAll('.part-item').forEach(i => i.classList.remove('active'));
+            setLighting('museum');
+            document.getElementById("badgeInfo").innerText = "Tyrannosaurus Rex • Espécimen Fósil 3D de Museo (Vista General)";
+            if (rootNode) rootNode.rotation.y = 0;
+            const face = anatomyLandmarks.facingAngle;
+            animateCamera(anatomyLandmarks.body, 6.0, face + Math.PI / 4.5, Math.PI / 2.5);
+        }
+
+        scene = createScene();
+        engine.runRenderLoop(() => {
+            if (scene) {
+                if (isTurntable && rootNode) {
+                    rootNode.rotation.y += 0.004;
+                }
+                scene.render();
+            }
+        });
+        window.addEventListener("resize", () => { engine.resize(); });
+    </script>
+</body>
+</html>

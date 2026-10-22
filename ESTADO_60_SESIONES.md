@@ -40,24 +40,28 @@ Este documento registra el avance del plan de actualización por lotes bajo la *
   - *Tema:* Los 5 Niveles del Poder Geopolítico y la Economía del Hogar.
   - *Características:* Selector de eventos mundiales (Canal de Suez, petróleo, sequía), cálculo del impacto en la cesta de la compra en euros y consejos de consumo local y proximidad.
   - *Triple Salvaguarda:* Semilla lista + Plano Técnico listo + App Oficial desplegada en `03_Sesion/`.
+- **Laboratorio `[COD-003]`:** Reconstrucción Arqueológica 3D de Pompeya y la Domus Romana (Fotogrametría Arqueológica).
 
 ### 🔹 Sesión 04:
 - **Micro-App `[NIV-004]`:** `04_SIMULADOR_APORTE_VALOR_EMPRESA_SENIORS.html`
   - *Tema:* Los 6 Niveles de Aporte de Valor, Experiencia y Sabiduría Senior.
   - *Características:* Balanza de vida que reconoce el papel insustituible de los abuelos en la conciliación, la calma familiar y el legado humano.
   - *Triple Salvaguarda:* Semilla lista + Plano Técnico listo + App Oficial desplegada en `04_Sesion/`.
+- **Laboratorio `[COD-004]`:** Anatomía del Ojo Humano, Cristalino y Óptica Biomédica 3D (NIH 3D).
 
 ### 🔹 Sesión 05:
 - **Micro-App `[NIV-005]`:** `05_SIMULADOR_EVOLUCION_DINERO_SENIORS.html`
   - *Tema:* Los 5 Niveles de la Evolución del Dinero: Del Trueque a Bizum y la IA.
   - *Características:* Comparador de seguridad frente a pérdidas y robos. Explicación tranquilizadora para usar Bizum y tarjeta con chip sin miedo.
   - *Triple Salvaguarda:* Semilla lista + Plano Técnico listo + App Oficial desplegada en `05_Sesion/`.
+- **Laboratorio `[COD-005]`:** Sistema Solar Interactivo y Planetario Orbital 3D (NASA JPL).
 
 ### 🔹 Sesión 06:
 - **Micro-App `[NIV-006]`:** `06_SIMULADOR_PODER_ADQUISITIVO_COSTE_VIDA_SENIORS.html`
   - *Tema:* Calculadora de Poder Adquisitivo y Cesta de la Compra Real.
   - *Características:* Desglose de gastos en supermercado, suministros de casa, farmacia y ocio con nietos. Diagnóstico de 6 niveles de desahogo.
   - *Triple Salvaguarda:* Semilla lista + Plano Técnico listo + App Oficial desplegada en `06_Sesion/`.
+- **Laboratorio `[COD-006]`:** Cerebro Humano, Lóbulos Corticales y Red Sináptica 3D (NIH 3D).
 
 ### 🔹 Sesión 07:
 - **Micro-App `[NIV-007]`:** `07_SIMULADOR_AUTOMATIZACION_TRABAJO_IA_SENIORS.html`
