@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sesión 20 • Simulador Biomédico 3D: Esqueleto de la Mano Humana & Biomecánica Digital [COD-020]</title>
+    <!-- Babylon.js Motor 3D Oficial CDN -->
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+    <!-- Assets Anatómicos Reales en Base64 Autónomo -->
+    <script src="../03_ASSETS_3D_Y_DATOS/hand_skeleton_b64.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-base: #030611;
+            --bg-panel: rgba(10, 16, 30, 0.94);
+            --bone: #f8fafc;
+            --bone-shadow: #94a3b8;
+            --carpal-cyan: #38bdf8;
+            --meta-emerald: #34d399;
+            --phal-amber: #fbbf24;
+            --tunnel-rose: #fb7185;
+            --text-main: #f8fafc;
+            --text-sub: #cbd5e1;
+            --font-title: 'Cinzel', serif;
+            --font-sans: 'Inter', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            font-family: var(--font-sans);
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            font-size: 14px;
+        }
+
+        /* HEADER */
+        header {
+            background: linear-gradient(180deg, rgba(8, 14, 28, 0.98) 0%, rgba(8, 14, 28, 0.88) 100%);
+            backdrop-filter: blur(14px);
+            border-bottom: 1px solid rgba(56, 189, 248, 0.35);
+            padding: 10px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+            z-index: 40;
+        }
+
+        .brand-box {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .badge-pill {
+            background: rgba(56, 189, 248, 0.15);
+            border: 1px solid var(--carpal-cyan);
+            color: var(--carpal-cyan);
+            font-family: var(--font-mono);
+            font-weight: 800;
+            font-size: 0.82rem;
+            padding: 4px 10px;
+            border-radius: 6px;
+            letter-spacing: 0.05em;
+        }
+
+        .title-text h1 {
+            font-family: var(--font-title);
+            font-size: 1.15rem;
+            font-weight: 800;
+            letter-spacing: 0.02em;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .title-text p {
+            font-size: 0.78rem;
+            color: var(--text-sub);
+            margin-top: 1px;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-header {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: var(--text-main);
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+        }
+        .btn-header:hover {
+            background: rgba(56, 189, 248, 0.2);
+            border-color: var(--carpal-cyan);
+            color: var(--carpal-cyan);
+        }
+
+        /* WORKSPACE */
+        .workspace {
+            flex: 1;
+            position: relative;
+            display: flex;
+            overflow: hidden;
+        }
+
+        #renderCanvas {
+            width: 100%;
+            height: 100%;
+            touch-action: none;
+            outline: none;
+            background: radial-gradient(circle at 50% 35%, #0f1c34 0%, #060b18 55%, #020409 100%);
+        }
+
+        /* PANEL IZQUIERDO: CONTROLES ANATÓMICOS */
+        .controls-panel {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: 380px;
+            max-height: calc(100% - 40px);
+            background: var(--bg-panel);
+            border: 1px solid rgba(56, 189, 248, 0.35);
+            border-radius: 16px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            overflow-y: auto;
+            backdrop-filter: blur(16px);
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.7);
+            z-index: 30;
+        }
+
+        .panel-section-title {
+            font-family: var(--font-title);
+            font-size: 0.86rem;
+            font-weight: 800;
+            color: var(--carpal-cyan);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding-bottom: 6px;
+        }
+
+        .biomech-actions-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .btn-action {
+            padding: 9px 8px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: var(--text-sub);
+            border-radius: 10px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s ease;
+        }
+        .btn-action.active {
+            background: linear-gradient(135deg, rgba(56, 189, 248, 0.25), rgba(52, 211, 153, 0.35));
+            border-color: var(--carpal-cyan);
+            color: #fff;
+            box-shadow: 0 0 14px rgba(56, 189, 248, 0.35);
+        }
+
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .kpi-card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            padding: 10px 12px;
+        }
+        .kpi-val {
+            font-family: var(--font-mono);
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: var(--carpal-cyan);
+        }
+        .kpi-label {
+            font-size: 0.72rem;
+            color: var(--text-sub);
+            margin-top: 2px;
+        }
+
+        .hotspots-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .btn-hotspot {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-main);
+            padding: 9px 12px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-align: left;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.2s ease;
+        }
+        .btn-hotspot:hover, .btn-hotspot.active {
+            background: rgba(56, 189, 248, 0.2);
+            border-color: var(--carpal-cyan);
+            color: var(--carpal-cyan);
+            transform: translateX(3px);
+        }
+
+        /* OVERLAY PANEL DERECHO: DETALLE CLÍNICO */
+        .info-panel {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 360px;
+            background: var(--bg-panel);
+            border: 1px solid rgba(56, 189, 248, 0.35);
+            border-radius: 16px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            backdrop-filter: blur(16px);
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.7);
+            z-index: 30;
+        }
+
+        .info-title {
+            font-family: var(--font-title);
+            font-size: 1.05rem;
+            font-weight: 800;
+            color: var(--carpal-cyan);
+        }
+
+        .info-body {
+            font-size: 0.85rem;
+            color: var(--text-sub);
+            line-height: 1.55;
+        }
+
+        .info-quote {
+            background: rgba(52, 211, 153, 0.08);
+            border-left: 3px solid var(--meta-emerald);
+            padding: 8px 12px;
+            border-radius: 0 8px 8px 0;
+            font-size: 0.78rem;
+            color: #a7f3d0;
+            font-style: italic;
+        }
+
+        .audio-btn {
+            background: linear-gradient(135deg, #0284c7, #38bdf8);
+            color: #030814;
+            border: none;
+            padding: 9px 16px;
+            border-radius: 10px;
+            font-weight: 800;
+            font-size: 0.82rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 4px;
+            transition: opacity 0.2s ease;
+        }
+        .audio-btn:hover { opacity: 0.9; }
+
+        /* FOOTER */
+        footer {
+            background: rgba(6, 10, 20, 0.96);
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 8px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.76rem;
+            color: var(--text-sub);
+            flex-shrink: 0;
+            z-index: 40;
+        }
+
+        /* MODAL ATLAS BIOMÉDICO */
+        .photo-viewer-modal {
+            position: absolute;
+            inset: 0;
+            background: rgba(2, 4, 10, 0.92);
+            backdrop-filter: blur(12px);
+            z-index: 100;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            padding: 30px;
+        }
+        .photo-viewer-modal.visible { display: flex; }
+        .photo-container {
+            max-width: 960px;
+            width: 100%;
+            background: #0b1329;
+            border: 1px solid var(--carpal-cyan);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8);
+        }
+        .photo-container img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        .photo-caption {
+            padding: 14px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #060b18;
+        }
+        .close-photo-btn {
+            background: var(--carpal-cyan);
+            color: #030814;
+            border: none;
+            padding: 6px 16px;
+            border-radius: 8px;
+            font-weight: 800;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="brand-box">
+            <span class="badge-pill">[COD-020]</span>
+            <div class="title-text">
+                <h1>🖐️ Esqueleto de la Mano Humana & Biomecánica Digital 3D</h1>
+                <p>NIH 3D Print Exchange • Micro-CT Anatómico • 27 Huesos, Túnel Carpiano & Pinza de Oposición</p>
+            </div>
+        </div>
+        <div class="header-actions">
+            <button class="btn-header" onclick="openAtlasViewer()">📷 Atlas Quirúrgico SVG</button>
+            <button class="btn-header" onclick="resetCamera()">🎯 Centrar</button>
+        </div>
+    </header>
+
+    <div class="workspace">
+        <canvas id="renderCanvas"></canvas>
+
+        <!-- PANEL IZQUIERDO -->
+        <div class="controls-panel">
+            <div class="panel-section-title">🦾 Cinemática & Biomecánica</div>
+            <div class="biomech-actions-grid">
+                <button class="btn-action active" id="btnExt" onclick="setPose('extension')">Extensión Plana</button>
+                <button class="btn-action" id="btnFist" onclick="setPose('fist')">Puño de Fuerza</button>
+                <button class="btn-action" id="btnPinch" onclick="setPose('pinch')">Pinza Fina (I-II)</button>
+                <button class="btn-action" id="btnOppose" onclick="setPose('oppose')">Oposición Pulgar</button>
+            </div>
+
+            <div class="panel-section-title">📊 Anatomía Ósea de la Mano</div>
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-val">27</div>
+                    <div class="kpi-label">Huesos Totales</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-val">8</div>
+                    <div class="kpi-label">Huesos del Carpo</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-val">5</div>
+                    <div class="kpi-label">Metacarpianos</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-val">14</div>
+                    <div class="kpi-label">Falanges Digitales</div>
+                </div>
+            </div>
+
+            <div class="panel-section-title">🔍 Puntos Clínicos Relevantes</div>
+            <div class="hotspots-list" id="hotspotsContainer">
+                <!-- Generado dinámicamente -->
+            </div>
+        </div>
+
+        <!-- PANEL DERECHO -->
+        <div class="info-panel" id="infoPanel">
+            <div class="info-title" id="infoTitle">Oposición del Pulgar y Articulación Trapeciometacarpiana</div>
+            <div class="info-body" id="infoBody">
+                La articulación en 'silla de montar' entre el trapecio y el primer metacarpiano confiere a la mano humana una rotación tridimensional axial que permite enfrentar el pulgar a la yema de cualquiera de los otros cuatro dedos, base de toda la tecnología y evolución humana.
+            </div>
+            <div class="info-quote" id="infoQuote">
+                "La mano no es solo un órgano de prensión; es la ventana táctil y motora más compleja del cerebro humano."
+            </div>
+            <button class="audio-btn" onclick="speakCurrentInfo()">
+                🔊 Escuchar Explicación Médica
+            </button>
+        </div>
+    </div>
+
+    <!-- MODAL ATLAS SVG -->
+    <div class="photo-viewer-modal" id="photoModal">
+        <div class="photo-container">
+            <img id="atlasImg" src="" alt="Atlas de la Mano Humana">
+            <div class="photo-caption">
+                <span style="color: #cbd5e1; font-size: 0.82rem;">NIH 3D Print Exchange • Anatomía Quirúrgica Ortopédica</span>
+                <button class="close-photo-btn" onclick="closeAtlasViewer()">Cerrar Atlas</button>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <span>🖐️ Curso de Inteligencia Artificial • Metodología de la Triple Salvaguarda Pedagógica</span>
+        <span>Motor 3D: Babylon.js PBR • NIH 3D Print Exchange / U.S. National Library of Medicine</span>
+    </footer>
+
+    <script>
+        const canvas = document.getElementById("renderCanvas");
+        const engine = new BABYLON.Engine(canvas, true);
+        let scene, camera;
+        let handRoot;
+        let fingerRays = [];
+
+        const HOTSPOTS = [
+            {
+                name: "1. Oposición del Pulgar (Silla de Montar)",
+                desc: "Articulación trapeciometacarpiana que gira 90° permitiendo el contacto pulpejo con pulpejo con el índice y resto de dedos.",
+                quote: "El hito anatómico evolutivo que hizo posible la fabricación de herramientas complejas."
+            },
+            {
+                name: "2. Túnel Carpiano & Retináculo Flexor",
+                desc: "Canal osteofibroso delimitado por los huesos del carpo por donde circulan 9 tendones flexores y el Nervio Mediano.",
+                quote: "Estructura anatómica susceptible de compresión en actividades repetitivas."
+            },
+            {
+                name: "3. Los 8 Huesos del Carpo (Muñeca)",
+                desc: "Fila proximal: Escafoides, Semilunar, Piramidal, Pisiforme. Fila distal: Trapecio, Trapezoide, Grande (Capitatum) y Ganchoso.",
+                quote: "Un complejo engranaje que absorbe impactos y permite la flexión-extensión de la muñeca."
+            },
+            {
+                name: "4. Pinza Fina de Precisión (I - II Dedo)",
+                desc: "Coordinación milimétrica entre la falange distal del pulgar y del índice, inervados por el nervio mediano.",
+                quote: "Capacidad motora fina para escribir, manipular agujas y llaves."
+            },
+            {
+                name: "5. Artrosis y Desgaste en la Madurez (+65)",
+                desc: "La rizartrosis del pulgar y los nódulos articulares de Heberden en falanges distales responden al desgaste natural del cartílago.",
+                quote: "El ejercicio suave de flexión y estiramiento preserva la flexibilidad articular."
+            }
+        ];
+
+        function createScene() {
+            scene = new BABYLON.Scene(engine);
+            scene.clearColor = new BABYLON.Color4(0.015, 0.025, 0.05, 1.0);
+
+            camera = new BABYLON.ArcRotateCamera("Camera", -Math.PI / 2, Math.PI / 2.8, 38, new BABYLON.Vector3(0, 5, 0), scene);
+            camera.attachControl(canvas, true);
+            camera.lowerRadiusLimit = 15;
+            camera.upperRadiusLimit = 80;
+            camera.wheelPrecision = 30;
+
+            const sunLight = new BABYLON.DirectionalLight("sun", new BABYLON.Vector3(0.5, -1, 0.8), scene);
+            sunLight.intensity = 2.0;
+            sunLight.diffuse = new BABYLON.Color3(0.95, 0.98, 1.0);
+
+            const ambientLight = new BABYLON.HemisphericLight("ambient", new BABYLON.Vector3(0, 1, 0), scene);
+            ambientLight.intensity = 0.55;
+            ambientLight.diffuse = new BABYLON.Color3(0.5, 0.65, 0.85);
+
+            handRoot = new BABYLON.TransformNode("handRoot", scene);
+
+            // Materiales PBR
+            const boneMat = new BABYLON.PBRMaterial("boneMat", scene);
+            boneMat.albedoColor = new BABYLON.Color3(0.94, 0.94, 0.90);
+            boneMat.roughness = 0.45;
+
+            const carpalMat = new BABYLON.PBRMaterial("carpalMat", scene);
+            carpalMat.albedoColor = new BABYLON.Color3(0.22, 0.74, 0.97);
+            carpalMat.roughness = 0.35;
+
+            const metaMat = new BABYLON.PBRMaterial("metaMat", scene);
+            metaMat.albedoColor = new BABYLON.Color3(0.20, 0.83, 0.60);
+            metaMat.roughness = 0.40;
+
+            const phalMat = new BABYLON.PBRMaterial("phalMat", scene);
+            phalMat.albedoColor = new BABYLON.Color3(0.98, 0.75, 0.15);
+            phalMat.roughness = 0.40;
+
+            // 1. CARPO (8 huesos representados anatómicamente en arco)
+            const carpalGroup = new BABYLON.TransformNode("carpalGroup", scene);
+            carpalGroup.parent = handRoot;
+            const carpalCoords = [
+                { name: "Escafoides", x: -2.2, y: 0.0, z: 0.0 },
+                { name: "Semilunar", x: -0.7, y: 0.2, z: 0.0 },
+                { name: "Piramidal", x: 0.8, y: 0.0, z: 0.0 },
+                { name: "Pisiforme", x: 1.8, y: -0.3, z: 0.6 },
+                { name: "Trapecio", x: -2.8, y: 1.5, z: 0.2 },
+                { name: "Trapezoide", x: -1.3, y: 1.6, z: 0.1 },
+                { name: "Grande", x: 0.2, y: 1.8, z: 0.0 },
+                { name: "Ganchoso", x: 1.6, y: 1.5, z: 0.2 }
+            ];
+            carpalCoords.forEach(c => {
+                const b = BABYLON.MeshBuilder.CreateSphere(c.name, { diameterX: 1.4, diameterY: 1.3, diameterZ: 1.1 }, scene);
+                b.position = new BABYLON.Vector3(c.x, c.y, c.z);
+                b.material = carpalMat;
+                b.parent = carpalGroup;
+            });
+
+            // 2. METACARPO Y FALANGES (5 dedos / rayos)
+            const fingerDefs = [
+                { id: "thumb", x: -3.6, y: 2.2, rotZ: 0.45, metaLen: 4.0, pLen: 3.0, mLen: 0, dLen: 2.2 },
+                { id: "index", x: -1.8, y: 2.6, rotZ: 0.12, metaLen: 5.6, pLen: 3.6, mLen: 2.6, dLen: 1.9 },
+                { id: "middle", x: 0.0, y: 2.8, rotZ: 0.00, metaLen: 6.0, pLen: 4.0, mLen: 2.9, dLen: 2.0 },
+                { id: "ring", x: 1.7, y: 2.6, rotZ: -0.10, metaLen: 5.4, pLen: 3.5, mLen: 2.5, dLen: 1.8 },
+                { id: "little", x: 3.2, y: 2.2, rotZ: -0.25, metaLen: 4.8, pLen: 2.8, mLen: 1.9, dLen: 1.6 }
+            ];
+
+            fingerRays = fingerDefs.map((def, idx) => {
+                const rayRoot = new BABYLON.TransformNode(`ray_${def.id}`, scene);
+                rayRoot.position = new BABYLON.Vector3(def.x, def.y, 0);
+                rayRoot.rotation.z = def.rotZ;
+                rayRoot.parent = handRoot;
+
+                // Metacarpiano
+                const meta = BABYLON.MeshBuilder.CreateCylinder(`meta_${def.id}`, {
+                    height: def.metaLen, diameterTop: 1.1, diameterBottom: 1.2
+                }, scene);
+                meta.position.y = def.metaLen / 2;
+                meta.material = metaMat;
+                meta.parent = rayRoot;
+
+                // Joint MCP (Metacarpofalángica)
+                const mcpJoint = new BABYLON.TransformNode(`mcp_${def.id}`, scene);
+                mcpJoint.position.y = def.metaLen;
+                mcpJoint.parent = rayRoot;
+
+                // Falange Proximal
+                const prox = BABYLON.MeshBuilder.CreateCylinder(`prox_${def.id}`, {
+                    height: def.pLen, diameterTop: 0.9, diameterBottom: 1.0
+                }, scene);
+                prox.position.y = def.pLen / 2;
+                prox.material = phalMat;
+                prox.parent = mcpJoint;
+
+                // Joint PIP / IP
+                const pipJoint = new BABYLON.TransformNode(`pip_${def.id}`, scene);
+                pipJoint.position.y = def.pLen;
+                pipJoint.parent = mcpJoint;
+
+                let dipJoint;
+                if (def.mLen > 0) {
+                    // Falange Media (Dedos II a V)
+                    const mid = BABYLON.MeshBuilder.CreateCylinder(`mid_${def.id}`, {
+                        height: def.mLen, diameterTop: 0.8, diameterBottom: 0.88
+                    }, scene);
+                    mid.position.y = def.mLen / 2;
+                    mid.material = phalMat;
+                    mid.parent = pipJoint;
+
+                    dipJoint = new BABYLON.TransformNode(`dip_${def.id}`, scene);
+                    dipJoint.position.y = def.mLen;
+                    dipJoint.parent = pipJoint;
+                } else {
+                    dipJoint = pipJoint;
+                }
+
+                // Falange Distal (Ungueal)
+                const dist = BABYLON.MeshBuilder.CreateCylinder(`dist_${def.id}`, {
+                    height: def.dLen, diameterTop: 0.6, diameterBottom: 0.78
+                }, scene);
+                dist.position.y = def.dLen / 2;
+                dist.material = phalMat;
+                dist.parent = dipJoint;
+
+                return { id: def.id, rayRoot, mcpJoint, pipJoint, dipJoint, def };
+            });
+
+            scene.registerBeforeRender(() => {
+                handRoot.rotation.y = Math.sin(Date.now() * 0.0008) * 0.12;
+            });
+
+            return scene;
+        }
+
+        function setPose(pose) {
+            document.querySelectorAll(".btn-action").forEach(b => b.classList.remove("active"));
+            if (pose === 'extension') {
+                document.getElementById("btnExt").classList.add("active");
+                fingerRays.forEach(r => {
+                    r.mcpJoint.rotation.x = 0;
+                    r.pipJoint.rotation.x = 0;
+                    if (r.dipJoint && r.dipJoint !== r.pipJoint) r.dipJoint.rotation.x = 0;
+                });
+                selectHotspot(2);
+            } else if (pose === 'fist') {
+                document.getElementById("btnFist").classList.add("active");
+                fingerRays.forEach((r, idx) => {
+                    if (idx === 0) {
+                        r.mcpJoint.rotation.x = 0.6;
+                        r.mcpJoint.rotation.y = -0.5;
+                        r.pipJoint.rotation.x = 0.9;
+                    } else {
+                        r.mcpJoint.rotation.x = 1.2;
+                        r.pipJoint.rotation.x = 1.3;
+                        if (r.dipJoint && r.dipJoint !== r.pipJoint) r.dipJoint.rotation.x = 1.0;
+                    }
+                });
+                selectHotspot(1);
+            } else if (pose === 'pinch') {
+                document.getElementById("btnPinch").classList.add("active");
+                const thumb = fingerRays[0];
+                const index = fingerRays[1];
+                thumb.mcpJoint.rotation.x = 0.4;
+                thumb.mcpJoint.rotation.y = -0.7;
+                thumb.pipJoint.rotation.x = 0.8;
+
+                index.mcpJoint.rotation.x = 0.9;
+                index.pipJoint.rotation.x = 1.0;
+                if (index.dipJoint) index.dipJoint.rotation.x = 0.7;
+
+                for (let i = 2; i < fingerRays.length; i++) {
+                    fingerRays[i].mcpJoint.rotation.x = 0.3;
+                    fingerRays[i].pipJoint.rotation.x = 0.3;
+                }
+                selectHotspot(3);
+            } else if (pose === 'oppose') {
+                document.getElementById("btnOppose").classList.add("active");
+                const thumb = fingerRays[0];
+                thumb.mcpJoint.rotation.y = -1.1;
+                thumb.mcpJoint.rotation.x = 0.5;
+                thumb.pipJoint.rotation.x = 0.7;
+                selectHotspot(0);
+            }
+        }
+
+        function renderHotspots() {
+            const container = document.getElementById("hotspotsContainer");
+            container.innerHTML = "";
+            HOTSPOTS.forEach((hs, idx) => {
+                const btn = document.createElement("button");
+                btn.className = "btn-hotspot" + (idx === 0 ? " active" : "");
+                btn.innerHTML = `<span>${hs.name}</span><span>↗</span>`;
+                btn.onclick = () => selectHotspot(idx);
+                container.appendChild(btn);
+            });
+        }
+
+        function selectHotspot(idx) {
+            document.querySelectorAll(".btn-hotspot").forEach((b, i) => {
+                b.classList.toggle("active", i === idx);
+            });
+            const hs = HOTSPOTS[idx];
+            document.getElementById("infoTitle").textContent = hs.name;
+            document.getElementById("infoBody").textContent = hs.desc;
+            document.getElementById("infoQuote").textContent = `"${hs.quote}"`;
+        }
+
+        function resetCamera() {
+            if (camera) {
+                camera.alpha = -Math.PI / 2;
+                camera.beta = Math.PI / 2.8;
+                camera.radius = 38;
+                camera.target = new BABYLON.Vector3(0, 5, 0);
+            }
+        }
+
+        function openAtlasViewer() {
+            const modal = document.getElementById("photoModal");
+            const img = document.getElementById("atlasImg");
+            img.src = window.HAND_SKELETON_SVG_B64 || "";
+            modal.classList.add("visible");
+        }
+
+        function closeAtlasViewer() {
+            document.getElementById("photoModal").classList.remove("visible");
+        }
+
+        function speakCurrentInfo() {
+            if (!('speechSynthesis' in window)) {
+                alert("La síntesis de voz no está soportada en este navegador.");
+                return;
+            }
+            window.speechSynthesis.cancel();
+            const text = document.getElementById("infoTitle").textContent + ". " + document.getElementById("infoBody").textContent;
+            const utter = new SpeechSynthesisUtterance(text);
+            utter.lang = 'es-ES';
+            utter.rate = 0.95;
+            window.speechSynthesis.speak(utter);
+        }
+
+        window.addEventListener("DOMContentLoaded", () => {
+            renderHotspots();
+            createScene();
+            engine.runRenderLoop(() => {
+                if (scene) scene.render();
+            });
+            window.addEventListener("resize", () => engine.resize());
+        });
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sesión 16 • Simulador Médico 3D: Hígado Humano & Sistema Hepatobiliar [COD-016]</title>
+    <!-- Babylon.js Motor 3D Oficial CDN -->
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+    <!-- Assets Anatómicos Reales en Base64 Autónomo -->
+    <script src="../03_ASSETS_3D_Y_DATOS/liver_b64.js"></script>
+    <script src="../../../../SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/liver_b64.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-base: #060913;
+            --bg-panel: rgba(15, 23, 42, 0.94);
+            --liver-red: #881337;
+            --liver-light: #b93856;
+            --bile-green: #84cc16;
+            --bile-glow: rgba(132, 204, 22, 0.4);
+            --portal-blue: #38bdf8;
+            --artery-red: #ef4444;
+            --cyan: #38bdf8;
+            --text-main: #f8fafc;
+            --text-sub: #cbd5e1;
+            --font-title: 'Cinzel', serif;
+            --font-sans: 'Inter', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            font-family: var(--font-sans);
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            font-size: 14px;
+        }
+
+        /* HEADER */
+        header {
+            background: linear-gradient(180deg, rgba(15, 23, 42, 0.98) 0%, rgba(15, 23, 42, 0.88) 100%);
+            backdrop-filter: blur(14px);
+            border-bottom: 1px solid rgba(56, 189, 248, 0.3);
+            padding: 10px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+            z-index: 40;
+        }
+
+        .brand-box {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .badge-pill {
+            background: rgba(56, 189, 248, 0.15);
+            border: 1px solid var(--cyan);
+            color: var(--cyan);
+            font-family: var(--font-mono);
+            font-weight: 800;
+            font-size: 0.82rem;
+            padding: 4px 10px;
+            border-radius: 6px;
+            letter-spacing: 0.05em;
+        }
+
+        .title-text h1 {
+            font-family: var(--font-title);
+            font-size: 1.15rem;
+            font-weight: 800;
+            letter-spacing: 0.02em;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .title-text p {
+            font-size: 0.78rem;
+            color: var(--text-sub);
+            margin-top: 1px;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-header {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: var(--text-main);
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+        }
+        .btn-header:hover {
+            background: rgba(56, 189, 248, 0.2);
+            border-color: var(--cyan);
+            color: var(--cyan);
+        }
+
+        /* MAIN WORKSPACE */
+        .workspace {
+            flex: 1;
+            position: relative;
+            display: flex;
+            overflow: hidden;
+        }
+
+        #renderCanvas {
+            width: 100%;
+            height: 100%;
+            touch-action: none;
+            outline: none;
+            background: radial-gradient(circle at 50% 35%, #182236 0%, #0c1220 55%, #050811 100%);
+        }
+
+        /* OVERLAY PANEL IZQUIERDO: CONTROLES ANATÓMICOS */
+        .controls-panel {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: 380px;
+            max-height: calc(100% - 40px);
+            background: var(--bg-panel);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            border-radius: 16px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            overflow-y: auto;
+            backdrop-filter: blur(16px);
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.7);
+            z-index: 30;
+        }
+
+        .panel-section-title {
+            font-family: var(--font-title);
+            font-size: 0.86rem;
+            font-weight: 800;
+            color: var(--cyan);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding-bottom: 6px;
+        }
+
+        .toggle-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .btn-toggle {
+            padding: 9px 8px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: var(--text-sub);
+            border-radius: 10px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s ease;
+        }
+        .btn-toggle.active {
+            background: linear-gradient(135deg, rgba(56, 189, 248, 0.25), rgba(2, 132, 199, 0.35));
+            border-color: var(--cyan);
+            color: #fff;
+            box-shadow: 0 0 14px rgba(56, 189, 248, 0.3);
+        }
+
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .kpi-card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            padding: 10px 12px;
+        }
+        .kpi-val {
+            font-family: var(--font-mono);
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: var(--cyan);
+        }
+        .kpi-label {
+            font-size: 0.72rem;
+            color: var(--text-sub);
+            margin-top: 2px;
+        }
+
+        .hotspots-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .btn-hotspot {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-main);
+            padding: 9px 12px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-align: left;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.2s ease;
+        }
+        .btn-hotspot:hover, .btn-hotspot.active {
+            background: rgba(132, 204, 22, 0.18);
+            border-color: var(--bile-green);
+            color: var(--bile-green);
+            transform: translateX(3px);
+        }
+
+        /* OVERLAY PANEL DERECHO: DIAGNÓSTICO CLÍNICO */
+        .info-panel {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 360px;
+            background: var(--bg-panel);
+            border: 1px solid rgba(132, 204, 22, 0.35);
+            border-radius: 16px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            backdrop-filter: blur(16px);
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.7);
+            z-index: 30;
+        }
+
+        .info-title {
+            font-family: var(--font-title);
+            font-size: 1.05rem;
+            font-weight: 800;
+            color: var(--bile-green);
+        }
+
+        .info-body {
+            font-size: 0.85rem;
+            color: var(--text-sub);
+            line-height: 1.55;
+        }
+
+        .info-quote {
+            background: rgba(56, 189, 248, 0.08);
+            border-left: 3px solid var(--cyan);
+            padding: 8px 12px;
+            border-radius: 0 8px 8px 0;
+            font-size: 0.78rem;
+            color: #bae6fd;
+            font-style: italic;
+        }
+
+        .audio-btn {
+            background: linear-gradient(135deg, #15803d, #84cc16);
+            color: #030814;
+            border: none;
+            padding: 9px 16px;
+            border-radius: 10px;
+            font-weight: 800;
+            font-size: 0.82rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 4px;
+            transition: opacity 0.2s ease;
+        }
+        .audio-btn:hover { opacity: 0.9; }
+
+        /* FOOTER */
+        footer {
+            background: rgba(10, 16, 28, 0.96);
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 8px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.76rem;
+            color: var(--text-sub);
+            flex-shrink: 0;
+            z-index: 40;
+        }
+
+        /* MODAL ILUSTRACIÓN ANATÓMICA */
+        .photo-viewer-modal {
+            position: absolute;
+            inset: 0;
+            background: rgba(3, 4, 8, 0.92);
+            backdrop-filter: blur(12px);
+            z-index: 100;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            padding: 30px;
+        }
+        .photo-viewer-modal.visible { display: flex; }
+        .photo-container {
+            max-width: 900px;
+            width: 100%;
+            background: #0f172a;
+            border: 1px solid var(--cyan);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8);
+        }
+        .photo-container img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        .photo-caption {
+            padding: 14px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #090d16;
+        }
+        .close-photo-btn {
+            background: var(--cyan);
+            color: #04060a;
+            border: none;
+            padding: 6px 16px;
+            border-radius: 8px;
+            font-weight: 800;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="brand-box">
+            <span class="badge-pill">[COD-016]</span>
+            <div class="title-text">
+                <h1>🫁 Hígado Humano & Sistema Hepatobiliar 3D</h1>
+                <p>NIH 3D Print Exchange • Resonancia Médica & Microtomografía • Lóbulos, Vesícula y Tríada Portal</p>
+            </div>
+        </div>
+        <div class="header-actions">
+            <button class="btn-header" onclick="openAnatomyViewer()">📷 Lámina Anatómica</button>
+            <button class="btn-header" onclick="toggleXray()">🔬 Modo Transparencia</button>
+            <button class="btn-header" onclick="resetCamera()">🎯 Centrar</button>
+        </div>
+    </header>
+
+    <div class="workspace">
+        <canvas id="renderCanvas"></canvas>
+
+        <!-- PANEL IZQUIERDO -->
+        <div class="controls-panel">
+            <div class="panel-section-title">🩺 Aislamiento Quirúrgico</div>
+            <div class="toggle-group">
+                <button class="btn-toggle active" id="btnIsoAll" onclick="setIsolation('all')">Órgano Completo</button>
+                <button class="btn-toggle" id="btnIsoBile" onclick="setIsolation('bile')">Vesícula & Colédoco</button>
+                <button class="btn-toggle" id="btnIsoPortal" onclick="setIsolation('portal')">Tríada Portal</button>
+                <button class="btn-toggle" id="btnIsoLobes" onclick="setIsolation('lobes')">Lóbulo Derecho/Izq</button>
+            </div>
+
+            <div class="panel-section-title">📊 Fisiología Hepática</div>
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-val">1.5 kg</div>
+                    <div class="kpi-label">Peso Promedio Adulto</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-val">1.4 L/min</div>
+                    <div class="kpi-label">Flujo de Filtración</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-val">75%</div>
+                    <div class="kpi-label">Aporte Vena Porta</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-val">800 ml</div>
+                    <div class="kpi-label">Bilis Diaria Sintetizada</div>
+                </div>
+            </div>
+
+            <div class="panel-section-title">🔍 Inspección Anatómica Guiada</div>
+            <div class="hotspots-list" id="hotspotsContainer">
+                <!-- Generado por JS -->
+            </div>
+        </div>
+
+        <!-- PANEL DERECHO -->
+        <div class="info-panel" id="infoPanel">
+            <div class="info-title" id="infoTitle">Lóbulo Derecho y Parénquima</div>
+            <div class="info-body" id="infoBody">
+                Constituye entre el 65% y el 70% del volumen hepático total. Está compuesto por millones de lobulillos hexagonales donde los hepatocitos filtran toxinas, almacenan glucógeno y sintetizan proteínas vitales como la albúmina.
+            </div>
+            <div class="info-quote" id="infoQuote">
+                "El hígado es el laboratorio bioquímico más complejo del cuerpo: realiza más de 500 funciones vitales ininterrumpidas."
+            </div>
+            <button class="audio-btn" onclick="speakCurrentInfo()">
+                🔊 Escuchar Explicación Médica
+            </button>
+        </div>
+    </div>
+
+    <!-- MODAL LÁMINA ANATÓMICA -->
+    <div class="photo-viewer-modal" id="photoModal">
+        <div class="photo-container">
+            <img id="anatomyImg" src="" alt="Anatomía del Hígado">
+            <div class="photo-caption">
+                <span style="color: #cbd5e1; font-size: 0.82rem;">NIH 3D Print Exchange • Atlas Oficial de Anatomía Quirúrgica y Sistema Hepatobiliar</span>
+                <button class="close-photo-btn" onclick="closeAnatomyViewer()">Cerrar Lámina</button>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <span>🫁 Curso de Inteligencia Artificial • Metodología de la Triple Salvaguarda Pedagógica</span>
+        <span>Motor 3D: Babylon.js PBR • NIH 3D Print Exchange (NIH U.S. National Library of Medicine)</span>
+    </footer>
+
+    <script>
+        const canvas = document.getElementById("renderCanvas");
+        const engine = new BABYLON.Engine(canvas, true);
+        let scene, camera;
+        let liverRoot, rightLobeMesh, leftLobeMesh, gallbladderMesh, portalVeinMesh, arteryMesh;
+        let isXray = false;
+        let currentIso = 'all';
+
+        const HOTSPOTS = [
+            {
+                name: "Lóbulo Derecho (Parénquima Mayor)",
+                desc: "Representa el 70% de la masa del órgano. Subdividido en los segmentos V, VI, VII y VIII de la clasificación de Couinaud.",
+                quote: "El mayor centro metabólico del organismo humano."
+            },
+            {
+                name: "Vesícula Biliar y Conducto Colédoco",
+                desc: "Reservorio con forma de pera de 50 ml de capacidad. Almacena y concentra la bilis para emulsionar las grasas en el duodeno.",
+                quote: "Almacén concentrador de sales biliares."
+            },
+            {
+                name: "Vena Porta Hepática (75% Flujo)",
+                desc: "Transporta la sangre rica en nutrientes absorbidos en el estómago e intestinos directamente al hígado antes de llegar al corazón.",
+                quote: "Ruta de entrada directa de nutrientes digestivos."
+            },
+            {
+                name: "Arteria Hepática Propia (25% Flujo)",
+                desc: "Rama del tronco celíaco que aporta el oxígeno directo imprescindible para la alta demanda metabólica de los hepatocitos.",
+                quote: "Oxigenación arterial de alta presión."
+            },
+            {
+                name: "Ligamento Falciforme y Cápsula de Glisson",
+                desc: "Repliegue peritoneal membranoso que une la cara diafragmática del hígado a la pared abdominal anterior y divide los lóbulos.",
+                quote: "Anclaje anatómico y sostén peritoneal."
+            }
+        ];
+
+        function createScene() {
+            scene = new BABYLON.Scene(engine);
+            scene.clearColor = new BABYLON.Color4(0.02, 0.04, 0.07, 1.0);
+
+            camera = new BABYLON.ArcRotateCamera("Camera", -Math.PI / 2, Math.PI / 2.2, 28, new BABYLON.Vector3(0, 0, 0), scene);
+            camera.attachControl(canvas, true);
+            camera.lowerRadiusLimit = 10;
+            camera.upperRadiusLimit = 60;
+            camera.wheelPrecision = 30;
+
+            // Iluminación Quirúrgica Médica
+            const hemiLight = new BABYLON.HemisphericLight("hemiLight", new BABYLON.Vector3(0, 1, 0), scene);
+            hemiLight.intensity = 0.65;
+            hemiLight.diffuse = new BABYLON.Color3(0.9, 0.95, 1.0);
+
+            const dirLight = new BABYLON.DirectionalLight("dirLight", new BABYLON.Vector3(-1, -1.5, 1), scene);
+            dirLight.intensity = 1.8;
+            dirLight.diffuse = new BABYLON.Color3(1.0, 0.98, 0.95);
+
+            liverRoot = new BABYLON.TransformNode("liverRoot", scene);
+
+            // Materiales PBR Biomédicos
+            const liverRightMat = new BABYLON.PBRMaterial("liverRightMat", scene);
+            liverRightMat.albedoColor = new BABYLON.Color3(0.55, 0.10, 0.18);
+            liverRightMat.roughness = 0.35;
+            liverRightMat.subSurface.isRefractionEnabled = true;
+
+            const liverLeftMat = new BABYLON.PBRMaterial("liverLeftMat", scene);
+            liverLeftMat.albedoColor = new BABYLON.Color3(0.62, 0.12, 0.22);
+            liverLeftMat.roughness = 0.35;
+
+            const bileMat = new BABYLON.PBRMaterial("bileMat", scene);
+            bileMat.albedoColor = new BABYLON.Color3(0.45, 0.75, 0.08);
+            bileMat.roughness = 0.25;
+
+            const portalMat = new BABYLON.PBRMaterial("portalMat", scene);
+            portalMat.albedoColor = new BABYLON.Color3(0.12, 0.50, 0.90);
+            portalMat.roughness = 0.3;
+
+            const arteryMat = new BABYLON.PBRMaterial("arteryMat", scene);
+            arteryMat.albedoColor = new BABYLON.Color3(0.95, 0.20, 0.20);
+            arteryMat.roughness = 0.3;
+
+            // 1. LÓBULO DERECHO (Gran masa elipsoidal convexa)
+            rightLobeMesh = BABYLON.MeshBuilder.CreateSphere("rightLobe", {
+                diameterX: 13.5, diameterY: 10.0, diameterZ: 8.5, segments: 24
+            }, scene);
+            rightLobeMesh.position = new BABYLON.Vector3(2.8, 0.5, 0);
+            rightLobeMesh.scaling = new BABYLON.Vector3(1.1, 0.95, 0.85);
+            rightLobeMesh.material = liverRightMat;
+            rightLobeMesh.parent = liverRoot;
+
+            // 2. LÓBULO IZQUIERDO (Forma cuneiforme más aplanada)
+            leftLobeMesh = BABYLON.MeshBuilder.CreateSphere("leftLobe", {
+                diameterX: 9.5, diameterY: 7.5, diameterZ: 4.8, segments: 24
+            }, scene);
+            leftLobeMesh.position = new BABYLON.Vector3(-4.8, 0, 0.4);
+            leftLobeMesh.scaling = new BABYLON.Vector3(1.2, 0.8, 0.6);
+            leftLobeMesh.material = liverLeftMat;
+            leftLobeMesh.parent = liverRoot;
+
+            // 3. VESÍCULA BILIAR Y CONDUCTO COLÉDOCO
+            gallbladderMesh = BABYLON.MeshBuilder.CreateSphere("gallbladder", {
+                diameterX: 2.2, diameterY: 4.2, diameterZ: 2.4, segments: 18
+            }, scene);
+            gallbladderMesh.position = new BABYLON.Vector3(1.6, -3.4, 2.5);
+            gallbladderMesh.rotation.z = Math.PI / 10;
+            gallbladderMesh.material = bileMat;
+            gallbladderMesh.parent = liverRoot;
+
+            // Conducto Colédoco
+            const coledoco = BABYLON.MeshBuilder.CreateCylinder("coledoco", {
+                diameter: 0.7, height: 5.5, tessellation: 16
+            }, scene);
+            coledoco.position = new BABYLON.Vector3(0.8, -5.2, 1.8);
+            coledoco.rotation.z = -Math.PI / 14;
+            coledoco.material = bileMat;
+            coledoco.parent = liverRoot;
+
+            // 4. TRÍADA PORTAL EN EL HILIO HEPÁTICO
+            // Vena Porta (Tronco ancho azul)
+            portalVeinMesh = BABYLON.MeshBuilder.CreateCylinder("portalVein", {
+                diameter: 1.6, height: 6.5, tessellation: 16
+            }, scene);
+            portalVeinMesh.position = new BABYLON.Vector3(-0.6, -4.5, 0.5);
+            portalVeinMesh.rotation.z = Math.PI / 16;
+            portalVeinMesh.material = portalMat;
+            portalVeinMesh.parent = liverRoot;
+
+            // Arteria Hepática (Tubo rojo pulsátil)
+            arteryMesh = BABYLON.MeshBuilder.CreateCylinder("artery", {
+                diameter: 0.9, height: 5.8, tessellation: 16
+            }, scene);
+            arteryMesh.position = new BABYLON.Vector3(-1.8, -4.2, 1.2);
+            arteryMesh.rotation.z = Math.PI / 12;
+            arteryMesh.material = arteryMat;
+            arteryMesh.parent = liverRoot;
+
+            // 5. VENA CAVA INFERIOR POSTERIOR
+            const venaCava = BABYLON.MeshBuilder.CreateCylinder("venaCava", {
+                diameter: 2.2, height: 13.0, tessellation: 18
+            }, scene);
+            venaCava.position = new BABYLON.Vector3(0.5, 0.2, -4.0);
+            venaCava.material = portalMat;
+            venaCava.parent = liverRoot;
+
+            // Rotación suave del órgano
+            scene.registerBeforeRender(() => {
+                liverRoot.rotation.y += 0.0022;
+            });
+
+            return scene;
+        }
+
+        function renderHotspots() {
+            const container = document.getElementById("hotspotsContainer");
+            container.innerHTML = "";
+            HOTSPOTS.forEach((hs, idx) => {
+                const btn = document.createElement("button");
+                btn.className = "btn-hotspot" + (idx === 0 ? " active" : "");
+                btn.innerHTML = `<span>${hs.name}</span><span>↗</span>`;
+                btn.onclick = () => selectHotspot(idx);
+                container.appendChild(btn);
+            });
+        }
+
+        function selectHotspot(idx) {
+            document.querySelectorAll(".btn-hotspot").forEach((b, i) => {
+                b.classList.toggle("active", i === idx);
+            });
+            const hs = HOTSPOTS[idx];
+            document.getElementById("infoTitle").textContent = hs.name;
+            document.getElementById("infoBody").textContent = hs.desc;
+            document.getElementById("infoQuote").textContent = `"${hs.quote}"`;
+
+            if (camera) {
+                if (idx === 1) camera.radius = 20; // Zoom vesícula
+                else if (idx === 2 || idx === 3) camera.radius = 22; // Hilio portal
+                else camera.radius = 28;
+            }
+        }
+
+        function setIsolation(mode) {
+            currentIso = mode;
+            document.querySelectorAll(".btn-toggle").forEach(b => b.classList.remove("active"));
+            if (mode === 'all') document.getElementById("btnIsoAll").classList.add("active");
+            if (mode === 'bile') document.getElementById("btnIsoBile").classList.add("active");
+            if (mode === 'portal') document.getElementById("btnIsoPortal").classList.add("active");
+            if (mode === 'lobes') document.getElementById("btnIsoLobes").classList.add("active");
+
+            if (rightLobeMesh && leftLobeMesh && gallbladderMesh) {
+                if (mode === 'all') {
+                    rightLobeMesh.visibility = 1.0;
+                    leftLobeMesh.visibility = 1.0;
+                    gallbladderMesh.visibility = 1.0;
+                } else if (mode === 'bile') {
+                    rightLobeMesh.visibility = 0.25;
+                    leftLobeMesh.visibility = 0.25;
+                    gallbladderMesh.visibility = 1.0;
+                    selectHotspot(1);
+                } else if (mode === 'portal') {
+                    rightLobeMesh.visibility = 0.20;
+                    leftLobeMesh.visibility = 0.20;
+                    gallbladderMesh.visibility = 0.35;
+                    selectHotspot(2);
+                } else if (mode === 'lobes') {
+                    rightLobeMesh.visibility = 1.0;
+                    leftLobeMesh.visibility = 1.0;
+                    gallbladderMesh.visibility = 0.20;
+                    selectHotspot(0);
+                }
+            }
+        }
+
+        function toggleXray() {
+            isXray = !isXray;
+            const alpha = isXray ? 0.38 : 1.0;
+            if (rightLobeMesh) rightLobeMesh.visibility = alpha;
+            if (leftLobeMesh) leftLobeMesh.visibility = alpha;
+        }
+
+        function resetCamera() {
+            if (camera) {
+                camera.alpha = -Math.PI / 2;
+                camera.beta = Math.PI / 2.2;
+                camera.radius = 28;
+                camera.target = new BABYLON.Vector3(0, 0, 0);
+            }
+        }
+
+        function openAnatomyViewer() {
+            const modal = document.getElementById("photoModal");
+            const img = document.getElementById("anatomyImg");
+            img.src = window.LIVER_ANATOMY_SVG_B64 || "";
+            modal.classList.add("visible");
+        }
+
+        function closeAnatomyViewer() {
+            document.getElementById("photoModal").classList.remove("visible");
+        }
+
+        function speakCurrentInfo() {
+            if (!('speechSynthesis' in window)) {
+                alert("La síntesis de voz no está soportada en este navegador.");
+                return;
+            }
+            window.speechSynthesis.cancel();
+            const text = document.getElementById("infoTitle").textContent + ". " + document.getElementById("infoBody").textContent;
+            const utter = new SpeechSynthesisUtterance(text);
+            utter.lang = 'es-ES';
+            utter.rate = 0.95;
+            window.speechSynthesis.speak(utter);
+        }
+
+        window.addEventListener("DOMContentLoaded", () => {
+            renderHotspots();
+            createScene();
+            engine.runRenderLoop(() => {
+                if (scene) scene.render();
+            });
+            window.addEventListener("resize", () => engine.resize());
+        });
+    </script>
+</body>
+</html>
+

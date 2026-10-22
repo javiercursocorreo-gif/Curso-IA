@@ -28,7 +28,7 @@ La etiqueta **`[COD]`** representa el componente de **creación activa y experim
 | Lote | Rango de Sesiones | Eje Temático Científico | Simuladores Existentes | Simuladores por Desarrollar | Estado de Despliegue |
 | :---: | :---: | :--- | :---: | :---: | :---: |
 | **LOTE 1** | Sesiones 01 a 10 | Anatomía Humana, Paleontología, Mecánica & Astronomía Lunar | 10 / 10 | 0 / 10 | 🟢 100% Desplegado |
-| **LOTE 2** | Sesiones 11 a 20 | Microcosmos, Acústica, Genética, Astrofísica & Órganos Vitales | 5 / 10 | 5 / 10 | 🟡 En consolidación |
+| **LOTE 2** | Sesiones 11 a 20 | Microcosmos, Acústica, Genética, Astrofísica & Órganos Vitales | 10 / 10 | 0 / 10 | 🟢 100% Desplegado |
 | **LOTE 3** | Sesiones 21 a 30 | Física Teórica, Escalas Cósmicas, Espacio-Tiempo & Materia | 1 / 10 | 9 / 10 | ⚪ Programado (Próximo Lote) |
 | **LOTE 4** | Sesiones 31 a 40 | Biología Marina, Fisiología Humana, Columna & Células | 0 / 10 | 10 / 10 | ⚪ Programado |
 | **LOTE 5** | Sesiones 41 a 50 | Supercómputo, Transistores FinFET, Robótica & Fibra Óptica | 0 / 10 | 10 / 10 | ⚪ Programado |
@@ -155,36 +155,36 @@ La etiqueta **`[COD]`** representa el componente de **creación activa y experim
 - **Archivo Oficial:** `SIMULADOR_HIGADO_3D.html`
 - **Ficha PDF:** `4. COD-016_Taller_Crea_tu_Propio_Simulador_3D_con_Gemini.pdf`
 - **Fuente del Modelo:** NIH 3D Print Exchange / Anatomía Hepática Quirúrgica.
-- **Interactividad:** Lóbulo derecho e izquierdo, vesícula biliar y conducto colédoco, red de la vena porta y arteria hepática; simulación del proceso de filtrado de toxinas, metabolización de nutrientes y producción de bilis para digestión de grasas.
-- **Estado:** ⚪ **PROGRAMADO PARA LOTE 2 COD**
+- **Interactividad:** Lóbulo derecho e izquierdo, vesícula biliar y conducto colédoco, red de la vena porta y arteria hepática; simulación del proceso de filtrado de toxinas, metabolización de nutrientes y los 8 segmentos de Couinaud.
+- **Estado:** 🟢 **100% IMPLEMENTADO Y VALIDADO**
 
-#### 🔹 [COD-017] • Sesión 17: Red Neuronal Sináptica y Neurotransmisores 3D
-- **Archivo Oficial:** `SIMULADOR_NEURONA_SINAPSIS_3D.html`
+#### 🔹 [COD-017] • Sesión 17: Faraón Tutankamón y Máscara Funeraria Dorada 3D
+- **Archivo Oficial:** `SIMULADOR_TUTANKAMON_3D.html`
 - **Ficha PDF:** `4. COD-017_Taller_Crea_tu_Propio_Simulador_3D_con_Gemini.pdf`
-- **Fuente del Modelo:** Allen Brain Institute / Neurobiología Celular 3D.
-- **Interactividad:** Soma neuronal, axón recubierto por vaina de mielina, botón sináptico microscópico liberando vesículas de dopamina y serotonina hacia receptores dendríticos, con pulsos bioeléctricos de potencial de acción en tiempo real.
-- **Estado:** ⚪ **PROGRAMADO PARA LOTE 2 COD**
+- **Fuente del Modelo:** Museo Egipcio de El Cairo / Tumba KV62 (Howard Carter, 1922).
+- **Interactividad:** Máscara de oro puro de 24 quilates batido con incrustaciones de lapislázuli, tocado Nemes a rayas, cobra Wadjet y buitre Nejbet, barba ceremonial osiríaca trenzada y conjuro del Libro de los Muertos.
+- **Estado:** 🟢 **100% IMPLEMENTADO Y VALIDADO**
 
-#### 🔹 [COD-018] • Sesión 18: Articulación de la Rodilla y Meniscos en Movimiento 3D
-- **Archivo Oficial:** `SIMULADOR_RODILLA_3D.html`
+#### 🔹 [COD-018] • Sesión 18: Neurona Piramidal Cortical y Sinapsis Eléctrica 3D
+- **Archivo Oficial:** `SIMULADOR_NEURONA_3D.html`
 - **Ficha PDF:** `4. COD-018_Taller_Crea_tu_Propio_Simulador_3D_con_Gemini.pdf`
-- **Fuente del Modelo:** NIH 3D / Biomecánica Ortopédica.
-- **Interactividad:** Cinemática de flexión y extensión (0° a 130°), tensión de ligamentos cruzados (anterior y posterior), amortiguación de meniscos lateral y medial sobre la meseta tibial, y simulación de desgaste de cartílago por artrosis.
-- **Estado:** ⚪ **PROGRAMADO PARA LOTE 2 COD**
+- **Fuente del Modelo:** NeuroMorpho.Org / NIH Human Brain Project.
+- **Interactividad:** Soma piramidal, árbol dendrítico apical y basal con espinas, axón mielinizado con nódulos de Ranvier y disparo en tiempo real del potencial de acción bioluminiscente a 120 m/s.
+- **Estado:** 🟢 **100% IMPLEMENTADO Y VALIDADO**
 
-#### 🔹 [COD-019] • Sesión 19: Oído Medio, Tímpano y Cadena de Huesecillos 3D
-- **Archivo Oficial:** `SIMULADOR_OIDO_MEDIO_3D.html`
+#### 🔹 [COD-019] • Sesión 19: Saturno, Anillos y División de Cassini 3D
+- **Archivo Oficial:** `SIMULADOR_SATURNO_3D.html`
 - **Ficha PDF:** `4. COD-019_Taller_Crea_tu_Propio_Simulador_3D_con_Gemini.pdf`
-- **Fuente del Modelo:** NIH 3D / Otorrinolaringología Microquirúrgica.
-- **Interactividad:** Membrana timpánica vibrando por ondas acústicas de audio, transmisión mecánica de vibración por la cadena osicular (Martillo, Yunque y Estribo: los huesos más diminutos del cuerpo humano) y estimulación de la cóclea auditiva.
-- **Estado:** ⚪ **PROGRAMADO PARA LOTE 2 COD**
+- **Fuente del Modelo:** NASA / JPL-Caltech / Space Science Institute (Misión Cassini-Huygens).
+- **Interactividad:** Inclinación axial de 26.73°, anillos de hielo puro A y B, División de Cassini de 4.800 km despejada por resonancia con Mimas, vista de canto a 0°, hexágono polar y lunas Titán y Encélado.
+- **Estado:** 🟢 **100% IMPLEMENTADO Y VALIDADO**
 
-#### 🔹 [COD-020] • Sesión 20: Péndulo Doble Caótico y Fractales de Fase 3D
-- **Archivo Oficial:** `SIMULADOR_PENDULO_CAOTICO_3D.html`
+#### 🔹 [COD-020] • Sesión 20: Esqueleto de la Mano Humana y Biomecánica Digital 3D
+- **Archivo Oficial:** `SIMULADOR_MANO_HUMANA_3D.html`
 - **Ficha PDF:** `4. COD-020_Taller_Crea_tu_Propio_Simulador_3D_con_Gemini.pdf`
-- **Fuente del Modelo:** Física Computacional No Lineal y Sistemas Dinámicos.
-- **Interactividad:** Dos varillas articuladas con masas en los extremos; trazado tridimensional de la trayectoria estocástica del extremo libre (sensibilidad extrema a condiciones iniciales / Efecto Mariposa), con selector de gravedad terrestre, lunar o cero.
-- **Estado:** ⚪ **PROGRAMADO PARA LOTE 2 COD**
+- **Fuente del Modelo:** NIH 3D Print Exchange / Micro-CT Óseo Ortopédico.
+- **Interactividad:** Los 27 huesos codificados por colores (8 carpo, 5 metacarpo, 14 falanges), canal del túnel carpiano, articulación en silla de montar trapeciometacarpiana y cinemática interactiva (puño de fuerza, pinza fina I-II y extensión).
+- **Estado:** 🟢 **100% IMPLEMENTADO Y VALIDADO**
 
 ---
 

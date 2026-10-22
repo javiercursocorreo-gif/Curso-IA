@@ -135,30 +135,35 @@ Este documento registra el avance del plan de actualización por lotes bajo la *
   - *Tema:* Los 6 Niveles de Prevención de Adicciones, Hábitos y Fármacos.
   - *Características:* Seguridad farmacológica, pastillero semanal, supervisión médica, equilibrio entre televisión y actividades al aire libre.
   - *Triple Salvaguarda:* Semilla lista + Plano Técnico listo + App Oficial desplegada en `16_Sesion/`.
+- **Laboratorio `[COD-016]`:** Hígado Humano y Sistema Hepatobiliar 3D (NIH 3D + Babylon.js).
 
 ### 🔹 Sesión 17:
 - **Micro-App `[NIV-017]`:** `17_SIMULADOR_EMPATIA_INTELIGENCIA_EMOCIONAL_SENIORS.html`
   - *Tema:* Los 5 Niveles de Empatía, Vínculo Familiar e Inteligencia Emocional.
   - *Características:* Escucha activa, límites cariñosos con los nietos sin sobrecargas, perdón de agravios pasados y serenidad en el hogar.
   - *Triple Salvaguarda:* Semilla lista + Plano Técnico listo + App Oficial desplegada en `17_Sesion/`.
+- **Laboratorio `[COD-017]`:** Faraón Tutankamón y Máscara de Oro 3D (Museo de El Cairo / Met + Babylon.js).
 
 ### 🔹 Sesión 18:
 - **Micro-App `[NIV-018]`:** `18_SIMULADOR_DISCIPLINA_HABITOS_VIDA_SENIORS.html`
   - *Tema:* Los 6 Niveles de Disciplina Serena y Hábitos de Longevidad Activa.
   - *Características:* Paseo diario de 30-45 minutos, movilidad articular, alimentación mediterránea sin rigideces y constancia alegre.
   - *Triple Salvaguarda:* Semilla lista + Plano Técnico listo + App Oficial desplegada en `18_Sesion/`.
+- **Laboratorio `[COD-018]`:** Neurona Piramidal Cortical y Sinapsis Eléctrica 3D (NeuroMorpho.Org / NIH + Babylon.js).
 
 ### 🔹 Sesión 19:
 - **Micro-App `[NIV-019]`:** `19_SIMULADOR_COMUNICACION_LENGUAJE_SENIORS.html`
   - *Tema:* Los 5 Niveles de Comunicación y Lenguaje Claro para Mayores.
   - *Características:* Hoja de notas con 3 dudas antes de ir al médico, asertividad bancaria tranquila ("Por favor, explíquemelo despacio") y cercanía con la familia.
   - *Triple Salvaguarda:* Semilla lista + Plano Técnico listo + App Oficial desplegada en `19_Sesion/`.
+- **Laboratorio `[COD-019]`:** Saturno, Anillos y División de Cassini 3D (NASA Cassini + Babylon.js).
 
 ### 🔹 Sesión 20:
 - **Micro-App `[NIV-020]`:** `20_SIMULADOR_CREATIVIDAD_INNOVACION_SENIORS.html`
   - *Tema:* Los 6 Niveles de Creatividad, Curiosidad e Innovación Vital.
   - *Características:* Curiosidad por la IA y novedades, hobbies manuales/artesanales, transmisión del legado y memorias familiares a los nietos.
   - *Triple Salvaguarda:* Semilla lista + Plano Técnico listo + App Oficial desplegada en `20_Sesion/`.
+- **Laboratorio `[COD-020]`:** Esqueleto de la Mano Humana y Biomecánica Digital 3D (NIH 3D + Babylon.js).
 
 ---
 
