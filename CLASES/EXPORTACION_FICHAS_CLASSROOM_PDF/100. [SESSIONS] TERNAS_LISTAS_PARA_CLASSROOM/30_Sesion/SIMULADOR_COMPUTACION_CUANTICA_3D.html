@@ -3,24 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sesión 30 • Simulador 3D: Computación Cuántica, Qubits & Esfera de Bloch [COD-030]</title>
-    <!-- Babylon.js Motor 3D Oficial CDN -->
-    <script src="https://cdn.babylonjs.com/babylon.js"></script>
-    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
-    <!-- Respaldo Científico en Base64 Autónomo -->
-    <script src="../03_ASSETS_3D_Y_DATOS/bloch_sphere_b64.js"></script>
-    <script src="../../SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/bloch_sphere_b64.js"></script>
-    <script src="../../../../SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/bloch_sphere_b64.js"></script>
+    <title>Sesión 30 • Laboratorio Cuántico: Computación Cuántica, Qubits & Esfera de Bloch [COD-030]</title>
+    <!-- IBM Quantum System One (15 mK) • Esfera de Bloch SU(2) • Puertas Hadamard & Pauli • Regla de Born -->
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-base: #030514;
+            --bg-base: #01030d;
             --bg-panel: rgba(8, 14, 28, 0.94);
-            --border: rgba(56, 189, 248, 0.35);
-            --primary: #38bdf8;
-            --amber: #fbbf24;
+            --border: rgba(192, 132, 252, 0.35);
+            --primary: #c084fc;
+            --primary-glow: rgba(192, 132, 252, 0.4);
+            --cyan: #38bdf8;
             --emerald: #34d399;
-            --purple: #c084fc;
+            --amber: #fbbf24;
             --rose: #f43f5e;
             --text-main: #f8fafc;
             --text-sub: #cbd5e1;
@@ -28,91 +23,267 @@
             --font-sans: 'Inter', sans-serif;
             --font-mono: 'JetBrains Mono', monospace;
         }
+
         * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
         body {
-            background-color: var(--bg-base); color: var(--text-main);
-            font-family: var(--font-sans); height: 100vh; width: 100vw;
-            overflow: hidden; display: flex; flex-direction: column; font-size: 14px;
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            font-family: var(--font-sans);
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            font-size: 14px;
         }
+
         header {
-            background: linear-gradient(180deg, rgba(8, 14, 28, 0.98) 0%, rgba(8, 14, 28, 0.88) 100%);
-            backdrop-filter: blur(14px); border-bottom: 1px solid var(--border);
-            padding: 10px 24px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; z-index: 40;
+            background: linear-gradient(180deg, rgba(14, 10, 28, 0.98) 0%, rgba(14, 10, 28, 0.88) 100%);
+            backdrop-filter: blur(14px);
+            border-bottom: 1px solid var(--border);
+            padding: 10px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+            z-index: 40;
         }
         .brand-box { display: flex; align-items: center; gap: 14px; }
         .badge-pill {
-            background: rgba(56, 189, 248, 0.15); border: 1px solid var(--primary);
-            color: var(--primary); font-family: var(--font-mono); font-weight: 800;
-            font-size: 0.82rem; padding: 4px 10px; border-radius: 6px;
+            background: rgba(192, 132, 252, 0.15);
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            font-family: var(--font-mono);
+            font-weight: 800;
+            font-size: 0.82rem;
+            padding: 4px 10px;
+            border-radius: 6px;
         }
         .title-text h1 {
-            font-family: var(--font-title); font-size: 1.15rem; font-weight: 800; color: #fff;
-            display: flex; align-items: center; gap: 8px;
+            font-family: var(--font-title);
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         .title-text p { font-size: 0.78rem; color: var(--text-sub); margin-top: 1px; }
+
         .header-actions { display: flex; align-items: center; gap: 10px; }
         .btn-header {
-            background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15);
-            color: var(--text-main); padding: 6px 14px; border-radius: 8px; font-size: 0.8rem;
-            font-weight: 700; cursor: pointer; transition: all 0.2s ease;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: var(--text-main);
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
         }
-        .btn-header:hover { background: rgba(56, 189, 248, 0.2); border-color: var(--primary); color: var(--primary); }
+        .btn-header:hover { background: rgba(192, 132, 252, 0.2); border-color: var(--primary); color: #fff; }
+
         .workspace { flex: 1; position: relative; overflow: hidden; display: flex; }
-        #renderCanvas { width: 100%; height: 100%; outline: none; display: block; }
+
+        .viewer-container {
+            flex: 1;
+            position: relative;
+            background: radial-gradient(circle at center, #0a0820 0%, #010208 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        #blochCanvas {
+            max-width: 96%;
+            max-height: 92%;
+            border-radius: 14px;
+            box-shadow: 0 15px 45px rgba(0, 0, 0, 0.9);
+            border: 1px solid rgba(192, 132, 252, 0.25);
+            background: #02030a;
+            cursor: grab;
+        }
+        #blochCanvas:active { cursor: grabbing; }
+
         .controls-panel {
-            position: absolute; top: 18px; left: 18px; width: 340px;
-            background: var(--bg-panel); border: 1px solid var(--border);
-            border-radius: 14px; padding: 18px; backdrop-filter: blur(14px);
-            z-index: 20; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            position: absolute;
+            top: 18px;
+            left: 20px;
+            width: 350px;
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 18px;
+            backdrop-filter: blur(14px);
+            z-index: 20;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            max-height: calc(100vh - 120px);
+            overflow-y: auto;
         }
+
         .panel-section-title {
-            font-family: var(--font-mono); font-size: 0.8rem; font-weight: 800;
-            color: var(--primary); text-transform: uppercase; margin-bottom: 12px;
-            display: flex; align-items: center; gap: 6px;
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            font-weight: 800;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
-        .btn-action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 16px; }
-        .btn-action {
-            background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.12);
-            color: var(--text-sub); padding: 8px 10px; border-radius: 8px; font-size: 0.8rem;
-            font-weight: 700; cursor: pointer; transition: all 0.2s ease; text-align: center;
+
+        .gate-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
         }
-        .btn-action.active, .btn-action:hover {
-            background: rgba(56, 189, 248, 0.25); border-color: var(--primary); color: #fff;
+
+        .btn-gate {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: var(--text-main);
+            padding: 10px 6px;
+            border-radius: 8px;
+            font-family: var(--font-mono);
+            font-size: 0.82rem;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
         }
+        .btn-gate:hover {
+            background: rgba(192, 132, 252, 0.2);
+            border-color: var(--primary);
+            box-shadow: 0 0 12px rgba(192, 132, 252, 0.3);
+        }
+
+        .btn-measure {
+            background: linear-gradient(135deg, #7c3aed 0%, #c084fc 100%);
+            border: none;
+            color: #ffffff;
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            font-weight: 800;
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 4px 14px rgba(124, 58, 237, 0.4);
+        }
+        .btn-measure:hover {
+            filter: brightness(1.15);
+            box-shadow: 0 6px 20px rgba(192, 132, 252, 0.5);
+        }
+
         .kpi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-        .kpi-card { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 8px 10px; }
-        .kpi-val { font-family: var(--font-mono); font-size: 1.05rem; font-weight: 800; color: #fff; }
-        .kpi-label { font-size: 0.72rem; color: var(--text-sub); margin-top: 2px; }
+        .kpi-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+            padding: 8px 10px;
+        }
+        .kpi-val {
+            font-family: var(--font-mono);
+            font-size: 0.98rem;
+            font-weight: 800;
+            color: #fff;
+        }
+        .kpi-label { font-size: 0.7rem; color: var(--text-sub); margin-top: 2px; }
+
+        .prob-bar-container {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .prob-row { display: flex; align-items: center; justify-content: space-between; font-size: 0.78rem; font-family: var(--font-mono); }
+        .prob-track { height: 7px; background: rgba(255, 255, 255, 0.08); border-radius: 4px; overflow: hidden; width: 100%; margin-top: 3px; }
+        .prob-fill-0 { height: 100%; background: #38bdf8; width: 100%; transition: width 0.3s ease; }
+        .prob-fill-1 { height: 100%; background: #f43f5e; width: 0%; transition: width 0.3s ease; }
+
         .info-panel {
-            position: absolute; bottom: 20px; right: 20px; width: 380px;
-            background: var(--bg-panel); border: 1px solid var(--border);
-            border-radius: 14px; padding: 18px; backdrop-filter: blur(14px);
-            z-index: 20; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            width: 390px;
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 18px;
+            backdrop-filter: blur(14px);
+            z-index: 20;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
         }
-        .info-title { font-family: var(--font-title); font-size: 1.15rem; font-weight: 700; color: var(--amber); margin-bottom: 8px; }
-        .info-body { font-size: 0.84rem; line-height: 1.5; color: var(--text-sub); margin-bottom: 12px; }
-        .info-quote { font-style: italic; font-size: 0.78rem; color: var(--primary); border-left: 2px solid var(--primary); padding-left: 10px; margin-bottom: 12px; }
+        .info-title {
+            font-family: var(--font-title);
+            font-size: 1.12rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+        .info-body {
+            font-size: 0.83rem;
+            line-height: 1.55;
+            color: var(--text-sub);
+            margin-bottom: 12px;
+        }
+        .info-quote {
+            font-style: italic;
+            font-size: 0.77rem;
+            color: var(--cyan);
+            border-left: 2px solid var(--cyan);
+            padding-left: 10px;
+            margin-bottom: 12px;
+        }
         .audio-btn {
-            background: linear-gradient(135deg, #0284c7 0%, #38bdf8 100%);
-            border: none; color: #020617; font-weight: 800; font-size: 0.82rem;
-            padding: 8px 14px; border-radius: 8px; width: 100%; cursor: pointer;
-            display: flex; align-items: center; justify-content: center; gap: 8px;
+            background: linear-gradient(135deg, #7c3aed 0%, #c084fc 100%);
+            border: none;
+            color: #ffffff;
+            font-weight: 800;
+            font-size: 0.82rem;
+            padding: 8px 14px;
+            border-radius: 8px;
+            width: 100%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
-        .photo-viewer-modal {
-            position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(8px);
+
+        .modal-telemetry {
+            position: fixed; inset: 0; background: rgba(0, 0, 0, 0.88); backdrop-filter: blur(8px);
             display: none; align-items: center; justify-content: center; z-index: 100;
         }
-        .photo-container {
-            background: #0a0f1d; border: 1px solid var(--primary); border-radius: 14px;
-            max-width: 900px; width: 92%; overflow: hidden; box-shadow: 0 0 40px rgba(56, 189, 248, 0.35);
+        .modal-box {
+            background: #090616; border: 1px solid var(--primary); border-radius: 14px;
+            max-width: 920px; width: 94%; padding: 22px; box-shadow: 0 0 50px rgba(192, 132, 252, 0.4);
+            max-height: 90vh; overflow-y: auto;
         }
-        .photo-container img { width: 100%; height: auto; display: block; }
-        .photo-caption { padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; background: #060b18; }
-        .close-photo-btn { background: var(--primary); color: #020617; border: none; padding: 6px 16px; border-radius: 8px; font-weight: 800; cursor: pointer; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding-bottom: 10px; }
+        .modal-title { font-family: var(--font-title); font-size: 1.2rem; color: #fff; }
+        .close-modal-btn { background: var(--primary); color: #020617; border: none; padding: 6px 16px; border-radius: 8px; font-weight: 800; cursor: pointer; }
+
         footer {
-            background: rgba(8, 14, 28, 0.98); border-top: 1px solid var(--border);
-            padding: 8px 24px; font-size: 0.78rem; color: var(--text-sub);
-            display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;
+            background: rgba(14, 10, 28, 0.98);
+            border-top: 1px solid var(--border);
+            padding: 8px 24px;
+            font-size: 0.78rem;
+            color: var(--text-sub);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
         }
     </style>
 </head>
@@ -122,205 +293,548 @@
             <span class="badge-pill">[COD-030]</span>
             <div class="title-text">
                 <h1>💻 Computación Cuántica, Qubits & Esfera de Bloch 3D</h1>
-                <p>Félix Bloch (1946) • Puertas Lógicas Cuánticas (X, Y, Z, Hadamard H) • Superposición Coherente |ψ⟩</p>
+                <p>IBM Quantum • Dinámica de Estados SU(2) • Puertas Hadamard H, Pauli X/Y/Z • Colapso de Born</p>
             </div>
         </div>
         <div class="header-actions">
-            <button class="btn-header" onclick="openAtlasViewer()">📷 Diagrama Bloch SVG</button>
-            <button class="btn-header" onclick="resetCamera()">🎯 Centrar</button>
+            <button class="btn-header" onclick="openCryoModal()">❄️ Criostato IBM (15 mK)</button>
+            <button class="btn-header" onclick="resetState()">🎯 Reset |0⟩</button>
         </div>
     </header>
 
     <div class="workspace">
-        <canvas id="renderCanvas"></canvas>
+        <div class="viewer-container">
+            <canvas id="blochCanvas" width="940" height="740"></canvas>
+        </div>
 
         <div class="controls-panel">
-            <div class="panel-section-title">🚪 Puertas Lógicas Cuánticas</div>
-            <div class="btn-action-grid">
-                <button class="btn-action" onclick="applyGate('H')">Hadamard (H)</button>
-                <button class="btn-action" onclick="applyGate('X')">NOT (Pauli-X)</button>
-                <button class="btn-action" onclick="applyGate('Z')">Fase (Pauli-Z)</button>
-                <button class="btn-action" onclick="applyGate('reset')">Reset |0⟩</button>
+            <div class="panel-section-title">🚪 Puertas Cuánticas Unitarias SU(2)</div>
+            <div class="gate-grid">
+                <button class="btn-gate" onclick="applyGate('H')">Hadamard (H)</button>
+                <button class="btn-gate" onclick="applyGate('X')">NOT (X)</button>
+                <button class="btn-gate" onclick="applyGate('Y')">Pauli-Y</button>
+                <button class="btn-gate" onclick="applyGate('Z')">Fase (Z)</button>
+                <button class="btn-gate" onclick="applyGate('S')">Fase S (π/2)</button>
+                <button class="btn-gate" onclick="applyGate('T')">Fase T (π/4)</button>
             </div>
 
-            <div class="panel-section-title">🎲 Medición Cuántica</div>
-            <div class="btn-action-grid">
-                <button class="btn-action" style="grid-column: span 2; background: linear-gradient(135deg, #7c3aed, #c084fc); color: #fff;" onclick="measureQubit()">
-                    ⚡ Realizar Medición Proyectiva
-                </button>
+            <div class="panel-section-title">🎲 Medición Proyectiva Cuántica</div>
+            <button class="btn-measure" onclick="measureState()">
+                ⚡ Medir Qubit (Colapso de Born)
+            </button>
+
+            <div class="panel-section-title">📊 Probabilidades Teóricas |Ψ|²</div>
+            <div class="prob-bar-container">
+                <div>
+                    <div class="prob-row">
+                        <span style="color: #38bdf8;">P(|0⟩) = cos²(θ/2)</span>
+                        <span id="prob0Val">100.0%</span>
+                    </div>
+                    <div class="prob-track">
+                        <div class="prob-fill-0" id="prob0Bar"></div>
+                    </div>
+                </div>
+                <div>
+                    <div class="prob-row">
+                        <span style="color: #f43f5e;">P(|1⟩) = sen²(θ/2)</span>
+                        <span id="prob1Val">0.0%</span>
+                    </div>
+                    <div class="prob-track">
+                        <div class="prob-fill-1" id="prob1Bar"></div>
+                    </div>
+                </div>
             </div>
 
-            <div class="panel-section-title">📊 Probabilidades Cuánticas</div>
+            <div class="panel-section-title">📈 Vector de Estado Cuántico</div>
             <div class="kpi-grid">
                 <div class="kpi-card">
-                    <div class="kpi-val" id="kpiP0">100%</div>
-                    <div class="kpi-label">P(|0⟩) Base Clásica 0</div>
+                    <div class="kpi-val" id="kpiStateStr">|0⟩</div>
+                    <div class="kpi-label">Ket de Estado |ψ⟩</div>
                 </div>
                 <div class="kpi-card">
-                    <div class="kpi-val" id="kpiP1">0%</div>
-                    <div class="kpi-label">P(|1⟩) Base Clásica 1</div>
+                    <div class="kpi-val" id="kpiAngles">θ=0.0° φ=0.0°</div>
+                    <div class="kpi-label">Coordenadas Esféricas</div>
                 </div>
                 <div class="kpi-card">
-                    <div class="kpi-val" id="kpiTheta">θ = 0.0°</div>
-                    <div class="kpi-label">Ángulo Polar (θ)</div>
+                    <div class="kpi-val" id="kpiShots">0 disparos</div>
+                    <div class="kpi-label">Historial de Medición</div>
                 </div>
                 <div class="kpi-card">
-                    <div class="kpi-val" id="kpiPhi">φ = 0.0°</div>
-                    <div class="kpi-label">Fase Azimutal (φ)</div>
+                    <div class="kpi-val" id="kpiCounts">0: 0 | 1: 0</div>
+                    <div class="kpi-label">Frecuencias Empíricas</div>
                 </div>
             </div>
         </div>
 
         <div class="info-panel">
-            <div class="info-title" id="infoTitle">Estado Base Fundamental |0⟩ (Polo Norte)</div>
-            <div class="info-body" id="infoBody">El qubit apunta directamente al polo norte de la esfera de Bloch (θ = 0). La probabilidad de medir el valor clásico 0 es del 100%. A diferencia de los bits clásicos que solo pueden ser 0 o 1, un qubit puede ocupar cualquier punto de la superficie esférica.</div>
-            <div class="info-quote" id="infoQuote">"Un ordenador cuántico no prueba combinaciones una a una: explora todas las ramas causales simultáneamente."</div>
-            <button class="audio-btn" onclick="speakCurrentInfo()">🔊 Escuchar Explicación de Computación Cuántica</button>
+            <div class="info-title" id="infoTitle">Estado Fundamental Puro |0⟩</div>
+            <div class="info-body" id="infoBody">El qubit se encuentra en el Polo Norte de la esfera de Bloch con probabilidad del 100% de ser medido como 0. Corresponde al estado de mínima energía del circuito superconductor transmon en el criostato de dilución a 15 milikelvin.</div>
+            <div class="info-quote" id="infoQuote">"La mecánica cuántica nos enseña que la realidad no es binaria hasta que es interrogada." — Félix Bloch</div>
+            <button class="audio-btn" onclick="speakCurrentInfo()">🔊 Escuchar Explicación Cuántica</button>
         </div>
     </div>
 
-    <div class="photo-viewer-modal" id="photoModal">
-        <div class="photo-container">
-            <img id="atlasImg" src="" alt="Esfera de Bloch">
-            <div class="photo-caption">
-                <span style="color: #cbd5e1; font-size: 0.82rem;">Computación Cuántica • Esfera de Bloch • Puertas Cuánticas Unitarias</span>
-                <button class="close-photo-btn" onclick="closeAtlasViewer()">Cerrar Diagrama</button>
+    <!-- Modal Científico: Criostato de Dilución IBM Quantum System One (15 mK) -->
+    <div class="modal-telemetry" id="cryoModal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <div class="modal-title">❄️ Criostato de Dilución IBM Quantum System One • 15 mK (-273.135 °C)</div>
+                <button class="close-modal-btn" onclick="closeCryoModal()">Cerrar Criostato</button>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 16px;">
+                <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(192,132,252,0.3); border-radius: 10px; padding: 14px;">
+                    <div style="font-family: var(--font-mono); font-size: 0.85rem; color: var(--primary); font-weight: 800; margin-bottom: 8px;">
+                        📉 Etapas Criogénicas del "Golden Chandelier"
+                    </div>
+                    <canvas id="cryoCanvas" width="410" height="210" style="background: #02050f; border: 1px solid rgba(192,132,252,0.2); border-radius: 6px; width: 100%; display: block;"></canvas>
+                    <div style="font-size: 0.74rem; color: var(--text-sub); margin-top: 8px; line-height: 1.4;">
+                        Enfriamiento por dilución isotópica de ³He/⁴He: desciende de 300 K a temperatura ambiente hasta 15 milikelvin en la cámara de mezcla donde reside el procesador Eagle/Heron.
+                    </div>
+                </div>
+                <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(192,132,252,0.3); border-radius: 10px; padding: 14px;">
+                    <div style="font-family: var(--font-mono); font-size: 0.85rem; color: var(--cyan); font-weight: 800; margin-bottom: 8px;">
+                        🔬 Microarquitectura del Qubit Transmon Superconductor
+                    </div>
+                    <canvas id="transmonCanvas" width="410" height="210" style="background: #02050f; border: 1px solid rgba(56,189,248,0.2); border-radius: 6px; width: 100%; display: block;"></canvas>
+                    <div style="font-size: 0.74rem; color: var(--text-sub); margin-top: 8px; line-height: 1.4;">
+                        Unión Josephson superconductora de aluminio-óxido-aluminio (Al/AlOₓ/Al) en derivación con un condensador planar de niobio. Frecuencia de resonancia \(\omega_{01} = 5.12\text{ GHz}\).
+                    </div>
+                </div>
+            </div>
+            <div style="font-size: 0.82rem; color: var(--text-sub); line-height: 1.55; background: rgba(192,132,252,0.06); border: 1px solid rgba(192,132,252,0.2); border-radius: 8px; padding: 14px;">
+                <strong>Tiempos de Coherencia Cuántica:</strong> Tiempo de relajación longitudinal \(T_1 = 120\text{ }\mu\text{s}\) (pérdida de energía hacia el entorno) y tiempo de desfase transversal \(T_2^* = 85\text{ }\mu\text{s}\) (pérdida de coherencia de fase cuántica). Las compuertas cuánticas de microondas se ejecutan en pulsos de 20 a 50 nanosegundos para operar dentro de la ventana de coherencia.
             </div>
         </div>
     </div>
 
     <footer>
         <span>💻 Curso de Inteligencia Artificial • Metodología de la Triple Salvaguarda Pedagógica</span>
-        <span>Motor 3D: Babylon.js PBR • Computación Cuántica & Qubits</span>
+        <span>Motor Científico: Simulación SU(2) del Espacio de Hilbert & Criogenia Cuántica</span>
     </footer>
 
     <script>
-        const canvas = document.getElementById("renderCanvas");
-        const engine = new BABYLON.Engine(canvas, true);
-        let scene, camera;
-        let blochSphereMesh, vectorArrowGroup;
-        let theta = 0, phi = 0; // Estado inicial |0>
+        const canvas = document.getElementById("blochCanvas");
+        const ctx = canvas.getContext("2d");
 
-        function createScene() {
-            scene = new BABYLON.Scene(engine);
-            scene.clearColor = new BABYLON.Color4(0.012, 0.016, 0.035, 1.0);
+        // Estado del qubit (ángulos esféricos de Bloch)
+        let theta = 0.0; // 0 en |0>, pi en |1>
+        let phi = 0.0;   // ángulo azimutal en el ecuador
 
-            camera = new BABYLON.ArcRotateCamera("Camera", -Math.PI / 2.3, Math.PI / 2.6, 26, BABYLON.Vector3.Zero(), scene);
-            camera.attachControl(canvas, true);
-            camera.lowerRadiusLimit = 10;
-            camera.upperRadiusLimit = 55;
+        // Ángulos de cámara 3D interactiva
+        let camRotX = 0.35, camRotY = -0.45;
+        let isDragging = false, lastX = 0, lastY = 0;
 
-            const sunLight = new BABYLON.DirectionalLight("sunLight", new BABYLON.Vector3(0.5, -1, 0.7), scene);
-            sunLight.intensity = 2.0;
-            const hemiLight = new BABYLON.HemisphericLight("hemiLight", new BABYLON.Vector3(0, 1, 0), scene);
-            hemiLight.intensity = 0.55;
+        // Historial de mediciones empíricas
+        let shotCount = 0, count0 = 0, count1 = 0;
 
-            // 1. Esfera de Bloch Translúcida PBR
-            blochSphereMesh = BABYLON.MeshBuilder.CreateSphere("blochSphere", { diameter: 14, segments: 48 }, scene);
-            const sphereMat = new BABYLON.PBRMaterial("sphereMat", scene);
-            sphereMat.alpha = 0.18;
-            sphereMat.albedoColor = new BABYLON.Color3(0.2, 0.6, 0.9);
-            sphereMat.roughness = 0.2;
-            blochSphereMesh.material = sphereMat;
-
-            // Anillos Guía (Ecuador X-Y y Meridianos)
-            const eqRing = BABYLON.MeshBuilder.CreateTorus("eqRing", { diameter: 14, thickness: 0.08, tessellation: 64 }, scene);
-            const eqMat = new BABYLON.StandardMaterial("eqMat", scene);
-            eqMat.emissiveColor = new BABYLON.Color3(0.2, 0.7, 0.9);
-            eqRing.material = eqMat;
-
-            // Ejes Cartesianos (X, Y, Z)
-            const zAxis = BABYLON.MeshBuilder.CreateCylinder("zAxis", { diameter: 0.12, height: 16 }, scene);
-            const zMat = new BABYLON.StandardMaterial("zMat", scene);
-            zMat.emissiveColor = new BABYLON.Color3(0.9, 0.95, 1.0);
-            zAxis.material = zMat;
-
-            // Marcadores de Polos |0> y |1>
-            const p0Sphere = BABYLON.MeshBuilder.CreateSphere("p0", { diameter: 0.8 }, scene);
-            p0Sphere.position.y = 7;
-            const p0Mat = new BABYLON.StandardMaterial("p0Mat", scene);
-            p0Mat.emissiveColor = new BABYLON.Color3(0.22, 0.74, 0.97);
-            p0Sphere.material = p0Mat;
-
-            const p1Sphere = BABYLON.MeshBuilder.CreateSphere("p1", { diameter: 0.8 }, scene);
-            p1Sphere.position.y = -7;
-            const p1Mat = new BABYLON.StandardMaterial("p1Mat", scene);
-            p1Mat.emissiveColor = new BABYLON.Color3(0.95, 0.25, 0.35);
-            p1Sphere.material = p1Mat;
-
-            // 2. Vector de Estado Cuántico |ψ⟩
-            vectorArrowGroup = new BABYLON.TransformNode("vectorArrowGroup", scene);
-
-            const arrowShaft = BABYLON.MeshBuilder.CreateCylinder("shaft", { diameter: 0.25, height: 7 }, scene);
-            arrowShaft.position.y = 3.5;
-            arrowShaft.parent = vectorArrowGroup;
-
-            const arrowHead = BABYLON.MeshBuilder.CreateCylinder("head", { diameterTop: 0, diameterBottom: 0.9, height: 1.4 }, scene);
-            arrowHead.position.y = 7;
-            arrowHead.parent = vectorArrowGroup;
-
-            const arrowMat = new BABYLON.StandardMaterial("arrowMat", scene);
-            arrowMat.emissiveColor = new BABYLON.Color3(0.98, 0.75, 0.15);
-            arrowShaft.material = arrowMat;
-            arrowHead.material = arrowMat;
-
-            updateVectorOrientation();
-            return scene;
+        function getCartesian(th, ph) {
+            return {
+                x: Math.sin(th) * Math.cos(ph),
+                y: Math.sin(th) * Math.sin(ph),
+                z: Math.cos(th)
+            };
         }
 
-        function updateVectorOrientation() {
-            // Conversión de ángulos esféricos (theta, phi) a rotación tridimensional en Babylon.js
-            vectorArrowGroup.rotation.z = -theta;
-            vectorArrowGroup.rotation.y = phi;
+        function project(x, y, z) {
+            // Rotación 3D
+            const cosY = Math.cos(camRotY), sinY = Math.sin(camRotY);
+            const x1 = x * cosY - y * sinY;
+            const y1 = x * sinY + y * cosY;
 
+            const cosX = Math.cos(camRotX), sinX = Math.sin(camRotX);
+            const y2 = y1 * cosX - z * sinX;
+            const z2 = y1 * sinX + z * cosX;
+
+            const fov = 650;
+            const scale = fov / (fov + y2 * 90 + 350);
+            const px = canvas.width / 2 + x1 * 220 * scale;
+            const py = canvas.height / 2 - z2 * 220 * scale;
+
+            return { px, py, z: y2, scale };
+        }
+
+        function updateUI() {
             const p0 = Math.pow(Math.cos(theta / 2), 2);
             const p1 = Math.pow(Math.sin(theta / 2), 2);
 
-            document.getElementById("kpiP0").textContent = `${(p0 * 100).toFixed(1)}%`;
-            document.getElementById("kpiP1").textContent = `${(p1 * 100).toFixed(1)}%`;
-            document.getElementById("kpiTheta").textContent = `θ = ${(theta * 180 / Math.PI).toFixed(1)}°`;
-            document.getElementById("kpiPhi").textContent = `φ = ${(phi * 180 / Math.PI).toFixed(1)}°`;
+            document.getElementById("prob0Val").textContent = (p0 * 100).toFixed(1) + "%";
+            document.getElementById("prob1Val").textContent = (p1 * 100).toFixed(1) + "%";
+            document.getElementById("prob0Bar").style.width = (p0 * 100) + "%";
+            document.getElementById("prob1Bar").style.width = (p1 * 100) + "%";
+
+            // Nombre ket simbólico
+            let stateStr = "|ψ⟩";
+            if (theta < 0.05) stateStr = "|0⟩";
+            else if (Math.abs(theta - Math.PI) < 0.05) stateStr = "|1⟩";
+            else if (Math.abs(theta - Math.PI / 2) < 0.05) {
+                if (Math.abs(phi) < 0.05) stateStr = "|+⟩ = (|0⟩+|1⟩)/√2";
+                else if (Math.abs(phi - Math.PI) < 0.05) stateStr = "|-⟩ = (|0⟩-|1⟩)/√2";
+                else if (Math.abs(phi - Math.PI / 2) < 0.05) stateStr = "|+i⟩";
+                else if (Math.abs(phi - 3 * Math.PI / 2) < 0.05) stateStr = "|-i⟩";
+                else stateStr = "Superposición Equiv.";
+            } else {
+                stateStr = `${Math.cos(theta/2).toFixed(2)}|0⟩ + ${Math.sin(theta/2).toFixed(2)}e^(i${(phi*180/Math.PI).toFixed(0)}°)|1⟩`;
+            }
+
+            document.getElementById("kpiStateStr").textContent = stateStr;
+            document.getElementById("kpiAngles").textContent = `θ=${(theta*180/Math.PI).toFixed(1)}° φ=${(phi*180/Math.PI).toFixed(1)}°`;
+            document.getElementById("kpiShots").textContent = `${shotCount} disparos`;
+            document.getElementById("kpiCounts").textContent = `0: ${count0} | 1: ${count1}`;
         }
 
         function applyGate(gate) {
             if (gate === 'H') {
-                // Puerta Hadamard: de |0> pasa a superposición ecuatorial |+> (theta = pi/2)
-                theta = Math.PI / 2; phi = 0;
-                document.getElementById("infoTitle").textContent = "Puerta Hadamard (H): Superposición Pura |+⟩";
-                document.getElementById("infoBody").textContent = "Crea una superposición equiprobable perfecta (50% |0⟩ y 50% |1⟩). Es la puerta fundacional de todos los algoritmos cuánticos como Grover y Shor.";
+                // Hadamard transforma |0> -> |+> y |1> -> |->
+                if (theta < 0.1) {
+                    theta = Math.PI / 2;
+                    phi = 0.0;
+                } else if (Math.abs(theta - Math.PI) < 0.1) {
+                    theta = Math.PI / 2;
+                    phi = Math.PI;
+                } else if (Math.abs(theta - Math.PI / 2) < 0.1 && phi < 0.1) {
+                    theta = 0.0;
+                    phi = 0.0;
+                } else if (Math.abs(theta - Math.PI / 2) < 0.1 && Math.abs(phi - Math.PI) < 0.1) {
+                    theta = Math.PI;
+                    phi = 0.0;
+                } else {
+                    theta = Math.PI / 2;
+                    phi = 0.0;
+                }
+                document.getElementById("infoTitle").textContent = "Puerta Hadamard (H) • Superposición Coherente";
+                document.getElementById("infoBody").textContent = "La puerta de Hadamard crea una superposición equilibrada |+⟩ con un 50% de probabilidad de colapsar en 0 y un 50% en 1. Es la piedra angular de la paralelización cuántica masiva.";
             } else if (gate === 'X') {
-                // NOT Cuántica: invierte el polo (theta = pi si era 0, o 0 si era pi)
-                theta = (Math.abs(theta) < 0.1) ? Math.PI : 0;
-                document.getElementById("infoTitle").textContent = "Puerta NOT Cuántica (Pauli-X)";
-                document.getElementById("infoBody").textContent = "Rotación de 180° en torno al eje X: invierte el estado |0⟩ al estado excitado |1⟩ y viceversa.";
+                // NOT cuántico: invierte theta (polo norte a sur o viceversa)
+                theta = Math.PI - theta;
+                phi = (phi + Math.PI) % (Math.PI * 2);
+                document.getElementById("infoTitle").textContent = "Puerta Pauli-X (NOT Cuántico)";
+                document.getElementById("infoBody").textContent = "Realiza una rotación de π radianes (180°) alrededor del eje X de la esfera de Bloch, invirtiendo |0⟩ en |1⟩ y |1⟩ en |0⟩.";
+            } else if (gate === 'Y') {
+                theta = Math.PI - theta;
+                phi = (Math.PI * 2 - phi) % (Math.PI * 2);
+                document.getElementById("infoTitle").textContent = "Puerta Pauli-Y (Inversión con Fase Compleja)";
+                document.getElementById("infoBody").textContent = "Rotación de π radianes sobre el eje Y de Bloch. Invierte la amplitud e introduce una fase imaginaria i.";
             } else if (gate === 'Z') {
-                // Puerta de Fase Z
-                phi += Math.PI;
-                document.getElementById("infoTitle").textContent = "Puerta de Fase (Pauli-Z)";
-                document.getElementById("infoBody").textContent = "Gira el vector de estado 180° alrededor del eje vertical Z, invirtiendo la fase relativa sin cambiar las probabilidades de medición.";
-            } else {
-                theta = 0; phi = 0;
-                document.getElementById("infoTitle").textContent = "Estado Base Fundamental |0⟩ (Reset)";
-                document.getElementById("infoBody").textContent = "El qubit se restablece en su estado de mínima energía (polo norte).";
+                phi = (phi + Math.PI) % (Math.PI * 2);
+                document.getElementById("infoTitle").textContent = "Puerta Pauli-Z (Inversión de Fase Cuántica)";
+                document.getElementById("infoBody").textContent = "Rotación de 180° alrededor del eje Z. Deja intacto el estado |0⟩ pero invierte el signo de |1⟩ (fase π). Transforma |+⟩ en |-⟩ sin alterar las probabilidades clásicas de medición.";
+            } else if (gate === 'S') {
+                phi = (phi + Math.PI / 2) % (Math.PI * 2);
+                document.getElementById("infoTitle").textContent = "Puerta de Fase S (Rotación de π/2)";
+                document.getElementById("infoBody").textContent = "Aplica una rotación de 90° alrededor del eje Z (raíz cuadrada de Z). Transforma |+⟩ en |+i⟩.";
+            } else if (gate === 'T') {
+                phi = (phi + Math.PI / 4) % (Math.PI * 2);
+                document.getElementById("infoTitle").textContent = "Puerta de Fase T (Rotación de π/4)";
+                document.getElementById("infoBody").textContent = "Rotación de 45° alrededor de Z (raíz cuarta de Z). Crucial para el conjunto universal de computación cuántica tolerante a fallos.";
             }
-            updateVectorOrientation();
+            updateUI();
         }
 
-        function measureQubit() {
+        function measureState() {
             const p0 = Math.pow(Math.cos(theta / 2), 2);
-            const result = Math.random() < p0 ? 0 : 1;
+            const rand = Math.random();
+            shotCount++;
 
-            theta = result === 0 ? 0 : Math.PI;
-            phi = 0;
-            updateVectorOrientation();
-
-            document.getElementById("infoTitle").textContent = `⚡ Colapso Proyectivo: Medido |${result}⟩`;
-            document.getElementById("infoBody").textContent = `La medición cuántica destruyó la superposición coherente. El qubit ha colapsado de forma irreversible al estado clásico |${result}⟩ con un valor determinista.`;
+            if (rand < p0) {
+                // Colapso a |0>
+                count0++;
+                theta = 0.0;
+                phi = 0.0;
+                document.getElementById("infoTitle").textContent = "¡Colapso Cuántico Registrado! → Resultado |0⟩";
+                document.getElementById("infoBody").textContent = `La medición proyectiva forzó al vector cuántico a colapsar instantáneamente al Polo Norte |0⟩ conforme a la Regla de Born con probabilidad experimental demostrada.`;
+            } else {
+                // Colapso a |1>
+                count1++;
+                theta = Math.PI;
+                phi = 0.0;
+                document.getElementById("infoTitle").textContent = "¡Colapso Cuántico Registrado! → Resultado |1⟩";
+                document.getElementById("infoBody").textContent = `La medición proyectiva forzó al vector cuántico a colapsar instantáneamente al Polo Sur |1⟩ conforme a la Regla de Born con probabilidad experimental demostrada.`;
+            }
+            updateUI();
         }
 
-        function resetCamera() {
-            camera.alpha = -Math.PI / 2.3; camera.beta = Math.PI / 2.6; camera.radius = 26;
-            camera.target = BABYLON.Vector3.Zero();
+        function resetState() {
+            theta = 0.0;
+            phi = 0.0;
+            shotCount = 0;
+            count0 = 0;
+            count1 = 0;
+            document.getElementById("infoTitle").textContent = "Estado Fundamental Puro |0⟩";
+            document.getElementById("infoBody").textContent = "El qubit se encuentra en el Polo Norte de la esfera de Bloch con probabilidad del 100% de ser medido como 0. Corresponde al estado de mínima energía del circuito superconductor transmon en el criostato de dilución a 15 milikelvin.";
+            updateUI();
+        }
+
+        function renderBloch() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Fondo espacial
+            ctx.fillStyle = "#01030d";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Retícula de fondo tenue
+            ctx.strokeStyle = "rgba(192, 132, 252, 0.04)";
+            ctx.lineWidth = 1;
+            for (let x = 0; x < canvas.width; x += 40) {
+                ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
+            }
+            for (let y = 0; y < canvas.height; y += 40) {
+                ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
+            }
+
+            // DIBUJAR ESFERA DE BLOCH 3D
+            const center = project(0, 0, 0);
+
+            // Resplandor del cuerpo de la esfera
+            const sphereGlow = ctx.createRadialGradient(center.px, center.py, 10, center.px, center.py, 220 * center.scale);
+            sphereGlow.addColorStop(0, "rgba(192, 132, 252, 0.08)");
+            sphereGlow.addColorStop(0.8, "rgba(56, 189, 248, 0.04)");
+            sphereGlow.addColorStop(1, "rgba(0, 0, 0, 0)");
+            ctx.fillStyle = sphereGlow;
+            ctx.beginPath();
+            ctx.arc(center.px, center.py, 220 * center.scale, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Círculo límite exterior de la esfera
+            ctx.strokeStyle = "rgba(192, 132, 252, 0.25)";
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.arc(center.px, center.py, 220 * center.scale, 0, Math.PI * 2);
+            ctx.stroke();
+
+            // 1. Ecuador (Plano XY, z = 0)
+            ctx.strokeStyle = "rgba(56, 189, 248, 0.4)";
+            ctx.lineWidth = 1.2;
+            ctx.setLineDash([4, 4]);
+            ctx.beginPath();
+            const eqSteps = 60;
+            for (let i = 0; i <= eqSteps; i++) {
+                const a = (i / eqSteps) * Math.PI * 2;
+                const p = project(Math.cos(a), Math.sin(a), 0);
+                if (i === 0) ctx.moveTo(p.px, p.py);
+                else ctx.lineTo(p.px, p.py);
+            }
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            // 2. Meridiano Principal (Plano XZ, y = 0)
+            ctx.strokeStyle = "rgba(192, 132, 252, 0.25)";
+            ctx.lineWidth = 1.0;
+            ctx.beginPath();
+            for (let i = 0; i <= eqSteps; i++) {
+                const a = (i / eqSteps) * Math.PI * 2;
+                const p = project(Math.cos(a), 0, Math.sin(a));
+                if (i === 0) ctx.moveTo(p.px, p.py);
+                else ctx.lineTo(p.px, p.py);
+            }
+            ctx.stroke();
+
+            // 3. Ejes de coordenadas X, Y, Z
+            const axisLen = 1.25;
+            const origin = project(0, 0, 0);
+            const axX = project(axisLen, 0, 0);
+            const axY = project(0, axisLen, 0);
+            const axZ = project(0, 0, axisLen);
+            const axZ_neg = project(0, 0, -axisLen);
+
+            // Eje Z (Vertical: |0> a |1>)
+            ctx.strokeStyle = "#c084fc";
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(axZ_neg.px, axZ_neg.py);
+            ctx.lineTo(axZ.px, axZ.py);
+            ctx.stroke();
+
+            // Eje X
+            ctx.strokeStyle = "#38bdf8";
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.moveTo(origin.px, origin.py);
+            ctx.lineTo(axX.px, axX.py);
+            ctx.stroke();
+
+            // Eje Y
+            ctx.strokeStyle = "#34d399";
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.moveTo(origin.px, origin.py);
+            ctx.lineTo(axY.px, axY.py);
+            ctx.stroke();
+
+            // Etiquetas de Ejes y Estados Fundamentales
+            ctx.font = "bold 12px 'JetBrains Mono', monospace";
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+
+            // Polo Norte |0>
+            const north = project(0, 0, 1.0);
+            ctx.fillStyle = "#38bdf8";
+            ctx.beginPath();
+            ctx.arc(north.px, north.py, 5, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillText("|0⟩ (Norte, Z)", axZ.px, axZ.py - 12);
+
+            // Polo Sur |1>
+            const south = project(0, 0, -1.0);
+            ctx.fillStyle = "#f43f5e";
+            ctx.beginPath();
+            ctx.arc(south.px, south.py, 5, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillText("|1⟩ (Sur, -Z)", axZ_neg.px, axZ_neg.py + 14);
+
+            // Estados en el ecuador
+            ctx.font = "10px 'JetBrains Mono', monospace";
+            ctx.fillStyle = "#38bdf8";
+            ctx.fillText("|+⟩ (X)", axX.px + 16, axX.py);
+            ctx.fillStyle = "#34d399";
+            ctx.fillText("|+i⟩ (Y)", axY.px, axY.py - 12);
+
+            // 4. VECTOR DE ESTADO ACTUAL |ψ⟩
+            const curPos = getCartesian(theta, phi);
+            const stateTip = project(curPos.x, curPos.y, curPos.z);
+
+            // Resplandor de la flecha de estado
+            ctx.strokeStyle = "rgba(192, 132, 252, 0.4)";
+            ctx.lineWidth = 7;
+            ctx.beginPath();
+            ctx.moveTo(origin.px, origin.py);
+            ctx.lineTo(stateTip.px, stateTip.py);
+            ctx.stroke();
+
+            // Flecha principal de estado
+            ctx.strokeStyle = "#ffffff";
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(origin.px, origin.py);
+            ctx.lineTo(stateTip.px, stateTip.py);
+            ctx.stroke();
+
+            // Punta del vector (Esfera resplandeciente)
+            const tipGrad = ctx.createRadialGradient(stateTip.px, stateTip.py, 2, stateTip.px, stateTip.py, 12);
+            tipGrad.addColorStop(0, "#ffffff");
+            tipGrad.addColorStop(0.4, "#c084fc");
+            tipGrad.addColorStop(1, "rgba(0,0,0,0)");
+            ctx.fillStyle = tipGrad;
+            ctx.beginPath();
+            ctx.arc(stateTip.px, stateTip.py, 12, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Etiqueta flotante del vector |ψ⟩
+            ctx.fillStyle = "#ffffff";
+            ctx.font = "bold 13px 'Cinzel', serif";
+            ctx.fillText("|ψ⟩", stateTip.px + 14, stateTip.py - 8);
+
+            requestAnimationFrame(renderBloch);
+        }
+
+        // Interacción táctil/ratón para orbitar la esfera de Bloch
+        canvas.addEventListener("mousedown", e => {
+            isDragging = true;
+            lastX = e.clientX;
+            lastY = e.clientY;
+        });
+        window.addEventListener("mousemove", e => {
+            if (!isDragging) return;
+            const dx = e.clientX - lastX;
+            const dy = e.clientY - lastY;
+            camRotY -= dx * 0.008;
+            camRotX += dy * 0.008;
+            lastX = e.clientX;
+            lastY = e.clientY;
+        });
+        window.addEventListener("mouseup", () => { isDragging = false; });
+
+        // Gráficos del Modal Científico
+        function drawCryoPlot() {
+            const c = document.getElementById("cryoCanvas");
+            if (!c) return;
+            const g = c.getContext("2d");
+            g.clearRect(0, 0, c.width, c.height);
+
+            const stages = [
+                { name: "Brida Externa", temp: "300 K (27 °C)", y: 25, col: "#f43f5e" },
+                { name: "Escudo Térmico 1", temp: "50 K (-223 °C)", y: 65, col: "#fbbf24" },
+                { name: "Tubo de Pulsos", temp: "4.2 K (-269 °C)", y: 105, col: "#38bdf8" },
+                { name: "Cámara Still", temp: "800 mK (0.8 K)", y: 145, col: "#34d399" },
+                { name: "Cámara de Mezcla ³He/⁴He", temp: "15 mK (-273.135 °C)", y: 185, col: "#c084fc" }
+            ];
+
+            stages.forEach(s => {
+                g.fillStyle = "rgba(255, 255, 255, 0.04)";
+                g.strokeStyle = s.col;
+                g.lineWidth = 1;
+                g.fillRect(20, s.y, 370, 26);
+                g.strokeRect(20, s.y, 370, 26);
+
+                g.fillStyle = "#ffffff";
+                g.font = "bold 10px 'JetBrains Mono', monospace";
+                g.textAlign = "left";
+                g.fillText(s.name, 30, s.y + 17);
+
+                g.fillStyle = s.col;
+                g.font = "bold 10px 'JetBrains Mono', monospace";
+                g.textAlign = "right";
+                g.fillText(s.temp, 380, s.y + 17);
+            });
+        }
+
+        function drawTransmonPlot() {
+            const c = document.getElementById("transmonCanvas");
+            if (!c) return;
+            const g = c.getContext("2d");
+            g.clearRect(0, 0, c.width, c.height);
+
+            // Circuito LC no lineal (Unión Josephson + Condensador en paralelo)
+            const cx = c.width / 2, cy = c.height / 2;
+
+            g.strokeStyle = "#38bdf8";
+            g.lineWidth = 2;
+
+            // Bucle superconductor
+            g.beginPath();
+            g.moveTo(cx - 90, cy - 50);
+            g.lineTo(cx + 90, cy - 50);
+            g.lineTo(cx + 90, cy + 50);
+            g.lineTo(cx - 90, cy + 50);
+            g.closePath();
+            g.stroke();
+
+            // Unión Josephson (Cruz 'X') a la izquierda
+            g.fillStyle = "#fbbf24";
+            g.strokeStyle = "#fbbf24";
+            g.lineWidth = 3;
+            g.beginPath();
+            g.moveTo(cx - 100, cy - 12); g.lineTo(cx - 80, cy + 12);
+            g.moveTo(cx - 100, cy + 12); g.lineTo(cx - 80, cy - 12);
+            g.stroke();
+
+            // Condensador Shunt '||' a la derecha
+            g.strokeStyle = "#c084fc";
+            g.lineWidth = 3;
+            g.beginPath();
+            g.moveTo(cx + 80, cy - 20); g.lineTo(cx + 80, cy + 20);
+            g.moveTo(cx + 100, cy - 20); g.lineTo(cx + 100, cy + 20);
+            g.stroke();
+
+            g.fillStyle = "#ffffff";
+            g.font = "bold 10px 'JetBrains Mono', monospace";
+            g.textAlign = "center";
+            g.fillText("Unión Josephson (EJ)", cx - 90, cy + 35);
+            g.fillText("Capacitancia Shunt (EC)", cx + 90, cy + 35);
+
+            g.fillStyle = "#34d399";
+            g.font = "11px 'JetBrains Mono', monospace";
+            g.fillText("EJ / EC ≫ 50 (Inmunidad al Ruido de Carga)", cx, cy - 65);
+            g.fillText("f₀₁ = √(8 EJ EC) - EC = 5.12 GHz", cx, cy + 85);
+        }
+
+        function openCryoModal() {
+            document.getElementById("cryoModal").style.display = "flex";
+            drawCryoPlot();
+            drawTransmonPlot();
+        }
+
+        function closeCryoModal() {
+            document.getElementById("cryoModal").style.display = "none";
         }
 
         function speakCurrentInfo() {
@@ -328,25 +842,14 @@
             window.speechSynthesis.cancel();
             const text = `${document.getElementById("infoTitle").textContent}. ${document.getElementById("infoBody").textContent}`;
             const u = new SpeechSynthesisUtterance(text);
-            u.lang = 'es-ES'; u.rate = 0.95;
+            u.lang = 'es-ES';
+            u.rate = 0.95;
             window.speechSynthesis.speak(u);
         }
 
-        function openAtlasViewer() {
-            const modal = document.getElementById("photoModal");
-            const img = document.getElementById("atlasImg");
-            img.src = window.BLOCH_SVG_B64 || "";
-            modal.style.display = "flex";
-        }
-
-        function closeAtlasViewer() {
-            document.getElementById("photoModal").style.display = "none";
-        }
-
-        scene = createScene();
-        engine.runRenderLoop(() => { scene.render(); });
-        window.addEventListener("resize", () => { engine.resize(); });
+        // Iniciar
+        updateUI();
+        renderBloch();
     </script>
 </body>
 </html>
-

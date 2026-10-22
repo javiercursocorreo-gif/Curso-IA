@@ -3,21 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sesión 25 • Simulador 3D: Relatividad Especial & Dilatación Lorentz [COD-025]</title>
-    <!-- Babylon.js Motor 3D Oficial CDN -->
-    <script src="https://cdn.babylonjs.com/babylon.js"></script>
-    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
-    <!-- Respaldo Científico en Base64 Autónomo -->
-    <script src="../03_ASSETS_3D_Y_DATOS/relativity_lorentz_b64.js"></script>
-    <script src="../../SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/relativity_lorentz_b64.js"></script>
-    <script src="../../../../SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/relativity_lorentz_b64.js"></script>
+    <title>Sesión 25 • Laboratorio de Relatividad Especial: Cono de Luz & Lorentz [COD-025]</title>
+    <!-- Física Relativista de Einstein (1905) • Diagramas de Minkowski & Efecto Terrell-Penrose -->
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-base: #030510;
-            --bg-panel: rgba(10, 16, 30, 0.94);
+            --bg-base: #010207;
+            --bg-panel: rgba(8, 14, 28, 0.94);
             --border: rgba(56, 189, 248, 0.35);
             --primary: #38bdf8;
+            --primary-glow: rgba(56, 189, 248, 0.4);
             --emerald: #34d399;
             --amber: #fbbf24;
             --purple: #c084fc;
@@ -28,322 +23,626 @@
             --font-sans: 'Inter', sans-serif;
             --font-mono: 'JetBrains Mono', monospace;
         }
+
         * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
         body {
-            background-color: var(--bg-base); color: var(--text-main);
-            font-family: var(--font-sans); height: 100vh; width: 100vw;
-            overflow: hidden; display: flex; flex-direction: column; font-size: 14px;
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            font-family: var(--font-sans);
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            font-size: 14px;
         }
+
         header {
             background: linear-gradient(180deg, rgba(8, 14, 28, 0.98) 0%, rgba(8, 14, 28, 0.88) 100%);
-            backdrop-filter: blur(14px); border-bottom: 1px solid var(--border);
-            padding: 10px 24px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; z-index: 40;
+            backdrop-filter: blur(14px);
+            border-bottom: 1px solid var(--border);
+            padding: 10px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+            z-index: 50;
         }
+
         .brand-box { display: flex; align-items: center; gap: 14px; }
         .badge-pill {
-            background: rgba(56, 189, 248, 0.15); border: 1px solid var(--primary);
-            color: var(--primary); font-family: var(--font-mono); font-weight: 800;
-            font-size: 0.82rem; padding: 4px 10px; border-radius: 6px;
+            background: rgba(56, 189, 248, 0.15);
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            font-family: var(--font-mono);
+            font-weight: 800;
+            font-size: 0.82rem;
+            padding: 4px 10px;
+            border-radius: 6px;
         }
+
         .title-text h1 {
-            font-family: var(--font-title); font-size: 1.15rem; font-weight: 800; color: #fff;
-            display: flex; align-items: center; gap: 8px;
+            font-family: var(--font-title);
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         .title-text p { font-size: 0.78rem; color: var(--text-sub); margin-top: 1px; }
+
         .header-actions { display: flex; align-items: center; gap: 10px; }
         .btn-header {
-            background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15);
-            color: var(--text-main); padding: 6px 14px; border-radius: 8px; font-size: 0.8rem;
-            font-weight: 700; cursor: pointer; transition: all 0.2s ease;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: var(--text-main);
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
         }
         .btn-header:hover { background: rgba(56, 189, 248, 0.2); border-color: var(--primary); color: var(--primary); }
+
         .workspace { flex: 1; position: relative; overflow: hidden; display: flex; }
-        #renderCanvas { width: 100%; height: 100%; outline: none; display: block; }
+
+        .viewer-container {
+            flex: 1;
+            position: relative;
+            background: radial-gradient(circle at center, #0a1126 0%, #010206 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        #relativityCanvas {
+            max-width: 96%;
+            max-height: 92%;
+            border-radius: 14px;
+            box-shadow: 0 15px 45px rgba(0, 0, 0, 0.9);
+            border: 1px solid rgba(56, 189, 248, 0.25);
+            background: #020309;
+        }
+
         .controls-panel {
-            position: absolute; top: 18px; left: 18px; width: 340px;
-            background: var(--bg-panel); border: 1px solid var(--border);
-            border-radius: 14px; padding: 18px; backdrop-filter: blur(14px);
-            z-index: 20; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            position: absolute;
+            top: 18px;
+            left: 20px;
+            width: 350px;
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 18px;
+            backdrop-filter: blur(14px);
+            z-index: 20;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            max-height: calc(100vh - 120px);
+            overflow-y: auto;
         }
+
         .panel-section-title {
-            font-family: var(--font-mono); font-size: 0.8rem; font-weight: 800;
-            color: var(--primary); text-transform: uppercase; margin-bottom: 12px;
-            display: flex; align-items: center; gap: 6px;
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            font-weight: 800;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
-        .slider-box { margin-bottom: 16px; }
-        .slider-label-row { display: flex; justify-content: space-between; font-size: 0.82rem; margin-bottom: 6px; }
-        .speed-slider {
-            width: 100%; -webkit-appearance: none; height: 8px; border-radius: 4px;
-            background: linear-gradient(90deg, #38bdf8 0%, #34d399 40%, #fbbf24 75%, #f43f5e 100%);
-            outline: none; cursor: pointer;
+
+        .slider-box {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
         }
-        .speed-slider::-webkit-slider-thumb {
-            -webkit-appearance: none; width: 22px; height: 22px; border-radius: 50%;
-            background: #ffffff; border: 3px solid #38bdf8; cursor: pointer;
-            box-shadow: 0 0 10px rgba(56, 189, 248, 0.8);
+        .slider-header {
+            display: flex;
+            justify-content: space-between;
+            font-family: var(--font-mono);
+            font-size: 0.78rem;
+            color: var(--primary);
+            font-weight: 800;
         }
-        .preset-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 16px; }
+        input[type="range"] {
+            width: 100%;
+            accent-color: var(--primary);
+            cursor: pointer;
+        }
+
+        .presets-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 5px;
+        }
         .btn-preset {
-            background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.12);
-            color: var(--text-sub); padding: 7px 10px; border-radius: 8px; font-size: 0.78rem;
-            cursor: pointer; transition: all 0.2s ease; text-align: left;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-sub);
+            padding: 6px 2px;
+            border-radius: 6px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s ease;
         }
-        .btn-preset.active, .btn-preset:hover {
-            background: rgba(56, 189, 248, 0.2); border-color: var(--primary); color: #fff;
+        .btn-preset.active {
+            background: rgba(56, 189, 248, 0.25);
+            border-color: var(--primary);
+            color: #fff;
         }
-        .kpi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-        .kpi-card { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 8px 10px; }
-        .kpi-val { font-family: var(--font-mono); font-size: 1.05rem; font-weight: 800; color: #fff; }
-        .kpi-label { font-size: 0.72rem; color: var(--text-sub); margin-top: 2px; }
+
+        .modes-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .btn-mode {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: var(--text-sub);
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: left;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.15s ease;
+        }
+        .btn-mode:hover, .btn-mode.active {
+            background: rgba(56, 189, 248, 0.15);
+            border-color: var(--primary);
+            color: #fff;
+        }
+
+        .kpi-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        .kpi-card {
+            background: rgba(0, 0, 0, 0.45);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+            padding: 8px 10px;
+        }
+        .kpi-val {
+            font-family: var(--font-mono);
+            font-size: 1.05rem;
+            font-weight: 900;
+            color: var(--primary);
+        }
+        .kpi-label { font-size: 0.7rem; color: var(--text-sub); margin-top: 1px; }
+
         .info-panel {
-            position: absolute; bottom: 20px; right: 20px; width: 380px;
-            background: var(--bg-panel); border: 1px solid var(--border);
-            border-radius: 14px; padding: 18px; backdrop-filter: blur(14px);
-            z-index: 20; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            position: absolute;
+            bottom: 24px;
+            right: 24px;
+            width: 370px;
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 18px;
+            backdrop-filter: blur(14px);
+            z-index: 20;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
         }
-        .info-title { font-family: var(--font-title); font-size: 1.15rem; font-weight: 700; color: var(--amber); margin-bottom: 8px; }
-        .info-body { font-size: 0.84rem; line-height: 1.5; color: var(--text-sub); margin-bottom: 12px; }
-        .info-quote { font-style: italic; font-size: 0.78rem; color: var(--primary); border-left: 2px solid var(--primary); padding-left: 10px; margin-bottom: 12px; }
+        .info-title {
+            font-family: var(--font-title);
+            font-size: 1.05rem;
+            font-weight: 800;
+            color: #fff;
+            margin-bottom: 6px;
+        }
+        .info-body { font-size: 0.82rem; line-height: 1.5; color: var(--text-sub); margin-bottom: 12px; }
+        .info-quote {
+            font-style: italic;
+            font-size: 0.76rem;
+            color: var(--primary);
+            border-left: 2px solid var(--primary);
+            padding-left: 10px;
+            margin-bottom: 12px;
+        }
         .audio-btn {
+            width: 100%;
             background: linear-gradient(135deg, #0284c7 0%, #38bdf8 100%);
-            border: none; color: #020617; font-weight: 800; font-size: 0.82rem;
-            padding: 8px 14px; border-radius: 8px; width: 100%; cursor: pointer;
-            display: flex; align-items: center; justify-content: center; gap: 8px;
+            border: none;
+            color: #fff;
+            padding: 9px;
+            border-radius: 8px;
+            font-weight: 900;
+            font-size: 0.82rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
         }
-        .photo-viewer-modal {
-            position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(8px);
-            display: none; align-items: center; justify-content: center; z-index: 100;
-        }
-        .photo-container {
-            background: #0a0f1d; border: 1px solid var(--primary); border-radius: 14px;
-            max-width: 900px; width: 92%; overflow: hidden; box-shadow: 0 0 40px rgba(56, 189, 248, 0.35);
-        }
-        .photo-container img { width: 100%; height: auto; display: block; }
-        .photo-caption { padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; background: #060b18; }
-        .close-photo-btn { background: var(--primary); color: #020617; border: none; padding: 6px 16px; border-radius: 8px; font-weight: 800; cursor: pointer; }
+        .audio-btn:hover { box-shadow: 0 0 15px rgba(56, 189, 248, 0.5); }
+
         footer {
-            background: rgba(8, 14, 28, 0.98); border-top: 1px solid var(--border);
-            padding: 8px 24px; font-size: 0.78rem; color: var(--text-sub);
-            display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;
+            background: rgba(8, 14, 28, 0.98);
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 8px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.76rem;
+            color: var(--text-sub);
+            flex-shrink: 0;
+            z-index: 50;
         }
     </style>
 </head>
 <body>
+
     <header>
         <div class="brand-box">
             <span class="badge-pill">[COD-025]</span>
             <div class="title-text">
-                <h1>🚀 Relatividad Especial, Cono de Luz & Dilatación Lorentz 3D</h1>
-                <p>Albert Einstein (1905) • Minkowski (1908) • Factor Gamma γ = 1 / √(1 - v²/c²)</p>
+                <h1>⚡ Relatividad Especial, Cono de Luz y Dilatación Lorentz</h1>
+                <p>Albert Einstein (1905) • Geometría Espaciotemporal de Minkowski • Aberración Óptica de Terrell-Penrose & Doppler</p>
             </div>
         </div>
         <div class="header-actions">
-            <button class="btn-header" onclick="openAtlasViewer()">📷 Cono de Luz SVG</button>
-            <button class="btn-header" onclick="resetCamera()">🎯 Centrar</button>
+            <button class="btn-header" onclick="setSpeed(0.0)">⚓ Reposo (v = 0)</button>
+            <button class="btn-header" onclick="setSpeed(0.866)">⏱️ γ = 2.0 (Doble Tiempo)</button>
+            <button class="btn-header" onclick="setSpeed(0.99)">🚀 v = 0.99 c (γ = 7.09)</button>
         </div>
     </header>
 
     <div class="workspace">
-        <canvas id="renderCanvas"></canvas>
+        <div class="viewer-container">
+            <canvas id="relativityCanvas" width="940" height="620"></canvas>
+        </div>
 
         <div class="controls-panel">
-            <div class="panel-section-title">⏱️ Velocidad Relativista (Fracción de c)</div>
+            <div class="panel-section-title">🚀 Velocidad Relativista (v / c)</div>
             <div class="slider-box">
-                <div class="slider-label-row">
-                    <span id="speedValText" style="font-family: var(--font-mono); font-weight: 800; color: #fff;">v = 0.866 c</span>
-                    <span id="gammaText" style="color: var(--primary);">γ = 2.000</span>
+                <div class="slider-header">
+                    <span>Fracción de c:</span>
+                    <span id="speedValLabel">0.866 c (γ = 2.000)</span>
                 </div>
-                <input type="range" min="0" max="4" value="2" step="1" class="speed-slider" id="speedSlider" oninput="onSpeedChange(this.value)">
+                <input type="range" id="speedSlider" min="0" max="0.995" step="0.005" value="0.866" oninput="onSpeedChange(this.value)">
             </div>
 
-            <div class="panel-section-title">⚡ Velocidades Históricas</div>
-            <div class="preset-grid">
-                <button class="btn-preset" onclick="setPreset(0)">0.00 c Clásica</button>
-                <button class="btn-preset" onclick="setPreset(1)">0.50 c (+15% tiempo)</button>
-                <button class="btn-preset active" onclick="setPreset(2)">0.866 c (Doble t)</button>
-                <button class="btn-preset" onclick="setPreset(3)">0.990 c (7x tiempo)</button>
-                <button class="btn-preset" onclick="setPreset(4)">0.999 c (22x tiempo)</button>
+            <div class="presets-grid">
+                <button class="btn-preset" onclick="setSpeed(0.0)">0.0 c</button>
+                <button class="btn-preset" onclick="setSpeed(0.5)">0.50 c</button>
+                <button class="btn-preset active" onclick="setSpeed(0.866)">0.866 c</button>
+                <button class="btn-preset" onclick="setSpeed(0.99)">0.99 c</button>
             </div>
 
-            <div class="panel-section-title">📊 Efectos Relativistas</div>
-            <div class="kpi-grid">
+            <div class="panel-section-title">🧭 Visualización Causal</div>
+            <div class="modes-list">
+                <button class="btn-mode active" onclick="setViewMode('minkowski')">
+                    <span>⏳ Cono de Luz de Minkowski</span>
+                    <span style="font-family: var(--font-mono); color: var(--primary);">Espacio-Tiempo</span>
+                </button>
+                <button class="btn-mode" onclick="setViewMode('terrell')">
+                    <span>🔄 Rotación Óptica Terrell-Penrose</span>
+                    <span style="font-family: var(--font-mono); color: var(--primary);">Aberración</span>
+                </button>
+                <button class="btn-mode" onclick="setViewMode('clocks')">
+                    <span>⏱️ Relojes Gemelos (Dilatación)</span>
+                    <span style="font-family: var(--font-mono); color: var(--primary);">Δt = γ·Δτ</span>
+                </button>
+            </div>
+
+            <div class="panel-section-title">📊 Transformación de Lorentz</div>
+            <div class="kpi-row">
                 <div class="kpi-card">
-                    <div class="kpi-val" id="kpiDilation">2.00 s</div>
-                    <div class="kpi-label">Reloj Tierra por cada 1 s Nave</div>
+                    <div class="kpi-val" id="kpiGamma">2.000</div>
+                    <div class="kpi-label">Factor Lorentz (γ)</div>
                 </div>
                 <div class="kpi-card">
                     <div class="kpi-val" id="kpiContraction">50.0%</div>
-                    <div class="kpi-label">Longitud de la Nave (L')</div>
+                    <div class="kpi-label">Longitud Aparente (L/L₀)</div>
+                </div>
+            </div>
+            <div class="kpi-row">
+                <div class="kpi-card">
+                    <div class="kpi-val" id="kpiDilation" style="color: var(--amber);">2.00 s</div>
+                    <div class="kpi-label">Tiempo Tierra por 1s Nave</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-val" id="kpiDoppler" style="color: var(--purple);">3.73×</div>
+                    <div class="kpi-label">Corrimiento Doppler Azul</div>
                 </div>
             </div>
         </div>
 
         <div class="info-panel">
-            <div class="info-title" id="infoTitle">Dilatación Temporal a v = 0.866 c (γ = 2.0)</div>
-            <div class="info-body" id="infoBody">A un 86.6% de la velocidad de la luz, el factor de Lorentz alcanza exactamente 2.0. Mientras el astronauta envejece 1 año a bordo, en la Tierra transcurren exactamente 2 años. Al mismo tiempo, la nave se contrae al 50% de su longitud en la dirección de vuelo.</div>
-            <div class="info-quote" id="infoQuote">"El tiempo y el espacio no son condiciones en las que vivimos, sino formas en las que pensamos." — Albert Einstein</div>
+            <div class="info-title" id="infoTitle">Cono de Luz Causal de Minkowski</div>
+            <div class="info-body" id="infoBody">
+                El cono de luz divide la estructura del universo en tres regiones invariantes: el Futuro Causal (eventos que podemos influenciar a velocidades menores o iguales a c), el Pasado Causal (eventos que pudieron influenciarnos) y el 'En Otro Lugar' (eventos separados por intervalos de tipo espacio, inaccesibles causalmente).
+            </div>
+            <div class="info-quote" id="infoQuote">
+                "De ahora en adelante, el espacio por sí mismo y el tiempo por sí mismo están condenados a desvanecerse en meras sombras; solo una unión de ambos preservará una realidad independiente." — Hermann Minkowski (1908).
+            </div>
             <button class="audio-btn" onclick="speakCurrentInfo()">🔊 Escuchar Explicación Relativista</button>
         </div>
     </div>
 
-    <div class="photo-viewer-modal" id="photoModal">
-        <div class="photo-container">
-            <img id="atlasImg" src="" alt="Cono de Luz de Minkowski">
-            <div class="photo-caption">
-                <span style="color: #cbd5e1; font-size: 0.82rem;">Albert Einstein • Espacio-Tiempo de Minkowski • Causalidad Relativista</span>
-                <button class="close-photo-btn" onclick="closeAtlasViewer()">Cerrar Gráfico</button>
-            </div>
-        </div>
-    </div>
-
     <footer>
-        <span>🚀 Curso de Inteligencia Artificial • Metodología de la Triple Salvaguarda Pedagógica</span>
-        <span>Motor 3D: Babylon.js PBR • Relatividad Especial de Einstein</span>
+        <span>⚡ Curso de Inteligencia Artificial • Metodología de la Triple Salvaguarda Pedagógica</span>
+        <span>Física Teórica Fundamental: Métrica Pseudo-Riemanniana de Lorentz ds² = -c²dt² + dx²</span>
     </footer>
 
     <script>
-        const canvas = document.getElementById("renderCanvas");
-        const engine = new BABYLON.Engine(canvas, true);
-        let scene, camera;
-        let shipMesh, lightConeMesh, starField;
-        let currentIdx = 2;
+        const canvas = document.getElementById("relativityCanvas");
+        const ctx = canvas.getContext("2d");
 
-        const CASES = (window.RELATIVITY_DATA && window.RELATIVITY_DATA.lorentzCases) || [
-            { v_frac: 0.00, gamma: 1.000, timeDilation: "1.00 s Tierra", contraction: "100%", desc: "Física clásica de Newton: el tiempo y el espacio son absolutos." },
-            { v_frac: 0.50, gamma: 1.155, timeDilation: "1.15 s Tierra", contraction: "86.6%", desc: "Efectos relativistas incipientes pero medibles en relojes atómicos GPS." },
-            { v_frac: 0.866, gamma: 2.000, timeDilation: "2.00 s Tierra (Doble)", contraction: "50.0%", desc: "El reloj en la Tierra corre exactamente al doble de velocidad." },
-            { v_frac: 0.990, gamma: 7.089, timeDilation: "7.09 s Tierra", contraction: "14.1%", desc: "El espacio se comprime violentamente en el sentido del avance." },
-            { v_frac: 0.999, gamma: 22.366, timeDilation: "22.37 s Tierra", contraction: "4.47%", desc: "Dilatación extrema: 1 año en la nave equivale a 22 años en la Tierra." }
-        ];
+        let velocity = 0.866; // Fracción de c
+        let viewMode = 'minkowski';
+        let animTime = 0;
 
-        function createScene() {
-            scene = new BABYLON.Scene(engine);
-            scene.clearColor = new BABYLON.Color4(0.015, 0.02, 0.045, 1.0);
+        function getLorentzGamma(v) {
+            return 1.0 / Math.sqrt(Math.max(0.001, 1.0 - v * v));
+        }
 
-            camera = new BABYLON.ArcRotateCamera("Camera", -Math.PI / 2.2, Math.PI / 2.6, 32, BABYLON.Vector3.Zero(), scene);
-            camera.attachControl(canvas, true);
-            camera.lowerRadiusLimit = 12;
-            camera.upperRadiusLimit = 65;
+        function drawRelativityLaboratory() {
+            ctx.fillStyle = "#010207";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            const sunLight = new BABYLON.DirectionalLight("sunLight", new BABYLON.Vector3(0.5, -1, 0.7), scene);
-            sunLight.intensity = 2.2;
-            const hemiLight = new BABYLON.HemisphericLight("hemiLight", new BABYLON.Vector3(0, 1, 0), scene);
-            hemiLight.intensity = 0.5;
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+            const gamma = getLorentzGamma(velocity);
 
-            // 1. Nave Espacial Relativista
-            shipMesh = BABYLON.MeshBuilder.CreateCylinder("ship", { diameterTop: 0, diameterBottom: 3.5, height: 10, tessellation: 32 }, scene);
-            shipMesh.rotation.z = Math.PI / 2; // Apunta en el eje X
+            // Retícula métrica espaciotemporal
+            drawSpacetimeGrid();
 
-            const shipMat = new BABYLON.PBRMaterial("shipMat", scene);
-            shipMat.albedoColor = new BABYLON.Color3(0.22, 0.74, 0.97);
-            shipMat.metallic = 0.9;
-            shipMat.roughness = 0.2;
-            shipMesh.material = shipMat;
+            ctx.save();
+            ctx.translate(cx, cy);
 
-            // 2. Cono de Luz de Minkowski 3D (Doble Cono)
-            const futureCone = BABYLON.MeshBuilder.CreateCylinder("fCone", { diameterTop: 16, diameterBottom: 0, height: 12, tessellation: 32 }, scene);
-            futureCone.position.y = 6;
-            const pastCone = BABYLON.MeshBuilder.CreateCylinder("pCone", { diameterTop: 0, diameterBottom: 16, height: 12, tessellation: 32 }, scene);
-            pastCone.position.y = -6;
-
-            const coneMat = new BABYLON.StandardMaterial("coneMat", scene);
-            coneMat.diffuseColor = new BABYLON.Color3(0.75, 0.52, 0.99);
-            coneMat.emissiveColor = new BABYLON.Color3(0.25, 0.1, 0.4);
-            coneMat.alpha = 0.22;
-            futureCone.material = coneMat;
-            pastCone.material = coneMat;
-
-            // 3. Campo de Estrellas con Aberración Doppler
-            const pGroup = new BABYLON.TransformNode("pGroup", scene);
-            for (let i = 0; i < 200; i++) {
-                const s = BABYLON.MeshBuilder.CreateSphere("star_" + i, { diameter: 0.2 }, scene);
-                s.position = new BABYLON.Vector3(
-                    (Math.random() - 0.5) * 50,
-                    (Math.random() - 0.5) * 30,
-                    (Math.random() - 0.5) * 50
-                );
-                s.parent = pGroup;
-                const smat = new BABYLON.StandardMaterial("smat_" + i, scene);
-                smat.emissiveColor = new BABYLON.Color3(0.9, 0.95, 1.0);
-                s.material = smat;
+            if (viewMode === 'minkowski') {
+                drawMinkowskiLightCone(gamma);
+            } else if (viewMode === 'terrell') {
+                drawTerrellPenroseRotation(gamma);
+            } else {
+                drawTwinClocksDilation(gamma);
             }
 
-            scene.registerBeforeRender(() => {
-                pGroup.rotation.y += 0.001;
-            });
+            ctx.restore();
 
-            return scene;
+            // Calibrador inferior
+            ctx.fillStyle = "#38bdf8";
+            ctx.font = "bold 12px var(--font-mono)";
+            ctx.fillText(`TRANSFORMACIÓN DE LORENTZ: x' = γ(x - vt), t' = γ(t - vx/c²) • MÉTRICA DE MINKOWSKI`, 30, canvas.height - 40);
+            ctx.fillStyle = "#94a3b8";
+            ctx.fillText(`VELOCIDAD v = ${velocity.toFixed(3)} c • FACTOR GAMMA γ = ${gamma.toFixed(3)} • C = 299.792 km/s`, 30, canvas.height - 22);
+        }
+
+        function drawSpacetimeGrid() {
+            ctx.strokeStyle = "rgba(56, 189, 248, 0.08)";
+            ctx.lineWidth = 1;
+            for (let x = 0; x < canvas.width; x += 40) {
+                ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
+            }
+            for (let y = 0; y < canvas.height; y += 40) {
+                ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
+            }
+        }
+
+        function drawMinkowskiLightCone(gamma) {
+            // Ejes de coordenadas espaciotemporales (Eje X = Espacio, Eje Y = Tiempo ct)
+            ctx.strokeStyle = "rgba(255, 255, 255, 0.4)";
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.moveTo(-280, 0); ctx.lineTo(280, 0); // Eje x
+            ctx.moveTo(0, -220); ctx.lineTo(0, 220); // Eje ct
+            ctx.stroke();
+
+            // Cono de luz a 45° (Geodésicas nulas ds² = 0)
+            ctx.strokeStyle = "#fbbf24";
+            ctx.lineWidth = 2.5;
+            ctx.beginPath();
+            ctx.moveTo(-200, 200); ctx.lineTo(200, -200);
+            ctx.moveTo(-200, -200); ctx.lineTo(200, 200);
+            ctx.stroke();
+
+            // Área de Futuro y Pasado Causal (Gradiente coloreado)
+            ctx.fillStyle = "rgba(56, 189, 248, 0.12)";
+            ctx.beginPath();
+            ctx.moveTo(0, 0); ctx.lineTo(-180, -180); ctx.lineTo(180, -180); ctx.closePath();
+            ctx.fill();
+
+            ctx.fillStyle = "rgba(192, 132, 252, 0.12)";
+            ctx.beginPath();
+            ctx.moveTo(0, 0); ctx.lineTo(-180, 180); ctx.lineTo(180, 180); ctx.closePath();
+            ctx.fill();
+
+            // Línea de Universo de la Nave Relativista (Inclinada según v/c)
+            const angle = Math.atan(velocity);
+            const lineLen = 170;
+            const nx = Math.sin(angle) * lineLen;
+            const ny = -Math.cos(angle) * lineLen;
+
+            ctx.strokeStyle = "#34d399";
+            ctx.lineWidth = 3.5;
+            ctx.beginPath();
+            ctx.moveTo(-nx, -ny);
+            ctx.lineTo(nx, ny);
+            ctx.stroke();
+
+            // Partícula observadora en la línea de universo
+            const curP = (Math.sin(animTime) * 0.7);
+            ctx.fillStyle = "#ffffff";
+            ctx.shadowColor = "#34d399";
+            ctx.shadowBlur = 12;
+            ctx.beginPath();
+            ctx.arc(nx * curP, ny * curP, 6, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.shadowBlur = 0;
+
+            // Rótulos explicativos
+            ctx.fillStyle = "#38bdf8";
+            ctx.font = "bold 12px var(--font-mono)";
+            ctx.fillText("FUTURO CAUSAL (ds² < 0, INTERVALO TEMPORAL)", -150, -195);
+            ctx.fillStyle = "#c084fc";
+            ctx.fillText("PASADO CAUSAL", -45, 195);
+            ctx.fillStyle = "#34d399";
+            ctx.fillText(`LÍNEA DE UNIVERSO (v = ${velocity.toFixed(2)} c)`, nx + 10, ny);
+            ctx.fillStyle = "#fbbf24";
+            ctx.fillText("GEODÉSICA NULA DE LA LUZ (c)", 120, -120);
+        }
+
+        function drawTerrellPenroseRotation(gamma) {
+            // Demostración de que la contracción de Lorentz es percibida visualmente como una rotación aparente
+            const lengthContracted = 160 / gamma;
+            const apparentAngle = Math.asin(velocity); // Ángulo aparente de rotación de Terrell
+
+            ctx.save();
+            ctx.rotate(-apparentAngle * 0.6);
+
+            // Cara frontal y lateral del objeto cúbico relativista
+            ctx.fillStyle = "rgba(56, 189, 248, 0.85)";
+            ctx.strokeStyle = "#ffffff";
+            ctx.lineWidth = 2;
+            ctx.fillRect(-lengthContracted / 2, -50, lengthContracted, 100);
+            ctx.strokeRect(-lengthContracted / 2, -50, lengthContracted, 100);
+
+            // Cara trasera visible debido al retraso del tiempo de llegada de los fotones
+            ctx.fillStyle = "rgba(244, 63, 94, 0.75)";
+            ctx.beginPath();
+            ctx.moveTo(lengthContracted / 2, -50);
+            ctx.lineTo(lengthContracted / 2 + velocity * 40, -85);
+            ctx.lineTo(lengthContracted / 2 + velocity * 40, 15);
+            ctx.lineTo(lengthContracted / 2, 50);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.restore();
+
+            // Textos
+            ctx.fillStyle = "#38bdf8";
+            ctx.font = "bold 13px var(--font-mono)";
+            ctx.fillText("EFECTO TERRELL-PENROSE (1959): ROTACIÓN ÓPTICA APARENTE", -220, -160);
+            ctx.fillText(`LONGITUD REPOSO L₀ = 160 px  →  LONGITUD CONTRAÍDA L = ${(lengthContracted).toFixed(1)} px`, -220, 160);
+        }
+
+        function drawTwinClocksDilation(gamma) {
+            // Reloj de la Tierra (Inercial en reposo)
+            ctx.save();
+            ctx.translate(-140, 0);
+            drawAnalyticClock("RELOJ TIERRA (t)", animTime * gamma, "#38bdf8");
+            ctx.restore();
+
+            // Reloj de la Nave (Tiempo propio tau)
+            ctx.save();
+            ctx.translate(140, 0);
+            drawAnalyticClock("RELOJ NAVE (τ)", animTime, "#34d399");
+            ctx.restore();
+
+            ctx.fillStyle = "#fbbf24";
+            ctx.font = "bold 13px var(--font-mono)";
+            ctx.fillText(`PARADOJA DE LOS GEMELOS: EL RELOJ DE LA NAVE AVANZA ${(gamma).toFixed(2)}× MÁS LENTO`, -240, -140);
+        }
+
+        function drawAnalyticClock(label, timeVal, color) {
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.arc(0, 0, 75, 0, Math.PI * 2);
+            ctx.stroke();
+
+            // Marcas horarias
+            for (let m = 0; m < 12; m++) {
+                const a = (m * Math.PI) / 6;
+                ctx.beginPath();
+                ctx.moveTo(Math.cos(a) * 65, Math.sin(a) * 65);
+                ctx.lineTo(Math.cos(a) * 72, Math.sin(a) * 72);
+                ctx.stroke();
+            }
+
+            // Manecilla minutera
+            const handAngle = timeVal % (Math.PI * 2);
+            ctx.lineWidth = 3.5;
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.lineTo(Math.sin(handAngle) * 55, -Math.cos(handAngle) * 55);
+            ctx.stroke();
+
+            // Centro
+            ctx.fillStyle = color;
+            ctx.beginPath(); ctx.arc(0, 0, 6, 0, Math.PI * 2); ctx.fill();
+
+            // Etiqueta
+            ctx.fillStyle = "#fff";
+            ctx.font = "bold 12px var(--font-mono)";
+            ctx.fillText(label, -55, 105);
         }
 
         function onSpeedChange(val) {
-            currentIdx = parseInt(val);
+            velocity = parseFloat(val);
             updateUI();
         }
 
-        function setPreset(idx) {
-            currentIdx = idx;
-            document.getElementById("speedSlider").value = idx;
-            document.querySelectorAll(".btn-preset").forEach((b, i) => {
-                b.classList.toggle("active", i === idx);
+        function setSpeed(v) {
+            velocity = v;
+            document.getElementById("speedSlider").value = v;
+            document.querySelectorAll(".btn-preset").forEach(b => {
+                b.classList.toggle("active", b.textContent.includes(v.toFixed(v === 0.866 ? 3 : 2)));
             });
             updateUI();
         }
 
-        function updateUI() {
-            const c = CASES[currentIdx];
-            document.getElementById("speedValText").textContent = `v = ${c.v_frac} c`;
-            document.getElementById("gammaText").textContent = `γ = ${c.gamma.toFixed(3)}`;
-            document.getElementById("kpiDilation").textContent = c.timeDilation;
-            document.getElementById("kpiContraction").textContent = c.contraction;
+        function setViewMode(mode) {
+            viewMode = mode;
+            document.querySelectorAll(".btn-mode").forEach(b => {
+                b.classList.toggle("active", b.getAttribute("onclick").includes(mode));
+            });
 
-            document.getElementById("infoTitle").textContent = `Efecto Lorentz a v = ${c.v_frac} c (γ = ${c.gamma.toFixed(2)})`;
-            document.getElementById("infoBody").textContent = `${c.desc} La contracción física reduce la nave a ${c.contraction} de su longitud para el observador externo.`;
-
-            // Contracción física real de la malla de la nave en su eje axial (eje Y local del cilindro)
-            const lengthScale = 1.0 / c.gamma;
-            shipMesh.scaling.y = Math.max(lengthScale, 0.05);
-
-            // Desplazamiento Doppler al azul (blueshift) en velocidad alta
-            if (c.v_frac > 0.8) {
-                shipMesh.material.albedoColor = new BABYLON.Color3(0.5, 0.3, 0.95);
-            } else if (c.v_frac > 0.4) {
-                shipMesh.material.albedoColor = new BABYLON.Color3(0.2, 0.75, 0.95);
+            if (mode === 'minkowski') {
+                document.getElementById("infoTitle").textContent = "Cono de Luz Causal de Minkowski";
+                document.getElementById("infoBody").textContent = "Estructura geométrica que define la causalidad en el espacio-tiempo. Todo rayo de luz viaja por la superficie exterior a 45° (ds² = 0), mientras que cualquier partícula con masa viaja confinada dentro del cono temporal (ds² < 0).";
+            } else if (mode === 'terrell') {
+                document.getElementById("infoTitle").textContent = "Efecto Terrell-Penrose de Rotación Óptica";
+                document.getElementById("infoBody").textContent = "Descubierto independientemente por James Terrell y Roger Penrose en 1959. Un objeto relativista no se ve comprimido como una moneda plana, sino que el retardo diferencial de los fotones provoca una rotación aparente en la retina del observador.";
             } else {
-                shipMesh.material.albedoColor = new BABYLON.Color3(0.9, 0.9, 0.9);
+                document.getElementById("infoTitle").textContent = "Dilatación Temporal y Relojes de Lorentz";
+                document.getElementById("infoBody").textContent = "El tiempo no es absoluto. Mientras el astronauta viaja a 0.866 c durante 1 año de su tiempo propio medido por su reloj biológico, en la Tierra habrán transcurrido exactamente 2.0 años de tiempo coordenado.";
             }
         }
 
-        function resetCamera() {
-            camera.alpha = -Math.PI / 2.2; camera.beta = Math.PI / 2.6; camera.radius = 32;
-            camera.target = BABYLON.Vector3.Zero();
+        function updateUI() {
+            const gamma = getLorentzGamma(velocity);
+            const contraction = (100.0 / gamma).toFixed(1);
+            const dilation = (gamma).toFixed(2);
+            const doppler = Math.sqrt((1.0 + velocity) / Math.max(0.001, 1.0 - velocity)).toFixed(2);
+
+            document.getElementById("speedValLabel").textContent = `${velocity.toFixed(3)} c (γ = ${gamma.toFixed(3)})`;
+            document.getElementById("kpiGamma").textContent = gamma.toFixed(3);
+            document.getElementById("kpiContraction").textContent = `${contraction}%`;
+            document.getElementById("kpiDilation").textContent = `${dilation} s`;
+            document.getElementById("kpiDoppler").textContent = `${doppler}×`;
         }
 
         function speakCurrentInfo() {
             if (!('speechSynthesis' in window)) return;
             window.speechSynthesis.cancel();
             const text = `${document.getElementById("infoTitle").textContent}. ${document.getElementById("infoBody").textContent}`;
-            const u = new SpeechSynthesisUtterance(text);
-            u.lang = 'es-ES'; u.rate = 0.95;
-            window.speechSynthesis.speak(u);
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = "es-ES";
+            utterance.rate = 1.0;
+            window.speechSynthesis.speak(utterance);
         }
 
-        function openAtlasViewer() {
-            const modal = document.getElementById("photoModal");
-            const img = document.getElementById("atlasImg");
-            img.src = window.RELATIVITY_SVG_B64 || "";
-            modal.style.display = "flex";
+        function animate() {
+            animTime += 0.035;
+            drawRelativityLaboratory();
+            requestAnimationFrame(animate);
         }
 
-        function closeAtlasViewer() {
-            document.getElementById("photoModal").style.display = "none";
-        }
-
-        scene = createScene();
+        // Inicialización y bucle
         updateUI();
-
-        engine.runRenderLoop(() => { scene.render(); });
-        window.addEventListener("resize", () => { engine.resize(); });
+        animate();
     </script>
 </body>
 </html>
-

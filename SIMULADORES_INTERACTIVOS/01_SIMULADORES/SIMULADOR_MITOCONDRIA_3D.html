@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sesión 33 • Mitocondria: Central Celular y Nanomotor ATP Sintasa 3D [COD-033]</title>
+    <!-- NIH 3D • PDB 6J5I • Teoría Quimiosmótica de Peter Mitchell • Rotor F0 / Cabeza F1 -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-base: #0a0414;
+            --bg-panel: rgba(18, 8, 36, 0.94);
+            --border: rgba(168, 85, 247, 0.35);
+            --primary: #c084fc;
+            --primary-glow: rgba(192, 132, 252, 0.4);
+            --cyan: #38bdf8;
+            --emerald: #34d399;
+            --amber: #fbbf24;
+            --rose: #f43f5e;
+            --text-main: #f8fafc;
+            --text-sub: #cbd5e1;
+            --font-title: 'Cinzel', serif;
+            --font-sans: 'Inter', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            font-family: var(--font-sans);
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            font-size: 14px;
+        }
+
+        header {
+            background: linear-gradient(180deg, rgba(14, 6, 28, 0.98) 0%, rgba(14, 6, 28, 0.88) 100%);
+            backdrop-filter: blur(14px);
+            border-bottom: 1px solid var(--border);
+            padding: 10px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+            z-index: 40;
+        }
+        .brand-box { display: flex; align-items: center; gap: 14px; }
+        .badge-pill {
+            background: rgba(192, 132, 252, 0.15);
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            font-family: var(--font-mono);
+            font-weight: 800;
+            font-size: 0.82rem;
+            padding: 4px 10px;
+            border-radius: 6px;
+        }
+        .title-text h1 {
+            font-family: var(--font-title);
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .title-text p { font-size: 0.78rem; color: var(--text-sub); margin-top: 1px; }
+
+        .header-actions { display: flex; align-items: center; gap: 10px; }
+        .btn-header {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: var(--text-main);
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .btn-header:hover { background: rgba(192, 132, 252, 0.2); border-color: var(--primary); color: #fff; }
+
+        .workspace { flex: 1; position: relative; overflow: hidden; display: flex; }
+
+        .viewer-container {
+            flex: 1;
+            position: relative;
+            background: radial-gradient(circle at center, #1b0a33 0%, #06020c 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        #mitoCanvas {
+            max-width: 96%;
+            max-height: 92%;
+            border-radius: 14px;
+            box-shadow: 0 15px 45px rgba(0, 0, 0, 0.9);
+            border: 1px solid rgba(192, 132, 252, 0.25);
+            background: #080312;
+            cursor: grab;
+        }
+        #mitoCanvas:active { cursor: grabbing; }
+
+        .controls-panel {
+            position: absolute;
+            top: 18px;
+            left: 20px;
+            width: 350px;
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 18px;
+            backdrop-filter: blur(14px);
+            z-index: 20;
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6);
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            max-height: calc(100vh - 120px);
+            overflow-y: auto;
+        }
+
+        .panel-sec-title {
+            font-size: 0.78rem;
+            font-family: var(--font-mono);
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding-bottom: 5px;
+        }
+
+        .slider-group { display: flex; flex-direction: column; gap: 6px; }
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.82rem;
+            color: var(--text-sub);
+        }
+        .slider-val { font-family: var(--font-mono); color: #fff; font-weight: 700; }
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #1e293b;
+            outline: none;
+            cursor: pointer;
+            accent-color: var(--primary);
+        }
+
+        .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .btn-action {
+            background: rgba(192, 132, 252, 0.12);
+            border: 1px solid rgba(192, 132, 252, 0.35);
+            color: #fff;
+            padding: 9px 10px;
+            border-radius: 8px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+        .btn-action:hover { background: rgba(192, 132, 252, 0.28); border-color: var(--primary); }
+        .btn-action.active { background: var(--primary); color: #080312; font-weight: 800; }
+        .btn-action.danger { background: rgba(244, 63, 94, 0.15); border-color: #f43f5e; color: #fca5a5; }
+        .btn-action.danger:hover { background: #f43f5e; color: #fff; }
+
+        .telemetry-card {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            width: 320px;
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            backdrop-filter: blur(14px);
+            z-index: 20;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .kpi-row { display: flex; justify-content: space-between; align-items: center; }
+        .kpi-name { font-size: 0.78rem; color: var(--text-sub); }
+        .kpi-val { font-family: var(--font-mono); font-size: 0.88rem; font-weight: 700; color: #fff; }
+        .status-badge {
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.74rem;
+            font-weight: 800;
+            text-align: center;
+        }
+        .status-healthy { background: rgba(52, 211, 153, 0.2); color: #6ee7b7; border: 1px solid #34d399; }
+        .status-warning { background: rgba(251, 191, 36, 0.2); color: #fde68a; border: 1px solid #fbbf24; }
+        .status-danger { background: rgba(244, 63, 94, 0.2); color: #fda4af; border: 1px solid #f43f5e; }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="brand-box">
+            <span class="badge-pill">[COD-033]</span>
+            <div class="title-text">
+                <h1>⚡ Mitocondria: Nanomotor ATP Sintasa 3D</h1>
+                <p>NIH 3D • PDB 6J5I • Quimiosmosis de Peter Mitchell • Rotor F₀ (9.000 RPM) • Cabeza Catalítica F₁ α₃β₃</p>
+            </div>
+        </div>
+        <div class="header-actions">
+            <button class="btn-header" id="btnAudioToggle">🔊 Audio Motor: ON</button>
+            <button class="btn-header" id="btnVoiceGuide">🗣️ Guía por Voz</button>
+            <button class="btn-header" id="btnResetView">🎯 Centrar Vista</button>
+        </div>
+    </header>
+
+    <div class="workspace">
+        <div class="viewer-container">
+            <canvas id="mitoCanvas" width="900" height="650"></canvas>
+        </div>
+
+        <div class="controls-panel">
+            <div class="panel-sec-title">
+                <span>Gradiente Electroquímico (Δp)</span>
+                <span>🔋 QUIMIOSMOSIS</span>
+            </div>
+
+            <div class="slider-group">
+                <div class="slider-label">
+                    <span>Potencial de Membrana (ΔΨm)</span>
+                    <span class="slider-val" id="valVolt">-180 mV</span>
+                </div>
+                <input type="range" id="rngVolt" min="-220" max="-60" step="5" value="-180">
+            </div>
+
+            <div class="slider-group">
+                <div class="slider-label">
+                    <span>Disponibilidad ADP + Pi</span>
+                    <span class="slider-val" id="valADP">85 %</span>
+                </div>
+                <input type="range" id="rngADP" min="10" max="100" step="5" value="85">
+            </div>
+
+            <div class="panel-sec-title">
+                <span>Inhibidores y Desacopladores</span>
+                <span>🛑 FARMACOLOGÍA</span>
+            </div>
+
+            <div class="btn-group">
+                <button class="btn-action danger" id="btnOligo">🧪 Oligomicina</button>
+                <button class="btn-action danger" id="btnDNP">🔥 Desacoplador DNP</button>
+            </div>
+
+            <div class="btn-group">
+                <button class="btn-action" id="btnBurstADP">⚡ Disparo de ATP</button>
+                <button class="btn-action active" id="btnResetMito">🔄 Reset Óptimo</button>
+            </div>
+        </div>
+
+        <div class="telemetry-card">
+            <div class="panel-sec-title">
+                <span>Cinética Molecular (PDB 6J5I)</span>
+                <span>Peter Mitchell</span>
+            </div>
+            <div class="kpi-row">
+                <span class="kpi-name">Velocidad del Rotor F₀:</span>
+                <span class="kpi-val" id="kpiRPM">8.400 RPM</span>
+            </div>
+            <div class="kpi-row">
+                <span class="kpi-name">Tasa Síntesis de ATP:</span>
+                <span class="kpi-val" id="kpiATP">420 moléculas/s</span>
+            </div>
+            <div class="kpi-row">
+                <span class="kpi-name">Flujo de Protones H⁺:</span>
+                <span class="kpi-val" id="kpiProtons">1.260 H⁺/s</span>
+            </div>
+            <div class="kpi-row">
+                <span class="kpi-name">Estado Quimiosmótico:</span>
+                <span class="status-badge status-healthy" id="kpiStatus">Fosforilación Activa</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('mitoCanvas');
+        const ctx = canvas.getContext('2d');
+
+        let state = {
+            volt: -180,
+            adp: 85,
+            inhibitor: 'none',
+            rotorAngle: 0,
+            rotX: -0.2,
+            rotY: 0.35,
+            zoom: 1.0,
+            audioEnabled: true
+        };
+
+        // Web Audio - Zumbido rotacional del nanomotor a altas RPM
+        let audioCtx = null;
+        let motorOsc = null;
+        let motorGain = null;
+
+        function initMotorAudio() {
+            if (!state.audioEnabled || motorOsc) return;
+            try {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                motorOsc = audioCtx.createOscillator();
+                motorGain = audioCtx.createGain();
+                motorOsc.type = 'sawtooth';
+                motorOsc.frequency.setValueAtTime(140, audioCtx.currentTime);
+                motorGain.gain.setValueAtTime(0.015, audioCtx.currentTime);
+                motorOsc.connect(motorGain);
+                motorGain.connect(audioCtx.destination);
+                motorOsc.start();
+            } catch(e) {}
+        }
+
+        function updateMotorAudio(rpm) {
+            if (!motorOsc || !audioCtx) return;
+            const freq = Math.max(30, (rpm / 60) * 1.5);
+            motorOsc.frequency.setTargetAtTime(freq, audioCtx.currentTime, 0.05);
+            motorGain.gain.setTargetAtTime(state.audioEnabled ? 0.015 : 0.0, audioCtx.currentTime, 0.05);
+        }
+
+        function speak(text) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const u = new SpeechSynthesisUtterance(text);
+                u.lang = 'es-ES';
+                u.rate = 1.05;
+                window.speechSynthesis.speak(u);
+            }
+        }
+
+        // Interacción orbital con ratón
+        let isDragging = false;
+        let lastMouse = { x: 0, y: 0 };
+        canvas.addEventListener('mousedown', (e) => {
+            initMotorAudio();
+            isDragging = true;
+            lastMouse = { x: e.clientX, y: e.clientY };
+        });
+        window.addEventListener('mouseup', () => isDragging = false);
+        window.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            const dx = e.clientX - lastMouse.x;
+            const dy = e.clientY - lastMouse.y;
+            state.rotY += dx * 0.008;
+            state.rotX += dy * 0.008;
+            lastMouse = { x: e.clientX, y: e.clientY };
+        });
+        canvas.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            state.zoom *= e.deltaY > 0 ? 0.95 : 1.05;
+            state.zoom = Math.max(0.6, Math.min(2.2, state.zoom));
+        });
+
+        // Loop de renderizado 3D de la ATP Sintasa
+        let t = 0;
+        function render() {
+            t += 0.02;
+
+            // Calcular velocidad rotacional en función de ΔΨm e inhibidores
+            let targetRPM = 0;
+            if (state.inhibitor === 'oligo') targetRPM = 0;
+            else if (state.inhibitor === 'dnp') targetRPM = 600;
+            else {
+                const drivingForce = Math.abs(state.volt) / 180.0;
+                targetRPM = 9000 * drivingForce * (state.adp / 100.0);
+            }
+
+            const rotSpeed = (targetRPM / 60) * 0.005;
+            state.rotorAngle += rotSpeed;
+            updateMotorAudio(targetRPM);
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+
+            const cosY = Math.cos(state.rotY);
+            const sinY = Math.sin(state.rotY);
+            const cosX = Math.cos(state.rotX);
+            const sinX = Math.sin(state.rotX);
+
+            function project(x, y, z) {
+                let x1 = x * cosY + z * sinY;
+                let z1 = -x * sinY + z * cosY;
+                let y2 = y * cosX - z1 * sinX;
+                let z2 = y * sinX + z1 * cosX;
+                const fov = 450;
+                const scale = (fov / (fov + z2 + 300)) * state.zoom;
+                return { x: cx + x1 * scale, y: cy + y2 * scale, z: z2, scale: scale };
+            }
+
+            // Bicapa lipídica de la cresta mitocondrial (plano transversal)
+            ctx.save();
+            const pMemL = project(-240, -40, 0);
+            const pMemR = project(240, -40, 0);
+            ctx.strokeStyle = 'rgba(56, 189, 248, 0.4)';
+            ctx.lineWidth = 14 * state.zoom;
+            ctx.beginPath();
+            ctx.moveTo(pMemL.x, pMemL.y);
+            ctx.lineTo(pMemR.x, pMemR.y);
+            ctx.stroke();
+
+            // Etiquetas de compartimentos
+            ctx.font = 'bold 11px JetBrains Mono';
+            ctx.fillStyle = '#38bdf8';
+            ctx.fillText("ESPACIO INTERMEMBRANA [H⁺ ALTO]", cx - 180, cy - 140 * state.zoom);
+            ctx.fillStyle = '#c084fc';
+            ctx.fillText("MATRIZ MITOCONDRIAL [ATP SÍNTESIS]", cx - 180, cy + 180 * state.zoom);
+            ctx.restore();
+
+            // 1. Rotor F₀ (incrustado en membrana lipídica, gira con state.rotorAngle)
+            const numSubunitsC = 10;
+            const radiusF0 = 36;
+            for (let i = 0; i < numSubunitsC; i++) {
+                const ang = state.rotorAngle + (Math.PI * 2 / numSubunitsC) * i;
+                const rx = Math.cos(ang) * radiusF0;
+                const rz = Math.sin(ang) * radiusF0;
+                const pr = project(rx, -40, rz);
+                ctx.beginPath();
+                ctx.arc(pr.x, pr.y, 8 * pr.scale, 0, Math.PI * 2);
+                ctx.fillStyle = (i % 2 === 0) ? '#38bdf8' : '#0284c7';
+                ctx.fill();
+                ctx.strokeStyle = '#fff';
+                ctx.lineWidth = 1;
+                ctx.stroke();
+            }
+
+            // 2. Tallo central asimétrico γ-ε que conecta F₀ con F₁
+            const pStemTop = project(0, -30, 0);
+            const pStemBot = project(Math.sin(state.rotorAngle) * 8, 45, Math.cos(state.rotorAngle) * 8);
+            ctx.beginPath();
+            ctx.moveTo(pStemTop.x, pStemTop.y);
+            ctx.lineTo(pStemBot.x, pStemBot.y);
+            ctx.strokeStyle = '#fbbf24';
+            ctx.lineWidth = 9 * state.zoom;
+            ctx.stroke();
+
+            // 3. Cabeza catalítica F₁ α₃β₃ (hexámero fijo en matriz)
+            const numF1 = 6;
+            const radiusF1 = 58;
+            for (let j = 0; j < numF1; j++) {
+                const f1Ang = (Math.PI * 2 / numF1) * j;
+                const fx = Math.cos(f1Ang) * radiusF1;
+                const fz = Math.sin(f1Ang) * radiusF1;
+                const prF1 = project(fx, 65, fz);
+                ctx.beginPath();
+                ctx.arc(prF1.x, prF1.y, 16 * prF1.scale, 0, Math.PI * 2);
+                ctx.fillStyle = (j % 2 === 0) ? '#c084fc' : '#a855f7';
+                ctx.fill();
+                ctx.strokeStyle = '#f8fafc';
+                ctx.lineWidth = 1.5;
+                ctx.stroke();
+
+                // Letras α y β
+                ctx.fillStyle = '#fff';
+                ctx.font = 'bold 9px JetBrains Mono';
+                ctx.fillText((j % 2 === 0) ? 'α' : 'β', prF1.x - 3, prF1.y + 3);
+            }
+
+            // 4. Estator periférico estático (brazo b₂ / OSCP exterior que evita la rotación de F₁)
+            const pStatorTop = project(-radiusF0 - 18, -40, 0);
+            const pStatorMid = project(-radiusF1 - 12, 20, 0);
+            const pStatorBot = project(-radiusF1 - 4, 75, 0);
+            ctx.beginPath();
+            ctx.moveTo(pStatorTop.x, pStatorTop.y);
+            ctx.lineTo(pStatorMid.x, pStatorMid.y);
+            ctx.lineTo(pStatorBot.x, pStatorBot.y);
+            ctx.strokeStyle = '#ef4444';
+            ctx.lineWidth = 5 * state.zoom;
+            ctx.stroke();
+
+            // 5. Flujo de protones H⁺ atravesando el semicanal F₀ hacia la matriz
+            if (targetRPM > 100) {
+                ctx.fillStyle = '#34d399';
+                for (let h = 0; h < 12; h++) {
+                    const py = -100 + ((t * 120 + h * 22) % 180);
+                    const prH = project(15 + Math.sin(h) * 12, py, Math.cos(h) * 12);
+                    ctx.beginPath();
+                    ctx.arc(prH.x, prH.y, 3 * prH.scale, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+
+            // 6. Moléculas de ATP liberadas desde F₁ (estallido fosfórico)
+            if (targetRPM > 1000) {
+                ctx.fillStyle = '#fbbf24';
+                for (let a = 0; a < 6; a++) {
+                    const atpY = 85 + ((t * 80 + a * 30) % 120);
+                    const prATP = project(Math.cos(a * 1.5) * 80, atpY, Math.sin(a * 1.5) * 80);
+                    ctx.beginPath();
+                    ctx.arc(prATP.x, prATP.y, 4 * prATP.scale, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.font = 'bold 8px JetBrains Mono';
+                    ctx.fillText("ATP", prATP.x + 6, prATP.y + 3);
+                }
+            }
+
+            requestAnimationFrame(render);
+        }
+        render();
+
+        function updateTelemetry() {
+            let rpm = 0;
+            if (state.inhibitor === 'oligo') rpm = 0;
+            else if (state.inhibitor === 'dnp') rpm = 450;
+            else {
+                const drivingForce = Math.abs(state.volt) / 180.0;
+                rpm = Math.round(9000 * drivingForce * (state.adp / 100.0));
+            }
+
+            document.getElementById('kpiRPM').innerText = `${rpm.toLocaleString()} RPM`;
+            const atpRate = Math.round((rpm / 60) * 3);
+            document.getElementById('kpiATP').innerText = `${atpRate} moléc/s`;
+            document.getElementById('kpiProtons').innerText = `${atpRate * 3} H⁺/s`;
+
+            const statusEl = document.getElementById('kpiStatus');
+            if (state.inhibitor === 'oligo') {
+                statusEl.className = 'status-badge status-danger';
+                statusEl.innerText = '🛑 Bloqueo F₀ (Oligomicina)';
+            } else if (state.inhibitor === 'dnp') {
+                statusEl.className = 'status-badge status-warning';
+                statusEl.innerText = '🔥 Desacoplado DNP (Calor)';
+            } else if (rpm > 7000) {
+                statusEl.className = 'status-badge status-healthy';
+                statusEl.innerText = 'Fosforilación Óptima (9 krpm)';
+            } else {
+                statusEl.className = 'status-badge status-warning';
+                statusEl.innerText = 'Baja Tasa Respiratoria';
+            }
+        }
+        setInterval(updateTelemetry, 250);
+
+        document.getElementById('rngVolt').addEventListener('input', (e) => {
+            state.volt = parseInt(e.target.value);
+            document.getElementById('valVolt').innerText = state.volt + ' mV';
+        });
+
+        document.getElementById('rngADP').addEventListener('input', (e) => {
+            state.adp = parseInt(e.target.value);
+            document.getElementById('valADP').innerText = state.adp + ' %';
+        });
+
+        document.getElementById('btnOligo').addEventListener('click', () => {
+            state.inhibitor = (state.inhibitor === 'oligo') ? 'none' : 'oligo';
+            if (state.inhibitor === 'oligo') speak("Inhibición por oligomicina. La toxina ocluye físicamente el canal F cero transmembrana, deteniendo la rotación mecánica del motor mitocondrial.");
+        });
+
+        document.getElementById('btnDNP').addEventListener('click', () => {
+            state.inhibitor = (state.inhibitor === 'dnp') ? 'none' : 'dnp';
+            if (state.inhibitor === 'dnp') speak("Desacoplamiento quimiosmótico con DNP. Los protones cruzan libremente la membrana interna sin pasar por la ATP sintasa, disipando la energía como calor sin sintetizar ATP.");
+        });
+
+        document.getElementById('btnBurstADP').addEventListener('click', () => {
+            state.adp = 100;
+            state.volt = -210;
+            state.inhibitor = 'none';
+            document.getElementById('rngVolt').value = -210;
+            document.getElementById('valVolt').innerText = '-210 mV';
+            document.getElementById('rngADP').value = 100;
+            document.getElementById('valADP').innerText = '100 %';
+            speak("Disparo masivo de ADP y sustrato fosfórico. Rotación catalítica acelerada al máximo fisiológico.");
+        });
+
+        document.getElementById('btnResetMito').addEventListener('click', () => {
+            state.volt = -180;
+            state.adp = 85;
+            state.inhibitor = 'none';
+            document.getElementById('rngVolt').value = -180;
+            document.getElementById('valVolt').innerText = '-180 mV';
+            document.getElementById('rngADP').value = 85;
+            document.getElementById('valADP').innerText = '85 %';
+            speak("Mitocondria restablecida a parámetros fisiológicos normales.");
+        });
+
+        document.getElementById('btnAudioToggle').addEventListener('click', (e) => {
+            state.audioEnabled = !state.audioEnabled;
+            e.target.innerText = state.audioEnabled ? '🔊 Audio Motor: ON' : '🔈 Audio: OFF';
+        });
+
+        document.getElementById('btnVoiceGuide').addEventListener('click', () => {
+            speak("Bienvenido al simulador tridimensional del nanomotor molecular ATP Sintasa. Observa el anillo de protones F cero en la membrana y la cabeza catalítica F uno en la matriz mitocondrial.");
+        });
+
+        document.getElementById('btnResetView').addEventListener('click', () => {
+            state.rotX = -0.2;
+            state.rotY = 0.35;
+            state.zoom = 1.0;
+        });
+    </script>
+</body>
+</html>

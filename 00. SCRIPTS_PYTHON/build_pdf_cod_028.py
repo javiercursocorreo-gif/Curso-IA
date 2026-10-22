@@ -68,14 +68,13 @@ def build_cod_028_taller_3d_pdf(output_path=PDF_PATH):
     story.append(Paragraph("🧠 <b>Prompt Maestro para Copiar y Pegar en Gemini:</b>", style_section_h))
     prompt_text = (
         "<b>Copia exactamente este texto en Gemini:</b><br/>"
-        "<i>\"Genera el código de programación (HTML, CSS y JavaScript) que voy a copiar y pegar en el Taller de Pruebas de mi curso para crear un visor interactivo 3D de la Tabla Periódica y Geometría Molecular VSEPR.<br/>"
+        "<i>\"Genera el código de programación (HTML, CSS y JavaScript) que voy a copiar y pegar en el Taller de Pruebas de mi curso para crear un visor interactivo 3D de Cristalografía, Enlaces Químicos y Redes Moleculares IUPAC.<br/>"
         "Requisitos del código:<br/>"
         "1. Entrega el programa en un único bloque de código listo para pulsar directamente «Copiar código» y pegarlo con Ctrl+V.<br/>"
-        "2. Incluye en la cabecera el script con los datos químicos reales de la IUPAC:<br/>"
-        "&lt;script src=&quot;https://javiercursocorreo-gif.github.io/Curso-IA/SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/periodic_table_b64.js&quot;&gt;&lt;/script&gt;<br/>"
-        "3. Modela con Babylon.js un visor molecular interactivo que renderiza con esferas PBR y cilindros de enlace: la molécula de agua H2O (angular 104.5°), metano CH4 (tetraedro 109.5°), red iónica cúbica de sal NaCl (27 iones Na+/Cl-) y la espiral helicoidal periódica de Mendeléyev.<br/>"
-        "4. Incluye botones para alternar instantáneamente entre H2O, CH4, NaCl y la Espiral Periódica.<br/>"
-        "5. Aplica un diseño en modo oscuro (#030614) con tipografía grande (16-18px), ángulo de enlace y tipo de enlace en KPIs y síntesis de voz en español.<br/>"
+        "2. Modela con Canvas 2D/3D fotorrealista PBR interactivo: red cúbica FCC de NaCl (27 iones Na+/Cl- con plano Miller 001), molécula de agua H2O polar (104.5° con nubes de pares libres sp³), metano CH4 (tetraedro 109.5°), red de diamante C tridimensional, CO2 lineal (180°) y NH3 piramidal (107.8°).<br/>"
+        "3. Incluye botones interactivos para alternar entre estructuras químicas, rotación orbital 3D con ratón y conmutadores de planos cristalográficos y dipolos.<br/>"
+        "4. Integra un botón modal de telemetría analítica con difractograma XRD de polvo (Ley de Bragg nλ = 2d·sen θ) y escala periódica de electronegatividad de Pauling (IUPAC).<br/>"
+        "5. Aplica un diseño en modo oscuro (#02040a) con tipografía grande (16-18px), KPIs de tipo de enlace, ángulo, distancia y diferencia Pauling Δχ, y síntesis de voz en español.<br/>"
         "6. Escribe exclusivamente el código sin texto explicativo.\"</i>"
     )
     p_table = Table([[Paragraph(prompt_text, style_prompt)]], colWidths=[letter[0] - 72])
@@ -94,8 +93,8 @@ def build_cod_028_taller_3d_pdf(output_path=PDF_PATH):
 
     story.append(Paragraph("🔬 <b>¿De dónde proceden los modelos y cómo se ha montado el objeto 3D?</b>", style_section_h))
     tech_text = (
-        "• <b>Origen de las estructuras químicas (<i>IUPAC / Teoría VSEPR de Gillespie-Nyholm</i>):</b> Las posiciones atómicas y ángulos de enlace (104.5° y 109.5°) se derivan de la repulsión mutua de pares electrónicos de valencia.<br/>"
-        "• <b>Montaje en Babylon.js:</b> Los radios atómicos y colores se leen de <i>periodic_table_b64.js</i>. Babylon.js posiciona esferas en coordenadas trigonométricas euclidianas y orienta cilindros de conexión mediante vectores de rotación axial (lookAt)."
+        "• <b>Origen de las estructuras químicas (<i>IUPAC / Teoría VSEPR de Gillespie-Nyholm</i>):</b> Las posiciones atómicas, distancias (d = 2.82 Å) y ángulos de enlace (104.5° y 109.5°) proceden de la cristalografía de rayos X y repulsión electrostática de pares de electrones.<br/>"
+        "• <b>Motor Gráfico y Cristalografía Computacional:</b> Proyección tridimensional interactiva con sombreado esférico fotorrealista PBR, rotación Euler, planos de Miller (001), nubes de pares solitarios sp³ y espectrograma XRD con picos Bragg."
     )
     tech_table = Table([[Paragraph(tech_text, style_task)]], colWidths=[letter[0] - 72])
     tech_table.setStyle(TableStyle([

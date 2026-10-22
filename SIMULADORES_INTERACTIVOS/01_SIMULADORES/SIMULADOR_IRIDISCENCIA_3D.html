@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sesión 39 • Mimetismo Óptico: Nanocristales e Iridiscencia de Mariposa 3D [COD-039]</title>
+    <!-- Natural History Museum London • Morpho peleides • Ley de Bragg-Snell • Inmersión Líquida -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-base: #010814;
+            --bg-panel: rgba(4, 16, 36, 0.94);
+            --border: rgba(56, 189, 248, 0.35);
+            --primary: #38bdf8;
+            --primary-glow: rgba(56, 189, 248, 0.4);
+            --morpho-blue: #0284c7;
+            --amber: #fbbf24;
+            --text-main: #f8fafc;
+            --text-sub: #cbd5e1;
+            --font-title: 'Cinzel', serif;
+            --font-sans: 'Inter', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            font-family: var(--font-sans);
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            font-size: 14px;
+        }
+
+        header {
+            background: linear-gradient(180deg, rgba(2, 12, 28, 0.98) 0%, rgba(2, 12, 28, 0.88) 100%);
+            backdrop-filter: blur(14px);
+            border-bottom: 1px solid var(--border);
+            padding: 10px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+            z-index: 40;
+        }
+        .brand-box { display: flex; align-items: center; gap: 14px; }
+        .badge-pill {
+            background: rgba(56, 189, 248, 0.15);
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            font-family: var(--font-mono);
+            font-weight: 800;
+            font-size: 0.82rem;
+            padding: 4px 10px;
+            border-radius: 6px;
+        }
+        .title-text h1 {
+            font-family: var(--font-title);
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .title-text p { font-size: 0.78rem; color: var(--text-sub); margin-top: 1px; }
+
+        .header-actions { display: flex; align-items: center; gap: 10px; }
+        .btn-header {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: var(--text-main);
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .btn-header:hover { background: rgba(56, 189, 248, 0.2); border-color: var(--primary); color: #fff; }
+
+        .workspace { flex: 1; position: relative; overflow: hidden; display: flex; }
+
+        .viewer-container {
+            flex: 1;
+            position: relative;
+            background: radial-gradient(circle at center, #062244 0%, #010814 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        #morphoCanvas {
+            max-width: 96%;
+            max-height: 92%;
+            border-radius: 14px;
+            box-shadow: 0 15px 45px rgba(0, 0, 0, 0.9);
+            border: 1px solid rgba(56, 189, 248, 0.25);
+            background: #020c1a;
+            cursor: grab;
+        }
+        #morphoCanvas:active { cursor: grabbing; }
+
+        .controls-panel {
+            position: absolute;
+            top: 18px;
+            left: 20px;
+            width: 350px;
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 18px;
+            backdrop-filter: blur(14px);
+            z-index: 20;
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6);
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            max-height: calc(100vh - 120px);
+            overflow-y: auto;
+        }
+
+        .panel-sec-title {
+            font-size: 0.78rem;
+            font-family: var(--font-mono);
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding-bottom: 5px;
+        }
+
+        .slider-group { display: flex; flex-direction: column; gap: 6px; }
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.82rem;
+            color: var(--text-sub);
+        }
+        .slider-val { font-family: var(--font-mono); color: #fff; font-weight: 700; }
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #1e293b;
+            outline: none;
+            cursor: pointer;
+            accent-color: var(--primary);
+        }
+
+        .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .btn-action {
+            background: rgba(56, 189, 248, 0.12);
+            border: 1px solid rgba(56, 189, 248, 0.35);
+            color: #fff;
+            padding: 9px 10px;
+            border-radius: 8px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+        .btn-action:hover { background: rgba(56, 189, 248, 0.28); border-color: var(--primary); }
+        .btn-action.active { background: var(--primary); color: #010814; font-weight: 800; }
+
+        .telemetry-card {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            width: 320px;
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            backdrop-filter: blur(14px);
+            z-index: 20;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .kpi-row { display: flex; justify-content: space-between; align-items: center; }
+        .kpi-name { font-size: 0.78rem; color: var(--text-sub); }
+        .kpi-val { font-family: var(--font-mono); font-size: 0.88rem; font-weight: 700; color: #fff; }
+        .status-badge {
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.74rem;
+            font-weight: 800;
+            text-align: center;
+        }
+        .status-healthy { background: rgba(56, 189, 248, 0.2); color: #7dd3fc; border: 1px solid #38bdf8; }
+        .status-warning { background: rgba(251, 191, 36, 0.2); color: #fde68a; border: 1px solid #fbbf24; }
+        .status-brown { background: rgba(180, 83, 9, 0.2); color: #fcd34d; border: 1px solid #b45309; }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="brand-box">
+            <span class="badge-pill">[COD-039]</span>
+            <div class="title-text">
+                <h1>🦋 Mimetismo Óptico e Iridiscencia de Mariposa 3D</h1>
+                <p>Natural History Museum London • Morpho peleides • Nanocristales en Árbol de Navidad • Color Estructural Puro</p>
+            </div>
+        </div>
+        <div class="header-actions">
+            <button class="btn-header" id="btnAudioToggle">🔊 Audio Óptico: ON</button>
+            <button class="btn-header" id="btnVoiceGuide">🗣️ Guía por Voz</button>
+            <button class="btn-header" id="btnResetView">🎯 Centrar Vista</button>
+        </div>
+    </header>
+
+    <div class="workspace">
+        <div class="viewer-container">
+            <canvas id="morphoCanvas" width="900" height="650"></canvas>
+        </div>
+
+        <div class="controls-panel">
+            <div class="panel-sec-title">
+                <span>Óptica Física y Ley de Bragg</span>
+                <span>🌈 INTERFERENCIA</span>
+            </div>
+
+            <div class="slider-group">
+                <div class="slider-label">
+                    <span>Ángulo de Incidencia de la Luz</span>
+                    <span class="slider-val" id="valAngle">15° (Normal)</span>
+                </div>
+                <input type="range" id="rngAngle" min="0" max="75" step="1" value="15">
+            </div>
+
+            <div class="slider-group">
+                <div class="slider-label">
+                    <span>Escala de Visualización (Zoom)</span>
+                    <span class="slider-val" id="valScale">Nanoestructura (SEM)</span>
+                </div>
+                <input type="range" id="rngScale" min="1" max="4" step="1" value="4">
+            </div>
+
+            <div class="panel-sec-title">
+                <span>Prueba de Refracción en Medios</span>
+                <span>🧪 EXPERIMENTO</span>
+            </div>
+
+            <div class="btn-group">
+                <button class="btn-action active" id="btnAir">💨 Aire (n=1.00)</button>
+                <button class="btn-action" id="btnWater">💧 Agua (n=1.33)</button>
+            </div>
+
+            <div class="btn-group">
+                <button class="btn-action" id="btnEthanol">🧪 Etanol (n=1.36)</button>
+                <button class="btn-action" id="btnFlap">🦋 Batir Alas</button>
+            </div>
+        </div>
+
+        <div class="telemetry-card">
+            <div class="panel-sec-title">
+                <span>Espectrofotometría Multicapa</span>
+                <span>Bragg-Snell</span>
+            </div>
+            <div class="kpi-row">
+                <span class="kpi-name">Longitud de Onda Dominante:</span>
+                <span class="kpi-val" id="kpiLambda">465 nm (Azul Metálico)</span>
+            </div>
+            <div class="kpi-row">
+                <span class="kpi-name">Reflectancia Especular:</span>
+                <span class="kpi-val" id="kpiReflect">84.2 %</span>
+            </div>
+            <div class="kpi-row">
+                <span class="kpi-name">Medio Circundante:</span>
+                <span class="kpi-val" id="kpiMedium">Aire (n = 1.00)</span>
+            </div>
+            <div class="kpi-row">
+                <span class="kpi-name">Origen del Color:</span>
+                <span class="status-badge status-healthy" id="kpiStatus">Color Físico Estructural</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('morphoCanvas');
+        const ctx = canvas.getContext('2d');
+
+        let state = {
+            angle: 15,
+            scaleView: 4, // 1: macro, 2: micro, 3: submicro, 4: nano
+            medium: 'air', // 'air', 'water', 'ethanol'
+            isFlapping: false,
+            rotX: -0.2,
+            rotY: 0.35,
+            zoom: 1.0,
+            audioEnabled: true
+        };
+
+        function speak(text) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const u = new SpeechSynthesisUtterance(text);
+                u.lang = 'es-ES';
+                u.rate = 1.05;
+                window.speechSynthesis.speak(u);
+            }
+        }
+
+        let isDragging = false;
+        let lastMouse = { x: 0, y: 0 };
+        canvas.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            lastMouse = { x: e.clientX, y: e.clientY };
+        });
+        window.addEventListener('mouseup', () => isDragging = false);
+        window.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            const dx = e.clientX - lastMouse.x;
+            const dy = e.clientY - lastMouse.y;
+            state.rotY += dx * 0.008;
+            state.rotX += dy * 0.008;
+            lastMouse = { x: e.clientX, y: e.clientY };
+        });
+        canvas.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            state.zoom *= e.deltaY > 0 ? 0.95 : 1.05;
+            state.zoom = Math.max(0.6, Math.min(2.0, state.zoom));
+        });
+
+        // Loop de renderizado 3D de la nanoestructura en Árbol de Navidad
+        let t = 0;
+        function render() {
+            t += 0.02;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+
+            const cosY = Math.cos(state.rotY);
+            const sinY = Math.sin(state.rotY);
+            const cosX = Math.cos(state.rotX);
+            const sinX = Math.sin(state.rotX);
+
+            function project(x, y, z) {
+                let x1 = x * cosY + z * sinY;
+                let z1 = -x * sinY + z * cosY;
+                let y2 = y * cosX - z1 * sinX;
+                let z2 = y * sinX + z1 * cosX;
+                const fov = 450;
+                const scale = (fov / (fov + z2 + 300)) * state.zoom;
+                return { x: cx + x1 * scale, y: cy + y2 * scale, z: z2, scale: scale };
+            }
+
+            // Cálculo del color según Bragg-Snell y medio líquido
+            // Aire: Azul brillante #0284c7 (465 nm) -> vira a violeta #8b5cf6 con ángulo
+            // Agua: Vira a verde esmeralda apagado #059669
+            // Etanol: Desaparece la interferencia -> Marrón melanina #78350f
+            let rCol = 2, gCol = 132, bCol = 199;
+            if (state.medium === 'ethanol') {
+                rCol = 120; gCol = 65; bCol = 25; // Marrón melanina químico basal
+            } else if (state.medium === 'water') {
+                rCol = 5; gCol = 150; bCol = 105; // Verde esmeralda
+            } else {
+                // Aire: desplazamiento angular hacia el violeta
+                const shift = state.angle * 1.2;
+                rCol = Math.floor(2 + shift * 1.5);
+                gCol = Math.floor(132 - shift * 1.1);
+                bCol = 220;
+            }
+
+            // Vista 4: Nanoestructura de Árbol de Navidad (Lamelas de cutícula separadas 140 nm)
+            if (state.scaleView >= 3) {
+                const numTrees = 5;
+                for (let tr = 0; tr < numTrees; tr++) {
+                    const tx = -140 + tr * 70;
+                    const pTrunkBot = project(tx, 140, 0);
+                    const pTrunkTop = project(tx, -140, 0);
+
+                    // Tallo central de la cresta
+                    ctx.beginPath();
+                    ctx.moveTo(pTrunkBot.x, pTrunkBot.y);
+                    ctx.lineTo(pTrunkTop.x, pTrunkTop.y);
+                    ctx.strokeStyle = '#64748b';
+                    ctx.lineWidth = 8 * state.zoom;
+                    ctx.stroke();
+
+                    // Lamelas laterales escalonadas (cutícula n=1.56)
+                    const numBranches = 10;
+                    for (let b = 0; b < numBranches; b++) {
+                        const by = 120 - b * 26;
+                        const bwBranch = (10 - b * 0.7) * 4.5 * state.zoom;
+
+                        const pLeft = project(tx - bwBranch, by, 0);
+                        const pRight = project(tx + bwBranch, by, 0);
+
+                        ctx.beginPath();
+                        ctx.moveTo(pLeft.x, pLeft.y);
+                        ctx.lineTo(pRight.x, pRight.y);
+                        ctx.strokeStyle = `rgb(${rCol}, ${gCol}, ${bCol})`;
+                        ctx.lineWidth = 5 * state.zoom;
+                        ctx.stroke();
+                    }
+                }
+
+                // Rayos de luz incidente y reflejada por interferencia constructiva
+                const pRayTarget = project(0, -20, 0);
+                const rayAngRad = (state.angle * Math.PI) / 180;
+                const pRaySource = project(-Math.sin(rayAngRad) * 220, -20 - Math.cos(rayAngRad) * 200, 0);
+                const pRayReflect = project(Math.sin(rayAngRad) * 220, -20 - Math.cos(rayAngRad) * 200, 0);
+
+                // Rayo incidente blanco
+                ctx.setLineDash([6, 6]);
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.7)';
+                ctx.lineWidth = 2.5;
+                ctx.beginPath();
+                ctx.moveTo(pRaySource.x, pRaySource.y);
+                ctx.lineTo(pRayTarget.x, pRayTarget.y);
+                ctx.stroke();
+
+                // Rayo reflejado con color iridiscente puro
+                ctx.strokeStyle = `rgb(${rCol}, ${gCol}, ${bCol})`;
+                ctx.lineWidth = 4;
+                ctx.beginPath();
+                ctx.moveTo(pRayTarget.x, pRayTarget.y);
+                ctx.lineTo(pRayReflect.x, pRayReflect.y);
+                ctx.stroke();
+                ctx.setLineDash([]);
+            } else {
+                // Vista Macro / Micro: Ala de Morpho peleides con batido alar
+                const flapAngle = state.isFlapping ? Math.sin(t * 8) * 0.4 : 0.0;
+                const pWingL = project(-180 * Math.cos(flapAngle), -80 * Math.sin(flapAngle), 0);
+                const pWingR = project(180 * Math.cos(flapAngle), -80 * Math.sin(flapAngle), 0);
+                const pBody = project(0, 40, 0);
+
+                ctx.beginPath();
+                ctx.moveTo(pBody.x, pBody.y);
+                ctx.lineTo(pWingL.x, pWingL.y);
+                ctx.lineTo(cx - 80, cy - 120);
+                ctx.closePath();
+                ctx.fillStyle = `rgb(${rCol}, ${gCol}, ${bCol})`;
+                ctx.fill();
+
+                ctx.beginPath();
+                ctx.moveTo(pBody.x, pBody.y);
+                ctx.lineTo(pWingR.x, pWingR.y);
+                ctx.lineTo(cx + 80, cy - 120);
+                ctx.closePath();
+                ctx.fillStyle = `rgb(${rCol}, ${gCol}, ${bCol})`;
+                ctx.fill();
+            }
+
+            requestAnimationFrame(render);
+        }
+        render();
+
+        function updateTelemetry() {
+            const lambdaEl = document.getElementById('kpiLambda');
+            const reflectEl = document.getElementById('kpiReflect');
+            const medEl = document.getElementById('kpiMedium');
+            const statEl = document.getElementById('kpiStatus');
+
+            if (state.medium === 'ethanol') {
+                lambdaEl.innerText = 'Color Perdido (580 nm melanina)';
+                reflectEl.innerText = '8.5 % (Absorbente)';
+                medEl.innerText = 'Etanol (n = 1.36)';
+                statEl.className = 'status-badge status-brown';
+                statEl.innerText = '⚠️ Prueba Positiva: Cero Pigmento Azul';
+            } else if (state.medium === 'water') {
+                lambdaEl.innerText = '515 nm (Verde Esmeralda)';
+                reflectEl.innerText = '42.0 %';
+                medEl.innerText = 'Agua (n = 1.33)';
+                statEl.className = 'status-badge status-warning';
+                statEl.innerText = 'Desplazamiento Óptico por Agua';
+            } else {
+                const wl = Math.round(465 - state.angle * 0.9);
+                lambdaEl.innerText = `${wl} nm (${wl < 420 ? 'Violeta / UV' : 'Azul Morpho'})`;
+                reflectEl.innerText = '84.2 % (Interferencia Constructiva)';
+                medEl.innerText = 'Aire (n = 1.00)';
+                statEl.className = 'status-badge status-healthy';
+                statEl.innerText = 'Color Físico Estructural Puro';
+            }
+        }
+        setInterval(updateTelemetry, 250);
+
+        document.getElementById('rngAngle').addEventListener('input', (e) => {
+            state.angle = parseInt(e.target.value);
+            document.getElementById('valAngle').innerText = `${state.angle}°`;
+        });
+
+        document.getElementById('rngScale').addEventListener('input', (e) => {
+            state.scaleView = parseInt(e.target.value);
+            const labels = ["", "Mariposa Completa", "Tejas de Escamas", "Crestas Microscópicas", "Nanoestructura (SEM)"];
+            document.getElementById('valScale').innerText = labels[state.scaleView];
+        });
+
+        document.getElementById('btnAir').addEventListener('click', () => {
+            state.medium = 'air';
+            document.getElementById('btnAir').classList.add('active');
+            document.getElementById('btnWater').classList.remove('active');
+            document.getElementById('btnEthanol').classList.remove('active');
+            speak("Aire ambiental con índice de refracción uno punto cero cero. Interferencia constructiva máxima en cuatrocientos sesenta y cinco nanómetros generando el azul metálico característico.");
+        });
+
+        document.getElementById('btnWater').addEventListener('click', () => {
+            state.medium = 'water';
+            document.getElementById('btnWater').classList.add('active');
+            document.getElementById('btnAir').classList.remove('active');
+            document.getElementById('btnEthanol').classList.remove('active');
+            speak("Inmersión en agua. El índice de refracción asciende a uno punto treinta y tres, desplazando el pico de reflexión hacia el verde.");
+        });
+
+        document.getElementById('btnEthanol').addEventListener('click', () => {
+            state.medium = 'ethanol';
+            document.getElementById('btnEthanol').classList.add('active');
+            document.getElementById('btnAir').classList.remove('active');
+            document.getElementById('btnWater').classList.remove('active');
+            speak("Experimento de inmersión en etanol. Al coincidir el índice de refracción del solvente con el de la cutícula, la reflexión por interferencia se anula por completo, revelando el color marrón oscuro de la melanina química y demostrando que no existe pigmento azul en el ala.");
+        });
+
+        document.getElementById('btnFlap').addEventListener('click', () => {
+            state.isFlapping = !state.isFlapping;
+            document.getElementById('btnFlap').classList.toggle('active', state.isFlapping);
+        });
+
+        document.getElementById('btnAudioToggle').addEventListener('click', (e) => {
+            state.audioEnabled = !state.audioEnabled;
+            e.target.innerText = state.audioEnabled ? '🔊 Audio Óptico: ON' : '🔈 Audio: OFF';
+        });
+
+        document.getElementById('btnVoiceGuide').addEventListener('click', () => {
+            speak("Bienvenido al simulador de Mimetismo Óptico e Iridiscencia. Comprueba cómo las lamelas nanoscópicas en forma de árbol de Navidad crean color mediante física de ondas sin usar pigmentos químicos.");
+        });
+
+        document.getElementById('btnResetView').addEventListener('click', () => {
+            state.rotX = -0.2;
+            state.rotY = 0.35;
+            state.zoom = 1.0;
+        });
+    </script>
+</body>
+</html>

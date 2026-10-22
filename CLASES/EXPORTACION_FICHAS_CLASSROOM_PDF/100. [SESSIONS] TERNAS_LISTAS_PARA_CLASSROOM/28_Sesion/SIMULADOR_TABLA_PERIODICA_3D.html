@@ -3,115 +3,280 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sesión 28 • Simulador 3D: Tabla Periódica & Enlaces Químicos [COD-028]</title>
-    <!-- Babylon.js Motor 3D Oficial CDN -->
-    <script src="https://cdn.babylonjs.com/babylon.js"></script>
-    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
-    <!-- Respaldo Científico en Base64 Autónomo -->
-    <script src="../03_ASSETS_3D_Y_DATOS/periodic_table_b64.js"></script>
-    <script src="../../SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/periodic_table_b64.js"></script>
-    <script src="../../../../SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/periodic_table_b64.js"></script>
+    <title>Sesión 28 • Laboratorio Científico: Cristalografía, Enlaces Químicos & Tabla Periódica [COD-028]</title>
+    <!-- IUPAC • Cristalografía de Rayos X (XRD) • Ley de Bragg • Teoría VSEPR & Hibridación sp³ -->
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-base: #030614;
+            --bg-base: #02040a;
             --bg-panel: rgba(8, 14, 28, 0.94);
             --border: rgba(56, 189, 248, 0.35);
             --primary: #38bdf8;
-            --amber: #fbbf24;
+            --primary-glow: rgba(56, 189, 248, 0.4);
             --emerald: #34d399;
+            --amber: #fbbf24;
             --rose: #f43f5e;
+            --purple: #c084fc;
             --text-main: #f8fafc;
             --text-sub: #cbd5e1;
             --font-title: 'Cinzel', serif;
             --font-sans: 'Inter', sans-serif;
             --font-mono: 'JetBrains Mono', monospace;
         }
+
         * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
         body {
-            background-color: var(--bg-base); color: var(--text-main);
-            font-family: var(--font-sans); height: 100vh; width: 100vw;
-            overflow: hidden; display: flex; flex-direction: column; font-size: 14px;
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            font-family: var(--font-sans);
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            font-size: 14px;
         }
+
         header {
             background: linear-gradient(180deg, rgba(8, 14, 28, 0.98) 0%, rgba(8, 14, 28, 0.88) 100%);
-            backdrop-filter: blur(14px); border-bottom: 1px solid var(--border);
-            padding: 10px 24px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; z-index: 40;
+            backdrop-filter: blur(14px);
+            border-bottom: 1px solid var(--border);
+            padding: 10px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+            z-index: 40;
         }
         .brand-box { display: flex; align-items: center; gap: 14px; }
         .badge-pill {
-            background: rgba(56, 189, 248, 0.15); border: 1px solid var(--primary);
-            color: var(--primary); font-family: var(--font-mono); font-weight: 800;
-            font-size: 0.82rem; padding: 4px 10px; border-radius: 6px;
+            background: rgba(56, 189, 248, 0.15);
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            font-family: var(--font-mono);
+            font-weight: 800;
+            font-size: 0.82rem;
+            padding: 4px 10px;
+            border-radius: 6px;
         }
         .title-text h1 {
-            font-family: var(--font-title); font-size: 1.15rem; font-weight: 800; color: #fff;
-            display: flex; align-items: center; gap: 8px;
+            font-family: var(--font-title);
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         .title-text p { font-size: 0.78rem; color: var(--text-sub); margin-top: 1px; }
+
         .header-actions { display: flex; align-items: center; gap: 10px; }
         .btn-header {
-            background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15);
-            color: var(--text-main); padding: 6px 14px; border-radius: 8px; font-size: 0.8rem;
-            font-weight: 700; cursor: pointer; transition: all 0.2s ease;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: var(--text-main);
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
         }
         .btn-header:hover { background: rgba(56, 189, 248, 0.2); border-color: var(--primary); color: var(--primary); }
+
         .workspace { flex: 1; position: relative; overflow: hidden; display: flex; }
-        #renderCanvas { width: 100%; height: 100%; outline: none; display: block; }
+
+        .viewer-container {
+            flex: 1;
+            position: relative;
+            background: radial-gradient(circle at center, #061124 0%, #010308 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        #chemCanvas {
+            max-width: 96%;
+            max-height: 92%;
+            border-radius: 14px;
+            box-shadow: 0 15px 45px rgba(0, 0, 0, 0.9);
+            border: 1px solid rgba(56, 189, 248, 0.25);
+            background: #01040a;
+            cursor: grab;
+        }
+        #chemCanvas:active { cursor: grabbing; }
+
         .controls-panel {
-            position: absolute; top: 18px; left: 18px; width: 340px;
-            background: var(--bg-panel); border: 1px solid var(--border);
-            border-radius: 14px; padding: 18px; backdrop-filter: blur(14px);
-            z-index: 20; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            position: absolute;
+            top: 18px;
+            left: 20px;
+            width: 350px;
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 18px;
+            backdrop-filter: blur(14px);
+            z-index: 20;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            max-height: calc(100vh - 120px);
+            overflow-y: auto;
         }
+
         .panel-section-title {
-            font-family: var(--font-mono); font-size: 0.8rem; font-weight: 800;
-            color: var(--primary); text-transform: uppercase; margin-bottom: 12px;
-            display: flex; align-items: center; gap: 6px;
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            font-weight: 800;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
-        .btn-action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 16px; }
-        .btn-action {
-            background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.12);
-            color: var(--text-sub); padding: 8px 10px; border-radius: 8px; font-size: 0.8rem;
-            font-weight: 700; cursor: pointer; transition: all 0.2s ease; text-align: center;
+
+        .structure-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
         }
-        .btn-action.active, .btn-action:hover {
-            background: rgba(56, 189, 248, 0.25); border-color: var(--primary); color: #fff;
+
+        .btn-struct {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: var(--text-sub);
+            padding: 9px 8px;
+            border-radius: 8px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
         }
+        .btn-struct:hover {
+            background: rgba(56, 189, 248, 0.15);
+            border-color: var(--primary);
+            color: #fff;
+        }
+        .btn-struct.active {
+            background: linear-gradient(135deg, rgba(2, 132, 199, 0.5) 0%, rgba(56, 189, 248, 0.4) 100%);
+            border-color: var(--primary);
+            color: #fff;
+            box-shadow: 0 0 12px rgba(56, 189, 248, 0.35);
+        }
+
+        .toggle-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 6px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .toggle-label { font-size: 0.8rem; color: var(--text-sub); }
+        .toggle-btn {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: var(--text-main);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        .toggle-btn.active {
+            background: var(--emerald);
+            color: #020617;
+            border-color: var(--emerald);
+        }
+
         .kpi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-        .kpi-card { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 8px 10px; }
-        .kpi-val { font-family: var(--font-mono); font-size: 1.05rem; font-weight: 800; color: #fff; }
-        .kpi-label { font-size: 0.72rem; color: var(--text-sub); margin-top: 2px; }
-        .info-panel {
-            position: absolute; bottom: 20px; right: 20px; width: 380px;
-            background: var(--bg-panel); border: 1px solid var(--border);
-            border-radius: 14px; padding: 18px; backdrop-filter: blur(14px);
-            z-index: 20; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        .kpi-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+            padding: 8px 10px;
         }
-        .info-title { font-family: var(--font-title); font-size: 1.15rem; font-weight: 700; color: var(--amber); margin-bottom: 8px; }
-        .info-body { font-size: 0.84rem; line-height: 1.5; color: var(--text-sub); margin-bottom: 12px; }
-        .info-quote { font-style: italic; font-size: 0.78rem; color: var(--primary); border-left: 2px solid var(--primary); padding-left: 10px; margin-bottom: 12px; }
+        .kpi-val {
+            font-family: var(--font-mono);
+            font-size: 1.0rem;
+            font-weight: 800;
+            color: #fff;
+        }
+        .kpi-label { font-size: 0.7rem; color: var(--text-sub); margin-top: 2px; }
+
+        .info-panel {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            width: 390px;
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 18px;
+            backdrop-filter: blur(14px);
+            z-index: 20;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+        }
+        .info-title {
+            font-family: var(--font-title);
+            font-size: 1.12rem;
+            font-weight: 700;
+            color: var(--amber);
+            margin-bottom: 8px;
+        }
+        .info-body {
+            font-size: 0.83rem;
+            line-height: 1.55;
+            color: var(--text-sub);
+            margin-bottom: 12px;
+        }
+        .info-quote {
+            font-style: italic;
+            font-size: 0.77rem;
+            color: var(--primary);
+            border-left: 2px solid var(--primary);
+            padding-left: 10px;
+            margin-bottom: 12px;
+        }
         .audio-btn {
             background: linear-gradient(135deg, #0284c7 0%, #38bdf8 100%);
-            border: none; color: #020617; font-weight: 800; font-size: 0.82rem;
-            padding: 8px 14px; border-radius: 8px; width: 100%; cursor: pointer;
-            display: flex; align-items: center; justify-content: center; gap: 8px;
+            border: none;
+            color: #020617;
+            font-weight: 800;
+            font-size: 0.82rem;
+            padding: 8px 14px;
+            border-radius: 8px;
+            width: 100%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
-        .photo-viewer-modal {
-            position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(8px);
+
+        .modal-telemetry {
+            position: fixed; inset: 0; background: rgba(0, 0, 0, 0.88); backdrop-filter: blur(8px);
             display: none; align-items: center; justify-content: center; z-index: 100;
         }
-        .photo-container {
-            background: #0a0f1d; border: 1px solid var(--primary); border-radius: 14px;
-            max-width: 900px; width: 92%; overflow: hidden; box-shadow: 0 0 40px rgba(56, 189, 248, 0.35);
+        .modal-box {
+            background: #070c1a; border: 1px solid var(--primary); border-radius: 14px;
+            max-width: 920px; width: 94%; padding: 22px; box-shadow: 0 0 50px rgba(56, 189, 248, 0.4);
+            max-height: 90vh; overflow-y: auto;
         }
-        .photo-container img { width: 100%; height: auto; display: block; }
-        .photo-caption { padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; background: #060b18; }
-        .close-photo-btn { background: var(--primary); color: #020617; border: none; padding: 6px 16px; border-radius: 8px; font-weight: 800; cursor: pointer; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding-bottom: 10px; }
+        .modal-title { font-family: var(--font-title); font-size: 1.2rem; color: #fff; }
+        .close-modal-btn { background: var(--primary); color: #020617; border: none; padding: 6px 16px; border-radius: 8px; font-weight: 800; cursor: pointer; }
+
         footer {
-            background: rgba(8, 14, 28, 0.98); border-top: 1px solid var(--border);
-            padding: 8px 24px; font-size: 0.78rem; color: var(--text-sub);
-            display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;
+            background: rgba(8, 14, 28, 0.98);
+            border-top: 1px solid var(--border);
+            padding: 8px 24px;
+            font-size: 0.78rem;
+            color: var(--text-sub);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
         }
     </style>
 </head>
@@ -120,232 +285,650 @@
         <div class="brand-box">
             <span class="badge-pill">[COD-028]</span>
             <div class="title-text">
-                <h1>🧪 Tabla Periódica & Enlaces Químicos 3D</h1>
-                <p>IUPAC • Geometría Molecular VSEPR • Enlace Covalente Polar H2O, Tetraédrico CH4 & Red Iónica NaCl</p>
+                <h1>🧪 Cristalografía, Enlaces Químicos & Tabla Periódica 3D</h1>
+                <p>IUPAC • Redes Cristalinas FCC • Geometría Molecular VSEPR • Difracción de Rayos X (Ley de Bragg)</p>
             </div>
         </div>
         <div class="header-actions">
-            <button class="btn-header" onclick="openAtlasViewer()">📷 Bloques IUPAC SVG</button>
-            <button class="btn-header" onclick="resetCamera()">🎯 Centrar</button>
+            <button class="btn-header" onclick="openXRDModal()">📊 Difractograma XRD & Electronegatividad</button>
+            <button class="btn-header" onclick="resetView()">🎯 Centrar Vista</button>
         </div>
     </header>
 
     <div class="workspace">
-        <canvas id="renderCanvas"></canvas>
+        <div class="viewer-container">
+            <canvas id="chemCanvas" width="940" height="740"></canvas>
+        </div>
 
         <div class="controls-panel">
-            <div class="panel-section-title">🔬 Geometría Molecular 3D</div>
-            <div class="btn-action-grid">
-                <button class="btn-action active" onclick="setMolecule('h2o')">Agua (H2O Polar)</button>
-                <button class="btn-action" onclick="setMolecule('ch4')">Metano (CH4 Tetraedro)</button>
-                <button class="btn-action" onclick="setMolecule('nacl')">Sal (NaCl Iónico)</button>
-                <button class="btn-action" onclick="setMolecule('helix')">Espiral Periódica</button>
+            <div class="panel-section-title">🔬 Estructura Química & Red 3D</div>
+            <div class="structure-grid">
+                <button class="btn-struct active" id="btn_nacl" onclick="setStructure('nacl')">NaCl (Cúbica FCC)</button>
+                <button class="btn-struct" id="btn_h2o" onclick="setStructure('h2o')">Agua H2O (Polar 104.5°)</button>
+                <button class="btn-struct" id="btn_ch4" onclick="setStructure('ch4')">Metano CH4 (Tetraedro)</button>
+                <button class="btn-struct" id="btn_diamond" onclick="setStructure('diamond')">Diamante C (Red sp³)</button>
+                <button class="btn-struct" id="btn_co2" onclick="setStructure('co2')">CO2 (Lineal 180°)</button>
+                <button class="btn-struct" id="btn_nh3" onclick="setStructure('nh3')">NH3 (Pirámide Trigonal)</button>
             </div>
 
-            <div class="panel-section-title">📊 Parámetros del Enlace</div>
+            <div class="panel-section-title">⚙️ Capas Analíticas</div>
+            <div class="toggle-row">
+                <span class="toggle-label">Plano de Red Cristalina / Miller</span>
+                <button class="toggle-btn active" id="togglePlanes" onclick="toggleOption('planes')">ACTIVO</button>
+            </div>
+            <div class="toggle-row">
+                <span class="toggle-label">Nubes Electrónicas / Dipolos</span>
+                <button class="toggle-btn active" id="toggleDipole" onclick="toggleOption('dipole')">ACTIVO</button>
+            </div>
+            <div class="toggle-row">
+                <span class="toggle-label">Rotación Continua 3D</span>
+                <button class="toggle-btn active" id="toggleRotate" onclick="toggleOption('rotate')">ACTIVO</button>
+            </div>
+
+            <div class="panel-section-title">📊 Parámetros de Enlace & Red</div>
             <div class="kpi-grid">
                 <div class="kpi-card">
-                    <div class="kpi-val" id="kpiBondType">Covalente Polar</div>
+                    <div class="kpi-val" id="kpiBondType">Iónico Puro</div>
                     <div class="kpi-label">Tipo de Enlace Químico</div>
                 </div>
                 <div class="kpi-card">
-                    <div class="kpi-val" id="kpiAngle">104.5°</div>
-                    <div class="kpi-label">Ángulo de Enlace VSEPR</div>
+                    <div class="kpi-val" id="kpiAngle">90.0°</div>
+                    <div class="kpi-label">Ángulo Interatómico</div>
                 </div>
                 <div class="kpi-card">
-                    <div class="kpi-val">118</div>
-                    <div class="kpi-label">Elementos IUPAC</div>
+                    <div class="kpi-val" id="kpiDistance">2.82 Å</div>
+                    <div class="kpi-label">Distancia Na-Cl (d)</div>
                 </div>
                 <div class="kpi-card">
-                    <div class="kpi-val">4 Bloques</div>
-                    <div class="kpi-label">s, p, d, f</div>
+                    <div class="kpi-val" id="kpiDeltaEN">Δχ = 2.23</div>
+                    <div class="kpi-label">Diferencia Pauling</div>
                 </div>
             </div>
         </div>
 
         <div class="info-panel">
-            <div class="info-title" id="infoTitle">Molécula de Agua (H2O): Enlace Covalente Polar</div>
-            <div class="info-body" id="infoBody">El átomo central de oxígeno comparte electrones con dos hidrógenos. Debido a los dos pares de electrones libres solitarios del oxígeno, la geometría molecular se comprime a un ángulo exacto de 104.5°, generando el momento dipolar vital que hace del agua el disolvente universal de la vida.</div>
-            <div class="info-quote" id="infoQuote">"En la naturaleza nada existe aislado; cada enlace químico es un puente de energía compartida." — Linus Pauling</div>
-            <button class="audio-btn" onclick="speakCurrentInfo()">🔊 Escuchar Explicación Química</button>
+            <div class="info-title" id="infoTitle">Cristal de Cloruro de Sodio (NaCl) • Red FCC</div>
+            <div class="info-body" id="infoBody">Red cristalina cúbica centrada en las caras (FCC) con parámetro de red a = 5.64 Å. Cada ion Na⁺ (verde, radio 102 pm) está octaédricamente coordinado por 6 iones Cl⁻ (dorado, radio 181 pm). La alta diferencia de electronegatividad (Δχ = 2.23) transfiere por completo el electrón 3s del sodio al cloro.</div>
+            <div class="info-quote" id="infoQuote">"El cristal no es un montón de átomos al azar; es una sinfonía matemática de planos paralelos." — William Lawrence Bragg</div>
+            <button class="audio-btn" onclick="speakCurrentInfo()">🔊 Escuchar Explicación Cristalográfica</button>
         </div>
     </div>
 
-    <div class="photo-viewer-modal" id="photoModal">
-        <div class="photo-container">
-            <img id="atlasImg" src="" alt="Tabla Periódica IUPAC">
-            <div class="photo-caption">
-                <span style="color: #cbd5e1; font-size: 0.82rem;">IUPAC • Bloques Electrónicos s, p, d, f • Teoría VSEPR</span>
-                <button class="close-photo-btn" onclick="closeAtlasViewer()">Cerrar Esquema</button>
+    <!-- Modal Científico: Difracción de Rayos X (XRD) & Mapa de Electronegatividad IUPAC -->
+    <div class="modal-telemetry" id="xrdModal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <div class="modal-title">🔬 Difractometría de Rayos X (XRD) & Electronegatividad Pauling</div>
+                <button class="close-modal-btn" onclick="closeXRDModal()">Cerrar Panel</button>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 16px;">
+                <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 14px;">
+                    <div style="font-family: var(--font-mono); font-size: 0.85rem; color: var(--primary); font-weight: 800; margin-bottom: 8px;">
+                        📈 Difractograma XRD de Polvo (λ = Cu-Kα = 1.5406 Å)
+                    </div>
+                    <canvas id="xrdPlotCanvas" width="410" height="200" style="background: #02050e; border: 1px solid rgba(56,189,248,0.2); border-radius: 6px; width: 100%; display: block;"></canvas>
+                    <div style="font-size: 0.74rem; color: var(--text-sub); margin-top: 8px; line-height: 1.4;">
+                        Picos de difracción característicos según la <strong>Ley de Bragg: nλ = 2d·sen(θ)</strong>. Planos de reflexión (111) a 27.4°, (200) a 31.7° y (220) a 45.4°.
+                    </div>
+                </div>
+                <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 14px;">
+                    <div style="font-family: var(--font-mono); font-size: 0.85rem; color: var(--amber); font-weight: 800; margin-bottom: 8px;">
+                        🗺️ Escala de Electronegatividad de Pauling (IUPAC)
+                    </div>
+                    <canvas id="paulingCanvas" width="410" height="200" style="background: #02050e; border: 1px solid rgba(251,191,36,0.2); border-radius: 6px; width: 100%; display: block;"></canvas>
+                    <div style="font-size: 0.74rem; color: var(--text-sub); margin-top: 8px; line-height: 1.4;">
+                        Gradiente periódico: Máximo en Flúor (χ = 3.98) y mínimo en Francio/Cesio (χ = 0.79). Cuando Δχ &gt; 1.7 el enlace es predominantemente iónico; si Δχ &lt; 0.4 es covalente no polar.
+                    </div>
+                </div>
+            </div>
+            <div style="font-size: 0.8rem; color: var(--text-sub); line-height: 1.5; background: rgba(56,189,248,0.05); border: 1px solid rgba(56,189,248,0.15); border-radius: 8px; padding: 12px;">
+                <strong>Regla de Hannay-Smyth:</strong> Carácter iónico % = \(16|Δχ| + 3.5(Δχ)^2\). Para NaCl (\(Δχ = 2.23\)), el carácter iónico es del 73.1%, estabilizado por la energía reticular de Madelung (\(U_0 = -786\text{ kJ/mol}\)).
             </div>
         </div>
     </div>
 
     <footer>
         <span>🧪 Curso de Inteligencia Artificial • Metodología de la Triple Salvaguarda Pedagógica</span>
-        <span>Motor 3D: Babylon.js PBR • Química Molecular Tridimensional</span>
+        <span>Motor Científico: Cristalografía Computacional & Cinética Molecular PBR</span>
     </footer>
 
     <script>
-        const canvas = document.getElementById("renderCanvas");
-        const engine = new BABYLON.Engine(canvas, true);
-        let scene, camera;
-        let moleculeGroup;
+        const canvas = document.getElementById("chemCanvas");
+        const ctx = canvas.getContext("2d");
 
-        function createScene() {
-            scene = new BABYLON.Scene(engine);
-            scene.clearColor = new BABYLON.Color4(0.012, 0.016, 0.035, 1.0);
+        let currentStruct = "nacl";
+        let rotX = 0.35, rotY = 0.55;
+        let isDragging = false, lastMouseX = 0, lastMouseY = 0;
+        let showPlanes = true, showDipoles = true, autoRotate = true;
 
-            camera = new BABYLON.ArcRotateCamera("Camera", -Math.PI / 2.3, Math.PI / 2.5, 24, BABYLON.Vector3.Zero(), scene);
-            camera.attachControl(canvas, true);
-            camera.lowerRadiusLimit = 8;
-            camera.upperRadiusLimit = 55;
-
-            const sunLight = new BABYLON.DirectionalLight("sunLight", new BABYLON.Vector3(0.5, -1, 0.7), scene);
-            sunLight.intensity = 2.2;
-            const hemiLight = new BABYLON.HemisphericLight("hemiLight", new BABYLON.Vector3(0, 1, 0), scene);
-            hemiLight.intensity = 0.55;
-
-            moleculeGroup = new BABYLON.TransformNode("moleculeGroup", scene);
-            buildMolecule("h2o");
-
-            scene.registerBeforeRender(() => {
-                moleculeGroup.rotation.y += 0.005;
-            });
-
-            return scene;
-        }
-
-        function clearMolecule() {
-            moleculeGroup.getChildren().slice().forEach(c => c.dispose());
-        }
-
-        function buildMolecule(type) {
-            clearMolecule();
-
-            if (type === "h2o") {
-                // Oxígeno central
-                const o = BABYLON.MeshBuilder.CreateSphere("o", { diameter: 3.2, segments: 32 }, scene);
-                o.position = new BABYLON.Vector3(0, 0.8, 0);
-                const oMat = new BABYLON.PBRMaterial("oMat", scene);
-                oMat.albedoColor = new BABYLON.Color3(0.95, 0.2, 0.2);
-                oMat.roughness = 0.3;
-                o.material = oMat;
-                o.parent = moleculeGroup;
-
-                // Dos Hidrógenos
-                const h1 = BABYLON.MeshBuilder.CreateSphere("h1", { diameter: 1.8, segments: 24 }, scene);
-                h1.position = new BABYLON.Vector3(-2.6, -1.2, 0);
-                const hMat = new BABYLON.PBRMaterial("hMat", scene);
-                hMat.albedoColor = new BABYLON.Color3(0.95, 0.95, 0.95);
-                hMat.roughness = 0.2;
-                h1.material = hMat;
-                h1.parent = moleculeGroup;
-
-                const h2 = BABYLON.MeshBuilder.CreateSphere("h2", { diameter: 1.8, segments: 24 }, scene);
-                h2.position = new BABYLON.Vector3(2.6, -1.2, 0);
-                h2.material = hMat;
-                h2.parent = moleculeGroup;
-
-                // Enlaces cilíndricos
-                createBond(o.position, h1.position);
-                createBond(o.position, h2.position);
-            } else if (type === "ch4") {
-                // Carbono central
-                const c = BABYLON.MeshBuilder.CreateSphere("c", { diameter: 3.4, segments: 32 }, scene);
-                const cMat = new BABYLON.PBRMaterial("cMat", scene);
-                cMat.albedoColor = new BABYLON.Color3(0.2, 0.25, 0.35);
-                c.material = cMat; c.parent = moleculeGroup;
-
-                const hMat = new BABYLON.PBRMaterial("hMat", scene);
-                hMat.albedoColor = new BABYLON.Color3(0.95, 0.95, 0.95);
-
-                const hCoords = [
-                    new BABYLON.Vector3(0, 3.2, 0),
-                    new BABYLON.Vector3(2.8, -1.1, 1.4),
-                    new BABYLON.Vector3(-2.8, -1.1, 1.4),
-                    new BABYLON.Vector3(0, -1.1, -3.1)
-                ];
-                hCoords.forEach((pos, idx) => {
-                    const h = BABYLON.MeshBuilder.CreateSphere("h_" + idx, { diameter: 1.8 }, scene);
-                    h.position = pos; h.material = hMat; h.parent = moleculeGroup;
-                    createBond(c.position, pos);
-                });
-            } else if (type === "nacl") {
-                // Red cristalina cúbica centrada
-                for (let x = -1; x <= 1; x++) {
-                    for (let y = -1; y <= 1; y++) {
-                        for (let z = -1; z <= 1; z++) {
-                            const isNa = (x + y + z) % 2 === 0;
-                            const atom = BABYLON.MeshBuilder.CreateSphere("ion", { diameter: isNa ? 1.6 : 2.4 }, scene);
-                            atom.position = new BABYLON.Vector3(x * 3.2, y * 3.2, z * 3.2);
-                            const mat = new BABYLON.PBRMaterial("mat", scene);
-                            mat.albedoColor = isNa ? new BABYLON.Color3(0.65, 0.35, 0.95) : new BABYLON.Color3(0.2, 0.8, 0.4);
-                            atom.material = mat;
-                            atom.parent = moleculeGroup;
+        const structures = {
+            nacl: {
+                title: "Cristal de Cloruro de Sodio (NaCl) • Red FCC",
+                body: "Red cristalina cúbica centrada en las caras (FCC) con parámetro de red a = 5.64 Å. Cada ion Na⁺ (verde, radio 102 pm) está octaédricamente coordinado por 6 iones Cl⁻ (dorado, radio 181 pm). La alta diferencia de electronegatividad (Δχ = 2.23) transfiere por completo el electrón 3s del sodio al cloro.",
+                quote: "\"El cristal no es un montón de átomos al azar; es una sinfonía matemática de planos paralelos.\" — William Lawrence Bragg",
+                bondType: "Iónico Puro",
+                angle: "90.0°",
+                distance: "2.82 Å",
+                deltaEN: "Δχ = 2.23",
+                atoms: [],
+                bonds: [],
+                build: function() {
+                    const atoms = [], bonds = [];
+                    const a = 1.6;
+                    for (let x = -1; x <= 1; x++) {
+                        for (let y = -1; y <= 1; y++) {
+                            for (let z = -1; z <= 1; z++) {
+                                const isNa = (Math.abs(x + y + z) % 2 === 0);
+                                atoms.push({
+                                    x: x * a, y: y * a, z: z * a,
+                                    radius: isNa ? 14 : 22,
+                                    color: isNa ? "#34d399" : "#fbbf24",
+                                    glow: isNa ? "rgba(52, 211, 153, 0.4)" : "rgba(251, 191, 36, 0.4)",
+                                    label: isNa ? "Na⁺" : "Cl⁻"
+                                });
+                            }
                         }
                     }
+                    for (let i = 0; i < atoms.length; i++) {
+                        for (let j = i + 1; j < atoms.length; j++) {
+                            const dx = atoms[i].x - atoms[j].x;
+                            const dy = atoms[i].y - atoms[j].y;
+                            const dz = atoms[i].z - atoms[j].z;
+                            const dist = Math.sqrt(dx*dx + dy*dy + dz*dz);
+                            if (Math.abs(dist - a) < 0.05) {
+                                bonds.push({ i, j, color: "rgba(255, 255, 255, 0.18)", width: 1.5 });
+                            }
+                        }
+                    }
+                    this.atoms = atoms;
+                    this.bonds = bonds;
                 }
-            } else {
-                // Espiral de los elementos
-                for (let e = 1; e <= 36; e++) {
-                    const angle = e * 0.45;
-                    const r = 2 + e * 0.25;
-                    const atom = BABYLON.MeshBuilder.CreateSphere("elem_" + e, { diameter: 1.0 }, scene);
-                    atom.position = new BABYLON.Vector3(Math.cos(angle) * r, (e - 18) * 0.35, Math.sin(angle) * r);
-                    const mat = new BABYLON.PBRMaterial("emat_" + e, scene);
-                    mat.albedoColor = new BABYLON.Color3(0.2 + (e / 36) * 0.7, 0.7, 0.9);
-                    atom.material = mat;
-                    atom.parent = moleculeGroup;
+            },
+            h2o: {
+                title: "Molécula de Agua (H2O) • Enlace Covalente Polar VSEPR",
+                body: "Ángulo de enlace medido experimentalmente de 104.5° (teoría VSEPR con hibridación sp³). Los dos pares solitarios no enlazantes del oxígeno ejercen repulsión electrostática sobre los enlaces O-H, reduciendo el ángulo tetraédrico de 109.5° a 104.5°. La polaridad genera el momento dipolar vital de 1.85 D.",
+                quote: "\"El agua es el vehículo de la naturaleza y el puente de hidrógeno la clave de la bioquímica.\" — Linus Pauling",
+                bondType: "Covalente Polar",
+                angle: "104.5°",
+                distance: "0.96 Å",
+                deltaEN: "Δχ = 1.24",
+                atoms: [],
+                bonds: [],
+                build: function() {
+                    const halfRad = (104.5 / 2) * (Math.PI / 180);
+                    const d = 2.2;
+                    this.atoms = [
+                        { x: 0, y: -0.6, z: 0, radius: 26, color: "#f43f5e", glow: "rgba(244, 63, 94, 0.4)", label: "O (δ⁻)" },
+                        { x: -Math.sin(halfRad) * d, y: Math.cos(halfRad) * d - 0.6, z: 0, radius: 15, color: "#38bdf8", glow: "rgba(56, 189, 248, 0.4)", label: "H (δ⁺)" },
+                        { x: Math.sin(halfRad) * d, y: Math.cos(halfRad) * d - 0.6, z: 0, radius: 15, color: "#38bdf8", glow: "rgba(56, 189, 248, 0.4)", label: "H (δ⁺)" }
+                    ];
+                    this.bonds = [
+                        { i: 0, j: 1, color: "rgba(56, 189, 248, 0.5)", width: 3 },
+                        { i: 0, j: 2, color: "rgba(56, 189, 248, 0.5)", width: 3 }
+                    ];
                 }
+            },
+            ch4: {
+                title: "Metano (CH4) • Tetraedro Perfecto sp³",
+                body: "Geometría tetraédrica perfecta con ángulo interaxial de 109.47°. El carbono central combina un orbital 2s y tres orbitales 2p para crear cuatro orbitales híbridos sp³ idénticos orientados hacia los vértices de un tetraedro regular, minimizando al extremo la repulsión electrónica.",
+                quote: "\"La química orgánica es la arquitectura tridimensional de los átomos de carbono.\" — Friedrich August Kekulé",
+                bondType: "Covalente Apolar",
+                angle: "109.5°",
+                distance: "1.09 Å",
+                deltaEN: "Δχ = 0.35",
+                atoms: [],
+                bonds: [],
+                build: function() {
+                    const d = 2.4;
+                    this.atoms = [
+                        { x: 0, y: 0, z: 0, radius: 24, color: "#64748b", glow: "rgba(100, 116, 139, 0.4)", label: "C (sp³)" },
+                        { x: d, y: d, z: d, radius: 14, color: "#e2e8f0", glow: "rgba(255, 255, 255, 0.4)", label: "H" },
+                        { x: -d, y: -d, z: d, radius: 14, color: "#e2e8f0", glow: "rgba(255, 255, 255, 0.4)", label: "H" },
+                        { x: -d, y: d, z: -d, radius: 14, color: "#e2e8f0", glow: "rgba(255, 255, 255, 0.4)", label: "H" },
+                        { x: d, y: -d, z: -d, radius: 14, color: "#e2e8f0", glow: "rgba(255, 255, 255, 0.4)", label: "H" }
+                    ];
+                    this.bonds = [
+                        { i: 0, j: 1, color: "rgba(203, 213, 225, 0.5)", width: 2.5 },
+                        { i: 0, j: 2, color: "rgba(203, 213, 225, 0.5)", width: 2.5 },
+                        { i: 0, j: 3, color: "rgba(203, 213, 225, 0.5)", width: 2.5 },
+                        { i: 0, j: 4, color: "rgba(203, 213, 225, 0.5)", width: 2.5 }
+                    ];
+                }
+            },
+            diamond: {
+                title: "Diamante • Red Covalente Continua Tridimensional",
+                body: "Cada átomo de carbono se enlaza covalentemente con otros 4 en geometría tetraédrica sp³, formando una red tridimensional continua infinita. La distancia C-C es de 1.54 Å. Esta estructura ultradensa y rígida es el origen de su dureza máxima (10 en la escala de Mohs) y su altísima conductividad térmica.",
+                quote: "\"En el diamante, cada átomo de carbono abraza a sus hermanos con la fuerza máxima de la mecánica cuántica.\" — Sir C. V. Raman",
+                bondType: "Covalente Red",
+                angle: "109.5°",
+                distance: "1.54 Å",
+                deltaEN: "Δχ = 0.00",
+                atoms: [],
+                bonds: [],
+                build: function() {
+                    const atoms = [], bonds = [];
+                    const coords = [
+                        [0,0,0], [2,2,0], [2,0,2], [0,2,2],
+                        [4,4,0], [4,0,4], [0,4,4], [4,4,4],
+                        [1,1,1], [3,3,1], [3,1,3], [1,3,3]
+                    ];
+                    coords.forEach(c => {
+                        atoms.push({
+                            x: (c[0] - 2) * 1.1,
+                            y: (c[1] - 2) * 1.1,
+                            z: (c[2] - 2) * 1.1,
+                            radius: 17,
+                            color: "#38bdf8",
+                            glow: "rgba(56, 189, 248, 0.45)",
+                            label: "C"
+                        });
+                    });
+                    for (let i = 0; i < atoms.length; i++) {
+                        for (let j = i + 1; j < atoms.length; j++) {
+                            const dx = atoms[i].x - atoms[j].x;
+                            const dy = atoms[i].y - atoms[j].y;
+                            const dz = atoms[i].z - atoms[j].z;
+                            const dist = Math.sqrt(dx*dx + dy*dy + dz*dz);
+                            if (dist > 1.5 && dist < 2.2) {
+                                bonds.push({ i, j, color: "rgba(56, 189, 248, 0.4)", width: 2 });
+                            }
+                        }
+                    }
+                    this.atoms = atoms;
+                    this.bonds = bonds;
+                }
+            },
+            co2: {
+                title: "Dióxido de Carbono (CO2) • Molécula Lineal sp",
+                body: "Geometría lineal de 180° con hibridación sp en el carbono central. Presenta dos enlaces dobles C=O formados por un enlace σ y un enlace π cada uno. Aunque los dos enlaces C=O son individualmente polares (Δχ = 0.89), sus momentos dipolares se cancelan mutuamente en direcciones opuestas.",
+                quote: "\"La simetría lineal cancela los dipolos individuales resultando en un momento neto exactamente nulo.\" — Gilbert N. Lewis",
+                bondType: "Covalente Doble",
+                angle: "180.0°",
+                distance: "1.16 Å",
+                deltaEN: "Δχ = 0.89 (μ=0)",
+                atoms: [],
+                bonds: [],
+                build: function() {
+                    this.atoms = [
+                        { x: 0, y: 0, z: 0, radius: 24, color: "#64748b", glow: "rgba(100, 116, 139, 0.4)", label: "C (sp)" },
+                        { x: -3.0, y: 0, z: 0, radius: 23, color: "#f43f5e", glow: "rgba(244, 63, 94, 0.4)", label: "O (δ⁻)" },
+                        { x: 3.0, y: 0, z: 0, radius: 23, color: "#f43f5e", glow: "rgba(244, 63, 94, 0.4)", label: "O (δ⁻)" }
+                    ];
+                    this.bonds = [
+                        { i: 0, j: 1, color: "rgba(244, 63, 94, 0.5)", width: 4 },
+                        { i: 0, j: 2, color: "rgba(244, 63, 94, 0.5)", width: 4 }
+                    ];
+                }
+            },
+            nh3: {
+                title: "Amoníaco (NH3) • Pirámide Trigonal sp³",
+                body: "Geometría piramidal trigonal con ángulo de enlace de 107.8°. El nitrógeno central posee un par solitario enlazado a la cúspide que repele a los tres enlaces N-H, reduciendo el ángulo con respecto al tetraedro ideal. Momento dipolar neto elevado de 1.47 D.",
+                quote: "\"La inversión piramidal del amoníaco fue la base física del primer máser de la historia.\" — Charles H. Townes",
+                bondType: "Covalente Polar",
+                angle: "107.8°",
+                distance: "1.01 Å",
+                deltaEN: "Δχ = 0.84",
+                atoms: [],
+                bonds: [],
+                build: function() {
+                    const r = 2.4;
+                    this.atoms = [
+                        { x: 0, y: -0.8, z: 0, radius: 25, color: "#38bdf8", glow: "rgba(56, 189, 248, 0.4)", label: "N (sp³)" },
+                        { x: Math.cos(0) * r, y: 0.9, z: Math.sin(0) * r, radius: 14, color: "#e2e8f0", glow: "rgba(255, 255, 255, 0.4)", label: "H" },
+                        { x: Math.cos(2.094) * r, y: 0.9, z: Math.sin(2.094) * r, radius: 14, color: "#e2e8f0", glow: "rgba(255, 255, 255, 0.4)", label: "H" },
+                        { x: Math.cos(4.188) * r, y: 0.9, z: Math.sin(4.188) * r, radius: 14, color: "#e2e8f0", glow: "rgba(255, 255, 255, 0.4)", label: "H" }
+                    ];
+                    this.bonds = [
+                        { i: 0, j: 1, color: "rgba(56, 189, 248, 0.5)", width: 2.5 },
+                        { i: 0, j: 2, color: "rgba(56, 189, 248, 0.5)", width: 2.5 },
+                        { i: 0, j: 3, color: "rgba(56, 189, 248, 0.5)", width: 2.5 }
+                    ];
+                }
+            }
+        };
+
+        // Construir todas las estructuras
+        for (let k in structures) {
+            structures[k].build();
+        }
+
+        function setStructure(key) {
+            currentStruct = key;
+            document.querySelectorAll(".btn-struct").forEach(b => b.classList.remove("active"));
+            const activeBtn = document.getElementById("btn_" + key);
+            if (activeBtn) activeBtn.classList.add("active");
+
+            const s = structures[key];
+            document.getElementById("infoTitle").textContent = s.title;
+            document.getElementById("infoBody").textContent = s.body;
+            document.getElementById("infoQuote").textContent = s.quote;
+            document.getElementById("kpiBondType").textContent = s.bondType;
+            document.getElementById("kpiAngle").textContent = s.angle;
+            document.getElementById("kpiDistance").textContent = s.distance;
+            document.getElementById("kpiDeltaEN").textContent = s.deltaEN;
+        }
+
+        function toggleOption(opt) {
+            if (opt === 'planes') {
+                showPlanes = !showPlanes;
+                document.getElementById("togglePlanes").className = showPlanes ? "toggle-btn active" : "toggle-btn";
+                document.getElementById("togglePlanes").textContent = showPlanes ? "ACTIVO" : "INACTIVO";
+            } else if (opt === 'dipole') {
+                showDipoles = !showDipoles;
+                document.getElementById("toggleDipole").className = showDipoles ? "toggle-btn active" : "toggle-btn";
+                document.getElementById("toggleDipole").textContent = showDipoles ? "ACTIVO" : "INACTIVO";
+            } else if (opt === 'rotate') {
+                autoRotate = !autoRotate;
+                document.getElementById("toggleRotate").className = autoRotate ? "toggle-btn active" : "toggle-btn";
+                document.getElementById("toggleRotate").textContent = autoRotate ? "ACTIVO" : "PAUSA";
             }
         }
 
-        function createBond(posA, posB) {
-            const dist = BABYLON.Vector3.Distance(posA, posB);
-            const bond = BABYLON.MeshBuilder.CreateCylinder("bond", { diameter: 0.4, height: dist }, scene);
-            bond.position = BABYLON.Vector3.Center(posA, posB);
-            bond.lookAt(posB);
-            bond.rotation.x += Math.PI / 2;
-            const bMat = new BABYLON.PBRMaterial("bMat", scene);
-            bMat.albedoColor = new BABYLON.Color3(0.5, 0.6, 0.7);
-            bMat.metallic = 0.5;
-            bond.material = bMat;
-            bond.parent = moleculeGroup;
+        function resetView() {
+            rotX = 0.35;
+            rotY = 0.55;
         }
 
-        function setMolecule(type) {
-            buildMolecule(type);
-            document.querySelectorAll(".controls-panel .btn-action").forEach(b => {
-                b.classList.toggle("active", b.textContent.toLowerCase().includes(type));
+        function project(x, y, z) {
+            // Rotación Euler 3D
+            const cosY = Math.cos(rotY), sinY = Math.sin(rotY);
+            const x1 = x * cosY - z * sinY;
+            const z1 = z * cosY + x * sinY;
+
+            const cosX = Math.cos(rotX), sinX = Math.sin(rotX);
+            const y2 = y * cosX - z1 * sinX;
+            const z2 = z1 * cosX + y * sinX;
+
+            const fov = 650;
+            const scale = fov / (fov + z2 * 70 + 350);
+            const px = canvas.width / 2 + x1 * 95 * scale;
+            const py = canvas.height / 2 + y2 * 95 * scale;
+
+            return { px, py, z: z2, scale };
+        }
+
+        function render() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Fondo y retícula cristalográfica sutil
+            ctx.fillStyle = "#02040b";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.strokeStyle = "rgba(56, 189, 248, 0.04)";
+            ctx.lineWidth = 1;
+            const step = 40;
+            for (let x = 0; x < canvas.width; x += step) {
+                ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
+            }
+            for (let y = 0; y < canvas.height; y += step) {
+                ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
+            }
+
+            if (autoRotate && !isDragging) {
+                rotY += 0.007;
+            }
+
+            const s = structures[currentStruct];
+
+            // Plano cristalográfico si está activo y es NaCl
+            if (showPlanes && currentStruct === "nacl") {
+                const p1 = project(-1.6, -1.6, 0);
+                const p2 = project(1.6, -1.6, 0);
+                const p3 = project(1.6, 1.6, 0);
+                const p4 = project(-1.6, 1.6, 0);
+
+                ctx.fillStyle = "rgba(56, 189, 248, 0.08)";
+                ctx.strokeStyle = "rgba(56, 189, 248, 0.35)";
+                ctx.lineWidth = 1.5;
+                ctx.beginPath();
+                ctx.moveTo(p1.px, p1.py);
+                ctx.lineTo(p2.px, p2.py);
+                ctx.lineTo(p3.px, p3.py);
+                ctx.lineTo(p4.px, p4.py);
+                ctx.closePath();
+                ctx.fill();
+                ctx.stroke();
+
+                ctx.fillStyle = "rgba(56, 189, 248, 0.8)";
+                ctx.font = "11px 'JetBrains Mono', monospace";
+                ctx.fillText("Plano Miller (001)", p1.px + 8, p1.py - 8);
+            }
+
+            // Proyectar átomos
+            const projAtoms = s.atoms.map((a, idx) => {
+                const p = project(a.x, a.y, a.z);
+                return { ...a, ...p, idx };
             });
 
-            if (type === "h2o") {
-                document.getElementById("kpiBondType").textContent = "Covalente Polar";
-                document.getElementById("kpiAngle").textContent = "104.5°";
-                document.getElementById("infoTitle").textContent = "Agua (H2O): Enlace Covalente Polar";
-                document.getElementById("infoBody").textContent = "Dos enlaces covalentes fuertemente polares comprimidos por los dos pares solitarios del oxígeno a 104.5°, creando la polaridad que sustenta la vida acuática y celular.";
-            } else if (type === "ch4") {
-                document.getElementById("kpiBondType").textContent = "Covalente Apolar";
-                document.getElementById("kpiAngle").textContent = "109.5°";
-                document.getElementById("infoTitle").textContent = "Metano (CH4): Simetría Tetraédrica";
-                document.getElementById("infoBody").textContent = "Hibridación orbital sp³ del carbono con 4 enlaces idénticos orientados hacia los vértices de un tetraedro regular de 109.5°, anulando el momento dipolar total.";
-            } else if (type === "nacl") {
-                document.getElementById("kpiBondType").textContent = "Iónico Electroestático";
-                document.getElementById("kpiAngle").textContent = "90.0° (Cúbico)";
-                document.getElementById("infoTitle").textContent = "Cloruro de Sodio (NaCl): Red Iónica Cristalina";
-                document.getElementById("infoBody").textContent = "Atracción electrostática pura entre cationes Na+ (violeta) y aniones Cl- (verde) organizados en una red cristalina tridimensional cúbica muy estable.";
-            } else {
-                document.getElementById("kpiBondType").textContent = "Periodicidad IUPAC";
-                document.getElementById("kpiAngle").textContent = "Espiral Continua";
-                document.getElementById("infoTitle").textContent = "Espiral Periódica de los Elementos";
-                document.getElementById("infoBody").textContent = "Representación tridimensional helicoidal alternativa donde la ley periódica de Mendeléyev se despliega continuamente según el número atómico Z creciente sin saltos artificiales.";
+            // Dibujar enlaces químicos
+            s.bonds.forEach(b => {
+                const a1 = projAtoms[b.i];
+                const a2 = projAtoms[b.j];
+                ctx.strokeStyle = b.color;
+                ctx.lineWidth = b.width * ((a1.scale + a2.scale) / 2);
+                ctx.beginPath();
+                ctx.moveTo(a1.px, a1.py);
+                ctx.lineTo(a2.px, a2.py);
+                ctx.stroke();
+            });
+
+            // Ordenar átomos por Z para oclusión realista
+            projAtoms.sort((a, b) => b.z - a.z);
+
+            // Dibujar átomos con sombreado esférico fotorrealista PBR
+            projAtoms.forEach(a => {
+                const r = a.radius * a.scale;
+
+                // Resplandor de densidad electrónica
+                const glowGrad = ctx.createRadialGradient(a.px, a.py, r * 0.2, a.px, a.py, r * 2.2);
+                glowGrad.addColorStop(0, a.glow);
+                glowGrad.addColorStop(1, "rgba(0,0,0,0)");
+                ctx.fillStyle = glowGrad;
+                ctx.beginPath();
+                ctx.arc(a.px, a.py, r * 2.2, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Esfera 3D iluminada
+                const sphereGrad = ctx.createRadialGradient(
+                    a.px - r * 0.35, a.py - r * 0.35, r * 0.1,
+                    a.px, a.py, r
+                );
+                sphereGrad.addColorStop(0, "#ffffff");
+                sphereGrad.addColorStop(0.3, a.color);
+                sphereGrad.addColorStop(1, "#050b18");
+
+                ctx.fillStyle = sphereGrad;
+                ctx.beginPath();
+                ctx.arc(a.px, a.py, r, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.strokeStyle = "rgba(255, 255, 255, 0.4)";
+                ctx.lineWidth = 1;
+                ctx.stroke();
+
+                // Etiqueta del elemento / ion
+                ctx.fillStyle = "#ffffff";
+                ctx.font = `bold ${Math.max(10, Math.round(11 * a.scale))}px 'JetBrains Mono', monospace`;
+                ctx.textAlign = "center";
+                ctx.textBaseline = "middle";
+                ctx.fillText(a.label, a.px, a.py);
+            });
+
+            // Par de electrones solitarios para el Agua si está activo
+            if (showDipoles && currentStruct === "h2o") {
+                const o = projAtoms.find(at => at.label.startsWith("O"));
+                if (o) {
+                    ctx.fillStyle = "rgba(192, 132, 252, 0.7)";
+                    ctx.beginPath();
+                    ctx.arc(o.px - 18 * o.scale, o.py - 24 * o.scale, 4 * o.scale, 0, Math.PI * 2);
+                    ctx.arc(o.px - 10 * o.scale, o.py - 26 * o.scale, 4 * o.scale, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    ctx.beginPath();
+                    ctx.arc(o.px + 10 * o.scale, o.py - 26 * o.scale, 4 * o.scale, 0, Math.PI * 2);
+                    ctx.arc(o.px + 18 * o.scale, o.py - 24 * o.scale, 4 * o.scale, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    ctx.fillStyle = "rgba(192, 132, 252, 0.9)";
+                    ctx.font = "10px 'JetBrains Mono', monospace";
+                    ctx.fillText("2 Pares Libres sp³", o.px, o.py - 36 * o.scale);
+                }
             }
+
+            requestAnimationFrame(render);
         }
 
-        function resetCamera() {
-            camera.alpha = -Math.PI / 2.3; camera.beta = Math.PI / 2.5; camera.radius = 24;
-            camera.target = BABYLON.Vector3.Zero();
+        // Interacción con ratón para rotación libre
+        canvas.addEventListener("mousedown", e => {
+            isDragging = true;
+            lastMouseX = e.clientX;
+            lastMouseY = e.clientY;
+        });
+        window.addEventListener("mousemove", e => {
+            if (!isDragging) return;
+            const dx = e.clientX - lastMouseX;
+            const dy = e.clientY - lastMouseY;
+            rotY += dx * 0.008;
+            rotX += dy * 0.008;
+            lastMouseX = e.clientX;
+            lastMouseY = e.clientY;
+        });
+        window.addEventListener("mouseup", () => { isDragging = false; });
+
+        // Gráfico XRD del Modal
+        function drawXRDPlot() {
+            const c = document.getElementById("xrdPlotCanvas");
+            if (!c) return;
+            const g = c.getContext("2d");
+            g.clearRect(0, 0, c.width, c.height);
+
+            g.strokeStyle = "rgba(56, 189, 248, 0.15)";
+            g.lineWidth = 1;
+            for (let x = 30; x < c.width; x += 40) {
+                g.beginPath(); g.moveTo(x, 10); g.lineTo(x, 170); g.stroke();
+            }
+            for (let y = 20; y < 170; y += 30) {
+                g.beginPath(); g.moveTo(30, y); g.lineTo(c.width - 10, y); g.stroke();
+            }
+
+            // Ejes
+            g.strokeStyle = "#38bdf8";
+            g.lineWidth = 1.5;
+            g.beginPath();
+            g.moveTo(30, 10); g.lineTo(30, 170); g.lineTo(c.width - 10, 170);
+            g.stroke();
+
+            // Picos de difracción de NaCl (111)=27.4°, (200)=31.7°, (220)=45.4°, (311)=53.8°, (222)=56.4°
+            const peaks = [
+                { twoTheta: 27.4, intensity: 35, hkl: "(111)" },
+                { twoTheta: 31.7, intensity: 100, hkl: "(200)" },
+                { twoTheta: 45.4, intensity: 58, hkl: "(220)" },
+                { twoTheta: 53.8, intensity: 15, hkl: "(311)" },
+                { twoTheta: 56.4, intensity: 22, hkl: "(222)" },
+                { twoTheta: 66.2, intensity: 18, hkl: "(400)" }
+            ];
+
+            // Curva espectral de intensidad
+            g.strokeStyle = "#38bdf8";
+            g.lineWidth = 2;
+            g.beginPath();
+            for (let px = 30; px < c.width - 10; px++) {
+                const twoTheta = 20 + ((px - 30) / (c.width - 40)) * 55;
+                let intensity = 8 + Math.random() * 2;
+                peaks.forEach(p => {
+                    const diff = twoTheta - p.twoTheta;
+                    intensity += p.intensity * Math.exp(- (diff * diff) / 0.18);
+                });
+                const py = 170 - (intensity / 115) * 150;
+                if (px === 30) g.moveTo(px, py);
+                else g.lineTo(px, py);
+            }
+            g.stroke();
+
+            // Etiquetas Miller
+            g.fillStyle = "#fbbf24";
+            g.font = "9px 'JetBrains Mono', monospace";
+            peaks.forEach(p => {
+                const px = 30 + ((p.twoTheta - 20) / 55) * (c.width - 40);
+                const py = 170 - (p.intensity / 115) * 150;
+                g.fillText(p.hkl, px - 12, py - 6);
+            });
+
+            g.fillStyle = "#94a3b8";
+            g.font = "9px 'JetBrains Mono', monospace";
+            g.fillText("2θ (grados)", c.width / 2 - 25, 188);
+            g.fillText("Intensidad", 34, 22);
+        }
+
+        // Gráfico Electronegatividad Pauling
+        function drawPaulingPlot() {
+            const c = document.getElementById("paulingCanvas");
+            if (!c) return;
+            const g = c.getContext("2d");
+            g.clearRect(0, 0, c.width, c.height);
+
+            // Período 2 y 3 (Li a F, Na a Cl)
+            const elements = [
+                { sym: "Na", chi: 0.93, col: "#34d399" },
+                { sym: "Mg", chi: 1.31, col: "#38bdf8" },
+                { sym: "Al", chi: 1.61, col: "#60a5fa" },
+                { sym: "Si", chi: 1.90, col: "#a78bfa" },
+                { sym: "P",  chi: 2.19, col: "#f472b6" },
+                { sym: "S",  chi: 2.58, col: "#fb7185" },
+                { sym: "Cl", chi: 3.16, col: "#fbbf24" }
+            ];
+
+            const barW = 34;
+            const startX = 35;
+            elements.forEach((el, i) => {
+                const x = startX + i * 50;
+                const h = (el.chi / 4.0) * 135;
+                const y = 160 - h;
+
+                // Barra degradada
+                const grad = g.createLinearGradient(x, y, x, 160);
+                grad.addColorStop(0, el.col);
+                grad.addColorStop(1, "rgba(2, 6, 23, 0.8)");
+
+                g.fillStyle = grad;
+                g.fillRect(x, y, barW, h);
+
+                g.strokeStyle = el.col;
+                g.strokeRect(x, y, barW, h);
+
+                g.fillStyle = "#ffffff";
+                g.font = "bold 11px 'JetBrains Mono', monospace";
+                g.textAlign = "center";
+                g.fillText(el.sym, x + barW / 2, 174);
+
+                g.fillStyle = "#fbbf24";
+                g.font = "10px 'JetBrains Mono', monospace";
+                g.fillText(el.chi.toFixed(2), x + barW / 2, y - 5);
+            });
+
+            // Línea de frontera iónica (Δχ > 1.7)
+            g.strokeStyle = "rgba(244, 63, 94, 0.6)";
+            g.setLineDash([4, 4]);
+            g.beginPath();
+            const y17 = 160 - (1.7 / 4.0) * 135;
+            g.moveTo(25, y17);
+            g.lineTo(c.width - 15, y17);
+            g.stroke();
+            g.setLineDash([]);
+
+            g.fillStyle = "#f43f5e";
+            g.font = "9px 'JetBrains Mono', monospace";
+            g.fillText("Umbral Iónico Δχ ≥ 1.7", 40, y17 - 4);
+        }
+
+        function openXRDModal() {
+            document.getElementById("xrdModal").style.display = "flex";
+            drawXRDPlot();
+            drawPaulingPlot();
+        }
+
+        function closeXRDModal() {
+            document.getElementById("xrdModal").style.display = "none";
         }
 
         function speakCurrentInfo() {
@@ -353,25 +936,13 @@
             window.speechSynthesis.cancel();
             const text = `${document.getElementById("infoTitle").textContent}. ${document.getElementById("infoBody").textContent}`;
             const u = new SpeechSynthesisUtterance(text);
-            u.lang = 'es-ES'; u.rate = 0.95;
+            u.lang = 'es-ES';
+            u.rate = 0.95;
             window.speechSynthesis.speak(u);
         }
 
-        function openAtlasViewer() {
-            const modal = document.getElementById("photoModal");
-            const img = document.getElementById("atlasImg");
-            img.src = window.PERIODIC_SVG_B64 || "";
-            modal.style.display = "flex";
-        }
-
-        function closeAtlasViewer() {
-            document.getElementById("photoModal").style.display = "none";
-        }
-
-        scene = createScene();
-        engine.runRenderLoop(() => { scene.render(); });
-        window.addEventListener("resize", () => { engine.resize(); });
+        // Iniciar
+        render();
     </script>
 </body>
 </html>
-

@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sesión 31 • Arrecife de Coral, Pólipos y Simbiosis Marina 3D [COD-031]</title>
+    <!-- NOAA Coral Reef Watch • Cryo-EM Cnidarios • Grados Días de Calentamiento (DHW) -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-base: #010712;
+            --bg-panel: rgba(4, 15, 30, 0.94);
+            --border: rgba(56, 189, 248, 0.35);
+            --primary: #38bdf8;
+            --primary-glow: rgba(56, 189, 248, 0.4);
+            --coral-live: #f43f5e;
+            --coral-bleached: #f8fafc;
+            --zoox: #10b981;
+            --amber: #fbbf24;
+            --text-main: #f8fafc;
+            --text-sub: #94a3b8;
+            --font-title: 'Cinzel', serif;
+            --font-sans: 'Inter', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            font-family: var(--font-sans);
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            font-size: 14px;
+        }
+
+        header {
+            background: linear-gradient(180deg, rgba(2, 10, 24, 0.98) 0%, rgba(2, 10, 24, 0.88) 100%);
+            backdrop-filter: blur(14px);
+            border-bottom: 1px solid var(--border);
+            padding: 10px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+            z-index: 40;
+        }
+        .brand-box { display: flex; align-items: center; gap: 14px; }
+        .badge-pill {
+            background: rgba(56, 189, 248, 0.15);
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            font-family: var(--font-mono);
+            font-weight: 800;
+            font-size: 0.82rem;
+            padding: 4px 10px;
+            border-radius: 6px;
+        }
+        .title-text h1 {
+            font-family: var(--font-title);
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .title-text p { font-size: 0.78rem; color: var(--text-sub); margin-top: 1px; }
+
+        .header-actions { display: flex; align-items: center; gap: 10px; }
+        .btn-header {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: var(--text-main);
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .btn-header:hover { background: rgba(56, 189, 248, 0.2); border-color: var(--primary); color: #fff; }
+
+        .workspace { flex: 1; position: relative; overflow: hidden; display: flex; }
+
+        .viewer-container {
+            flex: 1;
+            position: relative;
+            background: radial-gradient(circle at center, #03182e 0%, #010712 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        #coralCanvas {
+            max-width: 96%;
+            max-height: 92%;
+            border-radius: 14px;
+            box-shadow: 0 15px 45px rgba(0, 0, 0, 0.9);
+            border: 1px solid rgba(56, 189, 248, 0.25);
+            background: #020b17;
+            cursor: grab;
+        }
+        #coralCanvas:active { cursor: grabbing; }
+
+        .controls-panel {
+            position: absolute;
+            top: 18px;
+            left: 20px;
+            width: 350px;
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 18px;
+            backdrop-filter: blur(14px);
+            z-index: 20;
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6);
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            max-height: calc(100vh - 120px);
+            overflow-y: auto;
+        }
+
+        .panel-sec-title {
+            font-size: 0.78rem;
+            font-family: var(--font-mono);
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding-bottom: 5px;
+        }
+
+        .slider-group { display: flex; flex-direction: column; gap: 6px; }
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.82rem;
+            color: var(--text-sub);
+        }
+        .slider-val { font-family: var(--font-mono); color: #fff; font-weight: 700; }
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #1e293b;
+            outline: none;
+            cursor: pointer;
+            accent-color: var(--primary);
+        }
+
+        .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .btn-action {
+            background: rgba(56, 189, 248, 0.12);
+            border: 1px solid rgba(56, 189, 248, 0.35);
+            color: #fff;
+            padding: 9px 10px;
+            border-radius: 8px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+        .btn-action:hover { background: rgba(56, 189, 248, 0.28); border-color: var(--primary); }
+        .btn-action.active { background: var(--primary); color: #020712; font-weight: 800; }
+        .btn-action.danger { background: rgba(244, 63, 94, 0.15); border-color: #f43f5e; color: #fca5a5; }
+        .btn-action.danger:hover { background: #f43f5e; color: #fff; }
+
+        .telemetry-card {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            width: 320px;
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            backdrop-filter: blur(14px);
+            z-index: 20;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .kpi-row { display: flex; justify-content: space-between; align-items: center; }
+        .kpi-name { font-size: 0.78rem; color: var(--text-sub); }
+        .kpi-val { font-family: var(--font-mono); font-size: 0.88rem; font-weight: 700; color: #fff; }
+        .status-badge {
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.74rem;
+            font-weight: 800;
+            text-align: center;
+        }
+        .status-healthy { background: rgba(16, 185, 129, 0.2); color: #6ee7b7; border: 1px solid #10b981; }
+        .status-warning { background: rgba(251, 191, 36, 0.2); color: #fde68a; border: 1px solid #fbbf24; }
+        .status-bleached { background: rgba(244, 63, 94, 0.2); color: #fda4af; border: 1px solid #f43f5e; }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="brand-box">
+            <span class="badge-pill">[COD-031]</span>
+            <div class="title-text">
+                <h1>🪸 Laboratorio Marino: Arrecife de Coral & Simbiosis 3D</h1>
+                <p>NOAA Coral Reef Watch • Pólipos Cnidarios • Dinámica de Zooxantelas (Symbiodiniaceae) • Grados Días de Calentamiento (DHW)</p>
+            </div>
+        </div>
+        <div class="header-actions">
+            <button class="btn-header" id="btnAudioToggle">🔊 Audio Ecosistema: ON</button>
+            <button class="btn-header" id="btnVoiceGuide">🗣️ Guía por Voz</button>
+            <button class="btn-header" id="btnResetView">🎯 Centrar Vista</button>
+        </div>
+    </header>
+
+    <div class="workspace">
+        <div class="viewer-container">
+            <canvas id="coralCanvas" width="900" height="650"></canvas>
+        </div>
+
+        <div class="controls-panel">
+            <div class="panel-sec-title">
+                <span>Variables Oceánicas (NOAA CRW)</span>
+                <span>🌊 IN-SITU</span>
+            </div>
+
+            <div class="slider-group">
+                <div class="slider-label">
+                    <span>Temperatura del Agua (SST)</span>
+                    <span class="slider-val" id="valTemp">27.0 °C</span>
+                </div>
+                <input type="range" id="rngTemp" min="24.0" max="33.0" step="0.1" value="27.0">
+            </div>
+
+            <div class="slider-group">
+                <div class="slider-label">
+                    <span>Acumulación Térmica (DHW)</span>
+                    <span class="slider-val" id="valDHW">0.0 °C-sem</span>
+                </div>
+                <input type="range" id="rngDHW" min="0" max="16" step="0.5" value="0">
+            </div>
+
+            <div class="slider-group">
+                <div class="slider-label">
+                    <span>Acidificación Oceánica (pH)</span>
+                    <span class="slider-val" id="valPH">8.15 pH</span>
+                </div>
+                <input type="range" id="rngPH" min="7.60" max="8.30" step="0.01" value="8.15">
+            </div>
+
+            <div class="slider-group">
+                <div class="slider-label">
+                    <span>Radiación Solar / UV</span>
+                    <span class="slider-val" id="valUV">450 µmol/m²s</span>
+                </div>
+                <input type="range" id="rngUV" min="100" max="1200" step="25" value="450">
+            </div>
+
+            <div class="panel-sec-title">
+                <span>Modos y Procesos Biológicos</span>
+                <span>🔬 CNIDARIOS</span>
+            </div>
+
+            <div class="btn-group">
+                <button class="btn-action active" id="btnCycle">☀️ Modo Día</button>
+                <button class="btn-action" id="btnFeeding">🦐 Zooplancton</button>
+            </div>
+
+            <div class="btn-group">
+                <button class="btn-action danger" id="btnHeatwave">🔥 Ola de Calor</button>
+                <button class="btn-action" id="btnRecovery">🌿 Recuperación</button>
+            </div>
+        </div>
+
+        <div class="telemetry-card">
+            <div class="panel-sec-title">
+                <span>Telemetría Arrecifal</span>
+                <span>NOAA / Cryo-EM</span>
+            </div>
+            <div class="kpi-row">
+                <span class="kpi-name">Densidad Zooxantelas:</span>
+                <span class="kpi-val" id="kpiZoox">1.48 × 10⁶ cél/cm²</span>
+            </div>
+            <div class="kpi-row">
+                <span class="kpi-name">Tasa Calcificación CaCO₃:</span>
+                <span class="kpi-val" id="kpiCalc">14.2 g/m²/día</span>
+            </div>
+            <div class="kpi-row">
+                <span class="kpi-name">Extensión de Tentáculos:</span>
+                <span class="kpi-val" id="kpiTent">Reposo Diurno</span>
+            </div>
+            <div class="kpi-row">
+                <span class="kpi-name">Estado de Blanqueamiento:</span>
+                <span class="status-badge status-healthy" id="kpiStatus">Normal / Saludable</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('coralCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // Estado científico del arrecife
+        let state = {
+            temp: 27.0,
+            dhw: 0.0,
+            ph: 8.15,
+            uv: 450,
+            isNight: false,
+            feeding: false,
+            zooxHealth: 1.0, // 1.0 = normal, 0.0 = blanqueado total
+            rotX: -0.2,
+            rotY: 0.3,
+            zoom: 1.0,
+            audioEnabled: true
+        };
+
+        // Generar estructura de coral (esqueleto aragonito + pólipos radiales)
+        const polyps = [];
+        const numPolyps = 24;
+        for (let i = 0; i < numPolyps; i++) {
+            const phi = Math.acos(-1 + (2 * i) / numPolyps);
+            const theta = Math.sqrt(numPolyps * Math.PI) * phi;
+            const r = 140 + Math.sin(i * 3.5) * 20;
+            polyps.push({
+                x: r * Math.sin(phi) * Math.cos(theta),
+                y: r * Math.sin(phi) * Math.sin(theta) * 0.7 - 20,
+                z: r * Math.cos(phi),
+                tentacles: 8,
+                phase: Math.random() * Math.PI * 2,
+                size: 14 + Math.random() * 6
+            });
+        }
+
+        // Web Audio Submarino
+        let audioCtx = null;
+        function playSubAudio() {
+            if (!state.audioEnabled) return;
+            try {
+                if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(80 + Math.random() * 40, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.02, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 1.2);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 1.2);
+            } catch(e) {}
+        }
+        setInterval(playSubAudio, 2400);
+
+        // Síntesis de voz
+        function speak(text) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const u = new SpeechSynthesisUtterance(text);
+                u.lang = 'es-ES';
+                u.rate = 1.05;
+                window.speechSynthesis.speak(u);
+            }
+        }
+
+        // Interacción orbital con ratón
+        let isDragging = false;
+        let lastMouse = { x: 0, y: 0 };
+        canvas.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            lastMouse = { x: e.clientX, y: e.clientY };
+        });
+        window.addEventListener('mouseup', () => isDragging = false);
+        window.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            const dx = e.clientX - lastMouse.x;
+            const dy = e.clientY - lastMouse.y;
+            state.rotY += dx * 0.008;
+            state.rotX += dy * 0.008;
+            lastMouse = { x: e.clientX, y: e.clientY };
+        });
+        canvas.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            state.zoom *= e.deltaY > 0 ? 0.95 : 1.05;
+            state.zoom = Math.max(0.6, Math.min(2.2, state.zoom));
+        });
+
+        // Loop de renderizado 3D fotorrealista
+        let t = 0;
+        function render() {
+            t += 0.025;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2 + 30;
+
+            // Iluminación cáustica marina submarina
+            const causticAlpha = state.isNight ? 0.04 : 0.15;
+            ctx.save();
+            ctx.fillStyle = `rgba(56, 189, 248, ${causticAlpha})`;
+            for (let i = 0; i < 5; i++) {
+                ctx.beginPath();
+                ctx.arc(cx + Math.sin(t * 0.8 + i) * 260, cy - 120 + Math.cos(t * 0.6 + i) * 100, 80 + i * 20, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            ctx.restore();
+
+            // Transformación 3D
+            const cosY = Math.cos(state.rotY);
+            const sinY = Math.sin(state.rotY);
+            const cosX = Math.cos(state.rotX);
+            const sinX = Math.sin(state.rotX);
+
+            function project(p) {
+                // Rot Y
+                let x1 = p.x * cosY + p.z * sinY;
+                let z1 = -p.x * sinY + p.z * cosY;
+                // Rot X
+                let y2 = p.y * cosX - z1 * sinX;
+                let z2 = p.y * sinX + z1 * cosX;
+                const fov = 480;
+                const scale = (fov / (fov + z2 + 300)) * state.zoom;
+                return {
+                    x: cx + x1 * scale,
+                    y: cy + y2 * scale,
+                    z: z2,
+                    scale: scale
+                };
+            }
+
+            // Ordenar pólipos por profundidad Z (Painter's algorithm)
+            const projectedPolyps = polyps.map((p, idx) => ({ ...p, proj: project(p), idx }));
+            projectedPolyps.sort((a, b) => b.proj.z - a.proj.z);
+
+            // Base de esqueleto pétreo CaCO3
+            ctx.save();
+            const gradBase = ctx.createRadialGradient(cx, cy + 60, 20, cx, cy + 60, 220 * state.zoom);
+            const rBase = Math.floor(220 * (1 - state.zooxHealth) + 120 * state.zooxHealth);
+            const gBase = Math.floor(220 * (1 - state.zooxHealth) + 60 * state.zooxHealth);
+            const bBase = Math.floor(220 * (1 - state.zooxHealth) + 80 * state.zooxHealth);
+            gradBase.addColorStop(0, `rgb(${rBase}, ${gBase}, ${bBase})`);
+            gradBase.addColorStop(1, '#051329');
+            ctx.fillStyle = gradBase;
+            ctx.beginPath();
+            ctx.ellipse(cx, cy + 50, 180 * state.zoom, 110 * state.zoom, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
+
+            // Dibujar cada pólipo cnidario
+            projectedPolyps.forEach(p => {
+                const pr = p.proj;
+                if (pr.scale <= 0) return;
+
+                // Color dinámico según salud de zooxantelas y blanqueamiento
+                // Zooxantelas saludables = coral marrón-rosado brillante (#e11d48 a #059669)
+                // Blanqueado = blanco lechoso de aragonito (#f1f5f9)
+                const hR = Math.floor(240 * (1 - state.zooxHealth) + 225 * state.zooxHealth);
+                const hG = Math.floor(245 * (1 - state.zooxHealth) + 40 * state.zooxHealth);
+                const hB = Math.floor(250 * (1 - state.zooxHealth) + 90 * state.zooxHealth);
+
+                // Columna del pólipo
+                ctx.beginPath();
+                ctx.arc(pr.x, pr.y, p.size * pr.scale, 0, Math.PI * 2);
+                ctx.fillStyle = `rgb(${hR}, ${hG}, ${hB})`;
+                ctx.fill();
+                ctx.strokeStyle = `rgba(255, 255, 255, 0.35)`;
+                ctx.lineWidth = 1.5;
+                ctx.stroke();
+
+                // Tentáculos móviles (se extienden de noche o al alimentar)
+                const tentReach = (state.isNight || state.feeding ? 1.6 : 0.6) * pr.scale;
+                const tentCount = p.tentacles;
+                for (let k = 0; k < tentCount; k++) {
+                    const ang = (Math.PI * 2 / tentCount) * k + t * 0.5 + p.phase;
+                    const sway = Math.sin(t * 2 + k + p.phase) * (6 * pr.scale);
+                    const tx = pr.x + Math.cos(ang) * (p.size * pr.scale + 16 * tentReach) + sway;
+                    const ty = pr.y + Math.sin(ang) * (p.size * pr.scale + 16 * tentReach) + sway;
+
+                    ctx.beginPath();
+                    ctx.moveTo(pr.x + Math.cos(ang) * (p.size * pr.scale * 0.8), pr.y + Math.sin(ang) * (p.size * pr.scale * 0.8));
+                    ctx.quadraticCurveTo(pr.x + Math.cos(ang) * 12 * pr.scale + sway, pr.y + Math.sin(ang) * 12 * pr.scale + sway, tx, ty);
+                    ctx.strokeStyle = state.zooxHealth > 0.4 ? `rgba(251, 113, 133, 0.8)` : `rgba(241, 245, 249, 0.7)`;
+                    ctx.lineWidth = 2.2 * pr.scale;
+                    ctx.stroke();
+
+                    // Zooxantelas visibles como puntos verdes fotosintéticos si está sano
+                    if (state.zooxHealth > 0.25 && !state.isNight) {
+                        ctx.beginPath();
+                        ctx.arc(tx, ty, 1.8 * pr.scale, 0, Math.PI * 2);
+                        ctx.fillStyle = `rgba(16, 185, 129, ${state.zooxHealth * 0.9})`;
+                        ctx.fill();
+                    }
+                }
+
+                // Boca / cavidad gastrovascular central
+                ctx.beginPath();
+                ctx.arc(pr.x, pr.y, 3 * pr.scale, 0, Math.PI * 2);
+                ctx.fillStyle = '#1e1b4b';
+                ctx.fill();
+            });
+
+            // Partículas de zooplancton suspendidas
+            if (state.feeding || state.isNight) {
+                ctx.fillStyle = 'rgba(251, 191, 36, 0.75)';
+                for (let j = 0; j < 18; j++) {
+                    const px = cx + Math.sin(t * 0.5 + j * 1.3) * 280;
+                    const py = cy - 80 + Math.cos(t * 0.7 + j * 0.9) * 180;
+                    ctx.beginPath();
+                    ctx.arc(px, py, 2.2, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+
+            requestAnimationFrame(render);
+        }
+        render();
+
+        // Lógica de telemetría y actualización
+        function updateTelemetry() {
+            // Umbral biológico: > 30.5 °C o DHW > 4 causa expulsión de zooxantelas
+            if (state.temp > 30.5 || state.dhw >= 4.0) {
+                const stress = Math.max((state.temp - 30.5) * 0.2, (state.dhw - 3.5) * 0.08);
+                state.zooxHealth = Math.max(0.05, state.zooxHealth - stress * 0.02);
+            } else if (state.temp <= 28.5 && state.dhw < 2.0) {
+                state.zooxHealth = Math.min(1.0, state.zooxHealth + 0.008);
+            }
+
+            const dens = (state.zooxHealth * 1.5).toFixed(2);
+            document.getElementById('kpiZoox').innerText = `${dens} × 10⁶ cél/cm²`;
+
+            // Tasa de calcificación afectada por pH y zooxantelas
+            const phFactor = Math.max(0.2, (state.ph - 7.6) / (8.2 - 7.6));
+            const calc = (14.5 * state.zooxHealth * phFactor).toFixed(1);
+            document.getElementById('kpiCalc').innerText = `${calc} g/m²/día`;
+
+            // Estado NOAA
+            const statusEl = document.getElementById('kpiStatus');
+            if (state.dhw >= 8 || state.zooxHealth < 0.2) {
+                statusEl.className = 'status-badge status-bleached';
+                statusEl.innerText = '🚨 Alerta Nivel 2: Blanqueamiento Masivo';
+            } else if (state.dhw >= 4 || state.zooxHealth < 0.6) {
+                statusEl.className = 'status-badge status-warning';
+                statusEl.innerText = '⚠️ Alerta Nivel 1: Riesgo Térmico';
+            } else {
+                statusEl.className = 'status-badge status-healthy';
+                statusEl.innerText = 'Normal / Simbiosis Estable';
+            }
+
+            document.getElementById('kpiTent').innerText = state.isNight ? 'Expandidos (Captura Activa)' : (state.feeding ? 'Capturando Zooplancton' : 'Reposo Diurno');
+        }
+        setInterval(updateTelemetry, 300);
+
+        // Controladores UI
+        document.getElementById('rngTemp').addEventListener('input', (e) => {
+            state.temp = parseFloat(e.target.value);
+            document.getElementById('valTemp').innerText = state.temp.toFixed(1) + ' °C';
+            if (state.temp > 30.5) state.dhw = Math.min(16, state.dhw + 0.2);
+            document.getElementById('rngDHW').value = state.dhw;
+            document.getElementById('valDHW').innerText = state.dhw.toFixed(1) + ' °C-sem';
+        });
+
+        document.getElementById('rngDHW').addEventListener('input', (e) => {
+            state.dhw = parseFloat(e.target.value);
+            document.getElementById('valDHW').innerText = state.dhw.toFixed(1) + ' °C-sem';
+        });
+
+        document.getElementById('rngPH').addEventListener('input', (e) => {
+            state.ph = parseFloat(e.target.value);
+            document.getElementById('valPH').innerText = state.ph.toFixed(2) + ' pH';
+        });
+
+        document.getElementById('rngUV').addEventListener('input', (e) => {
+            state.uv = parseInt(e.target.value);
+            document.getElementById('valUV').innerText = state.uv + ' µmol/m²s';
+        });
+
+        document.getElementById('btnCycle').addEventListener('click', (e) => {
+            state.isNight = !state.isNight;
+            e.target.innerText = state.isNight ? '🌙 Modo Noche' : '☀️ Modo Día';
+            e.target.classList.toggle('active', !state.isNight);
+        });
+
+        document.getElementById('btnFeeding').addEventListener('click', () => {
+            state.feeding = !state.feeding;
+            document.getElementById('btnFeeding').classList.toggle('active', state.feeding);
+            if (state.feeding) speak("Alimentación cnidaria activada. Los pólipos despliegan sus tentáculos radiales para capturar zooplancton mediante nematocistos.");
+        });
+
+        document.getElementById('btnHeatwave').addEventListener('click', () => {
+            state.temp = 32.2;
+            state.dhw = 9.5;
+            document.getElementById('rngTemp').value = 32.2;
+            document.getElementById('valTemp').innerText = '32.2 °C';
+            document.getElementById('rngDHW').value = 9.5;
+            document.getElementById('valDHW').innerText = '9.5 °C-sem';
+            speak("Alerta NOAA Nivel 2. Ola marina calórica extrema. La fotosíntesis de las zooxantelas colapsa y el pólipo expulsa las algas simbiontes, blanqueando el arrecife.");
+        });
+
+        document.getElementById('btnRecovery').addEventListener('click', () => {
+            state.temp = 26.5;
+            state.dhw = 0.5;
+            state.zooxHealth = 0.95;
+            document.getElementById('rngTemp').value = 26.5;
+            document.getElementById('valTemp').innerText = '26.5 °C';
+            document.getElementById('rngDHW').value = 0.5;
+            document.getElementById('valDHW').innerText = '0.5 °C-sem';
+            speak("Temperatura oceánica restablecida a niveles óptimos. Las microalgas zooxantelas repueblan el tejido de los pólipos restableciendo la simbiosis.");
+        });
+
+        document.getElementById('btnAudioToggle').addEventListener('click', (e) => {
+            state.audioEnabled = !state.audioEnabled;
+            e.target.innerText = state.audioEnabled ? '🔊 Audio Ecosistema: ON' : '🔈 Audio: OFF';
+        });
+
+        document.getElementById('btnVoiceGuide').addEventListener('click', () => {
+            speak("Bienvenido al simulador tridimensional del Arrecife de Coral. Observa la colonia de pólipos y el esqueleto de aragonito. Aumenta la temperatura para presenciar el fenómeno de blanqueamiento.");
+        });
+
+        document.getElementById('btnResetView').addEventListener('click', () => {
+            state.rotX = -0.2;
+            state.rotY = 0.3;
+            state.zoom = 1.0;
+        });
+    </script>
+</body>
+</html>

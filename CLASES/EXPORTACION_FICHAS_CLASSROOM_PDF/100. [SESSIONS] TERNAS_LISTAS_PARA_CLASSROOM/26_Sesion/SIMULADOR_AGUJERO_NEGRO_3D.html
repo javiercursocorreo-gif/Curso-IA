@@ -3,22 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sesión 26 • Simulador 3D: Agujero Negro Supermasivo & Lente Gravitatoria [COD-026]</title>
-    <!-- Babylon.js Motor 3D Oficial CDN -->
-    <script src="https://cdn.babylonjs.com/babylon.js"></script>
-    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
-    <!-- Respaldo Científico en Base64 Autónomo -->
-    <script src="../03_ASSETS_3D_Y_DATOS/blackhole_accretion_b64.js"></script>
-    <script src="../../SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/blackhole_accretion_b64.js"></script>
-    <script src="../../../../SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/blackhole_accretion_b64.js"></script>
+    <title>Sesión 26 • Laboratorio Astrofísico: Agujero Negro Supermasivo & EHT [COD-026]</title>
+    <!-- Event Horizon Telescope (EHT) • M87* (2019) & Sgr A* (2022) • Métrica de Kerr & Schwarzschild -->
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-base: #020308;
+            --bg-base: #010206;
             --bg-panel: rgba(8, 12, 24, 0.94);
             --border: rgba(245, 158, 11, 0.35);
             --primary: #f59e0b;
-            --primary-glow: #fbbf24;
+            --primary-glow: rgba(245, 158, 11, 0.4);
             --cyan: #38bdf8;
             --orange: #ea580c;
             --text-main: #f8fafc;
@@ -27,316 +21,642 @@
             --font-sans: 'Inter', sans-serif;
             --font-mono: 'JetBrains Mono', monospace;
         }
+
         * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
         body {
-            background-color: var(--bg-base); color: var(--text-main);
-            font-family: var(--font-sans); height: 100vh; width: 100vw;
-            overflow: hidden; display: flex; flex-direction: column; font-size: 14px;
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            font-family: var(--font-sans);
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            font-size: 14px;
         }
+
         header {
-            background: linear-gradient(180deg, rgba(12, 10, 20, 0.98) 0%, rgba(12, 10, 20, 0.88) 100%);
-            backdrop-filter: blur(14px); border-bottom: 1px solid var(--border);
-            padding: 10px 24px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; z-index: 40;
+            background: linear-gradient(180deg, rgba(14, 10, 22, 0.98) 0%, rgba(14, 10, 22, 0.88) 100%);
+            backdrop-filter: blur(14px);
+            border-bottom: 1px solid var(--border);
+            padding: 10px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+            z-index: 50;
         }
+
         .brand-box { display: flex; align-items: center; gap: 14px; }
         .badge-pill {
-            background: rgba(245, 158, 11, 0.15); border: 1px solid var(--primary);
-            color: var(--primary); font-family: var(--font-mono); font-weight: 800;
-            font-size: 0.82rem; padding: 4px 10px; border-radius: 6px;
+            background: rgba(245, 158, 11, 0.15);
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            font-family: var(--font-mono);
+            font-weight: 800;
+            font-size: 0.82rem;
+            padding: 4px 10px;
+            border-radius: 6px;
         }
+
         .title-text h1 {
-            font-family: var(--font-title); font-size: 1.15rem; font-weight: 800; color: #fff;
-            display: flex; align-items: center; gap: 8px;
+            font-family: var(--font-title);
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         .title-text p { font-size: 0.78rem; color: var(--text-sub); margin-top: 1px; }
+
         .header-actions { display: flex; align-items: center; gap: 10px; }
         .btn-header {
-            background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15);
-            color: var(--text-main); padding: 6px 14px; border-radius: 8px; font-size: 0.8rem;
-            font-weight: 700; cursor: pointer; transition: all 0.2s ease;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: var(--text-main);
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
         }
-        .btn-header:hover { background: rgba(245, 158, 11, 0.2); border-color: var(--primary); color: var(--primary-glow); }
+        .btn-header:hover { background: rgba(245, 158, 11, 0.2); border-color: var(--primary); color: var(--primary); }
+
         .workspace { flex: 1; position: relative; overflow: hidden; display: flex; }
-        #renderCanvas { width: 100%; height: 100%; outline: none; display: block; }
+
+        .viewer-container {
+            flex: 1;
+            position: relative;
+            background: radial-gradient(circle at center, #0d0a14 0%, #010206 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        #blackHoleCanvas {
+            max-width: 96%;
+            max-height: 92%;
+            border-radius: 14px;
+            box-shadow: 0 15px 45px rgba(0, 0, 0, 0.95);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            background: #000000;
+            cursor: grab;
+        }
+        #blackHoleCanvas:active { cursor: grabbing; }
+
         .controls-panel {
-            position: absolute; top: 18px; left: 18px; width: 340px;
-            background: var(--bg-panel); border: 1px solid var(--border);
-            border-radius: 14px; padding: 18px; backdrop-filter: blur(14px);
-            z-index: 20; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            position: absolute;
+            top: 18px;
+            left: 20px;
+            width: 350px;
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 18px;
+            backdrop-filter: blur(14px);
+            z-index: 20;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            max-height: calc(100vh - 120px);
+            overflow-y: auto;
         }
+
         .panel-section-title {
-            font-family: var(--font-mono); font-size: 0.8rem; font-weight: 800;
-            color: var(--primary); text-transform: uppercase; margin-bottom: 12px;
-            display: flex; align-items: center; gap: 6px;
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            font-weight: 800;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
-        .btn-action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 16px; }
-        .btn-action {
-            background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.12);
-            color: var(--text-sub); padding: 8px 10px; border-radius: 8px; font-size: 0.8rem;
-            font-weight: 700; cursor: pointer; transition: all 0.2s ease; text-align: center;
+
+        .target-selector {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
         }
-        .btn-action.active, .btn-action:hover {
-            background: rgba(245, 158, 11, 0.25); border-color: var(--primary); color: #fff;
+        .btn-target {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-sub);
+            padding: 8px 6px;
+            border-radius: 8px;
+            font-size: 0.74rem;
+            font-weight: 700;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s ease;
         }
-        .kpi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-        .kpi-card { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 8px 10px; }
-        .kpi-val { font-family: var(--font-mono); font-size: 1.05rem; font-weight: 800; color: #fff; }
-        .kpi-label { font-size: 0.72rem; color: var(--text-sub); margin-top: 2px; }
+        .btn-target.active {
+            background: rgba(245, 158, 11, 0.25);
+            border-color: var(--primary);
+            color: #fff;
+            box-shadow: 0 0 12px var(--primary-glow);
+        }
+
+        .hotspot-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .btn-hotspot {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: var(--text-sub);
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: left;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.15s ease;
+        }
+        .btn-hotspot:hover, .btn-hotspot.active {
+            background: rgba(245, 158, 11, 0.15);
+            border-color: var(--primary);
+            color: #fff;
+        }
+
+        .kpi-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        .kpi-card {
+            background: rgba(0, 0, 0, 0.45);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+            padding: 8px 10px;
+        }
+        .kpi-val {
+            font-family: var(--font-mono);
+            font-size: 1.05rem;
+            font-weight: 900;
+            color: var(--primary);
+        }
+        .kpi-label { font-size: 0.7rem; color: var(--text-sub); margin-top: 1px; }
+
+        .slider-box {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .slider-label {
+            font-size: 0.75rem;
+            color: var(--text-sub);
+            display: flex;
+            justify-content: space-between;
+            font-family: var(--font-mono);
+        }
+        input[type="range"] {
+            width: 100%;
+            accent-color: var(--primary);
+            cursor: pointer;
+        }
+
         .info-panel {
-            position: absolute; bottom: 20px; right: 20px; width: 380px;
-            background: var(--bg-panel); border: 1px solid var(--border);
-            border-radius: 14px; padding: 18px; backdrop-filter: blur(14px);
-            z-index: 20; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            position: absolute;
+            bottom: 24px;
+            right: 24px;
+            width: 370px;
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 18px;
+            backdrop-filter: blur(14px);
+            z-index: 20;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
         }
-        .info-title { font-family: var(--font-title); font-size: 1.15rem; font-weight: 700; color: var(--primary-glow); margin-bottom: 8px; }
-        .info-body { font-size: 0.84rem; line-height: 1.5; color: var(--text-sub); margin-bottom: 12px; }
-        .info-quote { font-style: italic; font-size: 0.78rem; color: var(--cyan); border-left: 2px solid var(--cyan); padding-left: 10px; margin-bottom: 12px; }
+        .info-title {
+            font-family: var(--font-title);
+            font-size: 1.05rem;
+            font-weight: 800;
+            color: #fff;
+            margin-bottom: 6px;
+        }
+        .info-body { font-size: 0.82rem; line-height: 1.5; color: var(--text-sub); margin-bottom: 12px; }
+        .info-quote {
+            font-style: italic;
+            font-size: 0.76rem;
+            color: var(--primary);
+            border-left: 2px solid var(--primary);
+            padding-left: 10px;
+            margin-bottom: 12px;
+        }
         .audio-btn {
-            background: linear-gradient(135deg, #d97706 0%, #f59e0b 100%);
-            border: none; color: #020617; font-weight: 800; font-size: 0.82rem;
-            padding: 8px 14px; border-radius: 8px; width: 100%; cursor: pointer;
-            display: flex; align-items: center; justify-content: center; gap: 8px;
+            width: 100%;
+            background: linear-gradient(135deg, #d97706 0%, #fbbf24 100%);
+            border: none;
+            color: #050814;
+            padding: 9px;
+            border-radius: 8px;
+            font-weight: 900;
+            font-size: 0.82rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
         }
-        .photo-viewer-modal {
-            position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(8px);
-            display: none; align-items: center; justify-content: center; z-index: 100;
-        }
-        .photo-container {
-            background: #0a0f1d; border: 1px solid var(--primary); border-radius: 14px;
-            max-width: 900px; width: 92%; overflow: hidden; box-shadow: 0 0 40px rgba(245, 158, 11, 0.35);
-        }
-        .photo-container img { width: 100%; height: auto; display: block; }
-        .photo-caption { padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; background: #060b18; }
-        .close-photo-btn { background: var(--primary); color: #020617; border: none; padding: 6px 16px; border-radius: 8px; font-weight: 800; cursor: pointer; }
+        .audio-btn:hover { box-shadow: 0 0 15px rgba(245, 158, 11, 0.5); }
+
         footer {
-            background: rgba(12, 10, 20, 0.98); border-top: 1px solid var(--border);
-            padding: 8px 24px; font-size: 0.78rem; color: var(--text-sub);
-            display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;
+            background: rgba(14, 10, 22, 0.98);
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 8px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.76rem;
+            color: var(--text-sub);
+            flex-shrink: 0;
+            z-index: 50;
         }
     </style>
 </head>
 <body>
+
     <header>
         <div class="brand-box">
             <span class="badge-pill">[COD-026]</span>
             <div class="title-text">
-                <h1>🕳️ Agujero Negro Supermasivo Sgr A* & Lente Gravitatoria 3D</h1>
-                <p>Métrica de Schwarzschild & Kerr • Event Horizon Telescope • Disco de Acreción Deformado por RG</p>
+                <h1>🕳️ Agujero Negro Supermasivo & Lente Gravitatoria EHT</h1>
+                <p>Event Horizon Telescope (EHT) • M87* (2019) y Sagitario A* (2022) • Esfera de Fotones y Lente Gravitatoria Extrema</p>
             </div>
         </div>
         <div class="header-actions">
-            <button class="btn-header" onclick="openAtlasViewer()">📷 Esquema EHT SVG</button>
-            <button class="btn-header" onclick="resetCamera()">🎯 Centrar</button>
+            <button class="btn-header" onclick="toggleDoppler()">⚡ Doppler Beaming Relativista</button>
+            <button class="btn-header" onclick="resetView()">🎯 Centrar Horizonte</button>
         </div>
     </header>
 
     <div class="workspace">
-        <canvas id="renderCanvas"></canvas>
+        <div class="viewer-container">
+            <canvas id="blackHoleCanvas" width="940" height="620"></canvas>
+        </div>
 
         <div class="controls-panel">
-            <div class="panel-section-title">🔭 Componentes Astrofísicos</div>
-            <div class="btn-action-grid">
-                <button class="btn-action active" id="btnHorizon" onclick="toggleHorizon()">Horizonte: ON</button>
-                <button class="btn-action active" id="btnDisk" onclick="toggleDisk()">Disco Acreción</button>
-                <button class="btn-action active" id="btnLensing" onclick="toggleLensing()">Lente Gravitatoria</button>
-                <button class="btn-action" id="btnJets" onclick="toggleJets()">Chorros Polares</button>
+            <div class="panel-section-title">🔭 Agujero Negro Observado (EHT)</div>
+            <div class="target-selector">
+                <button class="btn-target active" onclick="setTarget('m87')">M87* (Messier 87)</button>
+                <button class="btn-target" onclick="setTarget('sgra')">Sgr A* (Vía Láctea)</button>
             </div>
 
-            <div class="panel-section-title">⚡ Modos de Observación</div>
-            <div class="btn-action-grid">
-                <button class="btn-action active" onclick="setViewMode('visual')">Óptico PBR</button>
-                <button class="btn-action" onclick="setViewMode('doppler')">Doppler Beaming</button>
+            <div class="panel-section-title">🧭 Anatomía del Espacio-Tiempo Extremo</div>
+            <div class="hotspot-list">
+                <button class="btn-hotspot active" onclick="selectFeature('horizon')">
+                    <span>⚫ Horizonte de Sucesos (r_s)</span>
+                    <span style="font-family: var(--font-mono); color: var(--primary);">2GM/c²</span>
+                </button>
+                <button class="btn-hotspot" onclick="selectFeature('photon_sphere')">
+                    <span>💍 Esfera de Fotones (1.5 r_s)</span>
+                    <span style="font-family: var(--font-mono); color: var(--primary);">Órbita Luz</span>
+                </button>
+                <button class="btn-hotspot" onclick="selectFeature('isco')">
+                    <span>🌀 Disco de Acreción & ISCO (3.0 r_s)</span>
+                    <span style="font-family: var(--font-mono); color: var(--primary);">Plasma T</span>
+                </button>
+                <button class="btn-hotspot" onclick="selectFeature('lensing')">
+                    <span>🌌 Lente Gravitatoria (Arco Gargantua)</span>
+                    <span style="font-family: var(--font-mono); color: var(--primary);">Curvatura</span>
+                </button>
+                <button class="btn-hotspot" onclick="selectFeature('doppler')">
+                    <span>⚡ Asimetría Doppler Relativista</span>
+                    <span style="font-family: var(--font-mono); color: var(--primary);">Brillo Asim.</span>
+                </button>
             </div>
 
-            <div class="panel-section-title">📊 Datos de Sagitario A*</div>
-            <div class="kpi-grid">
+            <div class="panel-section-title">📐 Ángulo de Inclinación Visual</div>
+            <div class="slider-box">
+                <div class="slider-label"><span>Inclinación del Disco</span><span id="tiltVal">18°</span></div>
+                <input type="range" id="tiltSlider" min="0" max="85" step="1" value="18" oninput="updateTilt(this.value)">
+            </div>
+
+            <div class="panel-section-title">📊 Parámetros Relativistas</div>
+            <div class="kpi-row">
                 <div class="kpi-card">
-                    <div class="kpi-val">4.3 Millones</div>
-                    <div class="kpi-label">Masas Solares (M_sun)</div>
+                    <div class="kpi-val" id="kpiMass">6.500 Millones M☉</div>
+                    <div class="kpi-label">Masa Gravitatoria</div>
                 </div>
                 <div class="kpi-card">
-                    <div class="kpi-val">12.7 Millones km</div>
-                    <div class="kpi-label">Radio Schwarzschild (r_s)</div>
+                    <div class="kpi-val" id="kpiRadius">19.200 Millones km</div>
+                    <div class="kpi-label">Radio de Schwarzschild (r_s)</div>
+                </div>
+            </div>
+            <div class="kpi-row">
+                <div class="kpi-card">
+                    <div class="kpi-val" id="kpiDist" style="color: var(--cyan);">53.5 Millones a.l.</div>
+                    <div class="kpi-label">Distancia a la Tierra</div>
                 </div>
                 <div class="kpi-card">
-                    <div class="kpi-val">1.5 r_s</div>
-                    <div class="kpi-label">Esfera de Fotones</div>
-                </div>
-                <div class="kpi-card">
-                    <div class="kpi-val">3.0 r_s</div>
-                    <div class="kpi-label">Órbita Estable (ISCO)</div>
+                    <div class="kpi-val" id="kpiWavelength" style="color: var(--orange);">1.3 mm (230 GHz)</div>
+                    <div class="kpi-label">Frecuencia Radio EHT</div>
                 </div>
             </div>
         </div>
 
         <div class="info-panel">
-            <div class="info-title" id="infoTitle">Disco de Acreción & Lente Gravitatoria</div>
-            <div class="info-body" id="infoBody">La curvatura extrema del espacio-tiempo producida por el agujero negro dobla la luz que proviene de la parte trasera del disco de acreción, haciéndola visible por encima y por debajo del horizonte negro, creando el icónico anillo doble observado por el Event Horizon Telescope.</div>
-            <div class="info-quote" id="infoQuote">"Los agujeros negros son lugares donde Dios dividió entre cero." — Albert Einstein</div>
-            <button class="audio-btn" onclick="speakCurrentInfo()">🔊 Escuchar Explicación Astrofísica</button>
-        </div>
-    </div>
-
-    <div class="photo-viewer-modal" id="photoModal">
-        <div class="photo-container">
-            <img id="atlasImg" src="" alt="Esquema Agujero Negro">
-            <div class="photo-caption">
-                <span style="color: #cbd5e1; font-size: 0.82rem;">EHT • M87* / Sgr A* • Métricas de Schwarzschild & Kerr</span>
-                <button class="close-photo-btn" onclick="closeAtlasViewer()">Cerrar Esquema</button>
+            <div class="info-title" id="infoTitle">Horizonte de Sucesos y Sombra Gravitatoria</div>
+            <div class="info-body" id="infoBody">
+                El horizonte de sucesos es la frontera de no retorno definida por el radio de Schwarzschild r_s = 2GM/c². Ninguna partícula ni radiación lumínica puede escapar una vez cruzado este límite, generando una silueta central negra de diámetro aproximado 5.2 r_s debido a la curvatura extrema de los rayos de luz circundantes.
             </div>
+            <div class="info-quote" id="infoQuote">
+                "Hemos visto lo que creíamos invisible: el abismo gravitatorio definitivo donde el tiempo se detiene." — Colaboración EHT (2019).
+            </div>
+            <button class="audio-btn" onclick="speakCurrentInfo()">🔊 Escuchar Explicación Astrofísica</button>
         </div>
     </div>
 
     <footer>
         <span>🕳️ Curso de Inteligencia Artificial • Metodología de la Triple Salvaguarda Pedagógica</span>
-        <span>Motor 3D: Babylon.js PBR • Astrofísica Relativista de Agujeros Negros</span>
+        <span>Astrofísica Relativista: Datos de la Red Global de Radiotelescopios Event Horizon Telescope (EHT)</span>
     </footer>
 
     <script>
-        const canvas = document.getElementById("renderCanvas");
-        const engine = new BABYLON.Engine(canvas, true);
-        let scene, camera;
-        let horizonMesh, flatDiskMesh, warpedTopDisk, warpedBottomDisk, jetsGroup;
-        let showHorizon = true, showDisk = true, showLensing = true, showJets = false;
+        const canvas = document.getElementById("blackHoleCanvas");
+        const ctx = canvas.getContext("2d");
 
-        function createScene() {
-            scene = new BABYLON.Scene(engine);
-            scene.clearColor = new BABYLON.Color4(0.01, 0.012, 0.02, 1.0);
+        let currentTarget = 'm87';
+        let currentFeature = 'horizon';
+        let tiltDeg = 18;
+        let isDopplerActive = true;
+        let animAngle = 0;
 
-            camera = new BABYLON.ArcRotateCamera("Camera", -Math.PI / 2.3, Math.PI / 2.5, 34, BABYLON.Vector3.Zero(), scene);
-            camera.attachControl(canvas, true);
-            camera.lowerRadiusLimit = 12;
-            camera.upperRadiusLimit = 65;
-
-            const sunLight = new BABYLON.DirectionalLight("sunLight", new BABYLON.Vector3(0.5, -1, 0.7), scene);
-            sunLight.intensity = 1.2;
-
-            const ambientLight = new BABYLON.HemisphericLight("ambient", new BABYLON.Vector3(0, 1, 0), scene);
-            ambientLight.intensity = 0.4;
-
-            // 1. Horizonte de Sucesos (Esfera completamente negra que absorbe 100% de la luz)
-            horizonMesh = BABYLON.MeshBuilder.CreateSphere("horizon", { diameter: 7, segments: 48 }, scene);
-            const horizonMat = new BABYLON.StandardMaterial("horizonMat", scene);
-            horizonMat.diffuseColor = new BABYLON.Color3(0, 0, 0);
-            horizonMat.specularColor = new BABYLON.Color3(0, 0, 0);
-            horizonMat.emissiveColor = new BABYLON.Color3(0, 0, 0);
-            horizonMesh.material = horizonMat;
-
-            // Esfera de Fotones (Halo brillante a 1.5 rs)
-            const photonRing = BABYLON.MeshBuilder.CreateTorus("photonRing", { diameter: 7.6, thickness: 0.1, tessellation: 64 }, scene);
-            const pMat = new BABYLON.StandardMaterial("pMat", scene);
-            pMat.emissiveColor = new BABYLON.Color3(1.0, 0.9, 0.5);
-            photonRing.material = pMat;
-
-            // 2. Disco de Acreción Plano Ecuatorial
-            flatDiskMesh = BABYLON.MeshBuilder.CreateDisc("flatDisk", { radius: 14, tessellation: 64, sideOrientation: BABYLON.Mesh.DOUBLESIDE }, scene);
-            flatDiskMesh.rotation.x = Math.PI / 2;
-            const diskMat = new BABYLON.StandardMaterial("diskMat", scene);
-            diskMat.diffuseColor = new BABYLON.Color3(0.95, 0.55, 0.1);
-            diskMat.emissiveColor = new BABYLON.Color3(0.9, 0.45, 0.05);
-            diskMat.alpha = 0.85;
-            flatDiskMesh.material = diskMat;
-
-            // 3. Disco Deformado por Lente Gravitatoria (Superior e Inferior - Arco Gargantua)
-            warpedTopDisk = BABYLON.MeshBuilder.CreateTorus("warpedTop", { diameter: 12, thickness: 1.8, tessellation: 48 }, scene);
-            warpedTopDisk.rotation.x = Math.PI / 3.5;
-            warpedTopDisk.material = diskMat;
-
-            warpedBottomDisk = BABYLON.MeshBuilder.CreateTorus("warpedBottom", { diameter: 12, thickness: 1.8, tessellation: 48 }, scene);
-            warpedBottomDisk.rotation.x = -Math.PI / 3.5;
-            warpedBottomDisk.material = diskMat;
-
-            // 4. Chorros Polares Relativistas
-            jetsGroup = new BABYLON.TransformNode("jetsGroup", scene);
-            const topJet = BABYLON.MeshBuilder.CreateCylinder("topJet", { diameterTop: 3.5, diameterBottom: 0.4, height: 20 }, scene);
-            topJet.position.y = 11;
-            topJet.parent = jetsGroup;
-            const bottomJet = BABYLON.MeshBuilder.CreateCylinder("bottomJet", { diameterTop: 0.4, diameterBottom: 3.5, height: 20 }, scene);
-            bottomJet.position.y = -11;
-            bottomJet.parent = jetsGroup;
-
-            const jetMat = new BABYLON.StandardMaterial("jetMat", scene);
-            jetMat.emissiveColor = new BABYLON.Color3(0.2, 0.7, 1.0);
-            jetMat.alpha = 0.35;
-            topJet.material = jetMat;
-            bottomJet.material = jetMat;
-            jetsGroup.setEnabled(false);
-
-            scene.registerBeforeRender(() => {
-                flatDiskMesh.rotation.z += 0.005;
-                warpedTopDisk.rotation.y += 0.003;
-                warpedBottomDisk.rotation.y -= 0.003;
-            });
-
-            return scene;
-        }
-
-        function toggleHorizon() {
-            showHorizon = !showHorizon;
-            horizonMesh.isVisible = showHorizon;
-            document.getElementById("btnHorizon").textContent = `Horizonte: ${showHorizon ? 'ON' : 'OFF'}`;
-        }
-
-        function toggleDisk() {
-            showDisk = !showDisk;
-            flatDiskMesh.isVisible = showDisk;
-            document.getElementById("btnDisk").textContent = `Disco Acreción: ${showDisk ? 'ON' : 'OFF'}`;
-        }
-
-        function toggleLensing() {
-            showLensing = !showLensing;
-            warpedTopDisk.isVisible = showLensing;
-            warpedBottomDisk.isVisible = showLensing;
-            document.getElementById("btnLensing").textContent = `Lente Gravitatoria: ${showLensing ? 'ON' : 'OFF'}`;
-        }
-
-        function toggleJets() {
-            showJets = !showJets;
-            jetsGroup.setEnabled(showJets);
-            document.getElementById("btnJets").textContent = `Chorros Polares: ${showJets ? 'ON' : 'OFF'}`;
-        }
-
-        function setViewMode(mode) {
-            if (mode === 'doppler') {
-                flatDiskMesh.material.emissiveColor = new BABYLON.Color3(0.2, 0.7, 1.0); // Azul relativistic beaming
-                document.getElementById("infoTitle").textContent = "Efecto Doppler Beaming Relativista";
-                document.getElementById("infoBody").textContent = "El plasma del disco que gira hacia el observador viaja a velocidades cercanas a la luz, emitiendo un haz de radiación mucho más energético, azul y brillante que el lado opuesto que se aleja.";
-            } else {
-                flatDiskMesh.material.emissiveColor = new BABYLON.Color3(0.9, 0.45, 0.05); // Óptico incandescente
-                document.getElementById("infoTitle").textContent = "Disco de Acreción & Lente Gravitatoria";
-                document.getElementById("infoBody").textContent = "La curvatura extrema del espacio-tiempo dobla la luz del disco trasero, proyectándola por encima y por debajo del horizonte negro.";
+        const BH_TARGETS = {
+            'm87': {
+                name: "M87* (Galaxia Elíptica Gigante Messier 87)",
+                mass: "6.500 Millones M☉",
+                radius: "19.200 Millones km (128 UA)",
+                dist: "53.5 Millones a.l.",
+                freq: "1.3 mm (230 GHz)",
+                desc: "Primer agujero negro fotografiado en la historia humana (abril 2019). Su chorro relativista de plasma abarca más de 5.000 años luz de longitud emitido desde los polos magnéticos del disco.",
+                quote: "Un monstruo gravitatorio de 6.500 millones de veces la masa de nuestro Sol."
+            },
+            'sgra': {
+                name: "Sagitario A* (Centro de la Vía Láctea)",
+                mass: "4.15 Millones M☉",
+                radius: "12.3 Millones km (0.08 UA)",
+                dist: "26.700 a.l.",
+                freq: "1.3 mm (230 GHz)",
+                desc: "El agujero negro supermasivo residente en el centro de nuestra propia galaxia, fotografiado por el EHT en mayo de 2022. Su horizonte de sucesos cabría cómodamente dentro de la órbita de Mercurio.",
+                quote: "El ancla gravitatoria oculta alrededor de la cual baila toda nuestra galaxia."
             }
+        };
+
+        const BH_FEATURES = {
+            'horizon': {
+                name: "Horizonte de Sucesos y Sombra Gravitatoria",
+                desc: "Frontera cuántica y relativista de radio r_s = 2GM/c². La velocidad de escape en este punto iguala a la velocidad de la luz. Su presencia produce una sombra negra circular proyectada sobre el plasma brillante del fondo.",
+                quote: "El umbral absoluto más allá del cual la información queda desconectada del resto del cosmos."
+            },
+            'photon_sphere': {
+                name: "Esfera de Fotones (r = 1.5 r_s)",
+                desc: "Radio crítico a 1.5 radios de Schwarzschild donde la fuerza gravitatoria obliga a la luz a viajar en órbitas circulares inestables. Es el anillo ultrabrillante y delgado que rodea directamente a la sombra.",
+                quote: "El lugar del universo donde un rayo de luz puede orbitar y ver la parte trasera de su propia emisión."
+            },
+            'isco': {
+                name: "Disco de Acreción & Órbita ISCO (r = 3.0 r_s)",
+                desc: "Última órbita circular estable para la materia antes de precipitarse inevitablemente al abismo. El plasma de gas gira a velocidades relativistas (~50% c), calentándose por fricción viscosa hasta millones de Kelvin.",
+                quote: "Un colosal dínamo electromagnético que convierte masa en radiación pura con una eficiencia del 40%."
+            },
+            'lensing': {
+                name: "Lente Gravitatoria y Arco Gargantua",
+                desc: "La curvatura extrema del espacio-tiempo desvía los rayos de luz emitidos por la cara posterior del disco, elevándolos por encima y por debajo del horizonte para crear la ilusión de un sombrero brillante que envuelve la esfera.",
+                quote: "La óptica de la gravedad de Einstein proyectando la espalda del disco hacia nuestros ojos."
+            },
+            'doppler': {
+                name: "Asimetría Doppler Beaming Relativista",
+                desc: "El plasma del disco que gira aproximándose hacia el observador emite un haz de radiación amplificado exponencialmente y desplazado hacia el azul por la velocidad relativista, haciendo que un lado del anillo sea notablemente más brillante que el opuesto.",
+                quote: "La media luna asimétrica característica de las imágenes reales publicadas por el EHT."
+            }
+        };
+
+        function drawBlackHoleLaboratory() {
+            ctx.fillStyle = "#000000";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+
+            // Retícula astronómica de interferometría VLBI
+            drawVLBIGrid();
+
+            ctx.save();
+            ctx.translate(cx, cy);
+
+            const tiltRad = (tiltDeg * Math.PI) / 180;
+            const rs = 52; // Radio de Schwarzschild base en píxeles
+
+            // 1. LENTE GRAVITATORIA TRASERA SUPERIOR (Arco de Einstein Gargantua)
+            drawUpperLensingArc(rs, tiltRad);
+
+            // 2. DISCO DE ACRECIÓN PLANO ECUATORIAL (ISCO 3.0 rs a 7.0 rs)
+            drawAccretionDisk(rs, tiltRad);
+
+            // 3. LENTE GRAVITATORIA TRASERA INFERIOR
+            drawLowerLensingArc(rs, tiltRad);
+
+            // 4. ESFERA DE FOTONES (Anillo delgado a 1.5 rs = 78 px)
+            drawPhotonSphere(rs);
+
+            // 5. SOMBRA Y HORIZONTE DE SUCESOS (Esfera absolutamente negra a 1.0 rs)
+            drawEventHorizon(rs);
+
+            ctx.restore();
+
+            // Calibrador métrico
+            ctx.fillStyle = "#f59e0b";
+            ctx.font = "bold 12px var(--font-mono)";
+            ctx.fillText(`INTERFEROMETRÍA VLBI • LONGITUD DE ONDA 1.3 mm • EVENT HORIZON TELESCOPE`, 30, canvas.height - 40);
+            ctx.fillStyle = "#94a3b8";
+            ctx.fillText(`OBJETIVO: ${currentTarget.toUpperCase()} • INCLINACIÓN: ${tiltDeg}° • DOPPLER BEAMING: ${isDopplerActive ? 'ON' : 'OFF'}`, 30, canvas.height - 22);
         }
 
-        function resetCamera() {
-            camera.alpha = -Math.PI / 2.3; camera.beta = Math.PI / 2.5; camera.radius = 34;
-            camera.target = BABYLON.Vector3.Zero();
+        function drawVLBIGrid() {
+            ctx.strokeStyle = "rgba(245, 158, 11, 0.06)";
+            ctx.lineWidth = 1;
+            for (let x = 0; x < canvas.width; x += 45) {
+                ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
+            }
+            for (let y = 0; y < canvas.height; y += 45) {
+                ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
+            }
+            ctx.strokeStyle = "rgba(245, 158, 11, 0.12)";
+            ctx.beginPath(); ctx.arc(canvas.width / 2, canvas.height / 2, 240, 0, Math.PI * 2); ctx.stroke();
+        }
+
+        function drawUpperLensingArc(rs, tilt) {
+            // La luz del disco trasero doblada hacia arriba por la gravedad
+            ctx.save();
+            const arcRadius = rs * 2.8;
+            const grad = ctx.createRadialGradient(0, 0, rs * 1.5, 0, 0, arcRadius);
+            grad.addColorStop(0, "rgba(254, 240, 138, 0.95)");
+            grad.addColorStop(0.35, "rgba(245, 158, 11, 0.85)");
+            grad.addColorStop(0.8, "rgba(234, 88, 12, 0.45)");
+            grad.addColorStop(1, "rgba(0, 0, 0, 0)");
+
+            ctx.fillStyle = grad;
+            ctx.beginPath();
+            ctx.ellipse(0, -rs * 0.4, arcRadius, arcRadius * 0.85, 0, Math.PI + 0.1, -0.1);
+            ctx.ellipse(0, -rs * 0.4, rs * 1.6, rs * 1.3, 0, -0.1, Math.PI + 0.1, true);
+            ctx.closePath();
+            ctx.fill();
+            ctx.restore();
+        }
+
+        function drawLowerLensingArc(rs, tilt) {
+            // La luz del disco trasero doblada hacia abajo
+            ctx.save();
+            const arcRadius = rs * 2.5;
+            const grad = ctx.createRadialGradient(0, 0, rs * 1.5, 0, 0, arcRadius);
+            grad.addColorStop(0, "rgba(254, 240, 138, 0.8)");
+            grad.addColorStop(0.4, "rgba(245, 158, 11, 0.6)");
+            grad.addColorStop(1, "rgba(0, 0, 0, 0)");
+
+            ctx.fillStyle = grad;
+            ctx.beginPath();
+            ctx.ellipse(0, rs * 0.35, arcRadius, arcRadius * 0.65, 0, 0.2, Math.PI - 0.2);
+            ctx.ellipse(0, rs * 0.35, rs * 1.6, rs * 1.0, 0, Math.PI - 0.2, 0.2, true);
+            ctx.closePath();
+            ctx.fill();
+            ctx.restore();
+        }
+
+        function drawAccretionDisk(rs, tilt) {
+            ctx.save();
+            const aspect = Math.sin(Math.max(0.1, tilt));
+            const rInner = rs * 2.6; // ISCO a 3.0 rs aprox
+            const rOuter = rs * 5.5;
+
+            // Simulación de flujo de plasma con asimetría Doppler relativista
+            // El lado izquierdo gira hacia nosotros -> Mucho más brillante (Doppler beaming)
+            const diskGrad = ctx.createLinearGradient(-rOuter, 0, rOuter, 0);
+            if (isDopplerActive) {
+                diskGrad.addColorStop(0.0, "#ffffff"); // Azul/blanco brillante relativista
+                diskGrad.addColorStop(0.25, "#fde047");
+                diskGrad.addColorStop(0.5, "#f97316");
+                diskGrad.addColorStop(0.85, "rgba(154, 52, 18, 0.4)");
+                diskGrad.addColorStop(1.0, "rgba(20, 5, 2, 0.15)"); // Lado que se aleja oscurecido
+            } else {
+                diskGrad.addColorStop(0.0, "#f97316");
+                diskGrad.addColorStop(0.5, "#fde047");
+                diskGrad.addColorStop(1.0, "#f97316");
+            }
+
+            ctx.fillStyle = diskGrad;
+            ctx.beginPath();
+            ctx.ellipse(0, 0, rOuter, rOuter * aspect, 0, 0, Math.PI * 2);
+            ctx.ellipse(0, 0, rInner, rInner * aspect, 0, Math.PI * 2, 0, true);
+            ctx.closePath();
+            ctx.fill();
+
+            ctx.restore();
+        }
+
+        function drawPhotonSphere(rs) {
+            // Anillo de luz en órbita inestable a 1.5 rs (78 px)
+            ctx.save();
+            ctx.strokeStyle = "rgba(254, 240, 138, 0.95)";
+            ctx.shadowColor = "#fde047";
+            ctx.shadowBlur = 18;
+            ctx.lineWidth = 3.5;
+            ctx.beginPath();
+            ctx.arc(0, 0, rs * 1.5, 0, Math.PI * 2);
+            ctx.stroke();
+            ctx.shadowBlur = 0;
+            ctx.restore();
+        }
+
+        function drawEventHorizon(rs) {
+            // Sombra del agujero negro: absorción absoluta de fotones
+            ctx.save();
+            ctx.fillStyle = "#000000";
+            ctx.shadowColor = "rgba(0, 0, 0, 1)";
+            ctx.shadowBlur = 25;
+            ctx.beginPath();
+            ctx.arc(0, 0, rs * 1.35, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.shadowBlur = 0;
+
+            // Borde nítido del horizonte
+            ctx.strokeStyle = "rgba(245, 158, 11, 0.35)";
+            ctx.lineWidth = 1.5;
+            ctx.stroke();
+            ctx.restore();
+        }
+
+        function setTarget(tgt) {
+            currentTarget = tgt;
+            document.querySelectorAll(".btn-target").forEach(b => {
+                b.classList.toggle("active", b.getAttribute("onclick").includes(tgt));
+            });
+            const d = BH_TARGETS[tgt];
+            document.getElementById("kpiMass").textContent = d.mass;
+            document.getElementById("kpiRadius").textContent = d.radius;
+            document.getElementById("kpiDist").textContent = d.dist;
+            document.getElementById("kpiWavelength").textContent = d.freq;
+
+            selectFeature('horizon');
+        }
+
+        function selectFeature(feat) {
+            currentFeature = feat;
+            document.querySelectorAll(".btn-hotspot").forEach(b => {
+                b.classList.toggle("active", b.getAttribute("onclick").includes(feat));
+            });
+            const data = BH_FEATURES[feat];
+            document.getElementById("infoTitle").textContent = data.name;
+            document.getElementById("infoBody").textContent = data.desc;
+            document.getElementById("infoQuote").textContent = `"${data.quote}"`;
+
+            if (feat === 'doppler') isDopplerActive = true;
+            drawBlackHoleLaboratory();
+        }
+
+        function toggleDoppler() {
+            isDopplerActive = !isDopplerActive;
+            selectFeature('doppler');
+        }
+
+        function updateTilt(val) {
+            tiltDeg = parseFloat(val);
+            document.getElementById("tiltVal").textContent = `${tiltDeg}°`;
+            drawBlackHoleLaboratory();
+        }
+
+        function resetView() {
+            tiltDeg = 18;
+            document.getElementById("tiltSlider").value = 18;
+            document.getElementById("tiltVal").textContent = "18°";
+            isDopplerActive = true;
+            selectFeature('horizon');
         }
 
         function speakCurrentInfo() {
             if (!('speechSynthesis' in window)) return;
             window.speechSynthesis.cancel();
             const text = `${document.getElementById("infoTitle").textContent}. ${document.getElementById("infoBody").textContent}`;
-            const u = new SpeechSynthesisUtterance(text);
-            u.lang = 'es-ES'; u.rate = 0.95;
-            window.speechSynthesis.speak(u);
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = "es-ES";
+            utterance.rate = 1.0;
+            window.speechSynthesis.speak(utterance);
         }
 
-        function openAtlasViewer() {
-            const modal = document.getElementById("photoModal");
-            const img = document.getElementById("atlasImg");
-            img.src = window.BLACKHOLE_SVG_B64 || "";
-            modal.style.display = "flex";
+        // Bucle de renderizado continuo
+        function animate() {
+            animAngle += 0.01;
+            drawBlackHoleLaboratory();
+            requestAnimationFrame(animate);
         }
 
-        function closeAtlasViewer() {
-            document.getElementById("photoModal").style.display = "none";
-        }
-
-        scene = createScene();
-        engine.runRenderLoop(() => { scene.render(); });
-        window.addEventListener("resize", () => { engine.resize(); });
+        // Inicialización
+        setTarget('m87');
+        animate();
     </script>
 </body>
 </html>
-

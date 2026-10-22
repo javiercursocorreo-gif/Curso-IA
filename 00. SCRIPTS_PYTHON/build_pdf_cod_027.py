@@ -73,8 +73,8 @@ def build_cod_027_taller_3d_pdf(output_path=PDF_PATH):
         "1. Entrega el programa en un único bloque de código listo para pulsar directamente «Copiar código» y pegarlo con Ctrl+V.<br/>"
         "2. Incluye en la cabecera el script con los datos cuánticos reales:<br/>"
         "&lt;script src=&quot;https://javiercursocorreo-gif.github.io/Curso-IA/SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/quantum_atom_b64.js&quot;&gt;&lt;/script&gt;<br/>"
-        "3. Modela con Babylon.js un núcleo atómico central de protones (rojos) y neutrones (grises), rodeado por nubes de probabilidad cuántica semitransparentes PBR con código de fases (fase positiva cian, fase negativa ámbar).<br/>"
-        "4. Incluye botones para seleccionar y renderizar dinámicamente los orbitales 1s (esférico), 2s (con nodo interno), 2pz, 2px, 3d z² (con toroide ecuatorial) y 3d xy (trébol).<br/>"
+        "3. Modela con funciones matemáticas analíticas exactas de la Ecuación de Schrödinger para el Hidrógeno: orbitales 1s, 2s (con superficie nodal esférica interna), 2pz, 2px/2py bilobulares, 3d z² (con toroide ecuatorial) y 3d xy (trébol de cuatro lóbulos con alternancia de fase de función de onda).<br/>"
+        "4. Integra conmutador analítico entre los orbitales teóricos 3D y el histórico 'Corral Cuántico' de 48 átomos de hierro de IBM Almaden registrado por Microscopio de Efecto Túnel (STM).<br/>"
         "5. Aplica un diseño en modo oscuro (#030612) con tipografía grande (16-18px), números cuánticos en KPIs (n, l, m, s) y síntesis de voz en español.<br/>"
         "6. Escribe exclusivamente el código sin explicaciones añadidas.\"</i>"
     )

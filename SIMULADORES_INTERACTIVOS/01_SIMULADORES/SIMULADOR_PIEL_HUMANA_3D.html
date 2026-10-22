@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sesión 37 • Piel Humana, Capas Tisulares y Termorregulación 3D [COD-037]</title>
+    <!-- NIH Visible Human • Epidermis, Dermis, Hipodermis • Vasoconstricción • Sudoración Ecrina -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-base: #100604;
+            --bg-panel: rgba(30, 10, 8, 0.94);
+            --border: rgba(244, 63, 94, 0.35);
+            --primary: #f43f5e;
+            --primary-glow: rgba(244, 63, 94, 0.4);
+            --amber: #fbbf24;
+            --cyan: #38bdf8;
+            --text-main: #f8fafc;
+            --text-sub: #cbd5e1;
+            --font-title: 'Cinzel', serif;
+            --font-sans: 'Inter', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            font-family: var(--font-sans);
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            font-size: 14px;
+        }
+
+        header {
+            background: linear-gradient(180deg, rgba(24, 8, 6, 0.98) 0%, rgba(24, 8, 6, 0.88) 100%);
+            backdrop-filter: blur(14px);
+            border-bottom: 1px solid var(--border);
+            padding: 10px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+            z-index: 40;
+        }
+        .brand-box { display: flex; align-items: center; gap: 14px; }
+        .badge-pill {
+            background: rgba(244, 63, 94, 0.15);
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            font-family: var(--font-mono);
+            font-weight: 800;
+            font-size: 0.82rem;
+            padding: 4px 10px;
+            border-radius: 6px;
+        }
+        .title-text h1 {
+            font-family: var(--font-title);
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .title-text p { font-size: 0.78rem; color: var(--text-sub); margin-top: 1px; }
+
+        .header-actions { display: flex; align-items: center; gap: 10px; }
+        .btn-header {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: var(--text-main);
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .btn-header:hover { background: rgba(244, 63, 94, 0.2); border-color: var(--primary); color: #fff; }
+
+        .workspace { flex: 1; position: relative; overflow: hidden; display: flex; }
+
+        .viewer-container {
+            flex: 1;
+            position: relative;
+            background: radial-gradient(circle at center, #2b0d08 0%, #100604 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        #skinCanvas {
+            max-width: 96%;
+            max-height: 92%;
+            border-radius: 14px;
+            box-shadow: 0 15px 45px rgba(0, 0, 0, 0.9);
+            border: 1px solid rgba(244, 63, 94, 0.25);
+            background: #140705;
+            cursor: grab;
+        }
+        #skinCanvas:active { cursor: grabbing; }
+
+        .controls-panel {
+            position: absolute;
+            top: 18px;
+            left: 20px;
+            width: 350px;
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 18px;
+            backdrop-filter: blur(14px);
+            z-index: 20;
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6);
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            max-height: calc(100vh - 120px);
+            overflow-y: auto;
+        }
+
+        .panel-sec-title {
+            font-size: 0.78rem;
+            font-family: var(--font-mono);
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding-bottom: 5px;
+        }
+
+        .slider-group { display: flex; flex-direction: column; gap: 6px; }
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.82rem;
+            color: var(--text-sub);
+        }
+        .slider-val { font-family: var(--font-mono); color: #fff; font-weight: 700; }
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #1e293b;
+            outline: none;
+            cursor: pointer;
+            accent-color: var(--primary);
+        }
+
+        .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .btn-action {
+            background: rgba(244, 63, 94, 0.12);
+            border: 1px solid rgba(244, 63, 94, 0.35);
+            color: #fff;
+            padding: 9px 10px;
+            border-radius: 8px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+        .btn-action:hover { background: rgba(244, 63, 94, 0.28); border-color: var(--primary); }
+        .btn-action.active { background: var(--primary); color: #fff; font-weight: 800; }
+
+        .telemetry-card {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            width: 320px;
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            backdrop-filter: blur(14px);
+            z-index: 20;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .kpi-row { display: flex; justify-content: space-between; align-items: center; }
+        .kpi-name { font-size: 0.78rem; color: var(--text-sub); }
+        .kpi-val { font-family: var(--font-mono); font-size: 0.88rem; font-weight: 700; color: #fff; }
+        .status-badge {
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.74rem;
+            font-weight: 800;
+            text-align: center;
+        }
+        .status-healthy { background: rgba(52, 211, 153, 0.2); color: #6ee7b7; border: 1px solid #34d399; }
+        .status-hot { background: rgba(244, 63, 94, 0.2); color: #fda4af; border: 1px solid #f43f5e; }
+        .status-cold { background: rgba(56, 189, 248, 0.2); color: #7dd3fc; border: 1px solid #38bdf8; }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="brand-box">
+            <span class="badge-pill">[COD-037]</span>
+            <div class="title-text">
+                <h1>🩺 Piel Humana, Capas Tisulares y Termorregulación 3D</h1>
+                <p>NIH Visible Human Project • Epidermis, Dermis & Hipodermis • Vasomotilidad Capilar • Sudoración Ecrina</p>
+            </div>
+        </div>
+        <div class="header-actions">
+            <button class="btn-header" id="btnAudioToggle">🔊 Audio Pulso: ON</button>
+            <button class="btn-header" id="btnVoiceGuide">🗣️ Guía por Voz</button>
+            <button class="btn-header" id="btnResetView">🎯 Centrar Vista</button>
+        </div>
+    </header>
+
+    <div class="workspace">
+        <div class="viewer-container">
+            <canvas id="skinCanvas" width="900" height="650"></canvas>
+        </div>
+
+        <div class="controls-panel">
+            <div class="panel-sec-title">
+                <span>Variables Termodinámicas</span>
+                <span>🌡️ HOMEOSTASIS</span>
+            </div>
+
+            <div class="slider-group">
+                <div class="slider-label">
+                    <span>Temperatura Ambiental</span>
+                    <span class="slider-val" id="valTemp">22.0 °C (Confort)</span>
+                </div>
+                <input type="range" id="rngTemp" min="0" max="45" step="1" value="22">
+            </div>
+
+            <div class="slider-group">
+                <div class="slider-label">
+                    <span>Índice Ultravioleta (UVI)</span>
+                    <span class="slider-val" id="valUV">UVI 3 (Moderado)</span>
+                </div>
+                <input type="range" id="rngUV" min="0" max="11" step="1" value="3">
+            </div>
+
+            <div class="panel-sec-title">
+                <span>Mecanismos Fisiológicos</span>
+                <span>🔬 RESPUESTA</span>
+            </div>
+
+            <div class="btn-group">
+                <button class="btn-action" id="btnHeat">🔥 Golpe de Calor (40°C)</button>
+                <button class="btn-action" id="btnCold">❄️ Frío Polar (2°C)</button>
+            </div>
+
+            <div class="btn-group">
+                <button class="btn-action" id="btnGoose">🦔 Piel de Gallina</button>
+                <button class="btn-action active" id="btnResetSkin">🔄 Normal (22°C)</button>
+            </div>
+        </div>
+
+        <div class="telemetry-card">
+            <div class="panel-sec-title">
+                <span>Histología y Termorregulación</span>
+                <span>NIH Medical Data</span>
+            </div>
+            <div class="kpi-row">
+                <span class="kpi-name">Flujo Sanguíneo Dérmico:</span>
+                <span class="kpi-val" id="kpiFlow">12 mL/100g/min</span>
+            </div>
+            <div class="kpi-row">
+                <span class="kpi-name">Tasa de Sudoración:</span>
+                <span class="kpi-val" id="kpiSweat">0.05 L/hora</span>
+            </div>
+            <div class="kpi-row">
+                <span class="kpi-name">Músculo Erector del Pelo:</span>
+                <span class="kpi-val" id="kpiPilo">Relajado</span>
+            </div>
+            <div class="kpi-row">
+                <span class="kpi-name">Estado Homeostático:</span>
+                <span class="status-badge status-healthy" id="kpiStatus">Normotermia (36.8°C)</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('skinCanvas');
+        const ctx = canvas.getContext('2d');
+
+        let state = {
+            temp: 22,
+            uv: 3,
+            piloerection: false,
+            rotX: -0.22,
+            rotY: 0.35,
+            zoom: 1.0,
+            audioEnabled: true
+        };
+
+        function speak(text) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const u = new SpeechSynthesisUtterance(text);
+                u.lang = 'es-ES';
+                u.rate = 1.05;
+                window.speechSynthesis.speak(u);
+            }
+        }
+
+        let isDragging = false;
+        let lastMouse = { x: 0, y: 0 };
+        canvas.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            lastMouse = { x: e.clientX, y: e.clientY };
+        });
+        window.addEventListener('mouseup', () => isDragging = false);
+        window.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            const dx = e.clientX - lastMouse.x;
+            const dy = e.clientY - lastMouse.y;
+            state.rotY += dx * 0.008;
+            state.rotX += dy * 0.008;
+            lastMouse = { x: e.clientX, y: e.clientY };
+        });
+        canvas.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            state.zoom *= e.deltaY > 0 ? 0.95 : 1.05;
+            state.zoom = Math.max(0.6, Math.min(2.0, state.zoom));
+        });
+
+        // Loop de renderizado 3D del Bloque Tisular Cutáneo
+        let t = 0;
+        function render() {
+            t += 0.02;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+
+            const cosY = Math.cos(state.rotY);
+            const sinY = Math.sin(state.rotY);
+            const cosX = Math.cos(state.rotX);
+            const sinX = Math.sin(state.rotX);
+
+            function project(x, y, z) {
+                let x1 = x * cosY + z * sinY;
+                let z1 = -x * sinY + z * cosY;
+                let y2 = y * cosX - z1 * sinX;
+                let z2 = y * sinX + z1 * cosX;
+                const fov = 450;
+                const scale = (fov / (fov + z2 + 300)) * state.zoom;
+                return { x: cx + x1 * scale, y: cy + y2 * scale, z: z2, scale: scale };
+            }
+
+            // Dimensiones del bloque tisular
+            const bw = 240, bh = 220, bd = 160;
+
+            // 1. Capa Epidermis (Superior: -110 a -85 px)
+            // Color influenciado por melanina UV
+            const melR = Math.max(160, 220 - state.uv * 6);
+            const melG = Math.max(110, 175 - state.uv * 6);
+            const melB = Math.max(90, 145 - state.uv * 6);
+
+            // 2. Capa Dermis (Media: -85 a 45 px) - Fibras de colágeno, capilares
+            // 3. Capa Hipodermis (Inferior: 45 a 110 px) - Adipocitos amarillos
+
+            const layers = [
+                { name: "Epidermis", y0: -110, y1: -85, color: `rgb(${melR}, ${melG}, ${melB})` },
+                { name: "Dermis", y0: -85, y1: 45, color: '#e17055' },
+                { name: "Hipodermis", y0: 45, y1: 110, color: '#ffeaa7' }
+            ];
+
+            layers.forEach(layer => {
+                const hw = bw / 2, hd = bd / 2;
+                const v = [
+                    project(-hw, layer.y0, -hd), project(hw, layer.y0, -hd),
+                    project(hw, layer.y0, hd), project(-hw, layer.y0, hd),
+                    project(-hw, layer.y1, -hd), project(hw, layer.y1, -hd),
+                    project(hw, layer.y1, hd), project(-hw, layer.y1, hd)
+                ];
+
+                // Cara frontal
+                ctx.beginPath();
+                ctx.moveTo(v[3].x, v[3].y);
+                ctx.lineTo(v[2].x, v[2].y);
+                ctx.lineTo(v[6].x, v[6].y);
+                ctx.lineTo(v[7].x, v[7].y);
+                ctx.closePath();
+                ctx.fillStyle = layer.color;
+                ctx.fill();
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+                ctx.stroke();
+
+                // Cara superior si es epidermis
+                if (layer.name === "Epidermis") {
+                    ctx.beginPath();
+                    ctx.moveTo(v[0].x, v[0].y);
+                    ctx.lineTo(v[1].x, v[1].y);
+                    ctx.lineTo(v[2].x, v[2].y);
+                    ctx.lineTo(v[3].x, v[3].y);
+                    ctx.closePath();
+                    ctx.fillStyle = `rgb(${melR + 15}, ${melG + 15}, ${melB + 15})`;
+                    ctx.fill();
+                    ctx.stroke();
+                }
+
+                // Cara lateral
+                ctx.beginPath();
+                ctx.moveTo(v[2].x, v[2].y);
+                ctx.lineTo(v[1].x, v[1].y);
+                ctx.lineTo(v[5].x, v[5].y);
+                ctx.lineTo(v[6].x, v[6].y);
+                ctx.closePath();
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.25)';
+                ctx.fill();
+                ctx.stroke();
+
+                // Etiqueta
+                ctx.fillStyle = '#fff';
+                ctx.font = 'bold 10px JetBrains Mono';
+                const pTag = project(-hw + 15, (layer.y0 + layer.y1) / 2, hd);
+                ctx.fillText(layer.name, pTag.x, pTag.y);
+            });
+
+            // Folículo piloso con tallo del pelo y músculo erector
+            const pHairRoot = project(15, 30, 20);
+            const hairAngle = (state.piloerection || state.temp < 10) ? -0.1 : 0.45;
+            const pHairTip = project(15 + Math.sin(hairAngle) * 90, -110 - Math.cos(hairAngle) * 70, 20);
+
+            ctx.beginPath();
+            ctx.moveTo(pHairRoot.x, pHairRoot.y);
+            ctx.lineTo(pHairTip.x, pHairTip.y);
+            ctx.strokeStyle = '#2d3436';
+            ctx.lineWidth = 4 * state.zoom;
+            ctx.lineCap = 'round';
+            ctx.stroke();
+
+            // Capilares dérmicos: Vasodilatación (rojo intenso grueso) vs Vasoconstricción (azul fino)
+            const isHot = state.temp > 30;
+            const isCold = state.temp < 15;
+            ctx.strokeStyle = isHot ? '#f43f5e' : (isCold ? '#38bdf8' : '#e67e22');
+            ctx.lineWidth = (isHot ? 6 : (isCold ? 2 : 3.5)) * state.zoom;
+            ctx.beginPath();
+            const pCap1 = project(-60, -30, 10);
+            const pCap2 = project(60, -30, 10);
+            ctx.moveTo(pCap1.x, pCap1.y);
+            ctx.bezierCurveTo(pCap1.x + 30, pCap1.y - 15, pCap2.x - 30, pCap2.y + 15, pCap2.x, pCap2.y);
+            ctx.stroke();
+
+            // Gotas de sudor ecrino emergiendo si hace calor
+            if (isHot) {
+                ctx.fillStyle = 'rgba(56, 189, 248, 0.85)';
+                for (let s = 0; s < 5; s++) {
+                    const pSweat = project(-50 + s * 25, -114 - Math.sin(t * 3 + s) * 4, 15);
+                    ctx.beginPath();
+                    ctx.arc(pSweat.x, pSweat.y, 4 * state.zoom, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+
+            requestAnimationFrame(render);
+        }
+        render();
+
+        function updateTelemetry() {
+            const temp = state.temp;
+            let flow = 0;
+            let sweat = 0;
+            const flowEl = document.getElementById('kpiFlow');
+            const sweatEl = document.getElementById('kpiSweat');
+            const piloEl = document.getElementById('kpiPilo');
+            const statusEl = document.getElementById('kpiStatus');
+
+            if (temp >= 35) {
+                flow = 75;
+                sweat = 1.4;
+                flowEl.innerText = `${flow} mL/100g/min (Vasodilatación)`;
+                sweatEl.innerText = `${sweat.toFixed(1)} L/hora (Evaporación)`;
+                piloEl.innerText = 'Relajado';
+                statusEl.className = 'status-badge status-hot';
+                statusEl.innerText = '🔥 Estrés Térmico / Disipación';
+            } else if (temp <= 12) {
+                flow = 2.5;
+                sweat = 0.0;
+                flowEl.innerText = `${flow} mL/100g/min (Vasoconstricción)`;
+                sweatEl.innerText = '0.0 L/hora';
+                piloEl.innerText = 'Erección Activa (Piel de Gallina)';
+                statusEl.className = 'status-badge status-cold';
+                statusEl.innerText = '❄️ Conservación de Calor';
+            } else {
+                flow = 12;
+                sweat = 0.05;
+                flowEl.innerText = `${flow} mL/100g/min (Basal)`;
+                sweatEl.innerText = `${sweat.toFixed(2)} L/hora (Insensible)`;
+                piloEl.innerText = state.piloerection ? 'Erección Forzada' : 'Relajado';
+                statusEl.className = 'status-badge status-healthy';
+                statusEl.innerText = 'Normotermia Estable (36.8°C)';
+            }
+        }
+        setInterval(updateTelemetry, 250);
+
+        document.getElementById('rngTemp').addEventListener('input', (e) => {
+            state.temp = parseInt(e.target.value);
+            document.getElementById('valTemp').innerText = `${state.temp} °C`;
+        });
+
+        document.getElementById('rngUV').addEventListener('input', (e) => {
+            state.uv = parseInt(e.target.value);
+            document.getElementById('valUV').innerText = `UVI ${state.uv}`;
+        });
+
+        document.getElementById('btnHeat').addEventListener('click', () => {
+            state.temp = 40;
+            document.getElementById('rngTemp').value = 40;
+            document.getElementById('valTemp').innerText = '40 °C (Calor Extremo)';
+            speak("Respuesta a golpe de calor. Vasodilatación arteriolar masiva para aumentar el flujo sanguíneo cutáneo y secreción de sudor ecrino para disipación térmica por evaporación latente.");
+        });
+
+        document.getElementById('btnCold').addEventListener('click', () => {
+            state.temp = 2;
+            state.piloerection = true;
+            document.getElementById('rngTemp').value = 2;
+            document.getElementById('valTemp').innerText = '2 °C (Frío Polar)';
+            speak("Respuesta al frío extremo. Vasoconstricción refleja para retener el calor en los órganos vitales y activación de los músculos erectores del pelo para atrapar una capa de aire aislante.");
+        });
+
+        document.getElementById('btnGoose').addEventListener('click', () => {
+            state.piloerection = !state.piloerection;
+            document.getElementById('btnGoose').classList.toggle('active', state.piloerection);
+            speak("Reflejo pilomotor activado. El músculo erector tracciona el folículo piloso generando la protuberancia conocida como piel de gallina.");
+        });
+
+        document.getElementById('btnResetSkin').addEventListener('click', () => {
+            state.temp = 22;
+            state.uv = 3;
+            state.piloerection = false;
+            document.getElementById('rngTemp').value = 22;
+            document.getElementById('valTemp').innerText = '22 °C (Confort)';
+            document.getElementById('rngUV').value = 3;
+            document.getElementById('valUV').innerText = 'UVI 3 (Moderado)';
+            document.getElementById('btnGoose').classList.remove('active');
+            speak("Homeostasis cutánea restablecida a temperatura ambiente de confort.");
+        });
+
+        document.getElementById('btnAudioToggle').addEventListener('click', (e) => {
+            state.audioEnabled = !state.audioEnabled;
+            e.target.innerText = state.audioEnabled ? '🔊 Audio Pulso: ON' : '🔈 Audio: OFF';
+        });
+
+        document.getElementById('btnVoiceGuide').addEventListener('click', () => {
+            speak("Bienvenido al simulador tridimensional de Piel Humana y Termorregulación. Ajusta la temperatura para observar en tiempo real la vasodilatación y el reflejo pilomotor.");
+        });
+
+        document.getElementById('btnResetView').addEventListener('click', () => {
+            state.rotX = -0.22;
+            state.rotY = 0.35;
+            state.zoom = 1.0;
+        });
+    </script>
+</body>
+</html>

@@ -106,8 +106,6 @@
             background: #0a0f1d; border: 1px solid var(--primary); border-radius: 14px;
             max-width: 900px; width: 92%; overflow: hidden; box-shadow: 0 0 40px rgba(192, 132, 252, 0.35);
         }
-        .photo-container img { width: 100%; height: auto; display: block; }
-        .photo-caption { padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; background: #060b18; }
         .close-photo-btn { background: var(--primary); color: #020617; border: none; padding: 6px 16px; border-radius: 8px; font-weight: 800; cursor: pointer; }
         footer {
             background: rgba(16, 12, 30, 0.98); border-top: 1px solid var(--border);
@@ -126,7 +124,7 @@
             </div>
         </div>
         <div class="header-actions">
-            <button class="btn-header" onclick="openAtlasViewer()">📷 Sección Calabi-Yau SVG</button>
+            <button class="btn-header" onclick="openHodgeModal()">📊 Diamante de Hodge & Métrica Kähler</button>
             <button class="btn-header" onclick="resetCamera()">🎯 Centrar</button>
         </div>
     </header>
@@ -178,12 +176,34 @@
         </div>
     </div>
 
-    <div class="photo-viewer-modal" id="photoModal">
-        <div class="photo-container">
-            <img id="atlasImg" src="" alt="Variedad de Calabi-Yau">
-            <div class="photo-caption">
-                <span style="color: #cbd5e1; font-size: 0.82rem;">CERN • Teoría de Supercuerdas • Geometría Compleja de Calabi-Yau</span>
-                <button class="close-photo-btn" onclick="closeAtlasViewer()">Cerrar Sección</button>
+    <!-- Modal Científico: Diamante de Hodge de Calabi-Yau & Métrica Kähler Ricci-Flat -->
+    <div class="photo-viewer-modal" id="hodgeModal">
+        <div class="photo-container" style="max-width: 860px; padding: 20px; background: #070919; border: 1px solid var(--primary);">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(192, 132, 252, 0.25); padding-bottom: 10px; margin-bottom: 14px;">
+                <div style="font-family: var(--font-title); font-size: 1.15rem; color: #fff;">💎 Diamante de Hodge & Geometría Diferencial de Calabi-Yau</div>
+                <button class="close-photo-btn" onclick="closeHodgeModal()">Cerrar Panel</button>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 14px;">
+                <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(192,132,252,0.2); border-radius: 8px; padding: 12px;">
+                    <div style="font-family: var(--font-mono); font-size: 0.85rem; color: var(--primary); font-weight: 800; margin-bottom: 8px;">
+                        💠 Diamante de Hodge para Variedad Quíntica 3-Fold
+                    </div>
+                    <canvas id="hodgeCanvas" width="380" height="200" style="background: #02040e; border-radius: 6px; width: 100%; display: block;"></canvas>
+                    <div style="font-size: 0.73rem; color: var(--text-sub); margin-top: 6px; line-height: 1.4;">
+                        Números de Hodge: \(h^{1,1} = 1\) (módulo de Kähler), \(h^{2,1} = 101\) (módulos de estructura compleja). Característica de Euler \(\chi = 2(1 - 101) = -200\).
+                    </div>
+                </div>
+                <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(192,132,252,0.2); border-radius: 8px; padding: 12px;">
+                    <div style="font-family: var(--font-mono); font-size: 0.85rem; color: var(--cyan); font-weight: 800; margin-bottom: 8px;">
+                        📐 Invariantes Topológicos y Generaciones
+                    </div>
+                    <div style="font-size: 0.78rem; color: var(--text-sub); line-height: 1.6;">
+                        <p style="margin-bottom: 6px;"><strong style="color: #fff;">Grupo de Holonomía:</strong> \(SU(3) \subset SO(6)\), garantizando supersimetría \(N=1\) en 4 dimensiones.</p>
+                        <p style="margin-bottom: 6px;"><strong style="color: #fff;">Métrica Ricci-Flat:</strong> \(R_{i\bar{j}} = 0\), conjetura de Calabi demostrada por Shing-Tung Yau (1977, Medalla Fields).</p>
+                        <p style="margin-bottom: 6px;"><strong style="color: #fff;">Número de Familias de Partículas:</strong> \(N_g = |\chi| / 2 = 3\) (generaciones de quarks y leptones: electrón, muón, tau).</p>
+                        <p><strong style="color: #fff;">Teoría M:</strong> La unificación de 11D descubierta por Edward Witten conecta las 5 teorías de supercuerdas por dualidades S y T.</p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -313,15 +333,54 @@
             window.speechSynthesis.speak(u);
         }
 
-        function openAtlasViewer() {
-            const modal = document.getElementById("photoModal");
-            const img = document.getElementById("atlasImg");
-            img.src = window.DIMENSIONS_SVG_B64 || "";
-            modal.style.display = "flex";
+        function drawHodgeDiamond() {
+            const c = document.getElementById("hodgeCanvas");
+            if (!c) return;
+            const g = c.getContext("2d");
+            g.clearRect(0, 0, c.width, c.height);
+
+            const cx = c.width / 2, cy = c.height / 2;
+            g.strokeStyle = "rgba(192, 132, 252, 0.25)";
+            g.lineWidth = 1;
+
+            // Rombo del diamante de Hodge
+            g.beginPath();
+            g.moveTo(cx, cy - 80);
+            g.lineTo(cx + 120, cy);
+            g.lineTo(cx, cy + 80);
+            g.lineTo(cx - 120, cy);
+            g.closePath();
+            g.stroke();
+
+            const hodgeData = [
+                { x: 0, y: -70, text: "h³,³ = 1", col: "#c084fc" },
+                { x: -45, y: -35, text: "h²,³ = 0", col: "#94a3b8" },
+                { x: 45, y: -35, text: "h³,² = 0", col: "#94a3b8" },
+                { x: -90, y: 0, text: "h¹,³ = 0", col: "#94a3b8" },
+                { x: 0, y: 0, text: "h²,² = 1", col: "#38bdf8" },
+                { x: 90, y: 0, text: "h³,¹ = 0", col: "#94a3b8" },
+                { x: -45, y: 35, text: "h¹,² = 101", col: "#fbbf24" },
+                { x: 45, y: 35, text: "h²,¹ = 101", col: "#fbbf24" },
+                { x: 0, y: 70, text: "h⁰,⁰ = 1", col: "#c084fc" }
+            ];
+
+            g.font = "bold 10px 'JetBrains Mono', monospace";
+            g.textAlign = "center";
+            g.textBaseline = "middle";
+
+            hodgeData.forEach(d => {
+                g.fillStyle = d.col;
+                g.fillText(d.text, cx + d.x, cy + d.y);
+            });
         }
 
-        function closeAtlasViewer() {
-            document.getElementById("photoModal").style.display = "none";
+        function openHodgeModal() {
+            document.getElementById("hodgeModal").style.display = "flex";
+            drawHodgeDiamond();
+        }
+
+        function closeHodgeModal() {
+            document.getElementById("hodgeModal").style.display = "none";
         }
 
         scene = createScene();
@@ -330,4 +389,3 @@
     </script>
 </body>
 </html>
-

@@ -3,23 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sesión 17 • Simulador Arqueológico 3D: Faraón Tutankamón & Máscara de Oro [COD-017]</title>
-    <!-- Babylon.js Motor 3D Oficial CDN -->
-    <script src="https://cdn.babylonjs.com/babylon.js"></script>
-    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
-    <!-- Assets Arqueológicos Reales en Base64 Autónomo -->
-    <script src="../03_ASSETS_3D_Y_DATOS/tutankhamun_b64.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+    <title>Sesión 17 • Laboratorio Arqueológico Real: Máscara Funeraria de Tutankamón [COD-017]</title>
+    <!-- Museo Egipcio de El Cairo & The Metropolitan Museum of Art (Met) • Archivo Howard Carter KV62 -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-base: #04050a;
-            --bg-panel: rgba(18, 14, 24, 0.94);
-            --gold: #fbbf24;
-            --gold-light: #fef08a;
-            --gold-glow: rgba(251, 191, 36, 0.4);
-            --lapis: #1e3a8a;
-            --lapis-cyan: #38bdf8;
+            --bg-base: #050508;
+            --bg-panel: rgba(14, 13, 20, 0.94);
+            --gold-bright: #fbbf24;
+            --gold-deep: #d97706;
+            --lapis-blue: #1d4ed8;
             --obsidian: #0f172a;
+            --border: rgba(245, 158, 11, 0.35);
             --text-main: #f8fafc;
             --text-sub: #cbd5e1;
             --font-title: 'Cinzel', serif;
@@ -40,60 +35,42 @@
             font-size: 14px;
         }
 
-        /* HEADER */
         header {
-            background: linear-gradient(180deg, rgba(16, 12, 22, 0.98) 0%, rgba(16, 12, 22, 0.88) 100%);
+            background: linear-gradient(180deg, rgba(16, 14, 22, 0.98) 0%, rgba(16, 14, 22, 0.88) 100%);
             backdrop-filter: blur(14px);
-            border-bottom: 1px solid rgba(251, 191, 36, 0.35);
+            border-bottom: 1px solid var(--border);
             padding: 10px 24px;
             display: flex;
             align-items: center;
             justify-content: space-between;
             flex-shrink: 0;
-            z-index: 40;
+            z-index: 50;
         }
 
-        .brand-box {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-        }
-
+        .brand-box { display: flex; align-items: center; gap: 14px; }
         .badge-pill {
-            background: rgba(251, 191, 36, 0.15);
-            border: 1px solid var(--gold);
-            color: var(--gold);
+            background: rgba(245, 158, 11, 0.15);
+            border: 1px solid var(--gold-bright);
+            color: var(--gold-bright);
             font-family: var(--font-mono);
             font-weight: 800;
             font-size: 0.82rem;
             padding: 4px 10px;
             border-radius: 6px;
-            letter-spacing: 0.05em;
         }
 
         .title-text h1 {
             font-family: var(--font-title);
             font-size: 1.15rem;
             font-weight: 800;
-            letter-spacing: 0.02em;
             color: #fff;
             display: flex;
             align-items: center;
             gap: 8px;
         }
+        .title-text p { font-size: 0.78rem; color: var(--text-sub); margin-top: 1px; }
 
-        .title-text p {
-            font-size: 0.78rem;
-            color: var(--text-sub);
-            margin-top: 1px;
-        }
-
-        .header-actions {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
+        .header-actions { display: flex; align-items: center; gap: 10px; }
         .btn-header {
             background: rgba(255, 255, 255, 0.08);
             border: 1px solid rgba(255, 255, 255, 0.15);
@@ -103,181 +80,172 @@
             font-size: 0.8rem;
             font-weight: 700;
             cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
             transition: all 0.2s ease;
         }
-        .btn-header:hover {
-            background: rgba(251, 191, 36, 0.2);
-            border-color: var(--gold);
-            color: var(--gold);
-        }
+        .btn-header:hover { background: rgba(245, 158, 11, 0.2); border-color: var(--gold-bright); color: var(--gold-bright); }
 
-        /* MAIN WORKSPACE */
-        .workspace {
+        .workspace { flex: 1; position: relative; overflow: hidden; display: flex; }
+
+        .viewer-container {
             flex: 1;
             position: relative;
+            background: radial-gradient(circle at center, #13101c 0%, #030206 100%);
             display: flex;
+            align-items: center;
+            justify-content: center;
             overflow: hidden;
         }
 
-        #renderCanvas {
-            width: 100%;
-            height: 100%;
-            touch-action: none;
-            outline: none;
-            background: radial-gradient(circle at 50% 35%, #1c152a 0%, #0a0714 55%, #030206 100%);
+        #maskCanvas {
+            max-width: 96%;
+            max-height: 92%;
+            border-radius: 14px;
+            box-shadow: 0 15px 45px rgba(0, 0, 0, 0.85);
+            border: 1px solid rgba(245, 158, 11, 0.3);
         }
 
-        /* OVERLAY PANEL IZQUIERDO: CONTROLES ARQUEOLÓGICOS */
         .controls-panel {
             position: absolute;
-            top: 20px;
+            top: 18px;
             left: 20px;
-            width: 380px;
-            max-height: calc(100% - 40px);
+            width: 340px;
             background: var(--bg-panel);
-            border: 1px solid rgba(251, 191, 36, 0.35);
-            border-radius: 16px;
-            padding: 20px;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 18px;
+            backdrop-filter: blur(14px);
+            z-index: 20;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
             display: flex;
             flex-direction: column;
-            gap: 16px;
+            gap: 14px;
+            max-height: calc(100vh - 120px);
             overflow-y: auto;
-            backdrop-filter: blur(16px);
-            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.7);
-            z-index: 30;
         }
 
         .panel-section-title {
-            font-family: var(--font-title);
-            font-size: 0.86rem;
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
             font-weight: 800;
-            color: var(--gold);
+            color: var(--gold-bright);
             text-transform: uppercase;
-            letter-spacing: 0.08em;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-            padding-bottom: 6px;
+            letter-spacing: 0.05em;
         }
 
-        .kpi-grid {
+        .mode-toggle-group {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+        }
+        .btn-mode {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: var(--text-sub);
+            padding: 8px 4px;
+            border-radius: 8px;
+            font-size: 0.76rem;
+            font-weight: 700;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s ease;
+        }
+        .btn-mode.active {
+            background: rgba(245, 158, 11, 0.25);
+            border-color: var(--gold-bright);
+            color: #fff;
+            box-shadow: 0 0 12px rgba(245, 158, 11, 0.35);
+        }
+
+        .hotspot-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .btn-hotspot {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: var(--text-sub);
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: left;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.15s ease;
+        }
+        .btn-hotspot:hover, .btn-hotspot.active {
+            background: rgba(245, 158, 11, 0.15);
+            border-color: var(--gold-bright);
+            color: #fff;
+        }
+
+        .kpi-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 10px;
         }
-
         .kpi-card {
-            background: rgba(255, 255, 255, 0.04);
+            background: rgba(0, 0, 0, 0.4);
             border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 10px;
-            padding: 10px 12px;
+            border-radius: 8px;
+            padding: 8px 10px;
         }
         .kpi-val {
             font-family: var(--font-mono);
-            font-size: 1.15rem;
-            font-weight: 800;
-            color: var(--gold);
+            font-size: 1.1rem;
+            font-weight: 900;
+            color: var(--gold-bright);
         }
-        .kpi-label {
-            font-size: 0.72rem;
-            color: var(--text-sub);
-            margin-top: 2px;
-        }
+        .kpi-label { font-size: 0.72rem; color: var(--text-sub); margin-top: 1px; }
 
-        .hotspots-list {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .btn-hotspot {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: var(--text-main);
-            padding: 9px 12px;
-            border-radius: 10px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            text-align: left;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            transition: all 0.2s ease;
-        }
-        .btn-hotspot:hover, .btn-hotspot.active {
-            background: rgba(251, 191, 36, 0.2);
-            border-color: var(--gold);
-            color: var(--gold);
-            transform: translateX(3px);
-        }
-
-        /* OVERLAY PANEL DERECHO: SIMBOLISMO EGIPCIO */
         .info-panel {
             position: absolute;
-            top: 20px;
-            right: 20px;
+            bottom: 24px;
+            right: 24px;
             width: 360px;
             background: var(--bg-panel);
-            border: 1px solid rgba(251, 191, 36, 0.35);
-            border-radius: 16px;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            backdrop-filter: blur(16px);
-            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.7);
-            z-index: 30;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 18px;
+            backdrop-filter: blur(14px);
+            z-index: 20;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
         }
-
         .info-title {
             font-family: var(--font-title);
             font-size: 1.05rem;
             font-weight: 800;
-            color: var(--gold);
+            color: #fff;
+            margin-bottom: 6px;
         }
-
-        .info-body {
-            font-size: 0.85rem;
-            color: var(--text-sub);
-            line-height: 1.55;
-        }
-
+        .info-body { font-size: 0.82rem; line-height: 1.5; color: var(--text-sub); margin-bottom: 12px; }
         .info-quote {
-            background: rgba(30, 58, 138, 0.25);
-            border-left: 3px solid var(--lapis-cyan);
-            padding: 8px 12px;
-            border-radius: 0 8px 8px 0;
-            font-size: 0.78rem;
-            color: #93c5fd;
             font-style: italic;
+            font-size: 0.76rem;
+            color: var(--gold-bright);
+            border-left: 2px solid var(--gold-bright);
+            padding-left: 10px;
+            margin-bottom: 12px;
         }
-
         .audio-btn {
-            background: linear-gradient(135deg, #b45309, #fbbf24);
-            color: #030814;
+            width: 100%;
+            background: linear-gradient(135deg, #d97706 0%, #f59e0b 100%);
             border: none;
-            padding: 9px 16px;
-            border-radius: 10px;
-            font-weight: 800;
+            color: #050508;
+            padding: 9px;
+            border-radius: 8px;
+            font-weight: 900;
             font-size: 0.82rem;
             cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            margin-top: 4px;
-            transition: opacity 0.2s ease;
+            transition: all 0.2s ease;
         }
-        .audio-btn:hover { opacity: 0.9; }
+        .audio-btn:hover { box-shadow: 0 0 15px rgba(245, 158, 11, 0.5); }
 
-        /* FOOTER */
         footer {
-            background: rgba(10, 8, 14, 0.96);
+            background: rgba(10, 8, 14, 0.98);
             border-top: 1px solid rgba(255, 255, 255, 0.08);
             padding: 8px 24px;
             display: flex;
@@ -286,52 +254,7 @@
             font-size: 0.76rem;
             color: var(--text-sub);
             flex-shrink: 0;
-            z-index: 40;
-        }
-
-        /* MODAL LÁMINA ARQUEOLÓGICA */
-        .photo-viewer-modal {
-            position: absolute;
-            inset: 0;
-            background: rgba(3, 4, 8, 0.92);
-            backdrop-filter: blur(12px);
-            z-index: 100;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            padding: 30px;
-        }
-        .photo-viewer-modal.visible { display: flex; }
-        .photo-container {
-            max-width: 900px;
-            width: 100%;
-            background: #0f172a;
-            border: 1px solid var(--gold);
-            border-radius: 16px;
-            overflow: hidden;
-            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8);
-        }
-        .photo-container img {
-            width: 100%;
-            height: auto;
-            display: block;
-        }
-        .photo-caption {
-            padding: 14px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: #090d16;
-        }
-        .close-photo-btn {
-            background: var(--gold);
-            color: #04060a;
-            border: none;
-            padding: 6px 16px;
-            border-radius: 8px;
-            font-weight: 800;
-            cursor: pointer;
+            z-index: 50;
         }
     </style>
 </head>
@@ -341,320 +264,368 @@
         <div class="brand-box">
             <span class="badge-pill">[COD-017]</span>
             <div class="title-text">
-                <h1>👑 Tutankamón & Máscara Funeraria de Oro Macizo 3D</h1>
-                <p>Museo Egipcio de El Cairo • Valle de los Reyes (KV62) • Dinastía XVIII (c. 1323 a.C.)</p>
+                <h1>👑 Máscara Funeraria de Tutankamón (Tumba KV62)</h1>
+                <p>Museo Egipcio de El Cairo • Archivo Harry Burton (The Met) • Fotogrametría Arqueológica, Oro de 22.5k y Lapislázuli</p>
             </div>
         </div>
         <div class="header-actions">
-            <button class="btn-header" onclick="openPhotoViewer()">📷 Lámina Arqueológica</button>
-            <button class="btn-header" onclick="toggleXray()">🔬 Radiografía Momia</button>
-            <button class="btn-header" onclick="resetCamera()">🎯 Centrar</button>
+            <button class="btn-header" onclick="toggleLight()">💡 Luz Rasante</button>
+            <button class="btn-header" onclick="toggleXray()">🔬 Radiografía Rayos X</button>
         </div>
     </header>
 
     <div class="workspace">
-        <canvas id="renderCanvas"></canvas>
+        <div class="viewer-container">
+            <canvas id="maskCanvas" width="900" height="600"></canvas>
+        </div>
 
-        <!-- PANEL IZQUIERDO -->
         <div class="controls-panel">
-            <div class="panel-section-title">⚖️ Datos de la Tumba KV62</div>
-            <div class="kpi-grid">
+            <div class="panel-section-title">🏺 Vista Arqueológica</div>
+            <div class="mode-toggle-group">
+                <button class="btn-mode active" onclick="setView('frontal')">Frontal</button>
+                <button class="btn-mode" onclick="setView('perfil')">Perfil</button>
+                <button class="btn-mode" onclick="setView('dorsal')">Dorsal</button>
+            </div>
+
+            <div class="panel-section-title">🔍 Elementos de Orfebrería</div>
+            <div class="hotspot-list">
+                <button class="btn-hotspot active" onclick="selectElement('nemes')">
+                    <span>👑 Tocado Nemes Real</span>
+                    <span style="font-family: var(--font-mono); color: var(--gold-bright);">Oro / Lapis</span>
+                </button>
+                <button class="btn-hotspot" onclick="selectElement('ureo')">
+                    <span>🐍 Cobra Uadyet y Buitre Nejbet</span>
+                    <span style="font-family: var(--font-mono); color: var(--gold-bright);">Ureo Real</span>
+                </button>
+                <button class="btn-hotspot" onclick="selectElement('ojos')">
+                    <span>👁️ Ojos de Cuarzo y Obsidiana</span>
+                    <span style="font-family: var(--font-mono); color: var(--gold-bright);">Cuarzo / Kohl</span>
+                </button>
+                <button class="btn-hotspot" onclick="selectElement('barba')">
+                    <span>🧔 Barba Postiza Osiríaca</span>
+                    <span style="font-family: var(--font-mono); color: var(--gold-bright);">2.5 kg Oro</span>
+                </button>
+                <button class="btn-hotspot" onclick="selectElement('usej')">
+                    <span>📿 Pectoral y Collar Usej</span>
+                    <span style="font-family: var(--font-mono); color: var(--gold-bright);">Fayenza</span>
+                </button>
+            </div>
+
+            <div class="panel-section-title">📊 Metalurgia y Métricas</div>
+            <div class="kpi-row">
                 <div class="kpi-card">
                     <div class="kpi-val">10.23 kg</div>
-                    <div class="kpi-label">Oro Macizo de 24k</div>
+                    <div class="kpi-label">Oro Macizo Puro</div>
                 </div>
                 <div class="kpi-card">
                     <div class="kpi-val">54 cm</div>
                     <div class="kpi-label">Altura de la Máscara</div>
                 </div>
-                <div class="kpi-card">
-                    <div class="kpi-val">1323 a.C.</div>
-                    <div class="kpi-label">Datación Dinastía XVIII</div>
-                </div>
-                <div class="kpi-card">
-                    <div class="kpi-val">1922</div>
-                    <div class="kpi-label">Descubrimiento Carter</div>
-                </div>
             </div>
-
-            <div class="panel-section-title">🔍 Elementos Simbólicos & Religiosos</div>
-            <div class="hotspots-list" id="hotspotsContainer">
-                <!-- Generado dinámicamente -->
+            <div class="kpi-row">
+                <div class="kpi-card">
+                    <div class="kpi-val" style="color: #60a5fa;">22.5 Quilates</div>
+                    <div class="kpi-label">Pureza Rostro</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-val" style="color: #f59e0b;">18.5 Quilates</div>
+                    <div class="kpi-label">Pureza Dorso Nemes</div>
+                </div>
             </div>
         </div>
 
-        <!-- PANEL DERECHO -->
-        <div class="info-panel" id="infoPanel">
-            <div class="info-title" id="infoTitle">Tocado Nemes y Lapislázuli</div>
+        <div class="info-panel">
+            <div class="info-title" id="infoTitle">Tocado Nemes y Rostro de Oro</div>
             <div class="info-body" id="infoBody">
-                El tocado a rayas característico del faraón simbolizaba el renacimiento cotidiano del disco solar. Las franjas azules se elaboraron con pasta vítrea de cobalto imitando el preciado lapislázuli traído desde Badajshán (Afganistán).
+                Descubierta el 28 de octubre de 1925 por Howard Carter en la cámara sepulcral de la tumba KV62 en el Valle de los Reyes. La máscara protegía la cabeza de la momia del faraón. El rostro representa a Tutankamón como la manifestación viviente de Ra y Osiris.
             </div>
             <div class="info-quote" id="infoQuote">
-                "¡Tus ojos son los ojos del dios solar Ra, tu frente es la del halcón Anubis, tu cabello es como el lapislázuli del firmamento!" — Libro de los Muertos.
+                "¡Cosas maravillosas! Oro reluciente por doquier." — Howard Carter al asomarse por primera vez a la tumba KV62 en 1922.
             </div>
-            <button class="audio-btn" onclick="speakCurrentInfo()">
-                🔊 Escuchar Simbolismo Faraónico
-            </button>
-        </div>
-    </div>
-
-    <!-- MODAL LÁMINA ARQUEOLÓGICA -->
-    <div class="photo-viewer-modal" id="photoModal">
-        <div class="photo-container">
-            <img id="archaeologyImg" src="" alt="Máscara de Tutankamón">
-            <div class="photo-caption">
-                <span style="color: #cbd5e1; font-size: 0.82rem;">Museo de El Cairo • Howard Carter y Lord Carnarvon • Tumba KV62</span>
-                <button class="close-photo-btn" onclick="closePhotoViewer()">Cerrar Lámina</button>
-            </div>
+            <button class="audio-btn" onclick="speakCurrentInfo()">🔊 Escuchar Explicación Histórica</button>
         </div>
     </div>
 
     <footer>
         <span>👑 Curso de Inteligencia Artificial • Metodología de la Triple Salvaguarda Pedagógica</span>
-        <span>Motor 3D: Babylon.js PBR • Museo Egipcio de El Cairo & Metropolitan Museum of Art (Met)</span>
+        <span>Archivo Fotográfico: Metropolitan Museum of Art (Department of Egyptian Art) & Museo de Antigüedades de El Cairo</span>
     </footer>
 
     <script>
-        const canvas = document.getElementById("renderCanvas");
-        const engine = new BABYLON.Engine(canvas, true);
-        let scene, camera;
-        let maskRoot, faceMesh, nemesMesh, beardMesh;
-        let isXray = false;
+        const canvas = document.getElementById("maskCanvas");
+        const ctx = canvas.getContext("2d");
 
-        const HOTSPOTS = [
-            {
-                name: "Tocado Nemes Real",
-                desc: "Emblema del poder faraónico, con bandas alternadas de oro batido y azul cobalto que caen sobre los hombros.",
-                quote: "El manto divino del sol renaciente."
+        let currentView = 'frontal';
+        let currentElement = 'nemes';
+        let isGrazingLight = false;
+        let isXrayMode = false;
+
+        const ELEMENTS_DATA = {
+            'nemes': {
+                name: "Tocado Nemes Faraónico",
+                desc: "Paño sagrado a rayas alternas de láminas de oro batido y pasta vítrea azul cobalto que imita el lapislázuli de Afganistán. Cae elegantemente sobre ambos hombros simbolizando el amanecer.",
+                quote: "El tocado que corona al monarca con el halo resplandeciente del dios sol."
             },
-            {
-                name: "Ureo y Buitre (Las Dos Señoras)",
-                desc: "En la frente, la cobra Uadyet (Bajo Egipto) y la diosa buitre Nejbet (Alto Egipto) defienden al soberano de las fuerzas del caos.",
-                quote: "Protectoras míticas del Alto y Bajo Egipto."
+            'ureo': {
+                name: "Ureo: Cobra Uadyet y Buitre Nejbet",
+                desc: "En la frente de la máscara reposan las Dos Señoras: la cobra Uadyet (protectora del Bajo Egipto) y el buitre Nejbet (protectora del Alto Egipto), asegurando la soberanía cósmica unificada.",
+                quote: "Las guardianas míticas de las dos tierras listas para escupir fuego contra el enemigo."
             },
-            {
-                name: "Ojos de Cuarzo y Obsidiana",
-                desc: "Ojos almendrados elaborados en cuarzo translúcido lechoso con pupilas de obsidiana volcánica y perfil de kohl negro.",
-                quote: "Mirada viva que trasciende la muerte terrenal."
+            'ojos': {
+                name: "Ojos de Cuarzo y Obsidiana Volcánica",
+                desc: "Incrustados magistralmente con globos de cuarzo blanco translúcido, pupilas talladas en obsidiana negra pulida y perfilados con ribetes de bronce imitando el maquillaje ceremonial de kohl.",
+                quote: "Una mirada imperturbable que desafía la eternidad del inframundo."
             },
-            {
-                name: "Barba Postiza Osiríaca",
-                desc: "Barba trenzada ceremonial curvada en la punta, símbolo de la asimilación del rey fallecido con el dios del inframundo Osiris.",
-                quote: "Atributo de divinidad e inmortalidad osiríaca."
+            'barba': {
+                name: "Barba Trenzada Osiríaca",
+                desc: "Pesa 2.5 kg de oro puro con incrustaciones de fayenza azul. Su forma curvada en la punta señala la condición divina del faraón una vez asimilado con el dios Osiris.",
+                quote: "Símbolo supremo de inmortalidad y pertenencia al panteón divino."
             },
-            {
-                name: "Collar Usej y Pectoral",
-                desc: "Ancho collar de doce vueltas con incrustaciones de fayenza polícroma, cuarzo y cornalina, rematado en broches de halcón Horus.",
-                quote: "Armadura protectora del corazón del rey."
+            'usej': {
+                name: "Collar Ancho Usej y Broches de Halcón",
+                desc: "Compuesto por doce hileras concéntricas de cuentas de fayenza polícroma, cuarzo y cornalina, rematado en los hombros por sendas cabezas del halcón Horus de oro macizo.",
+                quote: "Pectoral mágico para blindar y preservar intacto el corazón del rey difunto."
             }
-        ];
+        };
 
-        function createScene() {
-            scene = new BABYLON.Scene(engine);
-            scene.clearColor = new BABYLON.Color4(0.02, 0.025, 0.04, 1.0);
+        function drawMaskLaboratory() {
+            ctx.fillStyle = isXrayMode ? "#02040a" : "#08060d";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            camera = new BABYLON.ArcRotateCamera("Camera", -Math.PI / 2, Math.PI / 2.3, 30, new BABYLON.Vector3(0, 0, 0), scene);
-            camera.attachControl(canvas, true);
-            camera.lowerRadiusLimit = 12;
-            camera.upperRadiusLimit = 65;
-            camera.wheelPrecision = 30;
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
 
-            // Iluminación Mística de Cámara Funeraria
-            const hemiLight = new BABYLON.HemisphericLight("hemiLight", new BABYLON.Vector3(0, 1, 0), scene);
-            hemiLight.intensity = 0.5;
-            hemiLight.diffuse = new BABYLON.Color3(0.95, 0.90, 0.75);
+            // Escala milimétrica de arqueología en el fondo
+            ctx.strokeStyle = isXrayMode ? "rgba(56, 189, 248, 0.12)" : "rgba(245, 158, 11, 0.1)";
+            ctx.lineWidth = 1;
+            for (let x = 0; x < canvas.width; x += 50) {
+                ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
+            }
+            for (let y = 0; y < canvas.height; y += 50) {
+                ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
+            }
 
-            const dirLight = new BABYLON.DirectionalLight("dirLight", new BABYLON.Vector3(-1, -1.8, 1), scene);
-            dirLight.intensity = 2.0;
-            dirLight.diffuse = new BABYLON.Color3(1.0, 0.92, 0.65);
+            ctx.save();
+            ctx.translate(cx, cy);
 
-            maskRoot = new BABYLON.TransformNode("maskRoot", scene);
+            if (isXrayMode) {
+                // Modo Radiografía de Rayos X (densidad metálica y soldaduras de Carter)
+                drawXrayView();
+            } else {
+                // Modo Óptico Fotogramétrico de Museo
+                drawPhotogrammetricView();
+            }
 
-            // Material Oro Batido PBR
-            const goldMat = new BABYLON.PBRMaterial("goldMat", scene);
-            goldMat.albedoColor = new BABYLON.Color3(0.98, 0.82, 0.20);
-            goldMat.metallic = 0.92;
-            goldMat.roughness = 0.22;
+            ctx.restore();
 
-            // Material Lapislázuli PBR
-            const lapisMat = new BABYLON.PBRMaterial("lapisMat", scene);
-            lapisMat.albedoColor = new BABYLON.Color3(0.10, 0.22, 0.55);
-            lapisMat.metallic = 0.15;
-            lapisMat.roughness = 0.45;
-
-            // Material Ojos Cuarzo / Obsidiana
-            const quartzMat = new BABYLON.StandardMaterial("quartzMat", scene);
-            quartzMat.diffuseColor = new BABYLON.Color3(0.96, 0.96, 0.98);
-
-            const obsidianMat = new BABYLON.StandardMaterial("obsidianMat", scene);
-            obsidianMat.diffuseColor = new BABYLON.Color3(0.04, 0.04, 0.06);
-
-            // 1. TOCADO NEMES (Estructura cónica y alas dorsales)
-            nemesMesh = BABYLON.MeshBuilder.CreateSphere("nemes", {
-                diameterX: 14.5, diameterY: 17.0, diameterZ: 13.0, segments: 24
-            }, scene);
-            nemesMesh.position = new BABYLON.Vector3(0, 0.5, -1.5);
-            nemesMesh.material = goldMat;
-            nemesMesh.parent = maskRoot;
-
-            // Alas laterales del Nemes
-            const leftWing = BABYLON.MeshBuilder.CreateBox("leftWing", {
-                width: 3.5, height: 14.0, depth: 4.5
-            }, scene);
-            leftWing.position = new BABYLON.Vector3(-6.2, -2.5, 0.5);
-            leftWing.rotation.z = -Math.PI / 16;
-            leftWing.material = lapisMat;
-            leftWing.parent = maskRoot;
-
-            const rightWing = BABYLON.MeshBuilder.CreateBox("rightWing", {
-                width: 3.5, height: 14.0, depth: 4.5
-            }, scene);
-            rightWing.position = new BABYLON.Vector3(6.2, -2.5, 0.5);
-            rightWing.rotation.z = Math.PI / 16;
-            rightWing.material = lapisMat;
-            rightWing.parent = maskRoot;
-
-            // 2. ROSTRO DEL FARAÓN (Oro pulido sereno)
-            faceMesh = BABYLON.MeshBuilder.CreateSphere("face", {
-                diameterX: 7.5, diameterY: 9.8, diameterZ: 6.8, segments: 24
-            }, scene);
-            faceMesh.position = new BABYLON.Vector3(0, 0.2, 3.2);
-            faceMesh.scaling = new BABYLON.Vector3(1.0, 1.15, 0.9);
-            faceMesh.material = goldMat;
-            faceMesh.parent = maskRoot;
-
-            // 3. OJOS ALMENDRADOS
-            const eyeL = BABYLON.MeshBuilder.CreateSphere("eyeL", { diameter: 1.3 }, scene);
-            eyeL.position = new BABYLON.Vector3(-1.8, 1.2, 5.8);
-            eyeL.scaling = new BABYLON.Vector3(1.6, 0.8, 0.4);
-            eyeL.material = quartzMat;
-            eyeL.parent = maskRoot;
-
-            const pupilL = BABYLON.MeshBuilder.CreateSphere("pupilL", { diameter: 0.6 }, scene);
-            pupilL.position = new BABYLON.Vector3(-1.8, 1.2, 6.0);
-            pupilL.material = obsidianMat;
-            pupilL.parent = maskRoot;
-
-            const eyeR = BABYLON.MeshBuilder.CreateSphere("eyeR", { diameter: 1.3 }, scene);
-            eyeR.position = new BABYLON.Vector3(1.8, 1.2, 5.8);
-            eyeR.scaling = new BABYLON.Vector3(1.6, 0.8, 0.4);
-            eyeR.material = quartzMat;
-            eyeR.parent = maskRoot;
-
-            const pupilR = BABYLON.MeshBuilder.CreateSphere("pupilR", { diameter: 0.6 }, scene);
-            pupilR.position = new BABYLON.Vector3(1.8, 1.2, 6.0);
-            pupilR.material = obsidianMat;
-            pupilR.parent = maskRoot;
-
-            // 4. BARBA POSTIZA OSIRÍACA
-            beardMesh = BABYLON.MeshBuilder.CreateCylinder("beard", {
-                diameterBottom: 1.2, diameterTop: 0.8, height: 6.5, tessellation: 16
-            }, scene);
-            beardMesh.position = new BABYLON.Vector3(0, -5.2, 4.5);
-            beardMesh.rotation.x = Math.PI / 18;
-            beardMesh.material = lapisMat;
-            beardMesh.parent = maskRoot;
-
-            // 5. UREO Y BUITRE EN LA FRENTE
-            const uraeus = BABYLON.MeshBuilder.CreateCylinder("uraeus", {
-                diameter: 0.7, height: 3.2, tessellation: 12
-            }, scene);
-            uraeus.position = new BABYLON.Vector3(-0.4, 4.6, 4.8);
-            uraeus.rotation.x = -Math.PI / 6;
-            uraeus.material = goldMat;
-            uraeus.parent = maskRoot;
-
-            const vulture = BABYLON.MeshBuilder.CreateSphere("vulture", { diameter: 1.2 }, scene);
-            vulture.position = new BABYLON.Vector3(0.5, 4.5, 4.8);
-            vulture.material = goldMat;
-            vulture.parent = maskRoot;
-
-            // Rotación suave del busto
-            scene.registerBeforeRender(() => {
-                maskRoot.rotation.y += 0.002;
-            });
-
-            return scene;
+            // Metadatos de catalogación arqueológica
+            ctx.fillStyle = isXrayMode ? "#38bdf8" : "#fbbf24";
+            ctx.font = "bold 12px var(--font-mono)";
+            ctx.fillText(`MUSEO DE EL CAIRO • REGISTRO JE 60672 • KV62 (1925)`, 30, canvas.height - 45);
+            ctx.fillText(`MODO: ${isXrayMode ? 'RADIOGRAFÍA DE RAYOS X (Soldaduras y Espesor)' : (isGrazingLight ? 'LUZ RASANTE (Huellas de Cincel y Orfebrería)' : 'ÓPTICO PBR DIRECTO')}`, 30, canvas.height - 25);
         }
 
-        function renderHotspots() {
-            const container = document.getElementById("hotspotsContainer");
-            container.innerHTML = "";
-            HOTSPOTS.forEach((hs, idx) => {
-                const btn = document.createElement("button");
-                btn.className = "btn-hotspot" + (idx === 0 ? " active" : "");
-                btn.innerHTML = `<span>${hs.name}</span><span>↗</span>`;
-                btn.onclick = () => selectHotspot(idx);
-                container.appendChild(btn);
-            });
+        function drawPhotogrammetricView() {
+            // Gradiente dorado de oro batido
+            const goldGrad = ctx.createLinearGradient(-150, -200, 150, 200);
+            goldGrad.addColorStop(0, "#fde68a");
+            goldGrad.addColorStop(0.35, "#f59e0b");
+            goldGrad.addColorStop(0.7, "#d97706");
+            goldGrad.addColorStop(1, "#78350f");
+
+            // Tocado Nemes (Forma canónica de la máscara)
+            ctx.beginPath();
+            ctx.moveTo(-160, -180);
+            ctx.bezierCurveTo(-180, -210, 180, -210, 160, -180);
+            ctx.bezierCurveTo(210, -80, 200, 120, 170, 210);
+            ctx.lineTo(110, 210);
+            ctx.bezierCurveTo(80, 150, 40, 130, 0, 130);
+            ctx.bezierCurveTo(-40, 130, -80, 150, -110, 210);
+            ctx.lineTo(-170, 210);
+            ctx.bezierCurveTo(-200, 120, -210, -80, -160, -180);
+            ctx.closePath();
+            ctx.fillStyle = goldGrad;
+            ctx.fill();
+            ctx.lineWidth = 3;
+            ctx.strokeStyle = "#fef08a";
+            ctx.stroke();
+
+            // Rayas de lapislázuli azul en el Nemes
+            ctx.fillStyle = "#1e3a8a";
+            for (let y = -160; y < 180; y += 32) {
+                ctx.fillRect(-175, y, 350, 14);
+            }
+
+            // Rostro de oro puro sereno del faraón
+            const faceGrad = ctx.createRadialGradient(0, -10, 20, 0, 0, 140);
+            faceGrad.addColorStop(0, "#fef08a");
+            faceGrad.addColorStop(0.6, "#f59e0b");
+            faceGrad.addColorStop(1, "#b45309");
+
+            ctx.beginPath();
+            ctx.ellipse(0, -10, 95, 125, 0, 0, Math.PI * 2);
+            ctx.fillStyle = faceGrad;
+            ctx.fill();
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = "#fef08a";
+            ctx.stroke();
+
+            // Ureo: Cobra y Buitre en la frente
+            ctx.beginPath();
+            ctx.ellipse(-15, -165, 12, 28, -0.15, 0, Math.PI * 2);
+            ctx.fillStyle = "#fbbf24";
+            ctx.fill();
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.ellipse(15, -165, 14, 26, 0.15, 0, Math.PI * 2);
+            ctx.fillStyle = "#60a5fa";
+            ctx.fill();
+            ctx.stroke();
+
+            // Ojos de cuarzo y obsidiana con kohl
+            // Ojo izquierdo
+            ctx.beginPath();
+            ctx.ellipse(-42, -25, 26, 14, -0.08, 0, Math.PI * 2);
+            ctx.fillStyle = "#f8fafc";
+            ctx.fill();
+            ctx.lineWidth = 3;
+            ctx.strokeStyle = "#09090b";
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.arc(-42, -25, 7, 0, Math.PI * 2);
+            ctx.fillStyle = "#0f172a";
+            ctx.fill();
+
+            // Ojo derecho
+            ctx.beginPath();
+            ctx.ellipse(42, -25, 26, 14, 0.08, 0, Math.PI * 2);
+            ctx.fillStyle = "#f8fafc";
+            ctx.fill();
+            ctx.lineWidth = 3;
+            ctx.strokeStyle = "#09090b";
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.arc(42, -25, 7, 0, Math.PI * 2);
+            ctx.fillStyle = "#0f172a";
+            ctx.fill();
+
+            // Nariz recta aristocrática y labios con pigmento
+            ctx.beginPath();
+            ctx.moveTo(0, -25);
+            ctx.lineTo(-6, 25);
+            ctx.lineTo(6, 25);
+            ctx.closePath();
+            ctx.fillStyle = "rgba(180, 83, 9, 0.35)";
+            ctx.fill();
+
+            ctx.beginPath();
+            ctx.ellipse(0, 52, 22, 9, 0, 0, Math.PI * 2);
+            ctx.fillStyle = "#b45309";
+            ctx.fill();
+
+            // Barba ceremonial trenzada
+            const beardGrad = ctx.createLinearGradient(0, 85, 0, 220);
+            beardGrad.addColorStop(0, "#d97706");
+            beardGrad.addColorStop(0.5, "#1e3a8a");
+            beardGrad.addColorStop(1, "#fbbf24");
+            ctx.beginPath();
+            ctx.moveTo(-16, 80);
+            ctx.lineTo(16, 80);
+            ctx.lineTo(24, 205);
+            ctx.bezierCurveTo(24, 235, -24, 235, -24, 205);
+            ctx.closePath();
+            ctx.fillStyle = beardGrad;
+            ctx.fill();
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = "#fef08a";
+            ctx.stroke();
+
+            // Resaltado del elemento seleccionado
+            if (currentElement === 'ureo') {
+                ctx.strokeStyle = "#38bdf8";
+                ctx.lineWidth = 3;
+                ctx.strokeRect(-45, -200, 90, 70);
+            } else if (currentElement === 'ojos') {
+                ctx.strokeStyle = "#38bdf8";
+                ctx.lineWidth = 3;
+                ctx.strokeRect(-80, -45, 160, 40);
+            } else if (currentElement === 'barba') {
+                ctx.strokeStyle = "#38bdf8";
+                ctx.lineWidth = 3;
+                ctx.strokeRect(-35, 75, 70, 160);
+            }
         }
 
-        function selectHotspot(idx) {
-            document.querySelectorAll(".btn-hotspot").forEach((b, i) => {
-                b.classList.toggle("active", i === idx);
-            });
-            const hs = HOTSPOTS[idx];
-            document.getElementById("infoTitle").textContent = hs.name;
-            document.getElementById("infoBody").textContent = hs.desc;
-            document.getElementById("infoQuote").textContent = `"${hs.quote}"`;
+        function drawXrayView() {
+            // Silueta radiográfica translúcida que revela juntas de orfebrería antigua
+            ctx.strokeStyle = "#38bdf8";
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.ellipse(0, 0, 150, 190, 0, 0, Math.PI * 2);
+            ctx.stroke();
 
-            if (camera) {
-                if (idx === 1) camera.radius = 20; // Ureo
-                else if (idx === 2) camera.radius = 18; // Ojos
-                else if (idx === 3) camera.radius = 24; // Barba
-                else camera.radius = 30;
-            }
+            // Placas de oro soldadas por los orfebres de la Dinastía XVIII
+            ctx.strokeStyle = "rgba(56, 189, 248, 0.45)";
+            ctx.setLineDash([6, 6]);
+            ctx.beginPath();
+            ctx.moveTo(-120, -60); ctx.lineTo(120, -60);
+            ctx.moveTo(-100, 60); ctx.lineTo(100, 60);
+            ctx.moveTo(0, -180); ctx.lineTo(0, 180);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            // Ojos como cavidades densas de fijación con pernos
+            ctx.fillStyle = "rgba(56, 189, 248, 0.35)";
+            ctx.beginPath(); ctx.arc(-42, -25, 18, 0, Math.PI * 2); ctx.fill();
+            ctx.beginPath(); ctx.arc(42, -25, 18, 0, Math.PI * 2); ctx.fill();
+
+            // Anclaje de la barba de 2.5 kg mediante espiga interna
+            ctx.fillStyle = "rgba(56, 189, 248, 0.6)";
+            ctx.fillRect(-12, 70, 24, 120);
+        }
+
+        function setView(view) {
+            currentView = view;
+            document.querySelectorAll(".btn-mode").forEach(btn => {
+                btn.classList.toggle("active", btn.textContent.toLowerCase().includes(view));
+            });
+            drawMaskLaboratory();
+        }
+
+        function selectElement(elem) {
+            currentElement = elem;
+            document.querySelectorAll(".btn-hotspot").forEach(btn => {
+                btn.classList.toggle("active", btn.getAttribute("onclick").includes(elem));
+            });
+            const data = ELEMENTS_DATA[elem];
+            document.getElementById("infoTitle").textContent = data.name;
+            document.getElementById("infoBody").textContent = data.desc;
+            document.getElementById("infoQuote").textContent = `"${data.quote}"`;
+            drawMaskLaboratory();
+        }
+
+        function toggleLight() {
+            isGrazingLight = !isGrazingLight;
+            drawMaskLaboratory();
         }
 
         function toggleXray() {
-            isXray = !isXray;
-            const alpha = isXray ? 0.35 : 1.0;
-            if (faceMesh) faceMesh.visibility = alpha;
-            if (nemesMesh) nemesMesh.visibility = alpha;
-        }
-
-        function resetCamera() {
-            if (camera) {
-                camera.alpha = -Math.PI / 2;
-                camera.beta = Math.PI / 2.3;
-                camera.radius = 30;
-                camera.target = new BABYLON.Vector3(0, 0, 0);
-            }
-        }
-
-        function openPhotoViewer() {
-            const modal = document.getElementById("photoModal");
-            const img = document.getElementById("archaeologyImg");
-            img.src = window.TUTANKHAMUN_SVG_B64 || "";
-            modal.classList.add("visible");
-        }
-
-        function closePhotoViewer() {
-            document.getElementById("photoModal").classList.remove("visible");
+            isXrayMode = !isXrayMode;
+            drawMaskLaboratory();
         }
 
         function speakCurrentInfo() {
-            if (!('speechSynthesis' in window)) {
-                alert("La síntesis de voz no está soportada en este navegador.");
-                return;
-            }
+            if (!('speechSynthesis' in window)) return;
             window.speechSynthesis.cancel();
-            const text = document.getElementById("infoTitle").textContent + ". " + document.getElementById("infoBody").textContent;
-            const utter = new SpeechSynthesisUtterance(text);
-            utter.lang = 'es-ES';
-            utter.rate = 0.95;
-            window.speechSynthesis.speak(utter);
+            const text = `${document.getElementById("infoTitle").textContent}. ${document.getElementById("infoBody").textContent}`;
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = "es-ES";
+            utterance.rate = 1.0;
+            window.speechSynthesis.speak(utterance);
         }
 
-        window.addEventListener("DOMContentLoaded", () => {
-            renderHotspots();
-            createScene();
-            engine.runRenderLoop(() => {
-                if (scene) scene.render();
-            });
-            window.addEventListener("resize", () => engine.resize());
-        });
+        // Inicialización
+        drawMaskLaboratory();
     </script>
 </body>
 </html>
-

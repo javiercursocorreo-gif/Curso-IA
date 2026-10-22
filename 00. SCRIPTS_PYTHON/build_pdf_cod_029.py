@@ -68,15 +68,15 @@ def build_cod_029_taller_3d_pdf(output_path=PDF_PATH):
     story.append(Paragraph("🧠 <b>Prompt Maestro para Copiar y Pegar en Gemini:</b>", style_section_h))
     prompt_text = (
         "<b>Copia exactamente este texto en Gemini:</b><br/>"
-        "<i>\"Genera el código de programación (HTML, CSS y JavaScript) que voy a copiar y pegar en el Taller de Pruebas de mi curso para crear un simulador interactivo 3D del Experimento de la Doble Rendija y Dualidad Onda-Partícula.<br/>"
+        "<i>\"Genera el código de programación (HTML, CSS y JavaScript) que voy a copiar y pegar en el Taller de Pruebas de mi curso para crear un simulador interactivo del Experimento de la Doble Rendija y Dualidad Onda-Partícula (Registro Hitachi de Akira Tonomura 1989).<br/>"
         "Requisitos del código:<br/>"
         "1. Entrega el programa en un único bloque de código listo para pulsar directamente «Copiar código» y pegarlo con Ctrl+V.<br/>"
-        "2. Incluye en la cabecera el script con los datos físicos reales de óptica cuántica:<br/>"
-        "&lt;script src=&quot;https://javiercursocorreo-gif.github.io/Curso-IA/SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/double_slit_b64.js&quot;&gt;&lt;/script&gt;<br/>"
-        "3. Modela con Babylon.js un montaje de laboratorio con: cañón emisor cuántico, máscara con doble rendija (separación d=0.25mm), frente de ondas sinusoidal propagándose en 3D, pantalla detectora con acumulación de impactos de fósforo (franjas I = I0*cos^2) y detector cuántico ('Which-Way') con haz láser.<br/>"
-        "4. Incluye botones interactivos para: 'Disparar Fotones Continuos', 'Fotón Individual', 'Activar/Desactivar Detector' (colapso de onda vs interferencia) y 'Limpiar Pantalla'.<br/>"
-        "5. Aplica diseño en modo oscuro (#030614) con tipografía grande (16-18px), visibilidad de franjas en KPIs y síntesis de voz en español.<br/>"
-        "6. Escribe exclusivamente el código sin texto explicativo.\"</i>"
+        "2. Modela con precisión física: cañón de emisión de campo de 50 kV (λ de De Broglie = 0.0054 nm), biprisma electrostático con dos rendijas, detector microcanal de fósforo y muestreo Monte Carlo de impactos discretos según P(y) = |Ψ₁ + Ψ₂|².<br/>"
+        "3. Incluye modos de disparo cuántico: individual 1 a 1, ráfaga continua y saltos a N=100, 3000, 20000 y 70000 impactos para reproducir exactamente la emergencia gradual de las franjas de Young.<br/>"
+        "4. Añade conmutador de detector de trayectoria ('Which-Way'): al activarlo, colapsa la función de onda y transforma las franjas de interferencia en dos distribuciones gaussianas clásicas.<br/>"
+        "5. Integra botón de telemetría histórica con las micrografías originales de Tonomura (1989) y perfil de intensidad |Ψ|² en tiempo real.<br/>"
+        "6. Aplica diseño en modo oscuro (#01040a) con tipografía grande (16-18px), KPIs de conteo N y síntesis de voz en español.<br/>"
+        "7. Escribe exclusivamente el código sin texto explicativo.\"</i>"
     )
     p_table = Table([[Paragraph(prompt_text, style_prompt)]], colWidths=[letter[0] - 72])
     p_table.setStyle(TableStyle([
@@ -94,8 +94,8 @@ def build_cod_029_taller_3d_pdf(output_path=PDF_PATH):
 
     story.append(Paragraph("🔬 <b>¿De dónde proceden los modelos y cómo se ha montado el objeto 3D?</b>", style_section_h))
     tech_text = (
-        "• <b>Física ondulatoria y cuántica (<i>Young 1801 / Relación de de Broglie λ=h/p</i>):</b> El perfil de intensidad en la pantalla responde a I(θ) = I₀·cos²(π·d·sinθ / λ)·sinc²(π·a·sinθ / λ).<br/>"
-        "• <b>Montaje en Babylon.js:</b> Los frentes de onda se generan mediante mallas de cintas dinámicas (CreateRibbon) con funciones trigonométricas en tiempo real, mientras los impactos en la pantalla se acumulan con un sistema de partículas y textura dinámica emissive."
+        "• <b>Física cuántica y registro histórico (<i>Akira Tonomura, Hitachi 1989 / Longitud de onda de De Broglie</i>):</b> Cada electrón individual se difracta consigo mismo con longitud de onda λ = h/p = 5.4 pm (a 50 kV).<br/>"
+        "• <b>Simulación Estocástica y Acumulación de Impactos:</b> Muestreo de Monte Carlo por rechazo sobre la función de onda |Ψ₁ + Ψ₂|² para acumular hasta 70,000 impactos discretos sobre la placa de fósforo y colapso de von Neumann al encender el detector."
     )
     tech_table = Table([[Paragraph(tech_text, style_task)]], colWidths=[letter[0] - 72])
     tech_table.setStyle(TableStyle([

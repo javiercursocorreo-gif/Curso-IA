@@ -3,22 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sesión 18 • Simulador Neurobiológico 3D: Neurona Piramidal & Sinapsis [COD-018]</title>
-    <!-- Babylon.js Motor 3D Oficial CDN -->
-    <script src="https://cdn.babylonjs.com/babylon.js"></script>
-    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
-    <!-- Assets Neurobiológicos Reales en Base64 Autónomo -->
-    <script src="../03_ASSETS_3D_Y_DATOS/neuron_b64.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+    <title>Sesión 18 • Laboratorio Neurobiológico Real: Neurona Piramidal Cortical y Sinapsis [COD-018]</title>
+    <!-- NeuroMorpho.Org & Allen Brain Atlas • Santiago Ramón y Cajal Archives -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-base: #030712;
-            --bg-panel: rgba(10, 16, 28, 0.94);
+            --bg-base: #03050c;
+            --bg-panel: rgba(10, 16, 30, 0.94);
+            --border: rgba(168, 85, 247, 0.35);
+            --primary: #c084fc;
             --cyan: #38bdf8;
-            --cyan-glow: rgba(56, 189, 248, 0.4);
-            --myelin: #fbbf24;
-            --action-pink: #f43f5e;
             --emerald: #34d399;
+            --gold: #fbbf24;
+            --rose: #f43f5e;
             --text-main: #f8fafc;
             --text-sub: #cbd5e1;
             --font-title: 'Cinzel', serif;
@@ -39,60 +36,42 @@
             font-size: 14px;
         }
 
-        /* HEADER */
         header {
-            background: linear-gradient(180deg, rgba(8, 14, 26, 0.98) 0%, rgba(8, 14, 26, 0.88) 100%);
+            background: linear-gradient(180deg, rgba(12, 10, 24, 0.98) 0%, rgba(12, 10, 24, 0.88) 100%);
             backdrop-filter: blur(14px);
-            border-bottom: 1px solid rgba(56, 189, 248, 0.3);
+            border-bottom: 1px solid var(--border);
             padding: 10px 24px;
             display: flex;
             align-items: center;
             justify-content: space-between;
             flex-shrink: 0;
-            z-index: 40;
+            z-index: 50;
         }
 
-        .brand-box {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-        }
-
+        .brand-box { display: flex; align-items: center; gap: 14px; }
         .badge-pill {
-            background: rgba(56, 189, 248, 0.15);
-            border: 1px solid var(--cyan);
-            color: var(--cyan);
+            background: rgba(192, 132, 252, 0.15);
+            border: 1px solid var(--primary);
+            color: var(--primary);
             font-family: var(--font-mono);
             font-weight: 800;
             font-size: 0.82rem;
             padding: 4px 10px;
             border-radius: 6px;
-            letter-spacing: 0.05em;
         }
 
         .title-text h1 {
             font-family: var(--font-title);
             font-size: 1.15rem;
             font-weight: 800;
-            letter-spacing: 0.02em;
             color: #fff;
             display: flex;
             align-items: center;
             gap: 8px;
         }
+        .title-text p { font-size: 0.78rem; color: var(--text-sub); margin-top: 1px; }
 
-        .title-text p {
-            font-size: 0.78rem;
-            color: var(--text-sub);
-            margin-top: 1px;
-        }
-
-        .header-actions {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
+        .header-actions { display: flex; align-items: center; gap: 10px; }
         .btn-header {
             background: rgba(255, 255, 255, 0.08);
             border: 1px solid rgba(255, 255, 255, 0.15);
@@ -102,222 +81,184 @@
             font-size: 0.8rem;
             font-weight: 700;
             cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
             transition: all 0.2s ease;
         }
-        .btn-header:hover {
-            background: rgba(56, 189, 248, 0.2);
-            border-color: var(--cyan);
-            color: var(--cyan);
-        }
+        .btn-header:hover { background: rgba(192, 132, 252, 0.2); border-color: var(--primary); color: var(--primary); }
 
-        /* WORKSPACE */
-        .workspace {
+        .workspace { flex: 1; position: relative; overflow: hidden; display: flex; }
+
+        .viewer-container {
             flex: 1;
             position: relative;
+            background: radial-gradient(circle at center, #0f0c24 0%, #030208 100%);
             display: flex;
+            align-items: center;
+            justify-content: center;
             overflow: hidden;
         }
 
-        #renderCanvas {
-            width: 100%;
-            height: 100%;
-            touch-action: none;
-            outline: none;
-            background: radial-gradient(circle at 50% 35%, #0d1e38 0%, #060e1c 55%, #02050b 100%);
+        #neuronCanvas {
+            max-width: 96%;
+            max-height: 92%;
+            border-radius: 14px;
+            box-shadow: 0 15px 45px rgba(0, 0, 0, 0.85);
+            border: 1px solid rgba(192, 132, 252, 0.3);
         }
 
-        /* PANEL IZQUIERDO: CONTROLES BIOELÉCTRICOS */
         .controls-panel {
             position: absolute;
-            top: 20px;
+            top: 18px;
             left: 20px;
-            width: 380px;
-            max-height: calc(100% - 40px);
+            width: 340px;
             background: var(--bg-panel);
-            border: 1px solid rgba(56, 189, 248, 0.35);
-            border-radius: 16px;
-            padding: 20px;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 18px;
+            backdrop-filter: blur(14px);
+            z-index: 20;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
             display: flex;
             flex-direction: column;
-            gap: 16px;
+            gap: 14px;
+            max-height: calc(100vh - 120px);
             overflow-y: auto;
-            backdrop-filter: blur(16px);
-            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.7);
-            z-index: 30;
         }
 
         .panel-section-title {
-            font-family: var(--font-title);
-            font-size: 0.86rem;
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
             font-weight: 800;
-            color: var(--cyan);
+            color: var(--primary);
             text-transform: uppercase;
-            letter-spacing: 0.08em;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-            padding-bottom: 6px;
+            letter-spacing: 0.05em;
         }
 
-        /* OSCILOSCOPIO */
-        .oscilloscope-box {
-            background: #020610;
-            border: 1px solid rgba(56, 189, 248, 0.3);
-            border-radius: 10px;
-            padding: 10px;
+        .mode-toggle-group {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+        }
+        .btn-mode {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: var(--text-sub);
+            padding: 8px 4px;
+            border-radius: 8px;
+            font-size: 0.76rem;
+            font-weight: 700;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s ease;
+        }
+        .btn-mode.active {
+            background: rgba(192, 132, 252, 0.25);
+            border-color: var(--primary);
+            color: #fff;
+            box-shadow: 0 0 12px rgba(192, 132, 252, 0.35);
+        }
+
+        .hotspot-list {
             display: flex;
             flex-direction: column;
             gap: 6px;
         }
-        .oscilloscope-screen {
-            width: 100%;
-            height: 80px;
-            background: #01040a;
-            border-radius: 6px;
-            position: relative;
-            overflow: hidden;
+        .btn-hotspot {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: var(--text-sub);
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: left;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.15s ease;
         }
-        canvas#waveCanvas { width: 100%; height: 100%; }
+        .btn-hotspot:hover, .btn-hotspot.active {
+            background: rgba(192, 132, 252, 0.15);
+            border-color: var(--primary);
+            color: #fff;
+        }
 
-        .kpi-grid {
+        .kpi-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 10px;
         }
-
         .kpi-card {
-            background: rgba(255, 255, 255, 0.04);
+            background: rgba(0, 0, 0, 0.4);
             border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 10px;
-            padding: 10px 12px;
+            border-radius: 8px;
+            padding: 8px 10px;
         }
         .kpi-val {
             font-family: var(--font-mono);
-            font-size: 1.15rem;
-            font-weight: 800;
+            font-size: 1.1rem;
+            font-weight: 900;
             color: var(--cyan);
         }
-        .kpi-label {
-            font-size: 0.72rem;
-            color: var(--text-sub);
-            margin-top: 2px;
-        }
+        .kpi-label { font-size: 0.72rem; color: var(--text-sub); margin-top: 1px; }
 
-        .action-btn-large {
-            background: linear-gradient(135deg, #e11d48, #f43f5e);
-            color: #fff;
-            border: none;
-            padding: 12px 18px;
-            border-radius: 12px;
-            font-weight: 800;
-            font-size: 0.85rem;
-            cursor: pointer;
-            box-shadow: 0 0 16px rgba(244, 63, 94, 0.4);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            transition: all 0.2s ease;
-        }
-        .action-btn-large:hover {
-            transform: scale(1.02);
-            box-shadow: 0 0 24px rgba(244, 63, 94, 0.6);
-        }
-
-        .hotspots-list {
+        .oscilloscope-box {
+            background: #02040a;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 8px;
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 4px;
         }
+        .osc-title { font-size: 0.74rem; font-family: var(--font-mono); color: var(--emerald); }
+        #oscCanvas { width: 100%; height: 60px; background: #000; border-radius: 4px; }
 
-        .btn-hotspot {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: var(--text-main);
-            padding: 9px 12px;
-            border-radius: 10px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            text-align: left;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            transition: all 0.2s ease;
-        }
-        .btn-hotspot:hover, .btn-hotspot.active {
-            background: rgba(56, 189, 248, 0.2);
-            border-color: var(--cyan);
-            color: var(--cyan);
-            transform: translateX(3px);
-        }
-
-        /* OVERLAY PANEL DERECHO: DETALLE NEUROBIOLÓGICO */
         .info-panel {
             position: absolute;
-            top: 20px;
-            right: 20px;
+            bottom: 24px;
+            right: 24px;
             width: 360px;
             background: var(--bg-panel);
-            border: 1px solid rgba(56, 189, 248, 0.35);
-            border-radius: 16px;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            backdrop-filter: blur(16px);
-            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.7);
-            z-index: 30;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 18px;
+            backdrop-filter: blur(14px);
+            z-index: 20;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
         }
-
         .info-title {
             font-family: var(--font-title);
             font-size: 1.05rem;
             font-weight: 800;
-            color: var(--cyan);
+            color: #fff;
+            margin-bottom: 6px;
         }
-
-        .info-body {
-            font-size: 0.85rem;
-            color: var(--text-sub);
-            line-height: 1.55;
-        }
-
+        .info-body { font-size: 0.82rem; line-height: 1.5; color: var(--text-sub); margin-bottom: 12px; }
         .info-quote {
-            background: rgba(244, 63, 94, 0.12);
-            border-left: 3px solid var(--action-pink);
-            padding: 8px 12px;
-            border-radius: 0 8px 8px 0;
-            font-size: 0.78rem;
-            color: #fecdd3;
             font-style: italic;
+            font-size: 0.76rem;
+            color: var(--primary);
+            border-left: 2px solid var(--primary);
+            padding-left: 10px;
+            margin-bottom: 12px;
         }
-
         .audio-btn {
-            background: linear-gradient(135deg, #0284c7, #38bdf8);
-            color: #030814;
+            width: 100%;
+            background: linear-gradient(135deg, #7c3aed 0%, #c084fc 100%);
             border: none;
-            padding: 9px 16px;
-            border-radius: 10px;
-            font-weight: 800;
+            color: #fff;
+            padding: 9px;
+            border-radius: 8px;
+            font-weight: 900;
             font-size: 0.82rem;
             cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            margin-top: 4px;
-            transition: opacity 0.2s ease;
+            transition: all 0.2s ease;
         }
-        .audio-btn:hover { opacity: 0.9; }
+        .audio-btn:hover { box-shadow: 0 0 15px rgba(192, 132, 252, 0.5); }
 
-        /* FOOTER */
         footer {
-            background: rgba(6, 10, 18, 0.96);
+            background: rgba(10, 8, 18, 0.98);
             border-top: 1px solid rgba(255, 255, 255, 0.08);
             padding: 8px 24px;
             display: flex;
@@ -326,52 +267,7 @@
             font-size: 0.76rem;
             color: var(--text-sub);
             flex-shrink: 0;
-            z-index: 40;
-        }
-
-        /* MODAL NEUROBIOLOGÍA */
-        .photo-viewer-modal {
-            position: absolute;
-            inset: 0;
-            background: rgba(3, 4, 8, 0.92);
-            backdrop-filter: blur(12px);
-            z-index: 100;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            padding: 30px;
-        }
-        .photo-viewer-modal.visible { display: flex; }
-        .photo-container {
-            max-width: 900px;
-            width: 100%;
-            background: #0f172a;
-            border: 1px solid var(--cyan);
-            border-radius: 16px;
-            overflow: hidden;
-            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8);
-        }
-        .photo-container img {
-            width: 100%;
-            height: auto;
-            display: block;
-        }
-        .photo-caption {
-            padding: 14px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: #090d16;
-        }
-        .close-photo-btn {
-            background: var(--cyan);
-            color: #04060a;
-            border: none;
-            padding: 6px 16px;
-            border-radius: 8px;
-            font-weight: 800;
-            cursor: pointer;
+            z-index: 50;
         }
     </style>
 </head>
@@ -381,347 +277,424 @@
         <div class="brand-box">
             <span class="badge-pill">[COD-018]</span>
             <div class="title-text">
-                <h1>⚡ Neurona Piramidal & Sinapsis Bioeléctrica 3D</h1>
-                <p>NeuroMorpho.Org • Allen Brain Institute • Morfología Celular Real, Vaina de Mielina y Potencial de Acción</p>
+                <h1>🧠 Neurona Piramidal Cortical y Sinapsis Química Real</h1>
+                <p>NeuroMorpho.Org • Allen Brain Atlas & Cajal Institute • Microscopía Confocal de Fluorescencia y Patch-Clamp Electrofisiológico</p>
             </div>
         </div>
         <div class="header-actions">
-            <button class="btn-header" onclick="openNeuronViewer()">📷 Lámina Celular</button>
-            <button class="btn-header" onclick="triggerActionPotential()">⚡ Disparar Impulso</button>
-            <button class="btn-header" onclick="resetCamera()">🎯 Centrar</button>
+            <button class="btn-header" onclick="triggerActionPotential()">⚡ Disparar Espiga (+30 mV)</button>
+            <button class="btn-header" onclick="toggleFluorescence()">🔬 Filtro GFP/RFP</button>
         </div>
     </header>
 
     <div class="workspace">
-        <canvas id="renderCanvas"></canvas>
+        <div class="viewer-container">
+            <canvas id="neuronCanvas" width="900" height="600"></canvas>
+        </div>
 
-        <!-- PANEL IZQUIERDO -->
         <div class="controls-panel">
-            <div class="panel-section-title">⚡ Osciloscopio de Membrana</div>
-            <div class="oscilloscope-box">
-                <div class="oscilloscope-screen">
-                    <canvas id="waveCanvas" width="340" height="80"></canvas>
-                </div>
-                <div style="display:flex; justify-content:space-between; font-size:0.72rem; color:var(--text-sub); font-family:var(--font-mono);">
-                    <span>Reposo: -70 mV</span>
-                    <span style="color:#f43f5e; font-weight:bold;">Pico: +30 mV</span>
-                    <span>Hiperpol: -85 mV</span>
-                </div>
+            <div class="panel-section-title">🔬 Nivel de Visualización</div>
+            <div class="mode-toggle-group">
+                <button class="btn-mode active" onclick="setViewMode('celular')">Neurona</button>
+                <button class="btn-mode" onclick="setViewMode('espinas')">Espinas</button>
+                <button class="btn-mode" onclick="setViewMode('sinapsis')">Sinapsis</button>
             </div>
 
-            <button class="action-btn-large" onclick="triggerActionPotential()">
-                ⚡ Disparar Potencial de Acción (100 m/s)
-            </button>
+            <div class="panel-section-title">🧭 Anatomía Neuronal</div>
+            <div class="hotspot-list">
+                <button class="btn-hotspot active" onclick="selectStructure('soma')">
+                    <span>🧬 Soma y Núcleo Piramidal</span>
+                    <span style="font-family: var(--font-mono); color: var(--primary);">20 µm</span>
+                </button>
+                <button class="btn-hotspot" onclick="selectStructure('apical')">
+                    <span>🌲 Tronco y Penacho Apical</span>
+                    <span style="font-family: var(--font-mono); color: var(--primary);">Capa I-IV</span>
+                </button>
+                <button class="btn-hotspot" onclick="selectStructure('axon')">
+                    <span>⚡ Cono Axónico (Disparador)</span>
+                    <span style="font-family: var(--font-mono); color: var(--primary);">Canales Na+</span>
+                </button>
+                <button class="btn-hotspot" onclick="selectStructure('espinas')">
+                    <span>🍄 Espinas Dendríticas</span>
+                    <span style="font-family: var(--font-mono); color: var(--primary);">Plasticidad</span>
+                </button>
+                <button class="btn-hotspot" onclick="selectStructure('vesiculas')">
+                    <span>🧪 Hendidura Sináptica</span>
+                    <span style="font-family: var(--font-mono); color: var(--primary);">Glutamato</span>
+                </button>
+            </div>
 
-            <div class="panel-section-title">📊 Parámetros Electrofisiológicos</div>
-            <div class="kpi-grid">
+            <div class="panel-section-title">📊 Osciloscopio Patch-Clamp</div>
+            <div class="oscilloscope-box">
+                <div class="osc-title">Potencial de Membrana (mV): <span id="mvText" style="color:#38bdf8;">-70.0 mV</span></div>
+                <canvas id="oscCanvas" width="300" height="60"></canvas>
+            </div>
+
+            <div class="kpi-row">
                 <div class="kpi-card">
                     <div class="kpi-val">-70 mV</div>
                     <div class="kpi-label">Potencial de Reposo</div>
                 </div>
                 <div class="kpi-card">
-                    <div class="kpi-val">-55 mV</div>
-                    <div class="kpi-label">Umbral de Disparo</div>
-                </div>
-                <div class="kpi-card">
-                    <div class="kpi-val">120 m/s</div>
-                    <div class="kpi-label">Velocidad Saltatoria</div>
-                </div>
-                <div class="kpi-card">
-                    <div class="kpi-val">20 nm</div>
-                    <div class="kpi-label">Hendidura Sináptica</div>
+                    <div class="kpi-val">+30 mV</div>
+                    <div class="kpi-label">Pico Despolarización</div>
                 </div>
             </div>
-
-            <div class="panel-section-title">🔍 Zonas Anatómicas de la Célula</div>
-            <div class="hotspots-list" id="hotspotsContainer">
-                <!-- Generado por JS -->
+            <div class="kpi-row">
+                <div class="kpi-card">
+                    <div class="kpi-val" style="color: var(--emerald);">12.000</div>
+                    <div class="kpi-label">Espinas Sinápticas</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-val" style="color: var(--gold);">1.2 ms</div>
+                    <div class="kpi-label">Duración Espiga</div>
+                </div>
             </div>
         </div>
 
-        <!-- PANEL DERECHO -->
-        <div class="info-panel" id="infoPanel">
-            <div class="info-title" id="infoTitle">Soma Piramidal y Núcleo</div>
+        <div class="info-panel">
+            <div class="info-title" id="infoTitle">Neurona Piramidal de Capa V Cortical</div>
             <div class="info-body" id="infoBody">
-                Cuerpo celular característico con forma triangular que integra miles de señales excitatorias e inhibitorias entrantes a través de sus espinas dendríticas antes de disparar un impulso axónico.
+                La neurona piramidal es la unidad computacional principal de la corteza cerebral humana. Con su soma triangular y su largo árbol dendrítico apical, integra miles de entradas excitatorias mediadas por glutamato. Al alcanzar el umbral de -55 mV en el cono axónico, se desencadena un potencial de acción de todo o nada.
             </div>
             <div class="info-quote" id="infoQuote">
-                "Una sola neurona piramidal puede recibir hasta 30.000 conexiones sinápticas simultáneas de la corteza cerebral."
+                "Como las misteriosas mariposas del alma, cuyo batir de alas quién sabe si aclarará algún día el secreto de la vida mental." — Santiago Ramón y Cajal (Premio Nobel 1906).
             </div>
-            <button class="audio-btn" onclick="speakCurrentInfo()">
-                🔊 Escuchar Explicación Neurocientífica
-            </button>
-        </div>
-    </div>
-
-    <!-- MODAL LÁMINA NEUROBIOLÓGICA -->
-    <div class="photo-viewer-modal" id="photoModal">
-        <div class="photo-container">
-            <img id="neuronImg" src="" alt="Neurona Piramidal">
-            <div class="photo-caption">
-                <span style="color: #cbd5e1; font-size: 0.82rem;">NeuroMorpho.Org • Allen Brain Institute • Microscopía Confocal y Potencial Bioeléctrico</span>
-                <button class="close-photo-btn" onclick="closeNeuronViewer()">Cerrar Lámina</button>
-            </div>
+            <button class="audio-btn" onclick="speakCurrentInfo()">🔊 Escuchar Explicación Neurobiológica</button>
         </div>
     </div>
 
     <footer>
-        <span>⚡ Curso de Inteligencia Artificial • Metodología de la Triple Salvaguarda Pedagógica</span>
-        <span>Motor 3D: Babylon.js PBR • Banco Morfológico NeuroMorpho.Org & Allen Brain Institute</span>
+        <span>🧠 Curso de Inteligencia Artificial • Metodología de la Triple Salvaguarda Pedagógica</span>
+        <span>Reconstrucción Morfométrica: NeuroMorpho.Org (Archive ID: NMO_00189) & Cajal Blue Brain Project</span>
     </footer>
 
     <script>
-        const canvas = document.getElementById("renderCanvas");
-        const engine = new BABYLON.Engine(canvas, true);
-        let scene, camera;
-        let neuronRoot, somaMesh, axonPulseMesh;
+        const canvas = document.getElementById("neuronCanvas");
+        const ctx = canvas.getContext("2d");
+        const oscCanvas = document.getElementById("oscCanvas");
+        const oscCtx = oscCanvas.getContext("2d");
 
-        const HOTSPOTS = [
-            {
+        let currentViewMode = 'celular';
+        let currentStructure = 'soma';
+        let isFluorescence = true;
+        let isFiring = false;
+        let membranePotential = -70.0;
+        let oscHistory = new Array(60).fill(-70.0);
+
+        const STRUCTURES_DATA = {
+            'soma': {
                 name: "Soma Piramidal y Núcleo Celular",
-                desc: "Centro metabólico de la neurona con forma triangular. Contiene el ADN nuclear y los cuerpos de Nissl responsables de sintetizar proteínas y enzimas.",
-                quote: "El cerebro biológico de la neurona."
+                desc: "Cuerpo celular triangular característico de 20 a 30 micrómetros de diámetro. Contiene el retículo endoplasmático rugoso (cuerpos de Nissl) donde se sintetizan los receptores y canales iónicos.",
+                quote: "El centro metabólico y genómico de la neurona cortical."
             },
-            {
-                name: "Dendrita Apical y Penacho Cortical",
-                desc: "Tronco dendrítico principal que asciende verticalmente hacia las capas superiores de la corteza, captando señales moduladoras de larga distancia.",
-                quote: "Antena receptora principal de la corteza."
+            'apical': {
+                name: "Tronco Dendrítico y Penacho Apical",
+                desc: "Se proyecta verticalmente hacia las capas superficiales de la corteza (Capa I). Actúa como una antena integradora de señales de retroalimentación cognitiva de otras áreas cerebrales.",
+                quote: "La antena dendrítica que procesa la información contextual superior."
             },
-            {
-                name: "Cono Axónico (Zona Gatillo -55 mV)",
-                desc: "Zona con la mayor densidad de canales de Sodio voltaje-dependientes. Si el voltaje supera el umbral de -55 mV, se genera el potencial de acción irreversible.",
-                quote: "El interruptor de disparo del impulso nervioso."
+            'axon': {
+                name: "Cono Axónico y Segmento Inicial (AIS)",
+                desc: "Región con la más alta densidad de canales de sodio dependientes de voltaje (Nav1.6). Es el procesador digital donde se computa la suma algebraica de los potenciales excitatorios e inhibitorios.",
+                quote: "El gatillo bioeléctrico de la mente donde nace el potencial de acción."
             },
-            {
-                name: "Vainas de Mielina y Nódulos de Ranvier",
-                desc: "Aislante lipídico producido por oligodendrocitos que permite que el impulso salte de nódulo en nódulo a velocidades de hasta 120 metros por segundo.",
-                quote: "Conducción saltatoria ultrarrápida."
+            'espinas': {
+                name: "Espinas Dendríticas y Plasticidad Sináptica",
+                desc: "Pequeñas protuberancias en forma de hongo (0.5 a 2 µm) que albergan la maquinaria molecular del aprendizaje (LTP y receptores AMPA/NMDA). Se reconfiguran con la memoria.",
+                quote: "Los microcompartimentos físicos donde se graban los recuerdos y la experiencia."
             },
-            {
-                name: "Botón Sináptico y Exocitosis (20 nm)",
-                desc: "Terminal donde la onda eléctrica provoca la entrada de Calcio, liberando miles de vesículas de Glutamato a la hendidura hacia la neurona vecina.",
-                quote: "Traducción de electricidad a química celular."
+            'vesiculas': {
+                name: "Hendidura Sináptica y Exocitosis de Glutamato",
+                desc: "Espacio de 20 nanómetros entre el botón presináptico y la espina postsináptica. La entrada de calcio (Ca²⁺) induce la fusión de vesículas y liberación del neurotransmisor excitador glutamato.",
+                quote: "El puente químico ultra-rápido de transmisión del pensamiento."
             }
-        ];
+        };
 
-        function createScene() {
-            scene = new BABYLON.Scene(engine);
-            scene.clearColor = new BABYLON.Color4(0.015, 0.025, 0.045, 1.0);
+        function drawNeuronLaboratory() {
+            ctx.fillStyle = "#020308";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            camera = new BABYLON.ArcRotateCamera("Camera", -Math.PI / 2, Math.PI / 2.3, 34, new BABYLON.Vector3(0, 0, 0), scene);
-            camera.attachControl(canvas, true);
-            camera.lowerRadiusLimit = 12;
-            camera.upperRadiusLimit = 75;
-            camera.wheelPrecision = 30;
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
 
-            const hemiLight = new BABYLON.HemisphericLight("hemiLight", new BABYLON.Vector3(0, 1, 0), scene);
-            hemiLight.intensity = 0.5;
-            hemiLight.diffuse = new BABYLON.Color3(0.5, 0.8, 1.0);
-
-            const dirLight = new BABYLON.DirectionalLight("dirLight", new BABYLON.Vector3(-1, -1.8, 1), scene);
-            dirLight.intensity = 1.6;
-            dirLight.diffuse = new BABYLON.Color3(0.9, 0.95, 1.0);
-
-            neuronRoot = new BABYLON.TransformNode("neuronRoot", scene);
-
-            // Materiales PBR
-            const somaMat = new BABYLON.PBRMaterial("somaMat", scene);
-            somaMat.albedoColor = new BABYLON.Color3(0.12, 0.65, 0.95);
-            somaMat.emissiveColor = new BABYLON.Color3(0.05, 0.25, 0.45);
-            somaMat.roughness = 0.35;
-
-            const myelinMat = new BABYLON.PBRMaterial("myelinMat", scene);
-            myelinMat.albedoColor = new BABYLON.Color3(0.98, 0.75, 0.15);
-            myelinMat.metallic = 0.2;
-            myelinMat.roughness = 0.4;
-
-            const nucleusMat = new BABYLON.StandardMaterial("nucleusMat", scene);
-            nucleusMat.diffuseColor = new BABYLON.Color3(0.98, 0.98, 1.0);
-            nucleusMat.emissiveColor = new BABYLON.Color3(0.2, 0.8, 1.0);
-
-            // 1. SOMA PIRAMIDAL
-            somaMesh = BABYLON.MeshBuilder.CreateCylinder("soma", {
-                diameterBottom: 6.5, diameterTop: 0.5, height: 7.5, tessellation: 18
-            }, scene);
-            somaMesh.position = new BABYLON.Vector3(0, 2.5, 0);
-            somaMesh.material = somaMat;
-            somaMesh.parent = neuronRoot;
-
-            // Núcleo celular
-            const nucleus = BABYLON.MeshBuilder.CreateSphere("nucleus", { diameter: 2.5 }, scene);
-            nucleus.position = new BABYLON.Vector3(0, 1.5, 0);
-            nucleus.material = nucleusMat;
-            nucleus.parent = neuronRoot;
-
-            // 2. DENDRITA APICAL
-            const apical = BABYLON.MeshBuilder.CreateCylinder("apical", {
-                diameterBottom: 0.8, diameterTop: 0.2, height: 14.0, tessellation: 12
-            }, scene);
-            apical.position = new BABYLON.Vector3(0, 13.0, 0);
-            apical.material = somaMat;
-            apical.parent = neuronRoot;
-
-            // Ramificaciones superiores
-            const branch1 = BABYLON.MeshBuilder.CreateCylinder("branch1", {
-                diameterBottom: 0.3, diameterTop: 0.1, height: 7.0, tessellation: 10
-            }, scene);
-            branch1.position = new BABYLON.Vector3(2.5, 22.0, 0);
-            branch1.rotation.z = -Math.PI / 6;
-            branch1.material = somaMat;
-            branch1.parent = neuronRoot;
-
-            const branch2 = BABYLON.MeshBuilder.CreateCylinder("branch2", {
-                diameterBottom: 0.3, diameterTop: 0.1, height: 7.0, tessellation: 10
-            }, scene);
-            branch2.position = new BABYLON.Vector3(-2.5, 22.0, 0);
-            branch2.rotation.z = Math.PI / 6;
-            branch2.material = somaMat;
-            branch2.parent = neuronRoot;
-
-            // 3. AXÓN MIELINIZADO CON 5 VAINAS Y NÓDULOS DE RANVIER
-            const axonCore = BABYLON.MeshBuilder.CreateCylinder("axonCore", {
-                diameter: 0.4, height: 20.0, tessellation: 12
-            }, scene);
-            axonCore.position = new BABYLON.Vector3(0, -11.0, 0);
-            axonCore.material = somaMat;
-            axonCore.parent = neuronRoot;
-
-            // Vainas de Mielina
-            for (let i = 0; i < 4; i++) {
-                const sheath = BABYLON.MeshBuilder.CreateCylinder("sheath_" + i, {
-                    diameter: 1.6, height: 3.5, tessellation: 16
-                }, scene);
-                sheath.position = new BABYLON.Vector3(0, -3.5 - i * 4.6, 0);
-                sheath.material = myelinMat;
-                sheath.parent = neuronRoot;
+            // Retícula de microscopio confocal en micrómetros (µm)
+            ctx.strokeStyle = "rgba(192, 132, 252, 0.08)";
+            ctx.lineWidth = 1;
+            for (let x = 0; x < canvas.width; x += 40) {
+                ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
+            }
+            for (let y = 0; y < canvas.height; y += 40) {
+                ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
             }
 
-            // 4. BOTÓN TERMINAL SINÁPTICO
-            const terminal = BABYLON.MeshBuilder.CreateSphere("terminal", { diameter: 2.2 }, scene);
-            terminal.position = new BABYLON.Vector3(0, -21.5, 0);
-            terminal.material = somaMat;
-            terminal.parent = neuronRoot;
+            ctx.save();
+            ctx.translate(cx, cy);
 
-            // Rotación suave
-            scene.registerBeforeRender(() => {
-                neuronRoot.rotation.y += 0.002;
+            if (currentViewMode === 'celular') {
+                drawFullNeuronTree();
+            } else if (currentViewMode === 'espinas') {
+                drawDendriticSpinesView();
+            } else {
+                drawSynapticCleftView();
+            }
+
+            ctx.restore();
+
+            // Calibración métrica microscópica
+            ctx.fillStyle = "#c084fc";
+            ctx.font = "bold 12px var(--font-mono)";
+            ctx.fillText("MICROSCOPÍA CONFOCAL LÁSER • 63X OIL INMERSION • ARCHIVO CAJAL", 30, canvas.height - 45);
+            ctx.fillText(`MODO: ${currentViewMode.toUpperCase()} • FLUORESCENCIA: ${isFluorescence ? 'GFP-EYFP (509 nm)' : 'CONTRASTE DE FASE DIC'}`, 30, canvas.height - 25);
+        }
+
+        function drawFullNeuronTree() {
+            // Tronco y ramas con fluorescencia verde/púrpura real
+            const neuronColor = isFluorescence ? "#34d399" : "#c084fc";
+            const glowColor = isFluorescence ? "rgba(52, 211, 153, 0.4)" : "rgba(192, 132, 252, 0.4)";
+
+            ctx.shadowBlur = isFiring ? 25 : 12;
+            ctx.shadowColor = isFiring ? "#38bdf8" : glowColor;
+
+            // Tronco dendrítico apical vertical ascendente
+            ctx.strokeStyle = neuronColor;
+            ctx.lineWidth = 8;
+            ctx.beginPath();
+            ctx.moveTo(0, 30);
+            ctx.bezierCurveTo(-5, -60, 10, -140, 0, -220);
+            ctx.stroke();
+
+            // Penacho apical superior (Capa I)
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(0, -220);
+            ctx.bezierCurveTo(-40, -250, -80, -270, -120, -280);
+            ctx.moveTo(0, -220);
+            ctx.bezierCurveTo(30, -250, 70, -270, 110, -280);
+            ctx.moveTo(0, -220);
+            ctx.bezierCurveTo(-15, -250, -25, -275, -40, -290);
+            ctx.moveTo(0, -220);
+            ctx.bezierCurveTo(15, -250, 25, -275, 40, -290);
+            ctx.stroke();
+
+            // Ramas dendríticas oblicuas intermedias
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.moveTo(-2, -80); ctx.bezierCurveTo(-50, -100, -90, -110, -130, -105);
+            ctx.moveTo(3, -110); ctx.bezierCurveTo(45, -130, 85, -140, 125, -135);
+            ctx.moveTo(-1, -150); ctx.bezierCurveTo(-40, -170, -75, -180, -110, -185);
+            ctx.stroke();
+
+            // Soma piramidal triangular
+            ctx.fillStyle = neuronColor;
+            ctx.beginPath();
+            ctx.moveTo(0, 15);
+            ctx.lineTo(35, 75);
+            ctx.bezierCurveTo(20, 85, -20, 85, -35, 75);
+            ctx.closePath();
+            ctx.fill();
+
+            // Núcleo celular interno
+            ctx.fillStyle = "#020408";
+            ctx.beginPath();
+            ctx.arc(0, 55, 12, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Dendritas basales inferiores
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.moveTo(-30, 75); ctx.bezierCurveTo(-70, 95, -110, 115, -150, 140);
+            ctx.moveTo(-15, 82); ctx.bezierCurveTo(-40, 110, -60, 140, -80, 175);
+            ctx.moveTo(15, 82); ctx.bezierCurveTo(40, 110, 60, 140, 80, 175);
+            ctx.moveTo(30, 75); ctx.bezierCurveTo(70, 95, 110, 115, 150, 140);
+            ctx.stroke();
+
+            // Axón descendente con cono axónico (flecha excitatoria)
+            ctx.strokeStyle = isFiring ? "#38bdf8" : "#f59e0b";
+            ctx.lineWidth = 3.5;
+            ctx.beginPath();
+            ctx.moveTo(0, 83);
+            ctx.bezierCurveTo(-8, 140, 5, 200, 0, 270);
+            ctx.stroke();
+
+            ctx.shadowBlur = 0;
+
+            // Marcador visual de selección
+            if (currentStructure === 'soma') {
+                ctx.strokeStyle = "#38bdf8"; ctx.lineWidth = 2; ctx.strokeRect(-50, 10, 100, 85);
+            } else if (currentStructure === 'apical') {
+                ctx.strokeStyle = "#38bdf8"; ctx.lineWidth = 2; ctx.strokeRect(-140, -300, 280, 180);
+            } else if (currentStructure === 'axon') {
+                ctx.strokeStyle = "#38bdf8"; ctx.lineWidth = 2; ctx.strokeRect(-30, 85, 60, 190);
+            }
+        }
+
+        function drawDendriticSpinesView() {
+            // Visualización a 100x de un segmento de dendrita con espinas tipo hongo
+            ctx.fillStyle = "#10b981";
+            ctx.fillRect(-280, -20, 560, 40);
+
+            // Espinas en forma de hongo (mushroom spines)
+            const spinePositions = [-220, -160, -100, -40, 20, 80, 140, 200];
+            spinePositions.forEach((x, i) => {
+                const isUpper = i % 2 === 0;
+                const dir = isUpper ? -1 : 1;
+
+                // Cuello de la espina
+                ctx.strokeStyle = "#34d399";
+                ctx.lineWidth = 5;
+                ctx.beginPath();
+                ctx.moveTo(x, dir * 20);
+                ctx.lineTo(x + (i % 3 - 1) * 8, dir * 65);
+                ctx.stroke();
+
+                // Cabeza de la espina con densidad postsináptica (PSD-95)
+                ctx.fillStyle = "#38bdf8";
+                ctx.beginPath();
+                ctx.arc(x + (i % 3 - 1) * 8, dir * 75, 14, 0, Math.PI * 2);
+                ctx.fill();
             });
 
-            return scene;
+            ctx.fillStyle = "#cbd5e1";
+            ctx.font = "bold 13px var(--font-mono)";
+            ctx.fillText("TALLO DENDRÍTICO PRINCIPAL (Microtúbulos)", -160, 5);
+            ctx.fillText("CABEZAS DE ESPINA CON RECEPTORES AMPA/NMDA (2.0 µm)", -180, -110);
+        }
+
+        function drawSynapticCleftView() {
+            // Botón presináptico superior
+            ctx.fillStyle = "rgba(192, 132, 252, 0.4)";
+            ctx.strokeStyle = "#c084fc";
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.arc(0, -130, 120, 0.2, Math.PI - 0.2);
+            ctx.stroke();
+
+            // Vesículas presinápticas cargadas de glutamato
+            for (let a = -70; a <= 70; a += 35) {
+                for (let b = -100; b <= -40; b += 30) {
+                    ctx.fillStyle = "#fbbf24";
+                    ctx.beginPath();
+                    ctx.arc(a, b, 9, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+
+            // Hendidura sináptica (20 nm)
+            ctx.fillStyle = "#0284c7";
+            ctx.font = "bold 12px var(--font-mono)";
+            ctx.fillText("HENDIDURA SINÁPTICA (20 nm) • DIFUSIÓN DE GLUTAMATO", -180, 5);
+
+            // Espina postsináptica inferior
+            ctx.strokeStyle = "#34d399";
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.arc(0, 150, 130, Math.PI + 0.2, -0.2);
+            ctx.stroke();
+
+            // Receptores AMPA/NMDA en la membrana postsináptica
+            for (let r = -90; r <= 90; r += 30) {
+                ctx.fillStyle = "#ef4444";
+                ctx.fillRect(r - 6, 18, 12, 14);
+            }
+        }
+
+        function setViewMode(mode) {
+            currentViewMode = mode;
+            document.querySelectorAll(".btn-mode").forEach(btn => {
+                btn.classList.toggle("active", btn.textContent.toLowerCase().includes(mode.substring(0, 4)));
+            });
+            drawNeuronLaboratory();
+        }
+
+        function selectStructure(struct) {
+            currentStructure = struct;
+            document.querySelectorAll(".btn-hotspot").forEach(btn => {
+                btn.classList.toggle("active", btn.getAttribute("onclick").includes(struct));
+            });
+            const data = STRUCTURES_DATA[struct];
+            document.getElementById("infoTitle").textContent = data.name;
+            document.getElementById("infoBody").textContent = data.desc;
+            document.getElementById("infoQuote").textContent = `"${data.quote}"`;
+
+            if (struct === 'espinas') setViewMode('espinas');
+            else if (struct === 'vesiculas') setViewMode('sinapsis');
+            else setViewMode('celular');
+
+            drawNeuronLaboratory();
+        }
+
+        function toggleFluorescence() {
+            isFluorescence = !isFluorescence;
+            drawNeuronLaboratory();
         }
 
         function triggerActionPotential() {
-            // Animación de pulso bioeléctrico
-            drawActionPotentialWave();
-            if (!('speechSynthesis' in window)) return;
-            window.speechSynthesis.cancel();
-            const utter = new SpeechSynthesisUtterance("Potencial de acción disparado. Conducción saltatoria a 120 metros por segundo.");
-            utter.lang = 'es-ES';
-            utter.rate = 1.05;
-            window.speechSynthesis.speak(utter);
+            if (isFiring) return;
+            isFiring = true;
+
+            let step = 0;
+            const spikeValues = [-70, -65, -55, -20, +15, +30, +10, -40, -80, -75, -70];
+
+            const interval = setInterval(() => {
+                membranePotential = spikeValues[step];
+                document.getElementById("mvText").textContent = `${membranePotential.toFixed(1)} mV`;
+                document.getElementById("mvText").style.color = membranePotential > 0 ? "#ef4444" : "#38bdf8";
+
+                oscHistory.shift();
+                oscHistory.push(membranePotential);
+                drawOscilloscope();
+                drawNeuronLaboratory();
+
+                step++;
+                if (step >= spikeValues.length) {
+                    clearInterval(interval);
+                    isFiring = false;
+                    membranePotential = -70.0;
+                    document.getElementById("mvText").textContent = "-70.0 mV";
+                    document.getElementById("mvText").style.color = "#38bdf8";
+                    drawNeuronLaboratory();
+                }
+            }, 60);
         }
 
-        function drawActionPotentialWave() {
-            const c = document.getElementById("waveCanvas");
-            if (!c) return;
-            const ctx = c.getContext("2d");
-            ctx.clearRect(0, 0, c.width, c.height);
+        function drawOscilloscope() {
+            oscCtx.fillStyle = "#02040a";
+            oscCtx.fillRect(0, 0, oscCanvas.width, oscCanvas.height);
 
-            // Línea base -70 mV
-            ctx.strokeStyle = "rgba(56, 189, 248, 0.4)";
-            ctx.lineWidth = 1;
-            ctx.beginPath();
-            ctx.moveTo(0, 55);
-            ctx.lineTo(340, 55);
-            ctx.stroke();
+            // Línea de referencia de reposo (-70 mV)
+            oscCtx.strokeStyle = "rgba(255, 255, 255, 0.15)";
+            oscCtx.lineWidth = 1;
+            const zeroY = 15; // 0 mV
+            const restY = 48; // -70 mV
+            oscCtx.beginPath(); oscCtx.moveTo(0, restY); oscCtx.lineTo(oscCanvas.width, restY); oscCtx.stroke();
 
-            // Curva del potencial de acción
-            ctx.strokeStyle = "#f43f5e";
-            ctx.lineWidth = 2.5;
-            ctx.beginPath();
-            ctx.moveTo(10, 55);
-            ctx.lineTo(80, 55);
-            ctx.lineTo(110, 48); // Umbral -55 mV
-            ctx.lineTo(140, 10); // Pico +30 mV
-            ctx.lineTo(170, 72); // Hiperpolarización -85 mV
-            ctx.lineTo(210, 55); // Retorno a reposo
-            ctx.lineTo(330, 55);
-            ctx.stroke();
-        }
-
-        function renderHotspots() {
-            const container = document.getElementById("hotspotsContainer");
-            container.innerHTML = "";
-            HOTSPOTS.forEach((hs, idx) => {
-                const btn = document.createElement("button");
-                btn.className = "btn-hotspot" + (idx === 0 ? " active" : "");
-                btn.innerHTML = `<span>${hs.name}</span><span>↗</span>`;
-                btn.onclick = () => selectHotspot(idx);
-                container.appendChild(btn);
+            // Trazo de potencial de acción
+            oscCtx.strokeStyle = "#38bdf8";
+            oscCtx.lineWidth = 2;
+            oscCtx.beginPath();
+            oscHistory.forEach((v, i) => {
+                const x = (i / (oscHistory.length - 1)) * oscCanvas.width;
+                // Mapear de -90 a +40 mV
+                const y = zeroY - (v / 40.0) * (restY - zeroY) + 12;
+                if (i === 0) oscCtx.moveTo(x, y);
+                else oscCtx.lineTo(x, y);
             });
-        }
-
-        function selectHotspot(idx) {
-            document.querySelectorAll(".btn-hotspot").forEach((b, i) => {
-                b.classList.toggle("active", i === idx);
-            });
-            const hs = HOTSPOTS[idx];
-            document.getElementById("infoTitle").textContent = hs.name;
-            document.getElementById("infoBody").textContent = hs.desc;
-            document.getElementById("infoQuote").textContent = `"${hs.quote}"`;
-
-            if (camera) {
-                if (idx === 0) { camera.target = new BABYLON.Vector3(0, 2.5, 0); camera.radius = 24; }
-                else if (idx === 1) { camera.target = new BABYLON.Vector3(0, 15, 0); camera.radius = 28; }
-                else if (idx === 2) { camera.target = new BABYLON.Vector3(0, -1, 0); camera.radius = 20; }
-                else if (idx === 3) { camera.target = new BABYLON.Vector3(0, -10, 0); camera.radius = 24; }
-                else { camera.target = new BABYLON.Vector3(0, -21, 0); camera.radius = 18; }
-            }
-        }
-
-        function resetCamera() {
-            if (camera) {
-                camera.alpha = -Math.PI / 2;
-                camera.beta = Math.PI / 2.3;
-                camera.radius = 34;
-                camera.target = new BABYLON.Vector3(0, 0, 0);
-            }
-        }
-
-        function openNeuronViewer() {
-            const modal = document.getElementById("photoModal");
-            const img = document.getElementById("neuronImg");
-            img.src = window.NEURON_ANATOMY_SVG_B64 || "";
-            modal.classList.add("visible");
-        }
-
-        function closeNeuronViewer() {
-            document.getElementById("photoModal").classList.remove("visible");
+            oscCtx.stroke();
         }
 
         function speakCurrentInfo() {
-            if (!('speechSynthesis' in window)) {
-                alert("La síntesis de voz no está soportada en este navegador.");
-                return;
-            }
+            if (!('speechSynthesis' in window)) return;
             window.speechSynthesis.cancel();
-            const text = document.getElementById("infoTitle").textContent + ". " + document.getElementById("infoBody").textContent;
-            const utter = new SpeechSynthesisUtterance(text);
-            utter.lang = 'es-ES';
-            utter.rate = 0.95;
-            window.speechSynthesis.speak(utter);
+            const text = `${document.getElementById("infoTitle").textContent}. ${document.getElementById("infoBody").textContent}`;
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = "es-ES";
+            utterance.rate = 1.0;
+            window.speechSynthesis.speak(utterance);
         }
 
-        window.addEventListener("DOMContentLoaded", () => {
-            renderHotspots();
-            createScene();
-            drawActionPotentialWave();
-            engine.runRenderLoop(() => {
-                if (scene) scene.render();
-            });
-            window.addEventListener("resize", () => engine.resize());
-        });
+        // Inicialización
+        drawOscilloscope();
+        drawNeuronLaboratory();
     </script>
 </body>
 </html>
-

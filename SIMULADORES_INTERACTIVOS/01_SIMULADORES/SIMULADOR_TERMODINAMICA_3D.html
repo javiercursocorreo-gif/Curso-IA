@@ -3,369 +3,743 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sesión 23 • Simulador 3D: Termodinámica Molecular — Cero Absoluto a la Fusión [COD-023]</title>
-    <!-- Babylon.js Motor 3D Oficial CDN -->
-    <script src="https://cdn.babylonjs.com/babylon.js"></script>
-    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
-    <!-- Respaldo Científico en Base64 Autónomo -->
-    <script src="../03_ASSETS_3D_Y_DATOS/thermodynamics_b64.js"></script>
-    <script src="../../SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/thermodynamics_b64.js"></script>
-    <script src="../../../../SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/thermodynamics_b64.js"></script>
+    <title>Sesión 23 • Laboratorio Físico Real: Termodinámica Molecular & Fusión [COD-023]</title>
+    <!-- NIST CODATA • Maxwell-Boltzmann Distribution & Bose-Einstein Condensation (JILA / MIT) -->
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-base: #030612;
-            --bg-panel: rgba(10, 16, 30, 0.94);
+            --bg-base: #010309;
+            --bg-panel: rgba(8, 14, 28, 0.94);
             --border: rgba(56, 189, 248, 0.35);
             --primary: #38bdf8;
+            --primary-glow: rgba(56, 189, 248, 0.4);
             --emerald: #34d399;
             --amber: #fbbf24;
             --orange: #f97316;
             --purple: #c084fc;
+            --rose: #f43f5e;
             --text-main: #f8fafc;
             --text-sub: #cbd5e1;
             --font-title: 'Cinzel', serif;
             --font-sans: 'Inter', sans-serif;
             --font-mono: 'JetBrains Mono', monospace;
         }
+
         * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
         body {
-            background-color: var(--bg-base); color: var(--text-main);
-            font-family: var(--font-sans); height: 100vh; width: 100vw;
-            overflow: hidden; display: flex; flex-direction: column; font-size: 14px;
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            font-family: var(--font-sans);
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            font-size: 14px;
         }
+
         header {
             background: linear-gradient(180deg, rgba(8, 14, 28, 0.98) 0%, rgba(8, 14, 28, 0.88) 100%);
-            backdrop-filter: blur(14px); border-bottom: 1px solid var(--border);
-            padding: 10px 24px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; z-index: 40;
+            backdrop-filter: blur(14px);
+            border-bottom: 1px solid var(--border);
+            padding: 10px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+            z-index: 50;
         }
+
         .brand-box { display: flex; align-items: center; gap: 14px; }
         .badge-pill {
-            background: rgba(56, 189, 248, 0.15); border: 1px solid var(--primary);
-            color: var(--primary); font-family: var(--font-mono); font-weight: 800;
-            font-size: 0.82rem; padding: 4px 10px; border-radius: 6px;
+            background: rgba(56, 189, 248, 0.15);
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            font-family: var(--font-mono);
+            font-weight: 800;
+            font-size: 0.82rem;
+            padding: 4px 10px;
+            border-radius: 6px;
         }
+
         .title-text h1 {
-            font-family: var(--font-title); font-size: 1.15rem; font-weight: 800; color: #fff;
-            display: flex; align-items: center; gap: 8px;
+            font-family: var(--font-title);
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         .title-text p { font-size: 0.78rem; color: var(--text-sub); margin-top: 1px; }
+
         .header-actions { display: flex; align-items: center; gap: 10px; }
         .btn-header {
-            background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15);
-            color: var(--text-main); padding: 6px 14px; border-radius: 8px; font-size: 0.8rem;
-            font-weight: 700; cursor: pointer; transition: all 0.2s ease;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: var(--text-main);
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
         }
         .btn-header:hover { background: rgba(56, 189, 248, 0.2); border-color: var(--primary); color: var(--primary); }
+
         .workspace { flex: 1; position: relative; overflow: hidden; display: flex; }
-        #renderCanvas { width: 100%; height: 100%; outline: none; display: block; }
+
+        .viewer-container {
+            flex: 1;
+            position: relative;
+            background: radial-gradient(circle at center, #071024 0%, #010206 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        #thermoCanvas {
+            max-width: 96%;
+            max-height: 92%;
+            border-radius: 14px;
+            box-shadow: 0 15px 45px rgba(0, 0, 0, 0.9);
+            border: 1px solid rgba(56, 189, 248, 0.25);
+            background: #02040b;
+        }
+
         .controls-panel {
-            position: absolute; top: 18px; left: 18px; width: 340px;
-            background: var(--bg-panel); border: 1px solid var(--border);
-            border-radius: 14px; padding: 18px; backdrop-filter: blur(14px);
-            z-index: 20; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            position: absolute;
+            top: 18px;
+            left: 20px;
+            width: 350px;
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 18px;
+            backdrop-filter: blur(14px);
+            z-index: 20;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            max-height: calc(100vh - 120px);
+            overflow-y: auto;
         }
+
         .panel-section-title {
-            font-family: var(--font-mono); font-size: 0.8rem; font-weight: 800;
-            color: var(--primary); text-transform: uppercase; margin-bottom: 12px;
-            display: flex; align-items: center; gap: 6px;
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            font-weight: 800;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
-        .slider-box { margin-bottom: 16px; }
-        .slider-label-row { display: flex; justify-content: space-between; font-size: 0.82rem; margin-bottom: 6px; }
-        .temp-slider {
-            width: 100%; -webkit-appearance: none; height: 8px; border-radius: 4px;
-            background: linear-gradient(90deg, #38bdf8 0%, #34d399 30%, #fbbf24 60%, #f97316 85%, #c084fc 100%);
-            outline: none; cursor: pointer;
+
+        .slider-box {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
         }
-        .temp-slider::-webkit-slider-thumb {
-            -webkit-appearance: none; width: 22px; height: 22px; border-radius: 50%;
-            background: #ffffff; border: 3px solid #38bdf8; cursor: pointer;
-            box-shadow: 0 0 10px rgba(56, 189, 248, 0.8);
+        .slider-header {
+            display: flex;
+            justify-content: space-between;
+            font-family: var(--font-mono);
+            font-size: 0.78rem;
+            color: var(--primary);
+            font-weight: 800;
         }
-        .preset-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 16px; }
-        .btn-preset {
-            background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.12);
-            color: var(--text-sub); padding: 7px 10px; border-radius: 8px; font-size: 0.78rem;
-            cursor: pointer; transition: all 0.2s ease; text-align: left;
+        input[type="range"] {
+            width: 100%;
+            accent-color: var(--primary);
+            cursor: pointer;
         }
-        .btn-preset.active, .btn-preset:hover {
-            background: rgba(56, 189, 248, 0.2); border-color: var(--primary); color: #fff;
+
+        .benchmarks-list {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            max-height: 200px;
+            overflow-y: auto;
+            padding-right: 4px;
         }
-        .kpi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-        .kpi-card { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 8px 10px; }
-        .kpi-val { font-family: var(--font-mono); font-size: 1.05rem; font-weight: 800; color: #fff; }
-        .kpi-label { font-size: 0.72rem; color: var(--text-sub); margin-top: 2px; }
+        .btn-bench {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: var(--text-sub);
+            padding: 7px 10px;
+            border-radius: 8px;
+            font-size: 0.76rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: left;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.15s ease;
+        }
+        .btn-bench:hover, .btn-bench.active {
+            background: rgba(56, 189, 248, 0.15);
+            border-color: var(--primary);
+            color: #fff;
+        }
+
+        .dist-chart-box {
+            background: #010207;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .dist-title {
+            font-size: 0.72rem;
+            font-family: var(--font-mono);
+            color: var(--emerald);
+            display: flex;
+            justify-content: space-between;
+        }
+        #distCanvas {
+            width: 100%;
+            height: 60px;
+            background: #000;
+            border-radius: 4px;
+        }
+
+        .kpi-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        .kpi-card {
+            background: rgba(0, 0, 0, 0.45);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+            padding: 8px 10px;
+        }
+        .kpi-val {
+            font-family: var(--font-mono);
+            font-size: 1.05rem;
+            font-weight: 900;
+            color: var(--primary);
+        }
+        .kpi-label { font-size: 0.7rem; color: var(--text-sub); margin-top: 1px; }
+
         .info-panel {
-            position: absolute; bottom: 20px; right: 20px; width: 380px;
-            background: var(--bg-panel); border: 1px solid var(--border);
-            border-radius: 14px; padding: 18px; backdrop-filter: blur(14px);
-            z-index: 20; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            position: absolute;
+            bottom: 24px;
+            right: 24px;
+            width: 370px;
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 18px;
+            backdrop-filter: blur(14px);
+            z-index: 20;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
         }
-        .info-title { font-family: var(--font-title); font-size: 1.15rem; font-weight: 700; color: var(--amber); margin-bottom: 8px; }
-        .info-body { font-size: 0.84rem; line-height: 1.5; color: var(--text-sub); margin-bottom: 12px; }
-        .info-quote { font-style: italic; font-size: 0.78rem; color: var(--primary); border-left: 2px solid var(--primary); padding-left: 10px; margin-bottom: 12px; }
+        .info-title {
+            font-family: var(--font-title);
+            font-size: 1.05rem;
+            font-weight: 800;
+            color: #fff;
+            margin-bottom: 6px;
+        }
+        .info-body { font-size: 0.82rem; line-height: 1.5; color: var(--text-sub); margin-bottom: 12px; }
+        .info-quote {
+            font-style: italic;
+            font-size: 0.76rem;
+            color: var(--primary);
+            border-left: 2px solid var(--primary);
+            padding-left: 10px;
+            margin-bottom: 12px;
+        }
         .audio-btn {
+            width: 100%;
             background: linear-gradient(135deg, #0284c7 0%, #38bdf8 100%);
-            border: none; color: #020617; font-weight: 800; font-size: 0.82rem;
-            padding: 8px 14px; border-radius: 8px; width: 100%; cursor: pointer;
-            display: flex; align-items: center; justify-content: center; gap: 8px;
+            border: none;
+            color: #fff;
+            padding: 9px;
+            border-radius: 8px;
+            font-weight: 900;
+            font-size: 0.82rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
         }
-        .photo-viewer-modal {
-            position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(8px);
-            display: none; align-items: center; justify-content: center; z-index: 100;
-        }
-        .photo-container {
-            background: #0a0f1d; border: 1px solid var(--primary); border-radius: 14px;
-            max-width: 900px; width: 92%; overflow: hidden; box-shadow: 0 0 40px rgba(56, 189, 248, 0.35);
-        }
-        .photo-container img { width: 100%; height: auto; display: block; }
-        .photo-caption { padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; background: #060b18; }
-        .close-photo-btn { background: var(--primary); color: #020617; border: none; padding: 6px 16px; border-radius: 8px; font-weight: 800; cursor: pointer; }
+        .audio-btn:hover { box-shadow: 0 0 15px rgba(56, 189, 248, 0.5); }
+
         footer {
-            background: rgba(8, 14, 28, 0.98); border-top: 1px solid var(--border);
-            padding: 8px 24px; font-size: 0.78rem; color: var(--text-sub);
-            display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;
+            background: rgba(8, 14, 28, 0.98);
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 8px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.76rem;
+            color: var(--text-sub);
+            flex-shrink: 0;
+            z-index: 50;
         }
     </style>
 </head>
 <body>
+
     <header>
         <div class="brand-box">
             <span class="badge-pill">[COD-023]</span>
             <div class="title-text">
-                <h1>🔥 Termodinámica Molecular: Cero Absoluto a la Fusión 3D</h1>
-                <p>NIST Physical Data • Ecuación de Boltzmann • De 0 K (-273,15 °C) a 15 Millones de Kelvin</p>
+                <h1>🔥 Termodinámica Molecular: Cero Absoluto a la Fusión Nuclear</h1>
+                <p>NIST CODATA • Distribución Maxwell-Boltzmann • Condensado Bose-Einstein & Fusión Protón-Protón</p>
             </div>
         </div>
         <div class="header-actions">
-            <button class="btn-header" onclick="openAtlasViewer()">📷 Gráfica Boltzmann SVG</button>
-            <button class="btn-header" onclick="resetCamera()">🎯 Centrar</button>
+            <button class="btn-header" onclick="selectBenchmark(0)">❄️ Cero Absoluto (0 K)</button>
+            <button class="btn-header" onclick="selectBenchmark(3)">🧊 Hielo (273.15 K)</button>
+            <button class="btn-header" onclick="selectBenchmark(7)">☀️ Fusión Solar (15M K)</button>
         </div>
     </header>
 
     <div class="workspace">
-        <canvas id="renderCanvas"></canvas>
+        <div class="viewer-container">
+            <canvas id="thermoCanvas" width="940" height="620"></canvas>
+        </div>
 
         <div class="controls-panel">
-            <div class="panel-section-title">🌡️ Termostato Universal (Kelvin)</div>
+            <div class="panel-section-title">🌡️ Escala Termométrica Kelvin</div>
             <div class="slider-box">
-                <div class="slider-label-row">
-                    <span id="tempKText" style="font-family: var(--font-mono); font-weight: 800; color: #fff;">294.15 K</span>
-                    <span id="tempCText" style="color: var(--primary);">21.0 °C (Hogar)</span>
+                <div class="slider-header">
+                    <span>Temperatura:</span>
+                    <span id="tempHeaderLabel">294.15 K (21.0 °C)</span>
                 </div>
-                <input type="range" min="0" max="7" value="4" step="1" class="temp-slider" id="tempSlider" oninput="onTempChange(this.value)">
+                <input type="range" id="tempSlider" min="0" max="7" step="1" value="4" oninput="onSliderChange(this.value)">
             </div>
 
-            <div class="panel-section-title">⚡ Hitos Térmicos</div>
-            <div class="preset-grid">
-                <button class="btn-preset" onclick="setPreset(0)">0 K Cero Absoluto</button>
-                <button class="btn-preset" onclick="setPreset(1)">2.73 K Fondo Cósmico</button>
-                <button class="btn-preset" onclick="setPreset(2)">77 K Nitrógeno Líq.</button>
-                <button class="btn-preset" onclick="setPreset(3)">273 K Hielo (0 °C)</button>
-                <button class="btn-preset active" onclick="setPreset(4)">294 K Hogar (21 °C)</button>
-                <button class="btn-preset" onclick="setPreset(5)">373 K Vapor (100 °C)</button>
-                <button class="btn-preset" onclick="setPreset(6)">5778 K Fotosfera Sol</button>
-                <button class="btn-preset" onclick="setPreset(7)">15 MK Fusión Solar</button>
+            <div class="panel-section-title">🔬 Hitos Termodinámicos Oficiales</div>
+            <div class="benchmarks-list" id="benchList">
+                <!-- Generado dinámicamente -->
             </div>
 
-            <div class="panel-section-title">📊 Parámetros Cinéticos</div>
-            <div class="kpi-grid">
+            <div class="panel-section-title">📊 Distribución Maxwell-Boltzmann</div>
+            <div class="dist-chart-box">
+                <div class="dist-title">
+                    <span>Densidad de Probabilidad f(v):</span>
+                    <span id="vRmsLabel" style="color:#38bdf8;">v_rms: 460 m/s</span>
+                </div>
+                <canvas id="distCanvas" width="310" height="60"></canvas>
+            </div>
+
+            <div class="panel-section-title">⚙️ Parámetros Físicos NIST</div>
+            <div class="kpi-row">
                 <div class="kpi-card">
                     <div class="kpi-val" id="kpiSpeed">460 m/s</div>
-                    <div class="kpi-label">Velocidad Cuadrática (v_rms)</div>
+                    <div class="kpi-label">Velocidad Cuadrática Media</div>
                 </div>
                 <div class="kpi-card">
-                    <div class="kpi-val" id="kpiState">Gas Atmosférico</div>
+                    <div class="kpi-val" id="kpiEnergy">3.8 × 10⁻²¹ J</div>
+                    <div class="kpi-label">Energía Térmica (k_B·T)</div>
+                </div>
+            </div>
+            <div class="kpi-row">
+                <div class="kpi-card">
+                    <div class="kpi-val" id="kpiState" style="color: var(--emerald);">Gas Ideal</div>
                     <div class="kpi-label">Estado de la Materia</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-val" id="kpiEntropy" style="color: var(--amber);">Media</div>
+                    <div class="kpi-label">Entropía Molecular</div>
                 </div>
             </div>
         </div>
 
         <div class="info-panel">
-            <div class="info-title" id="infoTitle">Confort Térmico del Hogar (21 °C / 294 K)</div>
-            <div class="info-body" id="infoBody">A 21 °C, las moléculas de oxígeno y nitrógeno del aire se desplazan a unos 460 m/s (más rápidas que el sonido), colisionando miles de millones de veces por segundo. Esta temperatura minimiza el estrés cardiovascular en personas mayores.</div>
-            <div class="info-quote" id="infoQuote">"El calor no es una sustancia misteriosa; es simplemente el movimiento microscópico incesante de los átomos." — Ludwig Boltzmann</div>
-            <button class="audio-btn" onclick="speakCurrentInfo()">🔊 Escuchar Explicación Física</button>
-        </div>
-    </div>
-
-    <div class="photo-viewer-modal" id="photoModal">
-        <div class="photo-container">
-            <img id="atlasImg" src="" alt="Gráfica de Termodinámica">
-            <div class="photo-caption">
-                <span style="color: #cbd5e1; font-size: 0.82rem;">NIST • Dinámica Molecular • Distribución de Maxwell-Boltzmann</span>
-                <button class="close-photo-btn" onclick="closeAtlasViewer()">Cerrar Gráfica</button>
+            <div class="info-title" id="infoTitle">Temperatura de Confort del Hogar (294.15 K)</div>
+            <div class="info-body" id="infoBody">
+                A 21 °C (294.15 K), las moléculas de nitrógeno y oxígeno del aire viajan a una velocidad media de 460 metros por segundo (más rápido que la velocidad del sonido a 343 m/s), colisionando miles de millones de veces por segundo y transfiriendo calor de forma perfectamente equilibrada.
             </div>
+            <div class="info-quote" id="infoQuote">
+                "El calor no es un fluido material, sino la danza incesante y caótica de billones de átomos en colisión elástica perpetua." — Ludwig Boltzmann
+            </div>
+            <button class="audio-btn" onclick="speakCurrentInfo()">🔊 Escuchar Explicación Termodinámica</button>
         </div>
     </div>
 
     <footer>
         <span>🔥 Curso de Inteligencia Artificial • Metodología de la Triple Salvaguarda Pedagógica</span>
-        <span>Motor 3D: Babylon.js PBR • Termodinámica Cuántica & Molecular</span>
+        <span>Termodinámica Estadística: Ecuaciones de Boltzmann & Maxwell • NIST Fundamental Constants</span>
     </footer>
 
     <script>
-        const canvas = document.getElementById("renderCanvas");
-        const engine = new BABYLON.Engine(canvas, true);
-        let scene, camera;
-        let chamberBox, atoms = [];
-        let currentIdx = 4;
+        const canvas = document.getElementById("thermoCanvas");
+        const ctx = canvas.getContext("2d");
+        const distCanvas = document.getElementById("distCanvas");
+        const distCtx = distCanvas.getContext("2d");
 
-        const BENCHMARKS = (window.THERMO_DATA && window.THERMO_DATA.benchmarks) || [
-            { tempK: 0, tempC: -273.15, name: "Cero Absoluto (0 K)", desc: "Inmovilidad cinética total. Los átomos cesan toda vibración térmica ordinaria.", state: "Condensado Bose-Einstein", speedMs: 0 },
-            { tempK: 2.73, tempC: -270.42, name: "Fondo Cósmico de Microondas (CMB)", desc: "La temperatura residual del Big Bang en el vacío intergaláctico.", state: "Criogenia Extrema", speedMs: 130 },
-            { tempK: 77.36, tempC: -195.79, name: "Nitrógeno Líquido", desc: "Criogenia para preservación biológica; colisiones moleculares muy lentas.", state: "Líquido Criogénico", speedMs: 380 },
-            { tempK: 273.15, tempC: 0.0, name: "Punto de Congelación del Agua", desc: "Formación de la red cristalina rígida hexagonal de puentes de hidrógeno.", state: "Sólido Cristalino", speedMs: 440 },
-            { tempK: 294.15, tempC: 21.0, name: "Confort Térmico del Hogar (21 °C)", desc: "Temperatura ideal recomendada para la salud y calma vascular en mayores.", state: "Gas Atmosférico", speedMs: 460 },
-            { tempK: 373.15, tempC: 100.0, name: "Ebullición del Agua", desc: "Transición de fase líquida a gaseosa con gran aumento de entropía.", state: "Vapor de Agua", speedMs: 520 },
-            { tempK: 5778, tempC: 5505, name: "Superficie Solar (Fotosfera)", desc: "Incandescencia estelar amarilla emitiendo el espectro solar continuo.", state: "Gas Ionizado", speedMs: 2050 },
-            { tempK: 15000000, tempC: 14999727, name: "Núcleo Solar (Fusión Protón-Protón)", desc: "Plasma donde los choques vencen la repulsión de Coulomb fusionando hidrógeno.", state: "Plasma de Fusión", speedMs: 600000 }
+        const THERMO_BENCHMARKS = [
+            {
+                k: 0.0,
+                c: -273.15,
+                name: "Cero Absoluto (0 K)",
+                state: "Condensado Bose-Einstein",
+                entropy: "Mínima (S=0)",
+                v_rms: "0.0 m/s",
+                energy: "0.0 J",
+                desc: "Inmovilidad cinética clásica total. Los átomos de gas ultrafrío colapsan en una sola función de onda macroscópica coherente (Condensado de Bose-Einstein). Solo persiste la energía del punto cero cuántico dictada por Heisenberg.",
+                quote: "El estado fundamental donde la materia pierde su individualidad y actúa como una onda gigante."
+            },
+            {
+                k: 2.73,
+                c: -270.42,
+                name: "Fondo Cósmico (CMB)",
+                state: "Criogenia Extrema",
+                entropy: "Muy Baja",
+                v_rms: "135 m/s",
+                energy: "3.7 × 10⁻²³ J",
+                desc: "Temperatura residual del Big Bang que permea todo el vacío intergaláctico. Los escasos átomos de hidrógeno en el vacío cósmico vibran a paso lentísimo entre fotones primordiales de microondas.",
+                quote: "El eco térmico fósil de la gran explosión cósmica."
+            },
+            {
+                k: 77.36,
+                c: -195.79,
+                name: "Nitrógeno Líquido (77 K)",
+                state: "Líquido Criogénico",
+                entropy: "Baja",
+                v_rms: "382 m/s",
+                energy: "1.0 × 10⁻²¹ J",
+                desc: "Punto de ebullición del nitrógeno a presión atmosférica estándar. Utilizado en preservación biológica y superconductividad de alta temperatura porque reduce drásticamente las reacciones destructivas moleculares.",
+                quote: "La frontera del frío criogénico industrial y biológico."
+            },
+            {
+                k: 273.15,
+                c: 0.0,
+                name: "Congelación del Agua (273 K)",
+                state: "Sólido Cristalino (Hielo Ih)",
+                entropy: "Ordenada",
+                v_rms: "440 m/s",
+                energy: "3.5 × 10⁻²¹ J",
+                desc: "Transición de fase líquida a sólida. Las moléculas de agua quedan bloqueadas en una red hexagonal rígida mediante puentes de hidrógeno, expandiendo su volumen y haciendo que el hielo flote sobre el agua líquida.",
+                quote: "La anomalía física del agua que permite la vida en océanos y lagos bajo el hielo."
+            },
+            {
+                k: 294.15,
+                c: 21.0,
+                name: "Confort del Hogar (21 °C)",
+                state: "Gas Atmosférico",
+                entropy: "Media",
+                v_rms: "460 m/s",
+                energy: "3.8 × 10⁻²¹ J",
+                desc: "Temperatura ideal recomendada para la homeostasis humana y calma vascular en personas mayores. Las moléculas del aire chocan contra nuestro cuerpo a 460 m/s disipando exactamente el calor producido por el metabolismo basal.",
+                quote: "El remanso de equilibrio homeotérmico donde el ser humano prospera."
+            },
+            {
+                k: 373.15,
+                c: 100.0,
+                name: "Ebullición del Agua (373 K)",
+                state: "Vapor Gaseoso",
+                entropy: "Alta",
+                v_rms: "520 m/s",
+                energy: "4.8 × 10⁻²¹ J",
+                desc: "La presión de vapor iguala la presión atmosférica externa (1 atm). Los puentes de hidrógeno se rompen masivamente y las moléculas de H2O se separan velozmente hacia la fase gaseosa.",
+                quote: "La fuerza motriz de vapor que impulsó la Revolución Industrial humana."
+            },
+            {
+                k: 5778.0,
+                c: 5505.0,
+                name: "Fotosfera Solar (5.778 K)",
+                state: "Gas Altamente Ionizado",
+                entropy: "Muy Alta",
+                v_rms: "2.050 m/s",
+                energy: "7.5 × 10⁻²⁰ J",
+                desc: "Superficie visible del Sol. Los choques térmicos son tan violentos que los electrones son arrancados de los átomos creando un plasma incandescente que emite el espectro electromagnético de cuerpo negro.",
+                quote: "El crisol térmico que baña de luz dorada a todo el Sistema Solar."
+            },
+            {
+                k: 15000000.0,
+                c: 14999727.0,
+                name: "Núcleo Solar: Fusión Protón-Protón",
+                state: "Plasma de Fusión Termonuclear",
+                entropy: "Máxima (Plasma)",
+                v_rms: "600.000 m/s",
+                energy: "2.0 × 10⁻¹⁶ J",
+                desc: "A 15 millones de Kelvin y 250.000 millones de atmósferas, los protones colisionan con tal ímpetu que vencen la colosal repulsión electrostática de Coulomb mediante efecto túnel cuántico, fusionándose en helio y liberando energía nuclear.",
+                quote: "La alquimia estelar primordial donde nace la energía del universo (E = mc²)."
+            }
         ];
 
-        function createScene() {
-            scene = new BABYLON.Scene(engine);
-            scene.clearColor = new BABYLON.Color4(0.015, 0.02, 0.04, 1.0);
+        let currentIdx = 4; // Confort hogar 21 °C por defecto
 
-            camera = new BABYLON.ArcRotateCamera("Camera", -Math.PI / 2.2, Math.PI / 2.6, 32, BABYLON.Vector3.Zero(), scene);
-            camera.attachControl(canvas, true);
-            camera.lowerRadiusLimit = 12;
-            camera.upperRadiusLimit = 60;
-
-            const sunLight = new BABYLON.DirectionalLight("dirLight", new BABYLON.Vector3(0.5, -1, 0.7), scene);
-            sunLight.intensity = 2.0;
-
-            const hemiLight = new BABYLON.HemisphericLight("hemiLight", new BABYLON.Vector3(0, 1, 0), scene);
-            hemiLight.intensity = 0.6;
-
-            // Cámara de cuarzo transparente
-            chamberBox = BABYLON.MeshBuilder.CreateBox("chamber", { size: 14 }, scene);
-            const chamberMat = new BABYLON.PBRMaterial("chamberMat", scene);
-            chamberMat.alpha = 0.12;
-            chamberMat.roughness = 0.1;
-            chamberMat.metallic = 0.1;
-            chamberMat.albedoColor = new BABYLON.Color3(0.3, 0.7, 0.9);
-            chamberBox.material = chamberMat;
-
-            // Crear 60 átomos esféricos en la cámara
-            const atomColors = [
-                new BABYLON.Color3(0.2, 0.7, 0.9), // Frío cian
-                new BABYLON.Color3(0.3, 0.8, 0.5), // Verde
-                new BABYLON.Color3(0.9, 0.7, 0.2), // Ámbar
-                new BABYLON.Color3(0.9, 0.4, 0.1), // Naranja
-                new BABYLON.Color3(0.8, 0.3, 0.9)  // Fusión plasma
-            ];
-
-            const atomMat = new BABYLON.PBRMaterial("atomMat", scene);
-            atomMat.albedoColor = atomColors[2];
-            atomMat.emissiveColor = atomColors[2].scale(0.3);
-            atomMat.roughness = 0.3;
-
-            for (let i = 0; i < 60; i++) {
-                const a = BABYLON.MeshBuilder.CreateSphere("atom_" + i, { diameter: 0.9, segments: 16 }, scene);
-                a.position = new BABYLON.Vector3(
-                    (Math.random() - 0.5) * 12,
-                    (Math.random() - 0.5) * 12,
-                    (Math.random() - 0.5) * 12
-                );
-                a.vx = (Math.random() - 0.5) * 0.1;
-                a.vy = (Math.random() - 0.5) * 0.1;
-                a.vz = (Math.random() - 0.5) * 0.1;
-                a.material = atomMat;
-                atoms.push(a);
-            }
-
-            scene.registerBeforeRender(() => {
-                const speedFactor = currentIdx === 0 ? 0 : Math.pow(currentIdx + 1, 1.3) * 0.015;
-                atoms.forEach(a => {
-                    a.position.x += a.vx * speedFactor * 25;
-                    a.position.y += a.vy * speedFactor * 25;
-                    a.position.z += a.vz * speedFactor * 25;
-
-                    // Rebote elástico contra las paredes de la cámara (+-6)
-                    const limit = 6.2;
-                    if (Math.abs(a.position.x) > limit) { a.vx *= -1; a.position.x = Math.sign(a.position.x) * limit; }
-                    if (Math.abs(a.position.y) > limit) { a.vy *= -1; a.position.y = Math.sign(a.position.y) * limit; }
-                    if (Math.abs(a.position.z) > limit) { a.vz *= -1; a.position.z = Math.sign(a.position.z) * limit; }
-                });
-                chamberBox.rotation.y += 0.001;
+        // Partículas simuladas en la cámara de cuarzo
+        const PARTICLES_COUNT = 65;
+        let particles = [];
+        for (let i = 0; i < PARTICLES_COUNT; i++) {
+            particles.push({
+                x: (Math.random() - 0.5) * 440,
+                y: (Math.random() - 0.5) * 320,
+                vx: (Math.random() - 0.5) * 2,
+                vy: (Math.random() - 0.5) * 2,
+                radius: 6
             });
-
-            return scene;
         }
 
-        function onTempChange(val) {
+        function renderBenchmarksList() {
+            const list = document.getElementById("benchList");
+            list.innerHTML = "";
+            THERMO_BENCHMARKS.forEach((b, idx) => {
+                const btn = document.createElement("button");
+                btn.className = `btn-bench ${idx === currentIdx ? 'active' : ''}`;
+                btn.onclick = () => selectBenchmark(idx);
+                btn.innerHTML = `
+                    <span>${b.name.split("(")[0]}</span>
+                    <span style="font-family: var(--font-mono); color: var(--primary);">${b.k > 1000 ? b.k.toExponential(0) + ' K' : b.k + ' K'}</span>
+                `;
+                list.appendChild(btn);
+            });
+        }
+
+        function drawMolecularChamber() {
+            ctx.fillStyle = "#010309";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+            const b = THERMO_BENCHMARKS[currentIdx];
+
+            // Retícula métrica de cámara de vacío
+            drawChamberReticle();
+
+            ctx.save();
+            ctx.translate(cx, cy);
+
+            // Paredes de la cámara de confinamiento térmico
+            ctx.strokeStyle = "rgba(56, 189, 248, 0.4)";
+            ctx.lineWidth = 2;
+            ctx.strokeRect(-250, -180, 500, 360);
+
+            // Si es Cero Absoluto (0 K), mostrar Condensado Bose-Einstein
+            if (currentIdx === 0) {
+                drawBoseEinsteinCondensate();
+            } else if (currentIdx === 3) {
+                // Red cristalina rígida hexagonal del hielo
+                drawIceCrystalLattice();
+            } else if (currentIdx === 7) {
+                // Fusión termonuclear protón-protón
+                drawSolarFusionPlasma();
+            } else {
+                // Gas molecular según velocidad Maxwell-Boltzmann
+                drawMaxwellBoltzmannParticles();
+            }
+
+            ctx.restore();
+
+            // Calibración inferior
+            ctx.fillStyle = "#38bdf8";
+            ctx.font = "bold 12px var(--font-mono)";
+            ctx.fillText(`TERMODINÁMICA MOLECULAR • NIST CODATA • ESTADO: ${b.state.toUpperCase()}`, 30, canvas.height - 40);
+            ctx.fillStyle = "#94a3b8";
+            ctx.fillText(`VELOCIDAD RMS: ${b.v_rms} • ENERGÍA TÉRMICA k_B·T: ${b.energy}`, 30, canvas.height - 22);
+        }
+
+        function drawChamberReticle() {
+            ctx.strokeStyle = "rgba(56, 189, 248, 0.06)";
+            ctx.lineWidth = 1;
+            for (let x = 0; x < canvas.width; x += 40) {
+                ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
+            }
+            for (let y = 0; y < canvas.height; y += 40) {
+                ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
+            }
+        }
+
+        function drawBoseEinsteinCondensate() {
+            // Todos los átomos colapsados en el centro en una función de onda única
+            const waveGrad = ctx.createRadialGradient(0, 0, 5, 0, 0, 90);
+            waveGrad.addColorStop(0, "#ffffff");
+            waveGrad.addColorStop(0.3, "#38bdf8");
+            waveGrad.addColorStop(0.7, "rgba(192, 132, 252, 0.4)");
+            waveGrad.addColorStop(1, "rgba(56, 189, 248, 0)");
+            ctx.fillStyle = waveGrad;
+            ctx.beginPath(); ctx.arc(0, 0, 90, 0, Math.PI * 2); ctx.fill();
+
+            ctx.fillStyle = "#cbd5e1";
+            ctx.font = "bold 13px var(--font-mono)";
+            ctx.fillText("CONDENSADO BOSE-EINSTEIN (JILA / MIT)", -140, 120);
+            ctx.fillText("ÁTOMOS INDISTINGUIBLES EN EL ESTADO CUÁNTICO FUNDAMENTAL", -210, 140);
+        }
+
+        function drawIceCrystalLattice() {
+            // Estructura hexagonal del hielo Ih
+            ctx.strokeStyle = "rgba(56, 189, 248, 0.7)";
+            ctx.lineWidth = 2.5;
+
+            const hexPositions = [
+                [-120, -70], [0, -70], [120, -70],
+                [-60, 30], [60, 30],
+                [-120, 130], [0, 130], [120, 130]
+            ];
+
+            hexPositions.forEach(p => {
+                ctx.beginPath();
+                for (let h = 0; h < 6; h++) {
+                    const ha = (h * Math.PI) / 3;
+                    const hx = p[0] + Math.cos(ha) * 35;
+                    const hy = p[1] + Math.sin(ha) * 35;
+                    if (h === 0) ctx.moveTo(hx, hy);
+                    else ctx.lineTo(hx, hy);
+                }
+                ctx.closePath();
+                ctx.stroke();
+
+                // Molécula de oxígeno central roja y dos hidrógenos
+                ctx.fillStyle = "#f43f5e";
+                ctx.beginPath(); ctx.arc(p[0], p[1], 8, 0, Math.PI * 2); ctx.fill();
+                ctx.fillStyle = "#ffffff";
+                ctx.beginPath(); ctx.arc(p[0] - 12, p[1] - 8, 4, 0, Math.PI * 2); ctx.fill();
+                ctx.beginPath(); ctx.arc(p[0] + 12, p[1] - 8, 4, 0, Math.PI * 2); ctx.fill();
+            });
+
+            ctx.fillStyle = "#38bdf8";
+            ctx.font = "bold 12px var(--font-mono)";
+            ctx.fillText("RED CRISTALINA HEXAGONAL DE PUENTES DE HIDRÓGENO (HIELO Ih)", -220, -140);
+        }
+
+        function drawSolarFusionPlasma() {
+            // Plasma ionizado incandescente con choques relativistas y túnel cuántico
+            const sunPlasma = ctx.createRadialGradient(0, 0, 10, 0, 0, 160);
+            sunPlasma.addColorStop(0, "#ffffff");
+            sunPlasma.addColorStop(0.2, "#fef08a");
+            sunPlasma.addColorStop(0.6, "#f97316");
+            sunPlasma.addColorStop(1, "rgba(220, 38, 38, 0)");
+            ctx.fillStyle = sunPlasma;
+            ctx.beginPath(); ctx.arc(0, 0, 160, 0, Math.PI * 2); ctx.fill();
+
+            // Dos protones fusionándose con emisión de neutrino y positrón
+            ctx.fillStyle = "#38bdf8";
+            ctx.beginPath(); ctx.arc(-25, 0, 14, 0, Math.PI * 2); ctx.fill();
+            ctx.beginPath(); ctx.arc(25, 0, 14, 0, Math.PI * 2); ctx.fill();
+
+            // Haz de radiación gamma liberada
+            ctx.strokeStyle = "#fbbf24";
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(0, -20); ctx.lineTo(0, -90);
+            ctx.moveTo(0, 20); ctx.lineTo(0, 90);
+            ctx.stroke();
+
+            ctx.fillStyle = "#ffffff";
+            ctx.font = "bold 13px var(--font-mono)";
+            ctx.fillText("FUSIÓN NUCLEAR PROTÓN-PROTÓN (TÚNEL CUÁNTICO GAMOW)", -210, -130);
+            ctx.fillText("p + p → ²H + e⁺ + ν_e + 0.42 MeV", -110, 130);
+        }
+
+        function drawMaxwellBoltzmannParticles() {
+            const speedMultiplier = (currentIdx === 1 ? 0.25 : currentIdx === 2 ? 0.65 : currentIdx === 4 ? 1.0 : currentIdx === 5 ? 1.35 : 2.5);
+
+            particles.forEach((p, idx) => {
+                p.x += p.vx * speedMultiplier;
+                p.y += p.vy * speedMultiplier;
+
+                // Rebote elástico contra las paredes
+                if (Math.abs(p.x) > 235) { p.vx *= -1; p.x = Math.sign(p.x) * 235; }
+                if (Math.abs(p.y) > 165) { p.vy *= -1; p.y = Math.sign(p.y) * 165; }
+
+                // Color según régimen térmico
+                const col = (currentIdx <= 2) ? "#38bdf8" : (currentIdx <= 4) ? "#34d399" : (currentIdx === 5) ? "#fbbf24" : "#f97316";
+                ctx.fillStyle = col;
+                ctx.shadowColor = col;
+                ctx.shadowBlur = (currentIdx >= 5) ? 10 : 3;
+
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.shadowBlur = 0;
+
+                // Estela de velocidad cinética
+                ctx.strokeStyle = "rgba(255, 255, 255, 0.25)";
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(p.x, p.y);
+                ctx.lineTo(p.x - p.vx * speedMultiplier * 5, p.y - p.vy * speedMultiplier * 5);
+                ctx.stroke();
+            });
+        }
+
+        function drawMaxwellDistributionCurve() {
+            distCtx.fillStyle = "#010207";
+            distCtx.fillRect(0, 0, distCanvas.width, distCanvas.height);
+
+            distCtx.strokeStyle = "#38bdf8";
+            distCtx.lineWidth = 2;
+            distCtx.beginPath();
+
+            const T_norm = Math.max(0.1, currentIdx * 0.4);
+            const peakX = 40 + T_norm * 25;
+
+            for (let x = 0; x < distCanvas.width; x += 3) {
+                // Curva analítica f(v) = v^2 * exp(-v^2 / (2 * sigma^2))
+                const v = x / 30.0;
+                const sigma = Math.sqrt(T_norm);
+                const yVal = Math.pow(v / sigma, 2) * Math.exp(-Math.pow(v / sigma, 2) / 2);
+                const y = 55 - yVal * 48;
+
+                if (x === 0) distCtx.moveTo(x, y);
+                else distCtx.lineTo(x, y);
+            }
+            distCtx.stroke();
+
+            // Marcador de v_rms pico
+            distCtx.fillStyle = "#fbbf24";
+            distCtx.beginPath();
+            distCtx.arc(Math.min(distCanvas.width - 10, peakX), 15, 3.5, 0, Math.PI * 2);
+            distCtx.fill();
+        }
+
+        function selectBenchmark(idx) {
+            currentIdx = idx;
+            document.getElementById("tempSlider").value = idx;
+            updateUI();
+        }
+
+        function onSliderChange(val) {
             currentIdx = parseInt(val);
             updateUI();
         }
 
-        function setPreset(idx) {
-            currentIdx = idx;
-            document.getElementById("tempSlider").value = idx;
-            document.querySelectorAll(".btn-preset").forEach((b, i) => {
-                b.classList.toggle("active", i === idx);
-            });
-            updateUI();
-        }
-
         function updateUI() {
-            const b = BENCHMARKS[currentIdx];
-            document.getElementById("tempKText").textContent = `${b.tempK} K`;
-            document.getElementById("tempCText").textContent = `${b.tempC} °C (${b.name.split(" ")[0]})`;
-            document.getElementById("kpiSpeed").textContent = `${b.speedMs} m/s`;
-            document.getElementById("kpiState").textContent = b.state;
+            const b = THERMO_BENCHMARKS[currentIdx];
+            document.getElementById("tempHeaderLabel").textContent = `${b.k > 1000 ? b.k.toExponential(0) : b.k} K (${b.c > 1000 ? b.c.toExponential(0) : b.c} °C)`;
+            document.getElementById("kpiSpeed").textContent = b.v_rms;
+            document.getElementById("kpiEnergy").textContent = b.energy;
+            document.getElementById("kpiState").textContent = b.state.split("(")[0];
+            document.getElementById("kpiEntropy").textContent = b.entropy;
+            document.getElementById("vRmsLabel").textContent = `v_rms: ${b.v_rms}`;
 
             document.getElementById("infoTitle").textContent = b.name;
             document.getElementById("infoBody").textContent = b.desc;
+            document.getElementById("infoQuote").textContent = `"${b.quote}"`;
 
-            // Ajustar color de átomos según temperatura
-            const colors = [
-                new BABYLON.Color3(0.2, 0.7, 0.95), // 0 K Azul cian hielo
-                new BABYLON.Color3(0.2, 0.5, 0.9),  // CMB
-                new BABYLON.Color3(0.2, 0.8, 0.6),  // 77K
-                new BABYLON.Color3(0.4, 0.8, 0.8),  // 273K
-                new BABYLON.Color3(0.9, 0.7, 0.2),  // 294K Ámbar
-                new BABYLON.Color3(0.95, 0.5, 0.1), // 373K Naranja
-                new BABYLON.Color3(0.95, 0.2, 0.1), // 5778K Rojo-amarillo
-                new BABYLON.Color3(0.8, 0.3, 0.95)  // 15MK Violeta plasma
-            ];
-            const c = colors[currentIdx];
-            if (atoms.length > 0 && atoms[0].material) {
-                atoms[0].material.albedoColor = c;
-                atoms[0].material.emissiveColor = c.scale(currentIdx >= 6 ? 0.6 : 0.2);
-            }
-        }
-
-        function resetCamera() {
-            camera.alpha = -Math.PI / 2.2; camera.beta = Math.PI / 2.6; camera.radius = 32;
-            camera.target = BABYLON.Vector3.Zero();
+            renderBenchmarksList();
+            drawMaxwellDistributionCurve();
         }
 
         function speakCurrentInfo() {
             if (!('speechSynthesis' in window)) return;
             window.speechSynthesis.cancel();
             const text = `${document.getElementById("infoTitle").textContent}. ${document.getElementById("infoBody").textContent}`;
-            const u = new SpeechSynthesisUtterance(text);
-            u.lang = 'es-ES'; u.rate = 0.95;
-            window.speechSynthesis.speak(u);
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = "es-ES";
+            utterance.rate = 1.0;
+            window.speechSynthesis.speak(utterance);
         }
 
-        function openAtlasViewer() {
-            const modal = document.getElementById("photoModal");
-            const img = document.getElementById("atlasImg");
-            img.src = window.THERMO_SVG_B64 || "";
-            modal.style.display = "flex";
+        function animateLoop() {
+            drawMolecularChamber();
+            requestAnimationFrame(animateLoop);
         }
 
-        function closeAtlasViewer() {
-            document.getElementById("photoModal").style.display = "none";
-        }
-
-        scene = createScene();
+        // Inicialización y arranque
+        renderBenchmarksList();
         updateUI();
-
-        engine.runRenderLoop(() => { scene.render(); });
-        window.addEventListener("resize", () => { engine.resize(); });
+        animateLoop();
     </script>
 </body>
 </html>
-

@@ -68,15 +68,15 @@ def build_cod_030_taller_3d_pdf(output_path=PDF_PATH):
     story.append(Paragraph("🧠 <b>Prompt Maestro para Copiar y Pegar en Gemini:</b>", style_section_h))
     prompt_text = (
         "<b>Copia exactamente este texto en Gemini:</b><br/>"
-        "<i>\"Genera el código de programación (HTML, CSS y JavaScript) que voy a copiar y pegar en el Taller de Pruebas de mi curso para crear un simulador interactivo 3D de Computación Cuántica y Esfera de Bloch.<br/>"
+        "<i>\"Genera el código de programación (HTML, CSS y JavaScript) que voy a copiar y pegar en el Taller de Pruebas de mi curso para crear un simulador interactivo 3D de Computación Cuántica, Qubits y Esfera de Bloch (IBM Quantum System One).<br/>"
         "Requisitos del código:<br/>"
         "1. Entrega el programa en un único bloque de código listo para pulsar directamente «Copiar código» y pegarlo con Ctrl+V.<br/>"
-        "2. Incluye en la cabecera el script con las matrices cuánticas oficiales de IBM Quantum:<br/>"
-        "&lt;script src=&quot;https://javiercursocorreo-gif.github.io/Curso-IA/SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/bloch_sphere_b64.js&quot;&gt;&lt;/script&gt;<br/>"
-        "3. Modela con Babylon.js una Esfera de Bloch semitransparente con rejilla de paralelos/meridianos, ejes cartesianos X, Y, Z con flechas direccionales, polos |0⟩ (Zenit) y |1⟩ (Nadir), estados ecuatoriales |+⟩, |-⟩, |i⟩, |-i⟩, y un vector de estado cuántico animado (flecha PBR luminiscente).<br/>"
-        "4. Incluye un panel de control interactivo con puertas lógicas cuánticas: Hadamard (H para entrar en superposición 50/50), Pauli-X (NOT cuántico), Pauli-Y, Pauli-Z, y botón 'Medir Qubit' que proyecta el estado a |0⟩ o |1⟩ según probabilidades Born |α|² y |β|².<br/>"
-        "5. Aplica diseño en modo oscuro (#030614) con tipografía grande (16-18px), probabilidades |0⟩ y |1⟩ en KPIs en tiempo real y síntesis de voz en español.<br/>"
-        "6. Escribe exclusivamente el código sin texto explicativo.\"</i>"
+        "2. Modela en 3D la Esfera de Bloch matemática SU(2) con paralelos, ecuador, meridianos y ejes X, Y, Z. Mapea el vector |ψ⟩ = cos(θ/2)|0⟩ + e^(iφ)sen(θ/2)|1⟩ con rotación interactiva orbital.<br/>"
+        "3. Incluye puertas lógicas cuánticas unitarias: Hadamard H (|0⟩ → |+⟩ superposición 50/50), Pauli-X (NOT cuántico), Pauli-Y, Pauli-Z (fase), Fase S (π/2) y Fase T (π/4).<br/>"
+        "4. Añade botón de 'Medición Proyectiva Cuántica' que simula el colapso estocástico según la Regla de Born (P₀=cos²(θ/2), P₁=sen²(θ/2)), con barras dinámicas y conteo acumulativo de disparos.<br/>"
+        "5. Integra botón modal de telemetría criogénica de IBM Quantum System One a 15 milikelvin (etapas 300K, 50K, 4K, 800mK y 15mK) y microarquitectura del qubit superconductor transmon.<br/>"
+        "6. Aplica diseño en modo oscuro (#01030d) con tipografía grande (16-18px), KPIs de ket simbólico y síntesis de voz en español.<br/>"
+        "7. Escribe exclusivamente el código sin texto explicativo.\"</i>"
     )
     p_table = Table([[Paragraph(prompt_text, style_prompt)]], colWidths=[letter[0] - 72])
     p_table.setStyle(TableStyle([
@@ -94,8 +94,8 @@ def build_cod_030_taller_3d_pdf(output_path=PDF_PATH):
 
     story.append(Paragraph("🔬 <b>¿De dónde proceden los modelos y cómo se ha montado el objeto 3D?</b>", style_section_h))
     tech_text = (
-        "• <b>Mecánica cuántica y álgebra lineal (<i>Félix Bloch 1946 / IBM Quantum Qiskit</i>):</b> El estado puro |ψ⟩ se mapea como punto sobre S² con coordenadas (sinθ·cosφ, sinθ·sinφ, cosθ). La regla de Born fija P(0)=cos²(θ/2) y P(1)=sin²(θ/2).<br/>"
-        "• <b>Montaje en Babylon.js:</b> Se construye una esfera PBR translúcida con líneas geodésicas. Las puertas operan sobre el vector de estado aplicando cuaterniones de rotación continua interpolada (Slerp), ofreciendo animación suave sin saltos bruscos."
+        "• <b>Mecánica cuántica y álgebra de Pauli (<i>Félix Bloch 1946 / IBM Quantum Qiskit</i>):</b> El estado puro |ψ⟩ se mapea sobre la 2-esfera unitaria de Hilbert. La regla de Born fija P(0)=cos²(θ/2) y P(1)=sen²(θ/2).<br/>"
+        "• <b>Simulación SU(2) y Criogenia a 15 mK:</b> Rotaciones unitarias sobre la esfera de Bloch con proyección tridimensional interactiva y módulo de arquitectura superconductora Josephson con tiempos T₁=120µs y T₂*=85µs."
     )
     tech_table = Table([[Paragraph(tech_text, style_task)]], colWidths=[letter[0] - 72])
     tech_table.setStyle(TableStyle([

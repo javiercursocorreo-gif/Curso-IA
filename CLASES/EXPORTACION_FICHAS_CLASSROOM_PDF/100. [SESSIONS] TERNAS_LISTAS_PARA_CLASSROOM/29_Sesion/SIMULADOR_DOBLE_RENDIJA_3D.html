@@ -3,21 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sesión 29 • Simulador 3D: Experimento de la Doble Rendija & Dualidad [COD-029]</title>
-    <!-- Babylon.js Motor 3D Oficial CDN -->
-    <script src="https://cdn.babylonjs.com/babylon.js"></script>
-    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
-    <!-- Respaldo Científico en Base64 Autónomo -->
-    <script src="../03_ASSETS_3D_Y_DATOS/double_slit_b64.js"></script>
-    <script src="../../SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/double_slit_b64.js"></script>
-    <script src="../../../../SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/double_slit_b64.js"></script>
+    <title>Sesión 29 • Laboratorio Cuántico: Experimento de la Doble Rendija & Dualidad [COD-029]</title>
+    <!-- Registro Histórico Hitachi (Akira Tonomura 1989) • Longitud de Onda de De Broglie • Colapso por Medición -->
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-base: #030512;
-            --bg-panel: rgba(8, 14, 28, 0.94);
+            --bg-base: #01040a;
+            --bg-panel: rgba(8, 16, 26, 0.94);
             --border: rgba(34, 197, 94, 0.35);
             --primary: #22c55e;
+            --primary-glow: rgba(34, 197, 94, 0.4);
             --cyan: #38bdf8;
             --amber: #fbbf24;
             --rose: #f43f5e;
@@ -27,91 +22,258 @@
             --font-sans: 'Inter', sans-serif;
             --font-mono: 'JetBrains Mono', monospace;
         }
+
         * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
         body {
-            background-color: var(--bg-base); color: var(--text-main);
-            font-family: var(--font-sans); height: 100vh; width: 100vw;
-            overflow: hidden; display: flex; flex-direction: column; font-size: 14px;
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            font-family: var(--font-sans);
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            font-size: 14px;
         }
+
         header {
             background: linear-gradient(180deg, rgba(8, 20, 16, 0.98) 0%, rgba(8, 20, 16, 0.88) 100%);
-            backdrop-filter: blur(14px); border-bottom: 1px solid var(--border);
-            padding: 10px 24px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; z-index: 40;
+            backdrop-filter: blur(14px);
+            border-bottom: 1px solid var(--border);
+            padding: 10px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+            z-index: 40;
         }
         .brand-box { display: flex; align-items: center; gap: 14px; }
         .badge-pill {
-            background: rgba(34, 197, 94, 0.15); border: 1px solid var(--primary);
-            color: var(--primary); font-family: var(--font-mono); font-weight: 800;
-            font-size: 0.82rem; padding: 4px 10px; border-radius: 6px;
+            background: rgba(34, 197, 94, 0.15);
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            font-family: var(--font-mono);
+            font-weight: 800;
+            font-size: 0.82rem;
+            padding: 4px 10px;
+            border-radius: 6px;
         }
         .title-text h1 {
-            font-family: var(--font-title); font-size: 1.15rem; font-weight: 800; color: #fff;
-            display: flex; align-items: center; gap: 8px;
+            font-family: var(--font-title);
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         .title-text p { font-size: 0.78rem; color: var(--text-sub); margin-top: 1px; }
+
         .header-actions { display: flex; align-items: center; gap: 10px; }
         .btn-header {
-            background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15);
-            color: var(--text-main); padding: 6px 14px; border-radius: 8px; font-size: 0.8rem;
-            font-weight: 700; cursor: pointer; transition: all 0.2s ease;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: var(--text-main);
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
         }
         .btn-header:hover { background: rgba(34, 197, 94, 0.2); border-color: var(--primary); color: var(--primary); }
+
         .workspace { flex: 1; position: relative; overflow: hidden; display: flex; }
-        #renderCanvas { width: 100%; height: 100%; outline: none; display: block; }
+
+        .viewer-container {
+            flex: 1;
+            position: relative;
+            background: radial-gradient(circle at center, #041410 0%, #010408 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        #slitCanvas {
+            max-width: 96%;
+            max-height: 92%;
+            border-radius: 14px;
+            box-shadow: 0 15px 45px rgba(0, 0, 0, 0.9);
+            border: 1px solid rgba(34, 197, 94, 0.25);
+            background: #01050a;
+        }
+
         .controls-panel {
-            position: absolute; top: 18px; left: 18px; width: 340px;
-            background: var(--bg-panel); border: 1px solid var(--border);
-            border-radius: 14px; padding: 18px; backdrop-filter: blur(14px);
-            z-index: 20; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            position: absolute;
+            top: 18px;
+            left: 20px;
+            width: 350px;
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 18px;
+            backdrop-filter: blur(14px);
+            z-index: 20;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            max-height: calc(100vh - 120px);
+            overflow-y: auto;
         }
+
         .panel-section-title {
-            font-family: var(--font-mono); font-size: 0.8rem; font-weight: 800;
-            color: var(--primary); text-transform: uppercase; margin-bottom: 12px;
-            display: flex; align-items: center; gap: 6px;
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            font-weight: 800;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
-        .btn-action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 16px; }
+
+        .btn-action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
         .btn-action {
-            background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.12);
-            color: var(--text-sub); padding: 8px 10px; border-radius: 8px; font-size: 0.8rem;
-            font-weight: 700; cursor: pointer; transition: all 0.2s ease; text-align: center;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: var(--text-sub);
+            padding: 8px 10px;
+            border-radius: 8px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
         }
-        .btn-action.active, .btn-action:hover {
-            background: rgba(34, 197, 94, 0.25); border-color: var(--primary); color: #fff;
+        .btn-action:hover {
+            background: rgba(34, 197, 94, 0.15);
+            border-color: var(--primary);
+            color: #fff;
         }
+        .btn-action.active {
+            background: linear-gradient(135deg, rgba(21, 128, 61, 0.5) 0%, rgba(34, 197, 94, 0.4) 100%);
+            border-color: var(--primary);
+            color: #fff;
+            box-shadow: 0 0 12px rgba(34, 197, 94, 0.35);
+        }
+
+        .toggle-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 6px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .toggle-label { font-size: 0.8rem; color: var(--text-sub); }
+        .toggle-btn {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: var(--text-main);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        .toggle-btn.active {
+            background: var(--primary);
+            color: #020617;
+            border-color: var(--primary);
+        }
+        .toggle-btn.alert {
+            background: var(--rose);
+            color: #fff;
+            border-color: var(--rose);
+        }
+
         .kpi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-        .kpi-card { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 8px 10px; }
-        .kpi-val { font-family: var(--font-mono); font-size: 1.05rem; font-weight: 800; color: #fff; }
-        .kpi-label { font-size: 0.72rem; color: var(--text-sub); margin-top: 2px; }
-        .info-panel {
-            position: absolute; bottom: 20px; right: 20px; width: 380px;
-            background: var(--bg-panel); border: 1px solid var(--border);
-            border-radius: 14px; padding: 18px; backdrop-filter: blur(14px);
-            z-index: 20; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        .kpi-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+            padding: 8px 10px;
         }
-        .info-title { font-family: var(--font-title); font-size: 1.15rem; font-weight: 700; color: var(--primary); margin-bottom: 8px; }
-        .info-body { font-size: 0.84rem; line-height: 1.5; color: var(--text-sub); margin-bottom: 12px; }
-        .info-quote { font-style: italic; font-size: 0.78rem; color: var(--cyan); border-left: 2px solid var(--cyan); padding-left: 10px; margin-bottom: 12px; }
+        .kpi-val {
+            font-family: var(--font-mono);
+            font-size: 1.0rem;
+            font-weight: 800;
+            color: #fff;
+        }
+        .kpi-label { font-size: 0.7rem; color: var(--text-sub); margin-top: 2px; }
+
+        .info-panel {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            width: 390px;
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 18px;
+            backdrop-filter: blur(14px);
+            z-index: 20;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+        }
+        .info-title {
+            font-family: var(--font-title);
+            font-size: 1.12rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+        .info-body {
+            font-size: 0.83rem;
+            line-height: 1.55;
+            color: var(--text-sub);
+            margin-bottom: 12px;
+        }
+        .info-quote {
+            font-style: italic;
+            font-size: 0.77rem;
+            color: var(--cyan);
+            border-left: 2px solid var(--cyan);
+            padding-left: 10px;
+            margin-bottom: 12px;
+        }
         .audio-btn {
             background: linear-gradient(135deg, #15803d 0%, #22c55e 100%);
-            border: none; color: #ffffff; font-weight: 800; font-size: 0.82rem;
-            padding: 8px 14px; border-radius: 8px; width: 100%; cursor: pointer;
-            display: flex; align-items: center; justify-content: center; gap: 8px;
+            border: none;
+            color: #020617;
+            font-weight: 800;
+            font-size: 0.82rem;
+            padding: 8px 14px;
+            border-radius: 8px;
+            width: 100%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
-        .photo-viewer-modal {
-            position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(8px);
+
+        .modal-telemetry {
+            position: fixed; inset: 0; background: rgba(0, 0, 0, 0.88); backdrop-filter: blur(8px);
             display: none; align-items: center; justify-content: center; z-index: 100;
         }
-        .photo-container {
-            background: #0a0f1d; border: 1px solid var(--primary); border-radius: 14px;
-            max-width: 900px; width: 92%; overflow: hidden; box-shadow: 0 0 40px rgba(34, 197, 94, 0.35);
+        .modal-box {
+            background: #060f14; border: 1px solid var(--primary); border-radius: 14px;
+            max-width: 920px; width: 94%; padding: 22px; box-shadow: 0 0 50px rgba(34, 197, 94, 0.4);
+            max-height: 90vh; overflow-y: auto;
         }
-        .photo-container img { width: 100%; height: auto; display: block; }
-        .photo-caption { padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; background: #060b18; }
-        .close-photo-btn { background: var(--primary); color: #020617; border: none; padding: 6px 16px; border-radius: 8px; font-weight: 800; cursor: pointer; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding-bottom: 10px; }
+        .modal-title { font-family: var(--font-title); font-size: 1.2rem; color: #fff; }
+        .close-modal-btn { background: var(--primary); color: #020617; border: none; padding: 6px 16px; border-radius: 8px; font-weight: 800; cursor: pointer; }
+
         footer {
-            background: rgba(8, 20, 16, 0.98); border-top: 1px solid var(--border);
-            padding: 8px 24px; font-size: 0.78rem; color: var(--text-sub);
-            display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;
+            background: rgba(8, 20, 16, 0.98);
+            border-top: 1px solid var(--border);
+            padding: 8px 24px;
+            font-size: 0.78rem;
+            color: var(--text-sub);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
         }
     </style>
 </head>
@@ -121,192 +283,432 @@
             <span class="badge-pill">[COD-029]</span>
             <div class="title-text">
                 <h1>🌊 Experimento de la Doble Rendija & Dualidad Onda-Partícula 3D</h1>
-                <p>Thomas Young (1801) • De Broglie (1924) • Interferencia Cuántica vs Colapso por Observación</p>
+                <p>Hitachi (Akira Tonomura 1989) • Acumulación Individual de Electrones • Colapso por Detector 'Which-Way'</p>
             </div>
         </div>
         <div class="header-actions">
-            <button class="btn-header" onclick="openAtlasViewer()">📷 Esquema Óptico SVG</button>
-            <button class="btn-header" onclick="resetCamera()">🎯 Centrar</button>
+            <button class="btn-header" onclick="openArchiveModal()">📷 Registro Histórico Hitachi 1989</button>
+            <button class="btn-header" onclick="resetExperiment()">🔄 Reiniciar Disparos</button>
         </div>
     </header>
 
     <div class="workspace">
-        <canvas id="renderCanvas"></canvas>
+        <div class="viewer-container">
+            <canvas id="slitCanvas" width="940" height="740"></canvas>
+        </div>
 
         <div class="controls-panel">
-            <div class="panel-section-title">👁️ Observador Cuántico (Detector)</div>
+            <div class="panel-section-title">⚡ Modo de Emisión Cuántica</div>
             <div class="btn-action-grid">
-                <button class="btn-action active" id="btnObserverOff" onclick="setDetector(false)">Detector: OFF (Onda)</button>
-                <button class="btn-action" id="btnObserverOn" onclick="setDetector(true)">Detector: ON (Partícula)</button>
+                <button class="btn-action active" id="btn_single" onclick="setFiringRate('single')">1 a 1 (Tonomura)</button>
+                <button class="btn-action" id="btn_burst" onclick="setFiringRate('burst')">Ráfaga (500 e⁻/s)</button>
+                <button class="btn-action" id="btn_flood" onclick="setFiringRate('flood')">Flujo Máximo (5k e⁻/s)</button>
+                <button class="btn-action" id="btn_pause" onclick="togglePause()">Pausar Haz</button>
             </div>
 
-            <div class="panel-section-title">💡 Emisor de Partículas</div>
-            <div class="btn-action-grid">
-                <button class="btn-action active" onclick="setEmitter('photons')">Fotones Láser (532 nm)</button>
-                <button class="btn-action" onclick="setEmitter('electrons')">Electrones De Broglie</button>
+            <div class="panel-section-title">👁️ Detector de Trayectoria (Which-Way)</div>
+            <div class="toggle-row">
+                <span class="toggle-label">Observador Cuántico Activo</span>
+                <button class="toggle-btn" id="toggleDetector" onclick="toggleDetector()">OFF (Onda)</button>
             </div>
 
-            <div class="panel-section-title">📊 Parámetros del Experimento</div>
+            <div class="panel-section-title">📊 Telemetría de Detección</div>
             <div class="kpi-grid">
                 <div class="kpi-card">
-                    <div class="kpi-val" id="kpiPattern">Interferencia (Franjas)</div>
-                    <div class="kpi-label">Patrón en Pantalla</div>
+                    <div class="kpi-val" id="kpiCount">0</div>
+                    <div class="kpi-label">Electrones Detectados (N)</div>
                 </div>
                 <div class="kpi-card">
-                    <div class="kpi-val" id="kpiState">Superposición |ψ⟩</div>
-                    <div class="kpi-label">Estado Cuántico</div>
+                    <div class="kpi-val" id="kpiPattern">Aleatorio (N&lt;100)</div>
+                    <div class="kpi-label">Régimen Estadístico</div>
                 </div>
                 <div class="kpi-card">
-                    <div class="kpi-val">d = 0.25 mm</div>
-                    <div class="kpi-label">Distancia entre Rendijas</div>
+                    <div class="kpi-val">0.0054 nm</div>
+                    <div class="kpi-label">λ De Broglie (50 kV)</div>
                 </div>
                 <div class="kpi-card">
-                    <div class="kpi-val">L = 1.20 m</div>
-                    <div class="kpi-label">Distancia a Pantalla</div>
+                    <div class="kpi-val" id="kpiInterference">Coherente (100%)</div>
+                    <div class="kpi-label">Visibilidad de Franjas</div>
                 </div>
+            </div>
+
+            <div class="panel-section-title">🎯 Saltos Cuantitativos Rápidos</div>
+            <div class="btn-action-grid">
+                <button class="btn-action" onclick="jumpToCount(100)">N = 100</button>
+                <button class="btn-action" onclick="jumpToCount(3000)">N = 3,000</button>
+                <button class="btn-action" onclick="jumpToCount(20000)">N = 20,000</button>
+                <button class="btn-action" onclick="jumpToCount(70000)">N = 70,000</button>
             </div>
         </div>
 
         <div class="info-panel">
-            <div class="info-title" id="infoTitle">Patrón de Interferencia Ondulatorio (Detector OFF)</div>
-            <div class="info-body" id="infoBody">Sin detector en las rendijas, cada partícula individual se propaga como una onda de probabilidad cuántica que atraviesa ambas rendijas a la vez, interfiriendo consigo misma. El resultado en la pantalla detectora es un patrón alternante de franjas brillantes y oscuras de probabilidad.</div>
-            <div class="info-quote" id="infoQuote">"El experimento de la doble rendija contiene el misterio central de la mecánica cuántica." — Richard Feynman</div>
-            <button class="audio-btn" onclick="speakCurrentInfo()">🔊 Escuchar Explicación Cuántica</button>
+            <div class="info-title" id="infoTitle">Régimen de Partícula Individual (N &lt; 100)</div>
+            <div class="info-body" id="infoBody">Cada electrón impacta la placa detector como un punto completamente discreto y localizado. Con pocos electrones, los impactos parecen totalmente aleatorios y desordenados, como disparos de perdigones sin ningún patrón visible.</div>
+            <div class="info-quote" id="infoQuote">"Cualquier intento de observar por qué rendija pasa el electrón destruye inexorablemente el patrón de interferencia." — Richard Feynman</div>
+            <button class="audio-btn" onclick="speakCurrentInfo()">🔊 Escuchar Explicación de Mecánica Cuántica</button>
         </div>
     </div>
 
-    <div class="photo-viewer-modal" id="photoModal">
-        <div class="photo-container">
-            <img id="atlasImg" src="" alt="Doble Rendija">
-            <div class="photo-caption">
-                <span style="color: #cbd5e1; font-size: 0.82rem;">Óptica Cuántica • Thomas Young & Louis de Broglie • Superposición</span>
-                <button class="close-photo-btn" onclick="closeAtlasViewer()">Cerrar Esquema</button>
+    <!-- Modal Científico: Archivo Histórico Hitachi / Akira Tonomura 1989 -->
+    <div class="modal-telemetry" id="archiveModal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <div class="modal-title">📷 Registro Histórico de Akira Tonomura • Laboratorio Central Hitachi (1989)</div>
+                <button class="close-modal-btn" onclick="closeArchiveModal()">Cerrar Archivo</button>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 16px;">
+                <div style="background: #02050e; border: 1px solid rgba(34,197,94,0.3); border-radius: 8px; padding: 10px; text-align: center;">
+                    <canvas id="thumb1" width="180" height="130" style="width:100%; display:block; background:#000; border-radius:4px;"></canvas>
+                    <div style="font-family:var(--font-mono); font-size:0.8rem; color:var(--primary); font-weight:800; margin-top:6px;">(a) N = 100</div>
+                    <div style="font-size:0.7rem; color:var(--text-sub);">Impactos aparentemente caóticos</div>
+                </div>
+                <div style="background: #02050e; border: 1px solid rgba(34,197,94,0.3); border-radius: 8px; padding: 10px; text-align: center;">
+                    <canvas id="thumb2" width="180" height="130" style="width:100%; display:block; background:#000; border-radius:4px;"></canvas>
+                    <div style="font-family:var(--font-mono); font-size:0.8rem; color:var(--primary); font-weight:800; margin-top:6px;">(b) N = 3,000</div>
+                    <div style="font-size:0.7rem; color:var(--text-sub);">Surgen tenues líneas verticales</div>
+                </div>
+                <div style="background: #02050e; border: 1px solid rgba(34,197,94,0.3); border-radius: 8px; padding: 10px; text-align: center;">
+                    <canvas id="thumb3" width="180" height="130" style="width:100%; display:block; background:#000; border-radius:4px;"></canvas>
+                    <div style="font-family:var(--font-mono); font-size:0.8rem; color:var(--primary); font-weight:800; margin-top:6px;">(c) N = 20,000</div>
+                    <div style="font-size:0.7rem; color:var(--text-sub);">Franjas de Young nítidas</div>
+                </div>
+                <div style="background: #02050e; border: 1px solid rgba(34,197,94,0.3); border-radius: 8px; padding: 10px; text-align: center;">
+                    <canvas id="thumb4" width="180" height="130" style="width:100%; display:block; background:#000; border-radius:4px;"></canvas>
+                    <div style="font-family:var(--font-mono); font-size:0.8rem; color:var(--primary); font-weight:800; margin-top:6px;">(d) N = 70,000</div>
+                    <div style="font-size:0.7rem; color:var(--text-sub);">Distribución |Ψ|² completa</div>
+                </div>
+            </div>
+            <div style="font-size: 0.82rem; color: var(--text-sub); line-height: 1.55; background: rgba(34,197,94,0.06); border: 1px solid rgba(34,197,94,0.2); border-radius: 8px; padding: 14px;">
+                <strong>El Experimento Más Bello de la Física (Physics World 2002):</strong> Utilizando un biprisma de Möllenstedt electrostático y un emisor de emisión de campo de 50 kV, Akira Tonomura demostró empíricamente que cada electrón individual interfiere <em>consigo mismo</em> al propagarse como una onda de probabilidad cuántica de De Broglie (\(\lambda = 5.4\text{ pm}\)), aunque sea registrado como un único punto luminoso sobre el microcanal detector.
             </div>
         </div>
     </div>
 
     <footer>
         <span>🌊 Curso de Inteligencia Artificial • Metodología de la Triple Salvaguarda Pedagógica</span>
-        <span>Motor 3D: Babylon.js PBR • Óptica Cuántica Fundamental</span>
+        <span>Motor Científico: Simulación Cuántica de Trayectorias y Distribución de Born |Ψ|²</span>
     </footer>
 
     <script>
-        const canvas = document.getElementById("renderCanvas");
-        const engine = new BABYLON.Engine(canvas, true);
-        let scene, camera;
-        let emitterMesh, barrierMesh, screenMesh, waveRingsGroup, detectorEye;
-        let isObserverActive = false;
+        const canvas = document.getElementById("slitCanvas");
+        const ctx = canvas.getContext("2d");
 
-        function createScene() {
-            scene = new BABYLON.Scene(engine);
-            scene.clearColor = new BABYLON.Color4(0.012, 0.018, 0.035, 1.0);
+        let electronCount = 0;
+        let firingRate = "single"; // single, burst, flood
+        let isPaused = false;
+        let detectorOn = false;
 
-            camera = new BABYLON.ArcRotateCamera("Camera", -Math.PI / 2.2, Math.PI / 2.6, 32, BABYLON.Vector3.Zero(), scene);
-            camera.attachControl(canvas, true);
-            camera.lowerRadiusLimit = 12;
-            camera.upperRadiusLimit = 60;
+        // Búfer del detector de fósforo (acumula impactos)
+        const detW = 420;
+        const detH = 500;
+        const detCanvas = document.createElement("canvas");
+        detCanvas.width = detW;
+        detCanvas.height = detH;
+        const detCtx = detCanvas.getContext("2d");
+        detCtx.fillStyle = "#01050a";
+        detCtx.fillRect(0, 0, detW, detH);
 
-            const sunLight = new BABYLON.DirectionalLight("sunLight", new BABYLON.Vector3(0.5, -1, 0.7), scene);
-            sunLight.intensity = 2.0;
-            const hemiLight = new BABYLON.HemisphericLight("hemiLight", new BABYLON.Vector3(0, 1, 0), scene);
-            hemiLight.intensity = 0.5;
+        // Curva de densidad de probabilidad teórica P(y)
+        function getProbability(yNorm) {
+            // yNorm de -1 a +1
+            if (detectorOn) {
+                // Colapso clásico: dos jorobas gaussianas detrás de las rendijas A y B
+                const g1 = Math.exp(-Math.pow((yNorm - 0.35) / 0.22, 2));
+                const g2 = Math.exp(-Math.pow((yNorm + 0.35) / 0.22, 2));
+                return (g1 + g2) * 0.5;
+            } else {
+                // Interferencia cuántica: envolvente de difracción * franjas de interferencia
+                // I(y) = cos^2(beta) * (sin(alpha)/alpha)^2
+                const alpha = yNorm * 3.2;
+                const env = (alpha === 0) ? 1.0 : Math.pow(Math.sin(alpha) / alpha, 2);
+                const fringes = Math.pow(Math.cos(yNorm * 18.0), 2);
+                return env * fringes;
+            }
+        }
 
-            // 1. Cañón Emisor
-            emitterMesh = BABYLON.MeshBuilder.CreateCylinder("emitter", { diameter: 1.6, height: 4 }, scene);
-            emitterMesh.rotation.z = Math.PI / 2;
-            emitterMesh.position.x = -12;
-            const emMat = new BABYLON.PBRMaterial("emMat", scene);
-            emMat.albedoColor = new BABYLON.Color3(0.2, 0.8, 0.4);
-            emMat.emissiveColor = new BABYLON.Color3(0.1, 0.4, 0.2);
-            emitterMesh.material = emMat;
+        // Muestreador de Monte Carlo (Rejection Sampling)
+        function sampleY() {
+            let y, p, test;
+            do {
+                y = (Math.random() * 2 - 1);
+                p = getProbability(y);
+                test = Math.random();
+            } while (test > p);
+            return y;
+        }
 
-            // 2. Barrera con Doble Rendija
-            const barMat = new BABYLON.PBRMaterial("barMat", scene);
-            barMat.albedoColor = new BABYLON.Color3(0.3, 0.35, 0.45);
-            barMat.metallic = 0.6; barMat.roughness = 0.3;
+        function fireElectrons(num) {
+            for (let i = 0; i < num; i++) {
+                const yNorm = sampleY();
+                const py = (yNorm + 1) * 0.5 * detH;
+                const px = Math.random() * detW;
 
-            const bTop = BABYLON.MeshBuilder.CreateBox("bTop", { width: 0.6, height: 6, depth: 8 }, scene);
-            bTop.position = new BABYLON.Vector3(-2, 4.5, 0); bTop.material = barMat;
+                detCtx.fillStyle = detectorOn ? "rgba(244, 63, 94, 0.75)" : "rgba(34, 197, 94, 0.75)";
+                detCtx.beginPath();
+                detCtx.arc(px, py, 1.2, 0, Math.PI * 2);
+                detCtx.fill();
 
-            const bMid = BABYLON.MeshBuilder.CreateBox("bMid", { width: 0.6, height: 1.5, depth: 8 }, scene);
-            bMid.position = new BABYLON.Vector3(-2, 0, 0); bMid.material = barMat;
+                electronCount++;
+            }
+            updateTelemetry();
+        }
 
-            const bBottom = BABYLON.MeshBuilder.CreateBox("bBottom", { width: 0.6, height: 6, depth: 8 }, scene);
-            bBottom.position = new BABYLON.Vector3(-2, -4.5, 0); bBottom.material = barMat;
+        function updateTelemetry() {
+            document.getElementById("kpiCount").textContent = electronCount.toLocaleString();
 
-            // 3. Pantalla Detectora Fosforescente
-            screenMesh = BABYLON.MeshBuilder.CreateBox("screen", { width: 0.4, height: 14, depth: 14 }, scene);
-            screenMesh.position.x = 10;
-            const scMat = new BABYLON.StandardMaterial("scMat", scene);
-            scMat.diffuseColor = new BABYLON.Color3(0.05, 0.1, 0.15);
-            scMat.emissiveColor = new BABYLON.Color3(0.1, 0.3, 0.15);
-            screenMesh.material = scMat;
+            let patternText = "Aleatorio (N < 100)";
+            let title = "Régimen de Partícula Individual (N < 100)";
+            let body = "Cada electrón impacta la placa detector como un punto completamente discreto y localizado. Con pocos electrones, los impactos parecen totalmente aleatorios y desordenados, como disparos de perdigones sin ningún patrón visible.";
 
-            // 4. Ondas de Interferencia en 3D
-            waveRingsGroup = new BABYLON.TransformNode("waveRingsGroup", scene);
-            for (let w = 0; w < 10; w++) {
-                const ring = BABYLON.MeshBuilder.CreateTorus("wave_" + w, { diameter: 3 + w * 2.2, thickness: 0.1, tessellation: 48 }, scene);
-                ring.position = new BABYLON.Vector3(-1 + w * 1.1, 0, 0);
-                ring.rotation.z = Math.PI / 2;
-                ring.parent = waveRingsGroup;
-                const rMat = new BABYLON.StandardMaterial("rMat_" + w, scene);
-                rMat.emissiveColor = new BABYLON.Color3(0.2, 0.85, 0.4);
-                rMat.alpha = 0.35;
-                ring.material = rMat;
+            if (detectorOn) {
+                patternText = "Colapso: 2 Franjas Clásicas";
+                title = "Colapso por Observación Cuántica (Detector ON)";
+                body = "Al medir por cuál de las dos rendijas pasa el electrón, la función de onda cuántica Ψ colapsa inmediatamente. La interferencia se destruye por completo y se obtienen dos bandas clásicas balísticas correspondientes a las dos rendijas.";
+            } else if (electronCount >= 70000) {
+                patternText = "Interferencia |Ψ|² Completa";
+                title = "Distribución Cuántica Continua de Born (N ≥ 70,000)";
+                body = "La acumulación de miles de impactos discretos reproduce con precisión milimétrica la curva teórica de probabilidad |Ψ₁ + Ψ₂|² predicha por la ecuación de Schrödinger. La onda guía determina dónde aterriza cada partícula.";
+            } else if (electronCount >= 20000) {
+                patternText = "Franjas de Young Nítidas";
+                title = "Emergencia de Franjas de Interferencia (N ≥ 20,000)";
+                body = "El patrón de interferencia ondulatoria es ahora inconfundible. Zonas de interferencia constructiva acumulan miles de electrones, mientras que en las zonas destructivas ningún electrón impacta.";
+            } else if (electronCount >= 3000) {
+                patternText = "Líneas Incipientes Visibles";
+                title = "Emergencia Estadística Cuántica (N ≥ 3,000)";
+                body = "Comienzan a distinguirse sutiles franjas verticales de mayor densidad. Aunque los electrones se dispararon uno por uno con horas de diferencia, el conjunto manifiesta un comportamiento ondulatorio colectivo.";
             }
 
-            // 5. Detector / Ojo del Observador
-            detectorEye = BABYLON.MeshBuilder.CreateSphere("detEye", { diameter: 1.6 }, scene);
-            detectorEye.position = new BABYLON.Vector3(-2, 2.2, 3);
-            const eyeMat = new BABYLON.StandardMaterial("eyeMat", scene);
-            eyeMat.emissiveColor = new BABYLON.Color3(0.95, 0.2, 0.2);
-            detectorEye.material = eyeMat;
-            detectorEye.setEnabled(false);
+            document.getElementById("kpiPattern").textContent = patternText;
+            document.getElementById("infoTitle").textContent = title;
+            document.getElementById("infoBody").textContent = body;
+        }
 
-            scene.registerBeforeRender(() => {
-                waveRingsGroup.rotation.y += 0.002;
+        function setFiringRate(rate) {
+            firingRate = rate;
+            isPaused = false;
+            document.querySelectorAll(".controls-panel .btn-action-grid:first-of-type .btn-action").forEach(b => b.classList.remove("active"));
+            const b = document.getElementById("btn_" + rate);
+            if (b) b.classList.add("active");
+            document.getElementById("btn_pause").textContent = "Pausar Haz";
+        }
+
+        function togglePause() {
+            isPaused = !isPaused;
+            document.getElementById("btn_pause").textContent = isPaused ? "Reanudar" : "Pausar Haz";
+            if (!isPaused) {
+                document.getElementById("btn_" + firingRate).classList.add("active");
+            }
+        }
+
+        function toggleDetector() {
+            detectorOn = !detectorOn;
+            const btn = document.getElementById("toggleDetector");
+            btn.className = detectorOn ? "toggle-btn alert" : "toggle-btn";
+            btn.textContent = detectorOn ? "ON (Colapso)" : "OFF (Onda)";
+
+            document.getElementById("kpiInterference").textContent = detectorOn ? "Nula (0% - Clásico)" : "Coherente (100%)";
+            document.getElementById("kpiInterference").style.color = detectorOn ? "#f43f5e" : "#22c55e";
+
+            // Reiniciar búfer para ver el efecto puro
+            detCtx.fillStyle = "#01050a";
+            detCtx.fillRect(0, 0, detW, detH);
+            electronCount = 0;
+            updateTelemetry();
+        }
+
+        function resetExperiment() {
+            detCtx.fillStyle = "#01050a";
+            detCtx.fillRect(0, 0, detW, detH);
+            electronCount = 0;
+            updateTelemetry();
+        }
+
+        function jumpToCount(targetN) {
+            const diff = targetN - electronCount;
+            if (diff > 0) {
+                fireElectrons(diff);
+            }
+        }
+
+        // Bucle de renderizado del laboratorio
+        function renderLab() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Fondo del laboratorio
+            ctx.fillStyle = "#01040a";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Generar electrones según la tasa
+            if (!isPaused) {
+                if (firingRate === "single") fireElectrons(1);
+                else if (firingRate === "burst") fireElectrons(15);
+                else if (firingRate === "flood") fireElectrons(120);
+            }
+
+            // DIBUJAR APARATO EXPERIMENTAL 3D A LA IZQUIERDA
+            const cx = 220, cy = 370;
+
+            // 1. Cañón de electrones (FEG 50 kV)
+            ctx.fillStyle = "#0f172a";
+            ctx.strokeStyle = "rgba(56, 189, 248, 0.4)";
+            ctx.lineWidth = 2;
+            ctx.fillRect(40, cy - 40, 80, 80);
+            ctx.strokeRect(40, cy - 40, 80, 80);
+
+            ctx.fillStyle = "#38bdf8";
+            ctx.font = "bold 10px 'JetBrains Mono', monospace";
+            ctx.textAlign = "center";
+            ctx.fillText("Cañón FEG", 80, cy - 10);
+            ctx.fillText("50,000 V", 80, cy + 10);
+
+            // Rayos del haz de electrones
+            ctx.strokeStyle = detectorOn ? "rgba(244, 63, 94, 0.5)" : "rgba(34, 197, 94, 0.5)";
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(120, cy);
+            ctx.lineTo(230, cy - 35);
+            ctx.moveTo(120, cy);
+            ctx.lineTo(230, cy + 35);
+            ctx.stroke();
+
+            // Ondas de De Broglie si detector está OFF
+            if (!detectorOn) {
+                ctx.strokeStyle = "rgba(34, 197, 94, 0.25)";
+                ctx.lineWidth = 1;
+                for (let r = 20; r <= 100; r += 16) {
+                    ctx.beginPath();
+                    ctx.arc(120, cy, r, -0.4, 0.4);
+                    ctx.stroke();
+                }
+            }
+
+            // 2. Biprisma / Rendijas dobles
+            ctx.fillStyle = "#1e293b";
+            ctx.fillRect(230, cy - 180, 16, 135);
+            ctx.fillRect(230, cy + 45, 16, 135);
+            ctx.fillRect(230, cy - 15, 16, 30);
+
+            ctx.fillStyle = "#fbbf24";
+            ctx.font = "9px 'JetBrains Mono', monospace";
+            ctx.fillText("Rendija A", 238, cy - 30);
+            ctx.fillText("Rendija B", 238, cy + 32);
+
+            // Detector Which-Way si está activo
+            if (detectorOn) {
+                ctx.fillStyle = "rgba(244, 63, 94, 0.2)";
+                ctx.strokeStyle = "#f43f5e";
+                ctx.lineWidth = 1.5;
+                ctx.beginPath();
+                ctx.arc(238, cy - 25, 20, 0, Math.PI * 2);
+                ctx.arc(238, cy + 25, 20, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.stroke();
+
+                ctx.fillStyle = "#f43f5e";
+                ctx.font = "bold 9px 'JetBrains Mono', monospace";
+                ctx.fillText("👁️ DETECTOR ON", 238, cy - 60);
+            }
+
+            // Ondas secundarias emergiendo de las dos rendijas
+            if (!detectorOn) {
+                ctx.strokeStyle = "rgba(56, 189, 248, 0.2)";
+                ctx.lineWidth = 1;
+                for (let r = 15; r <= 160; r += 20) {
+                    ctx.beginPath();
+                    ctx.arc(246, cy - 25, r, -0.8, 0.8);
+                    ctx.stroke();
+
+                    ctx.beginPath();
+                    ctx.arc(246, cy + 25, r, -0.8, 0.8);
+                    ctx.stroke();
+                }
+            }
+
+            // 3. PANTALLA DETECTORA DE FÓSFORO (DERECHA)
+            const detScreenX = 460;
+            const detScreenY = cy - 250;
+
+            // Marco del detector
+            ctx.fillStyle = "rgba(255, 255, 255, 0.03)";
+            ctx.strokeStyle = detectorOn ? "rgba(244, 63, 94, 0.5)" : "rgba(34, 197, 94, 0.5)";
+            ctx.lineWidth = 2;
+            ctx.strokeRect(detScreenX - 4, detScreenY - 4, detW + 8, detH + 8);
+
+            // Volcar la placa de fósforo acumulada
+            ctx.drawImage(detCanvas, detScreenX, detScreenY);
+
+            // Gráfico de perfil de intensidad teórico superpuesto a la derecha
+            const profX = detScreenX + detW + 12;
+            ctx.strokeStyle = "rgba(255, 255, 255, 0.15)";
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(profX, detScreenY);
+            ctx.lineTo(profX, detScreenY + detH);
+            ctx.stroke();
+
+            ctx.strokeStyle = detectorOn ? "#f43f5e" : "#22c55e";
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            for (let py = 0; py <= detH; py += 2) {
+                const yNorm = (py / detH) * 2 - 1;
+                const prob = getProbability(yNorm);
+                const px = profX + prob * 35;
+                if (py === 0) ctx.moveTo(px, detScreenY + py);
+                else ctx.lineTo(px, detScreenY + py);
+            }
+            ctx.stroke();
+
+            ctx.fillStyle = detectorOn ? "#f43f5e" : "#22c55e";
+            ctx.font = "bold 9px 'JetBrains Mono', monospace";
+            ctx.textAlign = "left";
+            ctx.fillText(detectorOn ? "P(y) = |Ψ₁|²+|Ψ₂|²" : "|Ψ₁ + Ψ₂|²", profX + 4, detScreenY - 8);
+
+            requestAnimationFrame(renderLab);
+        }
+
+        // Miniaturas del Modal Científico
+        function generateThumbnails() {
+            const targets = [
+                { id: "thumb1", count: 100 },
+                { id: "thumb2", count: 3000 },
+                { id: "thumb3", count: 20000 },
+                { id: "thumb4", count: 70000 }
+            ];
+
+            targets.forEach(t => {
+                const c = document.getElementById(t.id);
+                if (!c) return;
+                const g = c.getContext("2d");
+                g.fillStyle = "#01050a";
+                g.fillRect(0, 0, c.width, c.height);
+
+                for (let i = 0; i < t.count; i++) {
+                    let y, p, test;
+                    do {
+                        y = (Math.random() * 2 - 1);
+                        const alpha = y * 3.2;
+                        const env = (alpha === 0) ? 1.0 : Math.pow(Math.sin(alpha) / alpha, 2);
+                        const fringes = Math.pow(Math.cos(y * 18.0), 2);
+                        p = env * fringes;
+                        test = Math.random();
+                    } while (test > p);
+
+                    const py = (y + 1) * 0.5 * c.height;
+                    const px = Math.random() * c.width;
+
+                    g.fillStyle = "rgba(34, 197, 94, 0.75)";
+                    g.fillRect(px, py, 1.2, 1.2);
+                }
             });
-
-            return scene;
         }
 
-        function setDetector(active) {
-            isObserverActive = active;
-            detectorEye.setEnabled(active);
-            document.getElementById("btnObserverOff").classList.toggle("active", !active);
-            document.getElementById("btnObserverOn").classList.toggle("active", active);
-
-            if (active) {
-                // Colapso de la función de onda: se apagan las ondas circulares
-                waveRingsGroup.setEnabled(false);
-                screenMesh.material.emissiveColor = new BABYLON.Color3(0.3, 0.1, 0.1);
-                document.getElementById("kpiPattern").textContent = "2 Bandas Clásicas (Colapso)";
-                document.getElementById("kpiState").textContent = "Partícula Medida |0⟩ / |1⟩";
-                document.getElementById("infoTitle").textContent = "Colapso de la Función de Onda (Detector ON)";
-                document.getElementById("infoBody").textContent = "¡El acto de observar cambia la realidad! Al colocar un detector para averiguar por cuál rendija cruza la partícula, la superposición cuántica colapsa instantáneamente. La naturaleza ondulatoria desaparece y en la pantalla se forman únicamente dos bandas clásicas.";
-            } else {
-                waveRingsGroup.setEnabled(true);
-                screenMesh.material.emissiveColor = new BABYLON.Color3(0.1, 0.3, 0.15);
-                document.getElementById("kpiPattern").textContent = "Interferencia (Franjas)";
-                document.getElementById("kpiState").textContent = "Superposición |ψ⟩";
-                document.getElementById("infoTitle").textContent = "Patrón de Interferencia Ondulatorio (Detector OFF)";
-                document.getElementById("infoBody").textContent = "Sin observador en las rendijas, cada partícula individual viaja como una onda de probabilidad cuántica que cruza ambas rendijas simultáneamente, generando franjas alternas de interferencia constructiva y destructiva.";
-            }
+        function openArchiveModal() {
+            document.getElementById("archiveModal").style.display = "flex";
+            generateThumbnails();
         }
 
-        function setEmitter(type) {
-            if (type === 'photons') {
-                emitterMesh.material.albedoColor = new BABYLON.Color3(0.2, 0.8, 0.4);
-                emitterMesh.material.emissiveColor = new BABYLON.Color3(0.1, 0.4, 0.2);
-            } else {
-                emitterMesh.material.albedoColor = new BABYLON.Color3(0.2, 0.7, 1.0);
-                emitterMesh.material.emissiveColor = new BABYLON.Color3(0.1, 0.3, 0.5);
-            }
-        }
-
-        function resetCamera() {
-            camera.alpha = -Math.PI / 2.2; camera.beta = Math.PI / 2.6; camera.radius = 32;
-            camera.target = BABYLON.Vector3.Zero();
+        function closeArchiveModal() {
+            document.getElementById("archiveModal").style.display = "none";
         }
 
         function speakCurrentInfo() {
@@ -314,25 +716,13 @@
             window.speechSynthesis.cancel();
             const text = `${document.getElementById("infoTitle").textContent}. ${document.getElementById("infoBody").textContent}`;
             const u = new SpeechSynthesisUtterance(text);
-            u.lang = 'es-ES'; u.rate = 0.95;
+            u.lang = 'es-ES';
+            u.rate = 0.95;
             window.speechSynthesis.speak(u);
         }
 
-        function openAtlasViewer() {
-            const modal = document.getElementById("photoModal");
-            const img = document.getElementById("atlasImg");
-            img.src = window.DOUBLE_SLIT_SVG_B64 || "";
-            modal.style.display = "flex";
-        }
-
-        function closeAtlasViewer() {
-            document.getElementById("photoModal").style.display = "none";
-        }
-
-        scene = createScene();
-        engine.runRenderLoop(() => { scene.render(); });
-        window.addEventListener("resize", () => { engine.resize(); });
+        // Iniciar
+        renderLab();
     </script>
 </body>
 </html>
-
