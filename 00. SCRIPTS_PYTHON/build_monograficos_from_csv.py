@@ -31,29 +31,22 @@ CSV_ROWS = [
         "url": GITHUB_BASE + "CLASES/1.%20INTRODUCCION_GEMINI/%2A.Guia_Visual_de_Gemini.pdf",
         "type": "pdf"
     },
-    # MONOGRÁFICO 2 (NUEVO)
+    # MONOGRÁFICO 2 (NUEVO: ESTUDIO CREATIVO DE VIDEOJUEGOS)
     {
-        "tema": "Monográfico 2. 104 Estilos Animados que puedes pedirle a la IA sin Programar",
-        "titulo": "Taller Interactivo: 6 Ejercicios de Estilos Animados (HTML)",
-        "desc": "Crea infografías y animaciones en movimiento con un solo prompt. Incluye 6 ejercicios de vida real para copiar y ejecutar.",
-        "url": GITHUB_BASE + "104%20ESTILO%20ANIMADOS%20SIN%20PROGRAMAR/TALLER_MONOGRAFICO_02_ESTILOS_ANIMADOS.html",
+        "tema": "Monográfico 2. Crea Videojuegos para tus Nietos con IA (El Estudio Creativo)",
+        "titulo": "Aplicación Web Interactiva: El Estudio de Videojuegos del Abuelo (HTML)",
+        "desc": "Diseña videojuegos personalizados con el nombre y aficiones de tus nietos en 4 sencillos pasos. Incluye Cuestionario Creativo, Generador de Prompts y Probador en Vivo.",
+        "url": GITHUB_BASE + "CLASES/105.%20%5BMONOGRAFICOS%5D%20CUADERNOS_Y_TALLERES_ESPECIALES/MONO-002/ESTUDIO_CREATIVO_VIDEOJUEGOS.html",
         "type": "launch"
     },
     {
-        "tema": "Monográfico 2. 104 Estilos Animados que puedes pedirle a la IA sin Programar",
-        "titulo": "Material: Ficha Guia del Alumno MONO-002 (PDF)",
-        "desc": "Metodología en 3 pasos para generar animaciones sin programar y guía completa de los 6 ejercicios prácticos de clase.",
-        "url": GITHUB_BASE + "104%20ESTILO%20ANIMADOS%20SIN%20PROGRAMAR/MONO-002_104_Estilos_Animados_Sin_Programar.pdf",
+        "tema": "Monográfico 2. Crea Videojuegos para tus Nietos con IA (El Estudio Creativo)",
+        "titulo": "Material: Ficha Didáctica del Alumno MONO-002 (PDF)",
+        "desc": "Metodología en 3 pasos, los 4 modelos clásicos de juegos infantiles y guía para guardar el archivo en el ordenador y jugar en casa.",
+        "url": GITHUB_BASE + "CLASES/105.%20%5BMONOGRAFICOS%5D%20CUADERNOS_Y_TALLERES_ESPECIALES/MONO-002/MONO-002_Crea_Videojuegos_para_tus_Nietos_con_IA.pdf",
         "type": "pdf"
     },
-    {
-        "tema": "Monográfico 2. 104 Estilos Animados que puedes pedirle a la IA sin Programar",
-        "titulo": "Material: Catalogo Completo 104 Estilos con Dibujos (PDF)",
-        "desc": "El catálogo de referencia de Paco Vida con los 104 estilos animados explicados con sus ilustraciones y enlaces a la galería.",
-        "url": GITHUB_BASE + "104%20ESTILO%20ANIMADOS%20SIN%20PROGRAMAR/76_Estilos_Animados_Ia_Sin_Programar_DiarioVida.pdf",
-        "type": "book"
-    },
-    # MONOGRÁFICO 3 (Antes 2)
+    # MONOGRÁFICO 3
     {
         "tema": "Monográfico 3. Gemini Notebook: Tu Cuaderno Inteligente",
         "titulo": "Ejemplo de Prueba: Guia de NotebookLM (PDF)",
@@ -61,7 +54,7 @@ CSV_ROWS = [
         "url": GITHUB_BASE + "CLASES/2.%20INTRODUCCION_NLM/1.%20PRESENTACI%C3%93N%20A%20LOS%20ALUMNOS/%2A.Guia_de_NotebookLM.pdf",
         "type": "pdf"
     },
-    # MONOGRÁFICO 4 (Antes 3)
+    # MONOGRÁFICO 4
     {
         "tema": "Monográfico 4. Cómo Crear un Cuento Ilustrado con Gemini Notebook",
         "titulo": "Material: Paso 0 Introduccion Proyecto (PDF)",
@@ -90,7 +83,7 @@ CSV_ROWS = [
         "url": GITHUB_BASE + "CLASES/3.%20COMO_HACER_UN_CUENTO_CON_NLM/%2A.%20Paso_3_Ilustrador_Visual.pdf",
         "type": "pdf"
     },
-    # MONOGRÁFICO 5 (Antes 4)
+    # MONOGRÁFICO 5
     {
         "tema": "Monográfico 5. Mi Biografía (Escribe tus Memorias con IA)",
         "titulo": "Aplicación Web Interactiva: Mi Biografía (HTML)",
@@ -105,7 +98,7 @@ CSV_ROWS = [
         "url": GITHUB_BASE + "CLASES/4.%20Mi_Biografia/%2A.Manual_de_Instrucciones.pdf",
         "type": "pdf"
     },
-    # MONOGRÁFICO 6 (Antes 5)
+    # MONOGRÁFICO 6
     {
         "tema": "Monográfico 6. Educanietos IA: Ayuda a tus Nietos con IA (Ciencias, Mates e Historia)",
         "titulo": "Aplicación Web Interactiva: Educanietos IA (HTML)",
@@ -491,34 +484,13 @@ def generate_master_map():
 
 def main():
     print("=" * 80)
-    print("🚀 GENERACIÓN DEL CSV Y MAPA OFICIAL DE MONOGRÁFICOS")
+    print("🚀 GENERACIÓN DEL MAPA OFICIAL DE MONOGRÁFICOS (6 MONOGRÁFICOS VIGENTES)")
     print("=" * 80)
 
-    # 1. Compilar PDF oficial MONO-002
-    try:
-        from build_pdf_mono_002 import build_mono_002_pdf
-        build_mono_002_pdf()
-    except Exception as e:
-        print(f"  ❌ Error PDF MONO-002: {e}")
-
-    # 2. Generar Taller 02 en 104
-    taller_01 = os.path.join(DIR_104, "TALLER_MONOGRAFICO_01_ESTILOS_ANIMADOS.html")
-    taller_02 = os.path.join(DIR_104, "TALLER_MONOGRAFICO_02_ESTILOS_ANIMADOS.html")
-    if os.path.exists(taller_01):
-        with open(taller_01, "r", encoding="utf-8") as f:
-            content = f.read()
-        content = content.replace("[MONO-001]", "[MONO-002]").replace("Monográfico 01", "Monográfico 02").replace("MONO-001_", "MONO-002_")
-        with open(taller_02, "w", encoding="utf-8") as f:
-            f.write(content)
-        print(f"✅ Taller 02 generado en:\n   {taller_02}")
-
-    # 3. Generar CSV 0.PANEL_MONOGRAFICOS.csv
-    generate_csv_file()
-
-    # 4. Generar MAPA_MONOGRAFICOS.html
+    # Generar MAPA_MONOGRAFICOS.html con los 6 monográficos oficiales vigentes
     generate_master_map()
 
-    print("\n✨ CSV y Mapa Maestro listos para subir a Classroom y GitHub.")
+    print("\n✨ Mapa Maestro listo para ver en Safari y desplegar en GitHub Pages.")
 
 if __name__ == "__main__":
     main()
