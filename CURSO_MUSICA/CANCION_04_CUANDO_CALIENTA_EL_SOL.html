@@ -338,23 +338,36 @@
         </div>
 
         <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:12px;">
-            <!-- BOTÓN MAESTRO 1: GUITARRA ESPAÑOLA + BEGUINE PLAYERO -->
-            <button class="btn-korg-master" onclick="cargarBoton1GuitarraBeguine()">
+            <!-- BOTÓN MAESTRO 1: ÓRGANO DE PERCUSIÓN + BEGUINE PLAYERO -->
+            <button class="btn-korg-master" onclick="cargarBoton1OrganoBeguine()">
                 <div>
-                    <div style="font-size:1.15rem; font-weight:900;">🎵 1. Beguine Playero (Guitarra)</div>
-                    <span class="desc">Upper 1: Nylon Guitar (GM PC 24) · Estilo 174 Beguine 1 · 112 BPM · Lower: Coro</span>
+                    <div style="font-size:1.15rem; font-weight:900;">🎵 1. Beguine & Órgano de Percusión</div>
+                    <span class="desc">Pantalla: Perc. Organ · Upper 1: Órgano Percusivo (PC 17) · Estilo 174 Beguine 1 (112 BPM) · Lower: Coro</span>
                 </div>
                 <div class="tag">BOTÓN 1</div>
             </button>
 
-            <!-- BOTÓN MAESTRO 2: GUITARRA & STRINGS (CAPA DUAL AUTOMÁTICA) -->
-            <button class="btn-korg-master alt" onclick="cargarBoton2GuitarraStrings()">
+            <!-- BOTÓN MAESTRO 2: ÓRGANO DE PERCUSIÓN & STRINGS (CAPA DUAL AUTOMÁTICA) -->
+            <button class="btn-korg-master alt" onclick="cargarBoton2OrganoStrings()">
                 <div>
-                    <div style="font-size:1.15rem; font-weight:900;">🎻 2. Guitarra & Cuerdas (Dúo)</div>
-                    <span class="desc">Enciende Upper 1 + Upper 2 (Strings cálidas 95) · Estilo 174 a 112 BPM</span>
+                    <div style="font-size:1.15rem; font-weight:900;">🎻 2. Órgano de Percusión & Cuerdas</div>
+                    <span class="desc">Enciende Upper 1 (Órgano 125) + Upper 2 (Strings cálidas 95) · Estilo 174 a 112 BPM</span>
                 </div>
                 <div class="tag" style="border-color:#38bdf8;">BOTÓN 2</div>
             </button>
+        </div>
+
+        <!-- SELECTOR DE VELOCIDAD DE TEMPO (KORG Y ATRIL) -->
+        <div style="background:#0f172a; border:1px solid #1e293b; border-radius:10px; padding:10px 14px; display:flex; flex-direction:column; gap:6px; margin-top:4px;">
+            <div style="font-size:0.82rem; color:#fde68a; font-weight:800; display:flex; justify-content:space-between; align-items:center;">
+                <span>⏱️ VELOCIDAD DE TEMPO (KORG EK-50 & ATRIL):</span>
+                <span id="current-tempo-badge" style="color:#38bdf8; font-family:monospace; font-size:0.9rem;">112 BPM</span>
+            </div>
+            <div style="display:flex; gap:8px;">
+                <button class="btn-tempo" onclick="cambiarTempo(100, this)" style="flex:1; background:#1e293b; color:#cbd5e1; border:1px solid #334155; padding:8px; border-radius:8px; font-weight:700; cursor:pointer;">100 BPM (Lento)</button>
+                <button class="btn-tempo active-tempo" onclick="cambiarTempo(112, this)" style="flex:1; background:#0284c7; color:#fff; border:1px solid #38bdf8; padding:8px; border-radius:8px; font-weight:800; cursor:pointer;">112 BPM (Oficial Beguine)</button>
+                <button class="btn-tempo" onclick="cambiarTempo(120, this)" style="flex:1; background:#1e293b; color:#cbd5e1; border:1px solid #334155; padding:8px; border-radius:8px; font-weight:700; cursor:pointer;">120 BPM (Rápido)</button>
+            </div>
         </div>
 
         <!-- CONTROLES SECUNDARIOS DE ACOMPAÑAMIENTO -->
@@ -547,11 +560,11 @@ cuando calienta el sol,
         </button>
 
         <div style="display:flex; gap:8px;">
-            <button onclick="cargarBoton1GuitarraBeguine()" style="background:#d97706; color:#fff; border:1px solid #fbbf24; padding:8px 14px; border-radius:8px; font-weight:900; font-size:0.85rem; cursor:pointer;">
-                🎵 1. Guitarra Beguine
+            <button onclick="cargarBoton1OrganoBeguine()" style="background:#d97706; color:#fff; border:1px solid #fbbf24; padding:8px 14px; border-radius:8px; font-weight:900; font-size:0.85rem; cursor:pointer;">
+                🎵 1. Órgano Beguine
             </button>
-            <button onclick="cargarBoton2GuitarraStrings()" style="background:#0284c7; color:#fff; border:1px solid #38bdf8; padding:8px 14px; border-radius:8px; font-weight:900; font-size:0.85rem; cursor:pointer;">
-                🎻 2. Guitarra & Cuerdas
+            <button onclick="cargarBoton2OrganoStrings()" style="background:#0284c7; color:#fff; border:1px solid #38bdf8; padding:8px 14px; border-radius:8px; font-weight:900; font-size:0.85rem; cursor:pointer;">
+                🎻 2. Órgano & Cuerdas
             </button>
         </div>
     </div>
@@ -712,9 +725,9 @@ cuando calienta el sol...
     }
 
     // ==============================================================================
-    // BOTÓN 1: BEGUINE PLAYERO (GUITARRA ESPAÑOLA)
+    // BOTÓN 1: BEGUINE & ÓRGANO DE PERCUSIÓN
     // ==============================================================================
-    async function cargarBoton1GuitarraBeguine() {
+    async function cargarBoton1OrganoBeguine() {
         const log = document.getElementById('log-1');
         if (!midiOutput && (!midiAccessInstance || obtenerSalidasDisponibles().length === 0)) {
             await conectarMIDI();
@@ -728,26 +741,34 @@ cuando calienta el sol...
 
         try {
             // 1. Cargar Estilo 174 (Beguine 1) en Canal 16 a 112 BPM
-            // Fórmula: 32 * (6 - 1) + 13 + 1 = 174 -> LSB 6, PC 13
+            // Fórmula exacta Korg EK-50: 16 * LSB + PC + 1 = Estilo
+            // 16 * 10 + 13 + 1 = 174 (LSB 10, PC 13)
             enviarMidiGlobal([0xB0 | 15, 0x00, 32]);
-            enviarMidiGlobal([0xB0 | 15, 0x20, 6]);
-            enviarMidiGlobal([0xC0 | 15, 13]); // Estilo 174 Beguine 1
+            enviarMidiGlobal([0xB0 | 15, 0x20, 10]); // LSB 10 = Banco Estilos 161-176
+            enviarMidiGlobal([0xC0 | 15, 13]);       // PC 13 = Estilo 174 (Beguine 1)
+
+            // 2. Cargar en pantalla del Korg el Keyboard Set "Perc. Organ" (Banco 33, LSB 3, PC 0)
+            enviarMidiGlobal([0xB0 | 0, 0x00, 33]);
+            enviarMidiGlobal([0xB0 | 0, 0x20, 3]);
+            enviarMidiGlobal([0xC0 | 0, 0]);
+
+            enviarMidiGlobal([0xB0 | 15, 0x00, 33]);
+            enviarMidiGlobal([0xB0 | 15, 0x20, 3]);
+            enviarMidiGlobal([0xC0 | 15, 0]);
 
             await new Promise(r => setTimeout(r, 45));
 
-            // 2. Upper 1 = GUITARRA ESPAÑOLA ACÚSTICA (Nylon Guitar GM PC 24)
+            // 3. Upper 1 = ÓRGANO DE PERCUSIÓN (Percussive Organ GM PC 17)
             enviarMidiGlobal([0xB0 | 0, 0x00, 0]);
             enviarMidiGlobal([0xB0 | 0, 0x20, 0]);
-            enviarMidiGlobal([0xC0 | 0, 24]);        // PC 24 = Nylon Guitar
-            enviarMidiGlobal([0xB0 | 0, 0x07, 120]); // Volumen potente
+            enviarMidiGlobal([0xC0 | 0, 17]);        // PC 17 = Percussive Organ
+            enviarMidiGlobal([0xB0 | 0, 0x07, 122]); // Volumen potente
             enviarMidiGlobal([0xB0 | 0, 0x0B, 127]); // Expresión 127
-            enviarMidiGlobal([0xB0 | 0, 0x01, 30]);  // Vibrato sutil
-            enviarMidiGlobal([0xB0 | 0, 0x4D, 40]);  // Profundidad de vibrato
-            enviarMidiGlobal([0xB0 | 0, 0x5B, 105]); // Reverb de concierto
-            enviarMidiGlobal([0xB0 | 0, 0x5D, 50]);  // Chorus ambiental
-            enviarMidiGlobal([0xB0 | 0, 0x48, 74]);  // Release suave
+            enviarMidiGlobal([0xB0 | 0, 0x5B, 100]); // Reverb Send
+            enviarMidiGlobal([0xB0 | 0, 0x5D, 55]);  // Chorus / Rotary
+            enviarMidiGlobal([0xB0 | 0, 0x48, 70]);  // Release percusivo
 
-            // Upper 2 y 3 silenciados para que la guitarra sea protagonista
+            // Upper 2 y 3 silenciados para que el órgano sea solista
             enviarMidiGlobal([0xB0 | 1, 0x07, 0]);
             enviarMidiGlobal([0xB0 | 2, 0x07, 0]);
 
@@ -760,16 +781,17 @@ cuando calienta el sol...
             enviarMidiGlobal([0xB0 | 3, 0x5B, 90]);
 
             const nombres = salidas.map(o=>o.name).join(', ') || 'Korg';
-            if (log) log.innerHTML = `🌴 <b>1. Beguine Playero (Guitarra)</b> listo en <b>${nombres}</b> (Estilo 174 Beguine 1 · ⏱️ <b>112 BPM</b> · Mano derecha: Guitarra Nylon · Izquierda: Coro). ¡Toca el teclado!`;
+            if (log) log.innerHTML = `🌴 <b>1. Beguine & Órgano de Percusión</b> listo en <b>${nombres}</b> (Pantalla: <b>Perc. Organ</b> · Estilo: <b>174 Beguine 1</b> · ⏱️ <b>112 BPM</b> · Mano derecha: Órgano Percusivo · Izquierda: Coro). ¡Toca el teclado!`;
         } catch(e) {
             if (log) log.innerHTML = `⚠️ Error enviando al Korg: ${e.message}`;
         }
     }
+    const cargarBoton1GuitarraBeguine = cargarBoton1OrganoBeguine;
 
     // ==============================================================================
-    // BOTÓN 2: GUITARRA & CUERDAS (DUAL UPPER 1 + UPPER 2 AUTO)
+    // BOTÓN 2: ÓRGANO DE PERCUSIÓN & CUERDAS (DUAL UPPER 1 + UPPER 2 AUTO)
     // ==============================================================================
-    async function cargarBoton2GuitarraStrings() {
+    async function cargarBoton2OrganoStrings() {
         const log = document.getElementById('log-1');
         if (!midiOutput && (!midiAccessInstance || obtenerSalidasDisponibles().length === 0)) {
             await conectarMIDI();
@@ -781,9 +803,9 @@ cuando calienta el sol...
         }
 
         try {
-            // 1. Cargar Estilo 174 Beguine 1
+            // 1. Cargar Estilo 174 Beguine 1 (LSB 10, PC 13)
             enviarMidiGlobal([0xB0 | 15, 0x00, 32]);
-            enviarMidiGlobal([0xB0 | 15, 0x20, 6]);
+            enviarMidiGlobal([0xB0 | 15, 0x20, 10]);
             enviarMidiGlobal([0xC0 | 15, 13]);
 
             // 2. ACTIVAR FÍSICAMENTE UPPER 1 Y UPPER 2 CON KEYBOARD SET 61 (The Strings)
@@ -797,13 +819,13 @@ cuando calienta el sol...
 
             await new Promise(r => setTimeout(r, 45));
 
-            // Upper 1 = Guitarra Española (Volumen 125)
+            // Upper 1 = Órgano de Percusión (Volumen 125)
             enviarMidiGlobal([0xB0 | 0, 0x00, 0]);
             enviarMidiGlobal([0xB0 | 0, 0x20, 0]);
-            enviarMidiGlobal([0xC0 | 0, 24]);
+            enviarMidiGlobal([0xC0 | 0, 17]);        // PC 17 = Percussive Organ
             enviarMidiGlobal([0xB0 | 0, 0x07, 125]);
             enviarMidiGlobal([0xB0 | 0, 0x0B, 127]);
-            enviarMidiGlobal([0xB0 | 0, 0x5B, 105]);
+            enviarMidiGlobal([0xB0 | 0, 0x5B, 100]);
 
             // Upper 2 = St. Strings (Cuerdas Orquestales cálidas Volumen 95)
             enviarMidiGlobal([0xB0 | 1, 0x00, 121]);
@@ -823,25 +845,85 @@ cuando calienta el sol...
             enviarMidiGlobal([0xB0 | 3, 0x07, 110]);
 
             const nombres = salidas.map(o=>o.name).join(', ') || 'Korg';
-            if (log) log.innerHTML = `🎻 <b>2. Guitarra & Cuerdas</b> listo en <b>${nombres}</b> (Upper 1: Guitarra · Upper 2: Cuerdas · Estilo 174 Beguine 1 · ⏱️ <b>112 BPM</b>). ¡Toca el teclado!`;
+            if (log) log.innerHTML = `🎻 <b>2. Órgano de Percusión & Cuerdas</b> listo en <b>${nombres}</b> (Upper 1: Órgano · Upper 2: Cuerdas · Estilo: <b>174 Beguine 1</b> · ⏱️ <b>112 BPM</b>). ¡Toca el teclado!`;
         } catch(e) {
             if (log) log.innerHTML = `⚠️ Error: ${e.message}`;
         }
     }
+    const cargarBoton2GuitarraStrings = cargarBoton2OrganoStrings;
+
+    // ==============================================================================
+    // CONTROL DE TEMPO (KORG EK-50 & ATRIL)
+    // ==============================================================================
+    let midiClockTimer = null;
+    let isKorgAccompanimentRunning = false;
+
+    function cambiarTempo(bpm, btn) {
+        tempoBPM = bpm;
+        document.querySelectorAll('.btn-tempo').forEach(b => {
+            b.classList.remove('active-tempo');
+            b.style.background = '#1e293b';
+            b.style.borderColor = '#334155';
+            b.style.color = '#cbd5e1';
+        });
+        if (btn) {
+            btn.classList.add('active-tempo');
+            btn.style.background = '#0284c7';
+            btn.style.borderColor = '#38bdf8';
+            btn.style.color = '#fff';
+        }
+
+        const badge = document.getElementById('current-tempo-badge');
+        if (badge) badge.textContent = `${bpm} BPM`;
+
+        // Si el acompañamiento del Korg está corriendo, ajustar el reloj MIDI en vivo
+        if (isKorgAccompanimentRunning) {
+            if (midiClockTimer) clearInterval(midiClockTimer);
+            const msPerTick = (60000 / (tempoBPM * 24));
+            midiClockTimer = setInterval(() => {
+                enviarMidiGlobal([0xF8]); // MIDI Timing Clock
+            }, msPerTick);
+        }
+
+        const log = document.getElementById('log-1');
+        if (log) log.innerHTML = `⏱️ Velocidad ajustada a <b>${bpm} BPM</b> (Estilo 174 Beguine · Reloj MIDI activo).`;
+    }
+    const cambiarTempoAccomp = (bpm) => cambiarTempo(bpm, null);
 
     function iniciarAcompanamientoKorg() {
         try {
+            isKorgAccompanimentRunning = true;
             enviarMidiGlobal([0xFA]); // MIDI Real-Time START
+
+            // Iniciar tren de reloj MIDI sincronizado a tempoBPM (24 ticks por negra)
+            if (midiClockTimer) clearInterval(midiClockTimer);
+            const msPerTick = (60000 / (tempoBPM * 24));
+            midiClockTimer = setInterval(() => {
+                enviarMidiGlobal([0xF8]);
+            }, msPerTick);
+
             const log = document.getElementById('log-1');
-            if (log) log.innerHTML = '▶️ Ritmo Korg INICIADO (Estilo 174 Beguine a 112 BPM).';
+            if (log) log.innerHTML = `▶️ Ritmo Korg INICIADO (Estilo 174 Beguine a <b>${tempoBPM} BPM</b>).`;
         } catch(e) {}
     }
 
     function detenerAcompanamientoKorg() {
         try {
+            isKorgAccompanimentRunning = false;
+            if (midiClockTimer) {
+                clearInterval(midiClockTimer);
+                midiClockTimer = null;
+            }
             enviarMidiGlobal([0xFC]); // MIDI Real-Time STOP
+
+            // All Sound Off / Notes Off
+            for (let ch = 0; ch < 16; ch++) {
+                enviarMidiGlobal([0xB0 | ch, 120, 0]);
+                enviarMidiGlobal([0xB0 | ch, 123, 0]);
+            }
+
             const log = document.getElementById('log-1');
-            if (log) log.innerHTML = '⏹️ Ritmo Korg DETENIDO.';
+            if (log) log.innerHTML = '⏹️ Ritmo Korg DETENIDO (Bus USB en silencio).';
         } catch(e) {}
     }
 
@@ -992,20 +1074,9 @@ cuando calienta el sol...
         }
     }
 
+    // Sincronización de compatibilidad
     function cambiarTempoAccomp(bpm) {
-        tempoBPM = bpm;
-        document.querySelectorAll('.btn-tempo').forEach(b => {
-            b.classList.remove('active-tempo');
-            b.style.background = '#1e293b';
-            b.style.borderColor = '#334155';
-            b.style.color = '#cbd5e1';
-        });
-        if (event && event.target) {
-            event.target.classList.add('active-tempo');
-            event.target.style.background = '#0284c7';
-            event.target.style.borderColor = '#38bdf8';
-            event.target.style.color = '#fff';
-        }
+        cambiarTempo(bpm, null);
     }
 
     // ==============================================================================

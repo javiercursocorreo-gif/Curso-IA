@@ -134,10 +134,10 @@ def build_pdf():
     # La Caja de Herramientas del Taller
     story.append(Paragraph("🛠️ <b>Tu Caja de Herramientas para Este Monográfico:</b>", style_section_h))
     extra_text = (
-        "• <b>La Aplicación del Taller (El Estudio de Videojuegos):</b> Entra en la app interactiva del monográfico en el cuadro de mandos del curso. "
-        "Allí tienes el cuestionario guiado con botones visuales que genera tu prompt en 1 clic y el <i>Probador en Vivo</i> para jugar de inmediato.<br/>"
-        "• <b>Cómo llevárselo a casa:</b> En el Probador pulsa <b>«Guardar Archivo en mi Ordenador»</b>. Se descargará el archivo <i>Juego_Para_Mi_Nieto.html</i> en tu carpeta de Descargas. "
-        "Múevelo al Escritorio y con solo hacer doble clic, ¡el juego se abrirá a pantalla completa en cualquier ordenador sin necesidad de internet!"
+        "• <b>Instrucciones Claras en Pantalla:</b> Cada juego generado muestra en su cabecera un recuadro vistoso con el <i>Objetivo</i> y los <i>Controles</i> para que niños y abuelos sepan exactamente cómo jugar sin perderse.<br/>"
+        "• <b>La Aplicación del Taller (El Estudio Creativo):</b> Entra en la app interactiva en el cuadro de mandos del curso. "
+        "Allí tienes el generador 100% directo, el generador de prompts y el <i>Probador en Vivo</i> con guía de juego integrada.<br/>"
+        "• <b>Cómo llevárselo a casa:</b> En el Probador pulsa <b>«Guardar Archivo en mi Ordenador»</b>. Se descargará el archivo <i>Juego_Para_Mi_Nieto.html</i> en tu carpeta de Descargas para jugar offline."
     )
     e_table = Table([[Paragraph(extra_text, style_task)]], colWidths=[letter[0] - 72])
     e_table.setStyle(TableStyle([

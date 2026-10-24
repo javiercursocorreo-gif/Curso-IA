@@ -246,5 +246,18 @@ Esta sección recopila los descubrimientos críticos de ingeniería realizados d
   3. **Eco y Reverberación:** Envío de `CC 91 = 115` (Reverb Send) y `CC 93 = 60` (Chorus/Ambiente espacial), logrando la amplitud de sala de concierto que el tema requiere.
   4. **Acompañamiento en Lower (Mano Izquierda):** Canal 4 configurado con `Choir Aahs` (PC 52, vol 115, Reverb CC91=90) para que la mano izquierda toque acordes arropados por un coro celestial.
 
+### 6.13. Fórmula Matemática de Selección de Estilos y Órgano de Percusión (v97)
+* **El Misterio del Estilo 110 en lugar de 174:** Al enviar `LSB 6` y `PC 13`, la pantalla del Korg EK-50 mostró inesperadamente el Estilo 110 (*Memphis Soul* a 120 BPM).
+* **Descubrimiento Matemático:** En la arquitectura interna del Korg EK-50, **cada banco LSB agrupa exactamente 16 estilos** (no 32 ni 128):
+  $$\text{Número de Estilo} = 16 \times \text{LSB} + \text{PC} + 1$$
+  * *Verificación con Estilo 110:* $16 \times 6 + 13 + 1 = 96 + 14 = 110$.
+  * *Cálculo exacto para Estilo 174 (Beguine 1):*
+    $$174 - 1 = 173 \implies 173 / 16 = 10 \text{ (resto 13)}$$
+    Por lo tanto: **`LSB = 10`** y **`PC = 13`** en Canal 16 (`0xB0 | 15, 0x20, 10` y `0xC0 | 15, 13`).
+* **Sincronización del Tempo a 112 BPM:** Al cargar el Estilo 174 con LSB 10, el procesador del Korg fija automáticamente su tempo nativo de **112 BPM** en el teclado, eliminando el tempo de 120 BPM del Estilo 110. Además, la botonera de velocidad (100, 112, 120 BPM) transmite trenes de pulsos `0xF8` dinámicos en directo al arrancar el acompañamiento.
+* **Mapeo de Órgano de Percusión (Perc. Organ):**
+  * *Pantalla Korg LCD:* Inyección de Keyboard Set `MSB 33, LSB 3, PC 0` en canales 1 y 16 (muestra **`Perc. Organ`**).
+  * *Upper 1:* General MIDI Patch 17 (`Bank 0, LSB 0, PC 17`) con volumen 122, Reverb 100 y Chorus/Rotary 55, proporcionando el clásico sonido latino percusivo con click de ataque.
+
 ---
 *Manual redactado y sellado para el proyecto CURSO-IA / CURSO_MUSICA. Todos los derechos reservados.*
