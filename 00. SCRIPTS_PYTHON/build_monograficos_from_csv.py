@@ -512,10 +512,21 @@ def main():
     except Exception as e:
         print(f"  ❌ Error PDF MONO-002: {e}")
 
-    # 2. Generar CSV 0.PANEL_MONOGRAFICOS.csv
+    # 2. Generar Taller 02 en 104
+    taller_01 = os.path.join(DIR_104, "TALLER_MONOGRAFICO_01_ESTILOS_ANIMADOS.html")
+    taller_02 = os.path.join(DIR_104, "TALLER_MONOGRAFICO_02_ESTILOS_ANIMADOS.html")
+    if os.path.exists(taller_01):
+        with open(taller_01, "r", encoding="utf-8") as f:
+            content = f.read()
+        content = content.replace("[MONO-001]", "[MONO-002]").replace("Monográfico 01", "Monográfico 02").replace("MONO-001_", "MONO-002_")
+        with open(taller_02, "w", encoding="utf-8") as f:
+            f.write(content)
+        print(f"✅ Taller 02 generado en:\n   {taller_02}")
+
+    # 3. Generar CSV 0.PANEL_MONOGRAFICOS.csv
     generate_csv_file()
 
-    # 3. Generar MAPA_MONOGRAFICOS.html
+    # 4. Generar MAPA_MONOGRAFICOS.html
     generate_master_map()
 
     print("\n✨ CSV y Mapa Maestro listos para subir a Classroom y GitHub.")
