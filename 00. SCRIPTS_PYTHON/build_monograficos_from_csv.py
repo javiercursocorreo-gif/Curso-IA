@@ -18,6 +18,7 @@ DIR_104 = os.path.join(BASE_DIR, "104 ESTILO ANIMADOS SIN PROGRAMAR")
 ROOT_MAP = os.path.join(BASE_DIR, "MAPA_MONOGRAFICOS.html")
 MAP_IN_104 = os.path.join(DIR_104, "MAPA_MONOGRAFICOS.html")
 OUTPUT_CSV = os.path.join(BASE_DIR, "0.PANEL_MONOGRAFICOS.csv")
+OUTPUT_CSV_PANELES = os.path.join(BASE_DIR, "PANELES_CSV", "0.PANEL_MONOGRAFICOS.csv")
 
 GITHUB_BASE = "https://javiercursocorreo-gif.github.io/Curso-IA/"
 
@@ -165,7 +166,10 @@ def generate_csv_file():
 
     with open(OUTPUT_CSV, "w", encoding="utf-8") as f:
         f.writelines(lines)
-    print(f"✅ Archivo CSV generado con éxito en:\n   {OUTPUT_CSV}")
+    os.makedirs(os.path.dirname(OUTPUT_CSV_PANELES), exist_ok=True)
+    with open(OUTPUT_CSV_PANELES, "w", encoding="utf-8") as f:
+        f.writelines(lines)
+    print(f"✅ Archivo CSV generado con éxito en:\n   {OUTPUT_CSV}\n   {OUTPUT_CSV_PANELES}")
 
 def generate_master_map():
     # Agrupar por temas para las tarjetas
