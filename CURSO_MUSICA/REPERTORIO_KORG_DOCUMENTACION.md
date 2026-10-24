@@ -255,9 +255,23 @@ Esta sección recopila los descubrimientos críticos de ingeniería realizados d
     $$174 - 1 = 173 \implies 173 / 16 = 10 \text{ (resto 13)}$$
     Por lo tanto: **`LSB = 10`** y **`PC = 13`** en Canal 16 (`0xB0 | 15, 0x20, 10` y `0xC0 | 15, 13`).
 * **Sincronización del Tempo a 112 BPM:** Al cargar el Estilo 174 con LSB 10, el procesador del Korg fija automáticamente su tempo nativo de **112 BPM** en el teclado, eliminando el tempo de 120 BPM del Estilo 110. Además, la botonera de velocidad (100, 112, 120 BPM) transmite trenes de pulsos `0xF8` dinámicos en directo al arrancar el acompañamiento.
-* **Mapeo de Órgano de Percusión (Perc. Organ):**
-  * *Pantalla Korg LCD:* Inyección de Keyboard Set `MSB 33, LSB 3, PC 0` en canales 1 y 16 (muestra **`Perc. Organ`**).
-  * *Upper 1:* General MIDI Patch 17 (`Bank 0, LSB 0, PC 17`) con volumen 122, Reverb 100 y Chorus/Rotary 55, proporcionando el clásico sonido latino percusivo con click de ataque.
+
+### 6.14. Blindaje del Botón 1: GM2 Bank MSB 121 y Aislamiento Estricto de Canales (v99)
+* **Problema:** En el Botón 1 de *Cuando Calienta el Sol*, a veces el teclado volvía a sonar como un piano o se perdía el estilo de acompañamiento.
+* **Causa Identificada:**
+  1. Si se enviaba un cambio de banco general (`Bank MSB 33`) al Canal 16, el Korg interpretaba que se modificaba el propio generador de estilos en lugar de la voz solista, desconfigurando el estilo 174.
+  2. En el Upper 1, enviar `Bank MSB 0` hacía que el motor sonoro del Korg recurriera al banco de fábrica de pianos acústicos (Grand Piano).
+* **Solución Definitiva (v99):**
+  1. **Aislamiento del Canal 16:** El Canal 16 se reserva **única y exclusivamente** para la selección del estilo (`MSB 32, LSB 10, PC 13`). No se envía ningún otro mensaje de banco a este canal.
+  2. **Banco Oficial GM2 en Upper 1 (Canal 1):** Se inyecta `Bank MSB 121, LSB 0, PC 17` (*Percussive Organ*). El banco 121 es el estándar GM2 universal del Korg EK-50 que blinda el timbre del órgano sin caer jamás en piano.
+  3. **Volumen y Expresión:** Canal 1 fijado a Volumen 125, Expresión 127, Reverb Send 105 y Chorus/Rotary 60.
+
+### 6.15. Motor Anti-Apagado Continuo de 25 Minutos para iPadOS en HTTP (v99)
+* **Problema:** El iPad apagaba la pantalla a mitad de canción o tras 5 minutos de atril si el músico no tocaba físicamente la pantalla táctil mientras tocaba con ambas manos en el teclado físico. Además, `navigator.wakeLock` estándar es rechazado por Safari en conexiones HTTP (`http://192.168.1.130:8888`).
+* **Solución Definitiva (v99):**
+  1. **Loop de Video Invisible mediante Canvas Stream:** Se crea dinámicamente un elemento `<video playsinline webkit-playsinline muted loop>` invisible alimentado por un `canvas.captureStream(1)`. WebKit de iOS interpreta la reproducción de este stream continuo como una tarea multimedia activa de primer plano, impidiendo que el sistema operativo suspenda la pantalla.
+  2. **Doble Capa con W3C WakeLock:** Si la conexión es segura (HTTPS), se activa complementariamente el WakeLock nativo.
+  3. **Ventana de 25 Minutos de Atril Ininterrumpido:** La duración del atril se amplió de 5 a 25 minutos. Cualquier toque en pantalla, scroll o pulsación reinicia el contador de 25 minutos.
 
 ---
 *Manual redactado y sellado para el proyecto CURSO-IA / CURSO_MUSICA. Todos los derechos reservados.*

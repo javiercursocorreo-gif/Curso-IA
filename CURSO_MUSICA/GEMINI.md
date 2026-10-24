@@ -37,12 +37,16 @@
     echo "=== [COMANDO XX] FINALIZADO CON ÉXITO ==="
     ```
 
-## 4. Validación Visual e Interacción Inmediata en Navegador
-- **Lanzamiento Local en Google Chrome:**
-  - Dado que Google Chrome en macOS ofrece soporte nativo y completo para la **Web MIDI API** con el cable USB del Korg EK-50, en cada turno donde se ajuste o cree una canción, el comando de terminal debe lanzar automáticamente dicho archivo en Google Chrome:  
-    `open -a "Google Chrome" "CURSO_MUSICA/CANCION_XX.html"`
+## 4. Validación Exclusiva en iPad (Prohibición de Ventanas en el Mac)
+- **PROHIBICIÓN TOTAL DE ABRIR NAVEGADORES EN EL MAC:**
+  - El asistente tiene **TERMINANTEMENTE PROHIBIDO** incluir comandos para abrir navegadores o páginas en el Mac (`open -a "Google Chrome"`, Safari, etc.).
+  - El usuario interpreta las canciones y valida el sistema **exclusivamente desde su iPad** conectado al Korg EK-50.
+  - Abrir ventanas en el Mac satura y llena la pantalla de pestañas no deseadas. Los comandos de terminal deben limitarse exclusivamente a sincronizar la carpeta espejo de iCloud y desplegar a GitHub.
+- **Simplificación Escénica (Sin Módulos Redundantes de Transposición):**
+  - Mantener la pantalla limpia de selectores de transposición armónica innecesarios que ocupen espacio visual en el iPad, salvo petición expresa del usuario.
 - **Acceso en iPadOS (Doble Vía):**
   - **Vía Rápida Local (Wi-Fi 0 segundos):** Mediante el servidor local Python en el puerto 8888 (`INICIAR_SERVIDOR_LOCAL.command`), accesible en el iPad desde `http://192.168.1.130:8888/`.
+  - **Vía Web MIDI por Cable USB en iPad:** Ejecutando la URL en la app `Web MIDI Browser` (App Store) con `{ sysex: false }`.
   - **Vía Web MIDI por Cable USB en iPad:** Ejecutando la URL en la app `Web MIDI Browser` (App Store) con `{ sysex: false }`.
 
 ## 5. Reglas de Oro del Control Web MIDI para Korg EK-50

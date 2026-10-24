@@ -305,8 +305,8 @@
             <span id="midi-label">Iniciando Web MIDI...</span>
         </div>
 
-        <button onclick="window.location.href=window.location.pathname+'?t='+Date.now()" style="background:#0284c7; color:#fff; border:none; padding:8px 14px; border-radius:8px; font-weight:700; font-size:0.85rem; cursor:pointer;" title="Recargar página en iPad">
-            🔄 Recargar
+        <button onclick="window.location.href=window.location.pathname+'?v=99&t='+Date.now()" style="background:#0284c7; color:#fff; border:none; padding:8px 14px; border-radius:8px; font-weight:800; font-size:0.85rem; cursor:pointer;" title="Recargar página en iPad">
+            🔄 Recargar (v99)
         </button>
     </div>
 
@@ -318,6 +318,9 @@
             <div class="song-author">Los Hermanos Rigual (1961) · Popularizada también por Luis Miguel</div>
             <div class="badge-korg">
                 🌴 Estilo Oficial: <b>174 Beguine 1</b> (Latin 1) · <b>112 BPM</b> · Tonalidad: <b>Fa Mayor (F)</b>
+            </div>
+            <div style="margin-top:8px; background:#064e3b; border:2px solid #10b981; border-radius:8px; padding:6px 12px; font-size:0.85rem; color:#6ee7b7; font-weight:900; display:flex; align-items:center; gap:8px;">
+                ✅ VERSIÓN v99 ACTIVA: Botón 1 Blindado (GM2 MSB 121 Órgano de Percusión + Estilo 174 Beguine) & Motor Anti-Apagado Continuo
             </div>
         </div>
 
@@ -385,26 +388,7 @@
         </div>
     </div>
 
-    <!-- SECCIÓN 2: TRANSPOSICIÓN ARMÓNICA 1-TAP -->
-    <div class="section-box">
-        <div class="section-title">
-            <span>🎯 Transposición Armónica Inmediata (Master Coarse Tuning)</span>
-        </div>
-        <p style="font-size:0.86rem; color:#94a3b8;">
-            Toca con los acordes fáciles de <b>Fa Mayor (F)</b> o adapta el tono a tu voz con 1 solo toque sin mover la mano:
-        </p>
-
-        <div style="display:flex; gap:8px; flex-wrap:wrap;">
-            <button onclick="fijarTransposicion(-2, this)" class="btn-trans" style="flex:1; min-width:80px; background:#1e293b; color:#cbd5e1; border:1px solid #334155; padding:8px; border-radius:8px; font-weight:700; cursor:pointer;">-2 st (Mib)</button>
-            <button onclick="fijarTransposicion(-1, this)" class="btn-trans" style="flex:1; min-width:80px; background:#1e293b; color:#cbd5e1; border:1px solid #334155; padding:8px; border-radius:8px; font-weight:700; cursor:pointer;">-1 st (Mi)</button>
-            <button onclick="fijarTransposicion(0, this)" class="btn-trans active-trans" style="flex:1; min-width:80px; background:#d97706; color:#fff; border:1px solid #fbbf24; padding:8px; border-radius:8px; font-weight:800; cursor:pointer;">0 st (Fa · Oficial)</button>
-            <button onclick="fijarTransposicion(2, this)" class="btn-trans" style="flex:1; min-width:80px; background:#1e293b; color:#cbd5e1; border:1px solid #334155; padding:8px; border-radius:8px; font-weight:700; cursor:pointer;">+2 st (Sol)</button>
-            <button onclick="fijarTransposicion(4, this)" class="btn-trans" style="flex:1; min-width:80px; background:#1e293b; color:#cbd5e1; border:1px solid #334155; padding:8px; border-radius:8px; font-weight:700; cursor:pointer;">+4 st (La)</button>
-        </div>
-        <div id="trans-log" style="font-size:0.8rem; color:#fbbf24; font-weight:700;">Tonalidad actual: Fa Mayor (Original)</div>
-    </div>
-
-    <!-- SECCIÓN 3: REPRODUCTOR WEB AUDIO SINTETIZADO (OFFLINE / IPAD SIN TECLADO) -->
+    <!-- SECCIÓN 2: REPRODUCTOR WEB AUDIO SINTETIZADO (OFFLINE / IPAD SIN TECLADO) -->
     <div class="section-box">
         <div class="section-title">
             <span>🎧 Ensayador Web Audio: Arpegio Beguine Playero (Offline)</span>
@@ -690,17 +674,23 @@ cuando calienta el sol...
                     midiOutput = null;
                     dot.style.background = "#d29922";
                     dot.classList.remove("connected");
-                    text.innerHTML = '🟡 Korg no detectado por USB';
+                    text.innerHTML = '🟡 Korg no detectado por USB <span style="font-size:0.75rem; text-decoration:underline; cursor:pointer;" onclick="conectarMIDI(true)">🔄 Re-escanear</span>';
                     return null;
                 }
             }
 
             midiAccessInstance.onstatechange = bindPorts;
-            return bindPorts();
+            const res = bindPorts();
+            if (!res) {
+                setTimeout(bindPorts, 600);
+                setTimeout(bindPorts, 1500);
+                setTimeout(bindPorts, 3000);
+            }
+            return res;
         } catch(err) {
             dot.style.background = "#d29922";
             dot.classList.remove("connected");
-            text.innerHTML = '🟡 Esperando cable USB...';
+            text.innerHTML = '🟡 Esperando cable USB... <span style="font-size:0.75rem; text-decoration:underline; cursor:pointer;" onclick="conectarMIDI(true)">🔄 Detectar</span>';
             return null;
         }
     }
@@ -725,7 +715,7 @@ cuando calienta el sol...
     }
 
     // ==============================================================================
-    // BOTÓN 1: BEGUINE & ÓRGANO DE PERCUSIÓN
+    // BOTÓN 1: BEGUINE & ÓRGANO DE PERCUSIÓN (100% BLINDADO)
     // ==============================================================================
     async function cargarBoton1OrganoBeguine() {
         const log = document.getElementById('log-1');
@@ -740,48 +730,39 @@ cuando calienta el sol...
         }
 
         try {
-            // 1. Cargar Estilo 174 (Beguine 1) en Canal 16 a 112 BPM
-            // Fórmula exacta Korg EK-50: 16 * LSB + PC + 1 = Estilo
-            // 16 * 10 + 13 + 1 = 174 (LSB 10, PC 13)
-            enviarMidiGlobal([0xB0 | 15, 0x00, 32]);
+            // 1. Cargar Estilo 174 (Beguine 1) EXCLUSIVAMENTE en Canal 16 a 112 BPM
+            // Fórmula exacta Korg EK-50: 16 * 10 + 13 + 1 = 174 (LSB 10, PC 13)
+            enviarMidiGlobal([0xB0 | 15, 0x00, 32]); // Bank MSB 32
             enviarMidiGlobal([0xB0 | 15, 0x20, 10]); // LSB 10 = Banco Estilos 161-176
             enviarMidiGlobal([0xC0 | 15, 13]);       // PC 13 = Estilo 174 (Beguine 1)
 
-            // 2. Cargar en pantalla del Korg el Keyboard Set "Perc. Organ" (Banco 33, LSB 3, PC 0)
-            enviarMidiGlobal([0xB0 | 0, 0x00, 33]);
-            enviarMidiGlobal([0xB0 | 0, 0x20, 3]);
-            enviarMidiGlobal([0xC0 | 0, 0]);
+            await new Promise(r => setTimeout(r, 60));
 
-            enviarMidiGlobal([0xB0 | 15, 0x00, 33]);
-            enviarMidiGlobal([0xB0 | 15, 0x20, 3]);
-            enviarMidiGlobal([0xC0 | 15, 0]);
-
-            await new Promise(r => setTimeout(r, 45));
-
-            // 3. Upper 1 = ÓRGANO DE PERCUSIÓN (Percussive Organ GM PC 17)
-            enviarMidiGlobal([0xB0 | 0, 0x00, 0]);
-            enviarMidiGlobal([0xB0 | 0, 0x20, 0]);
+            // 2. Upper 1 = ÓRGANO DE PERCUSIÓN AUTÉNTICO (GM2 Bank MSB 121, LSB 0, PC 17)
+            // En Korg EK-50, Bank MSB 121 es el banco universal GM2 para evitar caer en Piano (MSB 0)
+            enviarMidiGlobal([0xB0 | 0, 0x00, 121]); // Banco GM2 oficial Korg
+            enviarMidiGlobal([0xB0 | 0, 0x20, 0]);   // LSB 0
             enviarMidiGlobal([0xC0 | 0, 17]);        // PC 17 = Percussive Organ
-            enviarMidiGlobal([0xB0 | 0, 0x07, 122]); // Volumen potente
+            enviarMidiGlobal([0xB0 | 0, 0x07, 125]); // Volumen potente
             enviarMidiGlobal([0xB0 | 0, 0x0B, 127]); // Expresión 127
-            enviarMidiGlobal([0xB0 | 0, 0x5B, 100]); // Reverb Send
-            enviarMidiGlobal([0xB0 | 0, 0x5D, 55]);  // Chorus / Rotary
+            enviarMidiGlobal([0xB0 | 0, 0x5B, 105]); // Reverb Send
+            enviarMidiGlobal([0xB0 | 0, 0x5D, 60]);  // Chorus / Rotary
             enviarMidiGlobal([0xB0 | 0, 0x48, 70]);  // Release percusivo
 
-            // Upper 2 y 3 silenciados para que el órgano sea solista
+            // Upper 2 y 3 silenciados para que el órgano sea 100% solista
             enviarMidiGlobal([0xB0 | 1, 0x07, 0]);
             enviarMidiGlobal([0xB0 | 2, 0x07, 0]);
 
             // LOWER (Mano Izquierda - Canal 4): Coro cálido para acordes
-            enviarMidiGlobal([0xB0 | 3, 0x00, 0]);
+            enviarMidiGlobal([0xB0 | 3, 0x00, 121]);
             enviarMidiGlobal([0xB0 | 3, 0x20, 0]);
             enviarMidiGlobal([0xC0 | 3, 52]);        // PC 52 = Choir Aahs
-            enviarMidiGlobal([0xB0 | 3, 0x07, 110]);
+            enviarMidiGlobal([0xB0 | 3, 0x07, 115]);
             enviarMidiGlobal([0xB0 | 3, 0x0B, 127]);
             enviarMidiGlobal([0xB0 | 3, 0x5B, 90]);
 
             const nombres = salidas.map(o=>o.name).join(', ') || 'Korg';
-            if (log) log.innerHTML = `🌴 <b>1. Beguine & Órgano de Percusión</b> listo en <b>${nombres}</b> (Pantalla: <b>Perc. Organ</b> · Estilo: <b>174 Beguine 1</b> · ⏱️ <b>112 BPM</b> · Mano derecha: Órgano Percusivo · Izquierda: Coro). ¡Toca el teclado!`;
+            if (log) log.innerHTML = `🌴 <b>1. Beguine & Órgano de Percusión</b> listo en <b>${nombres}</b> (Estilo: <b>174 Beguine 1</b> · ⏱️ <b>112 BPM</b> · Mano derecha: <b>Órgano de Percusión</b> · Izquierda: Coro). ¡Toca el teclado!`;
         } catch(e) {
             if (log) log.innerHTML = `⚠️ Error enviando al Korg: ${e.message}`;
         }
@@ -813,19 +794,15 @@ cuando calienta el sol...
             enviarMidiGlobal([0xB0 | 0, 0x20, 6]);
             enviarMidiGlobal([0xC0 | 0, 0]);
 
-            enviarMidiGlobal([0xB0 | 15, 0x00, 33]);
-            enviarMidiGlobal([0xB0 | 15, 0x20, 6]);
-            enviarMidiGlobal([0xC0 | 15, 0]);
-
-            await new Promise(r => setTimeout(r, 45));
+            await new Promise(r => setTimeout(r, 60));
 
             // Upper 1 = Órgano de Percusión (Volumen 125)
-            enviarMidiGlobal([0xB0 | 0, 0x00, 0]);
+            enviarMidiGlobal([0xB0 | 0, 0x00, 121]);
             enviarMidiGlobal([0xB0 | 0, 0x20, 0]);
             enviarMidiGlobal([0xC0 | 0, 17]);        // PC 17 = Percussive Organ
             enviarMidiGlobal([0xB0 | 0, 0x07, 125]);
             enviarMidiGlobal([0xB0 | 0, 0x0B, 127]);
-            enviarMidiGlobal([0xB0 | 0, 0x5B, 100]);
+            enviarMidiGlobal([0xB0 | 0, 0x5B, 105]);
 
             // Upper 2 = St. Strings (Cuerdas Orquestales cálidas Volumen 95)
             enviarMidiGlobal([0xB0 | 1, 0x00, 121]);
@@ -839,10 +816,10 @@ cuando calienta el sol...
             enviarMidiGlobal([0xB0 | 2, 0x07, 0]);
 
             // Lower = Coro cálido
-            enviarMidiGlobal([0xB0 | 3, 0x00, 0]);
+            enviarMidiGlobal([0xB0 | 3, 0x00, 121]);
             enviarMidiGlobal([0xB0 | 3, 0x20, 0]);
             enviarMidiGlobal([0xC0 | 3, 52]);
-            enviarMidiGlobal([0xB0 | 3, 0x07, 110]);
+            enviarMidiGlobal([0xB0 | 3, 0x07, 115]);
 
             const nombres = salidas.map(o=>o.name).join(', ') || 'Korg';
             if (log) log.innerHTML = `🎻 <b>2. Órgano de Percusión & Cuerdas</b> listo en <b>${nombres}</b> (Upper 1: Órgano · Upper 2: Cuerdas · Estilo: <b>174 Beguine 1</b> · ⏱️ <b>112 BPM</b>). ¡Toca el teclado!`;
@@ -1099,38 +1076,112 @@ cuando calienta el sol...
     }
 
     // ==============================================================================
-    // MOTOR ANTI-APAGADO CON REPOSO INTELIGENTE A LOS 5 MINUTOS
+    // MOTOR ANTI-APAGADO CONTINUO (iOS HTTP CANVAS-STREAM + W3C WAKELOCK 25 MIN)
     // ==============================================================================
-    let wakeLock = null;
-    let sleepTimeout = null;
+    let wakeLockInstance = null;
+    let videoKeepAwake = null;
+    const TIEMPO_INACTIVIDAD_MS = 25 * 60 * 1000; // 25 minutos de atril continuo
+    let temporizadorInactividad = null;
+    let modoReposoActivo = false;
 
-    async function requestWakeLock() {
+    function activarModoAtrilSinApagado() {
+        if (modoReposoActivo) return;
+
+        // 1. Método Estándar W3C WakeLock (funciona en HTTPS)
+        if ('wakeLock' in navigator) {
+            try {
+                navigator.wakeLock.request('screen').then(lock => {
+                    wakeLockInstance = lock;
+                    console.log('☀️ WakeLock nativo activo');
+                }).catch(e => {});
+            } catch(e) {}
+        }
+
+        // 2. Método Infalible iOS / iPadOS para HTTP: Reproductor invisible de Canvas
         try {
-            if ('wakeLock' in navigator) {
-                wakeLock = await navigator.wakeLock.request('screen');
+            if (!videoKeepAwake) {
+                videoKeepAwake = document.createElement('video');
+                videoKeepAwake.setAttribute('playsinline', '');
+                videoKeepAwake.setAttribute('webkit-playsinline', '');
+                videoKeepAwake.setAttribute('muted', '');
+                videoKeepAwake.setAttribute('loop', '');
+                videoKeepAwake.muted = true;
+                videoKeepAwake.style.position = 'fixed';
+                videoKeepAwake.style.top = '-50px';
+                videoKeepAwake.style.left = '-50px';
+                videoKeepAwake.style.width = '1px';
+                videoKeepAwake.style.height = '1px';
+                videoKeepAwake.style.opacity = '0.001';
+                videoKeepAwake.style.pointerEvents = 'none';
+
+                const canvas = document.createElement('canvas');
+                canvas.width = 4;
+                canvas.height = 4;
+                const ctx = canvas.getContext('2d');
+                ctx.fillStyle = '#000000';
+                ctx.fillRect(0, 0, 4, 4);
+
+                if (canvas.captureStream) {
+                    videoKeepAwake.srcObject = canvas.captureStream(1);
+                }
+                document.body.appendChild(videoKeepAwake);
+            }
+            if (videoKeepAwake && videoKeepAwake.paused) {
+                videoKeepAwake.play().catch(() => {});
             }
         } catch(e) {}
     }
 
-    function resetSleepTimer() {
-        if (sleepTimeout) clearTimeout(sleepTimeout);
-        if (!wakeLock) requestWakeLock();
-        // Tras 5 minutos (300.000 ms) de inactividad total, liberar pantalla
-        sleepTimeout = setTimeout(() => {
-            if (wakeLock) {
-                wakeLock.release().then(() => { wakeLock = null; });
-            }
-        }, 300000);
+    function liberarModoAtril() {
+        if (wakeLockInstance) {
+            try {
+                wakeLockInstance.release();
+                wakeLockInstance = null;
+            } catch(e){}
+        }
+        if (videoKeepAwake) {
+            try {
+                videoKeepAwake.pause();
+            } catch(e){}
+        }
     }
 
-    ['click', 'touchstart', 'mousemove', 'keydown'].forEach(evt => {
-        window.addEventListener(evt, resetSleepTimer, { passive: true });
+    function reiniciarTemporizadorInactividad() {
+        if (modoReposoActivo) {
+            modoReposoActivo = false;
+            activarModoAtrilSinApagado();
+        }
+        if (temporizadorInactividad) clearTimeout(temporizadorInactividad);
+        temporizadorInactividad = setTimeout(() => {
+            modoReposoActivo = true;
+            console.log('💤 25 minutos sin uso: liberando pantalla para ahorrar batería');
+            liberarModoAtril();
+        }, TIEMPO_INACTIVIDAD_MS);
+    }
+
+    // Reiniciar inactividad con cualquier toque, scroll o tecla
+    ['touchstart', 'touchend', 'mousedown', 'keydown', 'scroll', 'click'].forEach(evt => {
+        document.addEventListener(evt, () => {
+            reiniciarTemporizadorInactividad();
+            activarModoAtrilSinApagado();
+        }, { passive: true });
+    });
+
+    // Re-activar si el usuario cambia de app y regresa a la ficha
+    document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') {
+            reiniciarTemporizadorInactividad();
+            activarModoAtrilSinApagado();
+        } else {
+            liberarModoAtril();
+        }
     });
 
     // Inicialización al cargar la página con 350 ms de retardo para CoreMIDI
     window.addEventListener('DOMContentLoaded', () => {
         setTimeout(conectarMIDI, 350);
-        resetSleepTimer();
+        activarModoAtrilSinApagado();
+        reiniciarTemporizadorInactividad();
     });
 </script>
 </body>
