@@ -23,14 +23,6 @@ OUTPUT_CSV_PANELES = os.path.join(BASE_DIR, "PANELES_CSV", "0.PANEL_MONOGRAFICOS
 GITHUB_BASE = "https://javiercursocorreo-gif.github.io/Curso-IA/"
 
 CSV_ROWS = [
-    # CABECERA MAESTRA (Opcional, entrada al mapa interactivo)
-    {
-        "tema": "00. Catálogo Maestro de Monográficos",
-        "titulo": "🚀 Cuadro de Mando de Monográficos de IA (HTML)",
-        "desc": "Acceso interactivo permanente a todos los monográficos, talleres y recursos complementarios del curso.",
-        "url": GITHUB_BASE + "MAPA_MONOGRAFICOS.html",
-        "type": "launch"
-    },
     # MONOGRÁFICO 1
     {
         "tema": "Monográfico 1. Gemini en PC y Móvil (Instalación y Uso)",
@@ -160,16 +152,17 @@ CSV_ROWS = [
 ]
 
 def generate_csv_file():
-    lines = ["ID_CURSO,TEMA_CLASSROOM,TITULO_MATERIAL,DESCRIPCION_MATERIAL,URL_GITHUB\n"]
-    for r in CSV_ROWS:
-        lines.append(f',{r["tema"]},{r["titulo"]},"{r["desc"]}",{r["url"]}\n')
+    lines = [
+        "ID_CURSO,TEMA_CLASSROOM,TITULO_MATERIAL,DESCRIPCION_MATERIAL,URL_GITHUB\n",
+        f',MONOGRAFICOS,Mapa Interactivo: Monográficos y Talleres de IA (HTML),"Acceso interactivo permanente a todos los monográficos, talleres prácticos de estilos animados, cuadernos de notas y utilidades complementarias del curso.",{GITHUB_BASE}MAPA_MONOGRAFICOS.html\n'
+    ]
 
     with open(OUTPUT_CSV, "w", encoding="utf-8") as f:
         f.writelines(lines)
     os.makedirs(os.path.dirname(OUTPUT_CSV_PANELES), exist_ok=True)
     with open(OUTPUT_CSV_PANELES, "w", encoding="utf-8") as f:
         f.writelines(lines)
-    print(f"✅ Archivo CSV generado con éxito en:\n   {OUTPUT_CSV}\n   {OUTPUT_CSV_PANELES}")
+    print(f"✅ Archivo CSV de Panel Único generado con éxito en:\n   {OUTPUT_CSV}\n   {OUTPUT_CSV_PANELES}")
 
 def generate_master_map():
     # Agrupar por temas para las tarjetas

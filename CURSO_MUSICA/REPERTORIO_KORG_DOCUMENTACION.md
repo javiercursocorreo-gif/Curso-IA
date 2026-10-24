@@ -102,6 +102,24 @@ El Korg EK-50 se conecta al iPad o Mac mediante un cable USB estándar (USB tipo
 
 ---
 
+### 🎵 Canción en Estudio / Próxima Incorporación: "Cuando Calienta el Sol"
+* **Autores:** Carlos y Mario Rigual (popularizada por Los Hermanos Rigual y Luis Miguel).
+* **Género Rítmico Musical:** Beguine / Bolero Rítmico Latino.
+* **El Mejor Estilo Oficial Korg EK-50:**
+  * **Opción Principal (Ganadora Absoluta - Clásica Playera):** **`174 Beguine 1`** (o **`175 Beguine 2`**) en la categoría **Latin 1** a **112 BPM**.
+    * *Por qué:* El ritmo *Beguine* (Beguina) es el patrón exacto de percusión latina (congas, maracas, caja a contratiempo y bajo sincopado) de la versión original playera de Los Hermanos Rigual.
+  * **Opción Romántica Íntima (Bolero Lento):** **`176 Slow Bolero`** (Latin 1) a **88 BPM** (para versión balada con piano y cuerdas).
+  * **Opción Bailable Ochentera (Versión Luis Miguel):** **`168 DiscoChaCha`** (Latin 1) a **124 BPM** (para recrear la versión bailable con metales y ritmo pop latino).
+  * **Opción Acústica Chillout:** **`161 UnplugBossa`** (Latin 1) a **114 BPM** (guitarra española y percusión sutil).
+* **Instrumentación y Capas Escénicas Recomendadas:**
+  * **Upper 1 (Voz Melódica):** *Nylon Guitar* (Guitarra Española acústica GM PC 24), *Velo Flute* o Trompeta con Sordina (*Muted Trumpet*).
+  * **Upper 2 (Capa de Refuerzo):** *St. Strings* (cuerdas orquestales suaves al 75% de volumen) para dar amplitud estéreo.
+  * **Lower (Mano Izquierda):** Piano cálido o coro suave (*Choir Aahs* PC 52) acompañando la rueda de acordes.
+* **Progresión Armónica Base (Tonalidad sugerida: Fa Mayor - $F$ o Sol Mayor - $G$):**
+  * Típica rueda de bolero latino: $I - vi - ii - V7$ (ej. en Fa: $F - Dm - Gm - C7$).
+
+---
+
 ## 4. INGENIERÍA WEB Y COMPATIBILIDAD CON IPADOS / SAFARI
 
 ### 4.1. El Reto de la Caché Persistente en iPad
