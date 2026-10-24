@@ -152,17 +152,9 @@ CSV_ROWS = [
 ]
 
 def generate_csv_file():
-    lines = [
-        "ID_CURSO,TEMA_CLASSROOM,TITULO_MATERIAL,DESCRIPCION_MATERIAL,URL_GITHUB\n",
-        f',MONOGRAFICOS,Mapa Interactivo: Monográficos y Talleres de IA (HTML),"Acceso interactivo permanente a todos los monográficos, talleres prácticos de estilos animados, cuadernos de notas y utilidades complementarias del curso.",{GITHUB_BASE}MAPA_MONOGRAFICOS.html\n'
-    ]
-
-    with open(OUTPUT_CSV, "w", encoding="utf-8") as f:
-        f.writelines(lines)
-    os.makedirs(os.path.dirname(OUTPUT_CSV_PANELES), exist_ok=True)
-    with open(OUTPUT_CSV_PANELES, "w", encoding="utf-8") as f:
-        f.writelines(lines)
-    print(f"✅ Archivo CSV de Panel Único generado con éxito en:\n   {OUTPUT_CSV}\n   {OUTPUT_CSV_PANELES}")
+    # En el modelo unificado vigente no se utilizan paneles sueltos como 0.PANEL_MONOGRAFICOS.csv.
+    # El archivo maestro único es PANELES_CSV/CURSO_IA_UNIFICADO.csv.
+    pass
 
 def generate_master_map():
     # Agrupar por temas para las tarjetas
