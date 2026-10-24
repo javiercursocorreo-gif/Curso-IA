@@ -300,13 +300,13 @@
             ⬅ Menú Repertorio
         </a>
 
-        <div class="midi-bar" id="midi-status-container">
+        <div class="midi-bar" id="midi-status-container" onclick="conectarMIDI(true)" style="cursor:pointer;" title="Pulsa aquí para conectar o re-escanear el Korg EK-50">
             <div class="status-dot" id="midi-dot"></div>
-            <span id="midi-label">Iniciando Web MIDI...</span>
+            <span id="midi-label">🟡 Conectando Web MIDI...</span>
         </div>
 
-        <button onclick="window.location.href=window.location.pathname+'?v=99&t='+Date.now()" style="background:#0284c7; color:#fff; border:none; padding:8px 14px; border-radius:8px; font-weight:800; font-size:0.85rem; cursor:pointer;" title="Recargar página en iPad">
-            🔄 Recargar (v99)
+        <button onclick="window.location.href=window.location.pathname+'?v=100&t='+Date.now()" style="background:#0284c7; color:#fff; border:none; padding:8px 14px; border-radius:8px; font-weight:800; font-size:0.85rem; cursor:pointer;" title="Recargar página en iPad">
+            🔄 Recargar (v100)
         </button>
     </div>
 
@@ -320,7 +320,7 @@
                 🌴 Estilo Oficial: <b>174 Beguine 1</b> (Latin 1) · <b>112 BPM</b> · Tonalidad: <b>Fa Mayor (F)</b>
             </div>
             <div style="margin-top:8px; background:#064e3b; border:2px solid #10b981; border-radius:8px; padding:6px 12px; font-size:0.85rem; color:#6ee7b7; font-weight:900; display:flex; align-items:center; gap:8px;">
-                ✅ VERSIÓN v99 ACTIVA: Botón 1 Blindado (GM2 MSB 121 Órgano de Percusión + Estilo 174 Beguine) & Motor Anti-Apagado Continuo
+                ✅ VERSIÓN v100 ACTIVA: Conexión Web MIDI Blindada (Auto-Detección + Reintentos) & Estilo 174 Beguine
             </div>
         </div>
 
@@ -625,12 +625,15 @@ cuando calienta el sol...
         return count;
     }
 
+    let intentosConexion = 0;
+
     async function conectarMIDI(forzar = false) {
         const dot = document.getElementById("midi-dot");
         const text = document.getElementById("midi-label");
         const log = document.getElementById("log-1");
         if (!dot || !text) return null;
 
+        // Si ya está conectado con salidas válidas y no se fuerza, reutilizarlo
         if (!forzar && midiOutput && obtenerSalidasDisponibles().length > 0) {
             dot.style.background = "#10b981";
             dot.classList.add("connected");
@@ -639,19 +642,69 @@ cuando calienta el sol...
             return midiOutput;
         }
 
+        if (!forzar && midiAccessInstance) {
+            const outputs = extraerPuertos(midiAccessInstance.outputs);
+            if (outputs.length > 0) {
+                const korg = outputs.find(o => o && o.name && (o.name.toLowerCase().includes('ek-50') || o.name.toLowerCase().includes('korg') || o.name.toLowerCase().includes('keyboard')));
+                midiOutput = korg || outputs[0];
+                dot.style.background = "#10b981";
+                dot.classList.add("connected");
+                const names = outputs.map(o => o.name || 'MIDI Out').join(', ');
+                text.innerHTML = `🟢 Conectado: <b>${names}</b>`;
+                if (log && log.innerHTML.includes('Listo para')) {
+                    log.innerHTML = `✅ Salida MIDI USB lista: <b>${names}</b>.`;
+                }
+                return midiOutput;
+            }
+        }
+
         if (!navigator.requestMIDIAccess) {
-            dot.style.background = "#d29922";
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+            dot.style.background = "#38bdf8";
             dot.classList.remove("connected");
-            text.innerHTML = '🟡 Web MIDI no soportado en este navegador';
-            if (log) log.innerHTML = '⚠️ En iPad usa <b>Web MIDI Browser</b> o abre en Google Chrome en tu ordenador.';
+            if (isIOS) {
+                text.innerHTML = '📱 <b>iPad:</b> Abre en la app <i>Web MIDI Browser</i> <span style="font-size:0.75rem; text-decoration:underline; cursor:pointer;" onclick="conectarMIDI(true)">🔄 Reintentar</span>';
+            } else {
+                text.innerHTML = '💻 <b>Modo Consulta:</b> Para conectar por USB abre en <b>Google Chrome</b>.';
+            }
+            if (log) log.innerHTML = '⚠️ En iPad se necesita la app gratuita <b>Web MIDI Browser</b> para conectar el cable USB al Korg.';
             return null;
         }
 
+        dot.style.background = "#e3b341";
+        text.innerHTML = '🟡 Conectando CoreMIDI...';
+
         try {
-            const midiAccess = await navigator.requestMIDIAccess({ sysex: false });
+            const midiAccess = await new Promise((resolve, reject) => {
+                let timer = setTimeout(() => {
+                    reject(new Error("Esperando CoreMIDI..."));
+                }, 3500);
+
+                try {
+                    const req = navigator.requestMIDIAccess({ sysex: false });
+                    if (req && typeof req.then === 'function') {
+                        req.then(
+                            ma => { clearTimeout(timer); resolve(ma); },
+                            err => { clearTimeout(timer); reject(err || new Error("Inicializando driver MIDI...")); }
+                        );
+                    } else if (req) {
+                        clearTimeout(timer);
+                        resolve(req);
+                    } else {
+                        clearTimeout(timer);
+                        reject(new Error("Driver Web MIDI no listo"));
+                    }
+                } catch(e) {
+                    clearTimeout(timer);
+                    reject(e);
+                }
+            });
+
             midiAccessInstance = midiAccess;
+            intentosConexion = 0;
 
             function bindPorts() {
+                if (!midiAccessInstance) return null;
                 const outputs = extraerPuertos(midiAccessInstance.outputs);
                 const inputs = extraerPuertos(midiAccessInstance.inputs);
 
@@ -662,13 +715,17 @@ cuando calienta el sol...
                     dot.classList.add("connected");
                     const names = outputs.map(o => o.name || 'MIDI Out').join(', ');
                     text.innerHTML = `🟢 Conectado: <b>${names}</b>`;
-                    if (log) log.innerHTML = `✅ Puerto de salida USB listo: <b>${names}</b>.`;
+                    if (log && (log.innerHTML.includes('Listo para') || log.innerHTML.includes('buscando') || log.innerHTML.includes('Esperando'))) {
+                        log.innerHTML = `✅ Puerto de salida USB listo: <b>${names}</b>.`;
+                    }
                     return midiOutput;
                 } else if (inputs.length > 0) {
                     midiOutput = null;
                     dot.style.background = "#d29922";
                     dot.classList.remove("connected");
-                    text.innerHTML = `🟡 Entrada detectada (sin salida USB)`;
+                    const inNames = inputs.map(i => i.name || 'MIDI In').join(', ');
+                    text.innerHTML = `🟡 Entrada: <b>${inNames}</b> (sin salida USB) <span style="font-size:0.75rem; text-decoration:underline; cursor:pointer;" onclick="conectarMIDI(true)">🔄 Re-escanear</span>`;
+                    if (log) log.innerHTML = `⚠️ Detectada entrada (<b>${inNames}</b>), pero CoreMIDI aún no abre la salida hacia el teclado. Vuelve a enchufar el adaptador USB.`;
                     return null;
                 } else {
                     midiOutput = null;
@@ -679,18 +736,29 @@ cuando calienta el sol...
                 }
             }
 
-            midiAccessInstance.onstatechange = bindPorts;
+            midiAccessInstance.onstatechange = () => {
+                bindPorts();
+            };
+
             const res = bindPorts();
             if (!res) {
-                setTimeout(bindPorts, 600);
-                setTimeout(bindPorts, 1500);
-                setTimeout(bindPorts, 3000);
+                setTimeout(bindPorts, 400);
+                setTimeout(bindPorts, 1000);
+                setTimeout(bindPorts, 2500);
             }
             return res;
         } catch(err) {
+            intentosConexion++;
+            const rawMsg = err && (err.message || err.name || (typeof err === 'string' ? err : ''));
+            const msg = rawMsg && rawMsg !== 'undefined' ? rawMsg : 'Esperando CoreMIDI...';
+
             dot.style.background = "#d29922";
             dot.classList.remove("connected");
-            text.innerHTML = '🟡 Esperando cable USB... <span style="font-size:0.75rem; text-decoration:underline; cursor:pointer;" onclick="conectarMIDI(true)">🔄 Detectar</span>';
+            text.innerHTML = `🟡 ${msg} <span style="font-size:0.75rem; text-decoration:underline; cursor:pointer;" onclick="conectarMIDI(true)">🔄 Detectar</span>`;
+
+            if (intentosConexion < 4) {
+                setTimeout(() => conectarMIDI(true), 800 * intentosConexion);
+            }
             return null;
         }
     }
@@ -1177,12 +1245,25 @@ cuando calienta el sol...
         }
     });
 
-    // Inicialización al cargar la página con 350 ms de retardo para CoreMIDI
-    window.addEventListener('DOMContentLoaded', () => {
-        setTimeout(conectarMIDI, 350);
-        activarModoAtrilSinApagado();
+    // Inicialización al cargar la página (Garantizado aunque DOMContentLoaded ya haya ocurrido)
+    function iniciarApp() {
         reiniciarTemporizadorInactividad();
-    });
+        activarModoAtrilSinApagado();
+        // En iOS / Web MIDI Browser, retrasar 350ms para permitir que el puente CoreMIDI se registre
+        setTimeout(() => {
+            conectarMIDI();
+        }, 350);
+        // Segundo intento a los 1200ms por si CoreMIDI tarda en listar salidas
+        setTimeout(() => {
+            if (!midiOutput) conectarMIDI(true);
+        }, 1200);
+    }
+
+    if (document.readyState === 'loading') {
+        window.addEventListener('DOMContentLoaded', iniciarApp);
+    } else {
+        iniciarApp();
+    }
 </script>
 </body>
 </html>

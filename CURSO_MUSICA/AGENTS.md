@@ -103,3 +103,7 @@
 - **Lección 6.10 (Reposo 5 Minutos):** Balance perfecto entre atril encendido en directo y apagado automático en inactividad.
 - **Lección 6.11 (Encendido Físico de Capas):** Usar Keyboard Set 61 para encender físicamente los botones `[UPPER 1]` y `[UPPER 2]` del Korg.
 - **Lección 6.12 (Armónica General MIDI):** Harmonica es PC 22 (PC 21 es Acordeón); inyectar modulación `CC 01 = 50`, `CC 77 = 68` y reverb `CC 91 = 115`.
+- **Lección 6.13 (Matemática de Estilos en Korg EK-50):** Cada banco LSB agrupa 16 estilos: `Estilo = 16 * LSB + PC + 1`. Estilo 174 Beguine 1 requiere `LSB 10, PC 13` en Canal 16 a 112 BPM.
+- **Lección 6.14 (Blindaje de Botón 1 con GM2 MSB 121):** Para órganos y patches melódicos, usar `Bank MSB 121` (GM2 oficial) en Canal 1 para evitar caídas a Grand Piano (MSB 0). Aislar Canal 16 exclusivamente para el estilo de acompañamiento.
+- **Lección 6.15 (Motor Anti-Apagado Continuo 25 min):** Reproductor `<video>` con `canvas.captureStream(1)` invisible para iOS Safari HTTP + WakeLock en HTTPS + reposo inteligente tras 25 minutos.
+- **Lección 6.16 (Inicialización Asíncrona Blindada CoreMIDI):** Para evitar que la barra quede fija en `Iniciando Web MIDI...`, verificar `document.readyState !== 'loading'` (evita listeners muertos si el DOM ya cargó), encapsular `requestMIDIAccess` en `Promise` con timeout de 3.5s, reintentar automáticamente hasta 4 veces y permitir re-escaneo con un toque (`onclick="conectarMIDI(true)"`).
