@@ -2,7 +2,7 @@
 > **Proyecto:** Sistema de Atril Digital, Control Web MIDI y Repertorio Pedagógico Interactivo  
 > **Ubicación:** `CURSO_MUSICA/` · **Repositorio:** `CURSO-IA`  
 > **Dispositivo Principal:** Teclado Korg EK-50 Entertainer Keyboard conectado a iPad / Mac  
-> **Versión del Sistema:** v104 (Ampliación del Repertorio a 20 Obras Musicales: Con te partirò, Volare, Ave Maria, Flashdance, Amor Amor Amor, Adagio, Whiter Shade of Pale, y colección de estudios instrumentales MuseScore)
+> **Versión del Sistema:** v105 (Clasificación Temática Oficial en 6 Categorías del Repertorio de 20 Obras Musicales: Clásica/Sacra, Grandes Baladas, Boleros Latinos, Canción Italiana, Dance 80s y Folclore/Danzas)
 
 ---
 
@@ -118,27 +118,39 @@ El Korg EK-50 se conecta al iPad o Mac mediante un cable USB estándar (USB tipo
 
 ---
 
-### 🎵 Canciones 5 a 11: Fichas Web MIDI & Enlaces MuseScore Directos
-* **Canción 5 · "Con te partirò" (Andrea Bocelli):** Tonalidad Sol Mayor ($G$) / Do Mayor ($C$). Estilo: `041 Love Ballad` (70 BPM). Upper 1: Grand Piano (PC 0) / Upper 2: Strings (PC 48). Partitura MuseScore #28816700.
-* **Canción 6 · "Volare (Nel blu dipinto di blu)" (Domenico Modugno):** Tonalidad Do Mayor ($C$). Estilo: `174 Beguine 1` (126 BPM). Upper 1: Accordion (PC 21) / Upper 2: Alto Sax (PC 65) & Strings. Partitura MuseScore #28739830.
-* **Canción 7 · "Ave Maria" (Franz Schubert):** Tonalidad Sib Mayor ($B\flat$). Estilo: `212 Classical Adagio` (56 BPM). Upper 1: Flute (PC 73) / Upper 2: Church Pipe Organ (PC 19) & Choir Aahs (PC 52). Partitura MuseScore #28530133.
-* **Canción 8 · "Flashdance... What a Feeling" (Irene Cara):** Tonalidad Sib Mayor ($B\flat$). Estilo: `005 80s Dance` (124 BPM). Upper 1: Synth Lead (PC 80) / Upper 2: Poly Synth (PC 90). Intro lenta en Piano Eléctrico (68 BPM). Partitura MuseScore #28103443.
-* **Canción 9 · "Amor, Amor, Amor" (Julio Iglesias):** Tonalidad Sol menor ($Gm$). Estilo: `174 Beguine 1` (112 BPM). Upper 1: Spanish Nylon Guitar (PC 24) / Upper 2: Muted Trumpet (PC 59) & Percussive Organ (PC 17). Partitura MuseScore #28063213.
-* **Canción 10 · "Adagio en Sol menor" (Tomaso Albinoni):** Tonalidad Sol menor ($Gm$). Estilo: `215 Orchestral Slow` (58 BPM). Upper 1: Church Pipe Organ (PC 19) / Solo Violin (PC 40) / Upper 2: Slow Strings (PC 49) & Coro. Partitura MuseScore #27905737.
-* **Canción 11 · "A Whiter Shade of Pale (Senza Luce)" (Procol Harum):** Tonalidad Do Mayor ($C$). Estilo: `042 60s Soul Ballad` (68 BPM). Upper 1: Percussive Organ (PC 17 con Reverb 115) / Upper 2: Strings (PC 48). Partitura MuseScore #27874576.
+### 🎵 Clasificación Oficial en 6 Categorías Temáticas (v105)
 
----
+#### 🏛️ Categoría 1: Música Clásica, Sacra & Solemne
+* **3. Hymn to the Fallen** (John Williams - BSO *Salvar al Soldado Ryan*): Marcha solemne a 58 BPM · Metales & Snare Roll continuo.
+* **7. Ave Maria** (Franz Schubert / Arr. francescobern): Sib Mayor ($B\flat$) · Adagio a 56 BPM · Flauta, cuerdas y órgano de iglesia con coro. Score MuseScore [#28530133](https://musescore.com/user/33531210/scores/28530133).
+* **10. Adagio en Sol menor** (Tomaso Albinoni / Remo Giazotto): Sol menor ($Gm$) · Orchestral Slow a 58 BPM · Órgano de tubos y cuerdas solemnes. Score MuseScore [#27905737](https://musescore.com/user/33531210/scores/27905737).
+* **13. Pieza Sacra / Clásica (Agni Parthene / J.S. Bach)** (Arr. Christhian Beschizza): Guitarra, órgano y coro sacro. Score MuseScore [#6325230](https://musescore.com/user/4592916/scores/6325230).
 
-### 🎵 Canciones 12 a 20: Catálogo Instrumental MuseScore
-* **12. Canzone Napoletana (Melodía Tradicional):** Mandolina y acordeón italiano. Score MuseScore [#27870430](https://musescore.com/user/33531210/scores/27870430).
-* **13. Pieza Sacra / Clásica (Agni Parthene / Bach):** Arr. Christhian Beschizza. Score MuseScore [#6325230](https://musescore.com/user/4592916/scores/6325230).
-* **14. Balada Romántica (Pop Clásico):** Grand Piano y cuerdas a 85 BPM. Score MuseScore [#27651577](https://musescore.com/user/33531210/scores/27651577).
-* **15. Estudio Instrumental I (Folk & Tradicional):** Acordeón y flauta en compás ternario a 110 BPM. Score MuseScore [#26692978](https://musescore.com/user/33531210/scores/26692978).
-* **16. Estudio Instrumental II (Canzonetta & Folk):** Armónica y cuerdas a 98 BPM. Score MuseScore [#26692912](https://musescore.com/user/33531210/scores/26692912).
-* **17. Estudio Instrumental III (Klezmer & Danza):** Clarinete y metales a 120 BPM. Score MuseScore [#26692870](https://musescore.com/user/33531210/scores/26692870).
-* **18. Estudio Instrumental IV (Balada / Vals Romántico):** Arreglo de cuerdas y piano. Score MuseScore [#26692240](https://musescore.com/user/33531210/scores/26692240).
-* **19. Estudio Instrumental V (Tema Melódico Lead Sheet):** Lead sheet para teclado. Score MuseScore [#26692024](https://musescore.com/user/33531210/scores/26692024).
-* **20. Estudio Instrumental VI (Composición / Ensayo para Teclado):** Práctica instrumental. Score MuseScore [#26691493](https://musescore.com/user/33531210/scores/26691493).
+#### 🌊 Categoría 2: Grandes Baladas Pop & Rock Universal
+* **1. To All The Girls I've Loved Before** (Julio Iglesias & Willie Nelson): Sol Mayor ($G$) / Mib ($E\flat$) · Love Ballad a 100 BPM · Transposer 1-Tap.
+* **2. Hallelujah** (Leonard Cohen): Fa Mayor ($F$) · Compás 12/8 a 56 BPM · STS Harmonica GM (PC 22) + Cuerdas + Coro.
+* **5. Con te partirò (Time to Say Goodbye)** (Andrea Bocelli): Sol Mayor ($G$) / Do Mayor ($C$) · Balada lírica a 70 BPM · Grand Piano & Cuerdas. Score MuseScore [#28816700](https://musescore.com/user/33531210/scores/28816700).
+* **11. A Whiter Shade of Pale (Senza Luce)** (Procol Harum / Dik Dik): Do Mayor ($C$) · 60s Soul Ballad a 68 BPM · Órgano Hammond (PC 17 con Reverb 115). Score MuseScore [#27874576](https://musescore.com/user/33531210/scores/27874576).
+* **14. Balada Romántica (Pop Clásico)** (Arr. francescobern): Grand Piano y cuerdas a 85 BPM. Score MuseScore [#27651577](https://musescore.com/user/33531210/scores/27651577).
+
+#### 🌴 Categoría 3: Boleros & Ritmos Latinos
+* **4. Cuando Calienta el Sol** (Los Hermanos Rigual / Luis Miguel): Do Mayor ($C$) · Estilo 174 Beguine 1 a 112 BPM · Órgano de Percusión & Cuerdas.
+* **9. Amor, Amor, Amor** (Julio Iglesias / Gabriel Ruiz): Sol menor ($Gm$) · Estilo 174 Beguine a 112 BPM · Guitarra Española, Cuerdas y Trompeta con Sordina. Score MuseScore [#28063213](https://musescore.com/user/33531210/scores/28063213).
+
+#### 🇮🇹 Categoría 4: Canción Italiana & Mediterráneo
+* **6. Volare (Nel blu dipinto di blu)** (Domenico Modugno): Do Mayor ($C$) · Beguine / Bossa a 126 BPM · Acordeón Italiano, Saxo Alto & Cuerdas. Score MuseScore [#28739830](https://musescore.com/user/33531210/scores/28739830).
+* **12. Canzone Napoletana (Melodía Tradicional)** (Arr. francescobern): Mandolina y acordeón italiano. Score MuseScore [#27870430](https://musescore.com/user/33531210/scores/27870430).
+* **16. Estudio Instrumental II (Canzonetta & Folk)** (Arr. francescobern): Armónica y cuerdas a 98 BPM. Score MuseScore [#26692912](https://musescore.com/user/33531210/scores/26692912).
+
+#### ⚡ Categoría 5: Dance 80s & Bandas Sonoras
+* **8. Flashdance... What a Feeling** (Irene Cara / Giorgio Moroder): Sib Mayor ($B\flat$) · 80s Dance a 124 BPM (Intro lenta a 68 BPM) · Synth Lead (PC 80) & Poly Synth (PC 90). Score MuseScore [#28103443](https://musescore.com/user/33531210/scores/28103443).
+
+#### 🪗 Categoría 6: Folclore, Valses & Danzas del Mundo
+* **15. Estudio Instrumental I (Folk & Vals Tradicional)** (Arr. francescobern): Acordeón y flauta a 110 BPM. Score MuseScore [#26692978](https://musescore.com/user/33531210/scores/26692978).
+* **17. Estudio Instrumental III (Klezmer & Danza)** (Arr. francescobern): Clarinete y metales a 120 BPM. Score MuseScore [#26692870](https://musescore.com/user/33531210/scores/26692870).
+* **18. Estudio Instrumental IV (Balada / Vals Romántico)** (Arr. francescobern): Cuerdas y piano. Score MuseScore [#26692240](https://musescore.com/user/33531210/scores/26692240).
+* **19. Estudio Instrumental V (Tema Melódico Lead Sheet)** (Arr. francescobern): Lead sheet melódico. Score MuseScore [#26692024](https://musescore.com/user/33531210/scores/26692024).
+* **20. Estudio Instrumental VI (Composición / Ensayo para Teclado)** (Arr. francescobern): Práctica instrumental. Score MuseScore [#26691493](https://musescore.com/user/33531210/scores/26691493).
 
 ---
 
