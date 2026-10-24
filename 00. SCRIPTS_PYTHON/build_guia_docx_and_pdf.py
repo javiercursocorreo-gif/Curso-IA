@@ -5,9 +5,11 @@ build_guia_docx_and_pdf.py
 Genera la Guía Oficial ÚNICA exclusivamente en:
 CURSO-ROBOTICA-IA-COMUN
 
-Elimina cualquier duplicado redundante en CURSO-IA y CURSO-ROBOTICA.
-Construye un .docx 100% estándar usando la API limpia de python-docx
-(sin manipulaciones de XML de bajo nivel que disparan avisos de recuperación en Word).
+- Cero IDs fósiles o antiguos (únicamente las 2 clases unificadas vigentes).
+- Generación de DOCX con párrafos estándar (sin estilos de lista que provoquen
+  avisos de recuperación en Microsoft Word).
+- Generación paralela de PDF de alta legibilidad con ReportLab.
+- Limpieza total de copias redundantes en CURSO-IA.
 """
 
 import os
@@ -20,14 +22,12 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 IA_DIR = os.path.abspath(os.path.join(SCRIPT_DIR, ".."))
 PARENT_DIR = os.path.abspath(os.path.join(IA_DIR, ".."))
 
-# Asegurar python-docx
 try:
     import docx
     from docx.shared import Inches, Pt, RGBColor
     from docx.enum.text import WD_ALIGN_PARAGRAPH
     from docx.enum.table import WD_TABLE_ALIGNMENT
 except ImportError:
-    print("⏳ Instalando python-docx...")
     subprocess.check_call([sys.executable, "-m", "pip", "install", "python-docx", "-q"])
     import docx
     from docx.shared import Inches, Pt, RGBColor
@@ -35,11 +35,10 @@ except ImportError:
     from docx.enum.table import WD_TABLE_ALIGNMENT
 
 def limpiar_duplicados_redundantes():
-    """Elimina las guías redundantes de CURSO-IA y de carpetas de robótica para dejar una sola fuente de verdad."""
+    """Elimina las guías redundantes de CURSO-IA y carpetas satélite."""
     patrones_a_borrar = [
         os.path.join(IA_DIR, "0.GUIA_PUBLICACION_GITHUB_CLASSROOM.*"),
     ]
-    # Buscar posibles carpetas de robótica
     for ruta in glob.glob(os.path.join(PARENT_DIR, "*ROBOTICA*")):
         if os.path.abspath(ruta) != os.path.abspath(COMUN_DIR):
             patrones_a_borrar.append(os.path.join(ruta, "0.GUIA_PUBLICACION_GITHUB_CLASSROOM.*"))
@@ -50,116 +49,118 @@ def limpiar_duplicados_redundantes():
                 os.remove(f)
                 print(f"🗑️ Eliminada guía redundante: {f}")
             except Exception as e:
-                print(f"⚠️ No se pudo eliminar {f}: {e}")
+                pass
 
 def create_clean_docx(output_path):
-    """Crea un documento .docx 100% compatible y nativo sin avisos de contenido no legible."""
+    """
+    Crea un .docx 100% libre de errores de recuperación.
+    Usa párrafos estándar con indentación manual (sin 'List Bullet' ni estilos corruptibles).
+    """
     doc = docx.Document()
 
-    # Márgenes estándar (1 pulgada = 2.54 cm)
+    # Márgenes de página (2.5 cm)
     for section in doc.sections:
         section.top_margin = Inches(1.0)
         section.bottom_margin = Inches(1.0)
         section.left_margin = Inches(1.0)
         section.right_margin = Inches(1.0)
 
-    # TÍTULO PRINCIPAL
+    # TÍTULO
     p_title = doc.add_paragraph()
     p_title.alignment = WD_ALIGN_PARAGRAPH.CENTER
     p_title.paragraph_format.space_before = Pt(0)
     p_title.paragraph_format.space_after = Pt(4)
-    run_title = p_title.add_run("GUÍA DE PUBLICACIÓN EN GITHUB Y CLASSROOM")
-    run_title.font.name = "Arial"
-    run_title.font.size = Pt(18)
-    run_title.font.bold = True
-    run_title.font.color.rgb = RGBColor(2, 132, 199) # Azul #0284C7
+    r_title = p_title.add_run("GUÍA DE PUBLICACIÓN EN GITHUB Y CLASSROOM")
+    r_title.font.name = "Arial"
+    r_title.font.size = Pt(17)
+    r_title.font.bold = True
+    r_title.font.color.rgb = RGBColor(2, 132, 199) # Azul corporativo
 
     # SUBTÍTULO
     p_sub = doc.add_paragraph()
     p_sub.alignment = WD_ALIGN_PARAGRAPH.CENTER
     p_sub.paragraph_format.space_after = Pt(16)
-    run_sub = p_sub.add_run("Workflow de Trabajo en Equipo: Tú (Profesor) y Antigravity (Asistente IA)")
-    run_sub.font.name = "Arial"
-    run_sub.font.size = Pt(10.5)
-    run_sub.font.italic = True
-    run_sub.font.color.rgb = RGBColor(100, 116, 139)
+    r_sub = p_sub.add_run("Workflow de Trabajo en Equipo: Tú (Profesor) y Antigravity (Asistente IA)")
+    r_sub.font.name = "Arial"
+    r_sub.font.size = Pt(10)
+    r_sub.font.italic = True
+    r_sub.font.color.rgb = RGBColor(100, 116, 139)
 
     # INTRODUCCIÓN
     p_intro = doc.add_paragraph()
     p_intro.paragraph_format.space_after = Pt(12)
-    r_intro_title = p_intro.add_run("💡 Introducción al Sistema Unificado:\n")
-    r_intro_title.bold = True
-    r_intro_title.font.name = "Arial"
-    r_intro_title.font.size = Pt(10)
-    r_intro_title.font.color.rgb = RGBColor(3, 105, 161)
-    
-    r_intro_body = p_intro.add_run(
+    p_intro.paragraph_format.left_indent = Inches(0.2)
+    r_intro_bold = p_intro.add_run("💡 Introducción al Sistema Unificado:\n")
+    r_intro_bold.bold = True
+    r_intro_bold.font.name = "Arial"
+    r_intro_bold.font.size = Pt(10)
+    r_intro_bold.font.color.rgb = RGBColor(3, 105, 161)
+    r_intro_text = p_intro.add_run(
         "Este flujo de trabajo garantiza que todo el material educativo (teoría, simuladores interactivos, "
         "fichas didácticas y monográficos) viaje desde tu Mac hasta Google Classroom sin gastar espacio en tu Google Drive "
         "y con una experiencia 100% limpia para los alumnos mediante Mapas Interactivos HTML únicos."
     )
-    r_intro_body.font.name = "Arial"
-    r_intro_body.font.size = Pt(9.5)
+    r_intro_text.font.name = "Arial"
+    r_intro_text.font.size = Pt(9.5)
 
-    def add_h2(text):
+    def add_h(text):
         p = doc.add_paragraph()
         p.paragraph_format.space_before = Pt(14)
         p.paragraph_format.space_after = Pt(4)
-        run = p.add_run(text)
-        run.font.name = "Arial"
-        run.font.size = Pt(12)
-        run.font.bold = True
-        run.font.color.rgb = RGBColor(15, 23, 42)
+        r = p.add_run(text)
+        r.font.name = "Arial"
+        r.font.size = Pt(12)
+        r.font.bold = True
+        r.font.color.rgb = RGBColor(15, 23, 42)
         return p
 
-    def add_bullet(text, prefix=""):
-        p = doc.add_paragraph(style='List Bullet')
+    def add_item(text, num="•"):
+        p = doc.add_paragraph()
+        p.paragraph_format.left_indent = Inches(0.25)
         p.paragraph_format.space_before = Pt(1)
         p.paragraph_format.space_after = Pt(3)
-        if prefix:
-            r_pre = p.add_run(prefix + " ")
-            r_pre.bold = True
-            r_pre.font.name = "Arial"
-            r_pre.font.size = Pt(9.5)
-            r_pre.font.color.rgb = RGBColor(30, 41, 59)
-        r_t = p.add_run(text)
-        r_t.font.name = "Arial"
-        r_t.font.size = Pt(9.5)
+        r_num = p.add_run(f"{num} ")
+        r_num.bold = True
+        r_num.font.name = "Arial"
+        r_num.font.size = Pt(9.5)
+        r_num.font.color.rgb = RGBColor(2, 132, 199)
+        r_text = p.add_run(text)
+        r_text.font.name = "Arial"
+        r_text.font.size = Pt(9.5)
         return p
 
     # FASE 1
-    add_h2("FASE 1: PREPARACIÓN LOCAL EN EL MAC 🧑🏻‍🏫 TAREA TUYA")
-    add_bullet("Escribe tu teoría, genera tus PDFs, graba los vídeos y organiza todo en la carpeta correspondiente de tu Mac.", "1.")
-    add_bullet("Nombra los archivos correctamente (ej: T0.DEBATE.pdf, T2.VIDEO.mp4, etc.).", "2.")
+    add_h("FASE 1: PREPARACIÓN LOCAL EN EL MAC 🧑🏻‍🏫 TAREA TUYA")
+    add_item("Escribe tu teoría, genera tus PDFs, graba los vídeos y organiza todo en la carpeta correspondiente de tu Mac.", "1.")
+    add_item("Nombra los archivos correctamente (ej: T0.DEBATE.pdf, T2.VIDEO.mp4, etc.).", "2.")
 
     # FASE 2
-    add_h2("FASE 2: SINCRONIZACIÓN AL SERVIDOR (GITHUB) 🤖 TAREA DE LA IA")
+    add_h("FASE 2: SINCRONIZACIÓN AL SERVIDOR (GITHUB) 🤖 TAREA DE LA IA")
     p_f2 = doc.add_paragraph()
-    p_f2.paragraph_format.space_after = Pt(4)
-    r_f2 = p_f2.add_run("Tú me dices: ")
-    r_f2.font.name = "Arial"
-    r_f2.font.size = Pt(9.5)
-    r_f2_q = p_f2.add_run('"Ya he metido todos los archivos nuevos en la carpeta del Mac, súbelos a GitHub".')
-    r_f2_q.italic = True
-    r_f2_q.font.name = "Arial"
-    r_f2_q.font.size = Pt(9.5)
-    add_bullet("Añadir los archivos creados o modificados y hacer el commit.", "•")
-    add_bullet("Subirlos a GitHub (git push origin main) en un único comando limpio.", "•")
-    add_bullet("Objetivo: Alojarlos gratis en GitHub Pages para enlazarlos desde Classroom sin gastar espacio en tu Google Drive. Al actualizar un archivo, solo se vuelve a subir a GitHub y se actualiza al instante para todos los alumnos.", "•")
+    p_f2.paragraph_format.space_after = Pt(3)
+    r_f2_1 = p_f2.add_run("Tú me dices: ")
+    r_f2_1.font.name = "Arial"
+    r_f2_1.font.size = Pt(9.5)
+    r_f2_2 = p_f2.add_run('"Ya he metido todos los archivos nuevos en la carpeta del Mac, súbelos a GitHub".')
+    r_f2_2.italic = True
+    r_f2_2.font.name = "Arial"
+    r_f2_2.font.size = Pt(9.5)
+    add_item("Añadir los archivos creados o modificados y hacer el commit.", "•")
+    add_item("Subirlos a GitHub (git push origin main) en un único comando limpio.", "•")
+    add_item("Objetivo: Alojarlos gratis en GitHub Pages para enlazarlos desde Classroom sin gastar espacio en tu Google Drive. Al actualizar un archivo, solo se vuelve a subir a GitHub y se actualiza al instante para todos los alumnos.", "•")
 
     # FASE 3
-    add_h2("FASE 3: CREACIÓN DEL PANEL UNIFICADO DE ENLACES 🤖 TAREA DE LA IA")
-    add_bullet("Yo (la IA) genero el archivo maestro CURSO_IA_UNIFICADO.csv (en PANELES_CSV/).", "•")
-    add_bullet("Arquitectura de Mapa Único: En lugar de saturar Classroom con docenas de enlaces sueltos, cada sección cuenta con un Mapa Interactivo HTML único (MAPA_MONOGRAFICOS.html y MAPA_SESION_XX.html) que agrupa fichas, simuladores y recursos interactivos sin rehacer publicaciones en Classroom.", "•")
+    add_h("FASE 3: CREACIÓN DEL PANEL UNIFICADO DE ENLACES 🤖 TAREA DE LA IA")
+    add_item("Yo (la IA) genero el archivo maestro CURSO_IA_UNIFICADO.csv (en PANELES_CSV/).", "•")
+    add_item("Arquitectura de Mapa Único: En lugar de saturar Classroom con docenas de enlaces sueltos, cada sección cuenta con un Mapa Interactivo HTML único (MAPA_MONOGRAFICOS.html y MAPA_SESION_XX.html) que agrupa fichas, simuladores y recursos interactivos sin rehacer publicaciones en Classroom.", "•")
 
     # FASE 4
-    add_h2("FASE 4: PREPARACIÓN DE GOOGLE CLASSROOM 🧑🏻‍🏫 TAREA TUYA")
-    add_bullet("Entra en classroom.google.com con tu cuenta de profesor.", "1.")
-    add_bullet("Trabajamos exclusivamente con las Clases Maestras Unificadas Anuales:", "2.")
+    add_h("FASE 4: PREPARACIÓN DE GOOGLE CLASSROOM 🧑🏻‍🏫 TAREA TUYA")
+    add_item("Entra en classroom.google.com con tu cuenta de profesor.", "1.")
+    add_item("Trabajamos exclusivamente con las dos Clases Maestras Unificadas Anuales:", "2.")
 
-    # TABLA DE CLASES MAESTRAS VIGENTES
+    # TABLA EXCLUSIVA DE LAS 2 CLASES VIGENTES
     t = doc.add_table(rows=3, cols=3)
-    t.style = 'Table Grid'
     t.alignment = WD_TABLE_ALIGNMENT.CENTER
     headers = ["CURSO", "NOMBRE EN CLASSROOM", "ID REAL DE LA CLASE"]
     for c_idx, h in enumerate(headers):
@@ -172,71 +173,56 @@ def create_clean_docx(output_path):
         r.font.size = Pt(9)
         r.font.color.rgb = RGBColor(2, 132, 199)
 
-    filas_clases = [
+    clases = [
         ("INTELIGENCIA ARTIFICIAL", "IA.", "890436514251"),
         ("ROBÓTICA", "ROBÓTICA.", "890435922022")
     ]
-    for r_idx, (c, n, id_r) in enumerate(filas_clases, start=1):
+    for r_idx, (c, n, id_r) in enumerate(clases, start=1):
         for c_idx, val in enumerate([c, n, id_r]):
             cell = t.cell(r_idx, c_idx)
             p = cell.paragraphs[0]
             p.alignment = WD_ALIGN_PARAGRAPH.CENTER
             r = p.add_run(val)
             r.font.name = "Arial"
-            r.font.size = Pt(9)
+            r.font.size = Pt(9.5)
             if c_idx == 2:
                 r.bold = True
                 r.font.color.rgb = RGBColor(16, 185, 129)
 
     # FASE 5
-    add_h2("FASE 5: INGESTA DE DATOS (GOOGLE SHEETS) 🧑🏻‍🏫 TAREA TUYA")
-    add_bullet("Abre tu navegador en Modo Incógnito / Ventana Privada (vital para evitar conflictos entre cuentas de Google).", "1.")
-    add_bullet("Entra a Google Drive y abre tu hoja de cálculo permanente: 0.PANEL_CLASSROOM.", "2.")
-    add_bullet("Ve a Archivo > Importar > Subir y arrastra PANELES_CSV/CURSO_IA_UNIFICADO.csv.", "3.")
-    add_bullet("Selecciona 'Reemplazar hoja de cálculo actual' y pulsa Importar.", "4.")
-    add_bullet("En la Columna A (ID_CURSO), pega el ID real: 890436514251 y arrastra hacia abajo para que todas las filas tengan el ID.", "5.")
+    add_h("FASE 5: INGESTA DE DATOS (GOOGLE SHEETS) 🧑🏻‍🏫 TAREA TUYA")
+    add_item("Abre tu navegador en Modo Incógnito / Ventana Privada (vital para evitar conflictos entre cuentas de Google).", "1.")
+    add_item("Entra a Google Drive y abre tu hoja de cálculo permanente: 0.PANEL_CLASSROOM.", "2.")
+    add_item("Ve a Archivo > Importar > Subir y arrastra PANELES_CSV/CURSO_IA_UNIFICADO.csv.", "3.")
+    add_item("Selecciona 'Reemplazar hoja de cálculo actual' y pulsa Importar.", "4.")
+    add_item("En la Columna A (ID_CURSO), pega el ID real: 890436514251 y arrastra hacia abajo para que todas las filas tengan el ID.", "5.")
 
     # FASE 6
-    add_h2("FASE 6: PUBLICACIÓN AUTOMÁTICA 🧑🏻‍🏫 TAREA TUYA")
-    add_bullet("Dentro de la hoja de Google Sheets, ve a Extensiones > Apps Script.", "1.")
-    add_bullet("Selecciona la función publicarTodoConTemas y pulsa Ejecutar.", "2.")
-    add_bullet("El script creará automáticamente el tema MONOGRAFICOS y los temas SESIÓN 1 a SESIÓN 60 con sus respectivos mapas interactivos en modo BORRADOR (DRAFT).", "3.")
-    add_bullet("¡Listo! Ya puedes ir publicando cada sesión a los alumnos conforme avance el calendario escolar.", "4.")
+    add_h("FASE 6: PUBLICACIÓN AUTOMÁTICA 🧑🏻‍🏫 TAREA TUYA")
+    add_item("Dentro de la hoja de Google Sheets, ve a Extensiones > Apps Script.", "1.")
+    add_item("Selecciona la función publicarTodoConTemas y pulsa Ejecutar.", "2.")
+    add_item("El script creará automáticamente el tema MONOGRAFICOS y los temas SESIÓN 1 a SESIÓN 60 con sus respectivos mapas interactivos en modo BORRADOR (DRAFT).", "3.")
+    add_item("¡Listo! Ya puedes ir publicando cada sesión a los alumnos conforme avance el calendario escolar.", "4.")
 
     # ANEXO 1
-    add_h2("🚨 ANEXO 1: EL BOTÓN DEL PÁNICO (RESET COMPLETO DE CLASE) 🧑🏻‍🏫 TAREA TUYA")
-    p_panic = doc.add_paragraph()
-    p_panic.paragraph_format.space_before = Pt(4)
-    p_panic.paragraph_format.space_after = Pt(4)
-    r_pan_title = p_panic.add_run("Si la subida ha quedado desfasada o necesitas borrar TODO de Classroom para empezar de cero:\n")
+    add_h("🚨 ANEXO 1: EL BOTÓN DEL PÁNICO (RESET COMPLETO DE CLASE) 🧑🏻‍🏫 TAREA TUYA")
+    p_pan = doc.add_paragraph()
+    p_pan.paragraph_format.space_before = Pt(3)
+    p_pan.paragraph_format.space_after = Pt(3)
+    r_pan_title = p_pan.add_run("Si la subida ha quedado desfasada o necesitas borrar TODO de Classroom para empezar de cero:\n")
     r_pan_title.bold = True
     r_pan_title.font.name = "Arial"
     r_pan_title.font.size = Pt(9.5)
     r_pan_title.font.color.rgb = RGBColor(220, 38, 38)
-    add_bullet("Asegúrate de que el ID del curso está puesto en la celda A2 de la hoja: 890436514251.", "1.")
-    add_bullet("Ve a Extensiones > Apps Script, selecciona la función borrarAbsolutamenteTodo y pulsa Ejecutar.", "2.")
-    add_bullet("Toda la clase (Temas, Materiales y Borradores) quedará completamente vacía en segundos.", "3.")
-
-    # ANEXO 2
-    add_h2("📋 ANEXO 2: HISTORIAL DE CLASES Y LOTES ANTERIORES (ARCHIVADAS / FÓSILES)")
-    fosiles = [
-        ("IA.MONOGRÁFICOS", "877999132773"),
-        ("IA1 (Sesiones 01 a 15)", "826134766630"),
-        ("IA2 (Sesiones 16 a 30)", "877174620039"),
-        ("IA3 (Sesiones 31 a 45)", "877172188045"),
-        ("IA4 (Sesiones 46 a 60)", "826136245220"),
-        ("IA.ÍNDICE", "877993104492"),
-        ("ROB+IA. Introducción", "876317836453"),
-        ("ROB1 a ROB7 (Bloques 1 a 7)", "876316970006 al 869853775914"),
-    ]
-    for nombre, id_f in fosiles:
-        add_bullet(f"{nombre}  --->  ID HISTÓRICO: {id_f}", "•")
+    add_item("Asegúrate de que el ID del curso está puesto en la celda A2 de la hoja: 890436514251.", "1.")
+    add_item("Ve a Extensiones > Apps Script, selecciona la función borrarAbsolutamenteTodo y pulsa Ejecutar.", "2.")
+    add_item("Toda la clase (Temas, Materiales y Borradores) quedará completamente vacía en segundos.", "3.")
 
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
     doc.save(output_path)
-    print(f"✅ Documento Word DOCX 100% certificado generado en: {output_path}")
+    print(f"✅ Microsoft Word DOCX limpio generado en: {output_path}")
 
-def create_pdf(output_path):
+def create_clean_pdf(output_path):
     from reportlab.lib.pagesizes import letter
     from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, HRFlowable
     from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
@@ -306,7 +292,7 @@ def create_pdf(output_path):
         Paragraph("<b>Arquitectura de Mapa Único:</b> En lugar de saturar Classroom con docenas de enlaces sueltos, cada sección cuenta con un <b>Mapa Interactivo HTML único</b> (<code>MAPA_MONOGRAFICOS.html</code> y <code>MAPA_SESION_XX.html</code>).", style_body),
 
         Paragraph("FASE 4: PREPARACIÓN DE GOOGLE CLASSROOM 🧑🏻‍🏫 TAREA TUYA", style_h2),
-        Paragraph("Entra en <code>classroom.google.com</code> con tu cuenta de profesor. Trabajamos con las <b>Clases Maestras Unificadas Anuales</b>:", style_body),
+        Paragraph("Entra en <code>classroom.google.com</code> con tu cuenta de profesor. Trabajamos exclusivamente con las <b>dos Clases Maestras Unificadas Anuales</b>:", style_body),
         Spacer(1, 3),
         Table([
             [Paragraph("<b>CURSO</b>", style_body), Paragraph("<b>NOMBRE EN CLASSROOM</b>", style_body), Paragraph("<b>ID REAL DE LA CLASE</b>", style_body)],
@@ -351,18 +337,16 @@ def create_pdf(output_path):
               ]),
     ]
     doc.build(story)
-    print(f"✅ Guía en PDF generada con éxito: {output_path}")
+    print(f"✅ Guía en PDF limpia generada en: {output_path}")
 
 def main():
-    # 1. Eliminar copias redundantes
     limpiar_duplicados_redundantes()
 
-    # 2. Generar ÚNICA y exclusivamente en CURSO-ROBOTICA-IA-COMUN
     dest_docx_comun = os.path.join(COMUN_DIR, "0.GUIA_PUBLICACION_GITHUB_CLASSROOM.docx")
     dest_pdf_comun = os.path.join(COMUN_DIR, "0.GUIA_PUBLICACION_GITHUB_CLASSROOM.pdf")
 
     create_clean_docx(dest_docx_comun)
-    create_pdf(dest_pdf_comun)
+    create_clean_pdf(dest_pdf_comun)
 
 if __name__ == "__main__":
     main()
