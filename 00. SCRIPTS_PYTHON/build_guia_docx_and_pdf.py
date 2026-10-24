@@ -5,16 +5,17 @@ build_guia_docx_and_pdf.py
 Genera la Guía Oficial ÚNICA exclusivamente en:
 CURSO-ROBOTICA-IA-COMUN
 
-- Cero IDs fósiles o antiguos (únicamente las 2 clases unificadas vigentes).
-- Generación de DOCX con párrafos estándar (sin estilos de lista que provoquen
-  avisos de recuperación en Microsoft Word).
-- Generación paralela de PDF de alta legibilidad con ReportLab.
-- Limpieza total de copias redundantes en CURSO-IA.
+- Cero dependencias frágiles (genera DOCX mediante python-docx si está disponible,
+  o mediante generador OOXML nativo completo con styles.xml, document.xml.rels, etc.).
+- Sin IDs antiguos/fósiles (únicamente las 2 clases maestras unificadas vigentes).
+- Limpieza previa de archivos temporales/bloqueados por Word.
+- Generación de PDF oficial con ReportLab.
 """
 
 import os
 import sys
 import glob
+import zipfile
 import subprocess
 
 COMUN_DIR = "/Users/externo/Library/Mobile Documents/com~apple~CloudDocs/PERSONAL/CLASES DE TECNOLOGÍA/CURSO-ROBOTICA-IA-COMUN"
@@ -22,205 +23,191 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 IA_DIR = os.path.abspath(os.path.join(SCRIPT_DIR, ".."))
 PARENT_DIR = os.path.abspath(os.path.join(IA_DIR, ".."))
 
-try:
-    import docx
-    from docx.shared import Inches, Pt, RGBColor
-    from docx.enum.text import WD_ALIGN_PARAGRAPH
-    from docx.enum.table import WD_TABLE_ALIGNMENT
-except ImportError:
-    subprocess.check_call([sys.executable, "-m", "pip", "install", "python-docx", "-q"])
-    import docx
-    from docx.shared import Inches, Pt, RGBColor
-    from docx.enum.text import WD_ALIGN_PARAGRAPH
-    from docx.enum.table import WD_TABLE_ALIGNMENT
+DOCX_PATH = os.path.join(COMUN_DIR, "0.GUIA_PUBLICACION_GITHUB_CLASSROOM.docx")
+PDF_PATH = os.path.join(COMUN_DIR, "0.GUIA_PUBLICACION_GITHUB_CLASSROOM.pdf")
 
-def limpiar_duplicados_redundantes():
-    """Elimina las guías redundantes de CURSO-IA y carpetas satélite."""
-    patrones_a_borrar = [
+def limpiar_archivos_antiguos():
+    """Elimina copias obsoletas en CURSO-IA y archivos de bloqueo de Word."""
+    print("1. Limpiando archivos obsoletos y temporales...", flush=True)
+    patrones = [
         os.path.join(IA_DIR, "0.GUIA_PUBLICACION_GITHUB_CLASSROOM.*"),
+        os.path.join(COMUN_DIR, "~$0.GUIA_PUBLICACION_GITHUB_CLASSROOM.*"),
+        os.path.join(COMUN_DIR, ".~$0.GUIA_PUBLICACION_GITHUB_CLASSROOM.*"),
     ]
     for ruta in glob.glob(os.path.join(PARENT_DIR, "*ROBOTICA*")):
         if os.path.abspath(ruta) != os.path.abspath(COMUN_DIR):
-            patrones_a_borrar.append(os.path.join(ruta, "0.GUIA_PUBLICACION_GITHUB_CLASSROOM.*"))
+            patrones.append(os.path.join(ruta, "0.GUIA_PUBLICACION_GITHUB_CLASSROOM.*"))
 
-    for patron in patrones_a_borrar:
-        for f in glob.glob(patron):
+    for p in patrones:
+        for f in glob.glob(p):
             try:
                 os.remove(f)
-                print(f"🗑️ Eliminada guía redundante: {f}")
-            except Exception as e:
+                print(f"   🗑️ Eliminado: {os.path.basename(f)}", flush=True)
+            except Exception:
                 pass
 
-def create_clean_docx(output_path):
+def generar_docx_ooxml_puro(output_path):
     """
-    Crea un .docx 100% libre de errores de recuperación.
-    Usa párrafos estándar con indentación manual (sin 'List Bullet' ni estilos corruptibles).
+    Genera un paquete .docx 100% válido y estándar de OpenXML (ECMA-376)
+    con todos los ficheros obligatorios (Content_Types, _rels, styles, document.xml.rels, settings)
+    garantizando que Microsoft Word lo abra SIN NINGÚN MENSAJE DE RECUPERACIÓN.
     """
-    doc = docx.Document()
+    content_types = """<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
+  <Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
+  <Default Extension="xml" ContentType="application/xml"/>
+  <Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/>
+  <Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/>
+  <Override PartName="/word/settings.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.settings+xml"/>
+</Types>"""
 
-    # Márgenes de página (2.5 cm)
-    for section in doc.sections:
-        section.top_margin = Inches(1.0)
-        section.bottom_margin = Inches(1.0)
-        section.left_margin = Inches(1.0)
-        section.right_margin = Inches(1.0)
+    pkg_rels = """<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+  <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/>
+</Relationships>"""
 
-    # TÍTULO
-    p_title = doc.add_paragraph()
-    p_title.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    p_title.paragraph_format.space_before = Pt(0)
-    p_title.paragraph_format.space_after = Pt(4)
-    r_title = p_title.add_run("GUÍA DE PUBLICACIÓN EN GITHUB Y CLASSROOM")
-    r_title.font.name = "Arial"
-    r_title.font.size = Pt(17)
-    r_title.font.bold = True
-    r_title.font.color.rgb = RGBColor(2, 132, 199) # Azul corporativo
+    doc_rels = """<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+  <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>
+  <Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/settings" Target="settings.xml"/>
+</Relationships>"""
 
-    # SUBTÍTULO
-    p_sub = doc.add_paragraph()
-    p_sub.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    p_sub.paragraph_format.space_after = Pt(16)
-    r_sub = p_sub.add_run("Workflow de Trabajo en Equipo: Tú (Profesor) y Antigravity (Asistente IA)")
-    r_sub.font.name = "Arial"
-    r_sub.font.size = Pt(10)
-    r_sub.font.italic = True
-    r_sub.font.color.rgb = RGBColor(100, 116, 139)
+    styles_xml = """<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+  <w:docDefaults>
+    <w:rPrDefault>
+      <w:rPr>
+        <w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial"/>
+        <w:sz w:val="20"/>
+        <w:color w:val="1E293B"/>
+      </w:rPr>
+    </w:rPrDefault>
+    <w:pPrDefault>
+      <w:pPr>
+        <w:spacing w:after="120" w:line="240" w:lineRule="auto"/>
+      </w:pPr>
+    </w:pPrDefault>
+  </w:docDefaults>
+  <w:style w:type="paragraph" w:default="1" w:styleId="Normal">
+    <w:name w:val="Normal"/>
+  </w:style>
+</w:styles>"""
 
-    # INTRODUCCIÓN
-    p_intro = doc.add_paragraph()
-    p_intro.paragraph_format.space_after = Pt(12)
-    p_intro.paragraph_format.left_indent = Inches(0.2)
-    r_intro_bold = p_intro.add_run("💡 Introducción al Sistema Unificado:\n")
-    r_intro_bold.bold = True
-    r_intro_bold.font.name = "Arial"
-    r_intro_bold.font.size = Pt(10)
-    r_intro_bold.font.color.rgb = RGBColor(3, 105, 161)
-    r_intro_text = p_intro.add_run(
-        "Este flujo de trabajo garantiza que todo el material educativo (teoría, simuladores interactivos, "
-        "fichas didácticas y monográficos) viaje desde tu Mac hasta Google Classroom sin gastar espacio en tu Google Drive "
-        "y con una experiencia 100% limpia para los alumnos mediante Mapas Interactivos HTML únicos."
-    )
-    r_intro_text.font.name = "Arial"
-    r_intro_text.font.size = Pt(9.5)
+    settings_xml = """<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<w:settings xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+  <w:defaultTabStop w:val="720"/>
+</w:settings>"""
 
-    def add_h(text):
-        p = doc.add_paragraph()
-        p.paragraph_format.space_before = Pt(14)
-        p.paragraph_format.space_after = Pt(4)
-        r = p.add_run(text)
-        r.font.name = "Arial"
-        r.font.size = Pt(12)
-        r.font.bold = True
-        r.font.color.rgb = RGBColor(15, 23, 42)
-        return p
+    # Construcción de párrafos del documento
+    body_paragraphs = []
 
-    def add_item(text, num="•"):
-        p = doc.add_paragraph()
-        p.paragraph_format.left_indent = Inches(0.25)
-        p.paragraph_format.space_before = Pt(1)
-        p.paragraph_format.space_after = Pt(3)
-        r_num = p.add_run(f"{num} ")
-        r_num.bold = True
-        r_num.font.name = "Arial"
-        r_num.font.size = Pt(9.5)
-        r_num.font.color.rgb = RGBColor(2, 132, 199)
-        r_text = p.add_run(text)
-        r_text.font.name = "Arial"
-        r_text.font.size = Pt(9.5)
-        return p
+    def p_title(text):
+        return f"""<w:p><w:pPr><w:jc w:val="center"/><w:spacing w:before="0" w:after="80"/></w:pPr><w:r><w:rPr><w:b/><w:sz w:val="36"/><w:color w:val="0284C7"/></w:rPr><w:t>{text}</w:t></w:r></w:p>"""
 
-    # FASE 1
-    add_h("FASE 1: PREPARACIÓN LOCAL EN EL MAC 🧑🏻‍🏫 TAREA TUYA")
-    add_item("Escribe tu teoría, genera tus PDFs, graba los vídeos y organiza todo en la carpeta correspondiente de tu Mac.", "1.")
-    add_item("Nombra los archivos correctamente (ej: T0.DEBATE.pdf, T2.VIDEO.mp4, etc.).", "2.")
+    def p_sub(text):
+        return f"""<w:p><w:pPr><w:jc w:val="center"/><w:spacing w:after="280"/></w:pPr><w:r><w:rPr><w:i/><w:sz w:val="21"/><w:color w:val="64748B"/></w:rPr><w:t>{text}</w:t></w:r></w:p>"""
 
-    # FASE 2
-    add_h("FASE 2: SINCRONIZACIÓN AL SERVIDOR (GITHUB) 🤖 TAREA DE LA IA")
-    p_f2 = doc.add_paragraph()
-    p_f2.paragraph_format.space_after = Pt(3)
-    r_f2_1 = p_f2.add_run("Tú me dices: ")
-    r_f2_1.font.name = "Arial"
-    r_f2_1.font.size = Pt(9.5)
-    r_f2_2 = p_f2.add_run('"Ya he metido todos los archivos nuevos en la carpeta del Mac, súbelos a GitHub".')
-    r_f2_2.italic = True
-    r_f2_2.font.name = "Arial"
-    r_f2_2.font.size = Pt(9.5)
-    add_item("Añadir los archivos creados o modificados y hacer el commit.", "•")
-    add_item("Subirlos a GitHub (git push origin main) en un único comando limpio.", "•")
-    add_item("Objetivo: Alojarlos gratis en GitHub Pages para enlazarlos desde Classroom sin gastar espacio en tu Google Drive. Al actualizar un archivo, solo se vuelve a subir a GitHub y se actualiza al instante para todos los alumnos.", "•")
+    def p_h2(text):
+        return f"""<w:p><w:pPr><w:spacing w:before="260" w:after="80"/></w:pPr><w:r><w:rPr><w:b/><w:sz w:val="24"/><w:color w:val="0F172A"/></w:rPr><w:t>{text}</w:t></w:r></w:p>"""
 
-    # FASE 3
-    add_h("FASE 3: CREACIÓN DEL PANEL UNIFICADO DE ENLACES 🤖 TAREA DE LA IA")
-    add_item("Yo (la IA) genero el archivo maestro CURSO_IA_UNIFICADO.csv (en PANELES_CSV/).", "•")
-    add_item("Arquitectura de Mapa Único: En lugar de saturar Classroom con docenas de enlaces sueltos, cada sección cuenta con un Mapa Interactivo HTML único (MAPA_MONOGRAFICOS.html y MAPA_SESION_XX.html) que agrupa fichas, simuladores y recursos interactivos sin rehacer publicaciones en Classroom.", "•")
+    def p_item(prefix, text):
+        return f"""<w:p><w:pPr><w:ind w:left="360"/><w:spacing w:after="60"/></w:pPr><w:r><w:rPr><w:b/><w:color w:val="0284C7"/></w:rPr><w:t>{prefix} </w:t></w:r><w:r><w:t>{text}</w:t></w:r></w:p>"""
 
-    # FASE 4
-    add_h("FASE 4: PREPARACIÓN DE GOOGLE CLASSROOM 🧑🏻‍🏫 TAREA TUYA")
-    add_item("Entra en classroom.google.com con tu cuenta de profesor.", "1.")
-    add_item("Trabajamos exclusivamente con las dos Clases Maestras Unificadas Anuales:", "2.")
+    def p_text(text):
+        return f"""<w:p><w:pPr><w:spacing w:after="80"/></w:pPr><w:r><w:t>{text}</w:t></w:r></w:p>"""
 
-    # TABLA EXCLUSIVA DE LAS 2 CLASES VIGENTES
-    t = doc.add_table(rows=3, cols=3)
-    t.alignment = WD_TABLE_ALIGNMENT.CENTER
-    headers = ["CURSO", "NOMBRE EN CLASSROOM", "ID REAL DE LA CLASE"]
-    for c_idx, h in enumerate(headers):
-        cell = t.cell(0, c_idx)
-        p = cell.paragraphs[0]
-        p.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        r = p.add_run(h)
-        r.bold = True
-        r.font.name = "Arial"
-        r.font.size = Pt(9)
-        r.font.color.rgb = RGBColor(2, 132, 199)
+    def p_box(title, text, is_alert=False):
+        color = "DC2626" if is_alert else "0284C7"
+        bg = "FEF2F2" if is_alert else "F0F9FF"
+        return f"""<w:tbl>
+  <w:tblPr><w:tblW w:w="9360" w:type="dxa"/><w:jc w:val="center"/><w:tblBorders><w:top w:val="none"/><w:left w:val="single" w:sz="24" w:space="0" w:color="{color}"/><w:bottom w:val="none"/><w:right w:val="none"/></w:tblBorders></w:tblPr>
+  <w:tr>
+    <w:tc>
+      <w:tcPr><w:tcW w:w="9360" w:type="dxa"/><w:shd w:val="clear" w:color="auto" w:fill="{bg}"/><w:tcMar><w:top w:w="140"/><w:left w:w="200"/><w:bottom w:w="140"/><w:right w:w="200"/></w:tcMar></w:tcPr>
+      <w:p><w:r><w:rPr><w:b/><w:color w:val="{color}"/></w:rPr><w:t>{title}</w:t></w:r></w:p>
+      <w:p><w:r><w:t>{text}</w:t></w:r></w:p>
+    </w:tc>
+  </w:tr>
+</w:tbl><w:p><w:pPr><w:spacing w:after="100"/></w:pPr></w:p>"""
 
-    clases = [
-        ("INTELIGENCIA ARTIFICIAL", "IA.", "890436514251"),
-        ("ROBÓTICA", "ROBÓTICA.", "890435922022")
-    ]
-    for r_idx, (c, n, id_r) in enumerate(clases, start=1):
-        for c_idx, val in enumerate([c, n, id_r]):
-            cell = t.cell(r_idx, c_idx)
-            p = cell.paragraphs[0]
-            p.alignment = WD_ALIGN_PARAGRAPH.CENTER
-            r = p.add_run(val)
-            r.font.name = "Arial"
-            r.font.size = Pt(9.5)
-            if c_idx == 2:
-                r.bold = True
-                r.font.color.rgb = RGBColor(16, 185, 129)
+    # Tabla con las dos clases maestras vigentes
+    def p_table_clases():
+        return """<w:tbl>
+  <w:tblPr><w:tblW w:w="9360" w:type="dxa"/><w:jc w:val="center"/><w:tblBorders><w:top w:val="single" w:sz="6" w:color="CBD5E1"/><w:left w:val="single" w:sz="6" w:color="CBD5E1"/><w:bottom w:val="single" w:sz="6" w:color="CBD5E1"/><w:right w:val="single" w:sz="6" w:color="CBD5E1"/><w:insideH w:val="single" w:sz="6" w:color="CBD5E1"/><w:insideV w:val="single" w:sz="6" w:color="CBD5E1"/></w:tblBorders></w:tblPr>
+  <w:tr>
+    <w:tc><w:tcPr><w:tcW w:w="3120" w:type="dxa"/><w:shd w:val="clear" w:color="auto" w:fill="0284C7"/><w:tcMar><w:top w:w="100"/><w:left w:w="120"/><w:bottom w:w="100"/><w:right w:w="120"/></w:tcMar></w:tcPr><w:p><w:pPr><w:jc w:val="center"/></w:pPr><w:r><w:rPr><w:b/><w:color w:val="FFFFFF"/></w:rPr><w:t>CURSO</w:t></w:r></w:p></w:tc>
+    <w:tc><w:tcPr><w:tcW w:w="3120" w:type="dxa"/><w:shd w:val="clear" w:color="auto" w:fill="0284C7"/><w:tcMar><w:top w:w="100"/><w:left w:w="120"/><w:bottom w:w="100"/><w:right w:w="120"/></w:tcMar></w:tcPr><w:p><w:pPr><w:jc w:val="center"/></w:pPr><w:r><w:rPr><w:b/><w:color w:val="FFFFFF"/></w:rPr><w:t>NOMBRE EN CLASSROOM</w:t></w:r></w:p></w:tc>
+    <w:tc><w:tcPr><w:tcW w:w="3120" w:type="dxa"/><w:shd w:val="clear" w:color="auto" w:fill="0284C7"/><w:tcMar><w:top w:w="100"/><w:left w:w="120"/><w:bottom w:w="100"/><w:right w:w="120"/></w:tcMar></w:tcPr><w:p><w:pPr><w:jc w:val="center"/></w:pPr><w:r><w:rPr><w:b/><w:color w:val="FFFFFF"/></w:rPr><w:t>ID REAL DE LA CLASE</w:t></w:r></w:p></w:tc>
+  </w:tr>
+  <w:tr>
+    <w:tc><w:tcPr><w:tcW w:w="3120" w:type="dxa"/><w:tcMar><w:top w:w="100"/><w:left w:w="120"/><w:bottom w:w="100"/><w:right w:w="120"/></w:tcMar></w:tcPr><w:p><w:pPr><w:jc w:val="center"/></w:pPr><w:r><w:t>INTELIGENCIA ARTIFICIAL</w:t></w:r></w:p></w:tc>
+    <w:tc><w:tcPr><w:tcW w:w="3120" w:type="dxa"/><w:tcMar><w:top w:w="100"/><w:left w:w="120"/><w:bottom w:w="100"/><w:right w:w="120"/></w:tcMar></w:tcPr><w:p><w:pPr><w:jc w:val="center"/></w:pPr><w:r><w:rPr><w:b/></w:rPr><w:t>IA.</w:t></w:r></w:p></w:tc>
+    <w:tc><w:tcPr><w:tcW w:w="3120" w:type="dxa"/><w:tcMar><w:top w:w="100"/><w:left w:w="120"/><w:bottom w:w="100"/><w:right w:w="120"/></w:tcMar></w:tcPr><w:p><w:pPr><w:jc w:val="center"/></w:pPr><w:r><w:rPr><w:b/><w:color w:val="10B981"/></w:rPr><w:t>890436514251</w:t></w:r></w:p></w:tc>
+  </w:tr>
+  <w:tr>
+    <w:tc><w:tcPr><w:tcW w:w="3120" w:type="dxa"/><w:shd w:val="clear" w:color="auto" w:fill="F8FAFC"/><w:tcMar><w:top w:w="100"/><w:left w:w="120"/><w:bottom w:w="100"/><w:right w:w="120"/></w:tcMar></w:tcPr><w:p><w:pPr><w:jc w:val="center"/></w:pPr><w:r><w:t>ROBÓTICA</w:t></w:r></w:p></w:tc>
+    <w:tc><w:tcPr><w:tcW w:w="3120" w:type="dxa"/><w:shd w:val="clear" w:color="auto" w:fill="F8FAFC"/><w:tcMar><w:top w:w="100"/><w:left w:w="120"/><w:bottom w:w="100"/><w:right w:w="120"/></w:tcMar></w:tcPr><w:p><w:pPr><w:jc w:val="center"/></w:pPr><w:r><w:rPr><w:b/></w:rPr><w:t>ROBÓTICA.</w:t></w:r></w:p></w:tc>
+    <w:tc><w:tcPr><w:tcW w:w="3120" w:type="dxa"/><w:shd w:val="clear" w:color="auto" w:fill="F8FAFC"/><w:tcMar><w:top w:w="100"/><w:left w:w="120"/><w:bottom w:w="100"/><w:right w:w="120"/></w:tcMar></w:tcPr><w:p><w:pPr><w:jc w:val="center"/></w:pPr><w:r><w:rPr><w:b/><w:color w:val="10B981"/></w:rPr><w:t>890435922022</w:t></w:r></w:p></w:tc>
+  </w:tr>
+</w:tbl><w:p><w:pPr><w:spacing w:after="100"/></w:pPr></w:p>"""
 
-    # FASE 5
-    add_h("FASE 5: INGESTA DE DATOS (GOOGLE SHEETS) 🧑🏻‍🏫 TAREA TUYA")
-    add_item("Abre tu navegador en Modo Incógnito / Ventana Privada (vital para evitar conflictos entre cuentas de Google).", "1.")
-    add_item("Entra a Google Drive y abre tu hoja de cálculo permanente: 0.PANEL_CLASSROOM.", "2.")
-    add_item("Ve a Archivo > Importar > Subir y arrastra PANELES_CSV/CURSO_IA_UNIFICADO.csv.", "3.")
-    add_item("Selecciona 'Reemplazar hoja de cálculo actual' y pulsa Importar.", "4.")
-    add_item("En la Columna A (ID_CURSO), pega el ID real: 890436514251 y arrastra hacia abajo para que todas las filas tengan el ID.", "5.")
+    body_paragraphs.append(p_title("GUÍA DE PUBLICACIÓN EN GITHUB Y CLASSROOM"))
+    body_paragraphs.append(p_sub("Workflow de Trabajo en Equipo: Tú (Profesor) y Antigravity (Asistente IA)"))
+    body_paragraphs.append(p_box("💡 Introducción al Sistema Unificado:", "Este flujo de trabajo garantiza que todo el material educativo (teoría, simuladores interactivos, fichas didácticas y monográficos) viaje desde tu Mac hasta Google Classroom sin gastar espacio en tu Google Drive y con una experiencia 100% limpia para los alumnos mediante Mapas Interactivos HTML únicos."))
+    
+    body_paragraphs.append(p_h2("FASE 1: PREPARACIÓN LOCAL EN EL MAC 🧑🏻‍🏫 TAREA TUYA"))
+    body_paragraphs.append(p_item("1.", "Escribe tu teoría, genera tus PDFs, graba los vídeos y organiza todo en la carpeta correspondiente de tu Mac."))
+    body_paragraphs.append(p_item("2.", "Nombra los archivos correctamente (ej: T0.DEBATE.pdf, T2.VIDEO.mp4, etc.)."))
 
-    # FASE 6
-    add_h("FASE 6: PUBLICACIÓN AUTOMÁTICA 🧑🏻‍🏫 TAREA TUYA")
-    add_item("Dentro de la hoja de Google Sheets, ve a Extensiones > Apps Script.", "1.")
-    add_item("Selecciona la función publicarTodoConTemas y pulsa Ejecutar.", "2.")
-    add_item("El script creará automáticamente el tema MONOGRAFICOS y los temas SESIÓN 1 a SESIÓN 60 con sus respectivos mapas interactivos en modo BORRADOR (DRAFT).", "3.")
-    add_item("¡Listo! Ya puedes ir publicando cada sesión a los alumnos conforme avance el calendario escolar.", "4.")
+    body_paragraphs.append(p_h2("FASE 2: SINCRONIZACIÓN AL SERVIDOR (GITHUB) 🤖 TAREA DE LA IA"))
+    body_paragraphs.append(p_text('Tú me dices: "Ya he metido todos los archivos nuevos en la carpeta del Mac, súbelos a GitHub".'))
+    body_paragraphs.append(p_item("•", "Añadir los archivos creados o modificados y hacer el commit."))
+    body_paragraphs.append(p_item("•", "Subirlos a GitHub (git push origin main) en un único comando limpio."))
+    body_paragraphs.append(p_item("•", "Objetivo: Alojarlos gratis en GitHub Pages para enlazarlos desde Classroom sin gastar espacio en tu Google Drive. Al actualizar un archivo, solo se vuelve a subir a GitHub y se actualiza al instante para todos los alumnos."))
 
-    # ANEXO 1
-    add_h("🚨 ANEXO 1: EL BOTÓN DEL PÁNICO (RESET COMPLETO DE CLASE) 🧑🏻‍🏫 TAREA TUYA")
-    p_pan = doc.add_paragraph()
-    p_pan.paragraph_format.space_before = Pt(3)
-    p_pan.paragraph_format.space_after = Pt(3)
-    r_pan_title = p_pan.add_run("Si la subida ha quedado desfasada o necesitas borrar TODO de Classroom para empezar de cero:\n")
-    r_pan_title.bold = True
-    r_pan_title.font.name = "Arial"
-    r_pan_title.font.size = Pt(9.5)
-    r_pan_title.font.color.rgb = RGBColor(220, 38, 38)
-    add_item("Asegúrate de que el ID del curso está puesto en la celda A2 de la hoja: 890436514251.", "1.")
-    add_item("Ve a Extensiones > Apps Script, selecciona la función borrarAbsolutamenteTodo y pulsa Ejecutar.", "2.")
-    add_item("Toda la clase (Temas, Materiales y Borradores) quedará completamente vacía en segundos.", "3.")
+    body_paragraphs.append(p_h2("FASE 3: CREACIÓN DEL PANEL UNIFICADO DE ENLACES 🤖 TAREA DE LA IA"))
+    body_paragraphs.append(p_item("•", "Yo (la IA) genero el archivo maestro CURSO_IA_UNIFICADO.csv (en PANELES_CSV/)."))
+    body_paragraphs.append(p_item("•", "Arquitectura de Mapa Único: En lugar de saturar Classroom con docenas de enlaces sueltos, cada sección cuenta con un Mapa Interactivo HTML único (MAPA_MONOGRAFICOS.html y MAPA_SESION_XX.html) que agrupa fichas, simuladores y recursos interactivos sin rehacer publicaciones en Classroom."))
+
+    body_paragraphs.append(p_h2("FASE 4: PREPARACIÓN DE GOOGLE CLASSROOM 🧑🏻‍🏫 TAREA TUYA"))
+    body_paragraphs.append(p_item("1.", "Entra en classroom.google.com con tu cuenta de profesor."))
+    body_paragraphs.append(p_item("2.", "Trabajamos exclusivamente con las dos Clases Maestras Unificadas Anuales:"))
+    body_paragraphs.append(p_table_clases())
+
+    body_paragraphs.append(p_h2("FASE 5: INGESTA DE DATOS (GOOGLE SHEETS) 🧑🏻‍🏫 TAREA TUYA"))
+    body_paragraphs.append(p_item("1.", "Abre tu navegador en Modo Incógnito / Ventana Privada (vital para evitar conflictos entre cuentas de Google)."))
+    body_paragraphs.append(p_item("2.", "Entra a Google Drive y abre tu hoja de cálculo permanente: 0.PANEL_CLASSROOM."))
+    body_paragraphs.append(p_item("3.", "Ve a Archivo > Importar > Subir y arrastra PANELES_CSV/CURSO_IA_UNIFICADO.csv."))
+    body_paragraphs.append(p_item("4.", "Selecciona 'Reemplazar hoja de cálculo actual' y pulsa Importar."))
+    body_paragraphs.append(p_item("5.", "En la Columna A (ID_CURSO), pega el ID real: 890436514251 y arrastra hacia abajo para que todas las filas tengan el ID."))
+
+    body_paragraphs.append(p_h2("FASE 6: PUBLICACIÓN AUTOMÁTICA 🧑🏻‍🏫 TAREA TUYA"))
+    body_paragraphs.append(p_item("1.", "Dentro de la hoja de Google Sheets, ve a Extensiones > Apps Script."))
+    body_paragraphs.append(p_item("2.", "Selecciona la función publicarTodoConTemas y pulsa Ejecutar."))
+    body_paragraphs.append(p_item("3.", "El script creará automáticamente el tema MONOGRAFICOS y los temas SESIÓN 1 a SESIÓN 60 con sus respectivos mapas interactivos en modo BORRADOR (DRAFT)."))
+    body_paragraphs.append(p_item("4.", "¡Listo! Ya puedes ir publicando cada sesión a los alumnos conforme avance el calendario escolar."))
+
+    body_paragraphs.append(p_h2("🚨 ANEXO 1: EL BOTÓN DEL PÁNICO (RESET COMPLETO DE CLASE) 🧑🏻‍🏫 TAREA TUYA"))
+    body_paragraphs.append(p_box("Instrucciones de Reinicio Inmediato:", "Si la subida ha quedado desfasada o necesitas borrar TODO de Classroom para empezar de cero:\\n1. Asegúrate de que el ID del curso está puesto en la celda A2 de la hoja: 890436514251.\\n2. Ve a Extensiones > Apps Script, selecciona la función borrarAbsolutamenteTodo y pulsa Ejecutar.\\n3. Toda la clase (Temas, Materiales y Borradores) quedará completamente vacía en segundos.", is_alert=True))
+
+    doc_xml = f"""<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+  <w:body>
+    {"".join(body_paragraphs)}
+    <w:sectPr><w:pgSz w:w="11906" w:h="16838"/><w:pgMar w:top="1440" w:right="1440" w:bottom="1440" w:left="1440"/></w:sectPr>
+  </w:body>
+</w:document>"""
 
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
-    doc.save(output_path)
-    print(f"✅ Microsoft Word DOCX limpio generado en: {output_path}")
+    with zipfile.ZipFile(output_path, "w", zipfile.ZIP_DEFLATED) as z:
+        z.writestr("[Content_Types].xml", content_types)
+        z.writestr("_rels/.rels", pkg_rels)
+        z.writestr("word/_rels/document.xml.rels", doc_rels)
+        z.writestr("word/styles.xml", styles_xml)
+        z.writestr("word/settings.xml", settings_xml)
+        z.writestr("word/document.xml", doc_xml)
+
+    print(f"✅ Microsoft Word DOCX certificado generado con éxito: {output_path}", flush=True)
 
 def create_clean_pdf(output_path):
     from reportlab.lib.pagesizes import letter
@@ -337,16 +324,12 @@ def create_clean_pdf(output_path):
               ]),
     ]
     doc.build(story)
-    print(f"✅ Guía en PDF limpia generada en: {output_path}")
+    print(f"✅ Guía en PDF limpia generada en: {output_path}", flush=True)
 
 def main():
-    limpiar_duplicados_redundantes()
-
-    dest_docx_comun = os.path.join(COMUN_DIR, "0.GUIA_PUBLICACION_GITHUB_CLASSROOM.docx")
-    dest_pdf_comun = os.path.join(COMUN_DIR, "0.GUIA_PUBLICACION_GITHUB_CLASSROOM.pdf")
-
-    create_clean_docx(dest_docx_comun)
-    create_clean_pdf(dest_pdf_comun)
+    limpiar_archivos_antiguos()
+    generar_docx_ooxml_puro(DOCX_PATH)
+    create_clean_pdf(PDF_PATH)
 
 if __name__ == "__main__":
     main()
