@@ -1,0 +1,256 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+update_guia_classroom.py
+Localiza y actualiza la Guía de Publicación en GitHub y Classroom
+en CURSO-ROBOTICA-IA-COMUN con el modelo unificado vigente y los IDs reales.
+"""
+
+import os
+import sys
+
+COMUN_DIR = "/Users/externo/Library/Mobile Documents/com~apple~CloudDocs/PERSONAL/CLASES DE TECNOLOGÍA/CURSO-ROBOTICA-IA-COMUN"
+
+NUEVA_GUIA = """# GUÍA DE PUBLICACIÓN EN GITHUB Y CLASSROOM (Workflow de Trabajo en Equipo)
+
+### INTRODUCCIÓN AL SISTEMA:
+Este no es un manual tradicional, es un flujo de trabajo para un equipo de dos: Tú (el Profesor) y Yo (Antigravity, tu asistente IA). Aquí explicamos exactamente quién se encarga de qué paso para que el contenido viaje desde tu Mac hasta Google Classroom sin que tengas que tocar código.
+
+---
+
+### FASE 1: PREPARACIÓN LOCAL EN EL MAC 🧑🏻‍🏫 TAREA TUYA
+1. Escribe tu teoría, genera tus PDFs, graba los vídeos y organiza todo en la carpeta correspondiente de tu Mac.
+2. Nombra los archivos correctamente (ej: `T0.DEBATE.pdf`, `T2.VIDEO.mp4`, etc.).
+
+---
+
+### FASE 2: SINCRONIZACIÓN AL SERVIDOR (GITHUB) 🤖 TAREA DE LA IA
+Tú me dices: *"Ya he metido todos los archivos nuevos en la carpeta del Mac, súbelos a GitHub"*.
+Yo (la IA) me encargo de:
+- Añadir los archivos creados o modificados.
+- Hacer el commit y enviarlos a la nube (`git push`) mediante el bloque de comandos correlativo.
+- **Objetivo:** Alojarlos gratis en internet para que Google Classroom pueda enlazarlos sin gastar espacio en tu Google Drive. Si algún día editas un PDF que ya subimos, solo tienes que pedirme que lo vuelva a subir y se actualizará automáticamente para todos tus alumnos sin tocar Classroom.
+
+---
+
+### FASE 3: CREACIÓN DEL PANEL UNIFICADO DE ENLACES 🤖 TAREA DE LA IA
+Tú me dices: *"Genera el CSV unificado con los enlaces actualizados"*.
+Yo (la IA) me encargo de:
+- Escanear las carpetas y generar el archivo maestro **`CURSO_IA_UNIFICADO.csv`** (dentro de `PANELES_CSV/`).
+- **Arquitectura de Mapa Único:** En lugar de saturar Classroom con docenas de enlaces sueltos, cada sección cuenta con un **Mapa Interactivo HTML único** (`MAPA_MONOGRAFICOS.html` para todos los monográficos y `MAPA_SESION_XX.html` para cada sesión), que dan acceso dinámico a todos los materiales, talleres interactivos y fichas sin rehacer publicaciones en Classroom.
+
+---
+
+### FASE 4: PREPARACIÓN DE GOOGLE CLASSROOM 🧑🏻‍🏫 TAREA TUYA
+1. Entra en `classroom.google.com` con tu cuenta de profesor.
+2. Trabajamos con las **Clases Maestras Unificadas Anuales**:
+   - **CLASE DE IA (Curso Completo):** `IA. ---> ID REAL: 890436514251`
+   - **CLASE DE ROBÓTICA (Curso Completo):** `ROBÓTICA. ---> ID REAL: 890435922022`
+
+---
+
+### FASE 5: INGESTA DE DATOS (GOOGLE SHEETS) 🧑🏻‍🏫 TAREA TUYA
+1. Abre tu navegador en **Modo Incógnito / Ventana Privada** (vital para evitar conflictos entre cuentas de Google).
+2. Entra a Google Drive y abre tu hoja permanente: **`0.PANEL_CLASSROOM`**.
+3. Ve a **Archivo > Importar > Subir** y arrastra el archivo maestro:
+   - Para IA: **`CURSO_IA_UNIFICADO.csv`** (ubicado en `PANELES_CSV/`).
+4. Selecciona **Reemplazar hoja de cálculo actual** y pulsa **Importar**.
+5. En la **Columna A (`ID_CURSO`)**, pega el ID real de la clase:
+   - Para el curso de IA: **`890436514251`**
+   - Arrastra el número hacia abajo para que todas las filas tengan el ID.
+
+---
+
+### FASE 6: PUBLICACIÓN AUTOMÁTICA 🧑🏻‍🏫 TAREA TUYA
+1. Dentro de la hoja de Google Sheets, ve a **Extensiones > Apps Script**.
+2. Selecciona la función **`publicarTodoConTemas`** y pulsa **Ejecutar**.
+3. El script creará automáticamente los Temas en Classroom (`MONOGRAFICOS` y `SESIÓN 1` a `SESIÓN 60`) y cargará todos los mapas interactivos en modo **BORRADOR** (DRAFT).
+4. ¡Listo! Ya puedes ir publicándolos a los alumnos según avance el calendario de clases.
+
+---
+
+### 🚨 ANEXO 1: EL BOTÓN DEL PÁNICO (RESET COMPLETO DE CLASE) 🧑🏻‍🏫 TAREA TUYA
+Si la subida ha quedado desfasada o necesitas borrar TODO de Classroom para empezar de cero:
+1. Asegúrate de que el ID de la clase está puesto en la celda **A2** de la hoja (ej: `890436514251`).
+2. Ve a **Extensiones > Apps Script**, selecciona la función **`borrarAbsolutamenteTodo`** y pulsa **Ejecutar**.
+3. Toda la clase (Temas, Materiales y Borradores) quedará borrada en segundos.
+
+---
+
+### 📋 ANEXO 2: LISTADO MAESTRO DE IDs DE TUS CLASES
+
+#### 🟢 CLASES MAESTRAS VIGENTES (MODELO UNIFICADO ANUAL)
+- **IA (Curso Completo Anual):** `---> ID REAL: 890436514251`
+- **ROBÓTICA (Curso Completo Anual):** `---> ID REAL: 890435922022`
+
+#### 📦 HISTORIAL DE CLASES Y LOTES ANTERIORES (ARCHIVADAS)
+- *IA.MONOGRÁFICOS:* `ID REAL: 877999132773`
+- *IA1 (Sesiones 01 a 15):* `ID REAL: 826134766630`
+- *IA2 (Sesiones 16 a 30):* `ID REAL: 877174620039`
+- *IA3 (Sesiones 31 a 45):* `ID REAL: 877172188045`
+- *IA4 (Sesiones 46 a 60):* `ID REAL: 826136245220`
+- *IA.ÍNDICE:* `ID REAL: 877993104492`
+- *ROB+IA. Introducción:* `ID REAL: 876317836453`
+- *Bloque 1: ROB1.Un motor:* `ID REAL: 876316970006`
+- *Bloque 2: ROB2.Sensores-Decisiones:* `ID REAL: 876801831599`
+- *Bloque 3: ROB3.Mov Avanzado:* `ID REAL: 876804534725`
+- *Bloque 4: ROB4.Brazo robótico:* `ID REAL: 876848630130`
+- *Bloque 5: ROB5.Androides:* `ID REAL: 876849927384`
+- *Bloque 6: ROB6.Naves espaciales:* `ID REAL: 876845244997`
+- *Bloque 7: ROB7.Exploracion Espacial:* `ID REAL: 869853775914`
+
+---
+
+### ⚙️ ANEXO 3: EL CÓDIGO MAESTRO DE APPS SCRIPT (Copia de Seguridad)
+```javascript
+// 1. AVERIGUAR IDs
+function dimeMisIDs() {
+  var cursos = Classroom.Courses.list().courses;
+  if (cursos && cursos.length > 0) {
+    for (var i = 0; i < cursos.length; i++) {
+      Logger.log("Curso: " + cursos[i].name + "  --->  ID REAL: " + cursos[i].id);
+    }
+  } else {
+    Logger.log("No tienes cursos en esta cuenta.");
+  }
+}
+
+// 2. PUBLICAR AGRUPADO POR TEMAS (EN BORRADOR)
+function publicarTodoConTemas() {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  var data = sheet.getDataRange().getValues();
+  var temasCacheados = {}; 
+  for (var i = 1; i < data.length; i++) {
+    var fila = data[i];
+    var cursoId = String(fila[0]).trim();
+    var claseNombre = String(fila[1]).trim();
+    var titulo = fila[2];
+    var descripcion = fila[3];
+    var urlGitHub = fila[4];
+    
+    if (!cursoId || cursoId === "") continue; 
+    
+    var topicId = null;
+    if (claseNombre !== "") {
+      var cacheKey = cursoId + "_" + claseNombre;
+      if (temasCacheados[cacheKey]) {
+        topicId = temasCacheados[cacheKey];
+      } else {
+        var existe = false;
+        try {
+          var response = Classroom.Courses.Topics.list(cursoId);
+          var temas = response.topic || [];
+          for (var t = 0; t < temas.length; t++) {
+            if (temas[t].name === claseNombre) {
+              topicId = temas[t].topicId;
+              existe = true;
+              break;
+            }
+          }
+        } catch(e) {}
+        
+        if (!existe) {
+          try {
+            var nuevoTema = Classroom.Courses.Topics.create({name: claseNombre}, cursoId);
+            topicId = nuevoTema.topicId;
+          } catch(e) {}
+        }
+        if (topicId) temasCacheados[cacheKey] = topicId;
+      }
+    }
+    
+    var material = {
+      title: titulo,
+      description: descripcion,
+      materials: [{ link: { url: urlGitHub } }],
+      state: "DRAFT"
+    };
+    
+    if (topicId) material.topicId = topicId;
+    
+    try {
+      Classroom.Courses.CourseWorkMaterials.create(material, cursoId);
+    } catch(e) {}
+  }
+}
+
+// 3. BOTÓN DEL PÁNICO (BORRAR TODO)
+function borrarAbsolutamenteTodo() {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  var cursoId = String(sheet.getRange("A2").getValue()).trim();
+  
+  if (!cursoId || cursoId === "") {
+    SpreadsheetApp.getUi().alert("Error: Introduce el ID del curso en la celda A2 antes de borrar.");
+    return;
+  }
+  
+  var pageTokenMats = null;
+  do {
+    try {
+      var params = { courseWorkMaterialStates: ["DRAFT", "PUBLISHED"] };
+      if (pageTokenMats) params.pageToken = pageTokenMats;
+      
+      var response = Classroom.Courses.CourseWorkMaterials.list(cursoId, params);
+      var mats = response.courseWorkMaterial || [];
+      for (var i = 0; i < mats.length; i++) {
+        Classroom.Courses.CourseWorkMaterials.remove(cursoId, mats[i].id);
+      }
+      pageTokenMats = response.nextPageToken;
+    } catch(e){
+      break;
+    }
+  } while (pageTokenMats);
+  
+  var pageTokenTemas = null;
+  do {
+    try {
+      var paramsTemas = {};
+      if (pageTokenTemas) paramsTemas.pageToken = pageTokenTemas;
+      
+      var responseTemas = Classroom.Courses.Topics.list(cursoId, paramsTemas);
+      var temas = responseTemas.topic || [];
+      for (var t = 0; t < temas.length; t++) {
+        Classroom.Courses.Topics.remove(cursoId, temas[t].topicId);
+      }
+      pageTokenTemas = responseTemas.nextPageToken;
+    } catch(e){
+      break;
+    }
+  } while (pageTokenTemas);
+}
+```
+"""
+
+def main():
+    if not os.path.exists(COMUN_DIR):
+        print(f"❌ No se encontró la carpeta: {COMUN_DIR}")
+        return
+
+    # Buscar cualquier archivo existente con nombre relacionado
+    found = []
+    for root, dirs, files in os.walk(COMUN_DIR):
+        for f in files:
+            if "GUIA" in f.upper() and ("PUBLICACION" in f.upper() or "CLASSROOM" in f.upper()):
+                found.append(os.path.join(root, f))
+
+    if found:
+        for p in found:
+            with open(p, "w", encoding="utf-8") as f:
+                f.write(NUEVA_GUIA)
+            print(f"✅ Documento existente actualizado: {p}")
+    else:
+        # Si no existía con ese nombre exacto, lo creamos
+        target_path = os.path.join(COMUN_DIR, "0.GUIA_PUBLICACION_GITHUB_CLASSROOM.md")
+        with open(target_path, "w", encoding="utf-8") as f:
+            f.write(NUEVA_GUIA)
+        print(f"✅ Creado documento oficial: {target_path}")
+
+    # También guardamos una copia de respaldo en CURSO-IA
+    backup_ia = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "0.GUIA_PUBLICACION_GITHUB_CLASSROOM.md")
+    with open(backup_ia, "w", encoding="utf-8") as f:
+        f.write(NUEVA_GUIA)
+    print(f"✅ Copia de seguridad guardada en CURSO-IA: {backup_ia}")
+
+if __name__ == "__main__":
+    main()
+
