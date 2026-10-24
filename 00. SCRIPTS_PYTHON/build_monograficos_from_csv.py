@@ -33,16 +33,16 @@ CSV_ROWS = [
     },
     # MONOGRÁFICO 2 (NUEVO: ESTUDIO CREATIVO DE VIDEOJUEGOS)
     {
-        "tema": "Monográfico 2. Crea Videojuegos para tus Nietos con IA (El Estudio Creativo)",
-        "titulo": "Aplicación Web Interactiva: El Estudio de Videojuegos del Abuelo (HTML)",
-        "desc": "Diseña videojuegos personalizados con el nombre y aficiones de tus nietos en 4 sencillos pasos. Incluye Cuestionario Creativo, Generador de Prompts y Probador en Vivo.",
+        "tema": "Monográfico 2. Crea Videojuegos para tus Nietos con IA (El Prompt Maestro)",
+        "titulo": "Aplicación Web Interactiva: El Estudio de Videojuegos con IA (HTML)",
+        "desc": "Taller práctico para crear videojuegos personalizados con IA para tus nietos. Incluye el Constructor del Prompt Maestro con corchetes libres, guía de diálogo con Gemini y Probador libre con guardado en PC.",
         "url": "CLASES/MONO_002_VIDEOJUEGOS/ESTUDIO_CREATIVO_VIDEOJUEGOS.html",
         "type": "launch"
     },
     {
-        "tema": "Monográfico 2. Crea Videojuegos para tus Nietos con IA (El Estudio Creativo)",
+        "tema": "Monográfico 2. Crea Videojuegos para tus Nietos con IA (El Prompt Maestro)",
         "titulo": "Material: Ficha Didáctica del Alumno MONO-002 (PDF)",
-        "desc": "Metodología en 3 pasos, los 4 modelos clásicos de juegos infantiles y guía para guardar el archivo en el ordenador y jugar en casa.",
+        "desc": "Metodología del Prompt Maestro con corchetes, catálogo de ideas para videojuegos, trucos para dialogar con Gemini y guía de guardado en el ordenador.",
         "url": "CLASES/MONO_002_VIDEOJUEGOS/MONO-002_Crea_Videojuegos_para_tus_Nietos_con_IA.pdf",
         "type": "pdf"
     },

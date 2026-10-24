@@ -5,6 +5,7 @@ build_pdf_mono_002_videojuegos.py
 Genera la Ficha Didáctica Oficial del Monográfico 02 (Letter/A4):
 MONO-002_Crea_Videojuegos_para_tus_Nietos_con_IA.pdf
 para el Curso de IA para Adultos Mayores (60+).
+Enfoque: El Prompt Maestro Universal, Diálogo con Gemini y Descarga de Archivo.
 """
 
 import os
@@ -58,12 +59,12 @@ def build_pdf():
     )
     style_task = ParagraphStyle(
         'TaskStyle', parent=styles['Normal'],
-        fontName='Helvetica', fontSize=7.5, leading=9.8,
+        fontName='Helvetica', fontSize=7.4, leading=9.6,
         textColor=colors.HexColor('#0F172A')
     )
     style_prompt = ParagraphStyle(
         'PromptStyle', parent=styles['Normal'],
-        fontName='Helvetica', fontSize=7.2, leading=9.3,
+        fontName='Courier', fontSize=6.8, leading=8.6,
         textColor=colors.HexColor('#0F172A')
     )
 
@@ -72,22 +73,23 @@ def build_pdf():
     story.append(Paragraph("MONOGRÁFICOS ESPECIALES & CUADERNOS DE TALLER PRÁCTICO [MONO-002]", style_block))
     story.append(HRFlowable(width="100%", thickness=1.2, color=colors.HexColor('#6366F1'), spaceAfter=4))
 
-    story.append(Paragraph("<b>[MONO-002] Taller Especial: Crea Videojuegos para tus Nietos con IA (El Estudio Creativo)</b>", style_title))
+    story.append(Paragraph("<b>[MONO-002] Crea Videojuegos con IA para tus Nietos: El Prompt Maestro y Creación en Gemini</b>", style_title))
 
-    story.append(Paragraph("🎮 <b>El Regalo Más Mágico: Un Videojuego Diseñado por su Abuelo:</b>", style_section_h))
+    story.append(Paragraph("🎮 <b>Tú eres el Director Creativo y Gemini es tu Programador:</b>", style_section_h))
     story.append(Paragraph(
-        "A petición de los alumnos de clase, en este taller especial descubrimos cómo convertirnos en directores de videojuegos para nuestros nietos. "
-        "No necesitas saber nada de programación: mediante nuestro <b>Cuestionario Creativo</b> eliges el nombre de tu nieto, sus aficiones favoritas "
-        "y el tipo de reto que le gusta. Puedes generar el juego personalizado de inmediato en 1 clic (100% garantizado) o usar la Inteligencia Artificial (Gemini) para crear variaciones.",
+        "A petición de los alumnos de clase tras la sesión de robótica, en este taller aprendemos a crear videojuegos infantiles únicos y totalmente a medida con Inteligencia Artificial. "
+        "No necesitas saber nada de código: el secreto consiste en guiar a Gemini con un <b>Prompt Maestro estructurado</b>, "
+        "probar el juego en pantalla y pedirle mejoras hablando en español natural hasta que quede perfecto.",
         style_body
     ))
 
-    # El Método en 3 Pasos
-    story.append(Paragraph("📋 <b>El Método Sencillo con Doble Salvaguarda en el Aula:</b>", style_section_h))
+    # El Método en 4 Pasos
+    story.append(Paragraph("📋 <b>El Método del Taller en 4 Pasos:</b>", style_section_h))
     steps_rows = [
-        [Paragraph("<b>1. Responde al Cuestionario Creativo:</b> Abre la aplicación del taller y elige el protagonista, el tipo de juego y el premio.", style_task)],
-        [Paragraph("<b>2. Pulsa «¡Crear mi Juego al Instante!» (100% Garantizado):</b> Tu juego personalizado se genera y arranca en 1 segundo en el navegador sin depender de la variabilidad de Gemini.", style_task)],
-        [Paragraph("<b>3. O Experimenta con Gemini (Modo IA):</b> Si quieres explorar más, copia el <i>Prompt Maestro</i> a Gemini (<i>gemini.google.com</i>), pega el código en el Probador y descárgalo.", style_task)],
+        [Paragraph("<b>1. Diseña tu Idea y Rellena los [Corchetes]:</b> Abre la app del taller y define el nombre de tu nieto, la mecánica que imaginas (naves, comecocos, carreras, laberinto...) y tu mensaje de victoria.", style_task)],
+        [Paragraph("<b>2. Copia tu Prompt Maestro a Gemini:</b> Entra en <i>gemini.google.com</i>, pega el texto y pulsa Enviar. La IA generará el juego completo e interactivo.", style_task)],
+        [Paragraph("<b>3. Pruébalo y Habla con Gemini:</b> Juega directamente en pantalla. Pídele cambios como a un programador: <i>«Haz que vaya más lento»</i>, <i>«Añade música al ganar»</i> o <i>«Pon botones más grandes»</i>.", style_task)],
+        [Paragraph("<b>4. Descárgalo y Guárdalo en tu PC:</b> Pulsa el botón <i>Descargar</i> en Gemini o usa el probador del curso para guardarlo como archivo <i>.html</i> y jugarlo siempre sin internet.", style_task)],
     ]
     st_table = Table(steps_rows, colWidths=[letter[0] - 72])
     st_table.setStyle(TableStyle([
@@ -101,58 +103,66 @@ def build_pdf():
     story.append(st_table)
     story.append(Spacer(1, 3))
 
-    # Los 4 Modelos Clásicos de Juego
-    story.append(Paragraph("🌟 <b>Los 4 Tipos de Juegos que Puedes Crear:</b>", style_section_h))
+    # El Prompt Maestro con Corchetes
+    story.append(Paragraph("📝 <b>El Prompt Maestro Universal para Gemini (Rellena los [Corchetes]):</b>", style_section_h))
 
-    ex_rows = [
-        [Paragraph("<b>🍎 Modelo 1 • Atrapa las Cosas que Caen (Cesta Móvil):</b> "
-                   "Caen fresas, estrellas o balones desde arriba. El nieto mueve una cesta o personaje con las flechas o con el dedo en la tablet para atraparlos sumando puntos.<br/>"
-                   "<i>Ideal para: Niños de 4 a 8 años. Reflejos rápidos, colores vivos y marcador de récord.</i>", style_prompt)],
-        [Paragraph("<b>🏰 Modelo 2 • El Laberinto de Aventura y Tesoros:</b> "
-                   "Un personaje (perrito, explorador o astronauta) recorre un mapa con pasillos sorteando obstáculos hasta encontrar la llave que abre el cofre secreto.<br/>"
-                   "<i>Ideal para: Niños de 6 a 12 años. Fomenta la orientación espacial y la resolución de problemas con calma.</i>", style_prompt)],
-        [Paragraph("<b>🐛 Modelo 3 • La Oruga Glotona (Estilo Serpiente Clásica):</b> "
-                   "Una simpática oruga va comiendo frutas y creciendo en la pantalla sin chocar contra los bordes. El juego más adictivo y clásico de la historia.<br/>"
-                   "<i>Ideal para: Toda la familia. Cada fruta suma puntos y la oruga cambia de colores divertidos.</i>", style_prompt)],
-        [Paragraph("<b>🃏 Modelo 4 • Parejas de Memoria (Memory Familiar):</b> "
-                   "12 cartas boca abajo en cuadrícula. El jugador levanta dos cartas buscando la pareja gemela (animales, coches o balones).<br/>"
-                   "<i>Ideal para: Jugar abuelo y nieto por turnos en el mismo ordenador, entrenando la memoria visual y la agilidad mental.</i>", style_prompt)],
-    ]
+    prompt_content = (
+        "Actúa como programador senior experto en videojuegos educativos para niños. Crea un juego completo, jugable al 100% y sin fallos, en UN ÚNICO ARCHIVO HTML autónomo (con CSS y JavaScript embebido) para mi nieto/a llamado <b>[NOMBRE DE TU NIETO/A]</b>.<br/><br/>"
+        "<b>DATOS DEL JUEGO:</b><br/>"
+        "• <b>MECÁNICA / TIPO DE JUEGO:</b> [ej. Nave espacial esquivando meteoritos / Perrito atrapando manzanas / Coche de carreras / Laberinto del tesoro / Comecocos en la granja...]<br/>"
+        "• <b>PROTAGONISTA Y ELEMENTOS:</b> [ej. Nave 🚀, asteroides 🪨 y estrellas ⭐]<br/>"
+        "• <b>OBJETIVO PARA GANAR:</b> [ej. Conseguir 10 puntos sin chocar con los obstáculos]<br/>"
+        "• <b>MENSAJE DE VICTORIA DEL ABUELO:</b> \"[ej. ¡Eres un auténtico campeón! El abuelo te quiere con locura]\"<br/><br/>"
+        "<b>REGLAS DE INGENIERÍA:</b><br/>"
+        "1. <b>Controles duales:</b> Funciona con flechas del teclado (⬆️⬇️⬅️➡️ y WASD) y muestra una botonera táctil en cruz en pantalla.<br/>"
+        "2. <b>Instrucciones en pantalla:</b> Cabecera clara explicando «🎯 CÓMO JUGAR: Objetivo...» y controles para que niños y abuelos lo entiendan de inmediato.<br/>"
+        "3. <b>Estilo visual:</b> Fondo azul noche o colorido con contraste (prohibido fondo negro #000000). Usa emojis para los gráficos sin imágenes externas.<br/>"
+        "4. <b>Pantalla de victoria:</b> Fanfarria sonora alegre (Web Audio API nativo), cartel gigante de felicitación y botón grande «¡Jugar Otra Vez!».<br/>"
+        "5. Entrega exclusivamente el código completo dentro de un bloque HTML (desde &lt;!DOCTYPE html&gt; hasta &lt;/html&gt;)."
+    )
 
-    p_table = Table(ex_rows, colWidths=[letter[0] - 72])
+    p_table = Table([[Paragraph(prompt_content, style_prompt)]], colWidths=[letter[0] - 72])
     p_table.setStyle(TableStyle([
         ('BACKGROUND', (0,0), (-1,-1), colors.HexColor('#F8FAFC')),
-        ('BOX', (0,0), (-1,-1), 1, colors.HexColor('#94A3B8')),
-        ('TOPPADDING', (0,0), (-1,-1), 2.5),
-        ('BOTTOMPADDING', (0,0), (-1,-1), 2.5),
-        ('LEFTPADDING', (0,0), (-1,-1), 7),
-        ('RIGHTPADDING', (0,0), (-1,-1), 7),
-    ]))
-    story.append(p_table)
-    story.append(Spacer(1, 3))
-
-    # La Caja de Herramientas del Taller
-    story.append(Paragraph("🛠️ <b>Tu Caja de Herramientas para Este Monográfico:</b>", style_section_h))
-    extra_text = (
-        "• <b>Instrucciones Claras en Pantalla:</b> Cada juego generado muestra en su cabecera un recuadro vistoso con el <i>Objetivo</i> y los <i>Controles</i> para que niños y abuelos sepan exactamente cómo jugar sin perderse.<br/>"
-        "• <b>La Aplicación del Taller (El Estudio Creativo):</b> Entra en la app interactiva en el cuadro de mandos del curso. "
-        "Allí tienes el generador 100% directo, el generador de prompts y el <i>Probador en Vivo</i> con guía de juego integrada.<br/>"
-        "• <b>Cómo llevárselo a casa:</b> En el Probador pulsa <b>«Guardar Archivo en mi Ordenador»</b>. Se descargará el archivo <i>Juego_Para_Mi_Nieto.html</i> en tu carpeta de Descargas para jugar offline."
-    )
-    e_table = Table([[Paragraph(extra_text, style_task)]], colWidths=[letter[0] - 72])
-    e_table.setStyle(TableStyle([
-        ('BACKGROUND', (0,0), (-1,-1), colors.HexColor('#F5F3FF')),
         ('BOX', (0,0), (-1,-1), 1, colors.HexColor('#6366F1')),
         ('TOPPADDING', (0,0), (-1,-1), 3),
         ('BOTTOMPADDING', (0,0), (-1,-1), 3),
         ('LEFTPADDING', (0,0), (-1,-1), 7),
         ('RIGHTPADDING', (0,0), (-1,-1), 7),
     ]))
-    story.append(e_table)
+    story.append(p_table)
+    story.append(Spacer(1, 3))
+
+    # Ideas y Diálogo
+    story.append(Paragraph("💡 <b>Ideas para tu Juego y Cómo Mejorarlo con Gemini:</b>", style_section_h))
+    ideas_text = (
+        "• <b>Ideas que encantan a los niños:</b> 🚀 <i>La Misión Espacial</i> (esquivar cometas), 🏎️ <i>El Circuito de Carreras</i> (esquivar charcos y sumar copas), 🏰 <i>El Laberinto</i> (buscar la llave dorada y abrir el cofre), 🐶 <i>La Merienda</i> (atrapar fresas o galletas), 🧠 <i>Trivial Familiar</i> (5 preguntas divertidas sobre anécdotas de los abuelos).<br/>"
+        "• <b>Cómo afinar el juego hablando con Gemini:</b> Si algo no te convence, no reprogrames nada: dile a Gemini frases como <i>«Haz que los objetos caigan un poco más despacio para un niño de 6 años»</i>, <i>«Cambia el coche por una nave espacial»</i> o <i>«Ponle un sonido de campana cada vez que sume puntos»</i>."
+    )
+    story.append(Paragraph(ideas_text, style_body))
+    story.append(Spacer(1, 2))
+
+    # Cómo Guardarlo en el Ordenador
+    story.append(Paragraph("💾 <b>Cómo Guardar el Archivo en tu Ordenador para Jugar Siempre:</b>", style_section_h))
+    save_text = (
+        "• <b>Método 1 (Directo desde Gemini):</b> En el bloque de código de Gemini pulsa el icono de <b>Descargar</b> (o cópialo).<br/>"
+        "• <b>Método 2 (Con la App del Curso):</b> Abre el <i>Estudio de Videojuegos</i> en el mapa del curso, ve a la pestaña <b>«2. Probador Libre»</b>, pega el código y pulsa <b>«Guardar Archivo en mi Ordenador»</b>. "
+        "Se descargará directamente el archivo <i>Juego_Para_Mi_Nieto.html</i> a tu carpeta de Descargas.<br/>"
+        "• <b>A jugar:</b> Haz doble clic sobre el archivo y se abrirá en pantalla completa en Safari o Chrome, listo para jugar en familia sin necesidad de conexión a internet."
+    )
+    s_table = Table([[Paragraph(save_text, style_task)]], colWidths=[letter[0] - 72])
+    s_table.setStyle(TableStyle([
+        ('BACKGROUND', (0,0), (-1,-1), colors.HexColor('#F5F3FF')),
+        ('BOX', (0,0), (-1,-1), 1, colors.HexColor('#8B5CF6')),
+        ('TOPPADDING', (0,0), (-1,-1), 2.5),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 2.5),
+        ('LEFTPADDING', (0,0), (-1,-1), 7),
+        ('RIGHTPADDING', (0,0), (-1,-1), 7),
+    ]))
+    story.append(s_table)
 
     doc.build(story)
     print(f"✅ Ficha Didáctica PDF Oficial MONO-002 generada en:\n   {DEST_PATH}")
 
 if __name__ == '__main__':
     build_pdf()
-

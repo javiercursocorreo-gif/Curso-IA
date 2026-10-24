@@ -273,5 +273,12 @@ Esta sección recopila los descubrimientos críticos de ingeniería realizados d
   2. **Doble Capa con W3C WakeLock:** Si la conexión es segura (HTTPS), se activa complementariamente el WakeLock nativo.
   3. **Ventana de 25 Minutos de Atril Ininterrumpido:** La duración del atril se amplió de 5 a 25 minutos. Cualquier toque en pantalla, scroll o pulsación reinicia el contador de 25 minutos.
 
+### 6.16. Adopción de la Tonalidad Oficial Do Mayor (C) y Enlaces MuseScore / YouTube (v102)
+* **Motivación:** Las ediciones y arreglos oficiales de mayor difusión pedagógica (como la edición de *The Ray Charles Singers* en MuseScore [#6959865](https://musescore.com/official_scores/scores/6959865) y el arreglo de *francescobern* [#27983731](https://musescore.com/user/33531210/scores/27983731)) están estructurados en la tonalidad canónica de **Do Mayor (C)**.
+* **Ventajas en el Korg EK-50:**
+  1. Todos los acordes fundamentales de la rueda armónica (**C – Am – Dm – G7**) se ejecutan de manera natural sin alteraciones sostenidas ni bemoles en las notas base.
+  2. Simplifica la lectura a primera vista en el atril digital y la ejecución fluida del acompañamiento latino Beguine a 112 BPM.
+* **Integración Multimedia:** Se añadieron tarjetas interactivas de acceso directo a las partituras oficiales en MuseScore y a las interpretaciones históricas en YouTube (Los Hermanos Rigual 1962 y Luis Miguel 1987).
+
 ---
 *Manual redactado y sellado para el proyecto CURSO-IA / CURSO_MUSICA. Todos los derechos reservados.*
