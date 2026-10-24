@@ -12,7 +12,7 @@ import sys
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 BASE_DIR = os.path.abspath(os.path.join(SCRIPT_DIR, ".."))
-OUTPUT_DIR_CLASSROOM = os.path.join(BASE_DIR, "CLASES", "105. [MONOGRAFICOS] CUADERNOS_Y_TALLERES_ESPECIALES", "MONO-002")
+OUTPUT_DIR_CLASSROOM = os.path.join(BASE_DIR, "CLASES", "MONO_002_VIDEOJUEGOS")
 os.makedirs(OUTPUT_DIR_CLASSROOM, exist_ok=True)
 
 PDF_FILENAME = "MONO-002_Crea_Videojuegos_para_tus_Nietos_con_IA.pdf"
@@ -78,16 +78,16 @@ def build_pdf():
     story.append(Paragraph(
         "A petición de los alumnos de clase, en este taller especial descubrimos cómo convertirnos en directores de videojuegos para nuestros nietos. "
         "No necesitas saber nada de programación: mediante nuestro <b>Cuestionario Creativo</b> eliges el nombre de tu nieto, sus aficiones favoritas "
-        "y el tipo de reto que le gusta. La Inteligencia Artificial (Gemini) construirá en segundos un juego exclusivo con su nombre, música y mensaje de felicitación.",
+        "y el tipo de reto que le gusta. Puedes generar el juego personalizado de inmediato en 1 clic (100% garantizado) o usar la Inteligencia Artificial (Gemini) para crear variaciones.",
         style_body
     ))
 
     # El Método en 3 Pasos
-    story.append(Paragraph("📋 <b>El Método Sencillo en 3 Pasos:</b>", style_section_h))
+    story.append(Paragraph("📋 <b>El Método Sencillo con Doble Salvaguarda en el Aula:</b>", style_section_h))
     steps_rows = [
         [Paragraph("<b>1. Responde al Cuestionario Creativo:</b> Abre la aplicación del taller y elige el protagonista, el tipo de juego y el premio.", style_task)],
-        [Paragraph("<b>2. Copia tu Prompt a Gemini:</b> Pulsa «Generar Prompt», cópialo en un clic y pégalo en Gemini (<i>gemini.google.com</i>).", style_task)],
-        [Paragraph("<b>3. ¡A Jugar y a Guardar!:</b> Pega el código en el <i>Probador en Vivo</i> para jugar de inmediato o descárgalo para jugar en casa.", style_task)],
+        [Paragraph("<b>2. Pulsa «¡Crear mi Juego al Instante!» (100% Garantizado):</b> Tu juego personalizado se genera y arranca en 1 segundo en el navegador sin depender de la variabilidad de Gemini.", style_task)],
+        [Paragraph("<b>3. O Experimenta con Gemini (Modo IA):</b> Si quieres explorar más, copia el <i>Prompt Maestro</i> a Gemini (<i>gemini.google.com</i>), pega el código en el Probador y descárgalo.", style_task)],
     ]
     st_table = Table(steps_rows, colWidths=[letter[0] - 72])
     st_table.setStyle(TableStyle([

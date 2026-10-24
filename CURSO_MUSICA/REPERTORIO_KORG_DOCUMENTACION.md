@@ -2,7 +2,7 @@
 > **Proyecto:** Sistema de Atril Digital, Control Web MIDI y Repertorio Pedagógico Interactivo  
 > **Ubicación:** `CURSO_MUSICA/` · **Repositorio:** `CURSO-IA`  
 > **Dispositivo Principal:** Teclado Korg EK-50 Entertainer Keyboard conectado a iPad / Mac  
-> **Versión del Sistema:** v96 (Harmonica Oficial GM PC 22 con Vibrato, Eco y Lower Voces + Protocolo de Encendido y Servidor 8888)
+> **Versión del Sistema:** v97 (Incorporación Oficial de Canción 4: Cuando Calienta el Sol con Estilo 174 Beguine 1 a 112 BPM, Guitarra Española y Cuerdas Duales)
 
 ---
 
@@ -102,21 +102,19 @@ El Korg EK-50 se conecta al iPad o Mac mediante un cable USB estándar (USB tipo
 
 ---
 
-### 🎵 Canción en Estudio / Próxima Incorporación: "Cuando Calienta el Sol"
-* **Autores:** Carlos y Mario Rigual (popularizada por Los Hermanos Rigual y Luis Miguel).
-* **Género Rítmico Musical:** Beguine / Bolero Rítmico Latino.
-* **El Mejor Estilo Oficial Korg EK-50:**
-  * **Opción Principal (Ganadora Absoluta - Clásica Playera):** **`174 Beguine 1`** (o **`175 Beguine 2`**) en la categoría **Latin 1** a **112 BPM**.
-    * *Por qué:* El ritmo *Beguine* (Beguina) es el patrón exacto de percusión latina (congas, maracas, caja a contratiempo y bajo sincopado) de la versión original playera de Los Hermanos Rigual.
-  * **Opción Romántica Íntima (Bolero Lento):** **`176 Slow Bolero`** (Latin 1) a **88 BPM** (para versión balada con piano y cuerdas).
-  * **Opción Bailable Ochentera (Versión Luis Miguel):** **`168 DiscoChaCha`** (Latin 1) a **124 BPM** (para recrear la versión bailable con metales y ritmo pop latino).
-  * **Opción Acústica Chillout:** **`161 UnplugBossa`** (Latin 1) a **114 BPM** (guitarra española y percusión sutil).
-* **Instrumentación y Capas Escénicas Recomendadas:**
-  * **Upper 1 (Voz Melódica):** *Nylon Guitar* (Guitarra Española acústica GM PC 24), *Velo Flute* o Trompeta con Sordina (*Muted Trumpet*).
-  * **Upper 2 (Capa de Refuerzo):** *St. Strings* (cuerdas orquestales suaves al 75% de volumen) para dar amplitud estéreo.
-  * **Lower (Mano Izquierda):** Piano cálido o coro suave (*Choir Aahs* PC 52) acompañando la rueda de acordes.
-* **Progresión Armónica Base (Tonalidad sugerida: Fa Mayor - $F$ o Sol Mayor - $G$):**
-  * Típica rueda de bolero latino: $I - vi - ii - V7$ (ej. en Fa: $F - Dm - Gm - C7$).
+### 🎵 Canción 4: "Cuando Calienta el Sol" (Oficial · v97)
+* **Autores:** Carlos y Mario Rigual (1961 · Popularizada también por Luis Miguel).
+* **Género Rítmico Musical:** Beguine / Bolero Rítmico Latino a **112 BPM**.
+* **Estilo Korg EK-50 Asignado:** **`174 Beguine 1`** (Canal 16: `MSB 32, LSB 6, PC 13`).
+* **Sonidos Escénicos (1-Tap Web MIDI):**
+  * **Opción 1 (`🎵 1. Beguine Playero - Guitarra`):** Upper 1 = *Nylon Guitar* acústica (GM PC 24) a volumen 120, Reverb Send 105, Chorus ambiental 50 y Lower con *Choir Aahs* (PC 52, vol 110).
+  * **Opción 2 (`🎻 2. Guitarra & Cuerdas - Dúo`):** Inyección de Keyboard Set 61 (*The Strings*) que enciende automáticamente los botones físicos `[UPPER 1]` y `[UPPER 2]`. Upper 1 = Guitarra Española (vol 125); Upper 2 = *St. Strings* orquestales (vol 95, Reverb 110) dando gran calidez playera sin tapar la guitarra.
+* **Acompañamiento Web Audio Sintetizado (Offline / iPad):**
+  * Motor sintetizador integrado en el navegador con patrón de conga sincopada latina y bajo Beguine en 4/4 con visualizador dinámico de compás.
+* **Progresión Armónica Base (Tonalidad: Fa Mayor · $F$):**
+  * Típica rueda de bolero latino: $F \rightarrow Dm \rightarrow Gm \rightarrow C7$.
+* **Modo Atril Pantalla Completa:**
+  * Barra fija superior translúcida con los botones maestros 1 y 2 para cambiar sonidos y ritmo en directo sin perder de vista la letra y los acordes.
 
 ---
 

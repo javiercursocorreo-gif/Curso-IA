@@ -36,14 +36,14 @@ CSV_ROWS = [
         "tema": "Monográfico 2. Crea Videojuegos para tus Nietos con IA (El Estudio Creativo)",
         "titulo": "Aplicación Web Interactiva: El Estudio de Videojuegos del Abuelo (HTML)",
         "desc": "Diseña videojuegos personalizados con el nombre y aficiones de tus nietos en 4 sencillos pasos. Incluye Cuestionario Creativo, Generador de Prompts y Probador en Vivo.",
-        "url": GITHUB_BASE + "CLASES/105.%20%5BMONOGRAFICOS%5D%20CUADERNOS_Y_TALLERES_ESPECIALES/MONO-002/ESTUDIO_CREATIVO_VIDEOJUEGOS.html",
+        "url": "CLASES/MONO_002_VIDEOJUEGOS/ESTUDIO_CREATIVO_VIDEOJUEGOS.html",
         "type": "launch"
     },
     {
         "tema": "Monográfico 2. Crea Videojuegos para tus Nietos con IA (El Estudio Creativo)",
         "titulo": "Material: Ficha Didáctica del Alumno MONO-002 (PDF)",
         "desc": "Metodología en 3 pasos, los 4 modelos clásicos de juegos infantiles y guía para guardar el archivo en el ordenador y jugar en casa.",
-        "url": GITHUB_BASE + "CLASES/105.%20%5BMONOGRAFICOS%5D%20CUADERNOS_Y_TALLERES_ESPECIALES/MONO-002/MONO-002_Crea_Videojuegos_para_tus_Nietos_con_IA.pdf",
+        "url": "CLASES/MONO_002_VIDEOJUEGOS/MONO-002_Crea_Videojuegos_para_tus_Nietos_con_IA.pdf",
         "type": "pdf"
     },
     # MONOGRÁFICO 3
@@ -478,9 +478,10 @@ def generate_master_map():
 """
     with open(ROOT_MAP, "w", encoding="utf-8") as f:
         f.write(full_html)
-    with open(MAP_IN_104, "w", encoding="utf-8") as f:
-        f.write(full_html)
-    print(f"✅ Mapa Maestro HTML generado en:\n   {ROOT_MAP}\n   {MAP_IN_104}")
+    if os.path.exists(DIR_104):
+        with open(MAP_IN_104, "w", encoding="utf-8") as f:
+            f.write(full_html)
+    print(f"✅ Mapa Maestro HTML generado en:\n   {ROOT_MAP}")
 
 def main():
     print("=" * 80)
