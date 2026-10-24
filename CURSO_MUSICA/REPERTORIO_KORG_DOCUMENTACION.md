@@ -2,7 +2,7 @@
 > **Proyecto:** Sistema de Atril Digital, Control Web MIDI y Repertorio Pedagógico Interactivo  
 > **Ubicación:** `CURSO_MUSICA/` · **Repositorio:** `CURSO-IA`  
 > **Dispositivo Principal:** Teclado Korg EK-50 Entertainer Keyboard conectado a iPad / Mac  
-> **Versión del Sistema:** v97 (Incorporación Oficial de Canción 4: Cuando Calienta el Sol con Estilo 174 Beguine 1 a 112 BPM, Guitarra Española y Cuerdas Duales)
+> **Versión del Sistema:** v104 (Ampliación del Repertorio a 20 Obras Musicales: Con te partirò, Volare, Ave Maria, Flashdance, Amor Amor Amor, Adagio, Whiter Shade of Pale, y colección de estudios instrumentales MuseScore)
 
 ---
 
@@ -115,6 +115,30 @@ El Korg EK-50 se conecta al iPad o Mac mediante un cable USB estándar (USB tipo
   * Típica rueda de bolero latino: $F \rightarrow Dm \rightarrow Gm \rightarrow C7$.
 * **Modo Atril Pantalla Completa:**
   * Barra fija superior translúcida con los botones maestros 1 y 2 para cambiar sonidos y ritmo en directo sin perder de vista la letra y los acordes.
+
+---
+
+### 🎵 Canciones 5 a 11: Fichas Web MIDI & Enlaces MuseScore Directos
+* **Canción 5 · "Con te partirò" (Andrea Bocelli):** Tonalidad Sol Mayor ($G$) / Do Mayor ($C$). Estilo: `041 Love Ballad` (70 BPM). Upper 1: Grand Piano (PC 0) / Upper 2: Strings (PC 48). Partitura MuseScore #28816700.
+* **Canción 6 · "Volare (Nel blu dipinto di blu)" (Domenico Modugno):** Tonalidad Do Mayor ($C$). Estilo: `174 Beguine 1` (126 BPM). Upper 1: Accordion (PC 21) / Upper 2: Alto Sax (PC 65) & Strings. Partitura MuseScore #28739830.
+* **Canción 7 · "Ave Maria" (Franz Schubert):** Tonalidad Sib Mayor ($B\flat$). Estilo: `212 Classical Adagio` (56 BPM). Upper 1: Flute (PC 73) / Upper 2: Church Pipe Organ (PC 19) & Choir Aahs (PC 52). Partitura MuseScore #28530133.
+* **Canción 8 · "Flashdance... What a Feeling" (Irene Cara):** Tonalidad Sib Mayor ($B\flat$). Estilo: `005 80s Dance` (124 BPM). Upper 1: Synth Lead (PC 80) / Upper 2: Poly Synth (PC 90). Intro lenta en Piano Eléctrico (68 BPM). Partitura MuseScore #28103443.
+* **Canción 9 · "Amor, Amor, Amor" (Julio Iglesias):** Tonalidad Sol menor ($Gm$). Estilo: `174 Beguine 1` (112 BPM). Upper 1: Spanish Nylon Guitar (PC 24) / Upper 2: Muted Trumpet (PC 59) & Percussive Organ (PC 17). Partitura MuseScore #28063213.
+* **Canción 10 · "Adagio en Sol menor" (Tomaso Albinoni):** Tonalidad Sol menor ($Gm$). Estilo: `215 Orchestral Slow` (58 BPM). Upper 1: Church Pipe Organ (PC 19) / Solo Violin (PC 40) / Upper 2: Slow Strings (PC 49) & Coro. Partitura MuseScore #27905737.
+* **Canción 11 · "A Whiter Shade of Pale (Senza Luce)" (Procol Harum):** Tonalidad Do Mayor ($C$). Estilo: `042 60s Soul Ballad` (68 BPM). Upper 1: Percussive Organ (PC 17 con Reverb 115) / Upper 2: Strings (PC 48). Partitura MuseScore #27874576.
+
+---
+
+### 🎵 Canciones 12 a 20: Catálogo Instrumental MuseScore
+* **12. Canzone Napoletana (Melodía Tradicional):** Mandolina y acordeón italiano. Score MuseScore [#27870430](https://musescore.com/user/33531210/scores/27870430).
+* **13. Pieza Sacra / Clásica (Agni Parthene / Bach):** Arr. Christhian Beschizza. Score MuseScore [#6325230](https://musescore.com/user/4592916/scores/6325230).
+* **14. Balada Romántica (Pop Clásico):** Grand Piano y cuerdas a 85 BPM. Score MuseScore [#27651577](https://musescore.com/user/33531210/scores/27651577).
+* **15. Estudio Instrumental I (Folk & Tradicional):** Acordeón y flauta en compás ternario a 110 BPM. Score MuseScore [#26692978](https://musescore.com/user/33531210/scores/26692978).
+* **16. Estudio Instrumental II (Canzonetta & Folk):** Armónica y cuerdas a 98 BPM. Score MuseScore [#26692912](https://musescore.com/user/33531210/scores/26692912).
+* **17. Estudio Instrumental III (Klezmer & Danza):** Clarinete y metales a 120 BPM. Score MuseScore [#26692870](https://musescore.com/user/33531210/scores/26692870).
+* **18. Estudio Instrumental IV (Balada / Vals Romántico):** Arreglo de cuerdas y piano. Score MuseScore [#26692240](https://musescore.com/user/33531210/scores/26692240).
+* **19. Estudio Instrumental V (Tema Melódico Lead Sheet):** Lead sheet para teclado. Score MuseScore [#26692024](https://musescore.com/user/33531210/scores/26692024).
+* **20. Estudio Instrumental VI (Composición / Ensayo para Teclado):** Práctica instrumental. Score MuseScore [#26691493](https://musescore.com/user/33531210/scores/26691493).
 
 ---
 
@@ -279,6 +303,13 @@ Esta sección recopila los descubrimientos críticos de ingeniería realizados d
   1. Todos los acordes fundamentales de la rueda armónica (**C – Am – Dm – G7**) se ejecutan de manera natural sin alteraciones sostenidas ni bemoles en las notas base.
   2. Simplifica la lectura a primera vista en el atril digital y la ejecución fluida del acompañamiento latino Beguine a 112 BPM.
 * **Integración Multimedia:** Se añadieron tarjetas interactivas de acceso directo a las partituras oficiales en MuseScore y a las interpretaciones históricas en YouTube (Los Hermanos Rigual 1962 y Luis Miguel 1987).
+
+### 6.17. Ampliación del Catálogo a 20 Obras Musicales con Sincronización Web MIDI & MuseScore (v104)
+* **Objetivo:** Integrar un nuevo bloque de piezas de música clásica, pop lírico y tradicional directamente en el atril interactivo, proporcionando fichas autónomas con control Web MIDI para el Korg EK-50 y enlaces de 1 toque a las partituras interactivas de MuseScore.
+* **Aspectos Técnicos Implementados:**
+  1. **Fichas Autónomas con Mutex Web MIDI:** Se generaron páginas interactivas (`CANCION_05_CON_TE_PARTIRO.html`, `CANCION_06_VOLARE.html`, `CANCION_07_AVE_MARIA.html`, `CANCION_08_FLASHDANCE.html`, `CANCION_09_AMOR_AMOR_AMOR.html`, `CANCION_10_ADAGIO_ALBINONI.html`, `CANCION_11_A_WHITER_SHADE_OF_PALE.html`) con el motor anti-bloqueo USB y el reproductor canvas keep-awake de 25 minutos.
+  2. **Indexación y Categorización en el Menú Principal:** En `REPERTORIO_KORG_EK50.html` e `index.html` se organizó el catálogo en 3 bloques limpios (Obras Maestras Oficiales 1 a 4, Grandes Clásicos & Baladas 5 a 11, y Colección Instrumental MuseScore 12 a 20).
+  3. **Resistencia a Caché en iPad:** Se elevó el parámetro de versión a `v104` en toda la botonera y enlaces para garantizar que Safari y Web MIDI Browser muestren el menú actualizado sin residuos en caché.
 
 ---
 *Manual redactado y sellado para el proyecto CURSO-IA / CURSO_MUSICA. Todos los derechos reservados.*
