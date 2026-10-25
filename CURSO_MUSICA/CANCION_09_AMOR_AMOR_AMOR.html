@@ -278,9 +278,9 @@
 <div class="container">
     <div class="nav-bar">
         <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
-            <a class="btn-back" href="REPERTORIO_KORG_EK50.html?v=112">⬅ Volver al Repertorio</a>
-            <button class="btn-reload" onclick="window.location.href=window.location.pathname+'?v=112&t='+Date.now()" title="Recargar y actualizar versión sin caché">
-                🔄 Recargar (v112)
+            <a class="btn-back" href="REPERTORIO_KORG_EK50.html?v=113">⬅ Volver al Repertorio</a>
+            <button class="btn-reload" onclick="window.location.href=window.location.pathname+'?v=113&t='+Date.now()" title="Recargar y actualizar versión sin caché">
+                🔄 Recargar (v113)
             </button>
         </div>
         <div class="midi-bar">
@@ -323,11 +323,16 @@
         </div>
 
         <!-- SELECTOR DE VELOCIDAD / TEMPO -->
-        <div style="display:flex; align-items:center; gap:10px; margin-top:4px; padding-top:10px; border-top:1px solid #1e293b;">
-            <span style="font-size:0.85rem; color:var(--text-muted); font-weight:700;">Velocidad:</span>
-            <button class="btn-tempo" onclick="cambiarTempo(92, this)">92 BPM</button>
-            <button class="btn-tempo active-tempo" onclick="cambiarTempo(100, this)">100 BPM</button>
-            <button class="btn-tempo" onclick="cambiarTempo(108, this)">108 BPM</button>
+        <div style="display:flex; flex-direction:column; gap:6px; margin-top:4px; padding-top:10px; border-top:1px solid #1e293b;">
+            <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+                <span style="font-size:0.85rem; color:var(--text-muted); font-weight:700;">Velocidad Partitura:</span>
+                <button class="btn-tempo" onclick="cambiarTempo(92, this)">92 BPM (Lento)</button>
+                <button class="btn-tempo active-tempo" onclick="cambiarTempo(100, this)">100 BPM (Estándar)</button>
+                <button class="btn-tempo" onclick="cambiarTempo(108, this)">108 BPM (Rápido)</button>
+            </div>
+            <div style="font-size:0.78rem; color:#fde68a; background:#451a03; border:1px solid #d97706; padding:6px 10px; border-radius:6px; margin-top:4px;">
+                💡 <b>Aviso Tempo Korg:</b> Al cargar el Estilo 174 Beguine, la memoria interna del teclado fija por defecto <b>110 BPM</b> en su pantalla. Pulsa el botón <b>TEMPO [ - ]</b> en el panel del Korg para bajarlo a <b>100 BPM</b> y tocar al tempo exacto de la partitura.
+            </div>
         </div>
         <div id="log-midi" style="font-size:0.8rem; color:#94a3b8; margin-top:2px;">Listo para enviar comandos al teclado Korg EK-50.</div>
     </div>
@@ -701,11 +706,29 @@
         if (btn) btn.classList.add('active-tempo');
         const badge = document.getElementById('current-tempo-badge');
         if (badge) badge.textContent = `${bpm} BPM`;
+        const log = document.getElementById('log-midi');
+        if (log) log.innerHTML = `⏱️ Velocidad de referencia fijada a <b>${bpm} BPM</b>.`;
     }
 
+    // ==============================================================================
+    // MOTOR ANTI-APAGADO CONTINUO IPAD (W3C WAKELOCK + VIDEO CANVAS LOOP 35 MIN)
+    // ==============================================================================
+    let wakeLockInstance = null;
     let videoKeepAwake = null;
     let temporizadorInactividad = null;
-    function activarKeepAwake() {
+
+    async function activarModoAtrilSinApagado() {
+        // 1. W3C WakeLock API nativo (Safari iOS / iPadOS 16.4+ sobre HTTPS)
+        if ('wakeLock' in navigator) {
+            try {
+                if (!wakeLockInstance) {
+                    wakeLockInstance = await navigator.wakeLock.request('screen');
+                    wakeLockInstance.addEventListener('release', () => { wakeLockInstance = null; });
+                }
+            } catch(e) {}
+        }
+
+        // 2. Fallback de Video Canvas Stream para WebKit
         try {
             if (!videoKeepAwake) {
                 videoKeepAwake = document.createElement('video');
@@ -716,25 +739,58 @@
                 videoKeepAwake.muted = true;
                 videoKeepAwake.style.position = 'fixed';
                 videoKeepAwake.style.top = '-50px';
+                videoKeepAwake.style.left = '-50px';
                 videoKeepAwake.style.width = '1px';
                 videoKeepAwake.style.height = '1px';
                 videoKeepAwake.style.opacity = '0.001';
-                const c = document.createElement('canvas'); c.width = 4; c.height = 4;
-                if (c.captureStream) videoKeepAwake.srcObject = c.captureStream(1);
+                videoKeepAwake.style.pointerEvents = 'none';
+
+                const canvas = document.createElement('canvas');
+                canvas.width = 16;
+                canvas.height = 16;
+                const ctx = canvas.getContext('2d');
+                ctx.fillStyle = '#000000';
+                ctx.fillRect(0, 0, 16, 16);
+
+                if (canvas.captureStream) {
+                    videoKeepAwake.srcObject = canvas.captureStream(1);
+                }
                 document.body.appendChild(videoKeepAwake);
             }
-            if (videoKeepAwake && videoKeepAwake.paused) videoKeepAwake.play().catch(()=>{});
-        } catch(e){}
+            if (videoKeepAwake && videoKeepAwake.paused) {
+                videoKeepAwake.play().catch(() => {});
+            }
+        } catch(e) {}
     }
+
     function reiniciarInactividad() {
-        activarKeepAwake();
+        activarModoAtrilSinApagado();
         if (temporizadorInactividad) clearTimeout(temporizadorInactividad);
+        // Mantiene la pantalla encendida durante 35 minutos de interpretación
         temporizadorInactividad = setTimeout(() => {
-            if (videoKeepAwake) try { videoKeepAwake.pause(); } catch(e){}
-        }, 25 * 60 * 1000);
+            if (wakeLockInstance) {
+                try { wakeLockInstance.release(); wakeLockInstance = null; } catch(e){}
+            }
+            if (videoKeepAwake) {
+                try { videoKeepAwake.pause(); } catch(e){}
+            }
+        }, 35 * 60 * 1000);
     }
-    ['touchstart', 'mousedown', 'keydown', 'scroll'].forEach(evt => document.addEventListener(evt, reiniciarInactividad, { passive: true }));
-    function iniciarApp() { reiniciarInactividad(); setTimeout(() => conectarMIDI(), 350); }
+
+    ['touchstart', 'touchend', 'mousedown', 'click', 'keydown', 'scroll'].forEach(evt => {
+        document.addEventListener(evt, () => reiniciarInactividad(), { passive: true });
+    });
+
+    document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') {
+            reiniciarInactividad();
+        }
+    });
+
+    function iniciarApp() {
+        reiniciarInactividad();
+        setTimeout(() => conectarMIDI(), 350);
+    }
     if (document.readyState === 'loading') window.addEventListener('DOMContentLoaded', iniciarApp); else iniciarApp();
 </script>
 </body>
