@@ -1,10 +1,10 @@
 # REGLAS DEL PROYECTO: REPERTORIO KORG EK-50 & ATRIL DIGITAL WEB MIDI (CURSO_MUSICA)
 
-## 1. Flujo de Trabajo Automatizado y Cero Interrupciones (Auto-Execution)
+## 1. Regla de Oro Primordial: Flujo de Trabajo Automatizado y Cero Interrupciones (Auto-Execution)
 - **PROHIBICIÓN ABSOLUTA DE SUBMITS Y VENTANAS DE APROBACIÓN EN EL CHAT:**
   - El asistente tiene **TERMINANTEMENTE PROHIBIDO** ejecutar comandos o acciones que provoquen la aparición de botones de "Submit", "Aprobar", confirmaciones o ventanas emergentes en la pantalla del usuario.
   - Queda **ESTRICTAMENTE PROHIBIDO** ejecutar herramientas de terminal intermedias (`run_command`) para inspección exploratoria de sistema, red o procesos (`ifconfig`, `lsof`, `ps`, `curl`, scripts de terminal de prueba, etc.) durante el turno de conversación.
-  - Toda la lectura, análisis, creación y edición de código debe ejecutarse de forma 100% silenciosa y desatendida mediante herramientas de edición de archivos (`read_file`, `edit_file`, `write_file`).
+  - Toda la lectura, análisis, creación y edición de código debe ejecutarse de forma 100% silenciosa y desatendida dentro del sandbox mediante herramientas de edición de archivos (`read_file`, `edit_file`, `write_file`).
   - Al final de la respuesta, el asistente debe entregar directamente y sin interrupciones previas **UN ÚNICO BLOQUE DE COMANDO DE TERMINAL LIMPIO Y NUMERADO** para que el usuario lo ejecute en su propia terminal externa.
 - **Eliminación de Confirmaciones y Botones de Proceed:**
   - El asistente NUNCA debe solicitar confirmación manual ni requerir feedback interactivo para ejecutar planes o artefactos (`RequestFeedback: false`).
@@ -18,14 +18,17 @@
     3. Las reglas de agentes y asistentes (`AGENTS.md` y `GEMINI.md`).
   - Queda terminantemente prohibido dejar descubrimientos, lecciones aprendidas o detalles técnicos aislados en la conversación del chat sin que queden permanentemente sellados y versionados en la documentación oficial del repositorio.
 
-## 3. Regla de Oro de Despliegue y Sincronización Tripartita
-- **Sincronización Inmediata en Cada Turno (Mac ⟷ iCloud iPad ⟷ GitHub):**
-  - Todo cambio, corrección, nueva canción o ajuste en `CURSO_MUSICA/` DEBE incluir siempre e indefectiblemente en el bloque de terminal:
-    1. Copia recursiva y silenciosa hacia la carpeta espejo de iCloud para el iPad:  
-       `cp -R "CURSO_MUSICA/"* "/Users/externo/Library/Mobile Documents/com~apple~CloudDocs/PERSONAL/CLASES DE TECNOLOGÍA/CURSO MUSICA/" 2>/dev/null || true`
-    2. Control de versiones y despliegue a GitHub (`git add -A`, `git commit -m "..."`, `git push origin main`).
+## 3. Regla de Oro de Unificación Canónica y Despliegue (Cero Duplicados en Disco)
+- **Carpeta Única Absoluta (`CURSO-IA/CURSO_MUSICA`):**
+  - Solo existe **UNA ÚNICA CARPETA FÍSICA** en todo el sistema: `CURSO-IA/CURSO_MUSICA/`.
+  - Queda **TERMINANTEMENTE PROHIBIDO** mantener carpetas duplicadas externas, réplicas o enlaces simbólicos. La carpeta externa ha sido eliminada de raíz.
+  - Todo el proyecto de música, atril digital, canciones y documentación reside y se ejecuta exclusivamente dentro de `CURSO-IA/CURSO_MUSICA/`.
+  - Todo cambio se versiona y sube a GitHub (`git add -A`, `git commit -m "..."`, `git push origin main`) para su despliegue en GitHub Pages.
+- **Prohibición Total de Archivos de Herencia en Disco:**
+  - Queda **TERMINANTEMENTE PROHIBIDO** crear archivos `HERENCIA.md` (o similares) en el disco.
+  - La herencia entre chats se redacta y entrega **exclusivamente como texto dentro de la respuesta del chat** cuando el usuario lo solicite, para su copia y pega directa.
 - **Formato Estándar y Numeración Correlativa Obligatoria de Comandos en Terminal:**
-  - **Título en Canvas / Chat:** Cada bloque entregado debe llevar su numeración correlativa secuencial (ej. `### 💻 [COMANDO 121] - Título Descriptivo`).
+  - **Título en Canvas / Chat:** Cada bloque entregado debe llevar su numeración correlativa secuencial (ej. `### 💻 [COMANDO 141] - Título Descriptivo`).
   - **Título y Numeración Correlativa DENTRO del Script:** El encabezado con `#` y los mensajes `echo` deben llevar exactamente la misma numeración correlativa:
     ```bash
     # ==============================================================================
@@ -46,7 +49,6 @@
   - Mantener la pantalla limpia de selectores de transposición armónica innecesarios que ocupen espacio visual en el iPad, salvo petición expresa del usuario.
 - **Acceso en iPadOS (Doble Vía):**
   - **Vía Rápida Local (Wi-Fi 0 segundos):** Mediante el servidor local Python en el puerto 8888 (`INICIAR_SERVIDOR_LOCAL.command`), accesible en el iPad desde `http://192.168.1.130:8888/`.
-  - **Vía Web MIDI por Cable USB en iPad:** Ejecutando la URL en la app `Web MIDI Browser` (App Store) con `{ sysex: false }`.
   - **Vía Web MIDI por Cable USB en iPad:** Ejecutando la URL en la app `Web MIDI Browser` (App Store) con `{ sysex: false }`.
 
 ## 5. Reglas de Oro del Control Web MIDI para Korg EK-50
@@ -78,8 +80,8 @@
   - Al pulsar los botones maestros 1 o 2 en el atril táctil, el sistema configura estilos, parches, bancos, efectos y tempos en silencio absoluto, sin disparar ráfagas de notas espurias (*Note On*). El teclado solo emite sonido cuando el pianista posa sus dedos en las teclas.
 - **Regla 8: Difusión Multi-Salida Global (`enviarMidiGlobal`):**
   - Para neutralizar las trampas de enrutamiento de CoreMIDI (donde puertos virtuales o de red ocupan la posición 0), los comandos deben enviarse en paralelo a todas las salidas USB activas (`outputs.forEach(...)`).
-- **Regla 9: Modo Atril Anti-Apagado Inteligente (5 Minutos de Reposo):**
-  - Implementación híbrida `WakeLock API` + `Canvas Video Loop` para mantener el iPad encendido mientras se toca, liberando el bloqueo de pantalla tras 5 minutos de inactividad total para proteger la batería.
+- **Regla 9: Modo Atril Anti-Apagado Inteligente (25 Minutos de Reposo):**
+  - Implementación híbrida `WakeLock API` + `Canvas Video Loop` para mantener el iPad encendido mientras se toca, liberando el bloqueo de pantalla tras 25 minutos de inactividad total para proteger la batería.
 
 ## 6. Resumen de Canales MIDI del Korg EK-50
 | Canal MIDI | Sección Korg | Función en el Repertorio | Configuración Estándar |
@@ -100,10 +102,13 @@
 - **Lección 6.7 (Rompe-Caché Safari):** Headers anti-caché + parámetros dinámicos `?t=Date.now()` + distintivos de versión visibles (`vXX`).
 - **Lección 6.8 (Búfer USB & Power Off):** Eliminar bucles `0xF8` en reposo; protocolo de encendido secuencial (Korg primero 5s, luego USB).
 - **Lección 6.9 (Servidor Local 8888):** Servir localmente con Python para validación instantánea sin latencia de despliegue en la nube.
-- **Lección 6.10 (Reposo 5 Minutos):** Balance perfecto entre atril encendido en directo y apagado automático en inactividad.
+- **Lección 6.10 (Reposo 25 Minutos):** Balance perfecto entre atril encendido en directo y apagado automático en inactividad mediante canvas video stream.
 - **Lección 6.11 (Encendido Físico de Capas):** Usar Keyboard Set 61 para encender físicamente los botones `[UPPER 1]` y `[UPPER 2]` del Korg.
 - **Lección 6.12 (Armónica General MIDI):** Harmonica es PC 22 (PC 21 es Acordeón); inyectar modulación `CC 01 = 50`, `CC 77 = 68` y reverb `CC 91 = 115`.
 - **Lección 6.13 (Matemática de Estilos en Korg EK-50):** Cada banco LSB agrupa 16 estilos: `Estilo = 16 * LSB + PC + 1`. Estilo 174 Beguine 1 requiere `LSB 10, PC 13` en Canal 16 a 112 BPM.
 - **Lección 6.14 (Blindaje de Botón 1 con GM2 MSB 121):** Para órganos y patches melódicos, usar `Bank MSB 121` (GM2 oficial) en Canal 1 para evitar caídas a Grand Piano (MSB 0). Aislar Canal 16 exclusivamente para el estilo de acompañamiento.
 - **Lección 6.15 (Motor Anti-Apagado Continuo 25 min):** Reproductor `<video>` con `canvas.captureStream(1)` invisible para iOS Safari HTTP + WakeLock en HTTPS + reposo inteligente tras 25 minutos.
 - **Lección 6.16 (Inicialización Asíncrona Blindada CoreMIDI):** Para evitar que la barra quede fija en `Iniciando Web MIDI...`, verificar `document.readyState !== 'loading'` (evita listeners muertos si el DOM ya cargó), encapsular `requestMIDIAccess` en `Promise` con timeout de 3.5s, reintentar automáticamente hasta 4 veces y permitir re-escaneo con un toque (`onclick="conectarMIDI(true)"`).
+- **Lección 6.17 (Repertorio Expandido a 24 Obras en 5 Categorías Temáticas):** Organización armónica con bloque italiano unificado en cabeza (1. Italianos [5], 2. Clásica [4], 3. Baladas Pop & Rock [8], 4. Latinos [4], 5. Cine & Chanson [3]).
+- **Lección 6.18 (Índice Ultra-Compacto en Doble Columna sin Autores - v111):** Menú para iPad con supresión total de nombres de autores e instrumentos en portada (se mantienen dentro de cada ficha individual) y cuadrícula simétrica de 2 columnas de 33px por fila para abarcar el 100% del catálogo en una sola pantalla sin necesidad de scroll.
+- **Lección 6.19 (Arquitectura de Fichas de Canción Autónomas con Botones de Instrumentos & MuseScore):** Cada obra dispone de su ficha interactiva con botones 1-Tap para configurar timbres, ritmos, volúmenes y efectos en el Korg EK-50, enlazando directamente a la partitura oficial en MuseScore sin duplicar partituras locales innecesarias.

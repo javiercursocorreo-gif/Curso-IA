@@ -87,11 +87,14 @@
 ## Módulo Especializado de Música y Web MIDI (CURSO_MUSICA)
 - Para cualquier trabajo en el módulo `CURSO_MUSICA/` (Atril Digital, Korg EK-50, Web MIDI, partituras y canciones), rigen de forma prioritaria las reglas de oro y arquitectura establecidas en `CURSO_MUSICA/AGENTS.md` y `CURSO_MUSICA/GEMINI.md`:
   - Cero intervención manual del usuario en el teclado Korg EK-50 (todo automatizado por Web MIDI).
-  - Sincronización obligatoria en cada turno con la carpeta espejo de iCloud: `/Users/externo/Library/Mobile Documents/com~apple~CloudDocs/PERSONAL/CLASES DE TECNOLOGÍA/CURSO MUSICA`.
-  - Validación local en Google Chrome (soporte nativo Web MIDI en macOS).
+  - Unificación Canónica Absoluta: Solo existe una única carpeta física en el sistema (`CURSO-IA/CURSO_MUSICA`), sin enlaces simbólicos ni réplicas externas.
+  - Prohibición Total de Archivos de Herencia en Disco: Nunca crear `HERENCIA.md` en disco; la herencia se redacta en el texto del chat para copiar y pegar.
+  - Validación exclusiva en iPad (prohibido abrir navegadores o pestañas en el Mac).
   - Protocolo anti-bloqueo USB (prohibición de `0xF8` en reposo; encendido secuencial de Korg primero 5s).
   - Mapeo General MIDI estricto (Harmonica = PC 22; Acordeón = PC 21; inyección de Vibrato CC1/CC77 y Reverb CC91=115).
   - Activación física de capas en panel frontal mediante Keyboard Set 61 (The Strings).
+  - Índice ultra-compacto en 2 columnas sin autores (v111) para abarcar el catálogo completo de 24 obras a pantalla completa en el iPad sin scroll.
+  - Creación de fichas autónomas para cada canción con botones 1-Tap para instrumentos y estilos del Korg EK-50, enlazando directamente a las partituras oficiales de MuseScore.
 
 
 

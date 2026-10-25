@@ -2,7 +2,7 @@
 > **Proyecto:** Sistema de Atril Digital, Control Web MIDI y Repertorio Pedagógico Interactivo  
 > **Ubicación:** `CURSO_MUSICA/` · **Repositorio:** `CURSO-IA`  
 > **Dispositivo Principal:** Teclado Korg EK-50 Entertainer Keyboard conectado a iPad / Mac  
-> **Versión del Sistema:** v110 (Índice de Repertorio Compacto a 1 Línea por Canción · 24 Obras Maestras)
+> **Versión del Sistema:** v111 (Índice Ultra-Compacto 1 Línea sin Autores en 2 Columnas · 24 Obras Maestras)
 
 ---
 
@@ -332,11 +332,11 @@ Esta sección recopila los descubrimientos críticos de ingeniería realizados d
 * **Objetivo:** Incorporar 4 nuevas grandes obras mundiales (Amapola, Killing Me Softly with His Song, La Vie en Rose, Stand by Me) y reemplazar cualquier título genérico de estudio por su denominación oficial de éxito mundial contrastada en MuseScore.
 
 ### 6.20. Rediseño del Índice de Repertorio Compacto a 1 Sola Línea por Canción (v110)
-* **Objetivo:** Optimizar la ergonomía visual del menú principal en iPad eliminando subtítulos explicativos de autor, instrumentos, tempo y estilo en la vista de lista, condensando cada una de las 24 canciones en una única línea horizontal compacta y táctil.
-* **Aspectos Técnicos Implementados:**
-  1. **Filosofía de Información Progresiva:** La información técnica de detalle (autores, estilo Korg EK-50, tempos, registro STS y atajos Web MIDI) se traslada y mantiene íntegra dentro de la ficha de cada canción, dejando el índice principal 100% despejado y navegable.
-  2. **Contenedor Flexbox Compacto y Truncado Seguro:** Cada enlace `.song-link` adopta una altura mínima de 42px con alineación centrada y `white-space: nowrap; overflow: hidden; text-overflow: ellipsis;` para garantizar que ni en iPad vertical ni horizontal se generen saltos de línea indeseados.
-  3. **Identificación Inmediata de Destino:** Mantenimiento de flechas direccionales contextuales (`➔` para fichas interactivas locales y `↗` para partituras oficiales de MuseScore).
+* **Objetivo:** Optimizar la ergonomía visual del menú principal en iPad eliminando subtítulos explicativos de autor, instrumentos, tempo y estilo en la vista de lista.
+
+### 6.21. Índice Ultra-Compacto en Doble Columna y Supresión Total de Autores (v111)
+* **Objetivo:** Eliminar cualquier indicación de autores en los títulos para dejar exclusivamente el nombre limpio de la canción, y organizar las 5 categorías temáticas en una cuadrícula simétrica de 2 columnas (13 obras a la izquierda y 12 elementos a la derecha) con filas ultra-compactas de 33px de altura.
+* **Resultado:** El 100% del catálogo de 24 obras maestras queda visible y accesible de forma instantánea a pantalla completa en el iPad sin necesidad de realizar scroll.
 
 ---
 *Manual redactado y sellado para el proyecto CURSO-IA / CURSO_MUSICA. Todos los derechos reservados.*
