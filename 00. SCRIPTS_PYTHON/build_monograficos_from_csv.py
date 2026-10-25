@@ -31,18 +31,18 @@ CSV_ROWS = [
         "url": GITHUB_BASE + "CLASES/1.%20INTRODUCCION_GEMINI/%2A.Guia_Visual_de_Gemini.pdf",
         "type": "pdf"
     },
-    # MONOGRÁFICO 2 (NUEVO: ESTUDIO CREATIVO DE VIDEOJUEGOS)
+    # MONOGRÁFICO 2 (NUEVO: CREADOR DE VIDEOJUEGOS)
     {
-        "tema": "Monográfico 2. Crea Videojuegos para tus Nietos con IA (El Estudio Creativo)",
-        "titulo": "Aplicación Web Interactiva: El Estudio de Videojuegos del Abuelo (HTML)",
-        "desc": "Diseña videojuegos personalizados con el nombre y aficiones de tus nietos en 4 sencillos pasos. Incluye Cuestionario Creativo, Generador de Prompts y Probador en Vivo.",
+        "tema": "Monográfico 2. Crea Videojuegos para tus Nietos (El Creador Interactivo)",
+        "titulo": "Aplicación Web Interactiva: El Creador de Videojuegos para Nietos (HTML)",
+        "desc": "Crea videojuegos personalizados en segundos: escribe el nombre de tu nieto, elige el tipo de juego (Gran Laberinto de Robótica con antorcha, Atrapar objetos, Oruga, Memoria o Trivial), juega en pantalla y descarga el archivo HTML para jugar offline.",
         "url": "CLASES/MONO_002_VIDEOJUEGOS/ESTUDIO_CREATIVO_VIDEOJUEGOS.html",
         "type": "launch"
     },
     {
-        "tema": "Monográfico 2. Crea Videojuegos para tus Nietos con IA (El Estudio Creativo)",
+        "tema": "Monográfico 2. Crea Videojuegos para tus Nietos (El Creador Interactivo)",
         "titulo": "Material: Ficha Didáctica del Alumno MONO-002 (PDF)",
-        "desc": "Metodología en 3 pasos, los 4 modelos clásicos de juegos infantiles y guía para guardar el archivo en el ordenador y jugar en casa.",
+        "desc": "Metodología del taller, los 5 formatos de videojuegos infantiles, el Prompt Maestro para Gemini y guía paso a paso para descargar y jugar.",
         "url": "CLASES/MONO_002_VIDEOJUEGOS/MONO-002_Crea_Videojuegos_para_tus_Nietos_con_IA.pdf",
         "type": "pdf"
     },

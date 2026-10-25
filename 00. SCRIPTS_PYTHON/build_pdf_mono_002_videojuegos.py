@@ -86,10 +86,10 @@ def build_pdf():
     # El Método en 4 Pasos
     story.append(Paragraph("<b>El Método del Taller en 4 Pasos:</b>", style_section_h))
     steps_rows = [
-        [Paragraph("<b>1. Diseña tu Idea y Rellena los [Corchetes]:</b> Abre la app del taller y define el nombre de tu nieto, la mecánica que imaginas (naves, comecocos, carreras, laberinto...) y tu mensaje de victoria.", style_task)],
-        [Paragraph("<b>2. Copia tu Prompt Maestro a Gemini:</b> Entra en <i>gemini.google.com</i>, pega el texto y pulsa Enviar. La IA generará el juego completo e interactivo.", style_task)],
-        [Paragraph("<b>3. Pruébalo y Habla con Gemini:</b> Juega directamente en pantalla. Pídele cambios como a un programador: <i>«Haz que vaya más lento»</i>, <i>«Añade música al ganar»</i> o <i>«Pon botones más grandes»</i>.", style_task)],
-        [Paragraph("<b>4. Descárgalo y Guárdalo en tu PC:</b> Pulsa el botón <i>Descargar</i> en Gemini o usa el probador del curso para guardarlo como archivo <i>.html</i> y jugarlo siempre sin internet.", style_task)],
+        [Paragraph("<b>1. Diseña tu Idea en la App del Taller:</b> Escribe el nombre de tu nieto, elige el tipo de juego (Atrapar, Laberinto, Oruga, Memoria o Trivial), tu personaje y el mensaje de victoria.", style_task)],
+        [Paragraph("<b>2. ¡Crear y Jugar en Pantalla!:</b> Pulsa el botón verde «Crear mi Videojuego» y tu juego arranca de inmediato en la pantalla, 100% interactivo con flechas de teclado y botones táctiles.", style_task)],
+        [Paragraph("<b>3. Descárgalo en 1 Clic a tu PC:</b> Pulsa «Descargar Juego (.html)» para guardar el archivo en tu carpeta de Descargas y jugarlo siempre a pantalla completa sin internet.", style_task)],
+        [Paragraph("<b>4. Opcional (El Prompt Maestro para Gemini):</b> Si quieres experimentar con la IA, copia el Prompt Maestro incluido abajo y pídele a Gemini que te invente variantes.", style_task)],
     ]
     st_table = Table(steps_rows, colWidths=[letter[0] - 72])
     st_table.setStyle(TableStyle([
@@ -109,15 +109,15 @@ def build_pdf():
     prompt_content = (
         "Actúa como programador senior experto en videojuegos educativos para niños. Crea un juego completo, jugable al 100% y sin fallos, en UN ÚNICO ARCHIVO HTML autónomo (con CSS y JavaScript embebido) para mi nieto/a llamado <b>[NOMBRE DE TU NIETO/A]</b>.<br/><br/>"
         "<b>DATOS DEL JUEGO:</b><br/>"
-        "• <b>MECÁNICA / TIPO DE JUEGO:</b> [ej. Nave espacial esquivando meteoritos / Perrito atrapando manzanas / Coche de carreras / Laberinto del tesoro / Comecocos en la granja...]<br/>"
-        "• <b>PROTAGONISTA Y ELEMENTOS:</b> [ej. Nave espacial, asteroides y estrellas doradas]<br/>"
-        "• <b>OBJETIVO PARA GANAR:</b> [ej. Conseguir 10 puntos sin chocar con los obstáculos]<br/>"
-        "• <b>MENSAJE DE VICTORIA DEL ABUELO:</b> \"[ej. ¡Eres un auténtico campeón! El abuelo te quiere con locura]\"<br/><br/>"
+        "• <b>MECÁNICA / TIPO DE JUEGO:</b> [ej. Gran Aventura del Laberinto (con llave dorada, gemas, antorcha y cofre final) / Atrapar objetos / Oruga glotona / Trivial familiar...]<br/>"
+        "• <b>PROTAGONISTA Y ELEMENTOS:</b> [ej. Robot Explorador, gemas brillantes, llave dorada y cofre]<br/>"
+        "• <b>OBJETIVO PARA GANAR:</b> [ej. Recoger las 4 gemas, encontrar la llave oculta y abrir el cofre del tesoro]<br/>"
+        "• <b>MENSAJE DE VICTORIA DEL ABUELO:</b> \"[ej. ¡Eres un auténtico genio de la robótica y la exploración! El abuelo está muy orgulloso de ti]\"<br/><br/>"
         "<b>REGLAS DE INGENIERÍA:</b><br/>"
-        "1. <b>Controles duales:</b> Funciona con flechas del teclado (Flechas de dirección y WASD) y muestra una botonera táctil en cruz en pantalla.<br/>"
-        "2. <b>Instrucciones en pantalla:</b> Cabecera clara explicando «CÓMO JUGAR: Objetivo...» y controles para que niños y abuelos lo entiendan de inmediato.<br/>"
-        "3. <b>Estilo visual:</b> Fondo azul noche o colorido con contraste (prohibido fondo negro #000000). Usa emojis para los gráficos sin imágenes externas.<br/>"
-        "4. <b>Pantalla de victoria:</b> Fanfarria sonora alegre (Web Audio API nativo), cartel gigante de felicitación y botón grande «¡Jugar Otra Vez!».<br/>"
+        "1. <b>Motor y Gráficos:</b> Laberinto en Canvas HTML5 con generación procedural, muros 3D, niebla/antorcha atmosférica y efectos sonoros nativos (Web Audio API).<br/>"
+        "2. <b>Controles duales:</b> Funciona con flechas del teclado (Flechas de dirección y WASD) y muestra una botonera táctil en cruz en pantalla.<br/>"
+        "3. <b>Instrucciones en pantalla:</b> Cabecera clara explicando «CÓMO JUGAR: Objetivo...», marcador de gemas y estado de la llave.<br/>"
+        "4. <b>Pantalla de victoria:</b> Lluvia de confeti, fanfarria sonora alegre (Web Audio API nativo) y cartel gigante con el mensaje del abuelo y botón «¡Jugar Otra Vez!».<br/>"
         "5. Entrega exclusivamente el código completo dentro de un bloque HTML (desde &lt;!DOCTYPE html&gt; hasta &lt;/html&gt;)."
     )
 
@@ -145,9 +145,8 @@ def build_pdf():
     # Cómo Guardarlo en el Ordenador
     story.append(Paragraph("<b>Cómo Guardar el Archivo en tu Ordenador para Jugar Siempre:</b>", style_section_h))
     save_text = (
-        "• <b>Método 1 (Directo desde Gemini):</b> En el bloque de código de Gemini pulsa el icono de <b>Descargar</b> (o cópialo).<br/>"
-        "• <b>Método 2 (Con la App del Curso):</b> Abre el <i>Estudio de Videojuegos</i> en el mapa del curso, ve a la pestaña <b>«2. Probador Libre»</b>, pega el código y pulsa <b>«Guardar Archivo en mi Ordenador»</b>. "
-        "Se descargará directamente el archivo <i>Juego_Para_Mi_Nieto.html</i> a tu carpeta de Descargas.<br/>"
+        "• <b>Método 1 (Descarga Directa en 1 Clic):</b> Abre el <i>Creador de Videojuegos</i> en el mapa del curso, pulsa «Crear mi Videojuego» y haz clic en <b>«Descargar Juego (.html) a mi Ordenador»</b>. Se guardará directamente en tu carpeta de Descargas.<br/>"
+        "• <b>Método 2 (Desde Gemini):</b> Si usas el Prompt Maestro en Gemini, en la esquina superior del bloque de código pulsa el icono de <b>Descargar</b> (o cópialo).<br/>"
         "• <b>A jugar:</b> Haz doble clic sobre el archivo y se abrirá en pantalla completa en Safari o Chrome, listo para jugar en familia sin necesidad de conexión a internet."
     )
     s_table = Table([[Paragraph(save_text, style_task)]], colWidths=[letter[0] - 72])
