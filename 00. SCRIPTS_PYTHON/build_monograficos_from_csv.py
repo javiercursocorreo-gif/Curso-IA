@@ -3,125 +3,145 @@
 """
 build_monograficos_from_csv.py
 Genera:
-1. El archivo CSV oficial 0.PANEL_MONOGRAFICOS.csv listo para importar directamente
-   en Google Classroom (con todos los enlaces, títulos y descripciones ya creados).
-2. El Mapa Maestro de Monográficos (MAPA_MONOGRAFICOS.html) con los 7 monográficos.
-3. La Ficha Didáctica Oficial MONO-002 en PDF.
+1. Los archivos CSV oficiales separados por cada monográfico en PANELES_CSV/
+   para poder publicarlos en Google Classroom UNO A UNO según el ritmo de la clase:
+   - 1.PANEL_MONOGRAFICO_1_GEMINI_PC_Y_MOVIL.csv
+   - 2.PANEL_MONOGRAFICO_2_GEMINI_NOTEBOOK.csv
+   - 3.PANEL_MONOGRAFICO_3_CUENTO_ILUSTRADO.csv
+   - 4.PANEL_MONOGRAFICO_4_MI_BIOGRAFIA.csv
+   - 5.PANEL_MONOGRAFICO_5_EDUCANIETOS_IA.csv
+   - 7.PANEL_MONOGRAFICO_7_MAPA_GESTION_PROYECTO.csv
+   - 0.PANEL_MONOGRAFICOS.csv (completo en raíz y en PANELES_CSV/)
+2. El Mapa Maestro de Monográficos (MAPA_MONOGRAFICOS.html) con los 6 monográficos oficiales vigentes.
 """
 
 import os
 import sys
+import csv
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 BASE_DIR = os.path.abspath(os.path.join(SCRIPT_DIR, ".."))
 DIR_104 = os.path.join(BASE_DIR, "104 ESTILO ANIMADOS SIN PROGRAMAR")
+DIR_PANELES = os.path.join(BASE_DIR, "PANELES_CSV")
 ROOT_MAP = os.path.join(BASE_DIR, "MAPA_MONOGRAFICOS.html")
 MAP_IN_104 = os.path.join(DIR_104, "MAPA_MONOGRAFICOS.html")
-OUTPUT_CSV = os.path.join(BASE_DIR, "0.PANEL_MONOGRAFICOS.csv")
-OUTPUT_CSV_PANELES = os.path.join(BASE_DIR, "PANELES_CSV", "0.PANEL_MONOGRAFICOS.csv")
+ROOT_CSV = os.path.join(BASE_DIR, "0.PANEL_MONOGRAFICOS.csv")
+PANELES_CSV_TOTAL = os.path.join(DIR_PANELES, "0.PANEL_MONOGRAFICOS.csv")
+
+os.makedirs(DIR_PANELES, exist_ok=True)
 
 GITHUB_BASE = "https://javiercursocorreo-gif.github.io/Curso-IA/"
 
+# CATÁLOGO OFICIAL ORIGINAL DE LOS 6 MONOGRÁFICOS
 CSV_ROWS = [
     # MONOGRÁFICO 1
     {
+        "num": 1,
+        "file_suffix": "1_GEMINI_PC_Y_MOVIL",
         "tema": "Monográfico 1. Gemini en PC y Móvil (Instalación y Uso)",
         "titulo": "Material: Guia Visual de Gemini (PDF)",
         "desc": "Nuestra IA de cabecera: manejo en ordenador, instalación de la app oficial en el móvil, dictado por voz y fotos con la cámara.",
         "url": GITHUB_BASE + "CLASES/1.%20INTRODUCCION_GEMINI/%2A.Guia_Visual_de_Gemini.pdf",
         "type": "pdf"
     },
-    # MONOGRÁFICO 2 (NUEVO: CREADOR DE VIDEOJUEGOS)
+    # MONOGRÁFICO 2
     {
-        "tema": "Monográfico 2. Crea Videojuegos para tus Nietos (El Creador Interactivo)",
-        "titulo": "Aplicación Web Interactiva: El Creador de Videojuegos para Nietos (HTML)",
-        "desc": "Crea videojuegos personalizados en segundos: escribe el nombre de tu nieto, elige el tipo de juego (Gran Laberinto de Robótica con antorcha, Atrapar objetos, Oruga, Memoria o Trivial), juega en pantalla y descarga el archivo HTML para jugar offline.",
-        "url": "CLASES/MONO_002_VIDEOJUEGOS/ESTUDIO_CREATIVO_VIDEOJUEGOS.html",
-        "type": "launch"
-    },
-    {
-        "tema": "Monográfico 2. Crea Videojuegos para tus Nietos (El Creador Interactivo)",
-        "titulo": "Material: Ficha Didáctica del Alumno MONO-002 (PDF)",
-        "desc": "Metodología del taller, los 5 formatos de videojuegos infantiles, el Prompt Maestro para Gemini y guía paso a paso para descargar y jugar.",
-        "url": "CLASES/MONO_002_VIDEOJUEGOS/MONO-002_Crea_Videojuegos_para_tus_Nietos_con_IA.pdf",
-        "type": "pdf"
-    },
-    # MONOGRÁFICO 3
-    {
-        "tema": "Monográfico 3. Gemini Notebook: Tu Cuaderno Inteligente",
+        "num": 2,
+        "file_suffix": "2_GEMINI_NOTEBOOK",
+        "tema": "Monográfico 2. Gemini Notebook: Tu Cuaderno Inteligente",
         "titulo": "Ejemplo de Prueba: Guia de NotebookLM (PDF)",
         "desc": "Tu biblioteca personal inteligente: cómo subir documentos familiares o recuerdos para resumir, hacer preguntas y generar guiones.",
         "url": GITHUB_BASE + "CLASES/2.%20INTRODUCCION_NLM/1.%20PRESENTACI%C3%93N%20A%20LOS%20ALUMNOS/%2A.Guia_de_NotebookLM.pdf",
         "type": "pdf"
     },
-    # MONOGRÁFICO 4
+    # MONOGRÁFICO 3
     {
-        "tema": "Monográfico 4. Cómo Crear un Cuento Ilustrado con Gemini Notebook",
+        "num": 3,
+        "file_suffix": "3_CUENTO_ILUSTRADO",
+        "tema": "Monográfico 3. Cómo Crear un Cuento Ilustrado con Gemini Notebook",
         "titulo": "Material: Paso 0 Introduccion Proyecto (PDF)",
         "desc": "Metodología en 3 pasos para crear historias inolvidables con Gemini Notebook y Gemini: el héroe, el guion por escenas y las ilustraciones para los nietos.",
         "url": GITHUB_BASE + "CLASES/3.%20COMO_HACER_UN_CUENTO_CON_NLM/%2A.%20Paso_0_Introduccion_Proyecto.pdf",
         "type": "pdf"
     },
     {
-        "tema": "Monográfico 4. Cómo Crear un Cuento Ilustrado con Gemini Notebook",
+        "num": 3,
+        "file_suffix": "3_CUENTO_ILUSTRADO",
+        "tema": "Monográfico 3. Cómo Crear un Cuento Ilustrado con Gemini Notebook",
         "titulo": "Material: Paso 1 Crear el Cuento (PDF)",
         "desc": "Metodología en 3 pasos para crear historias inolvidables con Gemini Notebook y Gemini: el héroe, el guion por escenas y las ilustraciones para los nietos.",
         "url": GITHUB_BASE + "CLASES/3.%20COMO_HACER_UN_CUENTO_CON_NLM/%2A.%20Paso_1_Crear_el_Cuento.pdf",
         "type": "pdf"
     },
     {
-        "tema": "Monográfico 4. Cómo Crear un Cuento Ilustrado con Gemini Notebook",
+        "num": 3,
+        "file_suffix": "3_CUENTO_ILUSTRADO",
+        "tema": "Monográfico 3. Cómo Crear un Cuento Ilustrado con Gemini Notebook",
         "titulo": "Material: Paso 2 Generador de Guion (PDF)",
         "desc": "Metodología en 3 pasos para crear historias inolvidables con Gemini Notebook y Gemini: el héroe, el guion por escenas y las ilustraciones para los nietos.",
         "url": GITHUB_BASE + "CLASES/3.%20COMO_HACER_UN_CUENTO_CON_NLM/%2A.%20Paso_2_Generador_de_Guion.pdf",
         "type": "pdf"
     },
     {
-        "tema": "Monográfico 4. Cómo Crear un Cuento Ilustrado con Gemini Notebook",
+        "num": 3,
+        "file_suffix": "3_CUENTO_ILUSTRADO",
+        "tema": "Monográfico 3. Cómo Crear un Cuento Ilustrado con Gemini Notebook",
         "titulo": "Material: Paso 3 Ilustrador Visual (PDF)",
         "desc": "Metodología en 3 pasos para crear historias inolvidables con Gemini Notebook y Gemini: el héroe, el guion por escenas y las ilustraciones para los nietos.",
         "url": GITHUB_BASE + "CLASES/3.%20COMO_HACER_UN_CUENTO_CON_NLM/%2A.%20Paso_3_Ilustrador_Visual.pdf",
         "type": "pdf"
     },
-    # MONOGRÁFICO 5
+    # MONOGRÁFICO 4
     {
-        "tema": "Monográfico 5. Mi Biografía (Escribe tus Memorias con IA)",
+        "num": 4,
+        "file_suffix": "4_MI_BIOGRAFIA",
+        "tema": "Monográfico 4. Mi Biografía (Escribe tus Memorias con IA)",
         "titulo": "Aplicación Web Interactiva: Mi Biografía (HTML)",
         "desc": "Escribe tus memorias familiares con ayuda de la IA: asistente interactivo para redactar vivencias, anécdotas y tu legado personal.",
         "url": GITHUB_BASE + "CLASES/4.%20Mi_Biografia/%2A.Mi_Biografia.html",
         "type": "launch"
     },
     {
-        "tema": "Monográfico 5. Mi Biografía (Escribe tus Memorias con IA)",
+        "num": 4,
+        "file_suffix": "4_MI_BIOGRAFIA",
+        "tema": "Monográfico 4. Mi Biografía (Escribe tus Memorias con IA)",
         "titulo": "Material: Manual de Instrucciones (PDF)",
         "desc": "Escribe tus memorias familiares con ayuda de la IA: asistente interactivo para redactar vivencias, anécdotas y tu legado personal.",
         "url": GITHUB_BASE + "CLASES/4.%20Mi_Biografia/%2A.Manual_de_Instrucciones.pdf",
         "type": "pdf"
     },
-    # MONOGRÁFICO 6
+    # MONOGRÁFICO 5
     {
-        "tema": "Monográfico 6. Educanietos IA: Ayuda a tus Nietos con IA (Ciencias, Mates e Historia)",
+        "num": 5,
+        "file_suffix": "5_EDUCANIETOS_IA",
+        "tema": "Monográfico 5. Educanietos IA: Ayuda a tus Nietos con IA (Ciencias, Mates e Historia)",
         "titulo": "Aplicación Web Interactiva: Educanietos IA (HTML)",
         "desc": "Tu rol de mentor escolar: cómo explicar ciencias y matemáticas razonadas paso a paso y guiar las sesiones de estudio en pantalla con Gemini Notebook.",
         "url": GITHUB_BASE + "CLASES/5.%20EL_ABUELO_TUTOR_MATEMATICAS_HISTORIA/%2Aapp/index.html",
         "type": "launch"
     },
     {
-        "tema": "Monográfico 6. Educanietos IA: Ayuda a tus Nietos con IA (Ciencias, Mates e Historia)",
+        "num": 5,
+        "file_suffix": "5_EDUCANIETOS_IA",
+        "tema": "Monográfico 5. Educanietos IA: Ayuda a tus Nietos con IA (Ciencias, Mates e Historia)",
         "titulo": "Material: FICHA MONOGRAFICO EDUCANIETOS IA (PDF)",
         "desc": "Tu rol de mentor escolar: cómo explicar ciencias y matemáticas razonadas paso a paso y guiar las sesiones de estudio en pantalla con Gemini Notebook.",
         "url": GITHUB_BASE + "CLASES/5.%20EL_ABUELO_TUTOR_MATEMATICAS_HISTORIA/%2A.pdf",
         "type": "pdf"
     },
     {
-        "tema": "Monográfico 6. Educanietos IA: Ayuda a tus Nietos con IA (Ciencias, Mates e Historia)",
+        "num": 5,
+        "file_suffix": "5_EDUCANIETOS_IA",
+        "tema": "Monográfico 5. Educanietos IA: Ayuda a tus Nietos con IA (Ciencias, Mates e Historia)",
         "titulo": "Ejemplo de Prueba: APUNTES HISTORIA EJEMPLO REYES CATOLICOS (TXT)",
         "desc": "Tu rol de mentor escolar: cómo explicar ciencias y matemáticas razonadas paso a paso y guiar las sesiones de estudio en pantalla con Gemini Notebook.",
         "url": GITHUB_BASE + "CLASES/5.%20EL_ABUELO_TUTOR_MATEMATICAS_HISTORIA/EJEMPLOS_PRUEBA/%2A.APUNTES_HISTORIA_EJEMPLO_REYES_CATOLICOS.txt",
         "type": "book"
     },
     {
-        "tema": "Monográfico 6. Educanietos IA: Ayuda a tus Nietos con IA (Ciencias, Mates e Historia)",
+        "num": 5,
+        "file_suffix": "5_EDUCANIETOS_IA",
+        "tema": "Monográfico 5. Educanietos IA: Ayuda a tus Nietos con IA (Ciencias, Mates e Historia)",
         "titulo": "Ejemplo de Prueba: PROBLEMAS MATES GUIA EJEMPLOS (TXT)",
         "desc": "Tu rol de mentor escolar: cómo explicar ciencias y matemáticas razonadas paso a paso y guiar las sesiones de estudio en pantalla con Gemini Notebook.",
         "url": GITHUB_BASE + "CLASES/5.%20EL_ABUELO_TUTOR_MATEMATICAS_HISTORIA/EJEMPLOS_PRUEBA/%2A.PROBLEMAS_MATES_GUIA_EJEMPLOS.txt",
@@ -129,6 +149,8 @@ CSV_ROWS = [
     },
     # MONOGRÁFICO 7
     {
+        "num": 7,
+        "file_suffix": "7_MAPA_GESTION_PROYECTO",
         "tema": "Monográfico 7. Mapa de Gestión del Proyecto con IA (Arquitectura y Flujo de Trabajo)",
         "titulo": "Infografía Interactiva: Mapa de Gestión del Proyecto con IA (HTML)",
         "desc": "Cómo creamos y publicamos este curso en equipo: el profesor, Antigravity en el PC, sincronización en GitHub y distribución automática en Google Classroom para los alumnos.",
@@ -136,6 +158,8 @@ CSV_ROWS = [
         "type": "launch"
     },
     {
+        "num": 7,
+        "file_suffix": "7_MAPA_GESTION_PROYECTO",
         "tema": "Monográfico 7. Mapa de Gestión del Proyecto con IA (Arquitectura y Flujo de Trabajo)",
         "titulo": "Infografía: Creacion de materiales con IA (PNG)",
         "desc": "Cómo creamos y publicamos este curso en equipo: el profesor, Antigravity en el PC, sincronización en GitHub y distribución automática en Google Classroom para los alumnos.",
@@ -144,18 +168,27 @@ CSV_ROWS = [
     }
 ]
 
-def generate_csv_file():
-    # En el modelo unificado vigente no se utilizan paneles sueltos como 0.PANEL_MONOGRAFICOS.csv.
-    # El archivo maestro único es PANELES_CSV/CURSO_IA_UNIFICADO.csv.
-    pass
+def generate_csv_files():
+    """Genera exclusivamente el archivo CSV maestro único de Monográficos."""
+    headers = ["ID_CURSO", "TEMA_CLASSROOM", "TITULO_MATERIAL", "DESCRIPCION_MATERIAL", "URL_GITHUB"]
+
+    # CSV General Único (en raíz y en PANELES_CSV/)
+    for path in [ROOT_CSV, PANELES_CSV_TOTAL]:
+        with open(path, "w", encoding="utf-8", newline="") as f:
+            writer = csv.writer(f)
+            writer.writerow(headers)
+            for r in CSV_ROWS:
+                writer.writerow(["", r["tema"], r["titulo"], r["desc"], r["url"]])
+    print(f"✅ CSV Maestro Único de Monográficos restaurado con éxito en:\n   - {ROOT_CSV}\n   - {PANELES_CSV_TOTAL}")
 
 def generate_master_map():
-    # Agrupar por temas para las tarjetas
+    """Genera el Mapa Maestro MAPA_MONOGRAFICOS.html con los 6 monográficos oficiales vigentes."""
     cards_dict = {}
     for r in CSV_ROWS:
         tema = r["tema"]
         if tema not in cards_dict:
             cards_dict[tema] = {
+                "num": r["num"],
                 "tema": tema,
                 "desc": r["desc"],
                 "items": []
@@ -172,8 +205,8 @@ def generate_master_map():
         cards_html += f"""
             <div class="mono-card">
                 <div class="card-top">
-                    <span class="mono-num">MONOGRÁFICO</span>
-                    <span class="tag-active">● DISPONIBLE</span>
+                    <span class="mono-num">MONOGRÁFICO {data["num"]}</span>
+                    <span class="tag-active">● DISPONIBLE EN CLASSROOM</span>
                 </div>
                 <h2 class="mono-title">{tema}</h2>
                 <p class="mono-desc">{data["desc"]}</p>
@@ -197,6 +230,7 @@ def generate_master_map():
             --primary: #38bdf8;
             --emerald: #34d399;
             --amber: #fbbf24;
+            --purple: #8b5cf6;
             --text-main: #f8fafc;
             --text-sub: #cbd5e1;
             --text-muted: #94a3b8;
@@ -216,228 +250,231 @@ def generate_master_map():
         }}
 
         header {{
-            padding: 32px 24px 22px;
+            padding: 36px 24px 22px;
             text-align: center;
-            background: linear-gradient(180deg, rgba(15, 23, 42, 0.85) 0%, rgba(15, 23, 42, 0) 100%);
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(12px);
             border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            position: sticky;
+            top: 0;
+            z-index: 50;
         }}
 
-        .header-pill {{
+        .brand-badge {{
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            padding: 6px 18px;
-            border-radius: 9999px;
             background: rgba(56, 189, 248, 0.12);
-            border: 1px solid rgba(56, 189, 248, 0.4);
-            color: var(--primary);
-            font-size: 0.82rem;
+            border: 1px solid rgba(56, 189, 248, 0.35);
+            padding: 5px 14px;
+            border-radius: 9999px;
+            font-size: 0.78rem;
             font-weight: 700;
+            color: var(--primary);
             text-transform: uppercase;
             letter-spacing: 0.08em;
             margin-bottom: 12px;
         }}
-        .pulse-dot {{
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: var(--primary);
-            box-shadow: 0 0 10px var(--primary);
-            animation: pulse 2s infinite;
-        }}
-        @keyframes pulse {{ 0%, 100% {{ opacity: 1; transform: scale(1); }} 50% {{ opacity: 0.4; transform: scale(0.85); }} }}
 
         h1 {{
-            font-size: 2.2rem;
+            font-size: 2.1rem;
             font-weight: 900;
-            letter-spacing: -0.02em;
-            background: linear-gradient(135deg, #ffffff 40%, #94a3b8 100%);
+            letter-spacing: -0.03em;
+            background: linear-gradient(to right, #ffffff, #93c5fd, #38bdf8);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             margin-bottom: 8px;
         }}
 
-        p.subtitle {{
-            color: var(--text-sub);
-            font-size: 1.05rem;
-            max-width: 800px;
-            margin: 0 auto;
+        .subtitle {{
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            max-width: 780px;
+            margin: 0 auto 16px;
             line-height: 1.5;
         }}
 
         .controls-bar {{
-            max-width: 1300px;
-            margin: 24px auto 0;
-            padding: 0 24px;
-            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 14px;
         }}
-        .search-box {{ width: 100%; position: relative; }}
+
+        .search-box {{
+            position: relative;
+            width: 100%;
+            max-width: 440px;
+        }}
+
         .search-input {{
             width: 100%;
-            background: rgba(15, 23, 42, 0.8);
+            background: rgba(2, 6, 23, 0.8);
             border: 1px solid rgba(255, 255, 255, 0.15);
             border-radius: 12px;
-            padding: 14px 18px 14px 46px;
-            color: var(--text-main);
-            font-size: 1rem;
+            padding: 10px 16px 10px 40px;
+            color: #fff;
+            font-size: 0.9rem;
             outline: none;
             transition: all 0.2s;
         }}
+
         .search-input:focus {{
             border-color: var(--primary);
-            box-shadow: 0 0 16px rgba(56, 189, 248, 0.3);
+            box-shadow: 0 0 12px rgba(56, 189, 248, 0.3);
         }}
+
         .search-icon {{
             position: absolute;
-            left: 16px;
+            left: 14px;
             top: 50%;
             transform: translateY(-50%);
+            font-size: 0.95rem;
             color: var(--text-muted);
-            font-size: 1.1rem;
+            pointer-events: none;
         }}
 
         .canvas-container {{
             flex: 1;
-            padding: 32px 24px 60px;
-            max-width: 1300px;
-            margin: 0 auto;
+            max-width: 1340px;
             width: 100%;
+            margin: 0 auto;
+            padding: 32px 24px 60px;
         }}
 
         .monos-grid {{
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
-            gap: 24px;
+            gap: 22px;
         }}
 
         .mono-card {{
             background: var(--bg-card);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            border-radius: 18px;
-            padding: 26px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 22px;
             display: flex;
             flex-direction: column;
-            gap: 16px;
-            box-shadow: 0 14px 34px rgba(0, 0, 0, 0.4);
-            transition: all 0.25s ease;
+            justify-content: space-between;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            transition: transform 0.2s ease, border-color 0.2s ease;
         }}
+
         .mono-card:hover {{
-            transform: translateY(-4px);
-            border-color: var(--primary);
-            box-shadow: 0 20px 44px rgba(0, 0, 0, 0.6), 0 0 20px rgba(56, 189, 248, 0.2);
+            transform: translateY(-3px);
+            border-color: rgba(56, 189, 248, 0.4);
+            box-shadow: 0 14px 40px rgba(0, 0, 0, 0.55);
         }}
 
         .card-top {{
             display: flex;
             align-items: center;
             justify-content: space-between;
+            margin-bottom: 12px;
         }}
 
         .mono-num {{
             font-family: var(--font-mono);
-            font-size: 0.85rem;
+            font-size: 0.72rem;
             font-weight: 800;
-            padding: 4px 12px;
-            border-radius: 8px;
-            background: rgba(56, 189, 248, 0.15);
             color: var(--primary);
-            border: 1px solid rgba(56, 189, 248, 0.35);
+            background: rgba(56, 189, 248, 0.12);
+            border: 1px solid rgba(56, 189, 248, 0.25);
+            padding: 3px 8px;
+            border-radius: 6px;
         }}
 
         .tag-active {{
-            font-size: 0.75rem;
-            font-weight: 800;
-            padding: 4px 10px;
-            border-radius: 6px;
-            background: rgba(52, 211, 153, 0.15);
+            font-size: 0.7rem;
+            font-weight: 700;
             color: var(--emerald);
-            border: 1px solid var(--emerald);
-            text-transform: uppercase;
         }}
 
         .mono-title {{
-            font-size: 1.25rem;
+            font-size: 1.15rem;
             font-weight: 800;
+            color: #fff;
+            margin-bottom: 8px;
             line-height: 1.35;
-            color: var(--text-main);
         }}
 
         .mono-desc {{
-            font-size: 0.92rem;
+            font-size: 0.86rem;
             color: var(--text-sub);
-            line-height: 1.55;
-            flex: 1;
+            line-height: 1.5;
+            margin-bottom: 18px;
+            flex-grow: 1;
         }}
 
         .actions-stack {{
             display: flex;
             flex-direction: column;
             gap: 8px;
-            padding-top: 14px;
-            border-top: 1px solid rgba(255, 255, 255, 0.08);
         }}
 
         .btn-action {{
             display: flex;
             align-items: center;
-            justify-content: center;
-            gap: 8px;
-            padding: 10px 14px;
+            justify-content: space-between;
+            padding: 9px 14px;
             border-radius: 10px;
+            font-size: 0.82rem;
             font-weight: 700;
-            font-size: 0.88rem;
             text-decoration: none;
-            cursor: pointer;
-            transition: all 0.2s;
-            border: 1px solid transparent;
-            text-align: center;
+            transition: all 0.15s;
         }}
+
         .btn-launch {{
-            background: linear-gradient(135deg, #0284c7, #0ea5e9);
-            color: #ffffff;
-            box-shadow: 0 4px 14px rgba(2, 132, 199, 0.4);
+            background: linear-gradient(135deg, rgba(56, 189, 248, 0.2), rgba(2, 132, 199, 0.3));
+            border: 1px solid rgba(56, 189, 248, 0.4);
+            color: #7dd3fc;
         }}
         .btn-launch:hover {{
-            background: linear-gradient(135deg, #0369a1, #0284c7);
-            box-shadow: 0 6px 20px rgba(2, 132, 199, 0.6);
-            transform: translateY(-1px);
+            background: rgba(56, 189, 248, 0.35);
+            color: #fff;
+            transform: translateX(2px);
         }}
 
         .btn-pdf {{
-            background: rgba(56, 189, 248, 0.1);
-            color: var(--primary);
-            border-color: rgba(56, 189, 248, 0.3);
+            background: rgba(239, 68, 68, 0.12);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #fca5a5;
         }}
-        .btn-pdf:hover {{ background: rgba(56, 189, 248, 0.2); }}
+        .btn-pdf:hover {{
+            background: rgba(239, 68, 68, 0.25);
+            color: #fff;
+            transform: translateX(2px);
+        }}
 
         .btn-book {{
-            background: rgba(255, 255, 255, 0.05);
-            color: var(--text-sub);
-            border-color: rgba(255, 255, 255, 0.1);
-            font-size: 0.82rem;
+            background: rgba(251, 191, 36, 0.12);
+            border: 1px solid rgba(251, 191, 36, 0.3);
+            color: #fde68a;
         }}
-        .btn-book:hover {{ background: rgba(255, 255, 255, 0.12); color: var(--text-main); }}
+        .btn-book:hover {{
+            background: rgba(251, 191, 36, 0.25);
+            color: #fff;
+            transform: translateX(2px);
+        }}
 
         footer {{
-            padding: 24px;
             text-align: center;
+            padding: 24px;
+            font-size: 0.8rem;
             color: var(--text-muted);
-            font-size: 0.85rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-            background: rgba(15, 23, 42, 0.6);
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(2, 6, 23, 0.9);
         }}
     </style>
 </head>
 <body>
-
     <header>
-        <div class="header-pill">
-            <div class="pulse-dot"></div>
-            <span>Catálogo Dinámico Permanente • 7 Monográficos Oficiales</span>
-        </div>
-        <h1>📚 Monográficos & Talleres Especiales de IA</h1>
+        <div class="brand-badge">CATÁLOGO OFICIAL • GOOGLE CLASSROOM & GITHUB PAGES</div>
+        <h1>Monográficos & Talleres Especiales de IA</h1>
         <p class="subtitle">
             Cuadernos prácticos, talleres visuales y monográficos complementarios del Curso de IA para Adultos Mayores.
+            Disponibles en Google Classroom mediante ficheros CSV independientes para publicar sesión a sesión.
         </p>
 
         <div class="controls-bar">
@@ -481,17 +518,20 @@ def generate_master_map():
     if os.path.exists(DIR_104):
         with open(MAP_IN_104, "w", encoding="utf-8") as f:
             f.write(full_html)
-    print(f"✅ Mapa Maestro HTML generado en:\n   {ROOT_MAP}")
+    print(f"✅ Mapa Maestro HTML generado en:\n   - {ROOT_MAP}\n   - {MAP_IN_104}")
 
 def main():
     print("=" * 80)
-    print("🚀 GENERACIÓN DEL MAPA OFICIAL DE MONOGRÁFICOS (6 MONOGRÁFICOS VIGENTES)")
+    print("🚀 GENERACIÓN DE MONOGRÁFICOS OFICIALES Y CSVs PARA GOOGLE CLASSROOM")
     print("=" * 80)
 
-    # Generar MAPA_MONOGRAFICOS.html con los 6 monográficos oficiales vigentes
+    # 1. Generar los archivos CSV separados por cada monográfico + el CSV general
+    generate_csv_files()
+
+    # 2. Generar el Mapa Maestro MAPA_MONOGRAFICOS.html (6 monográficos oficiales vigentes)
     generate_master_map()
 
-    print("\n✨ Mapa Maestro listo para ver en Safari y desplegar en GitHub Pages.")
+    print("\n✨ Proceso completado con éxito. CSVs listos para importar uno a uno en Classroom.")
 
 if __name__ == "__main__":
     main()
