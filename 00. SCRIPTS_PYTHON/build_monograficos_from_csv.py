@@ -169,17 +169,12 @@ CSV_ROWS = [
 ]
 
 def generate_csv_files():
-    """Genera exclusivamente el archivo CSV maestro único de Monográficos."""
-    headers = ["ID_CURSO", "TEMA_CLASSROOM", "TITULO_MATERIAL", "DESCRIPCION_MATERIAL", "URL_GITHUB"]
-
-    # CSV General Único (en raíz y en PANELES_CSV/)
-    for path in [ROOT_CSV, PANELES_CSV_TOTAL]:
-        with open(path, "w", encoding="utf-8", newline="") as f:
-            writer = csv.writer(f)
-            writer.writerow(headers)
-            for r in CSV_ROWS:
-                writer.writerow(["", r["tema"], r["titulo"], r["desc"], r["url"]])
-    print(f"✅ CSV Maestro Único de Monográficos restaurado con éxito en:\n   - {ROOT_CSV}\n   - {PANELES_CSV_TOTAL}")
+    """
+    En el modelo unificado vigente no se generan paneles CSV fósiles como 0.PANEL_MONOGRAFICOS.csv.
+    El único archivo maestro oficial para Google Classroom es:
+    PANELES_CSV/CURSO_IA_UNIFICADO.csv
+    """
+    pass
 
 def generate_master_map():
     """Genera el Mapa Maestro MAPA_MONOGRAFICOS.html con los 6 monográficos oficiales vigentes."""
@@ -525,13 +520,13 @@ def main():
     print("🚀 GENERACIÓN DE MONOGRÁFICOS OFICIALES Y CSVs PARA GOOGLE CLASSROOM")
     print("=" * 80)
 
-    # 1. Generar los archivos CSV separados por cada monográfico + el CSV general
+    # 1. El CSV maestro canónico es PANELES_CSV/CURSO_IA_UNIFICADO.csv (no se generan CSVs fósiles)
     generate_csv_files()
 
     # 2. Generar el Mapa Maestro MAPA_MONOGRAFICOS.html (6 monográficos oficiales vigentes)
     generate_master_map()
 
-    print("\n✨ Proceso completado con éxito. CSVs listos para importar uno a uno en Classroom.")
+    print("\n✨ Proceso completado con éxito. Mapa de monográficos actualizado.")
 
 if __name__ == "__main__":
     main()
