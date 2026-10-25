@@ -10,7 +10,7 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>9. Amor, Amor, Amor · Korg EK-50</title>
+    <title>9. Amor, Amor, Amor · Korg EK-50 (v117)</title>
     <style>
         :root {
             --bg-color: #0b0f17;
@@ -278,9 +278,9 @@
 <div class="container">
     <div class="nav-bar">
         <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
-            <a class="btn-back" href="REPERTORIO_KORG_EK50.html?v=116">⬅ Volver al Repertorio</a>
-            <button class="btn-reload" onclick="window.location.href=window.location.pathname+'?v=116&t='+Date.now()" title="Recargar y actualizar versión sin caché">
-                🔄 Recargar (v116)
+            <a class="btn-back" href="REPERTORIO_KORG_EK50.html?v=117">⬅ Volver al Repertorio</a>
+            <button class="btn-reload" onclick="window.location.href=window.location.pathname+'?v=117&t='+Date.now()" title="Recargar y actualizar versión sin caché">
+                🔄 Recargar (v117)
             </button>
         </div>
         <div class="midi-bar">
@@ -345,17 +345,39 @@
         <div id="log-midi" style="font-size:0.8rem; color:#94a3b8; margin-top:2px;">Listo para enviar comandos al teclado Korg EK-50.</div>
     </div>
 
-    <!-- SECCIÓN PARTITURA OFICIAL (ÚNICO BOTÓN PRINCIPAL Y ACCESIBLE) -->
-    <div class="section-box">
+    <!-- SECCIÓN PARTITURA OFICIAL & CAMBIO DE INSTRUMENTOS EN DIRECTO -->
+    <div class="section-box" style="border-color:#f59e0b;">
         <div class="section-title">
-            <span>🎼 Partitura Oficial MuseScore</span>
+            <span>🎼 Partitura Oficial & Control de Sonidos al Vuelo</span>
+            <span style="font-size:0.8rem; background:#78350f; color:#fde68a; padding:3px 8px; border-radius:6px; font-weight:700;">Directo / Atril</span>
         </div>
         <p style="font-size:0.88rem; color:var(--text-muted);">
-            Partitura oficial interactiva con melodía, compases y cifrado de acordes en MuseScore:
+            Cambia los sonidos del teclado directamente desde la partitura sin soltar la interpretación:
         </p>
-        <a href="https://musescore.com/user/33531210/scores/28063213" target="_blank" rel="noopener" class="btn-musescore">
-            <span>🎼 Abrir Partitura Completa en MuseScore (#28063213)</span> ➔
-        </a>
+
+        <!-- BOTONES DE CAMBIO DE INSTRUMENTOS EN LA PANTALLA DE LA PARTITURA -->
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:10px;">
+            <button class="btn-korg-preset" onclick="cargarPreset1NoisyTenor()" style="border-color:#f59e0b; background:linear-gradient(180deg, #b45309 0%, #78350f 100%); padding:14px;">
+                <div style="font-size:0.75rem; color:#fde68a; font-weight:800; text-transform:uppercase;">Configuración Oficial</div>
+                <div style="font-size:1.1rem; font-weight:900; margin-top:2px;">🎷 1. STS Noisy Tenor & Beguine 2</div>
+                <div style="font-size:0.82rem; color:#fef3c7; margin-top:3px;">Saxo Tenor solista en Upper 1 · Estilo 175 Beguine 2 · +1 Octava</div>
+            </button>
+
+            <button class="btn-korg-preset" onclick="cargarPreset2NoisyTenorStrings()" style="border-color:#38bdf8; background:linear-gradient(180deg, #0369a1 0%, #0c4a6e 100%); padding:14px;">
+                <div style="font-size:0.75rem; color:#bae6fd; font-weight:800; text-transform:uppercase;">Variación Orquestal</div>
+                <div style="font-size:1.1rem; font-weight:900; margin-top:2px;">🎷🎻 2. Noisy Tenor con Cuerdas</div>
+                <div style="font-size:0.82rem; color:#e0f2fe; margin-top:3px;">Saxo Tenor + Fondo de Cuerdas en Upper 2 · +1 Octava</div>
+            </button>
+        </div>
+
+        <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:6px;">
+            <button onclick="abrirPartituraPantallaCompleta()" class="btn-musescore" style="flex:1; min-width:280px; cursor:pointer;">
+                <span>🎼 Abrir Modo Atril Pantalla Completa (con Botonera 1 y 2 Flotante)</span> ➔
+            </button>
+            <a href="https://musescore.com/user/33531210/scores/28063213" target="_blank" rel="noopener" class="btn-back" style="min-height:50px; justify-content:center; flex:0 0 auto;">
+                <span>🌐 MuseScore Web</span> ↗
+            </a>
+        </div>
     </div>
 
     <!-- SECCIÓN GUÍA ARMÓNICA OFICIAL DE LA PARTITURA -->
@@ -610,7 +632,48 @@
     </div>
 </div>
 
+<!-- ============================================================================== -->
+<!-- MODAL DE PANTALLA COMPLETA TOTAL (MODO ATRIL CON BOTONERA 1 Y 2 FLOTANTE)      -->
+<!-- ============================================================================== -->
+<div id="modal-partitura-fullscreen" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:#0b0f17; z-index:999999; flex-direction:column;">
+    <!-- BARRA FLOTANTE FIJA SUPERIOR (HUD DE ESCENARIO): BOTONES 1 Y 2 + VOLVER -->
+    <div style="position:fixed; top:max(8px, env(safe-area-inset-top)); left:50%; transform:translateX(-50%); z-index:1000000; background:rgba(11, 15, 23, 0.94); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); border:1px solid rgba(245, 158, 11, 0.6); border-radius:14px; padding:6px 14px; display:flex; align-items:center; gap:8px; box-shadow:0 10px 30px rgba(0,0,0,0.85), 0 0 16px rgba(245,158,11,0.3); max-width:98vw; width:max-content; flex-wrap:wrap; justify-content:center;">
+        <button onclick="cargarPreset1NoisyTenor()" style="background:linear-gradient(180deg, #b45309 0%, #78350f 100%); color:#fff; border:1px solid #f59e0b; padding:8px 14px; border-radius:8px; font-weight:900; font-size:0.86rem; cursor:pointer; touch-action:manipulation; box-shadow:0 2px 8px rgba(245,158,11,0.35);">
+            🎷 1. STS Noisy Tenor
+        </button>
+        <button onclick="cargarPreset2NoisyTenorStrings()" style="background:linear-gradient(180deg, #0369a1 0%, #0c4a6e 100%); color:#fff; border:1px solid #38bdf8; padding:8px 14px; border-radius:8px; font-weight:900; font-size:0.86rem; cursor:pointer; touch-action:manipulation; box-shadow:0 2px 8px rgba(56,189,248,0.35);">
+            🎷🎻 2. Noisy Tenor con Cuerdas
+        </button>
+        <a href="https://musescore.com/user/33531210/scores/28063213" target="_blank" rel="noopener" style="background:#1e293b; color:#93c5fd; border:1px solid #334155; padding:8px 12px; border-radius:8px; font-weight:700; font-size:0.82rem; text-decoration:none; display:inline-flex; align-items:center; gap:4px;">
+            🌐 MuseScore ↗
+        </a>
+        <button onclick="cerrarPartituraPantallaCompleta()" style="background:#334155; color:#f1f5f9; border:1px solid #475569; padding:8px 14px; border-radius:8px; font-weight:800; font-size:0.84rem; cursor:pointer; touch-action:manipulation;">
+            ✕ Volver a la Ficha
+        </button>
+    </div>
+
+    <!-- CONTENEDOR CON LA PARTITURA EN PANTALLA COMPLETA -->
+    <div style="width:100vw; height:100vh; overflow:hidden; padding-top:max(66px, calc(env(safe-area-inset-top) + 56px)); box-sizing:border-box; background:#0b0f17; display:flex; flex-direction:column; align-items:center;">
+        <iframe id="musescore-frame-fullscreen" src="https://musescore.com/user/33531210/scores/28063213/embed" style="width:100%; height:100%; border:none; background:#0b0f17;" allowfullscreen></iframe>
+    </div>
+</div>
+
 <script>
+    function abrirPartituraPantallaCompleta() {
+        const modal = document.getElementById('modal-partitura-fullscreen');
+        if (modal) {
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+    }
+
+    function cerrarPartituraPantallaCompleta() {
+        const modal = document.getElementById('modal-partitura-fullscreen');
+        if (modal) {
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+    }
     let midiAccessInstance = null;
     let midiOutput = null;
     let conectandoMIDI = false;

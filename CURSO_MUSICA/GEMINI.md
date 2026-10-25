@@ -40,11 +40,10 @@
     echo "=== [COMANDO XX] FINALIZADO CON ÉXITO ==="
     ```
 
-## 4. Validación Exclusiva en iPad (Prohibición de Ventanas en el Mac)
-- **PROHIBICIÓN TOTAL DE ABRIR NAVEGADORES EN EL MAC:**
-  - El asistente tiene **TERMINANTEMENTE PROHIBIDO** incluir comandos para abrir navegadores o páginas en el Mac (`open -a "Google Chrome"`, Safari, etc.).
-  - El usuario interpreta las canciones y valida el sistema **exclusivamente desde su iPad** conectado al Korg EK-50.
-  - Abrir ventanas en el Mac satura y llena la pantalla de pestañas no deseadas. Los comandos de terminal deben limitarse exclusivamente a sincronizar la carpeta espejo de iCloud y desplegar a GitHub.
+## 4. Lanzamiento y Validación Visual Dual (iMac + iPad)
+- **Apertura Automática en el iMac:**
+  - En cada turno donde se ajuste, modifique o cree una ficha de canción, índice o visor, el comando de terminal entregado al usuario DEBE incluir siempre la apertura automática del archivo HTML en el iMac (`open -a "Safari" "CURSO_MUSICA/..."` o navegador predeterminado).
+  - Esto permite al usuario inspeccionar de inmediato en su pantalla de iMac la maquetación y cambios en 0 segundos mientras se realiza el despliegue a GitHub y prueba en iPad.
 - **Simplificación Escénica (Sin Módulos Redundantes de Transposición):**
   - Mantener la pantalla limpia de selectores de transposición armónica innecesarios que ocupen espacio visual en el iPad, salvo petición expresa del usuario.
 - **Acceso en iPadOS (Doble Vía):**
