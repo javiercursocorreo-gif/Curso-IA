@@ -75,7 +75,7 @@ def build_pdf():
 
     story.append(Paragraph("<b>[MONO-002] Crea Videojuegos con IA para tus Nietos: El Prompt Maestro y Creación en Gemini</b>", style_title))
 
-    story.append(Paragraph("🎮 <b>Tú eres el Director Creativo y Gemini es tu Programador:</b>", style_section_h))
+    story.append(Paragraph("<b>Tú eres el Director Creativo y Gemini es tu Programador:</b>", style_section_h))
     story.append(Paragraph(
         "A petición de los alumnos de clase tras la sesión de robótica, en este taller aprendemos a crear videojuegos infantiles únicos y totalmente a medida con Inteligencia Artificial. "
         "No necesitas saber nada de código: el secreto consiste en guiar a Gemini con un <b>Prompt Maestro estructurado</b>, "
@@ -84,7 +84,7 @@ def build_pdf():
     ))
 
     # El Método en 4 Pasos
-    story.append(Paragraph("📋 <b>El Método del Taller en 4 Pasos:</b>", style_section_h))
+    story.append(Paragraph("<b>El Método del Taller en 4 Pasos:</b>", style_section_h))
     steps_rows = [
         [Paragraph("<b>1. Diseña tu Idea y Rellena los [Corchetes]:</b> Abre la app del taller y define el nombre de tu nieto, la mecánica que imaginas (naves, comecocos, carreras, laberinto...) y tu mensaje de victoria.", style_task)],
         [Paragraph("<b>2. Copia tu Prompt Maestro a Gemini:</b> Entra en <i>gemini.google.com</i>, pega el texto y pulsa Enviar. La IA generará el juego completo e interactivo.", style_task)],
@@ -104,18 +104,18 @@ def build_pdf():
     story.append(Spacer(1, 3))
 
     # El Prompt Maestro con Corchetes
-    story.append(Paragraph("📝 <b>El Prompt Maestro Universal para Gemini (Rellena los [Corchetes]):</b>", style_section_h))
+    story.append(Paragraph("<b>El Prompt Maestro Universal para Gemini (Rellena los [Corchetes]):</b>", style_section_h))
 
     prompt_content = (
         "Actúa como programador senior experto en videojuegos educativos para niños. Crea un juego completo, jugable al 100% y sin fallos, en UN ÚNICO ARCHIVO HTML autónomo (con CSS y JavaScript embebido) para mi nieto/a llamado <b>[NOMBRE DE TU NIETO/A]</b>.<br/><br/>"
         "<b>DATOS DEL JUEGO:</b><br/>"
         "• <b>MECÁNICA / TIPO DE JUEGO:</b> [ej. Nave espacial esquivando meteoritos / Perrito atrapando manzanas / Coche de carreras / Laberinto del tesoro / Comecocos en la granja...]<br/>"
-        "• <b>PROTAGONISTA Y ELEMENTOS:</b> [ej. Nave 🚀, asteroides 🪨 y estrellas ⭐]<br/>"
+        "• <b>PROTAGONISTA Y ELEMENTOS:</b> [ej. Nave espacial, asteroides y estrellas doradas]<br/>"
         "• <b>OBJETIVO PARA GANAR:</b> [ej. Conseguir 10 puntos sin chocar con los obstáculos]<br/>"
         "• <b>MENSAJE DE VICTORIA DEL ABUELO:</b> \"[ej. ¡Eres un auténtico campeón! El abuelo te quiere con locura]\"<br/><br/>"
         "<b>REGLAS DE INGENIERÍA:</b><br/>"
-        "1. <b>Controles duales:</b> Funciona con flechas del teclado (⬆️⬇️⬅️➡️ y WASD) y muestra una botonera táctil en cruz en pantalla.<br/>"
-        "2. <b>Instrucciones en pantalla:</b> Cabecera clara explicando «🎯 CÓMO JUGAR: Objetivo...» y controles para que niños y abuelos lo entiendan de inmediato.<br/>"
+        "1. <b>Controles duales:</b> Funciona con flechas del teclado (Flechas de dirección y WASD) y muestra una botonera táctil en cruz en pantalla.<br/>"
+        "2. <b>Instrucciones en pantalla:</b> Cabecera clara explicando «CÓMO JUGAR: Objetivo...» y controles para que niños y abuelos lo entiendan de inmediato.<br/>"
         "3. <b>Estilo visual:</b> Fondo azul noche o colorido con contraste (prohibido fondo negro #000000). Usa emojis para los gráficos sin imágenes externas.<br/>"
         "4. <b>Pantalla de victoria:</b> Fanfarria sonora alegre (Web Audio API nativo), cartel gigante de felicitación y botón grande «¡Jugar Otra Vez!».<br/>"
         "5. Entrega exclusivamente el código completo dentro de un bloque HTML (desde &lt;!DOCTYPE html&gt; hasta &lt;/html&gt;)."
@@ -134,16 +134,16 @@ def build_pdf():
     story.append(Spacer(1, 3))
 
     # Ideas y Diálogo
-    story.append(Paragraph("💡 <b>Ideas para tu Juego y Cómo Mejorarlo con Gemini:</b>", style_section_h))
+    story.append(Paragraph("<b>Ideas para tu Juego y Cómo Mejorarlo con Gemini:</b>", style_section_h))
     ideas_text = (
-        "• <b>Ideas que encantan a los niños:</b> 🚀 <i>La Misión Espacial</i> (esquivar cometas), 🏎️ <i>El Circuito de Carreras</i> (esquivar charcos y sumar copas), 🏰 <i>El Laberinto</i> (buscar la llave dorada y abrir el cofre), 🐶 <i>La Merienda</i> (atrapar fresas o galletas), 🧠 <i>Trivial Familiar</i> (5 preguntas divertidas sobre anécdotas de los abuelos).<br/>"
+        "• <b>Ideas que encantan a los niños:</b> 1) <i>La Misión Espacial</i> (esquivar cometas), 2) <i>El Circuito de Carreras</i> (esquivar charcos y sumar copas), 3) <i>El Laberinto</i> (buscar la llave dorada y abrir el cofre), 4) <i>La Merienda</i> (atrapar fresas o galletas), 5) <i>Trivial Familiar</i> (5 preguntas divertidas sobre anécdotas de los abuelos).<br/>"
         "• <b>Cómo afinar el juego hablando con Gemini:</b> Si algo no te convence, no reprogrames nada: dile a Gemini frases como <i>«Haz que los objetos caigan un poco más despacio para un niño de 6 años»</i>, <i>«Cambia el coche por una nave espacial»</i> o <i>«Ponle un sonido de campana cada vez que sume puntos»</i>."
     )
     story.append(Paragraph(ideas_text, style_body))
     story.append(Spacer(1, 2))
 
     # Cómo Guardarlo en el Ordenador
-    story.append(Paragraph("💾 <b>Cómo Guardar el Archivo en tu Ordenador para Jugar Siempre:</b>", style_section_h))
+    story.append(Paragraph("<b>Cómo Guardar el Archivo en tu Ordenador para Jugar Siempre:</b>", style_section_h))
     save_text = (
         "• <b>Método 1 (Directo desde Gemini):</b> En el bloque de código de Gemini pulsa el icono de <b>Descargar</b> (o cópialo).<br/>"
         "• <b>Método 2 (Con la App del Curso):</b> Abre el <i>Estudio de Videojuegos</i> en el mapa del curso, ve a la pestaña <b>«2. Probador Libre»</b>, pega el código y pulsa <b>«Guardar Archivo en mi Ordenador»</b>. "
