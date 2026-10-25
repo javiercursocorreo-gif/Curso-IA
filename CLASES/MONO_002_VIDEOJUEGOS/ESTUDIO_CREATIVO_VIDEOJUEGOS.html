@@ -23,11 +23,17 @@
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
+html {
+            scroll-behavior: smooth;
+            overflow-y: scroll;
+            height: 100%;
+        }
         body {
             background: radial-gradient(circle at 50% 10%, #1e1b4b 0%, #060913 70%);
             color: var(--text-main);
             font-family: var(--font-sans);
-            min-height: 100vh;
+            min-height: 100%;
+            overflow-y: visible;
             display: flex;
             flex-direction: column;
         }
@@ -1086,7 +1092,7 @@ window.addEventListener('keydown', (e) => {
 buildMaze();
 requestAnimationFrame(render);
 window.focus();
-</script>
+<\/script>
 </body>
 </html>`;
         } else if (formatoSeleccionado === 'arcade') {
@@ -1323,12 +1329,8 @@ REGLAS DE INGENIERÍA:
 
         document.getElementById('promptOutput').value = promptMaestro;
 
-        // Desplazar suavemente a la pantalla del juego
+        // Desplazar suavemente a la pantalla del juego manteniendo el scroll libre
         section.scrollIntoView({ behavior: 'smooth' });
-
-        setTimeout(() => {
-            try { frame.contentWindow.focus(); } catch(e){}
-        }, 300);
     }
 
     function descargarJuegoGenerado() {
@@ -1367,9 +1369,9 @@ REGLAS DE INGENIERÍA:
         alert('📋 ¡Prompt copiado al portapapeles!');
     }
 
-    // CAPTURA SEGURA DE TECLADO: NUNCA BLOQUEA ESPACIOS NI TEXTO EN INPUTS
+    // REENVÍO AMIGABLE DE TECLADO SIN BLOQUEAR EL SCROLL DE LA PÁGINA
     window.addEventListener('keydown', (e) => {
-        // Si el usuario está escribiendo en cualquier caja de texto o input, NO interceptar nada
+        // Si el usuario está escribiendo en inputs o textos, no hacer nada
         if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.isContentEditable)) {
             return;
         }
@@ -1378,8 +1380,8 @@ REGLAS DE INGENIERÍA:
         if (keys.includes(e.key)) {
             const frame = document.getElementById('gameFrame');
             const section = document.getElementById('gameDisplaySection');
+            // Reenviar la pulsación al juego pero NUNCA bloquear el scroll natural (sin e.preventDefault)
             if (section && section.style.display !== 'none' && frame && frame.contentWindow) {
-                e.preventDefault();
                 try {
                     const evt = new KeyboardEvent('keydown', {
                         key: e.key,
