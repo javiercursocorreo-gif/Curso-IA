@@ -2,7 +2,7 @@
 > **Proyecto:** Sistema de Atril Digital, Control Web MIDI y Repertorio Pedagógico Interactivo  
 > **Ubicación:** `CURSO_MUSICA/` · **Repositorio:** `CURSO-IA`  
 > **Dispositivo Principal:** Teclado Korg EK-50 Entertainer Keyboard conectado a iPad / Mac  
-> **Versión del Sistema:** v105 (Clasificación Temática Oficial en 6 Categorías del Repertorio de 20 Obras Musicales: Clásica/Sacra, Grandes Baladas, Boleros Latinos, Canción Italiana, Dance 80s y Folclore/Danzas)
+> **Versión del Sistema:** v109 (24 Obras Maestras Oficiales: Incorporación de Amapola, Killing Me Softly with His Song, La Vie en Rose, Stand by Me)
 
 ---
 
@@ -118,39 +118,41 @@ El Korg EK-50 se conecta al iPad o Mac mediante un cable USB estándar (USB tipo
 
 ---
 
-### 🎵 Clasificación Oficial en 6 Categorías Temáticas (v105)
+### 🎵 Clasificación Temática Oficial de las 24 Obras (v109)
 
-#### 🏛️ Categoría 1: Música Clásica, Sacra & Solemne
+#### 🇮🇹 Categoría 1: Grandes Clásicos Italianos (Pop, Clásica & Cine) — 5 Obras
+* **6. Volare (Nel blu dipinto di blu)** (Domenico Modugno & Franco Migliacci): Do Mayor ($C$) · Beguine / Bossa a 126 BPM · Acordeón Italiano, Saxo Alto & Cuerdas. Score MuseScore [#28739830](https://musescore.com/user/33531210/scores/28739830).
+* **5. Con te partirò (Time to Say Goodbye)** (Andrea Bocelli / Sartori & Quarantotto): Sol Mayor ($G$) / Do Mayor ($C$) · Balada lírica a 70 BPM · Grand Piano & Cuerdas. Score MuseScore [#28816700](https://musescore.com/user/33531210/scores/28816700).
+* **10. Adagio en Sol menor** (Tomaso Albinoni / Remo Giazotto - Venecia): Sol menor ($Gm$) · Orchestral Slow a 58 BPM · Órgano de tubos y cuerdas solemnes. Score MuseScore [#27905737](https://musescore.com/user/33531210/scores/27905737).
+* **11. Senza Luce (A Whiter Shade of Pale)** (I Dik Dik / Mogol / Procol Harum): Do Mayor ($C$) · 60s Soul Ballad a 68 BPM · Órgano Hammond (PC 17 con Reverb 115). Score MuseScore [#27874576](https://musescore.com/user/33531210/scores/27874576).
+* **12. Romeo y Julieta (Tema de Amor / A Time for Us)** (Nino Rota - BSO *Romeo and Juliet*): Mi menor ($Em$) · Balada Lírica a 70 BPM · Guitarra Clásica, Mandolina & Cuerdas. Score MuseScore [#27870430](https://musescore.com/user/33531210/scores/27870430).
+
+#### 🏛️ Categoría 2: Música Clásica, Sacra & Solemne — 4 Obras
+* **7. Ave Maria** (Franz Schubert): Sib Mayor ($B\flat$) · Adagio a 56 BPM · Flauta, cuerdas y gran órgano sacro con coro. Score MuseScore [#28530133](https://musescore.com/user/33531210/scores/28530133).
+* **13. Canon en Re Mayor** (Johann Pachelbel): Re Mayor ($D$) · Classical a 56 BPM · Cuerdas barrocas de cámara & clavecín. Score MuseScore [#6325230](https://musescore.com/user/4592916/scores/6325230).
+* **14. Air - Suite Orquestal nº 3 en Re Mayor (Aria en Sol)** (Johann Sebastian Bach - BWV 1068): Re Mayor ($D$) · Classical a 50 BPM · Violines solistas & cuerdas orquestales. Score MuseScore [#27651577](https://musescore.com/user/33531210/scores/27651577).
 * **3. Hymn to the Fallen** (John Williams - BSO *Salvar al Soldado Ryan*): Marcha solemne a 58 BPM · Metales & Snare Roll continuo.
-* **7. Ave Maria** (Franz Schubert / Arr. francescobern): Sib Mayor ($B\flat$) · Adagio a 56 BPM · Flauta, cuerdas y órgano de iglesia con coro. Score MuseScore [#28530133](https://musescore.com/user/33531210/scores/28530133).
-* **10. Adagio en Sol menor** (Tomaso Albinoni / Remo Giazotto): Sol menor ($Gm$) · Orchestral Slow a 58 BPM · Órgano de tubos y cuerdas solemnes. Score MuseScore [#27905737](https://musescore.com/user/33531210/scores/27905737).
-* **13. Pieza Sacra / Clásica (Agni Parthene / J.S. Bach)** (Arr. Christhian Beschizza): Guitarra, órgano y coro sacro. Score MuseScore [#6325230](https://musescore.com/user/4592916/scores/6325230).
 
-#### 🌊 Categoría 2: Grandes Baladas Pop & Rock Universal
+#### 🌊 Categoría 3: Grandes Baladas Pop, Soul & Rock Universal — 8 Obras
 * **1. To All The Girls I've Loved Before** (Julio Iglesias & Willie Nelson): Sol Mayor ($G$) / Mib ($E\flat$) · Love Ballad a 100 BPM · Transposer 1-Tap.
 * **2. Hallelujah** (Leonard Cohen): Fa Mayor ($F$) · Compás 12/8 a 56 BPM · STS Harmonica GM (PC 22) + Cuerdas + Coro.
-* **5. Con te partirò (Time to Say Goodbye)** (Andrea Bocelli): Sol Mayor ($G$) / Do Mayor ($C$) · Balada lírica a 70 BPM · Grand Piano & Cuerdas. Score MuseScore [#28816700](https://musescore.com/user/33531210/scores/28816700).
-* **11. A Whiter Shade of Pale (Senza Luce)** (Procol Harum / Dik Dik): Do Mayor ($C$) · 60s Soul Ballad a 68 BPM · Órgano Hammond (PC 17 con Reverb 115). Score MuseScore [#27874576](https://musescore.com/user/33531210/scores/27874576).
-* **14. Balada Romántica (Pop Clásico)** (Arr. francescobern): Grand Piano y cuerdas a 85 BPM. Score MuseScore [#27651577](https://musescore.com/user/33531210/scores/27651577).
+* **15. Only You (And You Alone)** (The Platters): Sol Mayor ($G$) · Estilo: 042 Slow Rock 6/8 a 80 BPM · Grand Piano & Slow Strings. Score MuseScore [#26692978](https://musescore.com/user/33531210/scores/26692978).
+* **17. Morning Has Broken** (Cat Stevens): Do Mayor ($C$) · Estilo: 125 Traditional / Folk Waltz a 128 BPM · Piano Acústico & Cuerdas. Score MuseScore [#26692870](https://musescore.com/user/33531210/scores/26692870).
+* **18. Piano Man** (Billy Joel): Do Mayor ($C$) · Vals Pop Rock 3/4 a 176 BPM · Armónica GM (PC 22), Grand Piano & Acordeón. Score MuseScore [#26692240](https://musescore.com/user/33531210/scores/26692240).
+* **20. Nights in White Satin** (The Moody Blues): Mi menor ($Em$) · Estilo: 042 60s Soul / Slow Rock a 54 BPM · Flauta Traversa & Cuerdas Sinfónicas. Score MuseScore [#26691493](https://musescore.com/user/33531210/scores/26691493).
+* **22. Killing Me Softly with His Song** (Roberta Flack): Lab Mayor ($A\flat$) / Fa menor ($Fm$) · Estilo: 041 Love Ballad a 92 BPM · Piano Acústico & Flauta. Score MuseScore [#26680561](https://musescore.com/user/33531210/scores/26680561).
+* **24. Stand by Me** (Ben E. King): La Mayor ($A$) · Estilo: 042 60s Soul a 118 BPM · Bajo Acústico, Cuerdas Staccato & Saxo. Score MuseScore [#26693062](https://musescore.com/user/33531210/scores/26693062).
 
-#### 🌴 Categoría 3: Boleros & Ritmos Latinos
+#### 🌴 Categoría 4: Boleros & Ritmos Latinos — 4 Obras
 * **4. Cuando Calienta el Sol** (Los Hermanos Rigual / Luis Miguel): Do Mayor ($C$) · Estilo 174 Beguine 1 a 112 BPM · Órgano de Percusión & Cuerdas.
 * **9. Amor, Amor, Amor** (Julio Iglesias / Gabriel Ruiz): Sol menor ($Gm$) · Estilo 174 Beguine a 112 BPM · Guitarra Española, Cuerdas y Trompeta con Sordina. Score MuseScore [#28063213](https://musescore.com/user/33531210/scores/28063213).
+* **19. Perfidia** (Alberto Domínguez / Los Panchos): Do Mayor ($C$) · Estilo 174 Beguine 1 / Cha-cha a 112 BPM · Guitarra Acústica & Metales. Score MuseScore [#26692024](https://musescore.com/user/33531210/scores/26692024).
+* **21. Amapola** (José María Lacalle): Fa Mayor ($F$) · Estilo 174 Beguine 1 / Canción a 108 BPM · Guitarra Clásica & Cuerdas. Score MuseScore [#26600806](https://musescore.com/user/33531210/scores/26600806).
 
-#### 🇮🇹 Categoría 4: Canción Italiana & Mediterráneo
-* **6. Volare (Nel blu dipinto di blu)** (Domenico Modugno): Do Mayor ($C$) · Beguine / Bossa a 126 BPM · Acordeón Italiano, Saxo Alto & Cuerdas. Score MuseScore [#28739830](https://musescore.com/user/33531210/scores/28739830).
-* **12. Canzone Napoletana (Melodía Tradicional)** (Arr. francescobern): Mandolina y acordeón italiano. Score MuseScore [#27870430](https://musescore.com/user/33531210/scores/27870430).
-* **16. Estudio Instrumental II (Canzonetta & Folk)** (Arr. francescobern): Armónica y cuerdas a 98 BPM. Score MuseScore [#26692912](https://musescore.com/user/33531210/scores/26692912).
-
-#### ⚡ Categoría 5: Dance 80s & Bandas Sonoras
-* **8. Flashdance... What a Feeling** (Irene Cara / Giorgio Moroder): Sib Mayor ($B\flat$) · 80s Dance a 124 BPM (Intro lenta a 68 BPM) · Synth Lead (PC 80) & Poly Synth (PC 90). Score MuseScore [#28103443](https://musescore.com/user/33531210/scores/28103443).
-
-#### 🪗 Categoría 6: Folclore, Valses & Danzas del Mundo
-* **15. Estudio Instrumental I (Folk & Vals Tradicional)** (Arr. francescobern): Acordeón y flauta a 110 BPM. Score MuseScore [#26692978](https://musescore.com/user/33531210/scores/26692978).
-* **17. Estudio Instrumental III (Klezmer & Danza)** (Arr. francescobern): Clarinete y metales a 120 BPM. Score MuseScore [#26692870](https://musescore.com/user/33531210/scores/26692870).
-* **18. Estudio Instrumental IV (Balada / Vals Romántico)** (Arr. francescobern): Cuerdas y piano. Score MuseScore [#26692240](https://musescore.com/user/33531210/scores/26692240).
-* **19. Estudio Instrumental V (Tema Melódico Lead Sheet)** (Arr. francescobern): Lead sheet melódico. Score MuseScore [#26692024](https://musescore.com/user/33531210/scores/26692024).
-* **20. Estudio Instrumental VI (Composición / Ensayo para Teclado)** (Arr. francescobern): Práctica instrumental. Score MuseScore [#26691493](https://musescore.com/user/33531210/scores/26691493).
+#### 🎬 Categoría 5: Bandas Sonoras de Cine & Chanson — 3 Obras
+* **8. Flashdance... What a Feeling** (Irene Cara / Giorgio Moroder): Sib Mayor ($B\flat$) · 80s Dance a 124 BPM · Synth Lead (PC 80) & Poly Synth (PC 90). Score MuseScore [#28103443](https://musescore.com/user/33531210/scores/28103443).
+* **16. My Heart Will Go On** (Céline Dion / James Horner - BSO *Titanic*): Mi Mayor ($E$) · Estilo: 041 Love Ballad a 99 BPM · Tin Whistle / Flauta Celta & Cuerdas. Score MuseScore [#26692912](https://musescore.com/user/33531210/scores/26692912).
+* **23. La Vie en Rose** (Édith Piaf / Louiguy): Do Mayor ($C$) · Estilo: 174 Beguine / French Musette a 92 BPM · Acordeón Musette & Violines. Score MuseScore [#26680726](https://musescore.com/user/33531210/scores/26680726).
 
 ---
 
