@@ -145,7 +145,7 @@ El Korg EK-50 se conecta al iPad o Mac mediante un cable USB estándar (USB tipo
 
 #### 🌴 Categoría 4: Boleros & Ritmos Latinos — 4 Obras
 * **4. Cuando Calienta el Sol** (Los Hermanos Rigual / Luis Miguel): Do Mayor ($C$) · Estilo 174 Beguine 1 a 112 BPM · Órgano de Percusión & Cuerdas.
-* **9. Amor, Amor, Amor** (Julio Iglesias / Gabriel Ruiz): Sol menor ($Gm$) · Estilo 174 Beguine a 112 BPM · Guitarra Española, Cuerdas y Trompeta con Sordina. Score MuseScore [#28063213](https://musescore.com/user/33531210/scores/28063213).
+* **9. Amor, Amor, Amor** (Julio Iglesias / Gabriel Ruiz): Do Mayor ($C$) · Estilo 175 Beguine 2 a 100 BPM · Terna Escénica Web MIDI: 1. STS Noisy Tenor (Saxo solista) / 2. Bell Piano (Upper 1) & Ambient Pad (Upper 2) con eco y resonancia / 3. String Ensemble Gran Final. Score MuseScore [#28063213](https://musescore.com/user/33531210/scores/28063213).
 * **19. Perfidia** (Alberto Domínguez / Los Panchos): Do Mayor ($C$) · Estilo 174 Beguine 1 / Cha-cha a 112 BPM · Guitarra Acústica & Metales. Score MuseScore [#26692024](https://musescore.com/user/33531210/scores/26692024).
 * **21. Amapola** (José María Lacalle): Fa Mayor ($F$) · Estilo 174 Beguine 1 / Canción a 108 BPM · Guitarra Clásica & Cuerdas. Score MuseScore [#26600806](https://musescore.com/user/33531210/scores/26600806).
 
