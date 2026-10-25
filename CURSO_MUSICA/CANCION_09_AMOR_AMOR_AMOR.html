@@ -278,9 +278,9 @@
 <div class="container">
     <div class="nav-bar">
         <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
-            <a class="btn-back" href="REPERTORIO_KORG_EK50.html?v=111">⬅ Volver al Repertorio</a>
-            <button class="btn-reload" onclick="window.location.href=window.location.pathname+'?v=111&t='+Date.now()" title="Recargar y actualizar versión sin caché">
-                🔄 Recargar
+            <a class="btn-back" href="REPERTORIO_KORG_EK50.html?v=112">⬅ Volver al Repertorio</a>
+            <button class="btn-reload" onclick="window.location.href=window.location.pathname+'?v=112&t='+Date.now()" title="Recargar y actualizar versión sin caché">
+                🔄 Recargar (v112)
             </button>
         </div>
         <div class="midi-bar">
@@ -612,13 +612,21 @@
         const dot = document.getElementById("midi-dot");
         const text = document.getElementById("midi-label");
         const outputs = extraerPuertos(midiAccessInstance.outputs);
-        if (outputs.length > 0) {
-            const korg = outputs.find(o => o && o.name && (o.name.toLowerCase().includes('ek-50') || o.name.toLowerCase().includes('korg')));
-            midiOutput = korg || outputs[0];
+        
+        // Buscamos específicamente el hardware Korg EK-50 o interfaz USB
+        const korg = outputs.find(o => o && o.name && (
+            o.name.toLowerCase().includes('ek-50') || 
+            o.name.toLowerCase().includes('korg') ||
+            o.name.toLowerCase().includes('usb')
+        ));
+
+        if (korg) {
+            midiOutput = korg;
             if (dot) { dot.style.background = "#10b981"; dot.classList.add("connected"); }
-            if (text) text.innerHTML = `🟢 Conectado: <b>${outputs.map(o=>o.name).join(', ')}</b>`;
+            if (text) text.innerHTML = `🟢 Conectado: <b>${korg.name}</b>`;
             return midiOutput;
         } else {
+            // Si solo existe la sesión virtual de iOS ("Sesión 1" / Network Session), NO marcar como conectado
             midiOutput = null;
             if (dot) { dot.style.background = "#d29922"; dot.classList.remove("connected"); }
             if (text) text.innerHTML = '🟡 Korg no detectado por USB';
