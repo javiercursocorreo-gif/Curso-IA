@@ -2,7 +2,7 @@
 > **Proyecto:** Sistema de Atril Digital, Control Web MIDI y Repertorio Pedagógico Interactivo  
 > **Ubicación:** `CURSO_MUSICA/` · **Repositorio:** `CURSO-IA`  
 > **Dispositivo Principal:** Teclado Korg EK-50 Entertainer Keyboard conectado a iPad / Mac  
-> **Versión del Sistema:** v109 (24 Obras Maestras Oficiales: Incorporación de Amapola, Killing Me Softly with His Song, La Vie en Rose, Stand by Me)
+> **Versión del Sistema:** v110 (Índice de Repertorio Compacto a 1 Línea por Canción · 24 Obras Maestras)
 
 ---
 
@@ -322,8 +322,21 @@ Esta sección recopila los descubrimientos críticos de ingeniería realizados d
 * **Objetivo:** Integrar un nuevo bloque de piezas de música clásica, pop lírico y tradicional directamente en el atril interactivo, proporcionando fichas autónomas con control Web MIDI para el Korg EK-50 y enlaces de 1 toque a las partituras interactivas de MuseScore.
 * **Aspectos Técnicos Implementados:**
   1. **Fichas Autónomas con Mutex Web MIDI:** Se generaron páginas interactivas (`CANCION_05_CON_TE_PARTIRO.html`, `CANCION_06_VOLARE.html`, `CANCION_07_AVE_MARIA.html`, `CANCION_08_FLASHDANCE.html`, `CANCION_09_AMOR_AMOR_AMOR.html`, `CANCION_10_ADAGIO_ALBINONI.html`, `CANCION_11_A_WHITER_SHADE_OF_PALE.html`) con el motor anti-bloqueo USB y el reproductor canvas keep-awake de 25 minutos.
-  2. **Indexación y Categorización en el Menú Principal:** En `REPERTORIO_KORG_EK50.html` e `index.html` se organizó el catálogo en 3 bloques limpios (Obras Maestras Oficiales 1 a 4, Grandes Clásicos & Baladas 5 a 11, y Colección Instrumental MuseScore 12 a 20).
-  3. **Resistencia a Caché en iPad:** Se elevó el parámetro de versión a `v104` en toda la botonera y enlaces para garantizar que Safari y Web MIDI Browser muestren el menú actualizado sin residuos en caché.
+  2. **Indexación y Categorización en el Menú Principal:** En `REPERTORIO_KORG_EK50.html` e `index.html` se organizó el catálogo en bloques limpios.
+  3. **Resistencia a Caché en iPad:** Se elevó el parámetro de versión a `v104` en toda la botonera y enlaces.
+
+### 6.18. Reorganización Temática en 5 Categorías con Bloque Italiano Unificado (v108)
+* **Objetivo:** Agrupar armónicamente el repertorio en 5 bloques conceptuales claros (Clásicos Italianos, Música Clásica y Sacra, Baladas Pop y Rock, Ritmos Latinos y Boleros, y Bandas Sonoras de Cine), situando el bloque italiano en cabecera prioritaria.
+
+### 6.19. Ampliación a 24 Obras Maestras con Títulos Internacionales Auténticos (v109)
+* **Objetivo:** Incorporar 4 nuevas grandes obras mundiales (Amapola, Killing Me Softly with His Song, La Vie en Rose, Stand by Me) y reemplazar cualquier título genérico de estudio por su denominación oficial de éxito mundial contrastada en MuseScore.
+
+### 6.20. Rediseño del Índice de Repertorio Compacto a 1 Sola Línea por Canción (v110)
+* **Objetivo:** Optimizar la ergonomía visual del menú principal en iPad eliminando subtítulos explicativos de autor, instrumentos, tempo y estilo en la vista de lista, condensando cada una de las 24 canciones en una única línea horizontal compacta y táctil.
+* **Aspectos Técnicos Implementados:**
+  1. **Filosofía de Información Progresiva:** La información técnica de detalle (autores, estilo Korg EK-50, tempos, registro STS y atajos Web MIDI) se traslada y mantiene íntegra dentro de la ficha de cada canción, dejando el índice principal 100% despejado y navegable.
+  2. **Contenedor Flexbox Compacto y Truncado Seguro:** Cada enlace `.song-link` adopta una altura mínima de 42px con alineación centrada y `white-space: nowrap; overflow: hidden; text-overflow: ellipsis;` para garantizar que ni en iPad vertical ni horizontal se generen saltos de línea indeseados.
+  3. **Identificación Inmediata de Destino:** Mantenimiento de flechas direccionales contextuales (`➔` para fichas interactivas locales y `↗` para partituras oficiales de MuseScore).
 
 ---
 *Manual redactado y sellado para el proyecto CURSO-IA / CURSO_MUSICA. Todos los derechos reservados.*
