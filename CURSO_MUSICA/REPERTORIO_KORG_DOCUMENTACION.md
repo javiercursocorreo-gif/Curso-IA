@@ -377,5 +377,19 @@ Esta sección recopila los descubrimientos críticos de ingeniería realizados d
   3. **El Bloque [SET LIST] (con botón [BANK] y 10 botones numéricos):** Son los **bancos de memoria de usuario** (4 bancos x 10 memorias = 40 casillas). No son los STS del ritmo; sirven para que el usuario guarde sus propias combinaciones de repertorio completas para actuar en directo.
   4. **Ventaja con Web MIDI e iPad:** La botonera interactiva en el atril digital del iPad envía directamente los códigos MIDI correctos a los microprocesadores del teclado sin que el músico tenga que navegar por menús ni pulsar botones físicos en el instrumento.
 
+### 6.28. La Tímbrica Definitiva de Ramón Arcusa: Capa Dual de Piano Eléctrico FM & Piano de Campanas (v133)
+* **El Descubrimiento Acústico:** La famosa introducción de *Amor, Amor, Amor* (Julio Iglesias, 1982) no se construyó con un teclado de campanas solitario ni con cuerdas tapando la melodía, sino mediante la legendaria combinación ochentera de **Piano Eléctrico FM (DX Bell E.Piano) superpuesto al Piano de Campanas (Glockenspiel Pop)**.
+* **Arquitectura de Capas Dual en Korg EK-50:**
+  1. **Upper 1 (Canal 1):** `Electric Piano 2` (GM2 MSB 121, LSB 0, PC 5) a Volumen 124, Expresión 127, Cutoff abierto 115, Chorus estéreo 65 y Reverb 110. Aporta el cuerpo melódico y armónico inconfundible de las baladas ochenteras de Julio Iglesias.
+  2. **Upper 2 (Canal 2):** `Glockenspiel` (GM2 MSB 121, LSB 0, PC 9) a Volumen 114, Expresión 127, Cutoff 122 y Reverb 118. Inyecta el ataque percusivo y cristalino de campanillas en cada nota sobre el piano eléctrico.
+  3. **Resultado:** Ambas voces se funden de forma orgánica: el ataque cristalino de campana corta la mezcla con brillantez milimétrica y el piano eléctrico sostiene la resonancia cálida, replicando con fidelidad absoluta la producción de Ramón Arcusa.
+
+### 6.29. La Revelación del Grand Piano 011 con Eco y Reverb de Concierto (v134)
+* **La Intuición Acústica del Músico:** En la balada clásica de Julio Iglesias producida por Ramón Arcusa, el instrumento melódico solista que canta la melodía es el emblemático **Grand Piano de Cola (Sonido 011 de fábrica en el Korg EK-50)**, pero transformado por los procesadores de efectos de estudio. Si se toca el sonido 011 "a pelo" en el teclado suena a piano acústico seco de habitación; en cambio, enriquecido por Web MIDI se convierte en un piano de concierto majestuoso.
+* **Procesamiento de Señal y Efectos Inyectados en el 011:**
+  1. **Upper 1 (Canal 1):** `Acoustic Grand Piano 011` (`GM2 MSB 121, LSB 0, PC 0`) a **Volumen Máximo 127**, Expresión 127, Attack percusivo natural (0), Cutoff abierto (118) para brillo cristalino en agudos, **Release prolongado (`CC 72 = 104`)** para que las notas floten en el aire, **Reverb de Sala Máxima (`CC 91 = 127`)** y **Eco/Chorus Estéreo espacial (`CC 93 = 85`)**.
+  2. **Upper 2 (Canal 2):** Destello armónico tenue de campanilla (`GM2 PC 9: Glockenspiel`) a volumen muy bajo (45, sólo 25%) para aportar un brillo de campana en el ataque sin enmascarar la pureza del piano de cola.
+  3. **Resultado:** El piano de cola 011 adquiere la profundidad, majestuosidad y eco flotante propios de las grandes grabaciones de balada romántica orquestal.
+
 ---
 *Manual redactado y sellado para el proyecto CURSO-IA / CURSO_MUSICA. Todos los derechos reservados.*
