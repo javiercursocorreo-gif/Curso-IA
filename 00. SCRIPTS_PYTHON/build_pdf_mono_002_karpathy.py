@@ -95,7 +95,7 @@ def build_mono_002_pdf(output_path=PDF_PATH):
         [Paragraph("<b>[Paso 1] Abre el Estudio Interactivo de Prompting:</b> Abre en tu navegador el archivo oficial <i>ESTUDIO_PROMPTING_KARPATHY.html</i> para probar en directo los 4 modos de Karpathy.", style_task)],
         [Paragraph("<b>[Paso 2] Prueba el Filtro ASD-STE100 (Cero Paja):</b> Selecciona el Truco 1, copia el prompt maestro y pegalo en Gemini. Comprueba como la respuesta se reduce a ordenes directas de menos de 20 palabras.", style_task)],
         [Paragraph("<b>[Paso 3] Pide un Diagrama Visual Directo en el Chat:</b> Activa el Truco 2. Pídele a Gemini que dibuje un esquema visual en arte de texto con cajas [ ], rombos y flechas para verlo directamente en la conversación sin usar ningún visor.", style_task)],
-        [Paragraph("<b>[Paso 4] Crea y Ejecuta tu Micro-App HTML:</b> Activa el Truco 3. Pide a Gemini el código de una calculadora o temporizador y, en el siguiente mensaje, dile: <i>«¡Ejecuta este código en pantalla!»</i> para probarla directamente en el chat, o guárdala como <i>.html</i> en tu Mac.", style_task)],
+        [Paragraph("<b>[Paso 4] Pide Videojuegos y Apps en 1 Frase:</b> Activa el Truco 3. Pídele a Gemini algo tan directo como <i>«Hazme el juego de la serpiente»</i> o <i>«Hazme el Tres en Raya»</i>. Gemini abrirá el juego en vivo en la pantalla del chat para jugar al instante sin mostrar código.", style_task)],
         [Paragraph("<b>[Paso 5] Modo Documental 3Blue1Brown:</b> Activa el Truco 4 y pidele a Gemini que te explique como viaja el GPS como si fuera un guion cinematografico con 3 analogias visuales.", style_task)],
     ]
     t_table = Table(task_rows, colWidths=[PAGE_WIDTH])
@@ -149,9 +149,9 @@ def build_mono_002_pdf(output_path=PDF_PATH):
             Paragraph("Esquema visual dibujado directamente en el chat en 50 milisegundos sin visores.", style_task)
         ],
         [
-            Paragraph("<b>3. Micro-Apps HTML</b>", style_task),
-            Paragraph("Pide la app y luego dile en el paso 2: <i>«¡Ejecuta este código en pantalla!»</i>.", style_task),
-            Paragraph("Prueba la herramienta interactiva directamente en el chat de Gemini o en tu Mac.", style_task)
+            Paragraph("<b>3. Videojuegos y Apps</b>", style_task),
+            Paragraph("Pide <i>«Hazme el juego de la serpiente»</i> o <i>«Hazme el Tres en Raya»</i>.", style_task),
+            Paragraph("Gemini ejecuta el juego en vivo en el chat para jugar al instante sin código.", style_task)
         ],
         [
             Paragraph("<b>4. Modo 3Blue1Brown</b>", style_task),
