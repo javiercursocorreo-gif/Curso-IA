@@ -2,7 +2,7 @@
 > **Proyecto:** Sistema de Atril Digital, Control Web MIDI y Repertorio Pedagógico Interactivo  
 > **Ubicación:** `CURSO_MUSICA/` · **Repositorio:** `CURSO-IA`  
 > **Dispositivo Principal:** Teclado Korg EK-50 Entertainer Keyboard conectado a iPad / Mac  
-> **Versión del Sistema:** v129 (Campanas & Cuerdas Ramón Arcusa + Motor Anti-Apagado Continuo de Pantalla iPad)
+> **Versión del Sistema:** v130 (Desbloqueo Korg EK-50 + Purificación de Comandos MIDI Canal 1/2)
 
 ---
 
