@@ -2,7 +2,7 @@
 > **Proyecto:** Sistema de Atril Digital, Control Web MIDI y Repertorio Pedagógico Interactivo  
 > **Ubicación:** `CURSO_MUSICA/` · **Repositorio:** `CURSO-IA`  
 > **Dispositivo Principal:** Teclado Korg EK-50 Entertainer Keyboard conectado a iPad / Mac  
-> **Versión del Sistema:** v130 (Desbloqueo Korg EK-50 + Purificación de Comandos MIDI Canal 1/2)
+> **Versión del Sistema:** v131 (Cuerdas Románticas Intro en Botón 2 + STS String Ensemble en Botón 3)
 
 ---
 
@@ -337,6 +337,45 @@ Esta sección recopila los descubrimientos críticos de ingeniería realizados d
 ### 6.21. Índice Ultra-Compacto en Doble Columna y Supresión Total de Autores (v111)
 * **Objetivo:** Eliminar cualquier indicación de autores en los títulos para dejar exclusivamente el nombre limpio de la canción, y organizar las 5 categorías temáticas en una cuadrícula simétrica de 2 columnas (13 obras a la izquierda y 12 elementos a la derecha) con filas ultra-compactas de 33px de altura.
 * **Resultado:** El 100% del catálogo de 24 obras maestras queda visible y accesible de forma instantánea a pantalla completa en el iPad sin necesidad de realizar scroll.
+
+### 6.22. Destello Neón Táctil Escénico en iPadOS (v129)
+* **Problema:** En el escenario o durante el estudio, el músico pulsa un botón en la pantalla táctil del iPad y, ante la ausencia de vibración o clic mecánico físico, no tiene certeza visual de si el botón se ha activado, pulsándolo repetidamente por error.
+* **Solución Técnica:**
+  1. Implementación de una animación CSS `@keyframes destelloPulsacion` de alta luminosidad (brillo 2.8x, contraste 1.4x, aureola neón dual blanca y dorada `#f59e0b` y anillo blanco interior `inset`).
+  2. Función JavaScript `dispararDestelloBoton(el)` con reseteo de clase y forzado de reflow en el motor WebKit (`void el.offsetWidth`), garantizando que cada pulsación consecutiva dispare el destello visual de 450 ms de manera inequívoca.
+  3. Aplicado a todos los botones de la ficha y a los botones flotantes del visor de partitura a pantalla completa.
+
+### 6.23. Blindaje Anti-Apagado Continuo en iPadOS sobre HTTP mediante Generador Activo de Fotogramas (v130)
+* **Problema:** Al servir las fichas musicales en red local bajo protocolo HTTP (`http://192.168.1.130:8888`), la API estándar `navigator.wakeLock` está bloqueada por las políticas de seguridad de WebKit. Además, un `<video>` alimentado por `canvas.captureStream()` se congela si el canvas no actualiza activamente sus fotogramas, permitiendo que iPadOS suspenda la pantalla tras unos minutos.
+* **Solución Definitiva:**
+  1. Creación de un temporizador de baja frecuencia (1 fotograma por segundo) que dibuja un píxel imperceptible en el canvas oculto, forzando la emisión ininterrumpida de video activo en el pipeline de WebKit.
+  2. WebKit de iOS reconoce una reproducción de video activa de primer plano y bloquea por completo la suspensión automática de pantalla (`displaysleep`) sin importar la duración de la sesión.
+
+### 6.24. Desbloqueo y Protección Total del Procesador Korg EK-50 (v131)
+* **Problema:** Tras ciertas llamadas de cambio de sonido, el teclado Korg EK-50 quedaba completamente bloqueado: ni respondían los botones del panel ni sonaban las teclas físicas, requiriendo apagar y encender el instrumento.
+* **Causa Identificada:** Enviar mensajes de selección de banco con `Bank MSB 33` (asociado a registros internos o variaciones de acompañamiento) hacia los canales melódicos Upper 1 (Canal 1) o Canal 16 desbordaba el buffer del microprocesador del teclado, entrando en un estado de fallo de firmware.
+* **Regla de Blindaje:** Prohibición absoluta de enviar `Bank MSB 33` a Canal 1 o Canal 16. La selección de voces en Upper 1/2/3 se realiza exclusivamente mediante el estándar General MIDI 2 (`Bank MSB 121, LSB 0..1`), garantizando estabilidad absoluta y cero cuelgues.
+
+### 6.25. Terna Escénica de 3 Botones para Amor, Amor, Amor (v131)
+* **Diseño para Directo:**
+  1. **Botón 1 (🎷 STS Noisy Tenor):** Saxo Tenor solista con garra y cuerpo (STS 1 del estilo Beguine 2 a 100 BPM).
+  2. **Botón 2 (🔔 Campanas Julio Iglesias - Ramón Arcusa):** Tímbrica característica de la legendaria introducción de 1982.
+  3. **Botón 3 (🎻 STS String Ensemble):** Gran sección de cuerdas sinfónicas (STS 3 de Beguine 2) para el estribillo épico y la coda final.
+
+### 6.26. El Secreto de la Intro de Ramón Arcusa para Julio Iglesias (1982): Balance 80/20 (v132)
+* **El Problema del Balance:** Si se colocan campanas y cuerdas al mismo nivel de volumen (ej. 120 y 118), la densidad armónica y el sustain de los violines opacan por completo el ataque de las campanas, perdiéndose la melodía.
+* **La Solución Acústica de Ramón Arcusa:**
+  1. **Upper 1 (Canal 1 - Protagonista Absoluta):** Campanas cristalinas melódicas (`GM2 PC 9: Glockenspiel` / Pop Bell) a **Volumen Máximo 127**, Expresión 127, Attack percusivo rápido (`CC 73 = 15`) y Cutoff brillante abierto (`CC 74 = 120`).
+  2. **Upper 2 (Canal 2 - Lecho Orquestal Suave):** Violines cálidos (`GM2 PC 49: Warm Strings`) a **Volumen 40** (sólo un 30% del volumen solista), Attack retardado suave (`CC 73 = 75`) para entrar como un colchón detrás de cada nota sin golpe percusivo, y Cutoff cerrado (`CC 74 = 65`) sin agudos para no chocar de frecuencias con las campanas.
+  3. **Resultado:** Las campanas brillan nítidas y claras en primer plano con un 300% más de presencia que las cuerdas, mientras que el colchón tenue de violines aporta la resonancia, calidez y majestuosidad de la producción de 1982.
+
+### 6.27. Anatomía y Desmitificación del Panel Frontal del Korg EK-50: STS vs Keyboard Sets vs Set List (v132)
+* **Confusión Habitual del Músico:** Dificultad para localizar los STS desde el teclado físico o confusión con las plantillas numéricas impresas en el frontal.
+* **Estructura Físca Canónica del Korg EK-50:**
+  1. **Los 4 Botones DEBAJO del Cristal LCD = [VARIATION / STS 1 a 4]:** Son los 4 botones alargados horizontales situados directamente debajo de la pantalla. En modo normal controlan las variaciones de batería 1 a 4; al pulsar el botón `[STS]` se convierten en los 4 sonidos de fábrica exclusivos del estilo en reproducción.
+  2. **La Rótula Numérica en Plástico Negro (011, 031 Organ, 061...) = [KEYBOARD SET]:** Son los números de acceso rápido a los 702 sonidos sueltos generales de fábrica del teclado. Al pulsar `[KEYBOARD SET]` y teclear un número (ej. 013), se elige un sonido del catálogo general, por lo que **no aparece la palabra STS** en pantalla.
+  3. **El Bloque [SET LIST] (con botón [BANK] y 10 botones numéricos):** Son los **bancos de memoria de usuario** (4 bancos x 10 memorias = 40 casillas). No son los STS del ritmo; sirven para que el usuario guarde sus propias combinaciones de repertorio completas para actuar en directo.
+  4. **Ventaja con Web MIDI e iPad:** La botonera interactiva en el atril digital del iPad envía directamente los códigos MIDI correctos a los microprocesadores del teclado sin que el músico tenga que navegar por menús ni pulsar botones físicos en el instrumento.
 
 ---
 *Manual redactado y sellado para el proyecto CURSO-IA / CURSO_MUSICA. Todos los derechos reservados.*
