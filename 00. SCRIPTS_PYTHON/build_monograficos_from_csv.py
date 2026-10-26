@@ -32,7 +32,7 @@ os.makedirs(DIR_PANELES, exist_ok=True)
 
 GITHUB_BASE = "https://javiercursocorreo-gif.github.io/Curso-IA/"
 
-# CATÁLOGO OFICIAL ORIGINAL DE LOS 6 MONOGRÁFICOS
+# CATÁLOGO OFICIAL DE LOS 7 MONOGRÁFICOS VIGENTES (CON RENUMERACIÓN)
 CSV_ROWS = [
     # MONOGRÁFICO 1
     {
@@ -44,110 +44,129 @@ CSV_ROWS = [
         "url": GITHUB_BASE + "CLASES/1.%20INTRODUCCION_GEMINI/%2A.Guia_Visual_de_Gemini.pdf",
         "type": "pdf"
     },
-    # MONOGRÁFICO 2
+    # MONOGRÁFICO 2 (NUEVO: KARPATHY PROMPTING)
     {
         "num": 2,
-        "file_suffix": "2_GEMINI_NOTEBOOK",
-        "tema": "Monográfico 2. Gemini Notebook: Tu Cuaderno Inteligente",
+        "file_suffix": "2_KARPATHY_PROMPTING",
+        "tema": "Monográfico 2. Los 4 Super-Trucos de Prompting de Andrej Karpathy",
+        "titulo": "Ficha Didáctica Oficial del Alumno (PDF)",
+        "desc": "Metodología de los 4 trucos de Karpathy: filtro aeroespacial ASD-STE100 sin rodeos, diagramas visuales en texto directo, videojuegos retro en 1 frase y modo documental 3Blue1Brown.",
+        "url": GITHUB_BASE + "CLASES/MONO_002_PROMPTING_KARPATHY/MONO-002_Los_4_Trucos_de_Prompting_de_Karpathy.pdf",
+        "type": "pdf"
+    },
+    {
+        "num": 2,
+        "file_suffix": "2_KARPATHY_PROMPTING",
+        "tema": "Monográfico 2. Los 4 Super-Trucos de Prompting de Andrej Karpathy",
+        "titulo": "Aplicación Web Interactiva: Estudio de Prompting de Karpathy (HTML)",
+        "desc": "Taller interactivo en 4 pestañas para probar el filtro militar ASD-STE100, generador de diagramas, catálogo de videojuegos retro y modo 3Blue1Brown.",
+        "url": GITHUB_BASE + "CLASES/MONO_002_PROMPTING_KARPATHY/ESTUDIO_PROMPTING_KARPATHY.html",
+        "type": "launch"
+    },
+    # MONOGRÁFICO 3 (ANTES 2)
+    {
+        "num": 3,
+        "file_suffix": "3_GEMINI_NOTEBOOK",
+        "tema": "Monográfico 3. NotebookLM: Tu Cuaderno Inteligente",
         "titulo": "Ejemplo de Prueba: Guia de NotebookLM (PDF)",
         "desc": "Tu biblioteca personal inteligente: cómo subir documentos familiares o recuerdos para resumir, hacer preguntas y generar guiones.",
         "url": GITHUB_BASE + "CLASES/2.%20INTRODUCCION_NLM/1.%20PRESENTACI%C3%93N%20A%20LOS%20ALUMNOS/%2A.Guia_de_NotebookLM.pdf",
         "type": "pdf"
     },
-    # MONOGRÁFICO 3
+    # MONOGRÁFICO 4 (ANTES 3)
     {
-        "num": 3,
-        "file_suffix": "3_CUENTO_ILUSTRADO",
-        "tema": "Monográfico 3. Cómo Crear un Cuento Ilustrado con Gemini Notebook",
+        "num": 4,
+        "file_suffix": "4_CUENTO_ILUSTRADO",
+        "tema": "Monográfico 4. Cómo Crear un Cuento Ilustrado con NotebookLM",
         "titulo": "Material: Paso 0 Introduccion Proyecto (PDF)",
         "desc": "Metodología en 3 pasos para crear historias inolvidables con Gemini Notebook y Gemini: el héroe, el guion por escenas y las ilustraciones para los nietos.",
         "url": GITHUB_BASE + "CLASES/3.%20COMO_HACER_UN_CUENTO_CON_NLM/%2A.%20Paso_0_Introduccion_Proyecto.pdf",
         "type": "pdf"
     },
     {
-        "num": 3,
-        "file_suffix": "3_CUENTO_ILUSTRADO",
-        "tema": "Monográfico 3. Cómo Crear un Cuento Ilustrado con Gemini Notebook",
+        "num": 4,
+        "file_suffix": "4_CUENTO_ILUSTRADO",
+        "tema": "Monográfico 4. Cómo Crear un Cuento Ilustrado con NotebookLM",
         "titulo": "Material: Paso 1 Crear el Cuento (PDF)",
         "desc": "Metodología en 3 pasos para crear historias inolvidables con Gemini Notebook y Gemini: el héroe, el guion por escenas y las ilustraciones para los nietos.",
         "url": GITHUB_BASE + "CLASES/3.%20COMO_HACER_UN_CUENTO_CON_NLM/%2A.%20Paso_1_Crear_el_Cuento.pdf",
         "type": "pdf"
     },
     {
-        "num": 3,
-        "file_suffix": "3_CUENTO_ILUSTRADO",
-        "tema": "Monográfico 3. Cómo Crear un Cuento Ilustrado con Gemini Notebook",
+        "num": 4,
+        "file_suffix": "4_CUENTO_ILUSTRADO",
+        "tema": "Monográfico 4. Cómo Crear un Cuento Ilustrado con NotebookLM",
         "titulo": "Material: Paso 2 Generador de Guion (PDF)",
         "desc": "Metodología en 3 pasos para crear historias inolvidables con Gemini Notebook y Gemini: el héroe, el guion por escenas y las ilustraciones para los nietos.",
         "url": GITHUB_BASE + "CLASES/3.%20COMO_HACER_UN_CUENTO_CON_NLM/%2A.%20Paso_2_Generador_de_Guion.pdf",
         "type": "pdf"
     },
     {
-        "num": 3,
-        "file_suffix": "3_CUENTO_ILUSTRADO",
-        "tema": "Monográfico 3. Cómo Crear un Cuento Ilustrado con Gemini Notebook",
+        "num": 4,
+        "file_suffix": "4_CUENTO_ILUSTRADO",
+        "tema": "Monográfico 4. Cómo Crear un Cuento Ilustrado con NotebookLM",
         "titulo": "Material: Paso 3 Ilustrador Visual (PDF)",
         "desc": "Metodología en 3 pasos para crear historias inolvidables con Gemini Notebook y Gemini: el héroe, el guion por escenas y las ilustraciones para los nietos.",
         "url": GITHUB_BASE + "CLASES/3.%20COMO_HACER_UN_CUENTO_CON_NLM/%2A.%20Paso_3_Ilustrador_Visual.pdf",
         "type": "pdf"
     },
-    # MONOGRÁFICO 4
+    # MONOGRÁFICO 5 (ANTES 4)
     {
-        "num": 4,
-        "file_suffix": "4_MI_BIOGRAFIA",
-        "tema": "Monográfico 4. Mi Biografía (Escribe tus Memorias con IA)",
+        "num": 5,
+        "file_suffix": "5_MI_BIOGRAFIA",
+        "tema": "Monográfico 5. Mi Biografía (Escribe tus Memorias con IA)",
         "titulo": "Aplicación Web Interactiva: Mi Biografía (HTML)",
         "desc": "Escribe tus memorias familiares con ayuda de la IA: asistente interactivo para redactar vivencias, anécdotas y tu legado personal.",
         "url": GITHUB_BASE + "CLASES/4.%20Mi_Biografia/%2A.Mi_Biografia.html",
         "type": "launch"
     },
     {
-        "num": 4,
-        "file_suffix": "4_MI_BIOGRAFIA",
-        "tema": "Monográfico 4. Mi Biografía (Escribe tus Memorias con IA)",
+        "num": 5,
+        "file_suffix": "5_MI_BIOGRAFIA",
+        "tema": "Monográfico 5. Mi Biografía (Escribe tus Memorias con IA)",
         "titulo": "Material: Manual de Instrucciones (PDF)",
         "desc": "Escribe tus memorias familiares con ayuda de la IA: asistente interactivo para redactar vivencias, anécdotas y tu legado personal.",
         "url": GITHUB_BASE + "CLASES/4.%20Mi_Biografia/%2A.Manual_de_Instrucciones.pdf",
         "type": "pdf"
     },
-    # MONOGRÁFICO 5
+    # MONOGRÁFICO 6 (ANTES 5)
     {
-        "num": 5,
-        "file_suffix": "5_EDUCANIETOS_IA",
-        "tema": "Monográfico 5. Educanietos IA: Ayuda a tus Nietos con IA (Ciencias, Mates e Historia)",
+        "num": 6,
+        "file_suffix": "6_EDUCANIETOS_IA",
+        "tema": "Monográfico 6. Educanietos IA: Ayuda a tus Nietos con IA (Ciencias, Mates e Historia)",
         "titulo": "Aplicación Web Interactiva: Educanietos IA (HTML)",
         "desc": "Tu rol de mentor escolar: cómo explicar ciencias y matemáticas razonadas paso a paso y guiar las sesiones de estudio en pantalla con Gemini Notebook.",
         "url": GITHUB_BASE + "CLASES/5.%20EL_ABUELO_TUTOR_MATEMATICAS_HISTORIA/%2Aapp/index.html",
         "type": "launch"
     },
     {
-        "num": 5,
-        "file_suffix": "5_EDUCANIETOS_IA",
-        "tema": "Monográfico 5. Educanietos IA: Ayuda a tus Nietos con IA (Ciencias, Mates e Historia)",
+        "num": 6,
+        "file_suffix": "6_EDUCANIETOS_IA",
+        "tema": "Monográfico 6. Educanietos IA: Ayuda a tus Nietos con IA (Ciencias, Mates e Historia)",
         "titulo": "Material: FICHA MONOGRAFICO EDUCANIETOS IA (PDF)",
         "desc": "Tu rol de mentor escolar: cómo explicar ciencias y matemáticas razonadas paso a paso y guiar las sesiones de estudio en pantalla con Gemini Notebook.",
         "url": GITHUB_BASE + "CLASES/5.%20EL_ABUELO_TUTOR_MATEMATICAS_HISTORIA/%2A.pdf",
         "type": "pdf"
     },
     {
-        "num": 5,
-        "file_suffix": "5_EDUCANIETOS_IA",
-        "tema": "Monográfico 5. Educanietos IA: Ayuda a tus Nietos con IA (Ciencias, Mates e Historia)",
+        "num": 6,
+        "file_suffix": "6_EDUCANIETOS_IA",
+        "tema": "Monográfico 6. Educanietos IA: Ayuda a tus Nietos con IA (Ciencias, Mates e Historia)",
         "titulo": "Ejemplo de Prueba: APUNTES HISTORIA EJEMPLO REYES CATOLICOS (TXT)",
         "desc": "Tu rol de mentor escolar: cómo explicar ciencias y matemáticas razonadas paso a paso y guiar las sesiones de estudio en pantalla con Gemini Notebook.",
         "url": GITHUB_BASE + "CLASES/5.%20EL_ABUELO_TUTOR_MATEMATICAS_HISTORIA/EJEMPLOS_PRUEBA/%2A.APUNTES_HISTORIA_EJEMPLO_REYES_CATOLICOS.txt",
         "type": "book"
     },
     {
-        "num": 5,
-        "file_suffix": "5_EDUCANIETOS_IA",
-        "tema": "Monográfico 5. Educanietos IA: Ayuda a tus Nietos con IA (Ciencias, Mates e Historia)",
+        "num": 6,
+        "file_suffix": "6_EDUCANIETOS_IA",
+        "tema": "Monográfico 6. Educanietos IA: Ayuda a tus Nietos con IA (Ciencias, Mates e Historia)",
         "titulo": "Ejemplo de Prueba: PROBLEMAS MATES GUIA EJEMPLOS (TXT)",
         "desc": "Tu rol de mentor escolar: cómo explicar ciencias y matemáticas razonadas paso a paso y guiar las sesiones de estudio en pantalla con Gemini Notebook.",
         "url": GITHUB_BASE + "CLASES/5.%20EL_ABUELO_TUTOR_MATEMATICAS_HISTORIA/EJEMPLOS_PRUEBA/%2A.PROBLEMAS_MATES_GUIA_EJEMPLOS.txt",
         "type": "book"
     },
-    # MONOGRÁFICO 7
+    # MONOGRÁFICO 7 (ANTES 6)
     {
         "num": 7,
         "file_suffix": "7_MAPA_GESTION_PROYECTO",
