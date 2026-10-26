@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monográfico 2 • Los 4 Super-Trucos de Karpathy — Cuadro de Mando por Fases</title>
+    <style>
+        :root {
+            --bg-base: #070b14;
+            --bg-card: rgba(15, 23, 42, 0.92);
+            --border-glow: rgba(56, 189, 248, 0.45);
+            --text-main: #f8fafc;
+            --text-sub: #94a3b8;
+            --text-muted: #64748b;
+            --primary: #38bdf8;
+            --purple: #c084fc;
+            --emerald: #34d399;
+            --amber: #fbbf24;
+            --rose: #fb7185;
+            --cyan: #06b6d4;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: radial-gradient(circle at 50% 25%, #131d3b 0%, #080c18 65%, #030509 100%);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            user-select: none;
+        }
+
+        header {
+            padding: 28px 20px 18px;
+            text-align: center;
+            background: linear-gradient(180deg, rgba(15, 23, 42, 0.8) 0%, rgba(15, 23, 42, 0) 100%);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .header-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 5px 14px;
+            border-radius: 9999px;
+            background: rgba(56, 189, 248, 0.12);
+            border: 1px solid rgba(56, 189, 248, 0.35);
+            color: var(--primary);
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 10px;
+        }
+        h1 {
+            font-size: 1.85rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            background: linear-gradient(135deg, #ffffff 30%, #94a3b8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 6px;
+        }
+        .subtitle {
+            font-size: 0.95rem;
+            color: var(--text-sub);
+            max-width: 680px;
+            margin: 0 auto;
+            line-height: 1.45;
+        }
+
+        .container {
+            max-width: 1260px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 28px 20px 50px;
+            flex: 1;
+        }
+
+        .phases-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        @media (max-width: 960px) {
+            .phases-grid { grid-template-columns: 1fr; }
+        }
+
+        .phase-col {
+            background: var(--bg-card);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .phase-col::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+        }
+        .col-1::before { background: linear-gradient(90deg, #38bdf8, #0284c7); }
+        .col-2::before { background: linear-gradient(90deg, #c084fc, #9333ea); }
+        .col-3::before { background: linear-gradient(90deg, #34d399, #059669); }
+
+        .phase-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+        .phase-icon {
+            font-size: 1.4rem;
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .phase-title-wrap h2 {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #fff;
+        }
+        .phase-title-wrap p {
+            font-size: 0.74rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .card-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            flex: 1;
+        }
+
+        .res-card {
+            background: rgba(2, 6, 23, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 12px;
+            padding: 14px;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .res-card:hover {
+            border-color: rgba(56, 189, 248, 0.4);
+            transform: translateY(-2px);
+            background: rgba(2, 6, 23, 0.85);
+        }
+
+        .res-badge {
+            display: inline-block;
+            align-self: flex-start;
+            font-size: 0.68rem;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+        .badge-pdf { background: rgba(239, 68, 68, 0.15); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.3); }
+        .badge-app { background: rgba(56, 189, 248, 0.15); color: #7dd3fc; border: 1px solid rgba(56, 189, 248, 0.3); }
+        .badge-web { background: rgba(52, 211, 153, 0.15); color: #6ee7b7; border: 1px solid rgba(52, 211, 153, 0.3); }
+        .badge-vid { background: rgba(244, 114, 182, 0.15); color: #fbcfe8; border: 1px solid rgba(244, 114, 182, 0.3); }
+
+        .res-title {
+            font-size: 0.92rem;
+            font-weight: 700;
+            color: #fff;
+            line-height: 1.35;
+        }
+
+        .res-desc {
+            font-size: 0.8rem;
+            color: var(--text-sub);
+            line-height: 1.4;
+        }
+
+        .btn-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            margin-top: 4px;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all 0.15s;
+        }
+        .btn-pdf {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.35);
+            color: #fca5a5;
+        }
+        .btn-pdf:hover { background: rgba(239, 68, 68, 0.3); color: #fff; }
+
+        .btn-app {
+            background: linear-gradient(135deg, rgba(56, 189, 248, 0.2), rgba(2, 132, 199, 0.3));
+            border: 1px solid rgba(56, 189, 248, 0.45);
+            color: #7dd3fc;
+        }
+        .btn-app:hover { background: rgba(56, 189, 248, 0.35); color: #fff; }
+
+        .btn-web {
+            background: rgba(168, 85, 247, 0.15);
+            border: 1px solid rgba(168, 85, 247, 0.35);
+            color: #d8b4fe;
+        }
+        .btn-web:hover { background: rgba(168, 85, 247, 0.3); color: #fff; }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            background: rgba(2, 6, 23, 0.9);
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="header-pill">CATÁLOGO OFICIAL • MONOGRÁFICO 2</div>
+    <h1>Los 4 Super-Trucos de Prompting de Andrej Karpathy</h1>
+    <p class="subtitle">
+        Cuadro de mando en 3 fases: Ficha del alumno, Estudio interactivo con los 4 modos en tiempo real y portal de práctica en Google Gemini.
+    </p>
+</header>
+
+<div class="container">
+    <div class="phases-grid">
+        <!-- COLUMNA 1: MATERIALES Y GUÍA -->
+        <div class="phase-col col-1">
+            <div class="phase-header">
+                <div class="phase-icon">📄</div>
+                <div class="phase-title-wrap">
+                    <h2>Fase 1: Fundamentos</h2>
+                    <p>Ficha Didáctica Oficial</p>
+                </div>
+            </div>
+            <div class="card-list">
+                <div class="res-card">
+                    <span class="res-badge badge-pdf">PDF OFICIAL (A4)</span>
+                    <div class="res-title">Ficha Didáctica del Alumno [MONO-002]</div>
+                    <div class="res-desc">Guía paso a paso: los 4 trucos explicados, checklist guiado y el Prompt Maestro comodín listo para copiar.</div>
+                    <a href="MONO-002_Los_4_Trucos_de_Prompting_de_Karpathy.pdf" target="_blank" class="btn-link btn-pdf">Abrir Ficha PDF ↗</a>
+                </div>
+
+                <div class="res-card">
+                    <span class="res-badge badge-vid">VÍDEO DE ORIGEN</span>
+                    <div class="res-title">Vídeo Viral de Andrej Karpathy</div>
+                    <div class="res-desc">El clip de YouTube donde Karpathy explica el estándar aeronáutico ASD-STE100 y los 4 formatos de prompting.</div>
+                    <a href="https://youtube.com/shorts/tzJbsxv7hGs" target="_blank" class="btn-link btn-web">Ver Vídeo en YouTube ↗</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- COLUMNA 2: APLICACIÓN INTERACTIVA -->
+        <div class="phase-col col-2">
+            <div class="phase-header">
+                <div class="phase-icon">🔬</div>
+                <div class="phase-title-wrap">
+                    <h2>Fase 2: Taller Práctico</h2>
+                    <p>Estudio de los 4 Modos</p>
+                </div>
+            </div>
+            <div class="card-list">
+                <div class="res-card">
+                    <span class="res-badge badge-app">APLICACIÓN WEB OFICIAL</span>
+                    <div class="res-title">Estudio Interactivo de Prompting</div>
+                    <div class="res-desc">Simulador con pestañas para probar el filtro ASD-STE100, generador de diagramas, creador de micro-apps y el modo documental 3Blue1Brown.</div>
+                    <a href="ESTUDIO_PROMPTING_KARPATHY.html" target="_blank" class="btn-link btn-app">🚀 Abrir Taller de Prompting ↗</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- COLUMNA 3: PRÁCTICA CON GEMINI -->
+        <div class="phase-col col-3">
+            <div class="phase-header">
+                <div class="phase-icon">🧠</div>
+                <div class="phase-title-wrap">
+                    <h2>Fase 3: Práctica en Gemini</h2>
+                    <p>Ejecución con IA Real</p>
+                </div>
+            </div>
+            <div class="card-list">
+                <div class="res-card">
+                    <span class="res-badge badge-web">PORTAL DE IA</span>
+                    <div class="res-title">Acceso a Google Gemini</div>
+                    <div class="res-desc">Abre tu sesión de Gemini, pega el prompt maestro generado por el taller y comprueba cómo desaparece la palabrería.</div>
+                    <a href="https://gemini.google.com" target="_blank" class="btn-link btn-web">Ir a Google Gemini ↗</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer>
+    Curso de Inteligencia Artificial para Adultos • Material Didáctico Oficial
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monográfico Especial • Los 4 Super-Trucos de Prompting de Andrej Karpathy</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-base: #060913;
+            --bg-card: rgba(15, 23, 42, 0.94);
+            --border: rgba(255, 255, 255, 0.12);
+            --primary: #38bdf8;
+            --emerald: #10b981;
+            --amber: #fbbf24;
+            --purple: #a855f7;
+            --rose: #fb7185;
+            --text-main: #f8fafc;
+            --text-sub: #cbd5e1;
+            --text-muted: #94a3b8;
+            --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+        body {
+            background: radial-gradient(circle at 50% 10%, #151e3f 0%, #060913 70%);
+            color: var(--text-main);
+            font-family: var(--font-sans);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border);
+            padding: 24px 32px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .brand-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(56, 189, 248, 0.12);
+            border: 1px solid rgba(56, 189, 248, 0.35);
+            padding: 4px 12px;
+            border-radius: 9999px;
+            font-size: 0.78rem;
+            font-weight: 800;
+            letter-spacing: 0.05em;
+            color: var(--primary);
+            text-transform: uppercase;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            color: #fff;
+            margin-top: 6px;
+        }
+
+        .header-desc {
+            font-size: 0.88rem;
+            color: var(--text-sub);
+            max-width: 650px;
+            margin-top: 4px;
+            line-height: 1.4;
+        }
+
+        .author-tag {
+            background: rgba(168, 85, 247, 0.15);
+            border: 1px solid rgba(168, 85, 247, 0.4);
+            color: #d8b4fe;
+            padding: 8px 16px;
+            border-radius: 12px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        main {
+            flex: 1;
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 32px 24px 60px;
+        }
+
+        /* TABS SELECTOR */
+        .tabs-nav {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-bottom: 28px;
+        }
+
+        .tab-btn {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 16px 14px;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .tab-btn:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .tab-btn.active {
+            border-color: var(--primary);
+            background: linear-gradient(145deg, rgba(30, 41, 59, 0.95), rgba(15, 23, 42, 0.98));
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.2);
+        }
+
+        .tab-num {
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            font-weight: 800;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        .tab-title {
+            font-size: 0.95rem;
+            font-weight: 800;
+            color: #fff;
+        }
+
+        .tab-sub {
+            font-size: 0.76rem;
+            color: var(--text-muted);
+            line-height: 1.3;
+        }
+
+        /* TAB PANELS */
+        .tab-panel {
+            display: none;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 32px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .tab-panel.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 22px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .panel-badge {
+            font-size: 0.75rem;
+            font-weight: 800;
+            padding: 4px 10px;
+            border-radius: 6px;
+            text-transform: uppercase;
+        }
+
+        .badge-ste { background: rgba(56, 189, 248, 0.2); color: #7dd3fc; border: 1px solid rgba(56, 189, 248, 0.4); }
+        .badge-diag { background: rgba(52, 211, 153, 0.2); color: #6ee7b7; border: 1px solid rgba(52, 211, 153, 0.4); }
+        .badge-app { background: rgba(251, 191, 36, 0.2); color: #fde68a; border: 1px solid rgba(251, 191, 36, 0.4); }
+        .badge-video { background: rgba(244, 114, 182, 0.2); color: #fbcfe8; border: 1px solid rgba(244, 114, 182, 0.4); }
+
+        .two-cols {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        .box-preset {
+            background: rgba(2, 6, 23, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 14px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .box-title {
+            font-size: 0.86rem;
+            font-weight: 800;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .preset-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .btn-preset {
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #e2e8f0;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .btn-preset:hover {
+            background: rgba(56, 189, 248, 0.2);
+            border-color: var(--primary);
+            color: #fff;
+        }
+
+        textarea {
+            width: 100%;
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            padding: 12px;
+            color: #fff;
+            font-size: 0.85rem;
+            font-family: var(--font-sans);
+            resize: vertical;
+            outline: none;
+            min-height: 80px;
+        }
+
+        textarea:focus {
+            border-color: var(--primary);
+        }
+
+        .output-box {
+            background: rgba(2, 6, 23, 0.9);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            border-radius: 14px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            position: relative;
+        }
+
+        .prompt-preview {
+            background: rgba(15, 23, 42, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 16px;
+            font-family: var(--font-mono);
+            font-size: 0.82rem;
+            color: #38bdf8;
+            line-height: 1.5;
+            white-space: pre-wrap;
+            min-height: 140px;
+            max-height: 280px;
+            overflow-y: auto;
+        }
+
+        .btn-copy {
+            background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+            border: none;
+            color: #fff;
+            padding: 10px 18px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            font-weight: 800;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s;
+            box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3);
+        }
+
+        .btn-copy:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(2, 132, 199, 0.5);
+        }
+
+        .comparison-card {
+            margin-top: 20px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .comp-box {
+            padding: 16px;
+            border-radius: 12px;
+            font-size: 0.82rem;
+            line-height: 1.45;
+        }
+
+        .comp-bad {
+            background: rgba(239, 68, 68, 0.08);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #fca5a5;
+        }
+
+        .comp-good {
+            background: rgba(16, 185, 129, 0.08);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: #86efac;
+        }
+
+        /* DEMO FRAME */
+        .demo-sandbox {
+            background: #ffffff;
+            color: #0f172a;
+            border-radius: 12px;
+            padding: 20px;
+            min-height: 220px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            border: 2px solid var(--primary);
+        }
+
+        footer {
+            text-align: center;
+            padding: 24px;
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border);
+            background: rgba(2, 6, 23, 0.95);
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="header-content">
+        <div>
+            <div class="brand-badge">🔬 METODOLOGÍA OFICIAL • MONOGRÁFICO DE PROMPTING</div>
+            <h1>Los 4 Super-Trucos de Prompting de Andrej Karpathy</h1>
+            <p class="header-desc">
+                Descubre cómo pasar de recibir muros de texto confusos a obtener órdenes claras, diagramas visuales, aplicaciones en tu navegador y explicaciones cinematográficas.
+            </p>
+        </div>
+        <div class="author-tag">
+            <span>💡 Inspirado en</span>
+            <strong>Andrej Karpathy (OpenAI / Tesla)</strong>
+        </div>
+    </div>
+</header>
+
+<main>
+    <!-- SELECTOR DE LOS 4 TRUCOS -->
+    <div class="tabs-nav">
+        <button class="tab-btn active" onclick="setTab(1)">
+            <span class="tab-num">TRUCO 1</span>
+            <span class="tab-title">✈️ Filtro ASD-STE100</span>
+            <span class="tab-sub">Manual militar aeroespacial: frases &lt;20 palabras y cero rodeos.</span>
+        </button>
+
+        <button class="tab-btn" onclick="setTab(2)">
+            <span class="tab-num">TRUCO 2</span>
+            <span class="tab-title">📊 Pide Diagramas</span>
+            <span class="tab-sub">Visual thinking: sustituye párrafos por esquemas instantáneos.</span>
+        </button>
+
+        <button class="tab-btn" onclick="setTab(3)">
+            <span class="tab-num">TRUCO 3</span>
+            <span class="tab-title">💻 Apps Web en HTML</span>
+            <span class="tab-sub">Herramientas en 1 clic: genera calculadoras y simuladores interactivos.</span>
+        </button>
+
+        <button class="tab-btn" onclick="setTab(4)">
+            <span class="tab-num">TRUCO 4</span>
+            <span class="tab-title">🎬 Modo 3Blue1Brown</span>
+            <span class="tab-sub">Narrativa visual: explicaciones con misterio y analogías brillantes.</span>
+        </button>
+    </div>
+
+    <!-- PANEL 1: ASD-STE100 -->
+    <div class="tab-panel active" id="panel1">
+        <div class="panel-header">
+            <div>
+                <span class="panel-badge badge-ste">ESTÁNDAR DE LA AVIACIÓN (BOEING & AIRBUS)</span>
+                <h2 style="font-size:1.25rem; margin-top:4px;">1. El Filtro Anti-Rodeos: 80% ASD-STE100</h2>
+            </div>
+            <p style="font-size:0.84rem; color:var(--text-sub); max-width:500px;">
+                Fuerza a la IA a escribir como los manuales mecánicos donde un error cuesta vidas: cada frase con menos de 20 palabras, verbos directos y cero palabras de relleno.
+            </p>
+        </div>
+
+        <div class="two-cols">
+            <div class="box-preset">
+                <div class="box-title">🎯 Selecciona una consulta típica o escribe la tuya:</div>
+                <div class="preset-buttons">
+                    <button class="btn-preset" onclick="setSteQuery('Explicar qué hacer si huele a gas en la cocina')">🔥 Olor a gas</button>
+                    <button class="btn-preset" onclick="setSteQuery('Cómo configurar WhatsApp para que las fotos no llenen la memoria')">📱 Memoria WhatsApp</button>
+                    <button class="btn-preset" onclick="setSteQuery('Instrucciones para renovar el DNI por internet en España')">🪪 Renovar DNI</button>
+                    <button class="btn-preset" onclick="setSteQuery('Cómo cuidar una orquídea en casa para que vuelva a florecer')">🌸 Cuidar orquídea</button>
+                </div>
+                <textarea id="steInput" oninput="updateStePrompt()">Explicar qué hacer si huele a gas en la cocina</textarea>
+                <div style="font-size:0.8rem; color:var(--text-muted);">
+                    ⚡ <b>Regla del 80%:</b> Conserva la precisión técnica sin volverse robótica.
+                </div>
+            </div>
+
+            <div class="output-box">
+                <div class="box-title">📋 Prompt Maestro Listo para Copiar a Gemini / ChatGPT:</div>
+                <div class="prompt-preview" id="steOutput"></div>
+                <button class="btn-copy" onclick="copyText('steOutput')">📋 Copiar Prompt Maestro</button>
+            </div>
+        </div>
+
+        <div class="comparison-card">
+            <div class="comp-box comp-bad">
+                <b>❌ Respuesta Normal de la IA (Con Palabrería):</b><br>
+                <i>«Es sumamente importante que tengas en consideración que el olor a gas puede representar un riesgo potencial significativo. Antes que nada, mantén la calma y procede con cautela. Podría resultar recomendable abrir las ventanas si te es posible...»</i>
+            </div>
+            <div class="comp-box comp-good">
+                <b>✅ Respuesta con 80% ASD-STE100 (Directa y Segura):</b><br>
+                <i>«1. No enciendas luces ni fósforos.<br>2. Abre todas las ventanas inmediatamente.<br>3. Cierra la llave general de gas.<br>4. Sal de la casa al aire libre.<br>5. Llama a emergencias (112) desde la calle.»</i>
+            </div>
+        </div>
+    </div>
+
+    <!-- PANEL 2: DIAGRAMAS -->
+    <div class="tab-panel" id="panel2">
+        <div class="panel-header">
+            <div>
+                <span class="panel-badge badge-diag">VISUAL THINKING & SCHEMATICS</span>
+                <h2 style="font-size:1.25rem; margin-top:4px;">2. Diagramas en vez de Muros de Texto</h2>
+            </div>
+            <p style="font-size:0.84rem; color:var(--text-sub); max-width:500px;">
+                Un diagrama visual se comprende en 50 milisegundos. En lugar de pedirle a la IA que te describa un proceso, ordénale que te dibuje un mapa de flujo.
+            </p>
+        </div>
+
+        <div class="two-cols">
+            <div class="box-preset">
+                <div class="box-title">🎯 Elige qué proceso quieres ver en diagrama:</div>
+                <div class="preset-buttons">
+                    <button class="btn-preset" onclick="setDiagQuery('Flujo de decisión ante un correo sospechoso de estafa bancaria')">🚨 Radar Phishing</button>
+                    <button class="btn-preset" onclick="setDiagQuery('Cronología de las 4 etapas de la Revolución Industrial')">⚙️ Rev. Industrial</button>
+                    <button class="btn-preset" onclick="setDiagQuery('Cómo funciona el circuito eléctrico simple de una bombilla con interruptor')">💡 Circuito bombilla</button>
+                    <button class="btn-preset" onclick="setDiagQuery('Ruta del café: desde la semilla en Colombia hasta la taza')">☕ Ruta del café</button>
+                </div>
+                <textarea id="diagInput" oninput="updateDiagPrompt()">Flujo de decisión ante un correo sospechoso de estafa bancaria</textarea>
+            </div>
+
+            <div class="output-box">
+                <div class="box-title">📋 Prompt Maestro para Gemini (Pide Diagrama Mermaid/Visual):</div>
+                <div class="prompt-preview" id="diagOutput"></div>
+                <button class="btn-copy" onclick="copyText('diagOutput')">📋 Copiar Prompt para Diagrama</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PANEL 3: APPS WEB HTML -->
+    <div class="tab-panel" id="panel3">
+        <div class="panel-header">
+            <div>
+                <span class="panel-badge badge-app">HERRAMIENTAS EN 1 CLIC (MICRO-APPS)</span>
+                <h2 style="font-size:1.25rem; margin-top:4px;">3. Páginas Web Interactivas en HTML</h2>
+            </div>
+            <p style="font-size:0.84rem; color:var(--text-sub); max-width:500px;">
+                Los LLMs son desarrolladores web excepcionales. En vez de leer fórmulas teóricas, pide una mini-aplicación interactiva con deslizadores que puedas usar en tu Mac o móvil.
+            </p>
+        </div>
+
+        <div class="two-cols">
+            <div class="box-preset">
+                <div class="box-title">🎯 Selecciona la herramienta interactiva que necesitas:</div>
+                <div class="preset-buttons">
+                    <button class="btn-preset" onclick="setAppQuery('Calculadora de ahorro mensual y pensión con deslizador de gastos')">💶 Calculadora Pensión</button>
+                    <button class="btn-preset" onclick="setAppQuery('Temporizador de cocina grande y accesible con aviso sonoro')">⏱️ Temporizador Cocina</button>
+                    <button class="btn-preset" onclick="setAppQuery('Conversor de recetas: gramos a cucharadas y tazas')">🥣 Conversor Cocina</button>
+                    <button class="btn-preset" onclick="setAppQuery('Juego de memoria de cartas emparejadas con números grandes')">🃏 Juego Memoria</button>
+                </div>
+                <textarea id="appInput" oninput="updateAppPrompt()">Calculadora de ahorro mensual y pensión con deslizador de gastos</textarea>
+            </div>
+
+            <div class="output-box">
+                <div class="box-title">📋 Prompt Maestro para Generar la App HTML Completa:</div>
+                <div class="prompt-preview" id="appOutput"></div>
+                <button class="btn-copy" onclick="copyText('appOutput')">📋 Copiar Prompt para Crear la App</button>
+            </div>
+        </div>
+
+        <div style="margin-top:20px;">
+            <div class="box-title" style="margin-bottom:8px;">💡 Demostración en Vivo: Calculadora Inmediata generada con esta técnica</div>
+            <div class="demo-sandbox">
+                <h3 style="color:#0f172a; margin-bottom:8px;">Calculadora Rápida de Café & Ahorro</h3>
+                <p style="color:#475569; font-size:0.9rem; margin-bottom:12px;">Desliza para ver cuánto ahorras al año preparando el café en casa:</p>
+                <div style="display:flex; align-items:center; gap:14px; max-width:400px; width:100%;">
+                    <span>1 €</span>
+                    <input type="range" min="1" max="5" value="2" id="coffeeSlider" oninput="updateCoffeeDemo()" style="flex:1;">
+                    <span>5 €</span>
+                </div>
+                <div style="margin-top:14px; font-size:1.2rem; font-weight:800; color:#0284c7;">
+                    Ahorro anual: <span id="coffeeTotal">730</span> € al año
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PANEL 4: 3BLUE1BROWN -->
+    <div class="tab-panel" id="panel4">
+        <div class="panel-header">
+            <div>
+                <span class="panel-badge badge-video">DIVULGACIÓN CIENTÍFICA NARRATIVA</span>
+                <h2 style="font-size:1.25rem; margin-top:4px;">4. Guion de Vídeo Explicativo (Modo 3Blue1Brown)</h2>
+            </div>
+            <p style="font-size:0.84rem; color:var(--text-sub); max-width:500px;">
+                Pídele a la IA que explique conceptos complejos como si fuera el creador del canal educativo <i>3Blue1Brown</i>: un misterio intrigante, 3 metáforas visuales y cero fórmulas aburridas.
+            </p>
+        </div>
+
+        <div class="two-cols">
+            <div class="box-preset">
+                <div class="box-title">🎯 Selecciona qué enigma quieres comprender:</div>
+                <div class="preset-buttons">
+                    <button class="btn-preset" onclick="setVideoQuery('¿Por qué no se caen los satélites que orbitan la Tierra?')">🛰️ Satélites y Órbitas</button>
+                    <button class="btn-preset" onclick="setVideoQuery('¿Cómo sabe el teléfono exactamente en qué calle estoy usando el GPS?')">📍 Cómo funciona el GPS</button>
+                    <button class="btn-preset" onclick="setVideoQuery('¿Por qué el mar es azul si el agua en un vaso es transparente?')">🌊 Color del mar</button>
+                    <button class="btn-preset" onclick="setVideoQuery('¿Qué es realmente la Inteligencia Artificial y cómo aprende?')">🤖 Cómo aprende la IA</button>
+                </div>
+                <textarea id="videoInput" oninput="updateVideoPrompt()">¿Por qué no se caen los satélites que orbitan la Tierra?</textarea>
+            </div>
+
+            <div class="output-box">
+                <div class="box-title">📋 Prompt Maestro para Explicación Cinematográfica:</div>
+                <div class="prompt-preview" id="videoOutput"></div>
+                <button class="btn-copy" onclick="copyText('videoOutput')">📋 Copiar Prompt Cinematográfico</button>
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer>
+    Curso de Inteligencia Artificial para Adultos • Laboratorio de Prompting Avanzado (Técnicas Karpathy)
+</footer>
+
+<script>
+    function setTab(num) {
+        document.querySelectorAll('.tab-btn').forEach((btn, idx) => {
+            btn.classList.toggle('active', idx === (num - 1));
+        });
+        document.querySelectorAll('.tab-panel').forEach((panel, idx) => {
+            panel.classList.toggle('active', idx === (num - 1));
+        });
+    }
+
+    // TRUCO 1
+    function setSteQuery(text) {
+        document.getElementById('steInput').value = text;
+        updateStePrompt();
+    }
+    function updateStePrompt() {
+        const query = document.getElementById('steInput').value.trim();
+        const prompt = `Actúa como un redactor técnico de manuales aeroespaciales.
+Explica: "${query}".
+
+REGLAS ESTRICTAS DE RESPUESTA (Estándar 80% ASD-STE100):
+1. Redacta frases directas con un límite máximo de 20 palabras por instrucción.
+2. Utiliza exclusivamente el modo imperativo y la voz activa ("Haz esto", no "Se recomienda hacer").
+3. Elimina el 100% del texto de relleno: nada de saludos, disculpas, introducciones ni conclusiones obvias.
+4. Cada punto de la lista debe transmitir una sola acción clara e inequívoca.`;
+        document.getElementById('steOutput').innerText = prompt;
+    }
+
+    // TRUCO 2
+    function setDiagQuery(text) {
+        document.getElementById('diagInput').value = text;
+        updateDiagPrompt();
+    }
+    function updateDiagPrompt() {
+        const query = document.getElementById('diagInput').value.trim();
+        const prompt = `No me des una explicación en texto largo o párrafos.
+Representa visualmente: "${query}".
+
+REQUISITOS DEL DIAGRAMA:
+1. Genera un diagrama de flujo en formato Mermaid (código \`\`\`mermaid) o en arte esquemático limpio.
+2. Utiliza bloques concisos con etiquetas breves (máximo 4 palabras por nodo).
+3. Muestra claramente la secuencia paso a paso: Inicio -> Decisión -> Acción final.
+4. Añade al pie únicamente 3 viñetas resumen de 1 línea cada una.`;
+        document.getElementById('diagOutput').innerText = prompt;
+    }
+
+    // TRUCO 3
+    function setAppQuery(text) {
+        document.getElementById('appInput').value = text;
+        updateAppPrompt();
+    }
+    function updateAppPrompt() {
+        const query = document.getElementById('appInput').value.trim();
+        const prompt = `Construye una aplicación web interactiva en un único archivo HTML para: "${query}".
+
+REQUISITOS DEL CÓDIGO HTML:
+1. Incluye todo en un solo bloque autocontenido (HTML + CSS embebido en <style> + JavaScript en <script>).
+2. Interfaz moderna y accesible para adultos (+65): tipografía grande (16-18px), modo oscuro (#0f172a), botones amplios y controles intuitivos (deslizadores o botones rápidos).
+3. La aplicación debe ser 100% funcional en local con doble clic, sin librerías externas pesadas ni servidores.
+4. Entrega exclusivamente el bloque de código para que yo pulse directamente «Copiar código» y guardarlo en mi ordenador.`;
+        document.getElementById('appOutput').innerText = prompt;
+    }
+
+    // TRUCO 4
+    function setVideoQuery(text) {
+        document.getElementById('videoInput').value = text;
+        updateVideoPrompt();
+    }
+    function updateVideoPrompt() {
+        const query = document.getElementById('videoInput').value.trim();
+        const prompt = `Explica el siguiente concepto: "${query}".
+
+ESTILO DE DIVULGACIÓN (Al estilo del canal educativo 3Blue1Brown):
+1. Estructura la respuesta como el guion de un vídeo divulgativo fascinante.
+2. Escena 1: Plantea un enigma o pregunta inicial que desafíe el sentido común.
+3. Escena 2: Introduce 3 analogías visuales intuitivas (geometría, objetos cotidianos) evitando ecuaciones o jerga fría.
+4. Escena 3: Conexión reveladora: cómo esas analogías resuelven el enigma de forma cristalina.
+5. Lenguaje conversacional, apasionante y pensado para hacer visible lo invisible.`;
+        document.getElementById('videoOutput').innerText = prompt;
+    }
+
+    function updateCoffeeDemo() {
+        const val = parseInt(document.getElementById('coffeeSlider').value);
+        document.getElementById('coffeeTotal').innerText = (val * 365);
+    }
+
+    function copyText(elemId) {
+        const text = document.getElementById(elemId).innerText;
+        navigator.clipboard.writeText(text).then(() => {
+            alert("📋 ¡Prompt maestro copiado al portapapeles!\nListo para pegar en Gemini o ChatGPT.");
+        });
+    }
+
+    // Inicializar prompts
+    updateStePrompt();
+    updateDiagPrompt();
+    updateAppPrompt();
+    updateVideoPrompt();
+</script>
+
+</body>
+</html>
