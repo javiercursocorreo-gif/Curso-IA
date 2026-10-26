@@ -94,7 +94,7 @@ def build_mono_002_pdf(output_path=PDF_PATH):
     task_rows = [
         [Paragraph("<b>[Paso 1] Abre el Estudio Interactivo de Prompting:</b> Abre en tu navegador el archivo oficial <i>ESTUDIO_PROMPTING_KARPATHY.html</i> para probar en directo los 4 modos de Karpathy.", style_task)],
         [Paragraph("<b>[Paso 2] Prueba el Filtro ASD-STE100 (Cero Paja):</b> Selecciona el Truco 1, copia el prompt maestro y pegalo en Gemini. Comprueba como la respuesta se reduce a ordenes directas de menos de 20 palabras.", style_task)],
-        [Paragraph("<b>[Paso 3] Pide un Diagrama Visual (Visual Thinking):</b> Activa el Truco 2 y pide a Gemini un diagrama de flujo en formato Mermaid sobre un tramite o rutina familiar.", style_task)],
+        [Paragraph("<b>[Paso 3] Pide un Diagrama Visual Directo en el Chat:</b> Activa el Truco 2. Pídele a Gemini que dibuje un esquema visual en arte de texto con cajas [ ], rombos y flechas para verlo directamente en la conversación sin usar ningún visor.", style_task)],
         [Paragraph("<b>[Paso 4] Crea tu Micro-App HTML en 1 Clic:</b> Activa el Truco 3, copia el prompt y pídele a Gemini que te programe una calculadora de ahorro. Guarda el codigo como <i>.html</i> y usala en tu propio Mac.", style_task)],
         [Paragraph("<b>[Paso 5] Modo Documental 3Blue1Brown:</b> Activa el Truco 4 y pidele a Gemini que te explique como viaja el GPS como si fuera un guion cinematografico con 3 analogias visuales.", style_task)],
     ]
@@ -145,8 +145,8 @@ def build_mono_002_pdf(output_path=PDF_PATH):
         ],
         [
             Paragraph("<b>2. Diagramas Visuales</b>", style_task),
-            Paragraph("Ordena <i>«No uses texto largo, genera un diagrama Mermaid o esquema»</i>.", style_task),
-            Paragraph("Comprension en 50 milisegundos sin fatiga visual.", style_task)
+            Paragraph("Pide <i>«Dibuja un diagrama en arte de texto con cajas [ ], rombos y flechas | y v»</i>.", style_task),
+            Paragraph("Esquema visual dibujado directamente en el chat en 50 milisegundos sin visores.", style_task)
         ],
         [
             Paragraph("<b>3. Micro-Apps HTML</b>", style_task),

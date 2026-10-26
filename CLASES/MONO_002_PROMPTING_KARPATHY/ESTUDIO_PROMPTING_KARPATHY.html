@@ -463,11 +463,11 @@
     <div class="tab-panel" id="panel2">
         <div class="panel-header">
             <div>
-                <span class="panel-badge badge-diag">VISUAL THINKING & SCHEMATICS</span>
-                <h2 style="font-size:1.25rem; margin-top:4px;">2. Diagramas en vez de Muros de Texto</h2>
+                <span class="panel-badge badge-diag">VISUAL THINKING & ESQUEMAS EN EL CHAT</span>
+                <h2 style="font-size:1.25rem; margin-top:4px;">2. Diagramas Visuales Directos en el Chat de Gemini</h2>
             </div>
             <p style="font-size:0.84rem; color:var(--text-sub); max-width:500px;">
-                Un diagrama visual se comprende en 50 milisegundos. En lugar de pedirle a la IA que te describa un proceso, ordénale que te dibuje un mapa de flujo.
+                No necesitas visores ni programas externos: ordenas a Gemini que dibuje el diagrama directamente dentro de la conversación usando cajas de texto y flechas limpias.
             </p>
         </div>
 
@@ -475,19 +475,46 @@
             <div class="box-preset">
                 <div class="box-title">🎯 Elige qué proceso quieres ver en diagrama:</div>
                 <div class="preset-buttons">
+                    <button class="btn-preset" onclick="setDiagQuery('Cómo funciona el circuito eléctrico simple de una bombilla con interruptor')">💡 Circuito bombilla</button>
                     <button class="btn-preset" onclick="setDiagQuery('Flujo de decisión ante un correo sospechoso de estafa bancaria')">🚨 Radar Phishing</button>
                     <button class="btn-preset" onclick="setDiagQuery('Cronología de las 4 etapas de la Revolución Industrial')">⚙️ Rev. Industrial</button>
-                    <button class="btn-preset" onclick="setDiagQuery('Cómo funciona el circuito eléctrico simple de una bombilla con interruptor')">💡 Circuito bombilla</button>
                     <button class="btn-preset" onclick="setDiagQuery('Ruta del café: desde la semilla en Colombia hasta la taza')">☕ Ruta del café</button>
                 </div>
-                <textarea id="diagInput" oninput="updateDiagPrompt()">Flujo de decisión ante un correo sospechoso de estafa bancaria</textarea>
+                <textarea id="diagInput" oninput="updateDiagPrompt()">Cómo funciona el circuito eléctrico simple de una bombilla con interruptor</textarea>
+
+                <div style="background:rgba(56, 189, 248, 0.08); border:1px solid rgba(56, 189, 248, 0.25); border-radius:10px; padding:12px; font-size:0.8rem; color:#7dd3fc; line-height:1.45;">
+                    💡 <b>El Secreto del Segundo Paso:</b><br>
+                    Si la IA te da explicaciones largas, dile en el mismo chat: <i>«Ahora dibújame esto en un diagrama de flujo en arte de texto con cajas y flechas»</i>. ¡Gemini lo dibujará inmediatamente en la pantalla!
+                </div>
             </div>
 
             <div class="output-box">
-                <div class="box-title">📋 Prompt Maestro para Gemini (Pide Diagrama Mermaid/Visual):</div>
+                <div class="box-title">📋 Prompt Maestro para Copiar a Gemini (Directo en 1 Paso o tras la consulta):</div>
                 <div class="prompt-preview" id="diagOutput"></div>
-                <button class="btn-copy" onclick="copyText('diagOutput')">📋 Copiar Prompt para Diagrama</button>
+                <button class="btn-copy" onclick="copyText('diagOutput')">📋 Copiar Prompt para Diagrama en Gemini</button>
             </div>
+        </div>
+
+        <!-- MUESTRA VISUAL DE CÓMO RESPONDE GEMINI EN EL CHAT -->
+        <div style="margin-top:20px; background:rgba(2, 6, 23, 0.95); border:1px solid rgba(52, 211, 153, 0.35); border-radius:16px; padding:20px;">
+            <div class="box-title" style="color:#6ee7b7; margin-bottom:8px;">
+                ✨ Así es como Gemini dibuja el diagrama directamente en tu pantalla:
+            </div>
+            <pre id="diagAsciiPreview" style="font-family:var(--font-mono); font-size:0.84rem; line-height:1.45; color:#a7f3d0; background:#070d18; border:1px solid rgba(52, 211, 153, 0.2); border-radius:12px; padding:18px; overflow-x:auto;">
+[ Pila suministra voltaje ]
+                           |
+                           v
+               /-----------------------\
+              < ¿Interruptor cerrado?   >
+               \-----------------------/
+                 /                   \
+           (Sí) /                     \ (No)
+               v                       v
+    [ Circula corriente ]    [ Circuito abierto ]
+               |                       |
+               v                       v
+     (( Bombilla encendida )) (( Bombilla apagada ))
+            </pre>
         </div>
     </div>
 
@@ -608,17 +635,47 @@ REGLAS ESTRICTAS DE RESPUESTA (Estándar 80% ASD-STE100):
     function setDiagQuery(text) {
         document.getElementById('diagInput').value = text;
         updateDiagPrompt();
+        if (text.includes('circuito')) {
+            document.getElementById('diagAsciiPreview').innerText = `[ Pila suministra voltaje ]
+                           |
+                           v
+               /-----------------------\\
+              < ¿Interruptor cerrado?   >
+               \\-----------------------/
+                 /                   \\
+           (Sí) /                     \\ (No)
+               v                       v
+    [ Circula corriente ]    [ Circuito abierto ]
+               |                       |
+               v                       v
+     (( Bombilla encendida )) (( Bombilla apagada ))`;
+        } else if (text.includes('estafa') || text.includes('Phishing')) {
+            document.getElementById('diagAsciiPreview').innerText = `[ Mensaje sospechoso en móvil/email ]
+                           |
+                           v
+               /-----------------------\\
+              < ¿Pide pin, clave o enlace? >
+               \\-----------------------/
+                 /                   \\
+           (Sí) /                     \\ (No)
+               v                       v
+     [ ¡PELIGRO ESTAFA! ]     [ Mensaje ordinario ]
+               |                       |
+               v                       v
+       (( Borrar sin pulsar ))   (( Leer con calma ))`;
+        }
     }
     function updateDiagPrompt() {
         const query = document.getElementById('diagInput').value.trim();
-        const prompt = `No me des una explicación en texto largo o párrafos.
-Representa visualmente: "${query}".
+        const prompt = `No me des una explicación en texto largo o párrafos continuos.
+Dibuja un diagrama de flujo en arte de texto visual (con cajas, rombos y flechas verticales | y v) para representar este proceso:
+"${query}".
 
-REQUISITOS DEL DIAGRAMA:
-1. Genera un diagrama de flujo en formato Mermaid (código \`\`\`mermaid) o en arte esquemático limpio.
-2. Utiliza bloques concisos con etiquetas breves (máximo 4 palabras por nodo).
-3. Muestra claramente la secuencia paso a paso: Inicio -> Decisión -> Acción final.
-4. Añade al pie únicamente 3 viñetas resumen de 1 línea cada una.`;
+REGLAS DEL DIBUJO DIRECTO EN EL CHAT:
+1. Utiliza cajas de texto para los pasos (ej: [ Acción ]) y rombos o signos < > para las decisiones.
+2. Traza las conexiones con líneas verticales | y flechas v con sus opciones (Sí) y (No).
+3. Máximo 4 palabras por bloque.
+4. Debe verse directamente dibujado aquí en el chat sin necesidad de herramientas externas.`;
         document.getElementById('diagOutput').innerText = prompt;
     }
 
