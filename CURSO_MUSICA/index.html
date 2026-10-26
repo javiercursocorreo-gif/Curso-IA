@@ -13,7 +13,7 @@
     <meta http-equiv="Expires" content="0">
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='bg' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%231e3a8a'/%3E%3Cstop offset='100%25' stop-color='%230b0f17'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='100' height='100' rx='22' fill='url(%23bg)' stroke='%2338bdf8' stroke-width='3'/%3E%3Ctext x='50' y='74' font-family='-apple-system, BlinkMacSystemFont, sans-serif' font-weight='900' font-size='68' text-anchor='middle' fill='%2338bdf8'%3ER%3C/text%3E%3C/svg%3E">
     <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='bg' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%231e3a8a'/%3E%3Cstop offset='100%25' stop-color='%230b0f17'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='100' height='100' rx='22' fill='url(%23bg)' stroke='%2338bdf8' stroke-width='3'/%3E%3Ctext x='50' y='74' font-family='-apple-system, BlinkMacSystemFont, sans-serif' font-weight='900' font-size='68' text-anchor='middle' fill='%2338bdf8'%3ER%3C/text%3E%3C/svg%3E">
-    <title>Repertorio Musical · Korg EK-50 (v127)</title>
+    <title>Repertorio Musical · Korg EK-50 (v128)</title>
     <style>
         :root {
             --bg-color: #0b0f17;
@@ -214,8 +214,46 @@
             flex-shrink: 0;
             margin-left: 6px;
         }
-        .song-row:hover .song-arrow, .song-row:active .song-arrow {
+        .song-row:hover .song-arrow {
             color: var(--accent-blue);
+        }
+
+        /* ============================================================================== */
+        /* EFECTO DESTELLO TÁCTIL VISUAL INMEDIATO PARA IPAD (FEEDBACK ESCÉNICO AL PULSAR) */
+        /* ============================================================================== */
+        @keyframes destelloPulsacion {
+            0% {
+                filter: brightness(2.8) contrast(1.4);
+                transform: scale(0.95);
+                box-shadow: 0 0 30px #ffffff, 0 0 60px #38bdf8, inset 0 0 15px rgba(255,255,255,0.9);
+                border-color: #ffffff !important;
+                outline: 2px solid #ffffff;
+            }
+            35% {
+                filter: brightness(2.0) contrast(1.2);
+                transform: scale(1.03);
+                box-shadow: 0 0 40px #ffffff, 0 0 70px #f59e0b, inset 0 0 20px rgba(255,255,255,0.7);
+                border-color: #fde68a !important;
+                outline: 2px solid #fde68a;
+            }
+            100% {
+                filter: brightness(1) contrast(1);
+                transform: scale(1);
+                box-shadow: none;
+                outline: none;
+            }
+        }
+
+        .btn-flash-active {
+            animation: destelloPulsacion 0.45s cubic-bezier(0.2, 0.9, 0.3, 1) forwards !important;
+            position: relative;
+            z-index: 1000 !important;
+        }
+
+        button:active, .btn-reload:active, .btn-circle:active, .song-row:active {
+            filter: brightness(2.5) contrast(1.3) !important;
+            transform: scale(0.96) !important;
+            box-shadow: 0 0 25px #ffffff, 0 0 50px #38bdf8 !important;
         }
     </style>
 </head>
@@ -224,14 +262,14 @@
     <div class="header">
         <div class="header-title">
             <h1>🎼 Repertorio Korg EK-50</h1>
-            <span class="header-badge">⚡ v127 Ultra-Compacto · 24 Obras Maestras</span>
+            <span class="header-badge">⚡ v128 Ultra-Compacto · 24 Obras Maestras</span>
         </div>
         <div style="display:flex; align-items:center; gap:8px;">
-            <a class="btn-circle" href="CIRCULO_DE_QUINTAS.html?v=127" title="Ver Círculo de Quintas y Tonalidades">
+            <a class="btn-circle" href="CIRCULO_DE_QUINTAS.html?v=128" title="Ver Círculo de Quintas y Tonalidades">
                 🎡 Círculo de Quintas
             </a>
-            <button class="btn-reload" onclick="window.location.href=window.location.pathname+'?v=127&t='+Date.now()" title="Recargar sin caché">
-                🔄 Recargar (v127)
+            <button class="btn-reload" onclick="dispararDestelloBoton(this); window.location.href=window.location.pathname+'?v=128&t='+Date.now()" title="Recargar sin caché">
+                🔄 Recargar (v128)
             </button>
         </div>
     </div>
@@ -338,7 +376,7 @@
                         </div>
                         <span class="song-arrow" style="color:#fbbf24;">➔</span>
                     </a>
-                    <a class="song-row" href="CANCION_09_AMOR_AMOR_AMOR.html?v=127">
+                    <a class="song-row" href="CANCION_09_AMOR_AMOR_AMOR.html?v=128">
                         <div class="song-left">
                             <span class="song-num" style="color:#f59e0b;">9.</span>
                             <span class="song-title">Amor, Amor, Amor</span>
@@ -518,6 +556,19 @@
             if (favIcon) favIcon.href = pngUrl;
         } catch(e) {}
     });
+
+    /* Feedback visual táctil inmediato (destello reactivo al tacto en iPad) */
+    function dispararDestelloBoton(el) {
+        if (!el) return;
+        el.classList.remove('btn-flash-active');
+        void el.offsetWidth; // Forzar reflow del DOM para re-disparo instantáneo
+        el.classList.add('btn-flash-active');
+        setTimeout(() => el.classList.remove('btn-flash-active'), 460);
+    }
+    document.addEventListener('pointerdown', (e) => {
+        const btn = e.target.closest('button, .btn-reload, .btn-circle, .song-row');
+        if (btn) dispararDestelloBoton(btn);
+    }, { passive: true });
 
     /* Modo Atril Híbrido con Reposo Inteligente a los 25 minutos */
     let wakeLockInstance = null;
