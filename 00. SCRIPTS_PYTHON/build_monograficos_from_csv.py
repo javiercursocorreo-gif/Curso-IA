@@ -48,7 +48,7 @@ CSV_ROWS = [
     {
         "num": 2,
         "file_suffix": "2_KARPATHY_PROMPTING",
-        "tema": "Monográfico 2. Los 4 Super-Trucos de Prompting de Andrej Karpathy",
+        "tema": "Monográfico 2. Los 4 Super-Trucos de Prompting de Andrej Karpathy (Exdirector de IA de Tesla y Cofundador de OpenAI)",
         "titulo": "Ficha Didáctica Oficial del Alumno (PDF)",
         "desc": "Metodología de los 4 trucos de Karpathy: filtro aeroespacial ASD-STE100 sin rodeos, diagramas visuales en texto directo, videojuegos retro en 1 frase y modo documental 3Blue1Brown.",
         "url": GITHUB_BASE + "CLASES/MONO_002_PROMPTING_KARPATHY/MONO-002_Los_4_Trucos_de_Prompting_de_Karpathy.pdf",
@@ -57,7 +57,7 @@ CSV_ROWS = [
     {
         "num": 2,
         "file_suffix": "2_KARPATHY_PROMPTING",
-        "tema": "Monográfico 2. Los 4 Super-Trucos de Prompting de Andrej Karpathy",
+        "tema": "Monográfico 2. Los 4 Super-Trucos de Prompting de Andrej Karpathy (Exdirector de IA de Tesla y Cofundador de OpenAI)",
         "titulo": "Aplicación Web Interactiva: Estudio de Prompting de Karpathy (HTML)",
         "desc": "Taller interactivo en 4 pestañas para probar el filtro militar ASD-STE100, generador de diagramas, catálogo de videojuegos retro y modo 3Blue1Brown.",
         "url": GITHUB_BASE + "CLASES/MONO_002_PROMPTING_KARPATHY/ESTUDIO_PROMPTING_KARPATHY.html",

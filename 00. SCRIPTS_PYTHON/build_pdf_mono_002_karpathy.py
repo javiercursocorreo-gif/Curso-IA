@@ -78,13 +78,13 @@ def build_mono_002_pdf(output_path=PDF_PATH):
     story.append(HRFlowable(width="100%", thickness=1.2, color=colors.HexColor('#0284C7'), spaceAfter=4))
 
     # Titulo
-    story.append(Paragraph("<b>[MONO-002] Los 4 Super-Trucos de Prompting de Andrej Karpathy</b>", style_title))
+    story.append(Paragraph("<b>[MONO-002] Los 4 Super-Trucos de Prompting de Andrej Karpathy</b> <font size=8.5 color='#0284C7'><b>(Exdirector de IA de Tesla y Cofundador de OpenAI)</b></font>", style_title))
 
     # Mision
     story.append(Paragraph("<b>Mision Didactica &bull; De Sufrir Muros de Texto a Controlar la IA con Precision:</b>", style_section_h))
     story.append(Paragraph(
         "Muchos usuarios se frustran porque la IA responde con 6 parrafos interminables llenos de rodeos y lenguaje abstracto. "
-        "En este taller aprenderas los <b>4 trucos maestros revelados por Andrej Karpathy</b> (cofundador de OpenAI) para exigirle a Gemini "
+        "En este taller aprenderas los <b>4 trucos maestros revelados por Andrej Karpathy</b> (exdirector de IA de Tesla y cofundador de OpenAI) para exigirle a Gemini "
         "instrucciones directas estilo manual aeronautico, diagramas visuales en 50 milisegundos, aplicaciones interactivas en tu navegador y explicaciones de documental.",
         style_body
     ))
