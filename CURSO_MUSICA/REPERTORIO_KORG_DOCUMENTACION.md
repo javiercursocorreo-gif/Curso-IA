@@ -391,5 +391,12 @@ Esta sección recopila los descubrimientos críticos de ingeniería realizados d
   2. **Upper 2 (Canal 2):** Destello armónico tenue de campanilla (`GM2 PC 9: Glockenspiel`) a volumen muy bajo (45, sólo 25%) para aportar un brillo de campana en el ataque sin enmascarar la pureza del piano de cola.
   3. **Resultado:** El piano de cola 011 adquiere la profundidad, majestuosidad y eco flotante propios de las grandes grabaciones de balada romántica orquestal.
 
+### 6.30. La Fusión Perfecta: Grand Piano 011 & Campanas Glockenspiel al Unísono (v135)
+* **Diagnóstico y Corrección Acústica:** El usuario confirmó que la introducción de *Amor, Amor, Amor* debe llevar de forma inequívoca el **Grand Piano 011 sonando AL MISMO TIEMPO y con presencia total junto a las campanas**, y no como un mero rumor de fondo.
+* **Calibración de la Capa Dual:**
+  1. **Upper 1 (Canal 1 - Grand Piano 011):** `Acoustic Grand Piano` (GM2 PC 0) a **Volumen 126**, Cutoff brillante (118), Reverb de sala (115) y Eco/Chorus estéreo (70).
+  2. **Upper 2 (Canal 2 - Campanas Glockenspiel):** `Glockenspiel` (GM2 PC 9) a **Volumen 120** (sonando con fuerza, brillo y nitidez al unísono con el piano de cola), Attack percusivo rápido (10), Cutoff máximo (124) y Reverb amplia (120).
+  3. **Depuración de Sintaxis JS (Desbloqueo de Partitura):** Se eliminó un bloque de código residual huérfano fuera de función en el script que provocaba un fallo de parseo en WebKit, restaurando la apertura instantánea de la partitura a pantalla completa con `abrirPartituraPantallaCompleta()`.
+
 ---
 *Manual redactado y sellado para el proyecto CURSO-IA / CURSO_MUSICA. Todos los derechos reservados.*
