@@ -151,3 +151,9 @@
 - **Lección 6.36 (Equilibrio de Balance Acústico Acompañamiento vs Teclado - v140):**
   1. *Ajuste en Teclado Físico:* Mantener `[STYLE]` + girar Dial atenúa la orquesta de acompañamiento; mantener `[KEYBOARD SET]` + girar Dial eleva el volumen global de las teclas; mantener `[UPPER 1]` o `[UPPER 2]` + girar Dial calibra la mezcla interna de la mano derecha (ej. Pad vs Guitarra Acústica en Estilo 034 Diva).
   2. *Automatización por Web MIDI:* Se implementa enviando mensajes `CC 07 (Volume)` independientes a los canales de melodía (Upper 1/2) y a los canales rítmicos para un balance escénico perfecto.
+- **Lección 6.37 (Arquitectura de 1 Único STS por Estilo en Korg EK-50 y Superación con Web MIDI - v141):**
+  1. *Limitación de Fábrica:* A diferencia de los teclados de la serie profesional Korg Pa (que traen 4 botones STS por ritmo), el Korg EK-50 incluye **un único STS asociado a cada Style** (accesible con `[KEYBOARD SET / STS]`).
+  2. *Superación Tecnológica con Web MIDI:* El desarrollo del atril digital interactivo en iPad dota al Korg EK-50 de botones táctiles ilimitados por obra (como la terna Noisy Tenor / Piano 011 & Glockenspiel / String Ensemble en Amor, Amor, Amor), alcanzando la potencia escénica de un teclado de gama alta de 3.000 € sin tocar botones físicos.
+- **Lección 6.38 (Estrategia de Investigación Tímbrica de los 4 STS de Fábrica 031 a 034 - v142):**
+  1. *Fase 1 (Escucha de Fábrica):* Probar primero el STS predeterminado de cada estilo: 031 ➔ *Phase EP*, 032 ➔ *Piano & Pad*, 033 ➔ *EP & VoxPad*, 034 ➔ *Pad & Ac.Gtr*.
+  2. *Fase 2 (Sustitución Tímbrica si no encajan):* Si el STS de fábrica no casa con la melodía o carece de fuerza solista, se sustituye en Web MIDI por timbres de mayor personalidad (ej. Saxo Tenor 101, Cuerdas en Octavas 066 o Grand Piano 011 con Eco).

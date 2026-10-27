@@ -2,7 +2,7 @@
 > **Proyecto:** Sistema de Atril Digital, Control Web MIDI y Repertorio Pedagógico Interactivo  
 > **Ubicación:** `CURSO_MUSICA/` · **Repositorio:** `CURSO-IA`  
 > **Dispositivo Principal:** Teclado Korg EK-50 Entertainer Keyboard conectado a iPad / Mac  
-> **Versión del Sistema:** v140 (Calibración de Balance Acústico: Acompañamiento vs Teclado)
+> **Versión del Sistema:** v142 (Metodología de Investigación: STS de Fábrica 031-034 y Sustituciones)
 
 ---
 
@@ -457,6 +457,36 @@ Esta sección recopila los descubrimientos críticos de ingeniería realizados d
     - `Canal 1 (Upper 1)`: `CC 7 = 120-127` (Melodía solista protagonista).
     - `Canal 2 (Upper 2)`: `CC 7 = 90-115` (Capa de acompañamiento o brillo armónico).
     - `Canales de Acompañamiento (Pistas de Ritmo)`: Se atenúan a volúmenes equilibrados (70-85) para evitar saturación del preamplificador y garantizar que la interpretación del músico destaque con nitidez de concierto.
+
+### 6.35. La Gran Diferencia Arquitectónica: Korg EK-50 (1 STS) vs Korg Serie Pa (4 STS) (v141)
+* **La Confirmación del Músico:** En el Korg EK-50, **cada Estilo tiene un único STS principal asociado**, a diferencia de los teclados de la serie profesional Korg Pa (Pa300, Pa700, Pa1000, Pa4X), que cuentan con 4 botones físicos dedicados (`STS 1` a `STS 4`) para cada ritmo.
+* **El Motivo de Fabricación:**
+  - El **Korg EK-50** pertenece a la familia *Entertainer Keyboard* (gama de entrada/media diseñada para ser intuitiva y asequible). Para mantener el panel limpio y económico, Korg prescindió de los 4 botones dedicados de STS y asignó **un único sonido predeterminado óptimo por ritmo**, accesible mediante el botón `[KEYBOARD SET / STS]`.
+  - Si en el hardware del EK-50 el músico desea cambiar de timbre durante una canción, debe recurrir a la rueda (Dial) para buscar otro Keyboard Set del catálogo de 170+, o programar el bloque **SET LIST** (40 memorias de usuario).
+* **El Salto Cuántico con el Atril Digital Web MIDI:**
+  - Gracias al desarrollo del Atril Digital sobre Web MIDI en iPad, **hemos superado la limitación de hardware del Korg EK-50**:
+  - En la interfaz táctil construimos ternas o cuaternas de botones (como el Botón 1 Saxo Tenor, Botón 2 Piano 011 & Campanas, y Botón 3 Cuerdas Sinfónicas en *Amor, Amor, Amor*).
+  - Al pulsar un botón en el iPad, el sistema reconfigura en microsegundos las capas Upper 1/2/3, Lower, volúmenes, efectos y ecualización, dotando al Korg EK-50 de la versatilidad de cambio escénico en directo de un teclado profesional de gama alta de 3.000 € sin tocar ningún botón físico.
+
+### 6.36. Metodología de Investigación Tímbrica: Análisis de los 4 STS de Fábrica (031 a 034) y Estrategia de Sustitución (v142)
+* **La Premisa Metodológica:** Antes de alterar cualquier sonido o forzar timbres externos, el primer paso riguroso es **analizar y escuchar el STS que viene de fábrica con cada uno de los 4 estilos contemporáneos**. Los ingenieros de Korg concibieron cada STS para armonizar con el arreglo de batería y bajo de ese ritmo; si casan y suenan bonitos se conservan como opción principal, y si no ofrecen suficiente protagonismo o expresividad solista, se sustituyen por timbres de mayor personalidad.
+* **Disección de los 4 STS de Fábrica:**
+  1. **Style 031 (Windy Beat) ➔ STS de Fábrica: `Phase EP`**
+     - *Naturaleza Sonora:* Piano eléctrico (Rhodes/FM) procesado con un modulador de fase (*Phaser* suave y envolvente).
+     - *Carácter Acústico:* Textura aérea, etérea y con mucho movimiento. Muy típico del Pop estadounidense y baladas sofisticadas de los 80/90.
+     - *Veredicto:* Casa de maravilla para intros y estrofas lentas. Si se desea más fuerza melódica, se puede sustituir por un saxo solista o guitarra con distorsión sutil.
+  2. **Style 032 (Home Beat) ➔ STS de Fábrica: `Piano & Pad`**
+     - *Naturaleza Sonora:* Piano de cola acústico superpuesto a un colchón orquestal suave (Warm Synth Pad).
+     - *Carácter Acústico:* La combinación reina de la música acústica y el pop íntimo. Las notas percusivas del piano florecen sobre la calidez del pad sostenido.
+     - *Veredicto:* Casa perfecto para canciones reflexivas. Alternativas probadas con éxito: `KbdSet 101 (Tenor Sax)` para un toque Smooth Jazz nocturno, o `KbdSet 066 (Oct.Strings)` para una dimensión pop-sinfónica.
+  3. **Style 033 (Groove Bld) ➔ STS de Fábrica: `EP & VoxPad`**
+     - *Naturaleza Sonora:* Piano eléctrico cristalino acoplado a un coro de voces sintéticas celestiales (*Vox Pad* / Coro etéreo).
+     - *Carácter Acústico:* Gran espacialidad mística y profundidad reverencial. Mantiene el groove rítmico moderno pero aporta un lecho armónico sagrado/espiritual.
+     - *Veredicto:* Casa de forma conmovedora con himnos contemporáneos y obras de gran carga emocional como *Hallelujah*.
+  4. **Style 034 (Diva) ➔ STS de Fábrica: `Pad & Ac.Gtr`**
+     - *Naturaleza Sonora:* Colchón envolvente en Upper 1 y Guitarra Acústica arpegiada en Upper 2.
+     - *Carácter Acústico:* Arreglo cinematográfico de gran balada de los 90 (estilo *My Heart Will Go On* de Céline Dion).
+     - *Veredicto:* Requiere calibrar el balance de volumen (Dial `[STYLE]` hacia abajo o `CC 07` en Web MIDI) para que la delicadeza de la guitarra corte la mezcla de la orquesta. Si se busca un clímax épico, la guitarra puede ser sustituida por cuerdas masivas o flauta irlandesa.
 
 ---
 *Manual redactado y sellado para el proyecto CURSO-IA / CURSO_MUSICA. Todos los derechos reservados.*
