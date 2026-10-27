@@ -2,7 +2,7 @@
 > **Proyecto:** Sistema de Atril Digital, Control Web MIDI y Repertorio Pedagógico Interactivo  
 > **Ubicación:** `CURSO_MUSICA/` · **Repositorio:** `CURSO-IA`  
 > **Dispositivo Principal:** Teclado Korg EK-50 Entertainer Keyboard conectado a iPad / Mac  
-> **Versión del Sistema:** v138 (Jerarquía Sonora Korg EK-50: Sonidos Sueltos vs Keyboard Sets vs STS)
+> **Versión del Sistema:** v139 (Anatomía Física Real Korg EK-50: Partes LED, Set List y Persistencia Sonora)
 
 ---
 
@@ -423,27 +423,24 @@ Esta sección recopila los descubrimientos críticos de ingeniería realizados d
      - *Efecto Musical:* Transforma la obra en un **Pop Sinfónico Cinemático**. Al tocar las cuerdas en octavas sobre el pulso acústico íntimo de *Home Beat*, la melodía adquiere una envergadura épica y emocionante, ideal para momentos cumbre o finales orquestales modernos sin sonar recargada.
 * **Conclusión Pedagógica:** Este hallazgo demuestra la flexibilidad del atril y del Korg EK-50: una misma estructura armónica (Do Mayor canónica) puede presentarse en formato Clásico de Época (Estilo 175 Beguine 2 con Piano 011 y Campanas) o en formato Contemporáneo de Vanguardia (Estilo 032 Home Beat con Saxo Tenor 101 o Cuerdas en Octavas 066).
 
-### 6.33. Desmitificación Didáctica: Sonidos Sueltos vs Keyboard Sets vs STS (v138)
-* **La Pregunta Fundamental:** ¿Cuando pulso `Keyboard Set` o miro la plantilla serigrafiada (ej. `031 Organ`, `066 Oct.Strings`), estoy eligiendo instrumentos individuales o compuestos?
-* **Los Tres Niveles de la Arquitectura Sonora del Korg EK-50:**
-  1. **Nivel 1 · Sonidos Individuales (702 Sounds puros de fábrica):**
-     - Son los ladrillos atómicos del teclado: una muestra de flauta sola, una muestra de piano seco, un violín solo.
-     - Raramente se tocan sueltos porque suenan delgados y sin producción de estudio.
-  2. **Nivel 2 · KEYBOARD SETS (Las combinaciones universales del panel y plástico negro):**
-     - **¡SÍ, SON INSTRUMENTOS COMPUESTOS!** Cada número de Keyboard Set (los más de 170 preajustes impresos en el plástico como `011 Piano`, `031 Organ`, `066 Oct.Strings`, `101 Tenor Sax`):
-       - Agrupa hasta **4 instrumentos simultáneos**: Upper 1 (melodía), Upper 2 (capa de refuerzo o pad), Upper 3 (brillo o armónico) y Lower (mano izquierda / división de bajo o colchón).
-       - Incluye balance de volúmenes, ecualización, reverberación y chorus pre-calibrados por Korg.
-       - *Ejemplo en 031 Organ:* No es un órgano suelto plano, sino un órgano Drawbar principal en Upper 1 con un pedal de refuerzo en Upper 2 y un colchón cálido.
-       - *Ejemplo en 066 Oct.Strings:* Son cuerdas principales (Upper 1) + cuerdas a la octava superior (Upper 2) + coro etéreo (Oh-Ah Voices en Upper 3/Lower).
-       - Son universales: funcionan con cualquier ritmo o tocando a piano solo sin acompañamiento.
-  3. **Nivel 3 · STS (Single Touch Settings - Las 4 combinaciones exclusivas de cada Ritmo):**
-     - Son los **4 trajes a medida** diseñados específicamente para el estilo que está sonando.
-     - Se controlan con los 4 botones alargados **debajo de la pantalla LCD [1] [2] [3] [4]** cuando el teclado está en modo `STS` (botón físico `[STS]` encendido).
-     - Cada uno de los 4 STS también es una combinación de hasta 4 partes (Upper 1/2/3/Lower), pero elegida por los ingenieros de Korg para encajar a la perfección con la orquestación de ese ritmo específico (ej. en Beguine 2: STS 1 es Saxo Tenor, STS 3 es Cuerdas Sinfónicas).
-* **Resumen Operativo:**
-  - Botón físico `[KEYBOARD SET]` + número = Combinación compuesta del catálogo general (universal).
-  - Botones `[1] [2] [3] [4]` bajo la pantalla LCD (modo STS) = Combinación compuesta exclusiva del ritmo en curso.
-  - Con el **Atril Digital en iPad (Web MIDI)**: El músico no tiene que pulsar combinaciones de teclas en el teclado; un solo toque en la pantalla táctil inyecta la combinación exacta de instrumentos, volúmenes y efectos sin fricción.
+### 6.33. Desmitificación de la Anatomía Física del Korg EK-50 (v139)
+* **1. ¿Por qué en 066 se encienden 4 botones (Lower, Upper 1, 2 y 3) y en 031 o 101 solo se enciende Upper 1?**
+  - En el panel frontal del Korg EK-50 existen 4 botones dedicados a las partes del teclado: `[LOWER]`, `[UPPER 1]`, `[UPPER 2]` y `[UPPER 3]`, cada uno con su LED luminoso.
+  - Cada **Keyboard Set** define no solo qué sonidos están cargados, sino **cuáles de esas 4 partes están encendidas (activas) por defecto**:
+    * En **`066 Oct.Strings`**: Korg diseñó este preset como una masa orquestal masiva, por lo que **enciende físicamente las 4 partes a la vez** (violines en Upper 1, cuerdas a la octava en Upper 2, cuerda sintética en Upper 3 y voces/contrabajo en Lower). Por eso brillan los 4 LEDs.
+    * En **`031 Organ`** y en **`101 Tenor Sax`**: Korg los diseñó como **voces solistas puras** para la mano derecha. Por eso deja activo **únicamente el LED de `Upper 1`**; las demás partes (Upper 2/3 y Lower) quedan silenciadas para no ensuciar la melodía ni forzar un split en la mano izquierda a menos que el músico pulse manualmente su botón.
+* **2. Desmitificación del Panel: ¿Qué son el botón BANK y los 4 botones numéricos?**
+  - Ese bloque es la sección **SET LIST** del Korg EK-50:
+    * El botón negro **`BANK/WRITE`** conmuta las letras de los bancos de memoria (de la **A** a la **J**, 10 bancos en total).
+    * Los cuatro botones numéricos contiguos **`[1]` `[2]` `[3]` `[4]`** son las 4 casillas de memoria dentro de cada banco.
+    * En conjunto forman las **40 memorias de usuario (Set List)** para que el músico guarde sus canciones completas de un concierto. **No son los botones de STS de los ritmos.**
+* **3. ¿Cómo funciona realmente el STS en el Korg EK-50?**
+  - A diferencia de los teclados de gama Pa (que tienen 4 botones STS separados), el Korg EK-50 asocia **un STS principal a cada Estilo** mediante el botón **`KEYBOARD SET / [STS]`**.
+  - **La Regla de Persistencia Sonora al Cambiar de Estilo:**
+    * Si eliges manualmente un sonido con `[KEYBOARD SET]` (ej. el `101 Tenor Sax`), el teclado asume que quieres tocar con ese saxo. Por eso, si después cambias de ritmo (del Style 032 al Style 031), **el Korg EK-50 MANTIENE el sonido 101** para permitirte probar cómo suena tu saxo con distintos ritmos sin cambiártelo por sorpresa.
+    * **Para que el teclado cargue el STS propio del nuevo ritmo:** Debes pulsar **`[SHIFT] + [KEYBOARD SET / STS]`**. Al hacerlo, el Korg descartará el sonido manual 101 y cargará el preset de fábrica optimizado para ese estilo, mostrando el icono `STS` en la pantalla LCD.
+* **4. La Supremacía del Atril Digital Web MIDI:**
+  - Toda esta mecánica de acordarse de qué partes encender (`Upper 1` vs `Upper 2`), si pulsar `[SHIFT]` o qué botón del `Set List` no tocar, se elimina al 100% con la interfaz táctil del iPad: cada botón Web MIDI envía directamente el Estilo, Tempo, voces y mezcla exacta de capas sin tocar el teclado físico.
 
 ---
 *Manual redactado y sellado para el proyecto CURSO-IA / CURSO_MUSICA. Todos los derechos reservados.*

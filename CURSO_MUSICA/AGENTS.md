@@ -144,3 +144,7 @@
   1. *Sonidos Individuales (702 Sounds):* Tonos atómicos básicos de fábrica (un piano solo, una flauta sola).
   2. *Keyboard Sets (Panel / Plástico negro: 011, 031 Organ, 066 Oct.Strings, 101 Tenor Sax):* **SÍ son instrumentos compuestos**. Son preajustes universales que combinan hasta 4 capas (Upper 1, Upper 2, Upper 3 y Lower) con efectos, octavas y balances de fábrica.
   3. *STS (Single Touch Settings):* Son las 4 combinaciones compuestas exclusivas asociadas a cada Ritmo concreto (en los 4 botones bajo la pantalla LCD). Con el atril digital en iPad, Web MIDI configura las capas y efectos automáticamente sin manipulación física del teclado.
+- **Lección 6.35 (Anatomía Física de Panel: LEDs de Partes, Set List y Persistencia Sonora - v139):**
+  1. *LEDs de Partes (Lower, Upper 1, 2, 3):* Cada Keyboard Set define qué partes enciende: `066 (Oct.Strings)` activa las 4 a la vez por ser un colchón orquestal completo; mientras que `031 (Organ)` y `101 (Tenor Sax)` activan únicamente `Upper 1` como voces solistas melódicas.
+  2. *Bloque Set List:* El botón negro `BANK/WRITE` (bancos A-J) y los 4 botones numéricos contiguos son las 40 memorias de usuario para conciertos (no son los STS del ritmo).
+  3. *Persistencia Sonora:* Al elegir manualmente un Keyboard Set, el Korg preserva ese sonido al cambiar de estilo. Para que el teclado adopte el STS de fábrica del nuevo estilo, se debe pulsar `[SHIFT] + [KEYBOARD SET / STS]`. Con Web MIDI, esto se programa a 1 toque sin tocar el teclado físico.
