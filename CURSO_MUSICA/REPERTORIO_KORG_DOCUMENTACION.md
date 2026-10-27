@@ -2,7 +2,7 @@
 > **Proyecto:** Sistema de Atril Digital, Control Web MIDI y Repertorio Pedagógico Interactivo  
 > **Ubicación:** `CURSO_MUSICA/` · **Repositorio:** `CURSO-IA`  
 > **Dispositivo Principal:** Teclado Korg EK-50 Entertainer Keyboard conectado a iPad / Mac  
-> **Versión del Sistema:** v135 (Fusión Grand Piano 011 & Campanas Glockenspiel al Unísono)
+> **Versión del Sistema:** v137 (Caso Práctico Style 032 con KbdSet 101 Tenor Sax & KbdSet 066 Oct.Strings)
 
 ---
 
@@ -397,6 +397,31 @@ Esta sección recopila los descubrimientos críticos de ingeniería realizados d
   1. **Upper 1 (Canal 1 - Grand Piano 011):** `Acoustic Grand Piano` (GM2 PC 0) a **Volumen 126**, Cutoff brillante (118), Reverb de sala (115) y Eco/Chorus estéreo (70).
   2. **Upper 2 (Canal 2 - Campanas Glockenspiel):** `Glockenspiel` (GM2 PC 9) a **Volumen 120** (sonando con fuerza, brillo y nitidez al unísono con el piano de cola), Attack percusivo rápido (10), Cutoff máximo (124) y Reverb amplia (120).
   3. **Depuración de Sintaxis JS (Desbloqueo de Partitura):** Se eliminó un bloque de código residual huérfano fuera de función en el script que provocaba un fallo de parseo en WebKit, restaurando la apertura instantánea de la partitura a pantalla completa con `abrirPartituraPantallaCompleta()`.
+
+### 6.31. La Tetralogía de Estilos de Autor (Styles 031 a 034): La Alternativa Contemporánea (v136)
+* **El Descubrimiento del Músico:** Frente a los patrones tradicionales y estereotipados de balada lenta de los teclados de acompañamiento, el Korg EK-50 alberga una secuencia de 4 estilos extraordinarios (del 031 al 034) situados en la transición de **8/16 Beat 2** a **Ballad**. Poseen una producción moderna, dinámica, elegante y cinematográfica que renueva por completo el repertorio clásico y pop.
+* **Ficha Técnica y Matemática Web MIDI (Canal 16):**
+  | N.º Estilo | Nombre Oficial Korg | Categoría | Parámetros MIDI (Ch 16) | STS por Defecto | Identidad Acústica y Dinámica |
+  |:---|:---|:---|:---|:---|:---|
+  | **031** | **Windy Beat** | 8/16 Beat 2 | `Bank MSB 32, LSB 1, PC 14` | *Phase EP* | Ritmo fluido y etéreo con "aire" moderno; groove envolvente sin saturar la melodía. |
+  | **032** | **Home Beat** | 8/16 Beat 2 | `Bank MSB 32, LSB 1, PC 15` | *Piano & Pad* | Base íntima, orgánica y acústica. El colchón cálido aporta profundidad de estudio de grabación. |
+  | **033** | **Groove Bld** | Ballad | `Bank MSB 32, LSB 2, PC 0` | *EP & VoxPad* | Balada contemporánea con pulso rítmico elegante y voces celestiales; ritmo vivo y cero monótono. |
+  | **034** | **Diva** | Ballad | `Bank MSB 32, LSB 2, PC 1` | *Pad & Ac.Gtr* | Arreglo orquestal y cinematográfico de gran balada épica (arpegio de guitarra acústica y cuerdas). |
+* **Aplicación Escénica en el Repertorio:**
+  * **Hallelujah (Leonard Cohen):** En lugar del compás tradicional 042 (6/8 Ballad), los estilos **033 (Groove Bld)** o **034 (Diva)** transforman el tema en una versión pop-himno actual con guitarra acústica y pads vocales, dotando a la progresión armónica de una fuerza emocional conmovedora.
+  * **Amor, Amor, Amor (Julio Iglesias):** Como alternativa al patrón de Beguine clásico (174/175), los ritmos **031 (Windy Beat)** o **032 (Home Beat)** modernizan la canción convirtiéndola en una balada pop acústica sofisticada, permitiendo que el Grand Piano 011 y las Campanas Glockenspiel brillen con frescura actual.
+  * **My Heart Will Go On / Titanic (Celine Dion):** El estilo **034 (Diva)** fue diseñado exactamente para esta estética musical: comienza íntimo con guitarra acústica y pads cálidos para las estrofas de flauta irlandesa, y abre una sección rítmica orquestal monumental para el estribillo y el clímax final. **032 (Home Beat)** ofrece una variante desenchufada acústica de enorme calidez.
+
+### 6.32. Caso de Estudio Práctico: Amor, Amor, Amor en Versión Contemporánea (Style 032 + KbdSet 101 y KbdSet 066) (v137)
+* **El Experimento Acústico:** El usuario realizó una prueba práctica en el teclado Korg EK-50 aplicando el estilo contemporáneo **032 (Home Beat)** a la obra *Amor, Amor, Amor*, contrastando dos timbres principales: **Keyboard Set 101** y **Keyboard Set 066**.
+* **Análisis de los Resultados Sonoros:**
+  1. **Opción A · Estilo 032 + Keyboard Set 101 (Tenor Sax):**
+     - *Identidad del KbdSet 101:* Es el patch multitimbral de saxofón tenor del Korg EK-50, compuesto por *Tenor Noise* (ataque con aire y tecla), *Alto Breath* (cuerpo cálido) y *Barit Growl* con colchón *Dark Pad* en Lower.
+     - *Efecto Musical:* Desplaza radicalmente la canción desde el sonido caribeño/orquestal tradicional de Beguine hacia un ambiente **Smooth Jazz / Club Lounge nocturno** (en la onda de Stan Getz, Sade o Michael Bublé). La base acústica y relajada de *Home Beat* da aire para que el fraseo del saxo respire con enorme sensualidad y elegancia.
+  2. **Opción B · Estilo 032 + Keyboard Set 066 (Oct.Strings):**
+     - *Identidad del KbdSet 066:* Es el conjunto orquestal de cuerdas en octavas (*St. Strings*, *StringQuart* y voces corales *Oh-Ah*).
+     - *Efecto Musical:* Transforma la obra en un **Pop Sinfónico Cinemático**. Al tocar las cuerdas en octavas sobre el pulso acústico íntimo de *Home Beat*, la melodía adquiere una envergadura épica y emocionante, ideal para momentos cumbre o finales orquestales modernos sin sonar recargada.
+* **Conclusión Pedagógica:** Este hallazgo demuestra la flexibilidad del atril y del Korg EK-50: una misma estructura armónica (Do Mayor canónica) puede presentarse en formato Clásico de Época (Estilo 175 Beguine 2 con Piano 011 y Campanas) o en formato Contemporáneo de Vanguardia (Estilo 032 Home Beat con Saxo Tenor 101 o Cuerdas en Octavas 066).
 
 ---
 *Manual redactado y sellado para el proyecto CURSO-IA / CURSO_MUSICA. Todos los derechos reservados.*

@@ -95,6 +95,7 @@
   - Activación física de capas en panel frontal mediante Keyboard Set 61 (The Strings).
   - Índice ultra-compacto en 2 columnas sin autores (v111) para abarcar el catálogo completo de 24 obras a pantalla completa en el iPad sin scroll.
   - Creación de fichas autónomas para cada canción con botones 1-Tap para instrumentos y estilos del Korg EK-50, enlazando directamente a las partituras oficiales de MuseScore.
+  - Tetralogía de estilos contemporáneos 031 a 034 (Windy Beat, Home Beat, Groove Bld, Diva) catalogada para baladas pop, cine y versiones modernas.
 
 
 
