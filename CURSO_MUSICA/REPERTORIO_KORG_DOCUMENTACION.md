@@ -2,7 +2,7 @@
 > **Proyecto:** Sistema de Atril Digital, Control Web MIDI y Repertorio Pedagógico Interactivo  
 > **Ubicación:** `CURSO_MUSICA/` · **Repositorio:** `CURSO-IA`  
 > **Dispositivo Principal:** Teclado Korg EK-50 Entertainer Keyboard conectado a iPad / Mac  
-> **Versión del Sistema:** v139 (Anatomía Física Real Korg EK-50: Partes LED, Set List y Persistencia Sonora)
+> **Versión del Sistema:** v140 (Calibración de Balance Acústico: Acompañamiento vs Teclado)
 
 ---
 
@@ -441,6 +441,22 @@ Esta sección recopila los descubrimientos críticos de ingeniería realizados d
     * **Para que el teclado cargue el STS propio del nuevo ritmo:** Debes pulsar **`[SHIFT] + [KEYBOARD SET / STS]`**. Al hacerlo, el Korg descartará el sonido manual 101 y cargará el preset de fábrica optimizado para ese estilo, mostrando el icono `STS` en la pantalla LCD.
 * **4. La Supremacía del Atril Digital Web MIDI:**
   - Toda esta mecánica de acordarse de qué partes encender (`Upper 1` vs `Upper 2`), si pulsar `[SHIFT]` o qué botón del `Set List` no tocar, se elimina al 100% con la interfaz táctil del iPad: cada botón Web MIDI envía directamente el Estilo, Tempo, voces y mezcla exacta de capas sin tocar el teclado físico.
+
+### 6.34. Calibración del Balance Acústico: Acompañamiento vs Teclado (v140)
+* **El Problema Típico del Músico:** En ciertos estilos (como en el estilo `034 Diva`), la orquesta de acompañamiento (batería, bajo, guitarras rítmicas) suena muy fuerte y tiende a tapar o enmascarar los instrumentos delicados de la mano derecha (guitarra acústica, pianos, flautas).
+* **Métodos Físicos Oficiales en el Korg EK-50 (Uso del Dial):**
+  1. **Bajar el Volumen de Toda la Banda de Acompañamiento:**
+     - Mantén pulsado el botón **`[STYLE / MUSIC STYLE]`** y gira la rueda (**Dial**) a la izquierda.
+     - En la pantalla LCD verás el valor numérico disminuyendo (por ejemplo de 100 a 75 u 80). La orquesta se retirará al fondo, dejando el primer plano para la melodía.
+  2. **Subir el Volumen Global de las Teclas (Mano Derecha e Izquierda):**
+     - Mantén pulsado el botón **`[KEYBOARD SET / STS]`** y gira la rueda (**Dial**) a la derecha (por ejemplo hasta 120 o 127).
+  3. **Equilibrar Partes Individuales (Pad vs Guitarra Acústica dentro de la Mano Derecha):**
+     - Mantén pulsado el botón físico de la parte deseada (por ejemplo **`[UPPER 1]`** para el Pad o **`[UPPER 2]`** para la Guitarra Acústica) y gira la rueda (**Dial**) para darle más presencia a una sobre la otra.
+* **Control Automatizado por Web MIDI en el Atril Digital:**
+  - El estándar MIDI controla los volúmenes de cada pista mediante el **Control Change 7 (`CC 07: Volume`)** con valores de 0 a 127:
+    - `Canal 1 (Upper 1)`: `CC 7 = 120-127` (Melodía solista protagonista).
+    - `Canal 2 (Upper 2)`: `CC 7 = 90-115` (Capa de acompañamiento o brillo armónico).
+    - `Canales de Acompañamiento (Pistas de Ritmo)`: Se atenúan a volúmenes equilibrados (70-85) para evitar saturación del preamplificador y garantizar que la interpretación del músico destaque con nitidez de concierto.
 
 ---
 *Manual redactado y sellado para el proyecto CURSO-IA / CURSO_MUSICA. Todos los derechos reservados.*

@@ -148,3 +148,6 @@
   1. *LEDs de Partes (Lower, Upper 1, 2, 3):* Cada Keyboard Set define qué partes enciende: `066 (Oct.Strings)` activa las 4 a la vez por ser un colchón orquestal completo; mientras que `031 (Organ)` y `101 (Tenor Sax)` activan únicamente `Upper 1` como voces solistas melódicas.
   2. *Bloque Set List:* El botón negro `BANK/WRITE` (bancos A-J) y los 4 botones numéricos contiguos son las 40 memorias de usuario para conciertos (no son los STS del ritmo).
   3. *Persistencia Sonora:* Al elegir manualmente un Keyboard Set, el Korg preserva ese sonido al cambiar de estilo. Para que el teclado adopte el STS de fábrica del nuevo estilo, se debe pulsar `[SHIFT] + [KEYBOARD SET / STS]`. Con Web MIDI, esto se programa a 1 toque sin tocar el teclado físico.
+- **Lección 6.36 (Equilibrio de Balance Acústico Acompañamiento vs Teclado - v140):**
+  1. *Ajuste en Teclado Físico:* Mantener `[STYLE]` + girar Dial atenúa la orquesta de acompañamiento; mantener `[KEYBOARD SET]` + girar Dial eleva el volumen global de las teclas; mantener `[UPPER 1]` o `[UPPER 2]` + girar Dial calibra la mezcla interna de la mano derecha (ej. Pad vs Guitarra Acústica en Estilo 034 Diva).
+  2. *Automatización por Web MIDI:* Se implementa enviando mensajes `CC 07 (Volume)` independientes a los canales de melodía (Upper 1/2) y a los canales rítmicos para un balance escénico perfecto.
