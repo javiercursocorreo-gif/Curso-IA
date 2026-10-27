@@ -783,6 +783,9 @@
                     <button class="btn-tester btn-run" onclick="ejecutarCodigoTester()">
                         <span>▶️</span> <span>¡PROBAR Y JUGAR MI APP AHORA!</span>
                     </button>
+                    <button class="btn-tester" style="background:rgba(56,189,248,0.15); border:1px solid rgba(56,189,248,0.4); color:#7dd3fc;" onclick="abrirNuevaPestana()">
+                        <span>🚀</span> <span>Jugar a Pantalla Completa ↗</span>
+                    </button>
                     <button class="btn-tester btn-download" onclick="descargarCodigoTester()">
                         <span>💾</span> <span>Guardar Archivo en mi PC</span>
                     </button>
@@ -793,10 +796,13 @@
 
                 <div id="testerPreviewWrapper" class="tester-preview-wrapper" style="display:none;">
                     <div class="preview-bar">
-                        <span style="font-weight:700; color:#38bdf8; font-size:0.84rem;">🎮 Vista Previa en Vivo: Tu Juego / App está Funcionando</span>
+                        <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                            <span style="font-weight:700; color:#38bdf8; font-size:0.84rem;">🎮 Vista Previa en Vivo: Tu Juego / App está Funcionando</span>
+                            <span style="color:#fde047; font-size:0.78rem; background:rgba(253, 224, 71, 0.12); border:1px solid rgba(253, 224, 71, 0.3); padding:2px 8px; border-radius:6px;">👆 Haz un clic dentro del juego para usar las teclas</span>
+                        </div>
                         <button class="btn-mini-close" onclick="cerrarPreviewTester()">✕ Ocultar Juego</button>
                     </div>
-                    <iframe id="testerIframe" class="tester-iframe" sandbox="allow-scripts allow-modals"></iframe>
+                    <iframe id="testerIframe" class="tester-iframe"></iframe>
                 </div>
             </div>
         </div>
@@ -943,24 +949,102 @@ REGLAS DEL DIBUJO DIRECTO EN EL CHAT:
 ESPECIFICACIONES OBLIGATORIAS:
 1. Formato: Entrega TODO el programa en UN SOLO ARCHIVO HTML autónomo (con todo su CSS y JavaScript embebido dentro).
 2. Sin dependencias externas: Debe funcionar abriéndolo directamente en cualquier navegador o pegándolo en un visor web.
-3. Controles accesibles: Controles táctiles grandes en pantalla (botones visuales) y también flechas del teclado para PC.
-4. Diseño: Interfaz limpia, modo oscuro de alto contraste y letras grandes bien legibles.
-5. Entrega: Proporciona exclusivamente el bloque de código HTML (desde <!DOCTYPE html> hasta </html>) para que pueda pulsar «Copiar código» y probarlo al instante.`;
+3. Inicio inmediato: El juego debe arrancar automáticamente nada más cargar la página (con su bucle de animación o temporizador activo) para que no se quede congelado.
+4. Controles accesibles: Incluye botones táctiles visuales grandes en pantalla (Arriba ⬆️, Abajo ⬇️, Izquierda ⬅️, Derecha ➡️ y Reiniciar) con sus funciones onclick programadas y activas, además de las flechas del teclado para PC.
+5. Diseño: Interfaz limpia, fondo oscuro (#0f172a), gráficos de alto contraste y marcador de puntos bien visible.
+6. Entrega: Proporciona exclusivamente el bloque de código HTML (desde <!DOCTYPE html> hasta </html>) para que pueda pulsar «Copiar código» y probarlo al instante.`;
         document.getElementById('appOutput').innerText = prompt;
     }
 
     // TALLER PROBADOR EN VIVO DE CÓDIGO IA (TRUCO 3)
+    function sanitizarCodigoHtml(rawCode) {
+        let code = rawCode.trim();
+        // Eliminar bloques de markdown ```html o ```
+        code = code.replace(/^```html\s*/i, '').replace(/^```\s*/, '').replace(/```\s*$/, '');
+        // Si hay texto antes de <!DOCTYPE o <html, extraer el bloque HTML puro
+        const htmlStart = code.search(/<!DOCTYPE|<html/i);
+        if (htmlStart !== -1) {
+            const htmlEnd = code.toLowerCase().lastIndexOf('</html>');
+            if (htmlEnd !== -1) {
+                code = code.substring(htmlStart, htmlEnd + 7);
+            } else {
+                code = code.substring(htmlStart);
+            }
+        }
+
+        // Inyectar capturador de errores de JavaScript y protector universal de localStorage
+        const errorDiagnosticScript = `
+        <script>
+            (function() {
+                window._safeStorage = {
+                    _data: {},
+                    getItem: function(k) { return this._data[k] !== undefined ? this._data[k] : null; },
+                    setItem: function(k, v) { this._data[k] = String(v); },
+                    removeItem: function(k) { delete this._data[k]; },
+                    clear: function() { this._data = {}; }
+                };
+                try {
+                    var t = window.localStorage;
+                    if (!t || typeof t.getItem !== 'function') throw new Error();
+                    t.getItem('__probe');
+                } catch(e) {
+                    try {
+                        Object.defineProperty(window, 'localStorage', {
+                            get: function() { return window._safeStorage; },
+                            configurable: true
+                        });
+                    } catch(e2) {}
+                }
+            })();
+
+            window.addEventListener('error', function(e) {
+                var box = document.getElementById('ai-code-err-diag');
+                if (!box) {
+                    box = document.createElement('div');
+                    box.id = 'ai-code-err-diag';
+                    box.style = 'position:fixed;bottom:0;left:0;right:0;background:#ef4444;color:#fff;padding:10px 14px;font-size:13px;font-family:sans-serif;font-weight:bold;z-index:999999;box-shadow:0 -4px 12px rgba(0,0,0,0.5);text-align:center;';
+                    document.body.appendChild(box);
+                }
+                box.innerHTML = '⚠️ Error en el código de Gemini: ' + (e.message || 'Fallo de ejecución') + ' (en línea ' + (e.lineno || '?') + ')';
+            });
+        <\/script>`;
+
+        // Reemplazar de forma segura llamadas a localStorage para evitar SecurityError en iframes
+        code = code.replace(/\blocalStorage\b/g, '(window._safeStorage || window.localStorage)');
+
+        if (code.includes('</head>')) {
+            code = code.replace('</head>', errorDiagnosticScript + '\n</head>');
+        } else if (code.includes('<body')) {
+            code = code.replace('<body', errorDiagnosticScript + '\n<body');
+        } else {
+            code = errorDiagnosticScript + code;
+        }
+
+        return code.trim();
+    }
+
     function ejecutarCodigoTester() {
-        const code = document.getElementById('testerCodeInput').value.trim();
-        if (!code) {
+        const rawCode = document.getElementById('testerCodeInput').value.trim();
+        if (!rawCode) {
             alert('⚠️ Por favor, pega primero en el recuadro el código HTML que te dio Gemini.');
             return;
         }
+        const cleanCode = sanitizarCodigoHtml(rawCode);
         const wrapper = document.getElementById('testerPreviewWrapper');
         const frame = document.getElementById('testerIframe');
         wrapper.style.display = 'block';
-        frame.srcdoc = code;
+        frame.srcdoc = cleanCode;
         wrapper.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+        // Dar foco automático al iframe para que reciba las teclas del juego
+        frame.onload = function() {
+            try {
+                frame.focus();
+                if (frame.contentWindow) {
+                    frame.contentWindow.focus();
+                }
+            } catch (e) {}
+        };
     }
 
     function cerrarPreviewTester() {
@@ -973,6 +1057,18 @@ ESPECIFICACIONES OBLIGATORIAS:
     function limpiarCodigoTester() {
         document.getElementById('testerCodeInput').value = '';
         cerrarPreviewTester();
+    }
+
+    function abrirNuevaPestana() {
+        const rawCode = document.getElementById('testerCodeInput').value.trim();
+        if (!rawCode) {
+            alert('⚠️ Por favor, pega primero en el recuadro el código HTML que te dio Gemini.');
+            return;
+        }
+        const cleanCode = sanitizarCodigoHtml(rawCode);
+        const blob = new Blob([cleanCode], { type: 'text/html' });
+        const url = URL.createObjectURL(blob);
+        window.open(url, '_blank');
     }
 
     function descargarCodigoTester() {

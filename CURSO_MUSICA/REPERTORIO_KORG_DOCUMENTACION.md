@@ -2,7 +2,7 @@
 > **Proyecto:** Sistema de Atril Digital, Control Web MIDI y Repertorio Pedagógico Interactivo  
 > **Ubicación:** `CURSO_MUSICA/` · **Repositorio:** `CURSO-IA`  
 > **Dispositivo Principal:** Teclado Korg EK-50 Entertainer Keyboard conectado a iPad / Mac  
-> **Versión del Sistema:** v131 (Cuerdas Románticas Intro en Botón 2 + STS String Ensemble en Botón 3)
+> **Versión del Sistema:** v135 (Fusión Grand Piano 011 & Campanas Glockenspiel al Unísono)
 
 ---
 

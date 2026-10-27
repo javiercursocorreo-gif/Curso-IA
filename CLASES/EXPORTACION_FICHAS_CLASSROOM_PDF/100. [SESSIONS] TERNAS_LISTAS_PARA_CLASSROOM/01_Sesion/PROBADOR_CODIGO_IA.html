@@ -6773,6 +6773,21 @@ window.POMPEII_RECON_B64 = &quot;data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAYABg
                 return;
             }
 
+            // Sanitizar markdown si viene con ```html o texto circundante
+            code = code.replace(/^```html\s*/i, '').replace(/^```\s*/, '').replace(/```\s*$/, '');
+            const htmlStart = code.search(/<!DOCTYPE|<html/i);
+            if (htmlStart !== -1) {
+                const htmlEnd = code.toLowerCase().lastIndexOf('</html>');
+                if (htmlEnd !== -1) {
+                    code = code.substring(htmlStart, htmlEnd + 7);
+                } else {
+                    code = code.substring(htmlStart);
+                }
+            }
+
+            // Proteger contra SecurityError en localStorage dentro de iframes
+            code = code.replace(/\blocalStorage\b/g, '(window._safeStorage || window.localStorage)');
+
             emptyNotice.style.display = "none";
             ensurePompeiiAssetsInMemory();
 
@@ -6820,6 +6835,25 @@ window.POMPEII_RECON_B64 = &quot;data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAYABg
             </style>
             <script>
                 (function() {
+                    window._safeStorage = {
+                        _data: {},
+                        getItem: function(k) { return this._data[k] !== undefined ? this._data[k] : null; },
+                        setItem: function(k, v) { this._data[k] = String(v); },
+                        removeItem: function(k) { delete this._data[k]; },
+                        clear: function() { this._data = {}; }
+                    };
+                    try {
+                        var t = window.localStorage;
+                        if (!t || typeof t.getItem !== 'function') throw new Error();
+                        t.getItem('__probe');
+                    } catch(e) {
+                        try {
+                            Object.defineProperty(window, 'localStorage', {
+                                get: function() { return window._safeStorage; },
+                                configurable: true
+                            });
+                        } catch(e2) {}
+                    }
                     if (window.parent) {
                         if (window.parent.POMPEII_RUINS_B64 && !window.POMPEII_RUINS_B64) {
                             window.POMPEII_RUINS_B64 = window.parent.POMPEII_RUINS_B64;
@@ -7007,6 +7041,14 @@ window.POMPEII_RECON_B64 = &quot;data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAYABg
 
             // Inyectar HTML en el iframe
             frame.srcdoc = code;
+
+            // Foco al iframe para que los juegos y teclas funcionen al instante
+            setTimeout(() => {
+                try {
+                    frame.focus();
+                    if (frame.contentWindow) frame.contentWindow.focus();
+                } catch(e) {}
+            }, 100);
         }
 
         // Evento directo de carga del iframe para sincronizar imágenes
