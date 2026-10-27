@@ -140,3 +140,7 @@
 - **Lección 6.33 (Caso Práctico en Amor, Amor, Amor: Style 032 con KbdSets 101 y 066 - v137):**
   1. *Estilo 032 (Home Beat) + Keyboard Set 101 (Tenor Sax):* Convierte la canción en una balada de **Smooth Jazz / Lounge nocturno** (estilo Stan Getz o Sade), sustituyendo el aire de orquesta clásica por una atmósfera íntima y aterciopelada donde el saxo respira con aire y expresividad.
   2. *Estilo 032 (Home Beat) + Keyboard Set 066 (Oct.Strings):* Transforma la obra en un **Pop Sinfónico Cinemático**, donde las cuerdas en octavas (*St. Strings* + *StringQuart* + *Oh-Ah Voices*) arropan la melodía con amplitud épica sobre el lecho acústico contemporáneo.
+- **Lección 6.34 (Arquitectura Sonora del Korg EK-50: Sonidos Sueltos vs Keyboard Sets vs STS - v138):**
+  1. *Sonidos Individuales (702 Sounds):* Tonos atómicos básicos de fábrica (un piano solo, una flauta sola).
+  2. *Keyboard Sets (Panel / Plástico negro: 011, 031 Organ, 066 Oct.Strings, 101 Tenor Sax):* **SÍ son instrumentos compuestos**. Son preajustes universales que combinan hasta 4 capas (Upper 1, Upper 2, Upper 3 y Lower) con efectos, octavas y balances de fábrica.
+  3. *STS (Single Touch Settings):* Son las 4 combinaciones compuestas exclusivas asociadas a cada Ritmo concreto (en los 4 botones bajo la pantalla LCD). Con el atril digital en iPad, Web MIDI configura las capas y efectos automáticamente sin manipulación física del teclado.
