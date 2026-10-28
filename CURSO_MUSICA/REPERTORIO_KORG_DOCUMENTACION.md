@@ -491,7 +491,7 @@ Esta sección recopila los descubrimientos críticos de ingeniería realizados d
 
 ### 6.37. Creación de la Ficha 25: Can't Help Falling in Love (Elvis Presley) (v143)
 * **Tonalidad Identificada:** Armadura con un bemol en la línea de Si ($B\flat$) ➔ **Fa Mayor ($F$)**.
-* **Compás y Rítmica:** Compás ternario 6/8 o 12/8 balada lenta. Se asigna de fábrica el **Estilo 042 (6/8 Ballad)** a **68 BPM**, el tempo exacto de balanceo romántico popularizado por Elvis Presley.
+* **Compás y Rítmica:** Compás ternario 6/8 o 12/8 balada lenta. Se asigna de fábrica el **Estilo 042 (6/8 Ballad)** a **70 BPM**, el tempo exacto y fluido para acompañar el balanceo romántico de la melodía.
 * **Terna de Cuerdas STS y Acústica (Web MIDI 1-Tap):**
   1. **Botón 1 (🎻 1. STS Strings & Pad):** Cuerdas orquestales románticas en Upper 1 (String Ensemble 1, PC 48) a volumen alto 126 con Cutoff abierto y Reverb amplia, con un lecho suave de Warm Pad en Upper 2 (PC 89).
   2. **Botón 2 (🎻 2. The Strings - Keyboard Set 61):** Gran masa de cuerdas sinfónicas que enciende físicamente Upper 1 y Upper 2 con coro en Lower.
