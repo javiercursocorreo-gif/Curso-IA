@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Falling in Love">
+    <meta name="theme-color" content="#0b0f17">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>25. Can't Help Falling in Love · Korg EK-50 (v143)</title>
+    <style>
+        :root {
+            --bg-color: #0b0f17;
+            --card-bg: #131b26;
+            --border-color: #212c3d;
+            --text-main: #f0f6fc;
+            --text-muted: #8b9bb4;
+            --accent-amber: #f59e0b;
+            --accent-blue: #38bdf8;
+            --accent-green: #10b981;
+            --accent-purple: #c084fc;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            padding: max(16px, env(safe-area-inset-top)) max(18px, env(safe-area-inset-right)) max(24px, env(safe-area-inset-bottom)) max(18px, env(safe-area-inset-left));
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+        }
+        .container { max-width: 1040px; width: 100%; display: flex; flex-direction: column; gap: 16px; }
+        .nav-bar { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; padding-bottom: 8px; border-bottom: 1px solid var(--border-color); }
+        .btn-back { display: inline-flex; align-items: center; gap: 8px; background: #1e293b; color: #93c5fd; text-decoration: none; min-height: 44px; padding: 10px 18px; border-radius: 10px; font-size: 0.92rem; font-weight: 700; border: 1px solid #334155; touch-action: manipulation; }
+        .btn-back:hover, .btn-back:active { background: #334155; color: #fff; }
+        .btn-reload {
+            background: #0284c7;
+            color: #fff;
+            border: 1px solid #38bdf8;
+            min-height: 44px;
+            padding: 10px 16px;
+            border-radius: 10px;
+            font-size: 0.92rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            touch-action: manipulation;
+        }
+        .btn-reload:hover, .btn-reload:active { background: #0369a1; }
+        .midi-bar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #0f172a;
+            border: 1px solid #334155;
+            padding: 8px 14px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            font-weight: 700;
+        }
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #ef4444;
+            flex-shrink: 0;
+            transition: all 0.3s ease;
+        }
+        .status-dot.connected {
+            background: #10b981;
+            box-shadow: 0 0 10px #10b981;
+        }
+
+        .header-card {
+            background: linear-gradient(135deg, #1e1b4b 0%, #0f172a 100%);
+            border: 1px solid #3b82f6;
+            border-radius: 12px;
+            padding: 18px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+        }
+        .song-title {
+            font-size: 1.6rem;
+            font-weight: 900;
+            color: #fff;
+            letter-spacing: -0.3px;
+        }
+        .song-author {
+            font-size: 0.95rem;
+            color: #93c5fd;
+            font-weight: 600;
+        }
+        .badge-tonalidad {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #1e3a8a;
+            border: 1px solid #3b82f6;
+            border-radius: 6px;
+            padding: 4px 12px;
+            font-size: 0.85rem;
+            color: #dbeafe;
+            font-weight: 700;
+            width: fit-content;
+        }
+
+        .section-box {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+        .section-title {
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+        }
+
+        .btn-korg-preset {
+            background: linear-gradient(180deg, #1e3a8a 0%, #0f172a 100%);
+            border: 1px solid #3b82f6;
+            border-radius: 10px;
+            padding: 16px;
+            color: #fff;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            touch-action: manipulation;
+        }
+        .btn-korg-preset:hover {
+            transform: translateY(-2px);
+            border-color: #93c5fd;
+            box-shadow: 0 4px 14px rgba(59, 130, 246, 0.4);
+        }
+
+        /* Destello Neón Táctil Inmediato (0 ms) */
+        @keyframes destelloPulsacion {
+            0% {
+                filter: brightness(2.8) contrast(1.4);
+                transform: scale(0.94);
+                box-shadow: 0 0 35px #ffffff, 0 0 70px #38bdf8, inset 0 0 20px rgba(255,255,255,0.95);
+                border-color: #ffffff !important;
+                outline: 3px solid #ffffff;
+            }
+            35% {
+                filter: brightness(2.1) contrast(1.2);
+                transform: scale(1.05);
+                box-shadow: 0 0 45px #ffffff, 0 0 80px #f59e0b, inset 0 0 25px rgba(255,255,255,0.8);
+                border-color: #fde68a !important;
+                outline: 2px solid #fde68a;
+            }
+            100% {
+                filter: brightness(1) contrast(1);
+                transform: scale(1);
+                box-shadow: none;
+                outline: none;
+            }
+        }
+        .btn-flash-active {
+            animation: destelloPulsacion 0.45s cubic-bezier(0.2, 0.9, 0.3, 1) forwards !important;
+            position: relative;
+            z-index: 1000005 !important;
+        }
+        button:active, .btn-korg-preset:active, .btn-tempo:active, .btn-reload:active {
+            filter: brightness(2.6) contrast(1.3) !important;
+            transform: scale(0.95) !important;
+            box-shadow: 0 0 30px #ffffff, 0 0 60px #38bdf8 !important;
+            border-color: #ffffff !important;
+        }
+        .preset-activo {
+            outline: 2px solid #38bdf8 !important;
+            box-shadow: 0 0 18px rgba(56, 189, 248, 0.65) !important;
+        }
+
+        .btn-tempo {
+            background: #1e293b;
+            color: #cbd5e1;
+            border: 1px solid #334155;
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-weight: 800;
+            font-size: 0.9rem;
+            cursor: pointer;
+            touch-action: manipulation;
+        }
+        .btn-tempo.active-tempo {
+            background: #0284c7;
+            border-color: #38bdf8;
+            color: #fff;
+        }
+
+        /* Estructura Armónica y Cajas de Acordes */
+        .progression-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+        .part-card {
+            background: #0f172a;
+            border: 1px solid #1e293b;
+            border-radius: 10px;
+            padding: 14px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .part-title {
+            font-size: 0.95rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .part-badge-a { color: #38bdf8; }
+        .part-badge-b { color: #f59e0b; }
+        .part-badge-c { color: #c084fc; }
+
+        .chord-strip {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+        }
+        .chord-pill {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 8px 14px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 60px;
+            text-align: center;
+        }
+        .chord-name {
+            font-size: 1.15rem;
+            font-weight: 900;
+            color: #93c5fd;
+        }
+        .chord-sub {
+            font-size: 0.72rem;
+            color: #94a3b8;
+            font-weight: 700;
+            margin-top: 2px;
+        }
+        .chord-arrow {
+            color: #64748b;
+            font-weight: 900;
+            font-size: 1.1rem;
+        }
+
+        /* Tabla de Conducción Suave e Inversiones */
+        .voice-leading-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.88rem;
+            text-align: left;
+        }
+        .voice-leading-table th, .voice-leading-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #1f2937;
+        }
+        .voice-leading-table th {
+            background: #0f172a;
+            color: #94a3b8;
+            font-weight: 800;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.5px;
+        }
+        .voice-leading-table tr:hover { background: #162032; }
+        .notes-badge {
+            background: #1e293b;
+            border: 1px solid #334155;
+            color: #38bdf8;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-family: ui-monospace, Menlo, monospace;
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="nav-bar">
+        <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+            <a class="btn-back" href="REPERTORIO_KORG_EK50.html?v=143">⬅ Volver al Repertorio</a>
+            <button class="btn-reload" onclick="dispararDestelloBoton(this); window.location.href=window.location.pathname+'?v=143&t='+Date.now()" title="Recargar y actualizar versión sin caché">
+                🔄 Recargar (v143)
+            </button>
+        </div>
+        <div class="midi-bar">
+            <div id="midi-dot" class="status-dot"></div>
+            <div id="midi-label">🟡 Conectando Web MIDI...</div>
+        </div>
+    </div>
+
+    <!-- CABECERA DE LA OBRA -->
+    <div class="header-card">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:14px;">
+            <div>
+                <div style="font-size:0.85rem; color:#fde68a; font-weight:800; text-transform:uppercase; letter-spacing:1px;">
+                    Canción Nº 25 · Korg EK-50
+                </div>
+                <div class="song-title">Can't Help Falling in Love</div>
+                <div class="song-author">Elvis Presley (1961) · Hugo Peretti, Luigi Creatore & George David Weiss</div>
+                <div class="badge-tonalidad" style="margin-top:6px;">
+                    🎼 Tonalidad: Fa Mayor (F) · Armadura: 1 Bemol (Si♭) · Compás 6/8 · 68 BPM
+                </div>
+            </div>
+            <button onclick="abrirPartituraPantallaCompleta(this)" style="background:linear-gradient(135deg, #38bdf8 0%, #0284c7 100%); color:#fff; border:2px solid #bae6fd; padding:14px 22px; border-radius:12px; font-weight:900; font-size:1.05rem; cursor:pointer; display:inline-flex; align-items:center; gap:10px; box-shadow:0 4px 18px rgba(56,189,248,0.4); touch-action:manipulation;">
+                <span>🎼 Ver Partitura a Pantalla Completa (con Botones 1, 2 y 3)</span> ➔
+            </button>
+        </div>
+    </div>
+
+    <!-- SECCIÓN CONTROL WEB MIDI KORG EK-50 -->
+    <div class="section-box" style="border-color:#38bdf8;">
+        <div class="section-title">
+            <span>🎹 Control 1-Tap Korg EK-50 (Estilo 6/8 & Cuerdas STS)</span>
+            <span id="current-tempo-badge" style="background:#0284c7; color:#fff; padding:3px 8px; border-radius:6px; font-size:0.82rem;">68 BPM</span>
+        </div>
+
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:12px;">
+            <!-- BOTÓN 1: STS STRINGS (RITMO 6/8 BALLAD + CUERDAS CÁLIDAS) -->
+            <button class="btn-korg-preset" data-preset="1" onclick="cargarPreset1Strings(this)" style="border-color:#38bdf8; background:linear-gradient(180deg, #0369a1 0%, #0c4a6e 100%);">
+                <div style="font-size:0.75rem; color:#bae6fd; font-weight:800; text-transform:uppercase;">1. Tema Principal</div>
+                <div style="font-size:1.15rem; font-weight:900; margin-top:3px;">🎻 1. STS Strings & Pad</div>
+                <div style="font-size:0.82rem; color:#e0f2fe; margin-top:5px;">Cuerdas orquestales románticas · Estilo <b>042 (6/8 Ballad)</b> a 68 BPM · (+1 Octava)</div>
+            </button>
+
+            <!-- BOTÓN 2: THE STRINGS (KEYBOARD SET 61 CON VOCES EN LOWER) -->
+            <button class="btn-korg-preset" data-preset="2" onclick="cargarPreset2TheStrings(this)" style="border-color:#a855f7; background:linear-gradient(180deg, #581c87 0%, #3b0764 100%);">
+                <div style="font-size:0.75rem; color:#e9d5ff; font-weight:800; text-transform:uppercase;">2. Masa Sinfónica</div>
+                <div style="font-size:1.15rem; font-weight:900; margin-top:3px;">🎻 2. The Strings (KbdSet 61)</div>
+                <div style="font-size:0.82rem; color:#f3e8ff; margin-top:5px;">Violines en Upper 1 + Cuerdas en Upper 2 + Coro de acompañamiento en Lower · (+1 Octava)</div>
+            </button>
+
+            <!-- BOTÓN 3: GRAND PIANO 011 & STRINGS (CAPA DUAL) -->
+            <button class="btn-korg-preset" data-preset="3" onclick="cargarPreset3PianoStrings(this)" style="border-color:#f59e0b; background:linear-gradient(180deg, #b45309 0%, #78350f 100%);">
+                <div style="font-size:0.75rem; color:#fde68a; font-weight:800; text-transform:uppercase;">3. Capa Acústica Dual</div>
+                <div style="font-size:1.15rem; font-weight:900; margin-top:3px;">🎹 3. Grand Piano & Strings</div>
+                <div style="font-size:0.82rem; color:#fef3c7; margin-top:5px;">Grand Piano 011 (Upper 1) + Cuerdas cálidas (Upper 2) al unísono con Eco y Reverb · (+1 Octava)</div>
+            </button>
+        </div>
+
+        <!-- SELECTOR DE VELOCIDAD / TEMPO -->
+        <div style="display:flex; flex-direction:column; gap:6px; margin-top:4px; padding-top:10px; border-top:1px solid #1e293b;">
+            <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+                <span style="font-size:0.85rem; color:var(--text-muted); font-weight:700;">Velocidad Partitura:</span>
+                <button class="btn-tempo" onclick="cambiarTempo(62, this)">62 BPM (Muy Lento)</button>
+                <button class="btn-tempo active-tempo" onclick="cambiarTempo(68, this)">68 BPM (Estándar Elvis)</button>
+                <button class="btn-tempo" onclick="cambiarTempo(74, this)">74 BPM (Fluido)</button>
+            </div>
+            <div style="font-size:0.78rem; color:#93c5fd; background:#082f49; border:1px solid #0284c7; padding:6px 10px; border-radius:6px; margin-top:4px;">
+                💡 <b>Tempo 6/8:</b> El Estilo 042 (6/8 Ballad) marca el compás ternario lento perfecto para acompañar el balanceo romántico de la melodía.
+            </div>
+        </div>
+
+        <!-- REGISTRO Y ELEVACIÓN DE OCTAVA AUTOMÁTICA -->
+        <div style="display:flex; align-items:center; gap:10px; margin-top:8px; padding-top:10px; border-top:1px solid #1e293b; flex-wrap:wrap;">
+            <span style="font-size:0.85rem; color:var(--text-muted); font-weight:700;">Registro Teclado:</span>
+            <button id="btn-oct-0" class="btn-tempo" onclick="cambiarOctava(0, this)">Octava Estándar (0)</button>
+            <button id="btn-oct-12" class="btn-tempo active-tempo" onclick="cambiarOctava(12, this)">🔼 +1 Octava Arriba (+12 st)</button>
+            <span style="font-size:0.78rem; color:#38bdf8;">(Cuerdas brillantes y nítidas sobre la orquesta)</span>
+        </div>
+        <div id="log-midi" style="font-size:0.8rem; color:#94a3b8; margin-top:2px;">Listo para enviar comandos al teclado Korg EK-50.</div>
+    </div>
+
+    <!-- SECCIÓN PARTITURA OFICIAL EN IMAGEN -->
+    <div class="section-box" style="border-color:#3b82f6;">
+        <div class="section-title">
+            <span>🎼 Partitura Oficial (Armadura: Si♭ · Tonalidad: Fa Mayor)</span>
+            <span style="font-size:0.8rem; background:#1e3a8a; color:#93c5fd; padding:3px 8px; border-radius:6px; font-weight:700;">Partitura PNG</span>
+        </div>
+        
+        <div style="text-align:center; padding:10px; background:#080d16; border-radius:10px; border:1px solid #1e293b;">
+            <img id="partitura-img-inline" 
+                 src="CANCIONES PDF/I Can't help falling in love wtih you.png" 
+                 onerror="if(this.src.indexOf('wtih')!==-1){this.src='CANCIONES PDF/I Can\'t help falling in love with you.png';}else if(this.src.indexOf('.png')!==-1){this.src='CANCIONES PDF/I Can\'t help falling in love wtih you.pdf';}" 
+                 alt="Partitura Can't Help Falling in Love" 
+                 style="max-width:100%; height:auto; border-radius:8px; box-shadow:0 4px 16px rgba(0,0,0,0.7); display:block; margin:0 auto;">
+        </div>
+
+        <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:6px;">
+            <button onclick="abrirPartituraPantallaCompleta()" class="btn-reload" style="flex:1; min-width:280px; justify-content:center; padding:14px; font-size:1rem; background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%);">
+                <span>🎼 Abrir Modo Atril Pantalla Completa (con Botones 1, 2 y 3 Flotantes)</span> ➔
+            </button>
+        </div>
+    </div>
+
+    <!-- SECCIÓN GUÍA ARMÓNICA Y PROGRESIÓN DE ACORDES EN FA MAYOR -->
+    <div class="section-box">
+        <div class="section-title">
+            <span>📜 Progresión Armónica Canónica (Tonalidad: Fa Mayor · 1 Bemol Si♭)</span>
+        </div>
+
+        <div class="progression-grid">
+            <!-- ESTROFA (VERSE) -->
+            <div class="part-card">
+                <div class="part-title part-badge-a">
+                    <span>🔸 ESTROFA PRINCIPAL ("Wise men say, only fools rush in...")</span>
+                </div>
+                <div class="chord-strip">
+                    <div class="chord-pill"><span class="chord-name">F</span><span class="chord-sub">Fa Mayor</span></div>
+                    <span class="chord-arrow">➔</span>
+                    <div class="chord-pill"><span class="chord-name">Am</span><span class="chord-sub">La menor</span></div>
+                    <span class="chord-arrow">➔</span>
+                    <div class="chord-pill"><span class="chord-name">Dm</span><span class="chord-sub">Re menor</span></div>
+                    <span class="chord-arrow">➔</span>
+                    <div class="chord-pill" style="border-color:#38bdf8;"><span class="chord-name" style="color:#38bdf8;">Bb</span><span class="chord-sub">Si♭ Mayor</span></div>
+                    <span class="chord-arrow">➔</span>
+                    <div class="chord-pill"><span class="chord-name">F</span><span class="chord-sub">Fa Mayor</span></div>
+                    <span class="chord-arrow">➔</span>
+                    <div class="chord-pill"><span class="chord-name">C</span><span class="chord-sub">Do Mayor</span></div>
+                    <span class="chord-arrow">➔</span>
+                    <div class="chord-pill"><span class="chord-name">C7</span><span class="chord-sub">Do 7ª</span></div>
+                </div>
+                <div class="chord-strip" style="margin-top:6px;">
+                    <div class="chord-pill" style="border-color:#38bdf8;"><span class="chord-name" style="color:#38bdf8;">Bb</span><span class="chord-sub">Si♭ Mayor</span></div>
+                    <span class="chord-arrow">➔</span>
+                    <div class="chord-pill"><span class="chord-name">C</span><span class="chord-sub">Do Mayor</span></div>
+                    <span class="chord-arrow">➔</span>
+                    <div class="chord-pill"><span class="chord-name">Dm</span><span class="chord-sub">Re menor</span></div>
+                    <span class="chord-arrow">➔</span>
+                    <div class="chord-pill" style="border-color:#38bdf8;"><span class="chord-name" style="color:#38bdf8;">Bb</span><span class="chord-sub">Si♭ Mayor</span></div>
+                    <span class="chord-arrow">➔</span>
+                    <div class="chord-pill"><span class="chord-name">F</span><span class="chord-sub">Fa Mayor</span></div>
+                    <span class="chord-arrow">➔</span>
+                    <div class="chord-pill"><span class="chord-name">C</span><span class="chord-sub">Do Mayor</span></div>
+                    <span class="chord-arrow">➔</span>
+                    <div class="chord-pill"><span class="chord-name">F</span><span class="chord-sub">Fa Mayor</span></div>
+                </div>
+            </div>
+
+            <!-- PUENTE (BRIDGE) -->
+            <div class="part-card">
+                <div class="part-title part-badge-b">
+                    <span>🔹 PUENTE / ESTRIBILLO ("Like a river flows surely to the sea...")</span>
+                </div>
+                <div class="chord-strip">
+                    <div class="chord-pill"><span class="chord-name">Am</span><span class="chord-sub">La menor</span></div>
+                    <span class="chord-arrow">➔</span>
+                    <div class="chord-pill" style="border-color:#f59e0b;"><span class="chord-name" style="color:#f59e0b;">E7</span><span class="chord-sub">Mi 7ª</span></div>
+                    <span class="chord-arrow">➔</span>
+                    <div class="chord-pill"><span class="chord-name">Am</span><span class="chord-sub">La menor</span></div>
+                    <span class="chord-arrow">➔</span>
+                    <div class="chord-pill" style="border-color:#f59e0b;"><span class="chord-name" style="color:#f59e0b;">E7</span><span class="chord-sub">Mi 7ª</span></div>
+                    <span class="chord-arrow">➔</span>
+                    <div class="chord-pill"><span class="chord-name">Am</span><span class="chord-sub">La menor</span></div>
+                    <span class="chord-arrow">➔</span>
+                    <div class="chord-pill" style="border-color:#f59e0b;"><span class="chord-name" style="color:#f59e0b;">E7</span><span class="chord-sub">Mi 7ª</span></div>
+                    <span class="chord-arrow">➔</span>
+                    <div class="chord-pill"><span class="chord-name">Am</span><span class="chord-sub">La menor</span></div>
+                    <span class="chord-arrow">➔</span>
+                    <div class="chord-pill" style="border-color:#c084fc;"><span class="chord-name" style="color:#c084fc;">D7</span><span class="chord-sub">Re 7ª</span></div>
+                    <span class="chord-arrow">➔</span>
+                    <div class="chord-pill"><span class="chord-name">Gm</span><span class="chord-sub">Sol menor</span></div>
+                    <span class="chord-arrow">➔</span>
+                    <div class="chord-pill"><span class="chord-name">C7</span><span class="chord-sub">Do 7ª</span></div>
+                </div>
+            </div>
+
+            <!-- REEXPOSICIÓN Y FINAL -->
+            <div class="part-card">
+                <div class="part-title part-badge-c">
+                    <span>🌟 REEXPOSICIÓN & FINAL ("Take my hand, take my whole life too...")</span>
+                </div>
+                <div class="chord-strip">
+                    <div class="chord-pill"><span class="chord-name">F</span><span class="chord-sub">Fa Mayor</span></div>
+                    <span class="chord-arrow">➔</span>
+                    <div class="chord-pill"><span class="chord-name">Am</span><span class="chord-sub">La menor</span></div>
+                    <span class="chord-arrow">➔</span>
+                    <div class="chord-pill"><span class="chord-name">Dm</span><span class="chord-sub">Re menor</span></div>
+                    <span class="chord-arrow">➔</span>
+                    <div class="chord-pill" style="border-color:#38bdf8;"><span class="chord-name" style="color:#38bdf8;">Bb</span><span class="chord-sub">Si♭ Mayor</span></div>
+                    <span class="chord-arrow">➔</span>
+                    <div class="chord-pill"><span class="chord-name">F</span><span class="chord-sub">Fa Mayor</span></div>
+                    <span class="chord-arrow">➔</span>
+                    <div class="chord-pill"><span class="chord-name">C</span><span class="chord-sub">Do Mayor</span></div>
+                    <span class="chord-arrow">➔</span>
+                    <div class="chord-pill"><span class="chord-name">F</span><span class="chord-sub">Fa Mayor (Final)</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECCIÓN GUÍA DE CONDUCCIÓN SUAVE DE VOCES (VOICE LEADING) -->
+    <div class="section-box">
+        <div class="section-title">
+            <span>🖐️ Guía de Transiciones Armónicas Suaves (Mano Izquierda)</span>
+            <span style="font-size:0.8rem; color:#38bdf8; font-weight:700;">Enlaces Clave en Fa Mayor</span>
+        </div>
+
+        <div style="background:#062e1e; border-left:4px solid #10b981; padding:10px 14px; border-radius:8px; font-size:0.85rem; color:#d1fae5;">
+            💡 <b>Principio de Conducción Suave:</b> En Fa Mayor, la nota <b>Fa</b> o la nota <b>Do</b> actúan como pivotes entre F, Dm y Bb. Mueve únicamente los dedos restantes medio tono o un tono hacia la tecla contigua.
+        </div>
+
+        <div style="overflow-x:auto;">
+            <table class="voice-leading-table">
+                <thead>
+                    <tr>
+                        <th style="width:18%;">Transición</th>
+                        <th style="width:23%;">Posición Origen</th>
+                        <th style="width:23%;">Posición Destino</th>
+                        <th style="width:36%;">Paso Suave & Mecánica de Dedos</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><b style="color:#38bdf8;">F ➔ Am</b></td>
+                        <td><span class="notes-badge">F</span> [Fa - La - Do]<br><small style="color:#94a3b8;">Fundamental</small></td>
+                        <td><span class="notes-badge">Am</span> [Mi - La - Do]<br><small style="color:#c084fc;">1ª Inversión</small></td>
+                        <td>Las notas <b>La y Do quedan completamente fijas (doble pivote)</b>; ¡solo el <b>Fa baja medio tono a Mi</b>!</td>
+                    </tr>
+                    <tr>
+                        <td><b style="color:#38bdf8;">Am ➔ Dm</b></td>
+                        <td><span class="notes-badge">Am</span> [Mi - La - Do]<br><small style="color:#c084fc;">1ª Inversión</small></td>
+                        <td><span class="notes-badge">Dm</span> [Fa - La - Re]<br><small style="color:#c084fc;">1ª Inversión</small></td>
+                        <td>La nota <b>La queda fija de ancla</b>; Mi sube medio tono a <b>Fa</b> y Do sube un tono a <b>Re</b>.</td>
+                    </tr>
+                    <tr>
+                        <td><b style="color:#38bdf8;">Dm ➔ Bb</b></td>
+                        <td><span class="notes-badge">Dm</span> [Fa - La - Re]<br><small style="color:#c084fc;">1ª Inversión</small></td>
+                        <td><span class="notes-badge">Bb</span> [Fa - Si♭ - Re]<br><small style="color:#c084fc;">2ª Inversión</small></td>
+                        <td><b>Fa y Re quedan fijos (doble pivote)</b>; ¡únicamente el <b>La sube medio tono a Si♭</b>!</td>
+                    </tr>
+                    <tr>
+                        <td><b style="color:#38bdf8;">Bb ➔ F</b></td>
+                        <td><span class="notes-badge">Bb</span> [Fa - Si♭ - Re]<br><small style="color:#c084fc;">2ª Inversión</small></td>
+                        <td><span class="notes-badge">F</span> [Fa - La - Do]<br><small style="color:#94a3b8;">Fundamental</small></td>
+                        <td>La nota <b>Fa queda fija</b>; Si♭ baja a <b>La</b> y Re baja a <b>Do</b>.</td>
+                    </tr>
+                    <tr>
+                        <td><b style="color:#38bdf8;">F ➔ C</b></td>
+                        <td><span class="notes-badge">F</span> [Fa - La - Do]<br><small style="color:#94a3b8;">Fundamental</small></td>
+                        <td><span class="notes-badge">C</span> [Mi - Sol - Do]<br><small style="color:#c084fc;">1ª Inversión</small></td>
+                        <td>La nota <b>Do queda completamente fija</b>; Fa baja medio tono a <b>Mi</b> y La baja a <b>Sol</b>.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================================================== -->
+<!-- MODAL DE PANTALLA COMPLETA TOTAL (MODO ATRIL CON BOTONERA 1, 2 Y 3 FLOTANTE)   -->
+<!-- ============================================================================== -->
+<div id="modal-partitura-fullscreen" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:#0b0f17; z-index:999999; flex-direction:column;">
+    <!-- BARRA FLOTANTE FIJA SUPERIOR (HUD DE ESCENARIO): BOTONES 1, 2 Y 3 + VOLVER -->
+    <div style="position:fixed; top:max(8px, env(safe-area-inset-top)); left:50%; transform:translateX(-50%); z-index:1000000; background:rgba(11, 15, 23, 0.94); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); border:1px solid rgba(56, 189, 248, 0.6); border-radius:14px; padding:6px 14px; display:flex; align-items:center; gap:8px; box-shadow:0 10px 30px rgba(0,0,0,0.85), 0 0 16px rgba(56,189,248,0.3); max-width:98vw; width:max-content; flex-wrap:wrap; justify-content:center;">
+        <button data-preset="1" onclick="cargarPreset1Strings(this)" style="background:linear-gradient(180deg, #0369a1 0%, #0c4a6e 100%); color:#fff; border:1px solid #38bdf8; padding:8px 12px; border-radius:8px; font-weight:900; font-size:0.84rem; cursor:pointer; touch-action:manipulation; box-shadow:0 2px 8px rgba(56,189,248,0.35);">
+            🎻 1. STS Strings
+        </button>
+        <button data-preset="2" onclick="cargarPreset2TheStrings(this)" style="background:linear-gradient(180deg, #581c87 0%, #3b0764 100%); color:#fff; border:1px solid #a855f7; padding:8px 12px; border-radius:8px; font-weight:900; font-size:0.84rem; cursor:pointer; touch-action:manipulation; box-shadow:0 2px 8px rgba(168,85,247,0.35);">
+            🎻 2. The Strings 61
+        </button>
+        <button data-preset="3" onclick="cargarPreset3PianoStrings(this)" style="background:linear-gradient(180deg, #b45309 0%, #78350f 100%); color:#fff; border:1px solid #f59e0b; padding:8px 12px; border-radius:8px; font-weight:900; font-size:0.84rem; cursor:pointer; touch-action:manipulation; box-shadow:0 2px 8px rgba(245,158,11,0.35);">
+            🎹 3. Piano & Strings
+        </button>
+        <button onclick="cerrarPartituraPantallaCompleta(this)" style="background:#334155; color:#f1f5f9; border:1px solid #475569; padding:8px 14px; border-radius:8px; font-weight:800; font-size:0.84rem; cursor:pointer; touch-action:manipulation;">
+            ✕ Volver a la Ficha
+        </button>
+    </div>
+
+    <!-- CONTENEDOR CON LA PARTITURA EN PANTALLA COMPLETA -->
+    <div style="width:100vw; height:100vh; overflow-y:auto; -webkit-overflow-scrolling:touch; padding-top:max(66px, calc(env(safe-area-inset-top) + 56px)); padding-bottom:30px; box-sizing:border-box; background:#0b0f17; display:flex; flex-direction:column; align-items:center;">
+        <img id="partitura-img-fullscreen" 
+             src="CANCIONES PDF/I Can't help falling in love wtih you.png" 
+             onerror="if(this.src.indexOf('wtih')!==-1){this.src='CANCIONES PDF/I Can\'t help falling in love with you.png';}else if(this.src.indexOf('.png')!==-1){this.src='CANCIONES PDF/I Can\'t help falling in love wtih you.pdf';}" 
+             alt="Partitura Completa" 
+             style="max-width:96vw; width:auto; max-height:none; border-radius:10px; box-shadow:0 8px 30px rgba(0,0,0,0.85); display:block;">
+    </div>
+</div>
+
+<script>
+    // ==============================================================================
+    // FEEDBACK VISUAL INSTANTÁNEO Y SINCRONIZACIÓN DE PRESETS (DESTELLO TÁCTIL IPAD)
+    // ==============================================================================
+    function dispararDestelloBoton(el) {
+        if (!el) return;
+        el.classList.remove('btn-flash-active');
+        void el.offsetWidth;
+        el.classList.add('btn-flash-active');
+        setTimeout(() => { if (el) el.classList.remove('btn-flash-active'); }, 450);
+    }
+
+    function sincronizarPresetActivo(numPreset, btnOrigen = null) {
+        if (btnOrigen) dispararDestelloBoton(btnOrigen);
+        document.querySelectorAll('.btn-korg-preset').forEach(b => {
+            if (b.getAttribute('data-preset') === String(numPreset)) {
+                b.classList.add('preset-activo');
+            } else {
+                b.classList.remove('preset-activo');
+            }
+        });
+        document.querySelectorAll('#modal-partitura-fullscreen button[data-preset]').forEach(b => {
+            if (b.getAttribute('data-preset') === String(numPreset)) {
+                b.style.outline = "2px solid #ffffff";
+                b.style.boxShadow = "0 0 16px #38bdf8";
+            } else {
+                b.style.outline = "none";
+                b.style.boxShadow = "none";
+            }
+        });
+    }
+
+    // ==============================================================================
+    // MODAL PARTITURA A PANTALLA COMPLETA TOTAL
+    // ==============================================================================
+    function abrirPartituraPantallaCompleta(btn = null) {
+        if (btn) dispararDestelloBoton(btn);
+        const modal = document.getElementById('modal-partitura-fullscreen');
+        if (modal) {
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+            window.scrollTo(0, 0);
+        }
+    }
+
+    function cerrarPartituraPantallaCompleta(btn = null) {
+        if (btn) dispararDestelloBoton(btn);
+        const modal = document.getElementById('modal-partitura-fullscreen');
+        if (modal) {
+            modal.style.display = 'none';
+            document.body.style.overflow = '';
+        }
+    }
+
+    // ==============================================================================
+    // MOTOR WEB MIDI KORG EK-50
+    // ==============================================================================
+    let midiAccessInstance = null;
+    let midiOutput = null;
+    let conectandoMIDI = false;
+    let tempoActual = 68;
+    let octavaActual = 12; // +1 Octava arriba (+12 st) por defecto para que las cuerdas brillen
+
+    function extraerPuertos(mapOrList) {
+        if (!mapOrList) return [];
+        return (typeof mapOrList.values === 'function') ? Array.from(mapOrList.values()) : Array.from(mapOrList);
+    }
+
+    function obtenerSalidasDisponibles() {
+        return midiAccessInstance ? extraerPuertos(midiAccessInstance.outputs) : [];
+    }
+
+    function enviarMidiGlobal(bytes) { obtenerSalidasDisponibles().forEach(port => { try { port.send(bytes); } catch(e){} }); }
+
+    function bindPorts() {
+        if (!midiAccessInstance) return null;
+        const dot = document.getElementById("midi-dot");
+        const text = document.getElementById("midi-label");
+        const outputs = extraerPuertos(midiAccessInstance.outputs);
+        
+        const korg = outputs.find(o => o && o.name && (
+            o.name.toLowerCase().includes('ek-50') || 
+            o.name.toLowerCase().includes('korg') ||
+            o.name.toLowerCase().includes('usb')
+        ));
+
+        if (korg) {
+            midiOutput = korg;
+            if (dot) { dot.style.background = "#10b981"; dot.classList.add("connected"); }
+            if (text) text.innerHTML = `🟢 Conectado: <b>${korg.name}</b>`;
+            return midiOutput;
+        } else {
+            midiOutput = null;
+            if (dot) { dot.style.background = "#d29922"; dot.classList.remove("connected"); }
+            if (text) text.innerHTML = '🟡 Korg no detectado por USB';
+            return null;
+        }
+    }
+
+    async function conectarMIDI() {
+        if (conectandoMIDI) return null;
+        conectandoMIDI = true;
+        if (!navigator.requestMIDIAccess) { conectandoMIDI = false; return null; }
+        try {
+            const m = await navigator.requestMIDIAccess({ sysex: false });
+            midiAccessInstance = m;
+            conectandoMIDI = false;
+            midiAccessInstance.onstatechange = () => bindPorts();
+            return bindPorts();
+        } catch(e) { conectandoMIDI = false; return null; }
+    }
+
+    let estiloIniciado = false;
+
+    // Asegurar Estilo 042 (6/8 Ballad) en Canal 16
+    async function asegurarEstilo68Ballad() {
+        if (!estiloIniciado) {
+            enviarMidiGlobal([0xB0 | 15, 0x00, 32]);
+            enviarMidiGlobal([0xB0 | 15, 0x20, 2]);
+            enviarMidiGlobal([0xC0 | 15, 9]); // Estilo 042: 6/8 Ballad
+            estiloIniciado = true;
+            await new Promise(r => setTimeout(r, 120));
+        }
+    }
+
+    // BOTÓN 1: STS Strings & Pad (Cuerdas Románticas en Upper 1)
+    async function cargarPreset1Strings(btn = null) {
+        sincronizarPresetActivo(1, btn);
+        const log = document.getElementById('log-midi');
+        if (!midiOutput && (!midiAccessInstance || obtenerSalidasDisponibles().length === 0)) await conectarMIDI();
+        try {
+            await asegurarEstilo68Ballad();
+
+            // Upper 1: Cuerdas Orquestales (GM2 MSB 121, LSB 0, PC 48: String Ensemble 1)
+            enviarMidiGlobal([0xB0 | 0, 0x00, 121]);
+            enviarMidiGlobal([0xB0 | 0, 0x20, 0]);
+            enviarMidiGlobal([0xC0 | 0, 48]);
+            enviarMidiGlobal([0xB0 | 0, 0x07, 126]); // Volumen 126
+            enviarMidiGlobal([0xB0 | 0, 0x0B, 127]); // Expresión máxima
+            enviarMidiGlobal([0xB0 | 0, 0x4A, 118]); // Cutoff brillante
+            enviarMidiGlobal([0xB0 | 0, 0x48, 105]); // Release largo
+            enviarMidiGlobal([0xB0 | 0, 0x5B, 115]); // Reverb amplia de concierto
+
+            // Upper 2: Colchón cálido sutil de Pad (GM2 PC 89: Warm Pad)
+            enviarMidiGlobal([0xB0 | 1, 0x00, 121]);
+            enviarMidiGlobal([0xB0 | 1, 0x20, 0]);
+            enviarMidiGlobal([0xC0 | 1, 89]);
+            enviarMidiGlobal([0xB0 | 1, 0x07, 90]);  // Volumen 90
+            enviarMidiGlobal([0xB0 | 1, 0x5B, 120]);
+
+            // Lower: Colchón de coro en mano izquierda
+            enviarMidiGlobal([0xB0 | 3, 0x00, 121]);
+            enviarMidiGlobal([0xB0 | 3, 0x20, 0]);
+            enviarMidiGlobal([0xC0 | 3, 52]); // Choir Aahs
+            enviarMidiGlobal([0xB0 | 3, 0x07, 105]);
+
+            aplicarOctavaSuperior(octavaActual);
+            if (log) log.innerHTML = `🎻 <b>1. STS Strings & Pad</b> listo a 68 BPM.`;
+        } catch(e) { if (log) log.innerHTML = `⚠️ Error: ${e.message}`; }
+    }
+
+    // BOTÓN 2: The Strings (Keyboard Set 61 - Cuerdas Sinfónicas en Masa)
+    async function cargarPreset2TheStrings(btn = null) {
+        sincronizarPresetActivo(2, btn);
+        const log = document.getElementById('log-midi');
+        if (!midiOutput && (!midiAccessInstance || obtenerSalidasDisponibles().length === 0)) await conectarMIDI();
+        try {
+            await asegurarEstilo68Ballad();
+
+            // Keyboard Set 61 en Upper 1 (enciende capas físicas)
+            enviarMidiGlobal([0xB0 | 0, 0x00, 33]);
+            enviarMidiGlobal([0xB0 | 0, 0x20, 6]);
+            enviarMidiGlobal([0xC0 | 0, 0]);
+
+            enviarMidiGlobal([0xB0 | 0, 0x07, 126]);
+            enviarMidiGlobal([0xB0 | 0, 0x5B, 118]);
+
+            aplicarOctavaSuperior(octavaActual);
+            if (log) log.innerHTML = `🎻 <b>2. The Strings (KbdSet 61)</b> listo con masa orquestal.`;
+        } catch(e) { if (log) log.innerHTML = `⚠️ Error: ${e.message}`; }
+    }
+
+    // BOTÓN 3: Grand Piano 011 & Strings (Capa Dual Acústica)
+    async function cargarPreset3PianoStrings(btn = null) {
+        sincronizarPresetActivo(3, btn);
+        const log = document.getElementById('log-midi');
+        if (!midiOutput && (!midiAccessInstance || obtenerSalidasDisponibles().length === 0)) await conectarMIDI();
+        try {
+            await asegurarEstilo68Ballad();
+
+            // Upper 1: Grand Piano 011 con Reverb y Eco
+            enviarMidiGlobal([0xB0 | 0, 0x00, 121]);
+            enviarMidiGlobal([0xB0 | 0, 0x20, 0]);
+            enviarMidiGlobal([0xC0 | 0, 0]); // Grand Piano
+            enviarMidiGlobal([0xB0 | 0, 0x07, 125]);
+            enviarMidiGlobal([0xB0 | 0, 0x4A, 116]);
+            enviarMidiGlobal([0xB0 | 0, 0x5B, 115]);
+
+            // Upper 2: Cuerdas cálidas de fondo
+            enviarMidiGlobal([0xB0 | 1, 0x00, 121]);
+            enviarMidiGlobal([0xB0 | 1, 0x20, 0]);
+            enviarMidiGlobal([0xC0 | 1, 48]); // String Ensemble 1
+            enviarMidiGlobal([0xB0 | 1, 0x07, 105]);
+            enviarMidiGlobal([0xB0 | 1, 0x5B, 120]);
+
+            aplicarOctavaSuperior(octavaActual);
+            if (log) log.innerHTML = `🎹 <b>3. Grand Piano 011 & Strings</b> listo al unísono.`;
+        } catch(e) { if (log) log.innerHTML = `⚠️ Error: ${e.message}`; }
+    }
+
+    function cambiarTempo(bpm, btn = null) {
+        if (btn) dispararDestelloBoton(btn);
+        tempoActual = bpm;
+        document.querySelectorAll('.btn-tempo').forEach(b => {
+            if (b.innerText.includes(`${bpm} BPM`)) b.classList.add('active-tempo');
+            else if (b.innerText.includes('BPM')) b.classList.remove('active-tempo');
+        });
+        const badge = document.getElementById('current-tempo-badge');
+        if (badge) badge.innerText = `${bpm} BPM`;
+        const log = document.getElementById('log-midi');
+        if (log) log.innerHTML = `⏱️ Velocidad ajustada a <b>${bpm} BPM</b>.`;
+    }
+
+    function cambiarOctava(semitonos, btn = null) {
+        if (btn) dispararDestelloBoton(btn);
+        octavaActual = semitonos;
+        const b0 = document.getElementById('btn-oct-0');
+        const b12 = document.getElementById('btn-oct-12');
+        if (semitonos === 12) {
+            if (b12) b12.classList.add('active-tempo');
+            if (b0) b0.classList.remove('active-tempo');
+        } else {
+            if (b0) b0.classList.add('active-tempo');
+            if (b12) b12.classList.remove('active-tempo');
+        }
+        aplicarOctavaSuperior(semitonos);
+    }
+
+    function aplicarOctavaSuperior(semitonos) {
+        const canal1 = 0;
+        const canal2 = 1;
+        enviarMidiGlobal([0xB0 | canal1, 0x65, 0x00]);
+        enviarMidiGlobal([0xB0 | canal1, 0x64, 0x02]);
+        enviarMidiGlobal([0xB0 | canal1, 0x06, 64 + semitonos]);
+        enviarMidiGlobal([0xB0 | canal2, 0x65, 0x00]);
+        enviarMidiGlobal([0xB0 | canal2, 0x64, 0x02]);
+        enviarMidiGlobal([0xB0 | canal2, 0x06, 64 + semitonos]);
+    }
+
+    // ==============================================================================
+    // MOTOR ANTI-APAGADO CONTINUO EN IPADOS (CANVAS CAPTURE STREAM 1 FPS)
+    // ==============================================================================
+    let wakeLockInstance = null;
+    let videoAntiSleep = null;
+
+    async function activarWakeLock() {
+        if ('wakeLock' in navigator) {
+            try {
+                wakeLockInstance = await navigator.wakeLock.request('screen');
+            } catch(e){}
+        }
+    }
+
+    function iniciarMotorAntiApagado() {
+        activarWakeLock();
+        try {
+            const canvas = document.createElement('canvas');
+            canvas.width = 16;
+            canvas.height = 16;
+            const ctx = canvas.getContext('2d');
+            if (ctx && canvas.captureStream) {
+                const stream = canvas.captureStream(1);
+                videoAntiSleep = document.createElement('video');
+                videoAntiSleep.muted = true;
+                videoAntiSleep.playsInline = true;
+                videoAntiSleep.srcObject = stream;
+                videoAntiSleep.play().catch(()=>{});
+                setInterval(() => {
+                    ctx.fillStyle = ctx.fillStyle === '#000000' ? '#010101' : '#000000';
+                    ctx.fillRect(0, 0, 16, 16);
+                }, 1000);
+            }
+        } catch(e){}
+    }
+
+    window.addEventListener('pointerdown', () => {
+        if (videoAntiSleep && videoAntiSleep.paused) videoAntiSleep.play().catch(()=>{});
+        if (!wakeLockInstance) activarWakeLock();
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+        iniciarMotorAntiApagado();
+        setTimeout(conectarMIDI, 350);
+    });
+</script>
+</body>
+</html>

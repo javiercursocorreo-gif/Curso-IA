@@ -157,3 +157,7 @@
 - **Lección 6.38 (Estrategia de Investigación Tímbrica de los 4 STS de Fábrica 031 a 034 - v142):**
   1. *Fase 1 (Escucha de Fábrica):* Probar primero el STS predeterminado de cada estilo: 031 ➔ *Phase EP*, 032 ➔ *Piano & Pad*, 033 ➔ *EP & VoxPad*, 034 ➔ *Pad & Ac.Gtr*.
   2. *Fase 2 (Sustitución Tímbrica si no encajan):* Si el STS de fábrica no casa con la melodía o carece de fuerza solista, se sustituye en Web MIDI por timbres de mayor personalidad (ej. Saxo Tenor 101, Cuerdas en Octavas 066 o Grand Piano 011 con Eco).
+- **Lección 6.39 (Ficha Canción 25: Can't Help Falling in Love en Fa Mayor - v143):**
+  1. *Armadura y Tonalidad:* 1 bemol en Si♭ indica tonalidad canónica de **Fa Mayor (F)**.
+  2. *Estilo y Tempo:* **Estilo 042 (6/8 Ballad)** a **68 BPM** para el compás ternario clásico.
+  3. *Terna de Cuerdas STS (Web MIDI):* 1. STS Strings & Pad (cuerdas orquestales con brillo y reverb) · 2. The Strings (Keyboard Set 61 con capas de violines y coro en Lower) · 3. Grand Piano 011 & Strings (capa acústica dual). Visor de imagen responsivo y modal a pantalla completa integrado.

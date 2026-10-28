@@ -2,7 +2,7 @@
 > **Proyecto:** Sistema de Atril Digital, Control Web MIDI y Repertorio Pedagógico Interactivo  
 > **Ubicación:** `CURSO_MUSICA/` · **Repositorio:** `CURSO-IA`  
 > **Dispositivo Principal:** Teclado Korg EK-50 Entertainer Keyboard conectado a iPad / Mac  
-> **Versión del Sistema:** v142 (Metodología de Investigación: STS de Fábrica 031-034 y Sustituciones)
+> **Versión del Sistema:** v143 (Nueva Ficha Canción 25 Can't Help Falling in Love en Fa Mayor & Estilo 6/8)
 
 ---
 
@@ -142,6 +142,7 @@ El Korg EK-50 se conecta al iPad o Mac mediante un cable USB estándar (USB tipo
 * **20. Nights in White Satin** (The Moody Blues): Mi menor ($Em$) · Estilo: 042 60s Soul / Slow Rock a 54 BPM · Flauta Traversa & Cuerdas Sinfónicas. Score MuseScore [#26691493](https://musescore.com/user/33531210/scores/26691493).
 * **22. Killing Me Softly with His Song** (Roberta Flack): Lab Mayor ($A\flat$) / Fa menor ($Fm$) · Estilo: 041 Love Ballad a 92 BPM · Piano Acústico & Flauta. Score MuseScore [#26680561](https://musescore.com/user/33531210/scores/26680561).
 * **24. Stand by Me** (Ben E. King): La Mayor ($A$) · Estilo: 042 60s Soul a 118 BPM · Bajo Acústico, Cuerdas Staccato & Saxo. Score MuseScore [#26693062](https://musescore.com/user/33531210/scores/26693062).
+* **25. Can't Help Falling in Love** (Elvis Presley / Hugo Peretti): Fa Mayor ($F$ - Armadura: 1 bemol Si$\flat$) · Estilo: 042 6/8 Ballad a 68 BPM · Terna Web MIDI Cuerdas: 1. STS Strings & Pad / 2. The Strings (Keyboard Set 61) / 3. Grand Piano 011 & Strings. Partitura en imagen PNG `CANCIONES PDF/I Can't help falling in love wtih you.png` con visor a pantalla completa.
 
 #### 🌴 Categoría 4: Boleros & Ritmos Latinos — 4 Obras
 * **4. Cuando Calienta el Sol** (Los Hermanos Rigual / Luis Miguel): Do Mayor ($C$) · Estilo 174 Beguine 1 a 112 BPM · Órgano de Percusión & Cuerdas.
@@ -487,6 +488,15 @@ Esta sección recopila los descubrimientos críticos de ingeniería realizados d
      - *Naturaleza Sonora:* Colchón envolvente en Upper 1 y Guitarra Acústica arpegiada en Upper 2.
      - *Carácter Acústico:* Arreglo cinematográfico de gran balada de los 90 (estilo *My Heart Will Go On* de Céline Dion).
      - *Veredicto:* Requiere calibrar el balance de volumen (Dial `[STYLE]` hacia abajo o `CC 07` en Web MIDI) para que la delicadeza de la guitarra corte la mezcla de la orquesta. Si se busca un clímax épico, la guitarra puede ser sustituida por cuerdas masivas o flauta irlandesa.
+
+### 6.37. Creación de la Ficha 25: Can't Help Falling in Love (Elvis Presley) (v143)
+* **Tonalidad Identificada:** Armadura con un bemol en la línea de Si ($B\flat$) ➔ **Fa Mayor ($F$)**.
+* **Compás y Rítmica:** Compás ternario 6/8 o 12/8 balada lenta. Se asigna de fábrica el **Estilo 042 (6/8 Ballad)** a **68 BPM**, el tempo exacto de balanceo romántico popularizado por Elvis Presley.
+* **Terna de Cuerdas STS y Acústica (Web MIDI 1-Tap):**
+  1. **Botón 1 (🎻 1. STS Strings & Pad):** Cuerdas orquestales románticas en Upper 1 (String Ensemble 1, PC 48) a volumen alto 126 con Cutoff abierto y Reverb amplia, con un lecho suave de Warm Pad en Upper 2 (PC 89).
+  2. **Botón 2 (🎻 2. The Strings - Keyboard Set 61):** Gran masa de cuerdas sinfónicas que enciende físicamente Upper 1 y Upper 2 con coro en Lower.
+  3. **Botón 3 (🎹 3. Grand Piano 011 & Strings):** Capa dual acústica con Grand Piano 011 en Upper 1 y Cuerdas cálidas en Upper 2 para momentos reflexivos.
+* **Integración Visual y Partitura:** Ficha [CANCION_25_CANT_HELP_FALLING_IN_LOVE.html](file:///Users/externo/Library/Mobile%20Documents/com~apple~CloudDocs/PERSONAL/CLASES%20DE%20TECNOLOGÍA/CURSO-IA/CURSO_MUSICA/CANCION_25_CANT_HELP_FALLING_IN_LOVE.html) dotada de visor responsivo de imagen para la partitura `CANCIONES PDF/I Can't help falling in love wtih you.png` y modal de pantalla completa total con HUD flotante de botones táctiles (1, 2 y 3).
 
 ---
 *Manual redactado y sellado para el proyecto CURSO-IA / CURSO_MUSICA. Todos los derechos reservados.*
