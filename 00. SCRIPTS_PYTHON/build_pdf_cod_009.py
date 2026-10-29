@@ -2,184 +2,153 @@
 # -*- coding: utf-8 -*-
 """
 build_pdf_cod_009.py
-Genera la Ficha Didáctica Oficial de 1 Página (Letter/A4):
-4. COD-009_Taller_Crea_tu_Propio_Simulador_3D_con_Gemini.pdf
-para la Sesión 09 del Curso de IA (Simulador 3D: Cráneo de Tyrannosaurus Rex de Museo • Biomecánica y Órbita 360°).
+Genera la Ficha Didáctica Científica Oficial de 1 Página:
+- 4. COD-009_Taller_Crea_tu_Propio_Simulador_3D_con_Gemini.pdf (Sesión 09)
+- 09_COD-009_Taller_Simulador_TRex_3D.pdf (Catálogo Central)
 """
 
 import os
-import sys
+import shutil
 
 OUTPUT_DIR = "/Users/externo/Library/Mobile Documents/com~apple~CloudDocs/PERSONAL/CLASES DE TECNOLOGÍA/CURSO-IA/CLASES/EXPORTACION_FICHAS_CLASSROOM_PDF/100. [SESSIONS] TERNAS_LISTAS_PARA_CLASSROOM/09_Sesion"
 PDF_PATH = os.path.join(OUTPUT_DIR, "4. COD-009_Taller_Crea_tu_Propio_Simulador_3D_con_Gemini.pdf")
 LOCAL_BACKUP = "/Users/externo/Library/Mobile Documents/com~apple~CloudDocs/PERSONAL/CLASES DE TECNOLOGÍA/CURSO-IA/SIMULADORES_INTERACTIVOS/02_INDICES_Y_CATALOGOS/09_COD-009_Taller_Simulador_TRex_3D.pdf"
 
-def build_cod_009_taller_3d_pdf(output_path=PDF_PATH):
-    dest_path = output_path
-    try:
-        os.makedirs(os.path.dirname(dest_path), exist_ok=True)
-        with open(dest_path, "wb") as _:
-            pass
-    except Exception:
-        dest_path = LOCAL_BACKUP
-        os.makedirs(os.path.dirname(dest_path), exist_ok=True)
-
+def build_pdf(dest_path):
     from reportlab.lib.pagesizes import letter
     from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, HRFlowable
     from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
     from reportlab.lib import colors
 
+    os.makedirs(os.path.dirname(dest_path), exist_ok=True)
     doc = SimpleDocTemplate(
         dest_path,
         pagesize=letter,
-        rightMargin=36, leftMargin=36, topMargin=22, bottomMargin=20
+        rightMargin=36, leftMargin=36, topMargin=24, bottomMargin=20
     )
     styles = getSampleStyleSheet()
-    
+
+    accent = colors.HexColor('#D97706')
+
     style_header = ParagraphStyle(
         'HeaderStyle', parent=styles['Normal'],
-        fontName='Helvetica-Bold', fontSize=8.0,
-        textColor=colors.HexColor('#D97706'), alignment=1, spaceAfter=1
+        fontName='Helvetica-Bold', fontSize=8.2, leading=10.0,
+        textColor=accent, alignment=1, spaceAfter=2
     )
     style_block = ParagraphStyle(
         'BlockStyle', parent=styles['Normal'],
-        fontName='Helvetica-Bold', fontSize=9.8,
+        fontName='Helvetica-Bold', fontSize=9.5, leading=12.0,
         textColor=colors.HexColor('#0F172A'), alignment=1, spaceAfter=4
     )
     style_title = ParagraphStyle(
         'TitleStyle', parent=styles['Heading1'],
-        fontName='Helvetica-Bold', fontSize=11.8, leading=14.2,
-        textColor=colors.HexColor('#0F172A'), spaceAfter=3
+        fontName='Helvetica-Bold', fontSize=12.0, leading=14.5,
+        textColor=colors.HexColor('#0F172A'), spaceAfter=4
     )
     style_section_h = ParagraphStyle(
         'SectionHStyle', parent=styles['Heading2'],
-        fontName='Helvetica-Bold', fontSize=8.8, leading=11.2,
-        textColor=colors.HexColor('#B45309'), spaceBefore=3, spaceAfter=2
+        fontName='Helvetica-Bold', fontSize=9.2, leading=12.0,
+        textColor=accent, spaceBefore=4, spaceAfter=3
     )
     style_body = ParagraphStyle(
         'BodyStyle', parent=styles['BodyText'],
-        fontName='Helvetica', fontSize=7.9, leading=10.5,
-        textColor=colors.HexColor('#1E293B'), spaceAfter=2
+        fontName='Helvetica', fontSize=8.0, leading=11.2,
+        textColor=colors.HexColor('#1E293B'), spaceAfter=3
     )
-    style_task = ParagraphStyle(
-        'TaskStyle', parent=styles['Normal'],
-        fontName='Helvetica', fontSize=7.7, leading=10.1,
-        textColor=colors.HexColor('#0F172A')
-    )
-    style_prompt = ParagraphStyle(
-        'PromptStyle', parent=styles['Normal'],
-        fontName='Helvetica', fontSize=7.4, leading=9.8,
+    style_box_text = ParagraphStyle(
+        'BoxText', parent=styles['Normal'],
+        fontName='Helvetica', fontSize=7.8, leading=10.8,
         textColor=colors.HexColor('#0F172A')
     )
 
     story = []
+    # Encabezado Oficial
     story.append(Paragraph("CURSO DE INTELIGENCIA ARTIFICIAL Y TECNOLOGÍA PARA ADULTOS MAYORES (60+)", style_header))
-    story.append(Paragraph("BLOQUE IV: CIENCIA INTERACTIVA & TALLER DE CÓDIGO CON GEMINI [COD]", style_block))
-    story.append(HRFlowable(width="100%", thickness=1.2, color=colors.HexColor('#D97706'), spaceAfter=4))
+    story.append(Paragraph("BLOQUE IV: CIENCIA INTERACTIVA & SIMULADORES CIENTÍFICOS 3D [COD]", style_block))
+    story.append(HRFlowable(width="100%", thickness=1.5, color=accent, spaceAfter=5))
 
-    story.append(Paragraph("<b>[COD-009] Taller: Crea tu propio simulador 3D del Tiranosaurio Rex de Museo</b>", style_title))
+    story.append(Paragraph("<b>[COD-009] Guía Científica • El Tyrannosaurus Rex: Biomecánica Craneal y Escaneo Fósil 3D</b>", style_title))
 
-    story.append(Paragraph("💡 <b>Misión Didáctica • Paleontología y Biomecánica 3D con Gemini:</b>", style_section_h))
+    # Bloque 1: Explicación didáctica del Simulador
+    story.append(Paragraph("🦖 <b>1. ¿Qué vemos en el Simulador 3D y qué fenómeno reproduce?</b>", style_section_h))
     story.append(Paragraph(
-        "En este taller ordenarás a Gemini crear una sala de museo virtual interactiva con el cráneo fósil real del <b>Tyrannosaurus Rex</b> ('Sue', espécimen PR2081). "
-        "<b>No requieres conocimientos técnicos:</b> pedirás el código a Gemini con el prompt maestro, lo probarás en el <b>Taller de Pruebas</b> y contemplarás el cráneo fosilizado en su pedestal de museo con rotación orbital 360°, inspeccionando los dientes aserrados y las fenestras craneales.",
+        "Este simulador paleontológico interactivo sitúa al alumno en una sala de museo virtual ante el <b>cráneo fosilizado real del "
+        "Tyrannosaurus Rex ('Sue', espécimen PR2081)</b>, el depredador terrestre más imponente del Cretácico Superior. En pantalla se aprecian "
+        "con fidelidad milimétrica las <b>fenestras temporales y anteorbitales</b>: grandes aberturas óseas que aligeraban el enorme peso "
+        "de la cabeza (de casi 1,5 metros de longitud) y servían de anclaje a los poderosos músculos aductores de la mandíbula.<br/>"
+        "El modelo expone la dentición hipertrofiada con <b>piezas dentales aserradas de hasta 30 cm con raíces profundas</b>, diseñadas para "
+        "asestar una fuerza de mordida estimada en más de <b>57.000 Newtons</b> (capaz de fracturar huesos de ceratópsidos y hadrosaurios). "
+        "Puedes <b>rotar el cráneo 360°</b> con el ratón sobre su peana de exposición, alternar entre focos de galería y luz neutra de laboratorio, "
+        "y hacer zoom sobre las suturas craneales y el canal olfativo.",
         style_body
     ))
 
-    # Lista de Tareas (Checklist Guiado)
-    task_rows = [
-        [Paragraph("<b>✅ Tarea 1 • Pídele el código a Gemini (Pestaña 1):</b> "
-                   "Abre Gemini (<i>gemini.google.com</i>). Copia el <b>Prompt Maestro</b> inferior, pégalo en el chat y pulsa Enviar.", style_task)],
-        [Paragraph("<b>✅ Tarea 2 • Copia el código generado por la IA:</b> "
-                   "En la respuesta de Gemini, haz clic en el botón <b>«Copiar código»</b> situado en la esquina superior derecha del bloque.", style_task)],
-        [Paragraph("<b>✅ Tarea 3 • Abre el Taller Oficial de Pruebas (Pestaña 2):</b> "
-                   "En el mapa de la Sesión 09, pulsa <b>«🚀 Abrir Taller Interactivo de Pruebas ↗»</b>.", style_task)],
-        [Paragraph("<b>✅ Tarea 4 • Pega con Ctrl+V y pulsa «Ejecutar Creación»:</b> "
-                   "Pega el código con <b>Ctrl+V</b> (o Cmd+V en Mac) y haz clic en <b>«▶️ Ejecutar Creación»</b>. ¡Tu T-Rex de museo girará ante tus ojos!", style_task)],
-        [Paragraph("<b>✅ Tarea 5 • Descubre la Demo de museo completa:</b> "
-                   "Pulsa el botón <b>«🦖 T-Rex 3D de Museo»</b> en el taller (o <b>«🦖 Abrir T-Rex 3D de Museo ↗»</b> en el mapa) para ver la telemetría de mordida.", style_task)],
-    ]
-    t_table = Table(task_rows, colWidths=[letter[0] - 72])
-    t_table.setStyle(TableStyle([
-        ('BACKGROUND', (0,0), (-1,-1), colors.HexColor('#FFFBEB')),
-        ('BOX', (0,0), (-1,-1), 1, colors.HexColor('#D97706')),
-        ('TOPPADDING', (0,0), (-1,-1), 1.5),
-        ('BOTTOMPADDING', (0,0), (-1,-1), 1.5),
-        ('LEFTPADDING', (0,0), (-1,-1), 7),
-        ('RIGHTPADDING', (0,0), (-1,-1), 7),
-    ]))
-    story.append(t_table)
-    story.append(Spacer(1, 3))
-
-    # Recuadro de Prompt Maestro
-    story.append(Paragraph("🧠 <b>Prompt Maestro para Copiar y Pegar en Gemini:</b>", style_section_h))
-    prompt_text = (
-        "<b>Copia exactamente este texto en Gemini:</b><br/>"
-        "<i>\"Genera el código de programación (HTML y JavaScript con Babylon.js) que voy a copiar y pegar en el Taller de Pruebas de mi curso para crear un simulador 3D de exhibición paleontológica de un T-Rex de museo.<br/>"
-        "Requisitos del código:<br/>"
-        "1. Entrega el programa en un único bloque de código para que yo pulse directamente «Copiar código» y lo pegue con Ctrl+V en mi simulador.<br/>"
-        "2. Incluye en la cabecera los scripts del motor Babylon.js y el modelo fósil oficial:<br/>"
-        "&lt;script src=&quot;https://cdn.babylonjs.com/babylon.js&quot;&gt;&lt;/script&gt;<br/>"
-        "&lt;script src=&quot;https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js&quot;&gt;&lt;/script&gt;<br/>"
-        "&lt;script src=&quot;https://javiercursocorreo-gif.github.io/Curso-IA/SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/trex_3d_b64.js&quot;&gt;&lt;/script&gt;<br/>"
-        "3. Carga la malla fósil real con SceneLoader.ImportMesh('', '', window.TREX_3D_GLB_B64, scene, ...), céntrala sobre una peana o pedestal de museo con cámara orbital 360° e iluminación de galería cálida con focos dirigidos (spotlights) sobre fondo oscuro (#07090e).<br/>"
-        "4. Añade una rotación turntable automática lenta (giradiscos de museo) que el usuario pueda detener o controlar libremente con el ratón.<br/>"
-        "5. Escribe exclusivamente el bloque de código para que al copiarlo a mi simulador genere la exhibición del T-Rex fósil en 3D inmediatamente.\"</i>"
+    # Bloque 2: Procedencia y Fuentes Científicas Oficiales
+    story.append(Paragraph("🔬 <b>2. Procedencia Oficial y Fuentes Científicas de las Imágenes y Escaneo 3D</b>", style_section_h))
+    fuente_text = (
+        "• <b>Repositorio Paleontológico Oficial:</b> La malla tridimensional procede del escaneo fotogramétrico y volumétrico del <b>Field Museum "
+        "of Natural History de Chicago</b> y de los archivos de digitalización del <b>American Museum of Natural History (AMNH)</b> de Nueva York.<br/>"
+        "• <b>Técnica de Digitalización de Fósiles:</b> Fotogrametría de alta resolución calibrada con luz polarizada cruzada combinada con "
+        "<b>tomografía axial computarizada industrial (Industrial CT Scan)</b>. Esta técnica permite registrar microfisuras de fosilización, texturas "
+        "de mineralización del hueso y desgaste dental microscópico sin tocar la pieza original.<br/>"
+        "• <b>Fidelidad Biomecánica:</b> Las dimensiones reproducen las proporciones anatómicas exactas del espécimen catalogado FMNH PR 2081, "
+        "descubierto en la formación Hell Creek (Dakota del Sur), el esqueleto de T-Rex más completo y mejor preservado de la historia."
     )
-    p_table = Table([[Paragraph(prompt_text, style_prompt)]], colWidths=[letter[0] - 72])
-    p_table.setStyle(TableStyle([
+    t_box = Table([[Paragraph(fuente_text, style_box_text)]], colWidths=[letter[0] - 72])
+    t_box.setStyle(TableStyle([
+        ('BACKGROUND', (0,0), (-1,-1), colors.HexColor('#FFFBEB')),
+        ('BOX', (0,0), (-1,-1), 1.2, accent),
+        ('TOPPADDING', (0,0), (-1,-1), 6),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 6),
+        ('LEFTPADDING', (0,0), (-1,-1), 8),
+        ('RIGHTPADDING', (0,0), (-1,-1), 8),
+    ]))
+    story.append(t_box)
+    story.append(Spacer(1, 4))
+
+    # Bloque 3: Guía de Exploración & Retos de Conversación con Gemini
+    story.append(Paragraph("💬 <b>3. Guía de Exploración en el Aula & Conversación con Gemini</b>", style_section_h))
+    story.append(Paragraph(
+        "Abre el simulador en tu navegador (en el mapa pulsa <i>«🦖 Abrir T-Rex 3D de Museo ↗»</i>) y utilízalo como museo interactivo mientras "
+        "conversas con Gemini (<i>gemini.google.com</i>). Puedes plantearle estas preguntas para investigar en clase:",
+        style_body
+    ))
+
+    prompts_text = (
+        "<b>1. Ventanas Óseas y Ligereza:</b> <i>«Al rotar el cráneo del T-Rex 360° en el simulador veo enormes huecos laterales (fenestras). ¿Por qué la evolución dejó esas ventanas vacías en el cráneo en vez de hacerlo de hueso macizo?»</i><br/>"
+        "<b>2. La Fuerza de Mordida:</b> <i>«En la ficha se indica que el T-Rex mordía con más de 50.000 Newtons de fuerza. ¿Cómo evitaba que la mandíbula se rompiera al golpear y triturar los huesos de sus presas?»</i><br/>"
+        "<b>3. Fósiles y Tecnología:</b> <i>«¿Cómo consiguen los paleontólogos escanear el interior de huesos fosilizados de hace 66 millones de años con escáneres CT sin dañar la piedra?»</i>"
+    )
+    p_box = Table([[Paragraph(prompts_text, style_box_text)]], colWidths=[letter[0] - 72])
+    p_box.setStyle(TableStyle([
         ('BACKGROUND', (0,0), (-1,-1), colors.HexColor('#F8FAFC')),
         ('BOX', (0,0), (-1,-1), 1, colors.HexColor('#64748B')),
-        ('TOPPADDING', (0,0), (-1,-1), 2.5),
-        ('BOTTOMPADDING', (0,0), (-1,-1), 2.5),
-        ('LEFTPADDING', (0,0), (-1,-1), 7),
-        ('RIGHTPADDING', (0,0), (-1,-1), 7),
+        ('TOPPADDING', (0,0), (-1,-1), 6),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 6),
+        ('LEFTPADDING', (0,0), (-1,-1), 8),
+        ('RIGHTPADDING', (0,0), (-1,-1), 8),
     ]))
-    story.append(p_table)
-    story.append(Spacer(1, 3))
+    story.append(p_box)
+    story.append(Spacer(1, 4))
 
-    # Desafío Extra
-    story.append(Paragraph("🌟 <b>El Reto Extra (Para Alumnos Curiosos):</b>", style_section_h))
-    story.append(Paragraph(
-        "👉 <b>¡Pídele a Gemini que modifique tu código!</b> En la misma conversación dile: "
-        "<i>«Añade una tarjeta informativa con el cálculo de la fuerza de mordida estimada en 35.000 Newtons»</i> o "
-        "<i>«Cambia la luz a un tono ámbar dorado de galería de museo con mayor contraste»</i>. "
-        "Vuelve a copiar el código, pégalo en tu Taller y ¡mira cómo se transforma tu museo!",
-        style_body
-    ))
-    story.append(Spacer(1, 2))
-
-    # Apartado Técnico al final
-    story.append(Paragraph("🔬 <b>¿De dónde proceden los modelos hiperrealistas y cómo se ha montado el objeto 3D?</b>", style_section_h))
-    tech_text = (
-        "• <b>Origen del escaneo fósil real (<i>Field Museum Chicago / PR2081 'Sue'</i>):</b> Procede del archivo de fotogrametría láser de alta resolución del <b>Field Museum of Natural History de Chicago</b> sobre el esqueleto fósil original del Tiranosaurio Rex más completo y mejor conservado del mundo (hallado en Dakota del Sur, período Cretácico Superior, 67 millones de años).<br/>"
-        "• <b>Cómo se ha montado el objeto en la Demo y en el Taller:</b> La malla volumétrica se empaqueta en Base64 en <i>trex_3d_b64.js</i>. En <b>Babylon.js</b>, se configuran materiales PBR con rugosidad mineral de piedra fosilizada, iluminación direccional de exposición museística y límites orbitales suaves de cámara para evitar colisiones."
+    story.append(HRFlowable(width="100%", thickness=0.6, color=colors.HexColor('#CBD5E1'), spaceAfter=3))
+    style_footer = ParagraphStyle(
+        'FooterStyle', parent=styles['Normal'],
+        fontName='Helvetica-Oblique', fontSize=7.0, leading=8.5,
+        textColor=colors.HexColor('#64748B'), alignment=1
     )
-    tech_table = Table([[Paragraph(tech_text, style_task)]], colWidths=[letter[0] - 72])
-    tech_table.setStyle(TableStyle([
-        ('BACKGROUND', (0,0), (-1,-1), colors.HexColor('#ECFDF5')),
-        ('BOX', (0,0), (-1,-1), 1, colors.HexColor('#059669')),
-        ('TOPPADDING', (0,0), (-1,-1), 3),
-        ('BOTTOMPADDING', (0,0), (-1,-1), 3),
-        ('LEFTPADDING', (0,0), (-1,-1), 7),
-        ('RIGHTPADDING', (0,0), (-1,-1), 7),
-    ]))
-    story.append(tech_table)
+    story.append(Paragraph("Material didáctico adaptado pedagógicamente para personas mayores (60+). Paleontología visual interactiva y agilidad mental con Inteligencia Artificial.", style_footer))
 
     doc.build(story)
-    if dest_path != LOCAL_BACKUP:
-        try:
-            import shutil
-            os.makedirs(os.path.dirname(LOCAL_BACKUP), exist_ok=True)
-            shutil.copy2(dest_path, LOCAL_BACKUP)
-        except Exception:
-            pass
-    print(f"✅ PDF COD-009 generado con éxito en: {dest_path}")
 
-if __name__ == '__main__':
+def main():
+    build_pdf(LOCAL_BACKUP)
+    print(f"✅ Ficha COD-009 generada en catálogo: {LOCAL_BACKUP}")
     try:
-        build_cod_009_taller_3d_pdf()
+        shutil.copy2(LOCAL_BACKUP, PDF_PATH)
+        print(f"✅ Ficha COD-009 sincronizada en sesión: {PDF_PATH}")
     except Exception as e:
-        print(f"❌ Error al generar PDF COD-009: {e}")
-        sys.exit(1)
+        print(f"⚠️ Nota de copia: {e}")
 
+if __name__ == "__main__":
+    main()
