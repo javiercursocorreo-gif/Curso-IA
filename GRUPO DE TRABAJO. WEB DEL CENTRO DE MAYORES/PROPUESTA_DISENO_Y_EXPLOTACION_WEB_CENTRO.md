@@ -45,6 +45,7 @@ Los alumnos comienzan a utilizar la herramienta desde ya como taller práctico c
 
 ### 2.1. El Frontend (Web Pública Accesible)
 Diseñado con los criterios más exigentes de accesibilidad cognitiva y visual para la tercera edad:
+* **Diseño 100% Adaptable al Móvil (Responsive Senior):** Como la inmensa mayoría de los mayores consulta Internet exclusivamente desde su teléfono móvil, la interfaz se adapta de forma fluida a pantallas verticales: botones de ancho completo, objetivos táctiles de gran tamaño (mínimo 48 px), tipografía sin deformación y cero desplazamiento horizontal.
 * **Cero menús desplegables ni hamburguesas:** Se eliminan los menús pequeños que exigen precisión motriz o generan desorientación.
 * **Nivel 1 (Portal):** 5 grandes bloques temáticos a toda pantalla con iconos y colores contrastados:
   * 🚌 **Excursiones y Viajes**
@@ -57,7 +58,7 @@ Diseñado con los criterios más exigentes de accesibilidad cognitiva y visual p
   * 🔊 **«Escuchar en Voz Alta»** (narración automática mediante voz nativa del dispositivo).
   * 🖨️ **«Imprimir Folio»** (para quien desee guardarlo en papel).
   * ⬅️ **Botón «VOLVER ATRÁS» Gigante** visible permanentemente en la parte superior e inferior.
-* **Modo Pantalla TV Integrado:** Con un solo clic en `📺 Modo Pantalla TV`, la web se convierte en una presentación rotativa automática para la televisión del vestíbulo del centro, sin necesidad de usar pendrives.
+* **Web Pública 100% Limpia (Sin Botones Innecesarios de TV):** Para no confundir a los mayores, la web pública no contiene botones técnicos de televisión. Se centra exclusivamente en su lectura personal (con control de letra `A+ / A-`). La emisión de la televisión se controla y lanza de forma independiente desde el Backend mediante el canal dedicado [`PANTALLA_TV_VESTIBULO.html`](file:///Users/externo/Library/Mobile%20Documents/com~apple~CloudDocs/PERSONAL/CLASES%20DE%20TECNOLOGÍA/CURSO-IA/GRUPO%20DE%20TRABAJO.%20WEB%20DEL%20CENTRO%20DE%20MAYORES/PANTALLA_TV_VESTIBULO.html).
 
 ---
 

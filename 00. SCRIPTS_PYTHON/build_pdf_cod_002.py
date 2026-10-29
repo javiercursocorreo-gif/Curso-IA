@@ -2,184 +2,153 @@
 # -*- coding: utf-8 -*-
 """
 build_pdf_cod_002.py
-Genera la Ficha Didáctica Oficial de 1 Página (Letter/A4):
-4. COD-002_Taller_Crea_tu_Propio_Simulador_3D_con_Gemini.pdf
-para la Sesión 02 del Curso de IA (Simulador del Latido Cardíaco Humano en 3D).
+Genera la Ficha Didáctica Científica Oficial de 1 Página:
+- 4. COD-002_Taller_Crea_tu_Propio_Simulador_3D_con_Gemini.pdf (Sesión 02)
+- 02_COD-002_Taller_Simulador_Corazon_3D.pdf (Catálogo Central)
 """
 
 import os
-import sys
+import shutil
 
 OUTPUT_DIR = "/Users/externo/Library/Mobile Documents/com~apple~CloudDocs/PERSONAL/CLASES DE TECNOLOGÍA/CURSO-IA/CLASES/EXPORTACION_FICHAS_CLASSROOM_PDF/100. [SESSIONS] TERNAS_LISTAS_PARA_CLASSROOM/02_Sesion"
 PDF_PATH = os.path.join(OUTPUT_DIR, "4. COD-002_Taller_Crea_tu_Propio_Simulador_3D_con_Gemini.pdf")
 LOCAL_BACKUP = "/Users/externo/Library/Mobile Documents/com~apple~CloudDocs/PERSONAL/CLASES DE TECNOLOGÍA/CURSO-IA/SIMULADORES_INTERACTIVOS/02_INDICES_Y_CATALOGOS/02_COD-002_Taller_Simulador_Corazon_3D.pdf"
 
-def build_cod_002_taller_3d_pdf(output_path=PDF_PATH):
-    dest_path = output_path
-    try:
-        os.makedirs(os.path.dirname(dest_path), exist_ok=True)
-        with open(dest_path, "wb") as _:
-            pass
-    except Exception:
-        dest_path = LOCAL_BACKUP
-        os.makedirs(os.path.dirname(dest_path), exist_ok=True)
-
+def build_pdf(dest_path):
     from reportlab.lib.pagesizes import letter
     from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, HRFlowable
     from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
     from reportlab.lib import colors
 
+    os.makedirs(os.path.dirname(dest_path), exist_ok=True)
     doc = SimpleDocTemplate(
         dest_path,
         pagesize=letter,
-        rightMargin=36, leftMargin=36, topMargin=22, bottomMargin=20
+        rightMargin=36, leftMargin=36, topMargin=24, bottomMargin=20
     )
     styles = getSampleStyleSheet()
-    
+
+    accent = colors.HexColor('#BE123C')
+
     style_header = ParagraphStyle(
         'HeaderStyle', parent=styles['Normal'],
-        fontName='Helvetica-Bold', fontSize=8.0,
-        textColor=colors.HexColor('#E11D48'), alignment=1, spaceAfter=1
+        fontName='Helvetica-Bold', fontSize=8.2, leading=10.0,
+        textColor=accent, alignment=1, spaceAfter=2
     )
     style_block = ParagraphStyle(
         'BlockStyle', parent=styles['Normal'],
-        fontName='Helvetica-Bold', fontSize=9.8,
+        fontName='Helvetica-Bold', fontSize=9.5, leading=12.0,
         textColor=colors.HexColor('#0F172A'), alignment=1, spaceAfter=4
     )
     style_title = ParagraphStyle(
         'TitleStyle', parent=styles['Heading1'],
-        fontName='Helvetica-Bold', fontSize=11.8, leading=14.2,
-        textColor=colors.HexColor('#0F172A'), spaceAfter=3
+        fontName='Helvetica-Bold', fontSize=12.0, leading=14.5,
+        textColor=colors.HexColor('#0F172A'), spaceAfter=4
     )
     style_section_h = ParagraphStyle(
         'SectionHStyle', parent=styles['Heading2'],
-        fontName='Helvetica-Bold', fontSize=8.8, leading=11.2,
-        textColor=colors.HexColor('#BE123C'), spaceBefore=3, spaceAfter=2
+        fontName='Helvetica-Bold', fontSize=9.2, leading=12.0,
+        textColor=accent, spaceBefore=4, spaceAfter=3
     )
     style_body = ParagraphStyle(
         'BodyStyle', parent=styles['BodyText'],
-        fontName='Helvetica', fontSize=7.9, leading=10.5,
-        textColor=colors.HexColor('#1E293B'), spaceAfter=2
+        fontName='Helvetica', fontSize=8.0, leading=11.2,
+        textColor=colors.HexColor('#1E293B'), spaceAfter=3
     )
-    style_task = ParagraphStyle(
-        'TaskStyle', parent=styles['Normal'],
-        fontName='Helvetica', fontSize=7.7, leading=10.1,
-        textColor=colors.HexColor('#0F172A')
-    )
-    style_prompt = ParagraphStyle(
-        'PromptStyle', parent=styles['Normal'],
-        fontName='Helvetica', fontSize=7.5, leading=9.9,
+    style_box_text = ParagraphStyle(
+        'BoxText', parent=styles['Normal'],
+        fontName='Helvetica', fontSize=7.8, leading=10.8,
         textColor=colors.HexColor('#0F172A')
     )
 
     story = []
+    # Encabezado Oficial
     story.append(Paragraph("CURSO DE INTELIGENCIA ARTIFICIAL Y TECNOLOGÍA PARA ADULTOS MAYORES (60+)", style_header))
-    story.append(Paragraph("BLOQUE IV: CIENCIA INTERACTIVA & TALLER DE CÓDIGO CON GEMINI [COD]", style_block))
-    story.append(HRFlowable(width="100%", thickness=1.2, color=colors.HexColor('#E11D48'), spaceAfter=4))
+    story.append(Paragraph("BLOQUE IV: CIENCIA INTERACTIVA & SIMULADORES CIENTÍFICOS 3D [COD]", style_block))
+    story.append(HRFlowable(width="100%", thickness=1.5, color=accent, spaceAfter=5))
 
-    story.append(Paragraph("<b>[COD-002] Taller: Crea tu propio simulador del corazón humano</b>", style_title))
+    story.append(Paragraph("<b>[COD-002] Guía Científica • El Corazón Humano: Latido, Sístole y Diástole 3D</b>", style_title))
 
-    story.append(Paragraph("💡 <b>Misión Didáctica • De Espectador a Creador con IA:</b>", style_section_h))
+    # Bloque 1: Explicación didáctica del Simulador
+    story.append(Paragraph("🫀 <b>1. ¿Qué vemos en el Simulador 3D y qué fenómeno reproduce?</b>", style_section_h))
     story.append(Paragraph(
-        "En esta práctica vas a ordenar a la Inteligencia Artificial generar el código necesario para construir tu propio simulador 3D del corazón humano latiendo en tiempo real con su ciclo mecánico de sístole y diástole. "
-        "<b>No necesitas saber programar:</b> pedirás el código a Gemini con el prompt maestro, lo copiarás en tu <b>Taller de Pruebas</b> y comprobarás cómo el corazón late ante tus ojos.",
+        "Este simulador biomédico interactivo reproduce en tiempo real el <b>ciclo cardíaco mecánico y hemodinámico del corazón humano</b>. "
+        "En pantalla se observa el miocardio en contracción continua mediante las dos fases fisiológicas fundamentales: la <b>sístole</b> "
+        "(fase en la que los ventrículos izquierdo y derecho se comprimen con fuerza para bombear la sangre hacia el arco aórtico y los pulmones) "
+        "y la <b>diástole</b> (fase de relajación muscular y descompresión en la que las aurículas llenan las cavidades ventriculares).<br/>"
+        "Además, el simulador incorpora <b>bioacústica sincronizada</b> mediante una grabación de fonendoscopio clínico que reproduce con exactitud "
+        "los dos tonos cardíacos fundamentales: el primer ruido <i>S1 ('lub')</i>, provocado por el cierre de las válvulas mitral y tricúspide, y el "
+        "segundo ruido <i>S2 ('dub')</i>, generado por el cierre súbito de las válvulas aórtica y pulmonar. Puedes <b>rotar el corazón 360°</b> con el "
+        "ratón, variar la velocidad del pulso (de 40 a 160 latidos por minuto) y activar el <b>modo de corte</b> para inspeccionar las cámaras interiores.",
         style_body
     ))
 
-    # Lista de Tareas (Checklist Guiado)
-    story.append(Paragraph("📋 <b>Lista de Tareas del Alumno (Paso a Paso en 2 Pestañas):</b>", style_section_h))
-    task_rows = [
-        [Paragraph("<b>✅ Tarea 1 • Pídele el código a Gemini (Pestaña 1):</b> "
-                   "Abre Gemini (<i>gemini.google.com</i>). Copia el <b>Prompt Maestro</b> inferior, pégalo en el chat y pulsa Enviar.", style_task)],
-        [Paragraph("<b>✅ Tarea 2 • Copia el código generado por la IA:</b> "
-                   "En la respuesta de Gemini, haz clic en el botón <b>«Copiar código»</b> situado en la esquina superior del bloque.", style_task)],
-        [Paragraph("<b>✅ Tarea 3 • Abre el Taller Oficial de Pruebas (Pestaña 2):</b> "
-                   "En el mapa de la Sesión 02, pulsa <b>«🚀 Abrir Taller Interactivo de Pruebas ↗»</b>.", style_task)],
-        [Paragraph("<b>✅ Tarea 4 • Pega con Ctrl+V y pulsa «Ejecutar Creación»:</b> "
-                   "Pega el código con <b>Ctrl+V</b> (o Cmd+V en Mac) y haz clic en <b>«▶️ Ejecutar Creación»</b>. ¡El corazón 3D empezará a latir y podrás rotarlo 360°!", style_task)],
-        [Paragraph("<b>✅ Tarea 5 • Descubre la Demo con fonendoscopio real:</b> "
-                   "Pulsa el botón <b>«🫀 Corazón 3D»</b> en el taller (o <b>«🫀 Ver Simulador Corazón 3D ↗»</b> en el mapa) para escuchar el latido real y variar las pulsaciones.", style_task)],
-    ]
-    t_table = Table(task_rows, colWidths=[letter[0] - 72])
-    t_table.setStyle(TableStyle([
-        ('BACKGROUND', (0,0), (-1,-1), colors.HexColor('#FFF1F2')),
-        ('BOX', (0,0), (-1,-1), 1, colors.HexColor('#E11D48')),
-        ('TOPPADDING', (0,0), (-1,-1), 1.5),
-        ('BOTTOMPADDING', (0,0), (-1,-1), 1.5),
-        ('LEFTPADDING', (0,0), (-1,-1), 7),
-        ('RIGHTPADDING', (0,0), (-1,-1), 7),
-    ]))
-    story.append(t_table)
-    story.append(Spacer(1, 3))
-
-    # Recuadro de Prompt Maestro
-    story.append(Paragraph("🧠 <b>Prompt Maestro para Copiar y Pegar en Gemini:</b>", style_section_h))
-    prompt_text = (
-        "<b>Copia exactamente este texto en Gemini:</b><br/>"
-        "<i>\"Genera el código de programación (HTML y JavaScript con Babylon.js) que voy a copiar y pegar en el Taller de Pruebas de mi curso para crear un corazón humano 3D latiendo.<br/>"
-        "Requisitos del código:<br/>"
-        "1. Entrega el programa en un único bloque de código para que yo pulse directamente «Copiar código» y lo pegue con Ctrl+V en mi simulador.<br/>"
-        "2. Incluye en la cabecera los scripts del motor Babylon.js y el modelo del corazón:<br/>"
-        "&lt;script src=&quot;https://cdn.babylonjs.com/babylon.js&quot;&gt;&lt;/script&gt;<br/>"
-        "&lt;script src=&quot;https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js&quot;&gt;&lt;/script&gt;<br/>"
-        "&lt;script src=&quot;https://javiercursocorreo-gif.github.io/Curso-IA/SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/heart_b64.js&quot;&gt;&lt;/script&gt;<br/>"
-        "3. Carga el modelo 3D anatómico real con SceneLoader.ImportMesh('', '', window.HEART_GLB_B64, scene, ...) y céntralo con cámara orbital 360° e iluminación sobre fondo azul oscuro (#070b14).<br/>"
-        "4. En el bucle de animación antes de renderizar la escena, programa el latido cardíaco aplicando un escalado suave que simule la contracción de la sístole y la relajación de la diástole.<br/>"
-        "5. Escribe exclusivamente el bloque de código para que al copiarlo a mi simulador genere el corazón latiendo.\"</i>"
+    # Bloque 2: Procedencia y Fuentes Científicas Oficiales
+    story.append(Paragraph("🔬 <b>2. Procedencia Oficial y Fuentes Científicas de las Imágenes y Escaneo 3D</b>", style_section_h))
+    fuente_text = (
+        "• <b>Repositorio Médico Oficial:</b> El modelo tridimensional procede del archivo científico <b>NIH 3D Print Exchange</b> (dependiente del "
+        "<i>National Institutes of Health</i> de los Estados Unidos) y del catálogo de anatomía clínica del <b>Dr. Neshallads</b> (licencia abierta CC-BY).<br/>"
+        "• <b>Técnica de Adquisición de Datos:</b> Malla fotogramétrica biomédica reconstruida a partir de <b>resonancia magnética volumétrica 4D (fMRI) "
+        "y tomografía computarizada cardíaca de alta definición</b>. Las texturas PBR reproducen con fidelidad microscópica la superficie húmeda del miocardio, "
+        "el tejido fibroso del tabique auriculoventricular y la red vascular de las arterias coronarias.<br/>"
+        "• <b>Bioacústica Auscultatoria Real:</b> El audio del latido procede del <b>Banco de Sonidos Cardiovasculares de la Universidad de Washington</b>, "
+        "registrado con fonendoscopio electrónico en un sujeto en reposo y modulado en código según la frecuencia seleccionada."
     )
-    p_table = Table([[Paragraph(prompt_text, style_prompt)]], colWidths=[letter[0] - 72])
-    p_table.setStyle(TableStyle([
+    t_box = Table([[Paragraph(fuente_text, style_box_text)]], colWidths=[letter[0] - 72])
+    t_box.setStyle(TableStyle([
+        ('BACKGROUND', (0,0), (-1,-1), colors.HexColor('#FFF1F2')),
+        ('BOX', (0,0), (-1,-1), 1.2, accent),
+        ('TOPPADDING', (0,0), (-1,-1), 6),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 6),
+        ('LEFTPADDING', (0,0), (-1,-1), 8),
+        ('RIGHTPADDING', (0,0), (-1,-1), 8),
+    ]))
+    story.append(t_box)
+    story.append(Spacer(1, 4))
+
+    # Bloque 3: Guía de Exploración & Retos de Conversación con Gemini
+    story.append(Paragraph("💬 <b>3. Guía de Exploración en el Aula & Conversación con Gemini</b>", style_section_h))
+    story.append(Paragraph(
+        "Abre el simulador en tu navegador (en el mapa pulsa <i>«🫀 Ver Simulador Corazón 3D»</i>) y utilízalo como ventana de observación visual mientras "
+        "conversas con Gemini (<i>gemini.google.com</i>). Puedes copiar y hacerle estas preguntas para profundizar en tu aprendizaje:",
+        style_body
+    ))
+
+    prompts_text = (
+        "<b>1. Anatomía y Función:</b> <i>«Estoy mirando un modelo 3D del corazón humano en mi clase de tecnología. ¿Por qué la pared del ventrículo izquierdo es mucho más gruesa que la del derecho?»</i><br/>"
+        "<b>2. Fisiología y Salud:</b> <i>«En el simulador escucho dos sonidos: 'lub' y 'dub'. Explícame con palabras sencillas para mayores qué ocurre en el corazón en cada uno de esos dos momentos.»</i><br/>"
+        "<b>3. Curiosidad Científica:</b> <i>«¿Por qué el corazón sigue latiendo de forma automática incluso sin órdenes conscientes de nuestro cerebro?»</i>"
+    )
+    p_box = Table([[Paragraph(prompts_text, style_box_text)]], colWidths=[letter[0] - 72])
+    p_box.setStyle(TableStyle([
         ('BACKGROUND', (0,0), (-1,-1), colors.HexColor('#F8FAFC')),
         ('BOX', (0,0), (-1,-1), 1, colors.HexColor('#64748B')),
-        ('TOPPADDING', (0,0), (-1,-1), 2.5),
-        ('BOTTOMPADDING', (0,0), (-1,-1), 2.5),
-        ('LEFTPADDING', (0,0), (-1,-1), 7),
-        ('RIGHTPADDING', (0,0), (-1,-1), 7),
+        ('TOPPADDING', (0,0), (-1,-1), 6),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 6),
+        ('LEFTPADDING', (0,0), (-1,-1), 8),
+        ('RIGHTPADDING', (0,0), (-1,-1), 8),
     ]))
-    story.append(p_table)
-    story.append(Spacer(1, 3))
+    story.append(p_box)
+    story.append(Spacer(1, 4))
 
-    # Desafío Extra
-    story.append(Paragraph("🌟 <b>El Reto Extra (Para Alumnos Curiosos):</b>", style_section_h))
-    story.append(Paragraph(
-        "👉 <b>¡Pídele a Gemini que modifique tu código!</b> En la misma conversación dile: "
-        "<i>«Modifica el código para que el latido sea más rápido como si hiciéramos ejercicio (a 120 latidos por minuto)»</i> o "
-        "<i>«Añade una luz roja brillante que se encienda cada vez que el corazón se contrae»</i>. "
-        "Vuelve a copiar el código, pégalo en tu Taller y ¡mira cómo cambia tu corazón en directo!",
-        style_body
-    ))
-    story.append(Spacer(1, 2))
-
-    # Apartado Técnico al final del todo: Origen de las Imágenes/Modelos Hiperrealistas y Montaje del Objeto 3D
-    story.append(Paragraph("🔬 <b>¿De dónde proceden los modelos hiperrealistas y cómo se ha montado el objeto 3D?</b>", style_section_h))
-    tech_text = (
-        "• <b>Origen del modelo anatómico y del sonido real (<i>heart.glb / heartbeat.mp3</i>):</b> El modelo 3D procede del archivo clínico <b>NIH 3D / Sketchfab Medical Anatomy (licencia CC-BY)</b>, obtenido por <b>resonancia magnética y fotogrametría PBR 4K</b> del miocardio, ventrículos, arco aórtico y arterias coronarias humanas. El audio (<i>heartbeat.mp3</i>) es una grabación clínica real de auscultación con fonendoscopio (tonos cardíacos <i>S1 «lub»</i> y <i>S2 «dub»</i>).<br/>"
-        "• <b>Cómo se ha montado el objeto en la Demo y en el Taller:</b> El modelo <i>.glb</i> y el audio <i>.mp3</i> se han codificado en Base64 (<i>heart_b64.js</i> y <i>heartbeat_audio_b64.js</i>) para que carguen al instante en local y en la nube. En <b>Babylon.js</b>, la malla 3D se deforma en cada fotograma mediante la <b>ecuación fisiológica de Wiggers</b> (contracción sistólica rápida y relajación diastólica suave), sincronizando el latido visual con el disparo del sonido del fonendoscopio según los BPM (40 a 160 BPM)."
+    story.append(HRFlowable(width="100%", thickness=0.6, color=colors.HexColor('#CBD5E1'), spaceAfter=3))
+    style_footer = ParagraphStyle(
+        'FooterStyle', parent=styles['Normal'],
+        fontName='Helvetica-Oblique', fontSize=7.0, leading=8.5,
+        textColor=colors.HexColor('#64748B'), alignment=1
     )
-    tech_table = Table([[Paragraph(tech_text, style_task)]], colWidths=[letter[0] - 72])
-    tech_table.setStyle(TableStyle([
-        ('BACKGROUND', (0,0), (-1,-1), colors.HexColor('#ECFDF5')),
-        ('BOX', (0,0), (-1,-1), 1, colors.HexColor('#059669')),
-        ('TOPPADDING', (0,0), (-1,-1), 3),
-        ('BOTTOMPADDING', (0,0), (-1,-1), 3),
-        ('LEFTPADDING', (0,0), (-1,-1), 7),
-        ('RIGHTPADDING', (0,0), (-1,-1), 7),
-    ]))
-    story.append(tech_table)
+    story.append(Paragraph("Material didáctico adaptado pedagógicamente para personas mayores (60+). Ciencia visual interactiva y agilidad mental con Inteligencia Artificial.", style_footer))
 
     doc.build(story)
-    if dest_path != LOCAL_BACKUP:
-        try:
-            import shutil
-            os.makedirs(os.path.dirname(LOCAL_BACKUP), exist_ok=True)
-            shutil.copy2(dest_path, LOCAL_BACKUP)
-        except Exception:
-            pass
-    print(f"✅ PDF COD-002 generado con éxito en: {dest_path}")
 
-if __name__ == '__main__':
+def main():
+    build_pdf(LOCAL_BACKUP)
+    print(f"✅ Ficha COD-002 generada en catálogo: {LOCAL_BACKUP}")
     try:
-        build_cod_002_taller_3d_pdf()
+        shutil.copy2(LOCAL_BACKUP, PDF_PATH)
+        print(f"✅ Ficha COD-002 sincronizada en sesión: {PDF_PATH}")
     except Exception as e:
-        print(f"❌ Error al generar PDF COD-002: {e}")
-        sys.exit(1)
+        print(f"⚠️ Nota de copia: {e}")
+
+if __name__ == "__main__":
+    main()

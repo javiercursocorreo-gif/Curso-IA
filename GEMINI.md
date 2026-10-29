@@ -15,7 +15,15 @@
 - **Fuentes Científicas Reales e Hiperrealistas:** Prohibido el uso de geometrías toscas, esferas lisas o modelos abstractos ("huevos"). Todos los activos visuales deben ser fotografías científicas de alta resolución o escaneos reales procedentes de repositorios científicos acreditados (NIH, NASA, microtomografía CT, microscopía electrónica TEM, CyArk, etc.).
 - **Almacenamiento Centralizado y Portabilidad:** Todas las fotografías y escaneos deben guardarse en `SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/` en formato original (`.jpg`/`.png`/`.glb`) y disponer de su correspondiente contenedor autónomo Base64 (`_photo_b64.js`) para garantizar el funcionamiento 100% offline sin dependencias externas.
 
-## Regla de Oro: Sincronización Inmediata Simulador 3D ⟷ Prompt de Gemini en Ficha [COD]
+## Nueva Estructura Oficial de las Fichas Científicas [COD] (Sin Talleres ni Copia de Código)
+- **Fichas Orientadas a la Exploración Científica Directa:**
+  - Tras la supresión de los antiguos 'Talleres de Pruebas' para dejar exclusivamente los **Simuladores 3D Científicos Interactivos**, las fichas didácticas oficiales del bloque `[COD]` eliminan las listas de tareas de copiado de código y los prompts técnicos de programación.
+  - La estructura oficial estándar de 1 página se compone de:
+    1. **Explicación didáctica y científica del simulador:** qué fenómeno reproduce en tiempo real, órganos/estructuras visibles y controles de interacción 360°, corte y parámetros.
+    2. **Procedencia oficial y fuentes científicas:** acreditación rigurosa de las instituciones científicas (NIH, NASA, Z-Anatomy, CyArk, etc.), técnicas de captura médica/orbital (MRI 7T, tomografía, fotogrametría LiDAR) y calidad de datos.
+    3. **Guía de exploración en el aula & preguntas para conversar con Gemini:** preguntas de reflexión y aprendizaje para que los alumnos dialoguen con Gemini mientras observan el modelo en pantalla.
+
+## Regla de Oro: Sincronización Inmediata Simulador 3D ⟷ Ficha Didáctica [COD]
 - **Sincronización Biunívoca en Tiempo Real:**
   - Cada vez que se agregue, modifique, elimine o ajuste cualquier característica técnica, visual, botón o funcionalidad interactiva en un simulador (o en el probador de código), el asistente DEBE actualizar simultáneamente en ese mismo turno el **Prompt Maestro para Gemini** en el script generador de la ficha didáctica `build_pdf_cod_XXX.py` y regenerar el PDF oficial del alumno.
   - El alumno debe poder copiar el prompt de su ficha en Gemini y obtener exactamente el 100% de las funciones implementadas en el simulador oficial.
