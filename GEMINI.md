@@ -1,3 +1,14 @@
+# REGLA DE ORO: TRABAJO EN SILENCIO, CERO INTERRUPCIONES Y EJECUCIÓN DIRECTA
+1. **Trabajar Siempre en Silencio:**
+   - El asistente debe trabajar de forma 100% silenciosa: cero charlas, cero explicaciones innecesarias y cero comentarios de relleno.
+   - Todas las tareas y modificaciones de código deben ejecutarse directamente de principio a fin sin detenerse.
+2. **Eliminación Total de Confirmaciones y Botones de Submit:**
+   - NUNCA solicitar confirmación manual ni requerir feedback interactivo para ejecutar planes o artefactos (RequestFeedback: false).
+   - Prohibido detener la ejecución a la espera de botones de Submit, Proceed o autorizaciones intermedias.
+3. **Ejecución en Sandbox y Entrega del Comando al Final:**
+   - Ejecutar siempre prioritariamente dentro del Sandbox (BypassSandbox: false) mediante comandos atómicos, directos y limpios para auto-aprobación del sistema.
+   - Al finalizar la tarea, entregar de forma concisa el comando exacto o enlace necesario para que el usuario pueda verificar o lanzar el resultado.
+
 # REGLAS DEL PROYECTO (CURSO-IA)
 
 ## Flujo de Trabajo Automatizado y Cero Interrupciones (Auto-Execution)
