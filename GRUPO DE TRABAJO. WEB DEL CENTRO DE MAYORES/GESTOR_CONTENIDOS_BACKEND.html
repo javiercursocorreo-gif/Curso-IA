@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestor de Contenidos • Redacción Digital del Centro de Mayores</title>
+  <style>
+    :root {
+      --primary: #0284c7;
+      --primary-dark: #0369a1;
+      --bg-app: #f8fafc;
+      --card-bg: #ffffff;
+      --border-color: #cbd5e1;
+      --text-main: #0f172a;
+      --text-muted: #475569;
+      --green-ok: #16a34a;
+      --amber-warn: #d97706;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      font-size: 18px;
+      line-height: 1.5;
+      color: var(--text-main);
+      background-color: var(--bg-app);
+      padding-bottom: 60px;
+    }
+
+    /* BARRA SUPERIOR DEL PANEL */
+    .admin-navbar {
+      background: #0f172a;
+      color: #ffffff;
+      padding: 16px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+      border-bottom: 4px solid var(--primary);
+    }
+    .admin-title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .admin-title-wrap h1 {
+      font-size: 1.5rem;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+    }
+    .admin-role-badge {
+      background: rgba(56, 189, 248, 0.2);
+      border: 1px solid #38bdf8;
+      color: #38bdf8;
+      padding: 4px 12px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .admin-nav-actions {
+      display: flex;
+      gap: 12px;
+    }
+    .btn-nav {
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      color: #ffffff;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+    .btn-nav:hover {
+      background: rgba(255, 255, 255, 0.25);
+    }
+
+    /* CONTENEDOR PRINCIPAL */
+    .admin-container {
+      max-width: 1200px;
+      margin: 28px auto;
+      padding: 0 20px;
+    }
+
+    /* MENÚ SUPERIOR DE ROLES Y EQUIPOS DE TRABAJO */
+    .teams-strip {
+      background: #ffffff;
+      border: 2px solid var(--border-color);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 28px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+    }
+    .teams-strip h2 {
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 14px;
+    }
+    .teams-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+    }
+    .team-btn {
+      background: #f1f5f9;
+      border: 2px solid #cbd5e1;
+      border-radius: 12px;
+      padding: 14px 16px;
+      text-align: left;
+      cursor: pointer;
+      font-weight: 800;
+      font-size: 1.05rem;
+      color: #0f172a;
+      transition: all 0.15s;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .team-btn:hover {
+      background: #e2e8f0;
+      border-color: #94a3b8;
+    }
+    .team-btn.active {
+      background: #0284c7;
+      color: #ffffff;
+      border-color: #0284c7;
+      box-shadow: 0 4px 12px rgba(2, 132, 199, 0.35);
+    }
+
+    /* DISTRIBUCIÓN A DOS COLUMNAS: FORMULARIO Y VISTA PREVIA */
+    .editor-layout {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 28px;
+    }
+    @media (max-width: 900px) {
+      .editor-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* TARJETA DEL FORMULARIO */
+    .form-card {
+      background: #ffffff;
+      border: 2px solid var(--border-color);
+      border-radius: 18px;
+      padding: 28px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+    }
+
+    .form-header {
+      border-bottom: 2px solid #f1f5f9;
+      padding-bottom: 16px;
+      margin-bottom: 22px;
+    }
+    .form-header h2 {
+      font-size: 1.5rem;
+      font-weight: 900;
+      color: #0f172a;
+    }
+    .form-header p {
+      font-size: 1rem;
+      color: var(--text-muted);
+    }
+
+    .field-group {
+      margin-bottom: 20px;
+    }
+    .field-group label {
+      display: block;
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: #1e293b;
+      margin-bottom: 6px;
+    }
+    .field-help {
+      font-size: 0.9rem;
+      color: #64748b;
+      margin-bottom: 6px;
+    }
+
+    .field-input, .field-select, .field-textarea {
+      width: 100%;
+      padding: 12px 14px;
+      border: 2px solid #cbd5e1;
+      border-radius: 10px;
+      font-size: 1.05rem;
+      font-family: inherit;
+      color: #0f172a;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .field-input:focus, .field-select:focus, .field-textarea:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
+    }
+
+    .field-textarea {
+      min-height: 140px;
+      resize: vertical;
+    }
+
+    /* ASISTENTE GEMINI INTEGRADO */
+    .ai-assist-box {
+      background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%);
+      border: 2px solid #c4b5fd;
+      border-radius: 14px;
+      padding: 16px;
+      margin-top: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .ai-assist-text {
+      font-size: 0.95rem;
+      color: #5b21b6;
+      font-weight: 700;
+      flex: 1;
+    }
+    .btn-ai-magic {
+      background: #7c3aed;
+      color: #ffffff;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      font-weight: 800;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
+      transition: all 0.2s;
+    }
+    .btn-ai-magic:hover {
+      background: #6d28d9;
+      transform: translateY(-2px);
+    }
+
+    /* BOTONES DE ACCIÓN FINAL */
+    .form-actions {
+      display: flex;
+      gap: 14px;
+      margin-top: 28px;
+      flex-wrap: wrap;
+    }
+
+    .btn-action-primary {
+      background: #16a34a;
+      color: #ffffff;
+      border: none;
+      padding: 14px 24px;
+      border-radius: 12px;
+      font-size: 1.15rem;
+      font-weight: 900;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 4px 14px rgba(22, 163, 74, 0.35);
+      flex: 1;
+      justify-content: center;
+      transition: all 0.15s;
+    }
+    .btn-action-primary:hover {
+      background: #15803d;
+      transform: translateY(-2px);
+    }
+
+    .btn-action-draft {
+      background: #f1f5f9;
+      color: #0f172a;
+      border: 2px solid #cbd5e1;
+      padding: 14px 20px;
+      border-radius: 12px;
+      font-size: 1.05rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .btn-action-draft:hover {
+      background: #e2e8f0;
+    }
+
+    /* COLUMNA DERECHA: VISTA PREVIA Y BANDEJA DEL ADMINISTRADOR */
+    .preview-card {
+      background: #ffffff;
+      border: 2px solid var(--border-color);
+      border-radius: 18px;
+      padding: 24px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+      position: sticky;
+      top: 90px;
+    }
+
+    .preview-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 18px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid #f1f5f9;
+    }
+    .preview-header h3 {
+      font-size: 1.25rem;
+      font-weight: 900;
+      color: #0f172a;
+    }
+    .preview-badge-status {
+      background: #fef3c7;
+      color: #92400e;
+      border: 1px solid #f59e0b;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    /* SIMULADOR DE TARJETA EN LA WEB PÚBLICA */
+    .public-card-mockup {
+      border: 3px solid #0d7a57;
+      border-radius: 16px;
+      padding: 20px;
+      background: #ffffff;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+    }
+    .mockup-category {
+      font-size: 0.9rem;
+      font-weight: 800;
+      color: #0d7a57;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .mockup-title {
+      font-size: 1.4rem;
+      font-weight: 900;
+      color: #0f172a;
+      margin-bottom: 8px;
+    }
+    .mockup-meta {
+      font-size: 0.95rem;
+      color: #475569;
+      font-weight: 700;
+      margin-bottom: 12px;
+      background: #f8fafc;
+      padding: 6px 10px;
+      border-radius: 8px;
+    }
+    .mockup-body {
+      font-size: 1.05rem;
+      color: #334155;
+      line-height: 1.6;
+    }
+
+    /* BANDEJA DE BORRADORES DEL ADMINISTRADOR */
+    .admin-inbox {
+      margin-top: 24px;
+      background: #f0fdf4;
+      border: 2px solid #86efac;
+      border-radius: 14px;
+      padding: 16px;
+    }
+    .admin-inbox h4 {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: #166534;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .admin-inbox p {
+      font-size: 0.9rem;
+      color: #15803d;
+      margin-bottom: 12px;
+    }
+    .draft-item {
+      background: #ffffff;
+      border: 1px solid #bbf7d0;
+      border-radius: 8px;
+      padding: 10px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      font-size: 0.9rem;
+    }
+    .btn-approve-quick {
+      background: #16a34a;
+      color: #ffffff;
+      border: none;
+      padding: 5px 12px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 800;
+      cursor: pointer;
+    }
+  
+    @media (max-width: 768px) {
+      body {
+        font-size: 17px;
+      }
+      .admin-navbar {
+        padding: 12px 14px;
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .admin-nav-actions {
+        width: 100%;
+      }
+      .btn-nav {
+        width: 100%;
+        justify-content: center;
+      }
+      .admin-container {
+        padding: 0 12px;
+        margin: 16px auto;
+      }
+      .teams-strip {
+        padding: 16px 14px;
+      }
+      .teams-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+      .team-btn {
+        padding: 12px 14px;
+        font-size: 1rem;
+      }
+      .form-card, .preview-card {
+        padding: 20px 16px;
+        border-radius: 14px;
+      }
+      .field-input, .field-select, .field-textarea {
+        font-size: 16px; /* Evita zoom automático en Safari iOS */
+        padding: 12px;
+      }
+      .form-actions {
+        flex-direction: column;
+      }
+      .btn-action-primary, .btn-action-draft {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+
+      .grid-two-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media (max-width: 600px) { .grid-two-cols { grid-template-columns: 1fr; gap: 0; } }
+  </style>
+</head>
+<body>
+
+  <!-- BARRA SUPERIOR -->
+  <header class="admin-navbar">
+    <div class="admin-title-wrap">
+      <span style="font-size: 1.8rem;">✍️</span>
+      <div>
+        <h1>Gestor de Contenidos • Centro de Mayores</h1>
+        <div style="font-size: 0.85rem; color: #cbd5e1;">Redacción Digital de Alumnos e Información Oficial</div>
+      </div>
+      <span class="admin-role-badge">Equipo de Redacción IA</span>
+    </div>
+    <div class="admin-nav-actions">
+      <a href="WEB_PUBLICA_CENTRO_MAYORES.html" target="_blank" class="btn-nav">
+        🌐 Abrir Web Pública ➔
+      </a>
+    </div>
+  </header>
+
+  <main class="admin-container">
+
+    <!-- REPARTO DE TEMAS: SELECCIÓN DE EQUIPO O ÁREA -->
+    <section class="teams-strip">
+      <h2>1. Selecciona el Área que estás editando:</h2>
+      <div class="teams-grid">
+        <button class="team-btn active" onclick="selectArea('excursiones', '🚌 Excursiones y Viajes', '#0d7a57')">
+          <span>🚌</span> Excursiones
+        </button>
+        <button class="team-btn" onclick="selectArea('talleres', '🎨 Clases y Talleres', '#c05621')">
+          <span>🎨</span> Clases y Talleres
+        </button>
+        <button class="team-btn" onclick="selectArea('menu', '☕ Cafetería y Menú', '#9b2c2c')">
+          <span>☕</span> Menú Cafetería
+        </button>
+        <button class="team-btn" onclick="selectArea('normas', '📜 Normas y Secretaría', '#1e3a8a')">
+          <span>📜</span> Normas del Administrador
+        </button>
+        <button class="team-btn" onclick="selectArea('guias', '💡 Guías Ciudadanas e IA', '#5b21b6')">
+          <span>💡</span> Guías y Salud
+        </button>
+      </div>
+    </section>
+
+    <!-- FORMULARIO DE ALIMENTACIÓN + VISTA PREVIA -->
+    <div class="editor-layout">
+
+      <!-- COLUMNA IZQUIERDA: FORMULARIO AMIGABLE -->
+      <section class="form-card">
+        <div class="form-header">
+          <h2 id="formAreaTitle">🚌 Nuevo Aviso de Excursión</h2>
+          <p>Rellena los datos sencillos. El sistema le dará formato automático para la web y la televisión.</p>
+        </div>
+
+        <form id="contentForm" onsubmit="event.preventDefault(); publishItem();">
+          
+          <div class="field-group">
+            <label for="inpTitle">Título del Anuncio o Viaje:</label>
+            <div class="field-help">Escribe un nombre claro y atractivo (Ej: "Viaje de Primavera a Chinchón").</div>
+            <input type="text" id="inpTitle" class="field-input" value="Viaje de Día Completo a Chinchón y Colmenar de Oreja" oninput="updateLivePreview()">
+          </div>
+
+          <div class="grid-two-cols">
+            <div class="field-group">
+              <label for="inpDate">Fecha de Salida o Aplicación:</label>
+              <input type="text" id="inpDate" class="field-input" value="Sábado, 20 de Junio de 2026" oninput="updateLivePreview()">
+            </div>
+            <div class="field-group">
+              <label for="inpPrice">Precio o Plazas:</label>
+              <input type="text" id="inpPrice" class="field-input" value="25 € (Comida incluida) • 55 plazas" oninput="updateLivePreview()">
+            </div>
+          </div>
+
+          <div class="field-group">
+            <label for="inpBody">Descripción del viaje o contenido:</label>
+            <div class="field-help">Puedes escribir una nota rápida y pulsar el botón morado de Gemini para que lo mejore.</div>
+            <textarea id="inpBody" class="field-textarea" oninput="updateLivePreview()">Salida a las 9 de la mañana en autobús desde la puerta del centro. Visita a la plaza mayor de Chinchón y almuerzo típico. Por la tarde visita a una bodega tradicional. Vuelta a las 19h. Apuntarse con el Administrador a partir del lunes.</textarea>
+
+            <!-- ASISTENTE CON GEMINI PARA MEJORAR LA REDACCIÓN -->
+            <div class="ai-assist-box">
+              <div class="ai-assist-text">
+                ✨ <strong>Asistente Gemini:</strong> ¿Quieres enriquecer este texto con un tono cálido y letra clara para los socios?
+              </div>
+              <button type="button" class="btn-ai-magic" onclick="enhanceWithGemini()">
+                🪄 Pulir y enriquecer con IA
+              </button>
+            </div>
+          </div>
+
+          <div class="field-group">
+            <label for="inpUrgent">¿Aviso Destacado para la Pantalla de TV del vestíbulo?</label>
+            <select id="inpUrgent" class="field-select">
+              <option value="si">⭐ Sí, mostrar también en la Televisión del Centro</option>
+              <option value="no">Solo en la Web</option>
+            </select>
+          </div>
+
+          <!-- BOTONES DE ACCIÓN -->
+          <div class="form-actions">
+            <button type="submit" class="btn-action-primary">
+              🚀 Guardar y Publicar en la Web
+            </button>
+            <button type="button" class="btn-action-draft" onclick="saveAsDraft()">
+              💾 Guardar como Borrador para el Administrador
+            </button>
+          </div>
+
+        </form>
+      </section>
+
+      <!-- COLUMNA DERECHA: VISTA PREVIA EN VIVO Y BANDEJA DEL ADMINISTRADOR -->
+      <aside class="preview-card">
+        <div class="preview-header">
+          <h3>👁️ Vista Previa en Tiempo Real</h3>
+          <span class="preview-badge-status" id="previewStatus">Borrador</span>
+        </div>
+
+        <div class="public-card-mockup" id="mockupCard">
+          <div class="mockup-category" id="mockupCat">🚌 Excursiones y Viajes</div>
+          <div class="mockup-title" id="mockupTitle">Título aquí...</div>
+          <div class="mockup-meta" id="mockupMeta">Fecha y precio...</div>
+          <div class="mockup-body" id="mockupBody">Texto...</div>
+        </div>
+
+        <!-- BANDEJA DE APROBACIÓN PARA EL ADMINISTRADOR -->
+        <div class="admin-inbox">
+          <h4>👩‍💼 Bandeja de Revisión del Administrador</h4>
+          <p>El Administrador puede revisar los textos enviados por los alumnos y aprobarlos con un solo clic:</p>
+
+          <div class="draft-item">
+            <div>
+              <strong>Menú del Viernes Especial</strong><br>
+              <small style="color: #64748b;">Enviado por: Alumno Antonio (Equipo Cafetería)</small>
+            </div>
+            <button class="btn-approve-quick" onclick="alert('¡Aprobado y publicado en la web oficial!')">✓ Aprobar</button>
+          </div>
+
+          <div class="draft-item">
+            <div>
+              <strong>Guía: Cuidado con SMS falso</strong><br>
+              <small style="color: #64748b;">Enviado por: Alumna Carmen (Equipo IA)</small>
+            </div>
+            <button class="btn-approve-quick" onclick="alert('¡Aprobado y publicado en la web oficial!')">✓ Aprobar</button>
+          </div>
+        </div>
+
+      </aside>
+
+    </div>
+
+  </main>
+
+  <script>
+    let currentAreaKey = 'excursiones';
+    let currentAreaColor = '#0d7a57';
+    let currentAreaName = '🚌 Excursiones y Viajes';
+
+    function selectArea(areaKey, areaTitle, color) {
+      currentAreaKey = areaKey;
+      currentAreaColor = color;
+      currentAreaName = areaTitle;
+
+      document.querySelectorAll('.team-btn').forEach(b => b.classList.remove('active'));
+      event.currentTarget.classList.add('active');
+
+      document.getElementById('formAreaTitle').textContent = areaTitle;
+      document.getElementById('mockupCat').textContent = areaTitle;
+      document.getElementById('mockupCat').style.color = color;
+      document.getElementById('mockupCard').style.borderColor = color;
+
+      // Adaptar campos según área
+      if (areaKey === 'excursiones') {
+        document.getElementById('inpTitle').value = 'Viaje de Día Completo a Chinchón y Colmenar de Oreja';
+        document.getElementById('inpDate').value = 'Sábado, 20 de Junio de 2026';
+        document.getElementById('inpPrice').value = '25 € (Comida incluida) • 55 plazas';
+        document.getElementById('inpBody').value = 'Salida a las 9 de la mañana en autobús desde la puerta del centro. Visita a la plaza mayor de Chinchón y almuerzo típico. Por la tarde visita a una bodega tradicional. Vuelta a las 19h. Apuntarse con el Administrador a partir del lunes.';
+      } else if (areaKey === 'talleres') {
+        document.getElementById('inpTitle').value = 'Nuevo Taller: Robótica e Inteligencia Artificial Cotidiana';
+        document.getElementById('inpDate').value = 'Martes y Jueves de 10:30 a 12:00 h';
+        document.getElementById('inpPrice').value = 'Gratuito para socios • Aula de Informática';
+        document.getElementById('inpBody').value = 'Aprende a usar Gemini en el móvil, restaurar fotos antiguas de tu familia y escribir tus memorias. No hace falta saber de informática. Plazas limitadas.';
+      } else if (areaKey === 'menu') {
+        document.getElementById('inpTitle').value = 'Menú del Día Casero - Cocido Madrileño Tradicional';
+        document.getElementById('inpDate').value = 'Miércoles lectivo de 13:00 a 15:30 h';
+        document.getElementById('inpPrice').value = '6,50 € Socios • Incluye pan, bebida y postre';
+        document.getElementById('inpBody').value = 'Primer plato: Sopa de fideos desgrasada. Segundo: Cocido completo con garbanzos, morcillo, chorizo y verdura. Postre casero a elegir.';
+      } else if (areaKey === 'normas') {
+        document.getElementById('inpTitle').value = 'Horario de Verano y Climatización en Salas';
+        document.getElementById('inpDate').value = 'A partir del 1 de Junio';
+        document.getElementById('inpPrice').value = 'Acceso libre con carné de socio';
+        document.getElementById('inpBody').value = 'Las salas permanecerán abiertas y con aire acondicionado de 09:30 a 20:00 h para descanso y lectura de prensa de los socios. El Administrador atenderá secretaría por las mañanas.';
+      } else if (areaKey === 'guias') {
+        document.getElementById('inpTitle').value = 'Cómo renovar la tarjeta sanitaria desde casa paso a paso';
+        document.getElementById('inpDate').value = 'Guía Permanente • Equipo de Alumnos IA';
+        document.getElementById('inpPrice').value = 'Trámite 100% Gratuito y sin colas';
+        document.getElementById('inpBody').value = 'Explicamos en 3 pasos muy sencillos cómo pedir que te envíen la tarjeta sanitaria renovada a tu buzón sin hacer cola en el centro de salud ni esperar números.';
+      }
+
+      updateLivePreview();
+    }
+
+    function updateLivePreview() {
+      const title = document.getElementById('inpTitle').value || 'Sin título';
+      const date = document.getElementById('inpDate').value || '';
+      const price = document.getElementById('inpPrice').value || '';
+      const body = document.getElementById('inpBody').value || '';
+
+      document.getElementById('mockupTitle').textContent = title;
+      document.getElementById('mockupMeta').textContent = (date ? '📅 ' + date : '') + (price ? ' | 💶 ' + price : '');
+      document.getElementById('mockupBody').innerHTML = body.replace(/\n/g, '<br>');
+    }
+
+    // SIMULACIÓN DEL ASISTENTE GEMINI CONTEXTUAL (ADAPTADO A CADA SECCIÓN)
+    function enhanceWithGemini() {
+      const btn = document.querySelector('.btn-ai-magic');
+      btn.textContent = '⏳ Pensando con Gemini...';
+      btn.style.opacity = '0.7';
+
+      setTimeout(() => {
+        let enhanced = '';
+
+        if (currentAreaKey === 'guias') {
+          enhanced = 
+`¿Se te ha roto o caducado la tarjeta sanitaria? No hace falta que vayas al ambulatorio ni hagas cola: puedes pedir que te la manden a casa en 3 pasos muy fáciles:
+
+1. Ten a mano tu DNI y tu tarjeta vieja (aunque no funcione).
+2. Llama al teléfono gratuito de salud o entra en la aplicación del móvil.
+3. Confirma tu dirección y en un par de semanas te llega directamente a tu buzón de correos en una carta.
+
+💡 Y si te lías con el teléfono o prefieres que lo hagamos juntos, los martes a las 11:00 pásate por la clase de informática y te ayudamos encantados en un momento.`;
+
+        } else if (currentAreaKey === 'menu') {
+          enhanced = 
+`¡Hoy en la cafetería tenemos plato de cuchara del bueno!
+
+• De primero: Sopa de fideos casera, suave y calentita.
+• De segundo: Cocido madrileño con todos sus sacramentos (garbanzos tiernos, morcillo, chorizo y verdura).
+• Con pan recién hecho, vino o agua bien fría y postre casero (flan o arroz con leche).
+
+Servimos las comidas de 13:00 a 15:30 h. Con el carné de socio sale por 6,50 €. ¡Buen provecho y que lo disfrutéis!`;
+
+        } else if (currentAreaKey === 'talleres') {
+          enhanced = 
+`¡Anímate a probar el taller de Robótica e Inteligencia Artificial!
+
+No te preocupes si nunca has tocado un ordenador; aquí vamos muy despacio y aprendemos cosas útiles para el día a día:
+• Cómo hablarle al móvil con Gemini para resolver cualquier duda o pedirle recetas.
+• Recuperar y poner a color esas fotos antiguas en blanco y negro de la familia.
+• Escribir tus recuerdos y anécdotas de juventud para dejárselos a los nietos.
+
+Las clases son los martes y jueves por la mañana. Pásate por secretaría y habla con el Administrador para apuntarte. ¡Te va a encantar!`;
+
+        } else if (currentAreaKey === 'normas') {
+          enhanced = 
+`Un aviso importante del Administrador para estos días de tanto calor:
+
+Para que estemos todos lo más a gusto posible:
+• Las salas de lectura y de juegos tienen el aire acondicionado puesto y están abiertas de 09:30 a 20:00 h. Pasa cuando quieras a leer la prensa del día o a charlar fresquito.
+• Si necesitas hacer alguna gestión o renovar el carné, El Administrador está en secretaría de 10:00 a 13:30 h de lunes a viernes.
+• Acuérdate de llevar el carné en la cartera para los descuentos del bar.
+
+¡Cuidemos las instalaciones entre todos para sentirnos como en casa!`;
+
+        } else { // Excursiones por defecto
+          enhanced = 
+`¡Nos vamos de excursión a Chinchón y Colmenar de Oreja!
+
+Un día estupendo para pasear tranquilos, disfrutar de la plaza y comer juntos:
+• Salida: a las 09:00 h en la puerta del centro en autocar cómodo.
+• Mañana: paseo guiado en llano por Chinchón y tiempo para tomar un café al sol.
+• Comida: menú típico completo en restaurante concertado con bebida y postre.
+• Tarde: visita a una bodega tradicional y paseo por Colmenar.
+• Regreso: sobre las 19:30 h de vuelta al centro.
+
+Si quieres venirte, pásate por el despacho de secretaría a partir del lunes y habla con el Administrador para reservar tu asiento. ¡Lo pasaremos genial!`;
+        }
+
+        document.getElementById('inpBody').value = enhanced;
+        updateLivePreview();
+
+        btn.textContent = '🪄 Pulir y enriquecer con IA';
+        btn.style.opacity = '1';
+        alert(`✨ ¡Texto de «${currentAreaName}» enriquecido con Gemini!\n\nSe ha adaptado el tono y la estructura específicamente para esta sección.`);
+      }, 350);
+    }
+
+    function publishItem() {
+      document.getElementById('previewStatus').textContent = 'Publicado ✅';
+      document.getElementById('previewStatus').style.background = '#dcfce7';
+      document.getElementById('previewStatus').style.color = '#15803d';
+      document.getElementById('previewStatus').style.borderColor = '#22c55e';
+      alert("🚀 ¡Aviso publicado con éxito!\n\nSe ha guardado en el repositorio de GitHub y la Web Pública del Centro se ha actualizado automáticamente.");
+    }
+
+    function saveAsDraft() {
+      document.getElementById('previewStatus').textContent = 'Pendiente del Administrador ⏳';
+      document.getElementById('previewStatus').style.background = '#fef3c7';
+      document.getElementById('previewStatus').style.color = '#92400e';
+      alert("💾 Guardado como borrador.\n\nEl aviso ha quedado depositado en la bandeja del Administrador para su visto bueno antes de salir a la web.");
+    }
+
+    // Inicializar
+    updateLivePreview();
+  </script>
+</body>
+</html>
