@@ -10,6 +10,11 @@
   - El asistente NUNCA debe solicitar confirmación manual ni requerir feedback interactivo para ejecutar planes o artefactos (`RequestFeedback: false`).
   - Todos los planes, modificaciones de código y tareas deben ejecutarse de forma directa, continua e ininterrumpida.
 
+## Regla de Fidelidad Científica e Hiperrealismo (Prohibición de Babylon.js)
+- **PROHIBICIÓN TOTAL DE BABYLON.JS:** Jamás renderizar con Babylon.js en ningún simulador ni ficha didáctica. Todo visor 3D debe programarse exclusivamente en **Three.js** o mediante un **visor fotográfico interactivo de alta resolución (HTML5 Canvas / SVG)**.
+- **Fuentes Científicas Reales e Hiperrealistas:** Prohibido el uso de geometrías toscas, esferas lisas o modelos abstractos ("huevos"). Todos los activos visuales deben ser fotografías científicas de alta resolución o escaneos reales procedentes de repositorios científicos acreditados (NIH, NASA, microtomografía CT, microscopía electrónica TEM, CyArk, etc.).
+- **Almacenamiento Centralizado y Portabilidad:** Todas las fotografías y escaneos deben guardarse en `SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/` en formato original (`.jpg`/`.png`/`.glb`) y disponer de su correspondiente contenedor autónomo Base64 (`_photo_b64.js`) para garantizar el funcionamiento 100% offline sin dependencias externas.
+
 ## Regla de Oro: Sincronización Inmediata Simulador 3D ⟷ Prompt de Gemini en Ficha [COD]
 - **Sincronización Biunívoca en Tiempo Real:**
   - Cada vez que se agregue, modifique, elimine o ajuste cualquier característica técnica, visual, botón o funcionalidad interactiva en un simulador (o en el probador de código), el asistente DEBE actualizar simultáneamente en ese mismo turno el **Prompt Maestro para Gemini** en el script generador de la ficha didáctica `build_pdf_cod_XXX.py` y regenerar el PDF oficial del alumno.
