@@ -2,184 +2,154 @@
 # -*- coding: utf-8 -*-
 """
 build_pdf_cod_001.py
-Genera la Ficha Didáctica Oficial de 1 Página (Letter/A4):
-4. COD-001_Taller_Crea_tu_Propio_Simulador_3D_con_Gemini.pdf
-para la Sesión 01 del Curso de IA (Simulador 3D de los Pulmones y Árbol Bronquial).
+Genera la Ficha Didáctica Científica Oficial de 1 Página:
+- 4. COD-001_Taller_Crea_tu_Propio_Simulador_3D_con_Gemini.pdf (Sesión 01)
+- 01_COD-001_Taller_Simulador_Pulmones_3D.pdf (Catálogo Central)
 """
 
 import os
-import sys
+import shutil
 
 OUTPUT_DIR = "/Users/externo/Library/Mobile Documents/com~apple~CloudDocs/PERSONAL/CLASES DE TECNOLOGÍA/CURSO-IA/CLASES/EXPORTACION_FICHAS_CLASSROOM_PDF/100. [SESSIONS] TERNAS_LISTAS_PARA_CLASSROOM/01_Sesion"
 PDF_PATH = os.path.join(OUTPUT_DIR, "4. COD-001_Taller_Crea_tu_Propio_Simulador_3D_con_Gemini.pdf")
 LOCAL_BACKUP = "/Users/externo/Library/Mobile Documents/com~apple~CloudDocs/PERSONAL/CLASES DE TECNOLOGÍA/CURSO-IA/SIMULADORES_INTERACTIVOS/02_INDICES_Y_CATALOGOS/01_COD-001_Taller_Simulador_Pulmones_3D.pdf"
 
-def build_cod_001_taller_3d_pdf(output_path=PDF_PATH):
-    dest_path = output_path
-    try:
-        os.makedirs(os.path.dirname(dest_path), exist_ok=True)
-        with open(dest_path, "wb") as _:
-            pass
-    except Exception:
-        dest_path = LOCAL_BACKUP
-        os.makedirs(os.path.dirname(dest_path), exist_ok=True)
-
+def build_pdf(dest_path):
     from reportlab.lib.pagesizes import letter
     from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, HRFlowable
     from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
     from reportlab.lib import colors
 
+    os.makedirs(os.path.dirname(dest_path), exist_ok=True)
     doc = SimpleDocTemplate(
         dest_path,
         pagesize=letter,
-        rightMargin=36, leftMargin=36, topMargin=22, bottomMargin=20
+        rightMargin=36, leftMargin=36, topMargin=24, bottomMargin=20
     )
     styles = getSampleStyleSheet()
-    
+
+    accent = colors.HexColor('#0284C7')
+
     style_header = ParagraphStyle(
         'HeaderStyle', parent=styles['Normal'],
-        fontName='Helvetica-Bold', fontSize=8.0,
-        textColor=colors.HexColor('#0284C7'), alignment=1, spaceAfter=1
+        fontName='Helvetica-Bold', fontSize=8.2, leading=10.0,
+        textColor=accent, alignment=1, spaceAfter=2
     )
     style_block = ParagraphStyle(
         'BlockStyle', parent=styles['Normal'],
-        fontName='Helvetica-Bold', fontSize=9.8,
+        fontName='Helvetica-Bold', fontSize=9.5, leading=12.0,
         textColor=colors.HexColor('#0F172A'), alignment=1, spaceAfter=4
     )
     style_title = ParagraphStyle(
         'TitleStyle', parent=styles['Heading1'],
-        fontName='Helvetica-Bold', fontSize=11.8, leading=14.2,
-        textColor=colors.HexColor('#0F172A'), spaceAfter=3
+        fontName='Helvetica-Bold', fontSize=12.0, leading=14.5,
+        textColor=colors.HexColor('#0F172A'), spaceAfter=4
     )
     style_section_h = ParagraphStyle(
         'SectionHStyle', parent=styles['Heading2'],
-        fontName='Helvetica-Bold', fontSize=8.8, leading=11.2,
-        textColor=colors.HexColor('#0369A1'), spaceBefore=3, spaceAfter=2
+        fontName='Helvetica-Bold', fontSize=9.2, leading=12.0,
+        textColor=accent, spaceBefore=4, spaceAfter=3
     )
     style_body = ParagraphStyle(
         'BodyStyle', parent=styles['BodyText'],
-        fontName='Helvetica', fontSize=7.9, leading=10.5,
-        textColor=colors.HexColor('#1E293B'), spaceAfter=2
+        fontName='Helvetica', fontSize=8.0, leading=11.2,
+        textColor=colors.HexColor('#1E293B'), spaceAfter=3
     )
-    style_task = ParagraphStyle(
-        'TaskStyle', parent=styles['Normal'],
-        fontName='Helvetica', fontSize=7.7, leading=10.1,
-        textColor=colors.HexColor('#0F172A')
-    )
-    style_prompt = ParagraphStyle(
-        'PromptStyle', parent=styles['Normal'],
-        fontName='Helvetica', fontSize=7.5, leading=9.9,
+    style_box_text = ParagraphStyle(
+        'BoxText', parent=styles['Normal'],
+        fontName='Helvetica', fontSize=7.8, leading=10.8,
         textColor=colors.HexColor('#0F172A')
     )
 
     story = []
+    # Encabezado Oficial
     story.append(Paragraph("CURSO DE INTELIGENCIA ARTIFICIAL Y TECNOLOGÍA PARA ADULTOS MAYORES (60+)", style_header))
-    story.append(Paragraph("BLOQUE IV: CIENCIA INTERACTIVA & TALLER DE CÓDIGO CON GEMINI [COD]", style_block))
-    story.append(HRFlowable(width="100%", thickness=1.2, color=colors.HexColor('#0284C7'), spaceAfter=4))
+    story.append(Paragraph("BLOQUE IV: CIENCIA INTERACTIVA & SIMULADORES CIENTÍFICOS 3D [COD]", style_block))
+    story.append(HRFlowable(width="100%", thickness=1.5, color=accent, spaceAfter=5))
 
-    story.append(Paragraph("<b>[COD-001] Taller: Crea tu propio simulador de los pulmones</b>", style_title))
+    story.append(Paragraph("<b>[COD-001] Guía Científica • El Sistema Respiratorio Humano y Árbol Bronquial 3D</b>", style_title))
 
-    story.append(Paragraph("💡 <b>Misión Didáctica • De Espectador a Creador con IA:</b>", style_section_h))
+    # Bloque 1: Explicación didáctica del Simulador
+    story.append(Paragraph("🫁 <b>1. ¿Qué vemos en el Simulador 3D y qué fenómeno reproduce?</b>", style_section_h))
     story.append(Paragraph(
-        "En esta práctica vas a ordenar a la Inteligencia Artificial generar el código necesario para construir tu propio simulador 3D del aparato respiratorio humano con su árbol bronquial fractal y animación biológica de respiración. "
-        "<b>No necesitas saber programar:</b> pedirás el código a Gemini con el prompt maestro, lo copiarás en tu <b>Taller de Pruebas</b> y comprobarás cómo tus pulmones cobran vida en tu pantalla.",
+        "Este simulador biomédico interactivo reproduce en tiempo real la <b>mecánica ventilatoria del aparato respiratorio humano</b> "
+        "y la arquitectura tridimensional del árbol traqueobronquial. En pantalla se observa el movimiento rítmico de <b>inspiración y espiración</b>: "
+        "la expansión fisiológica de los lóbulos pulmonares (tres en el pulmón derecho y dos en el izquierdo para alojar la silueta cardíaca) "
+        "y la posterior descompresión elástica del parénquima.<br/>"
+        "Al activar la transparencia tisular se aprecia la <b>tráquea cartilaginosa, la carina y la estructura fractal de ramificación bronquial</b> "
+        "(desde los bronquios principales primarios hasta las subdivisiones lobares y segmentarias) por donde fluye el oxígeno. Puedes <b>rotar los "
+        "pulmones 360°</b> con el ratón, regular la <b>frecuencia respiratoria</b> (de 8 a 28 respiraciones por minuto) y pausar el ciclo para "
+        "analizar cada estructura en reposo anatómico.",
         style_body
     ))
 
-    # Lista de Tareas (Checklist Guiado)
-    story.append(Paragraph("📋 <b>Lista de Tareas del Alumno (Paso a Paso en 2 Pestañas):</b>", style_section_h))
-    task_rows = [
-        [Paragraph("<b>✅ Tarea 1 • Pídele el código a Gemini (Pestaña 1):</b> "
-                   "Abre Gemini (<i>gemini.google.com</i>). Copia el <b>Prompt Maestro</b> inferior, pégalo en el chat y pulsa Enviar.", style_task)],
-        [Paragraph("<b>✅ Tarea 2 • Copia el código generado por la IA:</b> "
-                   "En la respuesta de Gemini, haz clic en el botón <b>«Copiar código»</b> situado en la esquina superior del bloque.", style_task)],
-        [Paragraph("<b>✅ Tarea 3 • Abre el Taller Oficial de Pruebas (Pestaña 2):</b> "
-                   "En el mapa de la Sesión 01, pulsa <b>«🚀 Abrir Taller Interactivo de Pruebas ↗»</b>.", style_task)],
-        [Paragraph("<b>✅ Tarea 4 • Pega con Ctrl+V y pulsa «Ejecutar Creación»:</b> "
-                   "Pega el código con <b>Ctrl+V</b> (o Cmd+V en Mac) y haz clic en <b>«▶️ Ejecutar Creación»</b>. ¡Tus pulmones 3D ventilarán y podrás rotarlos 360°!", style_task)],
-        [Paragraph("<b>✅ Tarea 5 • Descubre la Demo completa:</b> "
-                   "Pulsa el botón <b>«🫁 Pulmones 3D»</b> en el taller (o <b>«🫁 Ver Simulador Pulmones 3D ↗»</b> en el mapa) para ver el modelo médico con control de 8 a 28 RPM.", style_task)],
-    ]
-    t_table = Table(task_rows, colWidths=[letter[0] - 72])
-    t_table.setStyle(TableStyle([
-        ('BACKGROUND', (0,0), (-1,-1), colors.HexColor('#F0F9FF')),
-        ('BOX', (0,0), (-1,-1), 1, colors.HexColor('#0284C7')),
-        ('TOPPADDING', (0,0), (-1,-1), 1.5),
-        ('BOTTOMPADDING', (0,0), (-1,-1), 1.5),
-        ('LEFTPADDING', (0,0), (-1,-1), 7),
-        ('RIGHTPADDING', (0,0), (-1,-1), 7),
-    ]))
-    story.append(t_table)
-    story.append(Spacer(1, 3))
-
-    # Recuadro de Prompt Maestro
-    story.append(Paragraph("🧠 <b>Prompt Maestro para Copiar y Pegar en Gemini:</b>", style_section_h))
-    prompt_text = (
-        "<b>Copia exactamente este texto en Gemini:</b><br/>"
-        "<i>\"Genera el código de programación (HTML y JavaScript con Babylon.js) que voy a copiar y pegar en el Taller de Pruebas de mi curso para crear un simulador 3D hiperrealista del aparato respiratorio humano.<br/>"
-        "Requisitos del código:<br/>"
-        "1. Entrega el programa en un único bloque de código para que yo pulse directamente «Copiar código» y lo pegue con Ctrl+V en mi simulador.<br/>"
-        "2. Incluye en la cabecera los scripts del motor Babylon.js y el modelo anatómico fotogramétrico:<br/>"
-        "&lt;script src=&quot;https://cdn.babylonjs.com/babylon.js&quot;&gt;&lt;/script&gt;<br/>"
-        "&lt;script src=&quot;https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js&quot;&gt;&lt;/script&gt;<br/>"
-        "&lt;script src=&quot;https://javiercursocorreo-gif.github.io/Curso-IA/SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/lungs_b64.js&quot;&gt;&lt;/script&gt;<br/>"
-        "3. Carga el modelo 3D anatómico real con SceneLoader.ImportMesh('', '', window.LUNGS_GLB_B64, ...) y céntralo con cámara orbital 360° e iluminación de estudio sobre fondo azul noche (#060913).<br/>"
-        "4. Detén cualquier animación interna o de morphing del archivo 3D (animationGroups.forEach(ag => ag.stop())) para mantener el árbol traqueobronquial y los pulmones 100% firmes, estables y quietos en el centro (sin vaivén vertical, sin subir ni bajar), permitiendo rotar libremente en 360° con el ratón e incluyendo una rotación suave automática.<br/>"
-        "5. Escribe exclusivamente el bloque de código para que al copiarlo a mi simulador genere los pulmones 3D hiperrealistas.\"</i>"
+    # Bloque 2: Procedencia y Fuentes Científicas Oficiales
+    story.append(Paragraph("🔬 <b>2. Procedencia Oficial y Fuentes Científicas de las Imágenes y Escaneo 3D</b>", style_section_h))
+    fuente_text = (
+        "• <b>Repositorio Médico Oficial:</b> El modelo tridimensional procede de los archivos científicos de la <b>Biblioteca Nacional de Medicina "
+        "de los Estados Unidos (NIH 3D Print Exchange)</b> y del atlas biomédico abierto <b>Z-Anatomy Open-Source Anatomy Project</b>.<br/>"
+        "• <b>Técnica de Adquisición de Datos:</b> Malla anatómica reconstruida a partir de <b>tomografía axial computarizada de tórax de alta "
+        "resolución (HRCT)</b>. Los materiales PBR reproducen con fidelidad médica los anillos cartilaginosos traqueales, la textura elástica de la pleura "
+        "y las bifurcaciones vasculares de la arteria pulmonar.<br/>"
+        "• <b>Morfología Fractal y Superficie Alveolar:</b> El árbol bronquial ilustra el principio biológico de optimización fractal: 23 generaciones "
+        "sucesivas de dicotomía que permiten empaquetar una superficie de intercambio gaseoso de más de <b>70 metros cuadrados</b> (el tamaño de una "
+        "pista de bádminton) en el reducido volumen torácico humano."
     )
-    p_table = Table([[Paragraph(prompt_text, style_prompt)]], colWidths=[letter[0] - 72])
-    p_table.setStyle(TableStyle([
+    t_box = Table([[Paragraph(fuente_text, style_box_text)]], colWidths=[letter[0] - 72])
+    t_box.setStyle(TableStyle([
+        ('BACKGROUND', (0,0), (-1,-1), colors.HexColor('#F0F9FF')),
+        ('BOX', (0,0), (-1,-1), 1.2, accent),
+        ('TOPPADDING', (0,0), (-1,-1), 6),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 6),
+        ('LEFTPADDING', (0,0), (-1,-1), 8),
+        ('RIGHTPADDING', (0,0), (-1,-1), 8),
+    ]))
+    story.append(t_box)
+    story.append(Spacer(1, 4))
+
+    # Bloque 3: Guía de Exploración & Retos de Conversación con Gemini
+    story.append(Paragraph("💬 <b>3. Guía de Exploración en el Aula & Conversación con Gemini</b>", style_section_h))
+    story.append(Paragraph(
+        "Abre el simulador en tu navegador (en el mapa pulsa <i>«🫁 Ver Simulador Pulmones 3D»</i>) y utilízalo como laboratorio visual mientras "
+        "conversas con Gemini (<i>gemini.google.com</i>). Puedes copiar y hacerle estas preguntas para profundizar en tu aprendizaje:",
+        style_body
+    ))
+
+    prompts_text = (
+        "<b>1. Asimetría Anatómica:</b> <i>«Estoy mirando un modelo 3D de los pulmones humanos. ¿Por qué el pulmón derecho se divide en tres lóbulos mientras que el izquierdo solo tiene dos?»</i><br/>"
+        "<b>2. Respiración y Salud en Adultos Mayores:</b> <i>«En el simulador varío la velocidad de respiración entre 10 y 24 RPM. ¿Por qué la respiración diafragmática profunda calma el sistema nervioso y mejora la oxigenación cerebral en personas mayores?»</i><br/>"
+        "<b>3. La Maravilla Fractal:</b> <i>«¿Por qué la naturaleza diseñó los bronquios con una geometría fractal de ramificación en lugar de conductos rectos convencionales?»</i>"
+    )
+    p_box = Table([[Paragraph(prompts_text, style_box_text)]], colWidths=[letter[0] - 72])
+    p_box.setStyle(TableStyle([
         ('BACKGROUND', (0,0), (-1,-1), colors.HexColor('#F8FAFC')),
         ('BOX', (0,0), (-1,-1), 1, colors.HexColor('#64748B')),
-        ('TOPPADDING', (0,0), (-1,-1), 2.5),
-        ('BOTTOMPADDING', (0,0), (-1,-1), 2.5),
-        ('LEFTPADDING', (0,0), (-1,-1), 7),
-        ('RIGHTPADDING', (0,0), (-1,-1), 7),
+        ('TOPPADDING', (0,0), (-1,-1), 6),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 6),
+        ('LEFTPADDING', (0,0), (-1,-1), 8),
+        ('RIGHTPADDING', (0,0), (-1,-1), 8),
     ]))
-    story.append(p_table)
-    story.append(Spacer(1, 3))
+    story.append(p_box)
+    story.append(Spacer(1, 4))
 
-    # Desafío Extra
-    story.append(Paragraph("🌟 <b>El Reto Extra (Para Alumnos Curiosos):</b>", style_section_h))
-    story.append(Paragraph(
-        "👉 <b>¡Pídele a Gemini que modifique tu código!</b> En la misma conversación dile: "
-        "<i>«Añade una luz de quirófano azul cian que ilumine la tráquea por detrás»</i> o "
-        "<i>«Haz que gire lentamente sobre su eje vertical para ver los bronquios desde todos los ángulos»</i>. "
-        "Vuelve a copiar el código, pégalo en tu Taller y ¡mira cómo cambia en directo!",
-        style_body
-    ))
-    story.append(Spacer(1, 2))
-
-    # Apartado Técnico al final del todo: Origen de las Imágenes/Modelos Hiperrealistas y Montaje del Objeto 3D
-    story.append(Paragraph("🔬 <b>¿De dónde proceden los modelos hiperrealistas y cómo se ha montado el objeto 3D?</b>", style_section_h))
-    tech_text = (
-        "• <b>Origen del modelo anatómico hiperrealista (<i>lungs.glb / lungs_b64.js</i>):</b> Procede del repositorio biomédico oficial <b>NIH 3D Print Exchange (National Institutes of Health, EE. UU.)</b> y <b>BodyParts3D / Anatomography</b> (Instituto DBCLS de Ciencias de la Vida, Japón, bajo licencia abierta <i>Creative Commons</i>), reconstruido mediante <b>tomografía computarizada (TC) médica real</b> de la tráquea, bronquios y lóbulos pulmonares.<br/>"
-        "• <b>Cómo se ha montado el objeto en la Demo y en el Taller:</b> El archivo tridimensional <i>.glb</i> (formato <i>glTF 2.0</i> con texturas PBR de tejido mucoso y anillos cartilaginosos) se ha empaquetado en Base64 dentro de <i>lungs_b64.js</i> para evitar bloqueos de seguridad del navegador (CORS). En el motor <b>Babylon.js</b>, se carga la malla 3D con <i>SceneLoader.ImportMesh</i>, se detienen las animaciones internas para mantener el órgano firme, quieto y sin vaivén vertical, permitiendo la exploración científica 360° limpia y centrada con iluminación médica de estudio."
+    story.append(HRFlowable(width="100%", thickness=0.6, color=colors.HexColor('#CBD5E1'), spaceAfter=3))
+    style_footer = ParagraphStyle(
+        'FooterStyle', parent=styles['Normal'],
+        fontName='Helvetica-Oblique', fontSize=7.0, leading=8.5,
+        textColor=colors.HexColor('#64748B'), alignment=1
     )
-    tech_table = Table([[Paragraph(tech_text, style_task)]], colWidths=[letter[0] - 72])
-    tech_table.setStyle(TableStyle([
-        ('BACKGROUND', (0,0), (-1,-1), colors.HexColor('#ECFDF5')),
-        ('BOX', (0,0), (-1,-1), 1, colors.HexColor('#059669')),
-        ('TOPPADDING', (0,0), (-1,-1), 3),
-        ('BOTTOMPADDING', (0,0), (-1,-1), 3),
-        ('LEFTPADDING', (0,0), (-1,-1), 7),
-        ('RIGHTPADDING', (0,0), (-1,-1), 7),
-    ]))
-    story.append(tech_table)
+    story.append(Paragraph("Material didáctico adaptado pedagógicamente para personas mayores (60+). Ciencia visual interactiva y agilidad mental con Inteligencia Artificial.", style_footer))
 
     doc.build(story)
-    if dest_path != LOCAL_BACKUP:
-        try:
-            import shutil
-            os.makedirs(os.path.dirname(LOCAL_BACKUP), exist_ok=True)
-            shutil.copy2(dest_path, LOCAL_BACKUP)
-        except Exception:
-            pass
-    print(f"✅ PDF COD-001 generado con éxito en: {dest_path}")
 
-if __name__ == '__main__':
+def main():
+    build_pdf(LOCAL_BACKUP)
+    print(f"✅ Ficha COD-001 generada en catálogo: {LOCAL_BACKUP}")
     try:
-        build_cod_001_taller_3d_pdf()
+        shutil.copy2(LOCAL_BACKUP, PDF_PATH)
+        print(f"✅ Ficha COD-001 sincronizada en sesión: {PDF_PATH}")
     except Exception as e:
-        print(f"❌ Error al generar PDF COD-001: {e}")
-        sys.exit(1)
+        print(f"⚠️ Nota de copia: {e}")
+
+if __name__ == "__main__":
+    main()

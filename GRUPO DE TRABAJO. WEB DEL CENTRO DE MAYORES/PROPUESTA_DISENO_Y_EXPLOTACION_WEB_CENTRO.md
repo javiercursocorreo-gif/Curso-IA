@@ -54,11 +54,11 @@ Diseñado con los criterios más exigentes de accesibilidad cognitiva y visual p
   * 📜 **Normas y Secretaría**
   * 💡 **Guías Ciudadanas con IA**
 * **Nivel 2 (Sublistado):** Nuevamente tarjetas horizontales grandes con el resumen de las noticias del área.
-* **Nivel 3 (Ficha Detalle):** Tipografía grande y escalable (`A+ / A-`), recuadros con datos clave (fechas, precio, plazas) y herramientas de apoyo:
+* **Nivel 3 (Ficha Detalle):** Tipografía grande y fija perfectamente proporcionada (sin botones de zoom que puedan descuadrar la pantalla), recuadros con datos clave (fechas, precio, plazas) y herramientas de apoyo:
   * 🔊 **«Escuchar en Voz Alta»** (narración automática mediante voz nativa del dispositivo).
   * 🖨️ **«Imprimir Folio»** (para quien desee guardarlo en papel).
   * ⬅️ **Botón «VOLVER ATRÁS» Gigante** visible permanentemente en la parte superior e inferior.
-* **Web Pública 100% Limpia (Sin Botones Innecesarios de TV):** Para no confundir a los mayores, la web pública no contiene botones técnicos de televisión. Se centra exclusivamente en su lectura personal (con control de letra `A+ / A-`). La emisión de la televisión se controla y lanza de forma independiente desde el Backend mediante el canal dedicado [`PANTALLA_TV_VESTIBULO.html`](file:///Users/externo/Library/Mobile%20Documents/com~apple~CloudDocs/PERSONAL/CLASES%20DE%20TECNOLOGÍA/CURSO-IA/GRUPO%20DE%20TRABAJO.%20WEB%20DEL%20CENTRO%20DE%20MAYORES/PANTALLA_TV_VESTIBULO.html).
+* **Web Pública 100% Limpia (Sin Botones Innecesarios de TV ni Zoom):** Para no confundir a los mayores, la web pública no contiene controles técnicos ni botones flotantes que desajusten el diseño. Se centra exclusivamente en su lectura limpia y directa. La emisión de la televisión se controla y lanza de forma independiente desde el Backend mediante el canal dedicado [`PANTALLA_TV_VESTIBULO.html`](file:///Users/externo/Library/Mobile%20Documents/com~apple~CloudDocs/PERSONAL/CLASES%20DE%20TECNOLOGÍA/CURSO-IA/GRUPO%20DE%20TRABAJO.%20WEB%20DEL%20CENTRO%20DE%20MAYORES/PANTALLA_TV_VESTIBULO.html).
 
 ---
 
