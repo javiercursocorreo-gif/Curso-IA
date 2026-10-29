@@ -7,7 +7,9 @@
     <!-- Babylon.js CDN Oficial y Loaders para GLTF/GLB -->
     <script src="https://cdn.babylonjs.com/babylon.js"></script>
     <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
-    <!-- Respaldo Base64 Autónomo (6.2 MB) para entornos locales y offline -->
+    <!-- Respaldo Base64 Autónomo (5.9 MB) para entornos locales y offline -->
+    <script src="brain_b64.js"></script>
+    <script src="../../../../SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/brain_b64.js"></script>
     <script src="../03_ASSETS_3D_Y_DATOS/brain_b64.js"></script>
     <script src="https://javiercursocorreo-gif.github.io/Curso-IA/SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/brain_b64.js"></script>
     <script src="https://javiercursocorreo-gif.github.io/Curso-IA/SIMULADORES_INTERACTIVOS/brain_b64.js"></script>
@@ -864,82 +866,99 @@
             backLight.intensity = 0.85;
             backLight.diffuse = new BABYLON.Color3(0.65, 0.45, 0.85);
 
-            // CARGA DEL ESCANEO ANATÓMICO REAL .GLB (Base64 local con fallback online)
-            const modelSource = (window.BRAIN_GLB_B64) ? window.BRAIN_GLB_B64 : "https://javiercursocorreo-gif.github.io/Curso-IA/SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/brain.glb";
+            // CARGA ROBUSTA DEL MODELO ANATÓMICO (Base64 offline -> local -> GitHub CDN)
+            const candidateSources = [
+                (window.BRAIN_GLB_B64 && window.BRAIN_GLB_B64.length > 1000) ? window.BRAIN_GLB_B64 : null,
+                "brain.glb",
+                "../../../../SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/brain.glb",
+                "../03_ASSETS_3D_Y_DATOS/brain.glb",
+                "https://javiercursocorreo-gif.github.io/Curso-IA/SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/brain.glb"
+            ].filter(Boolean);
 
-            BABYLON.SceneLoader.ImportMesh("", "", modelSource, sc, function (meshes) {
-                loadingOverlay.style.opacity = "0";
-                setTimeout(() => loadingOverlay.style.display = "none", 400);
+            let currentSrcIdx = 0;
+            function loadBrainMesh() {
+                if (currentSrcIdx >= candidateSources.length) {
+                    console.error("No se pudo cargar brain.glb desde ninguna de las fuentes candidatas.");
+                    loadingOverlay.innerHTML = '<div style="color:#ef4444;font-weight:700;">Error al cargar el archivo 3D del cerebro</div>';
+                    return;
+                }
+                const modelSource = candidateSources[currentSrcIdx];
+                BABYLON.SceneLoader.ImportMesh("", "", modelSource, sc, function (meshes) {
+                    loadingOverlay.style.opacity = "0";
+                    setTimeout(() => loadingOverlay.style.display = "none", 400);
 
-                brainRoot = new BABYLON.TransformNode("brainRoot", sc);
+                    brainRoot = new BABYLON.TransformNode("brainRoot", sc);
 
-                // Filtrar nervios periféricos descendentes y configurar materiales orgánicos
-                meshes.forEach(m => {
-                    const nl = (m.name || "").toLowerCase();
+                    // Filtrar nervios periféricos descendentes y configurar materiales orgánicos
+                    meshes.forEach(m => {
+                        const nl = (m.name || "").toLowerCase();
 
-                    // Ocultar nervios largos periféricos que cuelgan del tronco
-                    if (nl.includes("vagus") || nl.includes("accessory") || nl.includes("corticospinal")) {
-                        m.setEnabled(false);
-                        return;
-                    }
-
-                    if (m.parent === null) {
-                        m.parent = brainRoot;
-                    }
-
-                    if (m.material) {
-                        // Clonar material para permitir tintes independientes por lóbulo
-                        m.material = m.material.clone(m.name + "_mat");
-
-                        // ⚠️ ELIMINAR EL EMISSIVE BLANCO HORRIBLE [1,1,1] QUE VENÍA EN EL GLB ORIGINAL
-                        m.material.emissiveColor = new BABYLON.Color3(0, 0, 0);
-                        m.material.roughness = 0.52;
-                        m.material.metallic = 0.05;
-
-                        // Asignar color tisular de corteza si el albedo original es blanco plano
-                        const origAlbedo = m.material.albedoColor;
-                        let baseColor = new BABYLON.Color3(0.85, 0.58, 0.50);
-                        if (origAlbedo && (origAlbedo.r < 0.92 || origAlbedo.g < 0.92 || origAlbedo.b < 0.92)) {
-                            baseColor = origAlbedo.clone();
-                        } else {
-                            m.material.albedoColor = baseColor;
+                        // Ocultar nervios largos periféricos que cuelgan del tronco
+                        if (nl.includes("vagus") || nl.includes("accessory") || nl.includes("corticospinal")) {
+                            m.setEnabled(false);
+                            return;
                         }
 
-                        // Colorear vasos sanguíneos en rojo carmesí
-                        if (nl.includes("artery") || nl.includes("vein") || nl.includes("sinus")) {
-                            baseColor = new BABYLON.Color3(0.82, 0.18, 0.18);
-                            m.material.albedoColor = baseColor;
+                        if (m.parent === null) {
+                            m.parent = brainRoot;
                         }
 
-                        const lobeKey = classifyNodeLobe(nl);
-                        m.userData = {
-                            baseAlbedo: baseColor,
-                            lobe: lobeKey,
-                            name: m.name
-                        };
-                    }
-                    brainMeshes.push(m);
-                });
+                        if (m.material) {
+                            // Clonar material para permitir tintes independientes por lóbulo
+                            m.material = m.material.clone(m.name + "_mat");
 
-                // CENTRADO Y ESCALADO EXACTO DEL ENCÉFALO (Excluyendo las fibras inferiores)
-                const fixedCenterY = 1.561;
-                const fixedCenterZ = -0.006;
-                const brainHeight = 0.282; // Altura real del encéfalo
-                const scale = 3.6 / brainHeight; // Escalar a ~3.6 unidades estándar de visualización
+                            // ⚠️ ELIMINAR EL EMISSIVE BLANCO HORRIBLE [1,1,1] QUE VENÍA EN EL GLB ORIGINAL
+                            m.material.emissiveColor = new BABYLON.Color3(0, 0, 0);
+                            m.material.roughness = 0.52;
+                            m.material.metallic = 0.05;
 
-                brainRoot.scaling = new BABYLON.Vector3(scale, scale, scale);
-                brainRoot.position = new BABYLON.Vector3(0, -fixedCenterY * scale, -fixedCenterZ * scale);
+                            // Asignar color tisular de corteza si el albedo original es blanco plano
+                            const origAlbedo = m.material.albedoColor;
+                            let baseColor = new BABYLON.Color3(0.85, 0.58, 0.50);
+                            if (origAlbedo && (origAlbedo.r < 0.92 || origAlbedo.g < 0.92 || origAlbedo.b < 0.92)) {
+                                baseColor = origAlbedo.clone();
+                            } else {
+                                m.material.albedoColor = baseColor;
+                            }
 
-                camera.radius = 4.8;
-                camera.target = new BABYLON.Vector3(0, 0, 0);
-                isModelLoaded = true;
+                            // Colorear vasos sanguíneos en rojo carmesí
+                            if (nl.includes("artery") || nl.includes("vein") || nl.includes("sinus")) {
+                                baseColor = new BABYLON.Color3(0.82, 0.18, 0.18);
+                                m.material.albedoColor = baseColor;
+                            }
 
-                // CREAR PINES EN EL DOM
-                createLabelPins();
-            }, null, function (sc, message) {
-                console.error("Error al cargar brain.glb:", message);
-                loadingOverlay.innerHTML = '<div style="color:#ef4444;font-weight:700;">Error al cargar el archivo 3D del cerebro</div>';
-            });
+                            const lobeKey = classifyNodeLobe(nl);
+                            m.userData = {
+                                baseAlbedo: baseColor,
+                                lobe: lobeKey,
+                                name: m.name
+                            };
+                        }
+                        brainMeshes.push(m);
+                    });
+
+                    // CENTRADO Y ESCALADO EXACTO DEL ENCÉFALO (Excluyendo las fibras inferiores)
+                    const fixedCenterY = 1.561;
+                    const fixedCenterZ = -0.006;
+                    const brainHeight = 0.282; // Altura real del encéfalo
+                    const scale = 3.6 / brainHeight; // Escalar a ~3.6 unidades estándar de visualización
+
+                    brainRoot.scaling = new BABYLON.Vector3(scale, scale, scale);
+                    brainRoot.position = new BABYLON.Vector3(0, -fixedCenterY * scale, -fixedCenterZ * scale);
+
+                    camera.radius = 4.8;
+                    camera.target = new BABYLON.Vector3(0, 0, 0);
+                    isModelLoaded = true;
+
+                    // CREAR PINES EN EL DOM
+                    createLabelPins();
+                }, null, function (sc, message) {
+                    console.warn("⚠️ Falló fuente cerebro 3D:", modelSource, message);
+                    currentSrcIdx++;
+                    loadBrainMesh();
+                }, ".glb");
+            }
+            loadBrainMesh();
 
             return sc;
         };
