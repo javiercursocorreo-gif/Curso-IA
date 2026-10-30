@@ -115,15 +115,15 @@ def build_cod_012_taller_3d_pdf(output_path=PDF_PATH):
     story.append(Paragraph("🧠 <b>Prompt Maestro para Copiar y Pegar en Gemini:</b>", style_section_h))
     prompt_text = (
         "<b>Copia exactamente este texto en Gemini:</b><br/>"
-        "<i>\"Genera el código de programación (HTML, CSS y JavaScript) que voy a copiar y pegar en el Taller de Pruebas de mi curso para crear un visor astrofísico interactivo 3D de la Nebulosa Planetaria Helix (NGC 7293) con datos de los telescopios Hubble y Spitzer de la NASA.<br/>"
+        "<i>\"Genera el código de programación (HTML, CSS y JavaScript) que voy a copiar y pegar en el Taller de Pruebas de mi curso para crear un visor astrofísico interactivo de alta resolución de la Nebulosa Helix (NGC 7293) con astrofotografía de la NASA (Hubble y Spitzer).<br/>"
         "Requisitos del código:<br/>"
         "1. Entrega el programa en un único bloque de código listo para pulsar directamente «Copiar código» y pegarlo con Ctrl+V.<br/>"
-        "2. Incluye en la cabecera el script con los datos astronómicos reales:<br/>"
+        "2. Incluye en la cabecera el script con los datos astronómicos reales en Base64:<br/>"
         "&lt;script src=&quot;https://javiercursocorreo-gif.github.io/Curso-IA/SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/helix_nebula_b64.js&quot;&gt;&lt;/script&gt;<br/>"
-        "3. Crea un modelo 3D con Babylon.js que represente el anillo exterior de gas ionizado (hidrógeno rojo y nitrógeno), el disco interior (oxígeno ionizado azul verdoso) y la enana blanca caliente central.<br/>"
-        "4. Incluye botones interactivos para alternar entre la visión visible de Hubble y la visión infrarroja de Spitzer.<br/>"
-        "5. Aplica un diseño cósmico profesional en modo oscuro (#030612) con tipografía accesible.<br/>"
-        "6. Escribe exclusivamente el bloque de código funcional.\"</i>"
+        "3. Prohibido inventar gráficos en canvas 2D o círculos procedurales: muestra la fotografía científica de alta resolución contenida en window.HELIX_NEBULA_PHOTO_B64 sobre fondo espacial negro con estrellas (#030206), con controles interactivos de zoom y encuadre.<br/>"
+        "4. Posiciona marcadores luminosos sobre las estructuras astrofísicas reales: el anillo exterior de gas ionizado (hidrógeno y nitrógeno rojo), el disco intermedio de oxígeno y helio (turquesa) y la enana blanca ultradensa en el núcleo central.<br/>"
+        "5. Al hacer clic en cada estructura, muestra un panel lateral con su temperatura (120.000 K en el centro), longitud de onda espectral y velocidad de expansión (40 km/s).<br/>"
+        "6. Escribe exclusivamente el bloque de código para que al copiarlo a mi simulador funcione inmediatamente.\"</i>"
     )
     p_table = Table([[Paragraph(prompt_text, style_prompt)]], colWidths=[letter[0] - 72])
     p_table.setStyle(TableStyle([

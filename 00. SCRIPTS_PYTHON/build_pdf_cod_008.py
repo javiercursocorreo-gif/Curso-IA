@@ -123,7 +123,7 @@ def build_cod_008_taller_3d_pdf(output_path=PDF_PATH):
         "&lt;script src=&quot;https://cdn.babylonjs.com/babylon.js&quot;&gt;&lt;/script&gt;<br/>"
         "&lt;script src=&quot;https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js&quot;&gt;&lt;/script&gt;<br/>"
         "&lt;script src=&quot;https://javiercursocorreo-gif.github.io/Curso-IA/SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/engine_3d_b64.js&quot;&gt;&lt;/script&gt;<br/>"
-        "3. Carga la malla CAD real con SceneLoader.ImportMesh('', '', window.ENGINE_3D_GLB_B64, scene, ...), centra el conjunto mecánico y encuádralo con cámara orbital 360° e iluminación de estudio técnico sobre fondo azul noche (#060912).<br/>"
+        "3. Prohibido inventar mallas en canvas 2D o cilindros procedurales toscos: carga la malla CAD de ingeniería real mediante BABYLON.SceneLoader.ImportMesh('', '', window.ENGINE_3D_GLB_B64, scene, ...), centra el conjunto mecánico y encuádralo con cámara orbital ArcRotateCamera 360° e iluminación de estudio técnico sobre fondo azul noche (#060912).<br/>"
         "4. En el bucle de renderizado, anima la rotación del cigüeñal y la traslación armónica alternada de los pistones simulando los 4 tiempos del ciclo térmico a velocidad constante regulada.<br/>"
         "5. Escribe exclusivamente el bloque de código para que al copiarlo a mi simulador genere el motor 3D en funcionamiento inmediato.\"</i>"
     )

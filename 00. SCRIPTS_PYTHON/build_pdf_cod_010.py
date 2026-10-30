@@ -120,8 +120,8 @@ def build_cod_010_taller_3d_pdf(output_path=PDF_PATH):
         "1. Entrega el programa en un único bloque de código para que yo pulse directamente «Copiar código» y lo pegue con Ctrl+V en mi simulador.<br/>"
         "2. Incluye en la cabecera el script con los datos biomédicos de micro-CT:<br/>"
         "&lt;script src=&quot;https://javiercursocorreo-gif.github.io/Curso-IA/SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/molar_photo_b64.js&quot;&gt;&lt;/script&gt;<br/>"
-        "3. Crea un visor anatómico de alta resolución que presente la sección coronal del molar destacando las 4 capas biológicas: esmalte, dentina, cámara pulpar y nervio apical con selectores interactivos.<br/>"
-        "4. Incluye etiquetas anatómicas emergentes al hacer clic en cada estrato dental con explicación clara y sin jerga médica compleja.<br/>"
+        "3. Prohibido inventar gráficos en canvas 2D o mallas procedurales: muestra la microtomografía clínica hiperrealista oficial contenida en window.MOLAR_PHOTO_B64 como imagen de alta resolución con zoom interactivo y ubica sobre ella marcadores luminosos en las 4 capas biológicas: esmalte (96% mineral), dentina, cámara pulpar y canal radicular.<br/>"
+        "4. Al pulsar en cada estrato dental, despliega un panel lateral interactivo con su función protectora, grado de dureza y sensibilidad nerviosa.<br/>"
         "5. Aplica un diseño clínico profesional en modo oscuro (#060912) con tipografía accesible y contrastes cuidados.<br/>"
         "6. Escribe exclusivamente el bloque de código para que al copiarlo a mi simulador funcione inmediatamente.\"</i>"
     )

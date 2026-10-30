@@ -122,7 +122,7 @@ def build_cod_009_taller_3d_pdf(output_path=PDF_PATH):
         "&lt;script src=&quot;https://cdn.babylonjs.com/babylon.js&quot;&gt;&lt;/script&gt;<br/>"
         "&lt;script src=&quot;https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js&quot;&gt;&lt;/script&gt;<br/>"
         "&lt;script src=&quot;https://javiercursocorreo-gif.github.io/Curso-IA/SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/trex_3d_b64.js&quot;&gt;&lt;/script&gt;<br/>"
-        "3. Carga la malla fósil real con SceneLoader.ImportMesh('', '', window.TREX_3D_GLB_B64, scene, ...), céntrala sobre una peana o pedestal de museo con cámara orbital 360° e iluminación de galería cálida con focos dirigidos (spotlights) sobre fondo oscuro (#07090e).<br/>"
+        "3. Prohibido inventar dinosaurios en canvas 2D o cubos procedurales toscos: carga el cráneo fósil escaneado real mediante BABYLON.SceneLoader.ImportMesh('', '', window.TREX_3D_GLB_B64, scene, ...), céntralo sobre una peana de museo con cámara orbital ArcRotateCamera 360° e iluminación de galería cálida con focos (spotlights) sobre fondo oscuro (#07090e).<br/>"
         "4. Añade una rotación turntable automática lenta (giradiscos de museo) que el usuario pueda detener o controlar libremente con el ratón.<br/>"
         "5. Escribe exclusivamente el bloque de código para que al copiarlo a mi simulador genere la exhibición del T-Rex fósil en 3D inmediatamente.\"</i>"
     )

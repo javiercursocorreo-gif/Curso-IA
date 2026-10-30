@@ -115,15 +115,15 @@ def build_cod_011_taller_3d_pdf(output_path=PDF_PATH):
     story.append(Paragraph("🧠 <b>Prompt Maestro para Copiar y Pegar en Gemini:</b>", style_section_h))
     prompt_text = (
         "<b>Copia exactamente este texto en Gemini:</b><br/>"
-        "<i>\"Genera el código de programación (HTML, CSS y JavaScript) que voy a copiar y pegar en el Taller de Pruebas de mi curso para crear un visor interactivo 3D del Violín Stradivarius 'The Gould 1693' del Metropolitan Museum of Art.<br/>"
+        "<i>\"Genera el código de programación (HTML, CSS y JavaScript) que voy a copiar y pegar en el Taller de Pruebas de mi curso para crear un visor interactivo de alta resolución del Violín Stradivarius 'The Gould 1693' con organología y resonancia acústica.<br/>"
         "Requisitos del código:<br/>"
         "1. Entrega el programa en un único bloque de código listo para pulsar directamente «Copiar código» y pegarlo con Ctrl+V.<br/>"
-        "2. Incluye en la cabecera el script con los datos fotogramétricos reales:<br/>"
+        "2. Incluye en la cabecera el script con la fotografía científica oficial del Metropolitan Museum of Art en Base64:<br/>"
         "&lt;script src=&quot;https://javiercursocorreo-gif.github.io/Curso-IA/SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/violin_stradivarius_b64.js&quot;&gt;&lt;/script&gt;<br/>"
-        "3. Crea un modelo 3D con Babylon.js PBR que presente la tapa armónica, fondo flameado de arce, efes acústicas (ƒ), cordal, puente y las cuatro cuerdas (Sol, Re, La, Mi).<br/>"
-        "4. Incluye botones para explorar los 5 puntos acústicos de la luthería con explicaciones claras.<br/>"
-        "5. Aplica un diseño estético en modo oscuro (#0a0705) con tipografía elegante y controles accesibles.<br/>"
-        "6. Escribe exclusivamente el bloque de código funcional.\"</i>"
+        "3. Prohibido inventar gráficos en canvas 2D o mallas procedurales: muestra la fotografía real en alta resolución contenida en window.STRADIVARIUS_PHOTO_B64 centrada sobre fondo oscuro (#060507), con controles interactivos de zoom y encuadre.<br/>"
+        "4. Posiciona marcadores luminosos sobre los 5 componentes clave de luthería: la voluta/clavijero, el mástil/diapasón, las efes armónicas (ƒ), el puente con el alma interior y el cordal con las 4 cuerdas afinadas (Sol, Re, La, Mi).<br/>"
+        "5. Al hacer clic en cada componente, muestra un panel explicativo con su física acústica y madera empleada (abeto rojo de Val di Fiemme y arce flameado).<br/>"
+        "6. Escribe exclusivamente el bloque de código para que al copiarlo a mi simulador funcione inmediatamente.\"</i>"
     )
     p_table = Table([[Paragraph(prompt_text, style_prompt)]], colWidths=[letter[0] - 72])
     p_table.setStyle(TableStyle([

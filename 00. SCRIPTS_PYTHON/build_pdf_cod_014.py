@@ -115,15 +115,16 @@ def build_cod_014_taller_3d_pdf(output_path=PDF_PATH):
     story.append(Paragraph("🧠 <b>Prompt Maestro para Copiar y Pegar en Gemini:</b>", style_section_h))
     prompt_text = (
         "<b>Copia exactamente este texto en Gemini:</b><br/>"
-        "<i>\"Genera el código de programación (HTML, CSS y JavaScript) que voy a copiar y pegar en el Taller de Pruebas de mi curso para crear un simulador 3D de Júpiter y sus auroras boreales ultravioletas con datos de las misiones Cassini y Hubble de la NASA.<br/>"
+        "<i>\"Genera el código de programación (HTML, CSS y JavaScript con Babylon.js) que voy a copiar y pegar en el Taller de Pruebas de mi curso para crear un simulador 3D de Júpiter y sus auroras boreales ultravioletas con texturas de la NASA.<br/>"
         "Requisitos del código:<br/>"
         "1. Entrega el programa en un único bloque de código listo para pulsar directamente «Copiar código» y pegarlo con Ctrl+V.<br/>"
-        "2. Incluye en la cabecera el script con los datos astronómicos reales:<br/>"
+        "2. Incluye en la cabecera los scripts del motor Babylon.js y los datos de emisión auroral en Base64:<br/>"
+        "&lt;script src=&quot;https://cdn.babylonjs.com/babylon.js&quot;&gt;&lt;/script&gt;<br/>"
+        "&lt;script src=&quot;https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js&quot;&gt;&lt;/script&gt;<br/>"
         "&lt;script src=&quot;https://javiercursocorreo-gif.github.io/Curso-IA/SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/jupiter_aurora_b64.js&quot;&gt;&lt;/script&gt;<br/>"
-        "3. Crea un modelo 3D con Babylon.js que represente el globo planetario con sus bandas zonales, la Gran Mancha Roja (vórtice de 16.000 km) y anillos de emisión auroral cian/violeta en ambos polos.<br/>"
-        "4. Incluye botones para enfocar el Polo Norte magnético, la huella magnética de Ío y el ecuador.<br/>"
-        "5. Aplica un diseño espacial en modo oscuro (#04050e) con tipografía accesible.<br/>"
-        "6. Escribe exclusivamente el bloque de código funcional.\"</i>"
+        "3. Prohibido inventar texturas o cuadrículas en canvas 2D: crea una esfera planetaria 3D suave y aplícale directamente la textura fotográfica real de Júpiter libre de CORS: https://cdn.jsdelivr.net/gh/mrdoob/three.js@dev/examples/textures/planets/jupiter.jpg como diffuseTexture (new BABYLON.Texture('https://cdn.jsdelivr.net/gh/mrdoob/three.js@dev/examples/textures/planets/jupiter.jpg', scene)), mostrando la Gran Mancha Roja y bandas atmosféricas sobre fondo espacial oscuro.<br/>"
+        "4. Superpón en los polos anillos luminosos de emisión auroral ultravioleta (cian/violeta) con brillo emisivo que reaccionen a la rotación orbital ArcRotateCamera 360°.<br/>"
+        "5. Escribe exclusivamente el bloque de código para que al copiarlo a mi simulador funcione inmediatamente.\"</i>"
     )
     p_table = Table([[Paragraph(prompt_text, style_prompt)]], colWidths=[letter[0] - 72])
     p_table.setStyle(TableStyle([

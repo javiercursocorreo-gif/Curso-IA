@@ -115,15 +115,16 @@ def build_cod_013_taller_3d_pdf(output_path=PDF_PATH):
     story.append(Paragraph("🧠 <b>Prompt Maestro para Copiar y Pegar en Gemini:</b>", style_section_h))
     prompt_text = (
         "<b>Copia exactamente este texto en Gemini:</b><br/>"
-        "<i>\"Genera el código de programación (HTML, CSS y JavaScript) que voy a copiar y pegar en el Taller de Pruebas de mi curso para crear un visor molecular 3D de la Doble Hélice de ADN basado en los datos de cristalografía molecular del Protein Data Bank (PDB).<br/>"
+        "<i>\"Genera el código de programación (HTML, CSS y JavaScript con Babylon.js) que voy a copiar y pegar en el Taller de Pruebas de mi curso para crear un visor molecular 3D de la Doble Hélice de ADN (B-DNA) basado en cristalografía del Protein Data Bank.<br/>"
         "Requisitos del código:<br/>"
         "1. Entrega el programa en un único bloque de código listo para pulsar directamente «Copiar código» y pegarlo con Ctrl+V.<br/>"
-        "2. Incluye en la cabecera el script con los datos químicos y atómicos reales:<br/>"
+        "2. Incluye en la cabecera los scripts del motor Babylon.js y el conjunto de datos cristalográficos reales:<br/>"
+        "&lt;script src=&quot;https://cdn.babylonjs.com/babylon.js&quot;&gt;&lt;/script&gt;<br/>"
+        "&lt;script src=&quot;https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js&quot;&gt;&lt;/script&gt;<br/>"
         "&lt;script src=&quot;https://javiercursocorreo-gif.github.io/Curso-IA/SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/dna_helix_b64.js&quot;&gt;&lt;/script&gt;<br/>"
-        "3. Modela con Babylon.js una doble hélice dextrógira de 10 pares de bases por vuelta (paso de rosca de 3.4 nm), con dos hebras antiparalelas (5' a 3') y colores diferenciados para A, T, C y G.<br/>"
-        "4. Incluye botones para aislar el emparejamiento Adenina-Timina (2 enlaces) y Guanina-Citosina (3 enlaces).<br/>"
-        "5. Aplica un diseño biotecnológico en modo oscuro (#030a10) con tipografía legible.<br/>"
-        "6. Escribe exclusivamente el bloque de código funcional.\"</i>"
+        "3. Prohibido inventar gráficos en canvas 2D o esquemas planos: construye en Babylon.js con cilindros y esferas PBR la estructura atómica de la doble hélice dextrógira basada en window.DNA_HELIX_PDB_DATA, con 10 pares de bases por vuelta (paso de 3.4 nm), hebras de fosfato-azúcar antiparalelas y colores diferenciados para A (rojo), T (azul), C (verde) y G (amarillo) sobre fondo oscuro (#030a10) con cámara orbital ArcRotateCamera 360°.<br/>"
+        "4. En el bucle de renderizado añade rotación axial continua y botones para destacar los enlaces de hidrógeno en A-T (2 puentes) y G-C (3 puentes).<br/>"
+        "5. Escribe exclusivamente el bloque de código para que al copiarlo a mi simulador funcione inmediatamente.\"</i>"
     )
     p_table = Table([[Paragraph(prompt_text, style_prompt)]], colWidths=[letter[0] - 72])
     p_table.setStyle(TableStyle([
