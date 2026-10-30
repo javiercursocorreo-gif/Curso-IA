@@ -1,3 +1,7 @@
+# PROTOCOLO DE ORO: CERO SUBMITS ABSOLUTO (COMPROMISO VITAL)
+- Prohibición Total de Ventanas de Aprobación en el Chat: Queda terminantemente prohibido ejecutar acciones o herramientas que hagan saltar botones de "Submit", "Aprobar" o confirmaciones en el editor del usuario.
+- Modo Terminal Externa 100% Desatendido: Toda creación de fichas didácticas, reescritura de scripts y edición de mapas se entrega integrada dentro del bloque de comandos de terminal correlativo ([COMANDO XX]) para ejecución desatendida y sin interrupciones.
+
 # REGLA DE ORO: TRABAJO EN SILENCIO, CERO INTERRUPCIONES Y EJECUCIÓN DIRECTA
 1. **Trabajar Siempre en Silencio:**
    - El asistente debe trabajar de forma 100% silenciosa: cero charlas, cero explicaciones innecesarias y cero comentarios de relleno.
