@@ -2,153 +2,183 @@
 # -*- coding: utf-8 -*-
 """
 build_pdf_cod_012.py
-Genera la Ficha Didáctica Científica Oficial de 1 Página:
-- 4. COD-012_Taller_Crea_tu_Propio_Simulador_3D_con_Gemini.pdf (Sesión 12)
-- 12_COD-012_Taller_Simulador_Helix_3D.pdf (Catálogo Central)
+Genera la Ficha Didáctica Oficial de 1 Página (Letter/A4):
+4. COD-012_Taller_Crea_tu_Propio_Simulador_3D_con_Gemini.pdf
+para la Sesión 12 del Curso de IA (Simulador 3D: Nebulosa Helix 'El Ojo de Dios' • NASA Hubble y Spitzer).
 """
 
 import os
-import shutil
+import sys
 
 OUTPUT_DIR = "/Users/externo/Library/Mobile Documents/com~apple~CloudDocs/PERSONAL/CLASES DE TECNOLOGÍA/CURSO-IA/CLASES/EXPORTACION_FICHAS_CLASSROOM_PDF/100. [SESSIONS] TERNAS_LISTAS_PARA_CLASSROOM/12_Sesion"
 PDF_PATH = os.path.join(OUTPUT_DIR, "4. COD-012_Taller_Crea_tu_Propio_Simulador_3D_con_Gemini.pdf")
 LOCAL_BACKUP = "/Users/externo/Library/Mobile Documents/com~apple~CloudDocs/PERSONAL/CLASES DE TECNOLOGÍA/CURSO-IA/SIMULADORES_INTERACTIVOS/02_INDICES_Y_CATALOGOS/12_COD-012_Taller_Simulador_Helix_3D.pdf"
 
-def build_pdf(dest_path):
+def build_cod_012_taller_3d_pdf(output_path=PDF_PATH):
+    dest_path = output_path
+    try:
+        os.makedirs(os.path.dirname(dest_path), exist_ok=True)
+        with open(dest_path, "wb") as _:
+            pass
+    except Exception:
+        dest_path = LOCAL_BACKUP
+        os.makedirs(os.path.dirname(dest_path), exist_ok=True)
+
     from reportlab.lib.pagesizes import letter
     from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, HRFlowable
     from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
     from reportlab.lib import colors
 
-    os.makedirs(os.path.dirname(dest_path), exist_ok=True)
     doc = SimpleDocTemplate(
         dest_path,
         pagesize=letter,
-        rightMargin=36, leftMargin=36, topMargin=24, bottomMargin=20
+        rightMargin=36, leftMargin=36, topMargin=22, bottomMargin=20
     )
     styles = getSampleStyleSheet()
-
-    accent = colors.HexColor('#0284C7')
-
+    
     style_header = ParagraphStyle(
         'HeaderStyle', parent=styles['Normal'],
-        fontName='Helvetica-Bold', fontSize=8.2, leading=10.0,
-        textColor=accent, alignment=1, spaceAfter=2
+        fontName='Helvetica-Bold', fontSize=8.0,
+        textColor=colors.HexColor('#0284C7'), alignment=1, spaceAfter=1
     )
     style_block = ParagraphStyle(
         'BlockStyle', parent=styles['Normal'],
-        fontName='Helvetica-Bold', fontSize=9.5, leading=12.0,
+        fontName='Helvetica-Bold', fontSize=9.8,
         textColor=colors.HexColor('#0F172A'), alignment=1, spaceAfter=4
     )
     style_title = ParagraphStyle(
         'TitleStyle', parent=styles['Heading1'],
-        fontName='Helvetica-Bold', fontSize=12.0, leading=14.5,
-        textColor=colors.HexColor('#0F172A'), spaceAfter=4
+        fontName='Helvetica-Bold', fontSize=11.8, leading=14.2,
+        textColor=colors.HexColor('#0F172A'), spaceAfter=3
     )
     style_section_h = ParagraphStyle(
         'SectionHStyle', parent=styles['Heading2'],
-        fontName='Helvetica-Bold', fontSize=9.2, leading=12.0,
-        textColor=accent, spaceBefore=4, spaceAfter=3
+        fontName='Helvetica-Bold', fontSize=8.8, leading=11.2,
+        textColor=colors.HexColor('#0369A1'), spaceBefore=3, spaceAfter=2
     )
     style_body = ParagraphStyle(
         'BodyStyle', parent=styles['BodyText'],
-        fontName='Helvetica', fontSize=8.0, leading=11.2,
-        textColor=colors.HexColor('#1E293B'), spaceAfter=3
+        fontName='Helvetica', fontSize=7.9, leading=10.5,
+        textColor=colors.HexColor('#1E293B'), spaceAfter=2
     )
-    style_box_text = ParagraphStyle(
-        'BoxText', parent=styles['Normal'],
-        fontName='Helvetica', fontSize=7.8, leading=10.8,
+    style_task = ParagraphStyle(
+        'TaskStyle', parent=styles['Normal'],
+        fontName='Helvetica', fontSize=7.7, leading=10.1,
+        textColor=colors.HexColor('#0F172A')
+    )
+    style_prompt = ParagraphStyle(
+        'PromptStyle', parent=styles['Normal'],
+        fontName='Helvetica', fontSize=7.4, leading=9.8,
         textColor=colors.HexColor('#0F172A')
     )
 
     story = []
-    # Encabezado Oficial
     story.append(Paragraph("CURSO DE INTELIGENCIA ARTIFICIAL Y TECNOLOGÍA PARA ADULTOS MAYORES (60+)", style_header))
-    story.append(Paragraph("BLOQUE IV: CIENCIA INTERACTIVA & SIMULADORES CIENTÍFICOS 3D [COD]", style_block))
-    story.append(HRFlowable(width="100%", thickness=1.5, color=accent, spaceAfter=5))
+    story.append(Paragraph("BLOQUE IV: CIENCIA INTERACTIVA & TALLER DE CÓDIGO CON GEMINI [COD]", style_block))
+    story.append(HRFlowable(width="100%", thickness=1.2, color=colors.HexColor('#0284C7'), spaceAfter=4))
 
-    story.append(Paragraph("<b>[COD-012] Guía Científica • La Nebulosa Helix 3D: Astrofísica de una Enana Blanca (NASA)</b>", style_title))
+    story.append(Paragraph("<b>[COD-012] Taller: Crea tu propio simulador 3D de la Nebulosa Helix</b>", style_title))
 
-    # Bloque 1: Explicación didáctica del Simulador
-    story.append(Paragraph("🌌 <b>1. ¿Qué vemos en el Simulador 3D y qué fenómeno reproduce?</b>", style_section_h))
+    story.append(Paragraph("💡 <b>Misión Didáctica • Astrofísica, Telescopios Espaciales Hubble y Spitzer con Gemini:</b>", style_section_h))
     story.append(Paragraph(
-        "Este simulador astronómico interactivo reproduce la estructura tridimensional de la <b>Nebulosa planetaria Helix (NGC 7293)</b>, "
-        "conocida como el 'Ojo de Dios', ubicada a 650 años luz en la constelación de Acuario. En pantalla se contempla el destino cósmico "
-        "final que le aguarda a estrellas de masa media como nuestro Sol: tras agotar su combustible nuclear de hidrógeno y helio, el núcleo "
-        "estelar colapsa en una <b>enana blanca central ultradensa y ardiente</b> (a más de 120.000 K de temperatura superficial).<br/>"
-        "La estrella moribunda expulsa sus capas gaseosas exteriores, creando una envoltura toroidal de <b>hidrógeno molecular, oxígeno ionizado "
-        "(azul-verdoso) y nitrógeno/hidrógeno alfa (rojo brillante)</b> que se expande a más de 40 km/s por el medio interestelar. En el anillo "
-        "interno se aprecian los espectaculares <b>nudos cometarios</b> (gotas gaseosas densas con colas de evaporación apuntando en dirección opuesta "
-        "al núcleo). Puedes <b>rotar la nebulosa 360°</b> para comprobar su verdadera geometría cilíndrica tridimensional.",
+        "En este taller ordenarás a Gemini crear un simulador 3D volumétrico de la <b>Nebulosa Planetaria Helix (NGC 7293)</b>, conocida popularmente como 'El Ojo de Dios'. "
+        "<b>No requieres saber programar:</b> pegarás el prompt maestro en Gemini, copiarás el código en tu <b>Taller de Pruebas</b> y contemplarás los anillos de gas ionizado, la enana blanca central remanente y los filamentos cometarios en expansión cósmica.",
         style_body
     ))
 
-    # Bloque 2: Procedencia y Fuentes Científicas Oficiales
-    story.append(Paragraph("🔬 <b>2. Procedencia Oficial y Fuentes Científicas de las Imágenes y Escaneo 3D</b>", style_section_h))
-    fuente_text = (
-        "• <b>Repositorio Astronómico Oficial:</b> Los datos multiespectrales proceden del archivo unificado de la <b>NASA, ESA y Space Telescope "
-        "Science Institute (STScI)</b>, compilados a partir de observaciones directas en espectro visible e infrarrojo.<br/>"
-        "• <b>Instrumentación Espacial de Vanguardia:</b> Mosaico volumétrico calibrado combinando imágenes ópticas del <b>Telescopio Espacial Hubble "
-        "(cámara ACS)</b>, datos infrarrojos del <b>Telescopio Espacial Spitzer (IRAC/MIPS)</b> y cartografía térmica del telescopio <b>VISTA del "
-        "Observatorio Europeo Austral (ESO)</b> en Cerro Paranal (Chile).<br/>"
-        "• <b>Física Espectral:</b> La paleta cromática traduce con rigor las longitudes de onda de emisión atómica: verde azulado para el doblemente "
-        "ionizado [O III] a 500,7 nm y rojo profundo para el hidrógeno H-alfa a 656,3 nm y [N II]."
-    )
-    t_box = Table([[Paragraph(fuente_text, style_box_text)]], colWidths=[letter[0] - 72])
-    t_box.setStyle(TableStyle([
+    # Lista de Tareas
+    task_rows = [
+        [Paragraph("<b>✅ Tarea 1 • Pídele el código a Gemini (Pestaña 1):</b> "
+                   "Abre Gemini (<i>gemini.google.com</i>). Copia el <b>Prompt Maestro</b> inferior, pégalo en el chat y pulsa Enviar.", style_task)],
+        [Paragraph("<b>✅ Tarea 2 • Copia el código generado por la IA:</b> "
+                   "En la respuesta de Gemini, pulsa <b>«Copiar código»</b> en la esquina superior del bloque.", style_task)],
+        [Paragraph("<b>✅ Tarea 3 • Abre el Taller Oficial de Pruebas (Pestaña 2):</b> "
+                   "En el mapa de la Sesión 12, pulsa <b>«🚀 Abrir Taller Interactivo de Pruebas ↗»</b>.", style_task)],
+        [Paragraph("<b>✅ Tarea 4 • Pega con Ctrl+V y pulsa «Ejecutar Creación»:</b> "
+                   "Pega el código con <b>Ctrl+V</b> (o Cmd+V) y pulsa <b>«▶️ Ejecutar Creación»</b>. ¡Tu Nebulosa Helix se mostrará en 3D en pantalla!", style_task)],
+        [Paragraph("<b>✅ Tarea 5 • Descubre la Demo astronómica completa:</b> "
+                   "Pulsa <b>«🌌 Nebulosa Helix 3D»</b> en el taller (o <b>«🌌 Abrir Nebulosa Helix ↗»</b> en el mapa) para probar los filtros multiespectrales.", style_task)],
+    ]
+    t_table = Table(task_rows, colWidths=[letter[0] - 72])
+    t_table.setStyle(TableStyle([
         ('BACKGROUND', (0,0), (-1,-1), colors.HexColor('#F0F9FF')),
-        ('BOX', (0,0), (-1,-1), 1.2, accent),
-        ('TOPPADDING', (0,0), (-1,-1), 6),
-        ('BOTTOMPADDING', (0,0), (-1,-1), 6),
-        ('LEFTPADDING', (0,0), (-1,-1), 8),
-        ('RIGHTPADDING', (0,0), (-1,-1), 8),
+        ('BOX', (0,0), (-1,-1), 1, colors.HexColor('#0284C7')),
+        ('TOPPADDING', (0,0), (-1,-1), 1.5),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 1.5),
+        ('LEFTPADDING', (0,0), (-1,-1), 7),
+        ('RIGHTPADDING', (0,0), (-1,-1), 7),
     ]))
-    story.append(t_box)
-    story.append(Spacer(1, 4))
+    story.append(t_table)
+    story.append(Spacer(1, 3))
 
-    # Bloque 3: Guía de Exploración & Retos de Conversación con Gemini
-    story.append(Paragraph("💬 <b>3. Guía de Exploración en el Aula & Conversación con Gemini</b>", style_section_h))
-    story.append(Paragraph(
-        "Abre el simulador en tu navegador (en el mapa pulsa <i>«🌌 Abrir Nebulosa Helix 3D ↗»</i>) y utilízalo como observatorio espacial mientras "
-        "dialogas con Gemini (<i>gemini.google.com</i>). Puedes plantearle estas preguntas para reflexionar en clase:",
-        style_body
-    ))
-
-    prompts_text = (
-        "<b>1. El Futuro de Nuestro Sol:</b> <i>«Al rotar la Nebulosa Helix en 3D veo la diminuta estrella enana blanca en el centro. ¿Es este el destino final que le espera a nuestro propio Sol dentro de unos 5.000 millones de años?»</i><br/>"
-        "<b>2. La Forma Real de la Nebulosa:</b> <i>«Desde la Tierra parece un anillo o un ojo plano, pero en el simulador 3D se aprecia que es un cilindro o reloj de arena apuntando hacia nosotros. ¿Por qué la perspectiva engaña en astronomía?»</i><br/>"
-        "<b>3. El Reciclaje Cósmico:</b> <i>«¿Qué ocurrirá con todo ese gas de oxígeno, carbono y nitrógeno expulsado por la estrella moribunda cuando se mezcle con nubes moleculares en la galaxia?»</i>"
+    # Recuadro de Prompt Maestro
+    story.append(Paragraph("🧠 <b>Prompt Maestro para Copiar y Pegar en Gemini:</b>", style_section_h))
+    prompt_text = (
+        "<b>Copia exactamente este texto en Gemini:</b><br/>"
+        "<i>\"Genera el código de programación (HTML, CSS y JavaScript) que voy a copiar y pegar en el Taller de Pruebas de mi curso para crear un visor astrofísico interactivo 3D de la Nebulosa Planetaria Helix (NGC 7293) con datos de los telescopios Hubble y Spitzer de la NASA.<br/>"
+        "Requisitos del código:<br/>"
+        "1. Entrega el programa en un único bloque de código listo para pulsar directamente «Copiar código» y pegarlo con Ctrl+V.<br/>"
+        "2. Incluye en la cabecera el script con los datos astronómicos reales:<br/>"
+        "&lt;script src=&quot;https://javiercursocorreo-gif.github.io/Curso-IA/SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/helix_nebula_b64.js&quot;&gt;&lt;/script&gt;<br/>"
+        "3. Crea un modelo 3D con Babylon.js que represente el anillo exterior de gas ionizado (hidrógeno rojo y nitrógeno), el disco interior (oxígeno ionizado azul verdoso) y la enana blanca caliente central.<br/>"
+        "4. Incluye botones interactivos para alternar entre la visión visible de Hubble y la visión infrarroja de Spitzer.<br/>"
+        "5. Aplica un diseño cósmico profesional en modo oscuro (#030612) con tipografía accesible.<br/>"
+        "6. Escribe exclusivamente el bloque de código funcional.\"</i>"
     )
-    p_box = Table([[Paragraph(prompts_text, style_box_text)]], colWidths=[letter[0] - 72])
-    p_box.setStyle(TableStyle([
+    p_table = Table([[Paragraph(prompt_text, style_prompt)]], colWidths=[letter[0] - 72])
+    p_table.setStyle(TableStyle([
         ('BACKGROUND', (0,0), (-1,-1), colors.HexColor('#F8FAFC')),
         ('BOX', (0,0), (-1,-1), 1, colors.HexColor('#64748B')),
-        ('TOPPADDING', (0,0), (-1,-1), 6),
-        ('BOTTOMPADDING', (0,0), (-1,-1), 6),
-        ('LEFTPADDING', (0,0), (-1,-1), 8),
-        ('RIGHTPADDING', (0,0), (-1,-1), 8),
+        ('TOPPADDING', (0,0), (-1,-1), 2.5),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 2.5),
+        ('LEFTPADDING', (0,0), (-1,-1), 7),
+        ('RIGHTPADDING', (0,0), (-1,-1), 7),
     ]))
-    story.append(p_box)
-    story.append(Spacer(1, 4))
+    story.append(p_table)
+    story.append(Spacer(1, 3))
 
-    story.append(HRFlowable(width="100%", thickness=0.6, color=colors.HexColor('#CBD5E1'), spaceAfter=3))
-    style_footer = ParagraphStyle(
-        'FooterStyle', parent=styles['Normal'],
-        fontName='Helvetica-Oblique', fontSize=7.0, leading=8.5,
-        textColor=colors.HexColor('#64748B'), alignment=1
+    # Desafío Extra
+    story.append(Paragraph("🌟 <b>El Reto Extra (Para Alumnos Curiosos):</b>", style_section_h))
+    story.append(Paragraph(
+        "👉 <b>¡Pídele a Gemini que modifique tu código!</b> En la misma conversación dile: "
+        "<i>«Añade una tarjeta que explique cómo dentro de 5.000 millones de años nuestro Sol se convertirá en una nebulosa similar»</i> o "
+        "<i>«Coloca un control deslizante de brillo estelar para ver el destello de la enana blanca»</i>. "
+        "Vuelve a copiar el código, pégalo en tu Taller y ¡mira el cosmos en directo!",
+        style_body
+    ))
+    story.append(Spacer(1, 2))
+
+    # Apartado Técnico al final
+    story.append(Paragraph("🔬 <b>¿De dónde proceden los modelos hiperrealistas y cómo se ha montado el objeto 3D?</b>", style_section_h))
+    tech_text = (
+        "• <b>Origen de los datos espectroscópicos (<i>NASA Hubble & Spitzer</i>):</b> Los mapas de emisión de hidrógeno alfa [Hα], nitrógeno [NII] y oxígeno [OIII] provienen del archivo científico del <b>Telescopio Espacial Hubble (NASA/ESA)</b> y la cámara infrarroja IRAC del <b>Telescopio Spitzer</b>.<br/>"
+        "• <b>Cómo se ha montado el objeto en la Demo y en el Taller:</b> Los datos se integran en <i>helix_nebula_b64.js</i>. Babylon.js utiliza sistemas de partículas volumétricas emisivas y mezclas aditivas que reproducen la translucidez del gas estelar a 650 años luz de la Tierra."
     )
-    story.append(Paragraph("Material didáctico adaptado pedagógicamente para personas mayores (60+). Astronomía visual interactiva y agilidad mental con Inteligencia Artificial.", style_footer))
+    tech_table = Table([[Paragraph(tech_text, style_task)]], colWidths=[letter[0] - 72])
+    tech_table.setStyle(TableStyle([
+        ('BACKGROUND', (0,0), (-1,-1), colors.HexColor('#ECFDF5')),
+        ('BOX', (0,0), (-1,-1), 1, colors.HexColor('#059669')),
+        ('TOPPADDING', (0,0), (-1,-1), 3),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 3),
+        ('LEFTPADDING', (0,0), (-1,-1), 7),
+        ('RIGHTPADDING', (0,0), (-1,-1), 7),
+    ]))
+    story.append(tech_table)
 
     doc.build(story)
+    if dest_path != LOCAL_BACKUP:
+        try:
+            import shutil
+            os.makedirs(os.path.dirname(LOCAL_BACKUP), exist_ok=True)
+            shutil.copy2(dest_path, LOCAL_BACKUP)
+        except Exception:
+            pass
+    print(f"✅ PDF COD-012 generado con éxito en: {dest_path}")
 
-def main():
-    build_pdf(LOCAL_BACKUP)
-    print(f"✅ Ficha COD-012 generada en catálogo: {LOCAL_BACKUP}")
+if __name__ == '__main__':
     try:
-        shutil.copy2(LOCAL_BACKUP, PDF_PATH)
-        print(f"✅ Ficha COD-012 sincronizada en sesión: {PDF_PATH}")
+        build_cod_012_taller_3d_pdf()
     except Exception as e:
-        print(f"⚠️ Nota de copia: {e}")
+        print(f"❌ Error al generar PDF COD-012: {e}")
+        sys.exit(1)
 
-if __name__ == "__main__":
-    main()
