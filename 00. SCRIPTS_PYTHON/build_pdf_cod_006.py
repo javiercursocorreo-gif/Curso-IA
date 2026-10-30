@@ -2,153 +2,185 @@
 # -*- coding: utf-8 -*-
 """
 build_pdf_cod_006.py
-Genera la Ficha Didáctica Científica Oficial de 1 Página:
-- 6. COD-006_Taller_Crea_tu_Propio_Simulador_3D_con_Gemini.pdf (Sesión 06)
-- 06_COD-006_Taller_Simulador_Cerebro_Humano_3D.pdf (Catálogo Central)
+Genera la Ficha Didáctica Oficial de 1 Página (Letter/A4):
+4. COD-006_Taller_Crea_tu_Propio_Simulador_3D_con_Gemini.pdf
+para la Sesión 06 del Curso de IA (Simulador 3D del Encéfalo Humano, Lóbulos y Sinapsis Z-Anatomy).
 """
 
 import os
-import shutil
+import sys
 
 OUTPUT_DIR = "/Users/externo/Library/Mobile Documents/com~apple~CloudDocs/PERSONAL/CLASES DE TECNOLOGÍA/CURSO-IA/CLASES/EXPORTACION_FICHAS_CLASSROOM_PDF/100. [SESSIONS] TERNAS_LISTAS_PARA_CLASSROOM/06_Sesion"
 PDF_PATH = os.path.join(OUTPUT_DIR, "6. COD-006_Taller_Crea_tu_Propio_Simulador_3D_con_Gemini.pdf")
 LOCAL_BACKUP = "/Users/externo/Library/Mobile Documents/com~apple~CloudDocs/PERSONAL/CLASES DE TECNOLOGÍA/CURSO-IA/SIMULADORES_INTERACTIVOS/02_INDICES_Y_CATALOGOS/06_COD-006_Taller_Simulador_Cerebro_Humano_3D.pdf"
 
-def build_pdf(dest_path):
+def build_cod_006_taller_3d_pdf(output_path=PDF_PATH):
+    dest_path = output_path
+    try:
+        os.makedirs(os.path.dirname(dest_path), exist_ok=True)
+        with open(dest_path, "wb") as _:
+            pass
+    except Exception:
+        dest_path = LOCAL_BACKUP
+        os.makedirs(os.path.dirname(dest_path), exist_ok=True)
+
     from reportlab.lib.pagesizes import letter
     from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, HRFlowable
     from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
     from reportlab.lib import colors
 
-    os.makedirs(os.path.dirname(dest_path), exist_ok=True)
     doc = SimpleDocTemplate(
         dest_path,
         pagesize=letter,
-        rightMargin=36, leftMargin=36, topMargin=24, bottomMargin=20
+        rightMargin=36, leftMargin=36, topMargin=22, bottomMargin=20
     )
     styles = getSampleStyleSheet()
-
-    accent = colors.HexColor('#0284C7') # Tono cyan/azul neurocientífico
-
+    
     style_header = ParagraphStyle(
         'HeaderStyle', parent=styles['Normal'],
-        fontName='Helvetica-Bold', fontSize=8.2, leading=10.0,
-        textColor=accent, alignment=1, spaceAfter=2
+        fontName='Helvetica-Bold', fontSize=8.0,
+        textColor=colors.HexColor('#0284C7'), alignment=1, spaceAfter=1
     )
     style_block = ParagraphStyle(
         'BlockStyle', parent=styles['Normal'],
-        fontName='Helvetica-Bold', fontSize=9.5, leading=12.0,
+        fontName='Helvetica-Bold', fontSize=9.8,
         textColor=colors.HexColor('#0F172A'), alignment=1, spaceAfter=4
     )
     style_title = ParagraphStyle(
         'TitleStyle', parent=styles['Heading1'],
-        fontName='Helvetica-Bold', fontSize=12.0, leading=14.5,
-        textColor=colors.HexColor('#0F172A'), spaceAfter=4
+        fontName='Helvetica-Bold', fontSize=11.8, leading=14.2,
+        textColor=colors.HexColor('#0F172A'), spaceAfter=3
     )
     style_section_h = ParagraphStyle(
         'SectionHStyle', parent=styles['Heading2'],
-        fontName='Helvetica-Bold', fontSize=9.2, leading=12.0,
-        textColor=accent, spaceBefore=4, spaceAfter=3
+        fontName='Helvetica-Bold', fontSize=8.8, leading=11.2,
+        textColor=colors.HexColor('#0369A1'), spaceBefore=3, spaceAfter=2
     )
     style_body = ParagraphStyle(
         'BodyStyle', parent=styles['BodyText'],
-        fontName='Helvetica', fontSize=8.0, leading=11.2,
-        textColor=colors.HexColor('#1E293B'), spaceAfter=3
+        fontName='Helvetica', fontSize=7.9, leading=10.5,
+        textColor=colors.HexColor('#1E293B'), spaceAfter=2
     )
-    style_box_text = ParagraphStyle(
-        'BoxText', parent=styles['Normal'],
-        fontName='Helvetica', fontSize=7.8, leading=10.8,
+    style_task = ParagraphStyle(
+        'TaskStyle', parent=styles['Normal'],
+        fontName='Helvetica', fontSize=7.7, leading=10.1,
+        textColor=colors.HexColor('#0F172A')
+    )
+    style_prompt = ParagraphStyle(
+        'PromptStyle', parent=styles['Normal'],
+        fontName='Helvetica', fontSize=7.4, leading=9.8,
         textColor=colors.HexColor('#0F172A')
     )
 
     story = []
-    # Encabezado Oficial
     story.append(Paragraph("CURSO DE INTELIGENCIA ARTIFICIAL Y TECNOLOGÍA PARA ADULTOS MAYORES (60+)", style_header))
-    story.append(Paragraph("BLOQUE IV: CIENCIA INTERACTIVA & SIMULADORES CIENTÍFICOS 3D [COD]", style_block))
-    story.append(HRFlowable(width="100%", thickness=1.5, color=accent, spaceAfter=5))
+    story.append(Paragraph("BLOQUE IV: CIENCIA INTERACTIVA & TALLER DE CÓDIGO CON GEMINI [COD]", style_block))
+    story.append(HRFlowable(width="100%", thickness=1.2, color=colors.HexColor('#0284C7'), spaceAfter=4))
 
-    story.append(Paragraph("<b>[COD-006] Guía Neurocientífica • El Encéfalo Humano: Lóbulos Corticales y Conectoma 3D</b>", style_title))
+    story.append(Paragraph("<b>[COD-006] Taller: Crea tu simulador 3D del Cerebro Humano y Sinapsis</b>", style_title))
 
-    # Bloque 1: Explicación didáctica del Simulador
-    story.append(Paragraph("🧠 <b>1. ¿Qué vemos en el Simulador 3D y qué fenómeno reproduce?</b>", style_section_h))
+    story.append(Paragraph("💡 <b>Misión Didáctica • Neurociencia Anatómica con Gemini:</b>", style_section_h))
     story.append(Paragraph(
-        "Este simulador biomédico interactivo en 3D permite explorar el <b>encéfalo humano bilateral completo</b>, estructurado en sus regiones corticales funcionales "
-        "y sus vías de comunicación bioeléctrica. En pantalla se distinguen los cuatro grandes lóbulos de la corteza cerebral: el <b>Lóbulo Frontal</b> "
-        "(sede de las funciones ejecutivas, planificación y corteza motora), el <b>Lóbulo Parietal</b> (integración somatosensorial del tacto, temperatura y dolor), "
-        "el <b>Lóbulo Temporal</b> (audición, comprensión del lenguaje e hipocampo de la memoria) y el <b>Lóbulo Occipital</b> (centro primario de procesamiento visual), "
-        "junto con el <b>Cerebelo</b> (coordinación motora fina y equilibrio) y el <b>Tronco Encefálico</b> vital.<br/>"
-        "El modelo incorpora un <b>conectoma dinámico de 320 haces axonales internos con 380 potenciales de acción luminiscentes</b> que viajan a 40 Hz (ondas Gamma). "
-        "Puedes <b>rotar el encéfalo 360°</b>, graduar la <b>opacidad cortical</b> para descubrir las sinapsis profundas en tiempo real, "
-        "pulsar sobre las <b>chinchetas 3D</b> para enfocar cada lóbulo y regular la <b>velocidad de disparo bioeléctrico</b>.",
+        "En esta sesión pedirás a la Inteligencia Artificial generar el código completo para construir un visor tridimensional del <b>encéfalo humano</b> con circunvoluciones reales de Z-Anatomy, corte sagital y destellos de sinapsis neuronales. "
+        "<b>Sin saber programar:</b> pedirás el código a Gemini con el prompt maestro, lo probarás en el <b>Taller de Pruebas</b> y explorarás los cuatro lóbulos cerebrales (frontal, parietal, temporal y occipital) con rotación 360°.",
         style_body
     ))
 
-    # Bloque 2: Procedencia y Fuentes Científicas Oficiales
-    story.append(Paragraph("🔬 <b>2. Procedencia Oficial y Fuentes Científicas de las Imágenes y Escaneo 3D</b>", style_section_h))
-    fuente_text = (
-        "• <b>Repositorio Anatómico Oficial:</b> El modelo tridimensional procede del atlas biomédico abierto <b>Z-Anatomy Open-Source Project</b> y de las bases de datos "
-        "del proyecto internacional <b>Human Connectome Project</b> (dependiente del <i>National Institutes of Health - NIH</i> y de la Universidad de Tokio - <i>BodyParts3D</i>).<br/>"
-        "• <b>Técnica de Adquisición Médica:</b> Reconstrucción volumétrica de alta fidelidad obtenida mediante <b>resonancia magnética nuclear estructural (MRI de 7 Tesla) "
-        "y tractografía por tensor de difusión (DTI)</b>. El archivo contiene <b>437 estructuras anatómicas reales</b> (surcos, cisuras, circunvoluciones y red arterial completa), "
-        "sin aproximaciones ni geometrías esféricas artificiales.<br/>"
-        "• <b>Color Tisular y Parámetros Bioeléctricos:</b> Los materiales PBR reproducen el tono tisular gris-rosáceo de la corteza humana (código tisular <i>#d59b8c</i>) con "
-        "vasos sanguíneos destacados en carmesí, sincronizados con la frecuencia fisiológica de disparo axonal a 40 Hz de los circuitos talamocorticales."
-    )
-    t_box = Table([[Paragraph(fuente_text, style_box_text)]], colWidths=[letter[0] - 72])
-    t_box.setStyle(TableStyle([
+    # Lista de Tareas (Checklist Guiado)
+    task_rows = [
+        [Paragraph("<b>✅ Tarea 1 • Pídele el código a Gemini (Pestaña 1):</b> "
+                   "Abre Gemini (<i>gemini.google.com</i>). Copia el <b>Prompt Maestro</b> inferior, pégalo en el chat y pulsa Enviar.", style_task)],
+        [Paragraph("<b>✅ Tarea 2 • Copia el código generado por la IA:</b> "
+                   "En la respuesta de Gemini, haz clic en el botón <b>«Copiar código»</b> situado en la esquina superior del bloque.", style_task)],
+        [Paragraph("<b>✅ Tarea 3 • Abre el Taller Oficial de Pruebas (Pestaña 2):</b> "
+                   "En el mapa de la Sesión 06, pulsa <b>«🚀 Abrir Taller Interactivo de Pruebas ↗»</b>.", style_task)],
+        [Paragraph("<b>✅ Tarea 4 • Pega con Ctrl+V y pulsa «Ejecutar Creación»:</b> "
+                   "Pega el código con <b>Ctrl+V</b> (o Cmd+V en Mac) y haz clic en <b>«▶️ Ejecutar Creación»</b>. ¡Tu cerebro 3D cobrará vida con sinapsis luminosas!", style_task)],
+        [Paragraph("<b>✅ Tarea 5 • Descubre la Demo completa:</b> "
+                   "Pulsa el botón <b>«🧠 Cerebro 3D»</b> en el taller (o <b>«🧠 Ver Simulador Cerebro 3D ↗»</b> en el mapa) para ver el corte sagital profundo.", style_task)],
+    ]
+    t_table = Table(task_rows, colWidths=[letter[0] - 72])
+    t_table.setStyle(TableStyle([
         ('BACKGROUND', (0,0), (-1,-1), colors.HexColor('#F0F9FF')),
-        ('BOX', (0,0), (-1,-1), 1.2, accent),
-        ('TOPPADDING', (0,0), (-1,-1), 6),
-        ('BOTTOMPADDING', (0,0), (-1,-1), 6),
-        ('LEFTPADDING', (0,0), (-1,-1), 8),
-        ('RIGHTPADDING', (0,0), (-1,-1), 8),
+        ('BOX', (0,0), (-1,-1), 1, colors.HexColor('#0284C7')),
+        ('TOPPADDING', (0,0), (-1,-1), 1.5),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 1.5),
+        ('LEFTPADDING', (0,0), (-1,-1), 7),
+        ('RIGHTPADDING', (0,0), (-1,-1), 7),
     ]))
-    story.append(t_box)
-    story.append(Spacer(1, 4))
+    story.append(t_table)
+    story.append(Spacer(1, 3))
 
-    # Bloque 3: Guía de Exploración & Retos de Conversación con Gemini
-    story.append(Paragraph("💬 <b>3. Guía de Exploración en el Aula & Conversación con Gemini</b>", style_section_h))
-    story.append(Paragraph(
-        "Abre el simulador en tu pantalla (en el mapa pulsa <i>«🧠 Ver Simulador Cerebro 3D»</i>) y utilízalo como laboratorio interactivo mientras conversas con "
-        "Gemini (<i>gemini.google.com</i>):",
-        style_body
-    ))
-
-    prompts_text = (
-        "<b>1. Neuroplasticidad:</b> <i>«Estoy mirando un modelo 3D del cerebro humano. ¿Cómo consiguen las personas mayores de 60 años crear nuevas conexiones neuronales (neuroplasticidad) al aprender tecnología o tocar un instrumento?»</i><br/>"
-        "<b>2. Vías y Conectoma:</b> <i>«Al reducir la opacidad en el simulador 3D contemplo las redes bioeléctricas internas. ¿Cómo se comunican ambos hemisferios a través del cuerpo calloso para coordinar el pensamiento lógico y la intuición?»</i><br/>"
-        "<b>3. Salud Cerebral y Memoria:</b> <i>«¿Por qué el ejercicio físico moderado y el descanso nocturno profundo son tan determinantes para la salud de las neuronas de nuestro lóbulo temporal e hipocampo?»</i>"
+    # Recuadro de Prompt Maestro
+    story.append(Paragraph("🧠 <b>Prompt Maestro para Copiar y Pegar en Gemini:</b>", style_section_h))
+    prompt_text = (
+        "<b>Copia exactamente este texto en Gemini:</b><br/>"
+        "<i>\"Genera el código de programación (HTML y JavaScript con Three.js) que voy a copiar y pegar en el Taller de Pruebas de mi curso para crear un simulador 3D del cerebro humano con el modelo anatómico oficial de Z-Anatomy.<br/>"
+        "Requisitos del código:<br/>"
+        "1. Entrega el programa en un único bloque de código para que yo pulse directamente «Copiar código» y lo pegue con Ctrl+V en mi simulador.<br/>"
+        "2. Incluye en la cabecera las librerías Three.js, OrbitControls y el script del modelo cerebral en Base64:<br/>"
+        "&lt;script src=&quot;https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js&quot;&gt;&lt;/script&gt;<br/>"
+        "&lt;script src=&quot;https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js&quot;&gt;&lt;/script&gt;<br/>"
+        "&lt;script src=&quot;https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js&quot;&gt;&lt;/script&gt;<br/>"
+        "&lt;script src=&quot;https://javiercursocorreo-gif.github.io/Curso-IA/SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/brain_b64.js&quot;&gt;&lt;/script&gt;<br/>"
+        "3. Carga el encéfalo anatómico real con GLTFLoader parseando window.BRAIN_GLB_B64 (o modelo cortical Three.js con textura PBR de circunvoluciones y surcos) sobre fondo azul noche (#030712) e iluminación médica.<br/>"
+        "4. Configura cámara orbital 360°, rotación suave con el ratón y destellos luminosos de pulsos sinápticos que recorran la corteza cerebral emulando la actividad bioeléctrica neuronal.<br/>"
+        "5. Añade botones para destacar los lóbulos Frontal (azul), Temporal (verde), Parietal (amarillo) y Occipital (rosa).<br/>"
+        "6. Escribe exclusivamente el bloque de código para que al copiarlo a mi simulador genere el Cerebro 3D inmediatamente.\"</i>"
     )
-    p_box = Table([[Paragraph(prompts_text, style_box_text)]], colWidths=[letter[0] - 72])
-    p_box.setStyle(TableStyle([
+    p_table = Table([[Paragraph(prompt_text, style_prompt)]], colWidths=[letter[0] - 72])
+    p_table.setStyle(TableStyle([
         ('BACKGROUND', (0,0), (-1,-1), colors.HexColor('#F8FAFC')),
         ('BOX', (0,0), (-1,-1), 1, colors.HexColor('#64748B')),
-        ('TOPPADDING', (0,0), (-1,-1), 6),
-        ('BOTTOMPADDING', (0,0), (-1,-1), 6),
-        ('LEFTPADDING', (0,0), (-1,-1), 8),
-        ('RIGHTPADDING', (0,0), (-1,-1), 8),
+        ('TOPPADDING', (0,0), (-1,-1), 2.5),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 2.5),
+        ('LEFTPADDING', (0,0), (-1,-1), 7),
+        ('RIGHTPADDING', (0,0), (-1,-1), 7),
     ]))
-    story.append(p_box)
-    story.append(Spacer(1, 4))
+    story.append(p_table)
+    story.append(Spacer(1, 3))
 
-    story.append(HRFlowable(width="100%", thickness=0.6, color=colors.HexColor('#CBD5E1'), spaceAfter=3))
-    style_footer = ParagraphStyle(
-        'FooterStyle', parent=styles['Normal'],
-        fontName='Helvetica-Oblique', fontSize=7.0, leading=8.5,
-        textColor=colors.HexColor('#64748B'), alignment=1
+    # Desafío Extra
+    story.append(Paragraph("🌟 <b>El Reto Extra (Para Alumnos Curiosos):</b>", style_section_h))
+    story.append(Paragraph(
+        "👉 <b>¡Pídele a Gemini que modifique tu código!</b> En la misma conversación dile: "
+        "<i>«Añade un botón de corte sagital para separar los dos hemisferios y ver el cuerpo calloso interior»</i> o "
+        "<i>«Aumenta la frecuencia de los destellos sinápticos para simular un proceso de concentración y memoria»</i>. "
+        "Vuelve a copiar el código, pégalo en tu Taller y ¡mira cómo tu cerebro responde en directo!",
+        style_body
+    ))
+    story.append(Spacer(1, 2))
+
+    # Apartado Técnico al final
+    story.append(Paragraph("🔬 <b>¿De dónde proceden los modelos hiperrealistas y cómo se ha montado el objeto 3D?</b>", style_section_h))
+    tech_text = (
+        "• <b>Origen del modelo neuroanatómico (<i>Z-Anatomy / Human Connectome Project</i>):</b> Procedente del atlas de código abierto <b>Z-Anatomy</b> y reconstrucciones por <b>resonancia magnética de alto campo (7 Tesla)</b> del <i>Human Connectome Project</i>, con mallas anatómicas reales de las circunvoluciones y surcos de la corteza telencefálica.<br/>"
+        "• <b>Cómo se ha montado el objeto en la Demo y en el Taller:</b> La malla se transporta en Base64 en <i>brain_b64.js</i>. En <b>Three.js</b>, un sistema de partículas de GPU calcula los pulsos bioeléctricos sinusoidales a lo largo de los tractos axonales, permitiendo observar las sinapsis neuronales con luz emisiva bioluminiscente sin ralentizar el navegador."
     )
-    story.append(Paragraph("Material didáctico adaptado pedagógicamente para personas mayores (60+). Neurociencia visual y agilidad mental con Inteligencia Artificial.", style_footer))
+    tech_table = Table([[Paragraph(tech_text, style_task)]], colWidths=[letter[0] - 72])
+    tech_table.setStyle(TableStyle([
+        ('BACKGROUND', (0,0), (-1,-1), colors.HexColor('#ECFDF5')),
+        ('BOX', (0,0), (-1,-1), 1, colors.HexColor('#059669')),
+        ('TOPPADDING', (0,0), (-1,-1), 3),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 3),
+        ('LEFTPADDING', (0,0), (-1,-1), 7),
+        ('RIGHTPADDING', (0,0), (-1,-1), 7),
+    ]))
+    story.append(tech_table)
 
     doc.build(story)
+    if dest_path != LOCAL_BACKUP:
+        try:
+            import shutil
+            os.makedirs(os.path.dirname(LOCAL_BACKUP), exist_ok=True)
+            shutil.copy2(dest_path, LOCAL_BACKUP)
+        except Exception:
+            pass
+    print(f"✅ PDF COD-006 generado con éxito en: {dest_path}")
 
-def main():
-    build_pdf(LOCAL_BACKUP)
-    print(f"✅ Ficha COD-006 generada en catálogo: {LOCAL_BACKUP}")
+if __name__ == '__main__':
     try:
-        shutil.copy2(LOCAL_BACKUP, PDF_PATH)
-        print(f"✅ Ficha COD-006 sincronizada en sesión: {PDF_PATH}")
+        build_cod_006_taller_3d_pdf()
     except Exception as e:
-        print(f"⚠️ Nota de copia: {e}")
-
-if __name__ == "__main__":
-    main()
+        print(f"❌ Error al generar PDF COD-006: {e}")
+        sys.exit(1)

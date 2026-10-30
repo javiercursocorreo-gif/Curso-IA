@@ -122,7 +122,7 @@ def build_cod_007_taller_3d_pdf(output_path=PDF_PATH):
         "2. Incluye en la cabecera los scripts del motor Babylon.js:<br/>"
         "&lt;script src=&quot;https://cdn.babylonjs.com/babylon.js&quot;&gt;&lt;/script&gt;<br/>"
         "&lt;script src=&quot;https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js&quot;&gt;&lt;/script&gt;<br/>"
-        "3. Crea una esfera 3D suave de radio 2.2 que represente la Luna. Prohibido generar texturas en canvas ni cuadrículas: aplica directamente la foto real de la NASA del CDN oficial de Babylon.js: https://assets.babylonjs.com/textures/moon.jpg mediante new BABYLON.Texture('https://assets.babylonjs.com/textures/moon.jpg', scene) sobre fondo espacial negro con estrellas.<br/>"
+        "3. Crea una esfera 3D suave de radio 2.2 que represente la Luna y aplícale la textura fotográfica satelital real de la NASA libre de CORS: https://cdn.jsdelivr.net/gh/mrdoob/three.js@dev/examples/textures/planets/moon_1024.jpg como diffuseTexture (new BABYLON.Texture('https://cdn.jsdelivr.net/gh/mrdoob/three.js@dev/examples/textures/planets/moon_1024.jpg', scene)) con rugosidad mate 0.9 sin relieves invertidos sobre fondo espacial negro con estrellas.<br/>"
         "4. Configura una cámara orbital ArcRotateCamera con rotación 360°, zoom suave con la rueda del ratón y una luz direccional lateral intensa que simule la iluminación del Sol proyectando sombras alargadas sobre los cráteres (simulación de fases lunares).<br/>"
         "5. Añade una rotación axial lenta automática y marcadores luminosos en Mare Tranquillitatis (Apolo 11, 1969) y en el Cráter Tycho.<br/>"
         "6. Escribe exclusivamente el bloque de código para que al copiarlo a mi simulador genere el Atlas Lunar 3D inmediatamente.\"</i>"

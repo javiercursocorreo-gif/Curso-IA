@@ -2,152 +2,183 @@
 # -*- coding: utf-8 -*-
 """
 build_pdf_cod_005.py
-Genera la Ficha Didáctica Científica Oficial de 1 Página:
-- 5. COD-005_Taller_Crea_tu_Propio_Simulador_3D_con_Gemini.pdf (Sesión 05)
-- 05_COD-005_Taller_Simulador_Sistema_Solar_3D.pdf (Catálogo Central)
+Genera la Ficha Didáctica Oficial de 1 Página (Letter/A4):
+4. COD-005_Taller_Crea_tu_Propio_Simulador_3D_con_Gemini.pdf
+para la Sesión 05 del Curso de IA (Simulador 3D del Sistema Solar Kepleriano, NASA y Órbitas Planetarias).
 """
 
 import os
-import shutil
+import sys
 
 OUTPUT_DIR = "/Users/externo/Library/Mobile Documents/com~apple~CloudDocs/PERSONAL/CLASES DE TECNOLOGÍA/CURSO-IA/CLASES/EXPORTACION_FICHAS_CLASSROOM_PDF/100. [SESSIONS] TERNAS_LISTAS_PARA_CLASSROOM/05_Sesion"
-PDF_PATH = os.path.join(OUTPUT_DIR, "5. COD-005_Taller_Crea_tu_Propio_Simulador_3D_con_Gemini.pdf")
+PDF_PATH = os.path.join(OUTPUT_DIR, "4. COD-005_Taller_Crea_tu_Propio_Simulador_3D_con_Gemini.pdf")
 LOCAL_BACKUP = "/Users/externo/Library/Mobile Documents/com~apple~CloudDocs/PERSONAL/CLASES DE TECNOLOGÍA/CURSO-IA/SIMULADORES_INTERACTIVOS/02_INDICES_Y_CATALOGOS/05_COD-005_Taller_Simulador_Sistema_Solar_3D.pdf"
 
-def build_pdf(dest_path):
+def build_cod_005_taller_3d_pdf(output_path=PDF_PATH):
+    dest_path = output_path
+    try:
+        os.makedirs(os.path.dirname(dest_path), exist_ok=True)
+        with open(dest_path, "wb") as _:
+            pass
+    except Exception:
+        dest_path = LOCAL_BACKUP
+        os.makedirs(os.path.dirname(dest_path), exist_ok=True)
+
     from reportlab.lib.pagesizes import letter
     from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, HRFlowable
     from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
     from reportlab.lib import colors
 
-    os.makedirs(os.path.dirname(dest_path), exist_ok=True)
     doc = SimpleDocTemplate(
         dest_path,
         pagesize=letter,
-        rightMargin=36, leftMargin=36, topMargin=24, bottomMargin=20
+        rightMargin=36, leftMargin=36, topMargin=22, bottomMargin=20
     )
     styles = getSampleStyleSheet()
-
-    accent = colors.HexColor('#D97706') # Tono ámbar/dorado solar
-
+    
     style_header = ParagraphStyle(
         'HeaderStyle', parent=styles['Normal'],
-        fontName='Helvetica-Bold', fontSize=8.2, leading=10.0,
-        textColor=accent, alignment=1, spaceAfter=2
+        fontName='Helvetica-Bold', fontSize=8.0,
+        textColor=colors.HexColor('#D97706'), alignment=1, spaceAfter=1
     )
     style_block = ParagraphStyle(
         'BlockStyle', parent=styles['Normal'],
-        fontName='Helvetica-Bold', fontSize=9.5, leading=12.0,
+        fontName='Helvetica-Bold', fontSize=9.8,
         textColor=colors.HexColor('#0F172A'), alignment=1, spaceAfter=4
     )
     style_title = ParagraphStyle(
         'TitleStyle', parent=styles['Heading1'],
-        fontName='Helvetica-Bold', fontSize=12.0, leading=14.5,
-        textColor=colors.HexColor('#0F172A'), spaceAfter=4
+        fontName='Helvetica-Bold', fontSize=11.8, leading=14.2,
+        textColor=colors.HexColor('#0F172A'), spaceAfter=3
     )
     style_section_h = ParagraphStyle(
         'SectionHStyle', parent=styles['Heading2'],
-        fontName='Helvetica-Bold', fontSize=9.2, leading=12.0,
-        textColor=accent, spaceBefore=4, spaceAfter=3
+        fontName='Helvetica-Bold', fontSize=8.8, leading=11.2,
+        textColor=colors.HexColor('#B45309'), spaceBefore=3, spaceAfter=2
     )
     style_body = ParagraphStyle(
         'BodyStyle', parent=styles['BodyText'],
-        fontName='Helvetica', fontSize=8.0, leading=11.2,
-        textColor=colors.HexColor('#1E293B'), spaceAfter=3
+        fontName='Helvetica', fontSize=7.9, leading=10.5,
+        textColor=colors.HexColor('#1E293B'), spaceAfter=2
     )
-    style_box_text = ParagraphStyle(
-        'BoxText', parent=styles['Normal'],
-        fontName='Helvetica', fontSize=7.8, leading=10.8,
+    style_task = ParagraphStyle(
+        'TaskStyle', parent=styles['Normal'],
+        fontName='Helvetica', fontSize=7.7, leading=10.1,
+        textColor=colors.HexColor('#0F172A')
+    )
+    style_prompt = ParagraphStyle(
+        'PromptStyle', parent=styles['Normal'],
+        fontName='Helvetica', fontSize=7.4, leading=9.8,
         textColor=colors.HexColor('#0F172A')
     )
 
     story = []
-    # Encabezado Oficial
     story.append(Paragraph("CURSO DE INTELIGENCIA ARTIFICIAL Y TECNOLOGÍA PARA ADULTOS MAYORES (60+)", style_header))
-    story.append(Paragraph("BLOQUE IV: CIENCIA INTERACTIVA & SIMULADORES CIENTÍFICOS 3D [COD]", style_block))
-    story.append(HRFlowable(width="100%", thickness=1.5, color=accent, spaceAfter=5))
+    story.append(Paragraph("BLOQUE IV: CIENCIA INTERACTIVA & TALLER DE CÓDIGO CON GEMINI [COD]", style_block))
+    story.append(HRFlowable(width="100%", thickness=1.2, color=colors.HexColor('#D97706'), spaceAfter=4))
 
-    story.append(Paragraph("<b>[COD-005] Guía Astronómica • El Sistema Solar: Dinámica Orbital Planetaria y Kepler 3D</b>", style_title))
+    story.append(Paragraph("<b>[COD-005] Taller: Crea tu simulador 3D del Sistema Solar Kepleriano (NASA)</b>", style_title))
 
-    # Bloque 1: Explicación didáctica del Simulador
-    story.append(Paragraph("🪐 <b>1. ¿Qué vemos en el Simulador 3D y qué fenómeno reproduce?</b>", style_section_h))
+    story.append(Paragraph("💡 <b>Misión Didáctica • Astronomía Dinámica y Órbitas con Gemini:</b>", style_section_h))
     story.append(Paragraph(
-        "Este planetario heliocéntrico interactivo 3D reproduce con precisión física el <b>movimiento de traslación y rotación de los 8 planetas</b> "
-        "alrededor del Sol, siguiendo las <b>Leyes de Gravitación Universal de Newton</b> y las <b>Leyes del Movimiento Planetario de Kepler</b> (órbitas "
-        "elípticas con velocidad orbital inversamente proporcional a la distancia del perihelio).<br/>"
-        "El simulador permite contrastar las dos familias planetarias de nuestro sistema: los <b>planetas rocosos interiores</b> (Mercurio, Venus, la Tierra con "
-        "su satélite lunar y Marte) y los <b>gigantes gaseosos exteriores</b> (Júpiter con sus bandas atmosféricas ciclónicas, Saturno con su sistema de anillos "
-        "de partículas de hielo, Urano y Neptuno). Mediante la botonera interactiva puedes <b>acelerar el tiempo orbital (de 1x a 50x)</b>, activar las trazas "
-        "luminosas de las órbitas elípticas, rotar libremente la cámara espacial 360° y hacer zoom a cada planeta para contemplar su rotación axial.",
+        "En esta sesión pedirás a la Inteligencia Artificial generar el código completo para construir un planetario tridimensional del <b>Sistema Solar</b> con física kepleriana real, el Sol radiante y texturas fotográficas satelitales oficiales de la NASA. "
+        "<b>Sin saber programar:</b> pedirás el código a Gemini con el prompt maestro, lo probarás en el <b>Taller de Pruebas</b> y contemplarás los planetas orbitando a su velocidad relativa real con rotación 360°.",
         style_body
     ))
 
-    # Bloque 2: Procedencia y Fuentes Científicas Oficiales
-    story.append(Paragraph("🔬 <b>2. Procedencia Oficial y Fuentes Científicas de las Imágenes y Escaneo 3D</b>", style_section_h))
-    fuente_text = (
-        "• <b>Agencia Espacial y Repositorios Oficiales:</b> Todos los datos orbitales y texturas superficiales proceden de la <b>NASA (National Aeronautics and Space Administration)</b> "
-        "a través del <b>Jet Propulsion Laboratory (JPL)</b> y el <i>NASA Scientific Visualization Studio</i>.<br/>"
-        "• <b>Mosaicos Satelitales y Fotografía Espacial:</b> Los mapas fotográficos esféricos de cada planeta fueron capturados por sondas espaciales emblemáticas: "
-        "la misión <b>Cassini-Huygens</b> (mapas de Júpiter y anillos de Saturno), <b>Lunar Reconnaissance Orbiter (LRO)</b> para el relieve lunar, la sonda <b>Mars Global Surveyor</b> "
-        "para la topografía marciana y las cámaras WFC3 del <b>Telescopio Espacial Hubble</b>.<br/>"
-        "• <b>Parámetros Físicos Rigurosos:</b> Las distancias relativas, excentricidades orbitales y periodos siderales de traslación se sincronizan con las efemérides astronómicas "
-        "del <i>Solar System Dynamics Group (SSD)</i> del Instituto Tecnológico de California (Caltech)."
-    )
-    t_box = Table([[Paragraph(fuente_text, style_box_text)]], colWidths=[letter[0] - 72])
-    t_box.setStyle(TableStyle([
+    # Lista de Tareas (Checklist Guiado)
+    task_rows = [
+        [Paragraph("<b>✅ Tarea 1 • Pídele el código a Gemini (Pestaña 1):</b> "
+                   "Abre Gemini (<i>gemini.google.com</i>). Copia el <b>Prompt Maestro</b> inferior, pégalo en el chat y pulsa Enviar.", style_task)],
+        [Paragraph("<b>✅ Tarea 2 • Copia el código generado por la IA:</b> "
+                   "En la respuesta de Gemini, haz clic en el botón <b>«Copiar código»</b> situado en la esquina superior del bloque.", style_task)],
+        [Paragraph("<b>✅ Tarea 3 • Abre el Taller Oficial de Pruebas (Pestaña 2):</b> "
+                   "En el mapa de la Sesión 05, pulsa <b>«🚀 Abrir Taller Interactivo de Pruebas ↗»</b>.", style_task)],
+        [Paragraph("<b>✅ Tarea 4 • Pega con Ctrl+V y pulsa «Ejecutar Creación»:</b> "
+                   "Pega el código con <b>Ctrl+V</b> (o Cmd+V en Mac) y haz clic en <b>«▶️ Ejecutar Creación»</b>. ¡Los planetas orbitarán en 3D en tu pantalla!", style_task)],
+        [Paragraph("<b>✅ Tarea 5 • Descubre la Demo completa:</b> "
+                   "Pulsa el botón <b>«🌌 Sistema Solar 3D»</b> en el taller (o <b>«🌌 Ver Simulador Sistema Solar ↗»</b> en el mapa) para ver el Vórtice Galáctico.", style_task)],
+    ]
+    t_table = Table(task_rows, colWidths=[letter[0] - 72])
+    t_table.setStyle(TableStyle([
         ('BACKGROUND', (0,0), (-1,-1), colors.HexColor('#FEF3C7')),
-        ('BOX', (0,0), (-1,-1), 1.2, accent),
-        ('TOPPADDING', (0,0), (-1,-1), 6),
-        ('BOTTOMPADDING', (0,0), (-1,-1), 6),
-        ('LEFTPADDING', (0,0), (-1,-1), 8),
-        ('RIGHTPADDING', (0,0), (-1,-1), 8),
+        ('BOX', (0,0), (-1,-1), 1, colors.HexColor('#D97706')),
+        ('TOPPADDING', (0,0), (-1,-1), 1.5),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 1.5),
+        ('LEFTPADDING', (0,0), (-1,-1), 7),
+        ('RIGHTPADDING', (0,0), (-1,-1), 7),
     ]))
-    story.append(t_box)
-    story.append(Spacer(1, 4))
+    story.append(t_table)
+    story.append(Spacer(1, 3))
 
-    # Bloque 3: Guía de Exploración & Retos de Conversación con Gemini
-    story.append(Paragraph("💬 <b>3. Guía de Exploración en el Aula & Conversación con Gemini</b>", style_section_h))
-    story.append(Paragraph(
-        "Abre el planetario en tu pantalla (en el mapa de la clase pulsa <i>«🪐 Ver Simulador Sistema Solar 3D»</i>) y hazle estas preguntas a Gemini "
-        "(<i>gemini.google.com</i>) para explorar los enigmas del cosmos:",
-        style_body
-    ))
-
-    prompts_text = (
-        "<b>1. Leyes de Kepler:</b> <i>«Estoy mirando el simulador del Sistema Solar. ¿Por qué Mercurio se desplaza a tanta velocidad (88 días por vuelta) mientras que Neptuno tarda 165 años terrestres en completar una órbita?»</i><br/>"
-        "<b>2. Astronomía y Escalas:</b> <i>«¿Por qué en los libros y simuladores el tamaño de los planetas se agranda respecto a la inmensidad de las distancias espaciales que los separan?»</i><br/>"
-        "<b>3. Exploración Espacial:</b> <i>«¿Cómo consiguen las sondas espaciales de la NASA aprovechar la gravedad de planetas como Júpiter para acelerar su viaje hacia los confines del sistema solar?»</i>"
+    # Recuadro de Prompt Maestro
+    story.append(Paragraph("🧠 <b>Prompt Maestro para Copiar y Pegar en Gemini:</b>", style_section_h))
+    prompt_text = (
+        "<b>Copia exactamente este texto en Gemini:</b><br/>"
+        "<i>\"Genera el código de programación (HTML y JavaScript con Three.js) que voy a copiar y pegar en el Taller de Pruebas de mi curso para crear un planetario 3D del Sistema Solar con texturas satelitales oficiales de la NASA.<br/>"
+        "Requisitos del código:<br/>"
+        "1. Entrega el programa en un único bloque de código para que yo pulse directamente «Copiar código» y lo pegue con Ctrl+V en mi simulador.<br/>"
+        "2. Incluye en la cabecera las librerías oficiales de Three.js y OrbitControls:<br/>"
+        "&lt;script src=&quot;https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js&quot;&gt;&lt;/script&gt;<br/>"
+        "&lt;script src=&quot;https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js&quot;&gt;&lt;/script&gt;<br/>"
+        "3. Crea el Sol central brillante con luz puntual y los planetas orbitando a distancias proporcionales con la 3ª Ley de Kepler sobre fondo espacial negro con estrellas.<br/>"
+        "4. Aplica directamente a la Tierra la textura satelital real de la NASA libre de CORS: https://cdn.jsdelivr.net/gh/mrdoob/three.js@dev/examples/textures/planets/earth_atmos_2048.jpg y a la Luna la textura https://cdn.jsdelivr.net/gh/mrdoob/three.js@dev/examples/textures/planets/moon_1024.jpg mediante THREE.TextureLoader.<br/>"
+        "5. Configura una cámara orbital con rotación 360°, zoom suave con la rueda del ratón y trazas de las órbitas elípticas en líneas tenues.<br/>"
+        "6. Escribe exclusivamente el bloque de código para que al copiarlo a mi simulador genere el Sistema Solar 3D inmediatamente.\"</i>"
     )
-    p_box = Table([[Paragraph(prompts_text, style_box_text)]], colWidths=[letter[0] - 72])
-    p_box.setStyle(TableStyle([
+    p_table = Table([[Paragraph(prompt_text, style_prompt)]], colWidths=[letter[0] - 72])
+    p_table.setStyle(TableStyle([
         ('BACKGROUND', (0,0), (-1,-1), colors.HexColor('#F8FAFC')),
         ('BOX', (0,0), (-1,-1), 1, colors.HexColor('#64748B')),
-        ('TOPPADDING', (0,0), (-1,-1), 6),
-        ('BOTTOMPADDING', (0,0), (-1,-1), 6),
-        ('LEFTPADDING', (0,0), (-1,-1), 8),
-        ('RIGHTPADDING', (0,0), (-1,-1), 8),
+        ('TOPPADDING', (0,0), (-1,-1), 2.5),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 2.5),
+        ('LEFTPADDING', (0,0), (-1,-1), 7),
+        ('RIGHTPADDING', (0,0), (-1,-1), 7),
     ]))
-    story.append(p_box)
-    story.append(Spacer(1, 4))
+    story.append(p_table)
+    story.append(Spacer(1, 3))
 
-    story.append(HRFlowable(width="100%", thickness=0.6, color=colors.HexColor('#CBD5E1'), spaceAfter=3))
-    style_footer = ParagraphStyle(
-        'FooterStyle', parent=styles['Normal'],
-        fontName='Helvetica-Oblique', fontSize=7.0, leading=8.5,
-        textColor=colors.HexColor('#64748B'), alignment=1
+    # Desafío Extra
+    story.append(Paragraph("🌟 <b>El Reto Extra (Para Alumnos Curiosos):</b>", style_section_h))
+    story.append(Paragraph(
+        "👉 <b>¡Pídele a Gemini que modifique tu código!</b> En la misma conversación dile: "
+        "<i>«Añade los anillos de Saturno con inclinación de 27°»</i> o "
+        "<i>«Coloca un botón para acelerar el tiempo de órbita y ver a Mercurio dar 4 vueltas completas por cada año terrestre»</i>. "
+        "Vuelve a copiar el código, pégalo en tu Taller y ¡mira cómo tu Sistema Solar responde en directo!",
+        style_body
+    ))
+    story.append(Spacer(1, 2))
+
+    # Apartado Técnico al final
+    story.append(Paragraph("🔬 <b>¿De dónde proceden los modelos hiperrealistas y cómo se ha montado el objeto 3D?</b>", style_section_h))
+    tech_text = (
+        "• <b>Origen de las texturas satelitales y efemérides (<i>NASA JPL / Solar System Dynamics</i>):</b> Los mapas esféricos de superficie proceden de las misiones espaciales <b>NASA Blue Marble (satélites Terra/Aqua)</b>, <b>LRO</b> y <b>Cassini-Huygens</b>, con parámetros orbitales exactos calibrados según la base de datos de efemérides <i>HORIZONS</i> del JPL.<br/>"
+        "• <b>Cómo se ha montado el objeto en la Demo y en el Taller:</b> En <b>Three.js</b>, la velocidad angular de cada planeta se calcula en cada fotograma mediante la 3ª Ley de Kepler ($T^2 \\propto a^3$), garantizando que Mercurio orbite 4 veces más rápido que la Tierra y Júpiter complete su órbita en 11.86 años relativos."
     )
-    story.append(Paragraph("Material didáctico adaptado pedagógicamente para personas mayores (60+). Astronomía visual y agilidad mental con Inteligencia Artificial.", style_footer))
+    tech_table = Table([[Paragraph(tech_text, style_task)]], colWidths=[letter[0] - 72])
+    tech_table.setStyle(TableStyle([
+        ('BACKGROUND', (0,0), (-1,-1), colors.HexColor('#ECFDF5')),
+        ('BOX', (0,0), (-1,-1), 1, colors.HexColor('#059669')),
+        ('TOPPADDING', (0,0), (-1,-1), 3),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 3),
+        ('LEFTPADDING', (0,0), (-1,-1), 7),
+        ('RIGHTPADDING', (0,0), (-1,-1), 7),
+    ]))
+    story.append(tech_table)
 
     doc.build(story)
+    if dest_path != LOCAL_BACKUP:
+        try:
+            import shutil
+            os.makedirs(os.path.dirname(LOCAL_BACKUP), exist_ok=True)
+            shutil.copy2(dest_path, LOCAL_BACKUP)
+        except Exception:
+            pass
+    print(f"✅ PDF COD-005 generado con éxito en: {dest_path}")
 
-def main():
-    build_pdf(LOCAL_BACKUP)
-    print(f"✅ Ficha COD-005 generada en catálogo: {LOCAL_BACKUP}")
+if __name__ == '__main__':
     try:
-        shutil.copy2(LOCAL_BACKUP, PDF_PATH)
-        print(f"✅ Ficha COD-005 sincronizada en sesión: {PDF_PATH}")
+        build_cod_005_taller_3d_pdf()
     except Exception as e:
-        print(f"⚠️ Nota de copia: {e}")
-
-if __name__ == "__main__":
-    main()
+        print(f"❌ Error al generar PDF COD-005: {e}")
+        sys.exit(1)
