@@ -112,6 +112,18 @@
   - Cada vez que se descubra, depure, aprenda o ajuste una nueva técnica, comportamiento de hardware, solución de bug o parámetro técnico en cualquier módulo del proyecto, el asistente DEBE actualizar simultánea e inmediatamente en ese mismo turno toda la documentación técnica correspondiente (`.md` y `.html`), bitácoras y archivos de reglas (`AGENTS.md` y `GEMINI.md`).
   - Queda terminantemente prohibido dejar descubrimientos o lecciones aprendidas aisladas en el chat sin que queden permanentemente selladas y versionadas en la documentación oficial.
 
+## Blindaje de Texturas y Modelos 3D en Prompts [COD] (Prohibición de Invención en Canvas y URLs Directas Obligatorias)
+- **Diagnóstico del "Tablero de Ajedrez" y Ceguera de Gemini:**
+  - Gemini no tiene conexión a internet en tiempo de generación ni acceso al sistema de archivos local, ni dispone de ojos para ver el canvas renderizado.
+  - Si un prompt solicita "aplica una textura satelital de la NASA" sin proporcionar una URL web directa, Gemini intentará "dibujar la superficie matemáticamente" mediante un `<canvas>` procedural, generando bucles de cuadrículas (`(fila + columna) % 2 === 0`) que producen un tablero de ajedrez irreal y frustrante.
+- **Suministro Obligatorio de URLs Públicas Libres de CORS:**
+  - En todo Prompt Maestro para Gemini que requiera texturas o modelos 3D, DEBE incluirse taxativamente la URL web pública oficial y libre de CORS (ej. `https://assets.babylonjs.com/textures/moon.jpg` en el CDN oficial de Babylon.js, NIH, NASA, etc.).
+  - El prompt debe ordenar explícitamente: *"Prohibido generar texturas en canvas o cuadrículas procedurales: aplica directamente la textura/modelo oficial desde [URL]"*.
+- **El Doble Botón como Salvavidas Pedagógico:**
+  - Toda sesión del bloque [COD] en mapas y Classroom mantiene la doble vía de acceso:
+    1. **Taller Interactivo de Pruebas:** Para que el alumno experimente la generación de código con Gemini y vea su aplicación nacer en directo.
+    2. **Simulador 3D Oficial Garantizado:** Botón directo a la aplicación final hiperrealista depurada, asegurando que el 100% de los alumnos disfrute de la experiencia completa sin atascos ni dependencias de variabilidad de la IA.
+
 ## Módulo Especializado de Música y Web MIDI (CURSO_MUSICA)
 - Para cualquier trabajo en el módulo `CURSO_MUSICA/` (Atril Digital, Korg EK-50, Web MIDI, partituras y canciones), rigen de forma prioritaria las reglas de oro y arquitectura establecidas en `CURSO_MUSICA/AGENTS.md` y `CURSO_MUSICA/GEMINI.md`:
   - Cero intervención manual del usuario en el teclado Korg EK-50 (todo automatizado por Web MIDI).
