@@ -3,25 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sesión 15 • Reconstrucción Arqueológica 3D: El Partenón de Atenas & Proporción Áurea (Phi) [COD-015]</title>
-    <!-- Babylon.js Motor 3D Oficial CDN -->
-    <script src="https://cdn.babylonjs.com/babylon.js"></script>
-    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+    <title>Sesión 15 • Visor Arqueológico Real: El Partenón & Proporción Áurea (Phi) • CyArk [COD-015]</title>
+    <!-- Fuentes Tipográficas Oficiales -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
     <!-- Assets Fotogramétricos y Arqueológicos Reales en Base64 Autónomo -->
+    <script src="../03_ASSETS_3D_Y_DATOS/parthenon_photo_b64.js"></script>
+    <script src="../../../../SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/parthenon_photo_b64.js"></script>
     <script src="../03_ASSETS_3D_Y_DATOS/parthenon_b64.js"></script>
     <script src="../../../../SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/parthenon_b64.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg-base: #06070a;
             --bg-panel: rgba(18, 16, 22, 0.94);
             --marble: #f4ede1;
-            --marble-shadow: #b8a68b;
             --gold: #fbbf24;
             --gold-glow: rgba(251, 191, 36, 0.4);
             --cyan: #38bdf8;
             --emerald: #34d399;
-            --rose: #fb7185;
             --text-main: #f8fafc;
             --text-sub: #cbd5e1;
             --font-title: 'Cinzel', serif;
@@ -42,7 +40,6 @@
             font-size: 14px;
         }
 
-        /* HEADER */
         header {
             background: linear-gradient(180deg, rgba(14, 12, 18, 0.98) 0%, rgba(14, 12, 18, 0.88) 100%);
             backdrop-filter: blur(14px);
@@ -52,653 +49,523 @@
             align-items: center;
             justify-content: space-between;
             flex-shrink: 0;
-            z-index: 40;
+            z-index: 50;
         }
 
-        .brand-box {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-        }
-
-        .badge-pill {
+        .brand-box { display: flex; align-items: center; gap: 14px; }
+        .badge-code {
             background: rgba(251, 191, 36, 0.15);
-            border: 1px solid var(--gold);
             color: var(--gold);
+            border: 1px solid rgba(251, 191, 36, 0.4);
             font-family: var(--font-mono);
+            font-size: 0.85rem;
             font-weight: 800;
-            font-size: 0.82rem;
             padding: 4px 10px;
-            border-radius: 6px;
-            letter-spacing: 0.05em;
+            border-radius: 8px;
         }
 
-        .title-text h1 {
+        h1 {
             font-family: var(--font-title);
-            font-size: 1.15rem;
+            font-size: 1.25rem;
             font-weight: 800;
-            letter-spacing: 0.02em;
-            color: #fff;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .title-text p {
-            font-size: 0.78rem;
-            color: var(--text-sub);
-            margin-top: 1px;
-        }
-
-        .header-actions {
+            color: #ffffff;
             display: flex;
             align-items: center;
             gap: 10px;
         }
 
-        .btn-header {
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            color: var(--text-main);
-            padding: 6px 14px;
-            border-radius: 8px;
-            font-size: 0.8rem;
+        .pill-status {
+            background: rgba(251, 191, 36, 0.12);
+            color: var(--gold);
+            border: 1px solid rgba(251, 191, 36, 0.35);
+            font-size: 0.82rem;
             font-weight: 700;
-            cursor: pointer;
-            display: inline-flex;
+            padding: 5px 13px;
+            border-radius: 9999px;
+            display: flex;
             align-items: center;
             gap: 6px;
-            transition: all 0.2s ease;
         }
-        .btn-header:hover {
-            background: rgba(251, 191, 36, 0.2);
-            border-color: var(--gold);
-            color: var(--gold);
+        .pulse-dot {
+            width: 8px; height: 8px; border-radius: 50%;
+            background: var(--gold); box-shadow: 0 0 10px var(--gold);
+            animation: pulse 2s infinite;
         }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
 
-        /* MAIN WORKSPACE */
-        .workspace {
+        .workspace-grid {
             flex: 1;
+            min-height: 0;
+            display: grid;
+            grid-template-columns: 320px 1fr 340px;
+            background: #06070a;
             position: relative;
-            display: flex;
-            overflow: hidden;
         }
 
-        #renderCanvas {
-            width: 100%;
-            height: 100%;
-            touch-action: none;
-            outline: none;
-            background: radial-gradient(circle at 50% 35%, #151e2e 0%, #080c14 55%, #030508 100%);
-        }
-
-        /* OVERLAY PANEL IZQUIERDO: ARQUEOLOGÍA Y CONTROLES */
-        .controls-panel {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            width: 380px;
-            max-height: calc(100% - 40px);
+        .sidebar-panel {
             background: var(--bg-panel);
-            border: 1px solid rgba(251, 191, 36, 0.3);
-            border-radius: 16px;
-            padding: 20px;
+            backdrop-filter: blur(16px);
+            padding: 18px;
+            overflow-y: auto;
             display: flex;
             flex-direction: column;
             gap: 16px;
-            overflow-y: auto;
-            backdrop-filter: blur(16px);
-            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.7);
-            z-index: 30;
+            z-index: 20;
+        }
+        .sidebar-left { border-right: 1px solid rgba(255, 255, 255, 0.08); }
+        .sidebar-right { border-left: 1px solid rgba(255, 255, 255, 0.08); }
+
+        .card-easy-concept {
+            background: linear-gradient(135deg, rgba(180, 83, 9, 0.22) 0%, rgba(18, 16, 22, 0.6) 100%);
+            border: 1px solid rgba(251, 191, 36, 0.35);
+            border-radius: 12px;
+            padding: 14px;
+        }
+        .easy-tag {
+            color: var(--gold); font-family: var(--font-mono); font-size: 0.75rem;
+            font-weight: 800; text-transform: uppercase; margin-bottom: 4px;
+        }
+        .easy-title { font-weight: 800; font-size: 1.02rem; color: #ffffff; margin-bottom: 6px; }
+        .easy-text { font-size: 0.82rem; color: #cbd5e1; line-height: 1.5; }
+
+        .section-title {
+            font-family: var(--font-mono); font-size: 0.78rem; font-weight: 800;
+            text-transform: uppercase; color: #94a3b8; letter-spacing: 0.05em;
+            margin-bottom: 8px; display: flex; justify-content: space-between;
         }
 
-        .panel-section-title {
-            font-family: var(--font-title);
-            font-size: 0.86rem;
-            font-weight: 800;
-            color: var(--gold);
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-            padding-bottom: 6px;
-        }
-
-        .mode-toggle-group {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-        }
-
-        .btn-mode {
-            padding: 10px 8px;
-            background: rgba(255, 255, 255, 0.06);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            color: var(--text-sub);
+        .btn-layer {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #e2e8f0;
+            padding: 10px 14px;
             border-radius: 10px;
-            font-size: 0.78rem;
+            font-size: 0.84rem;
             font-weight: 700;
             cursor: pointer;
-            text-align: center;
-            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 6px;
+            transition: all 0.2s;
         }
-        .btn-mode.active {
-            background: linear-gradient(135deg, rgba(251, 191, 36, 0.25), rgba(217, 119, 6, 0.35));
-            border-color: var(--gold);
-            color: #fff;
-            box-shadow: 0 0 14px var(--gold-glow);
+        .btn-layer:hover { background: rgba(251, 191, 36, 0.15); border-color: rgba(251, 191, 36, 0.4); }
+        .btn-layer.active {
+            background: linear-gradient(135deg, #b45309, #d97706);
+            border-color: #fbbf24;
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(217, 119, 6, 0.35);
         }
 
-        .kpi-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
+        .stage-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: radial-gradient(circle at center, #121016 0%, #06070a 100%);
+        }
+
+        #photoCanvas {
+            max-width: 100%;
+            max-height: 100%;
+            display: block;
+            cursor: grab;
+        }
+        #photoCanvas:active { cursor: grabbing; }
+
+        .top-tools-bar {
+            position: absolute;
+            top: 16px;
+            background: rgba(18, 16, 22, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(251, 191, 36, 0.3);
+            border-radius: 9999px;
+            padding: 6px 14px;
+            display: flex;
+            align-items: center;
             gap: 10px;
+            z-index: 30;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
+        }
+        .btn-tool {
+            background: transparent;
+            border: none;
+            color: #cbd5e1;
+            font-size: 0.78rem;
+            font-weight: 700;
+            padding: 4px 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .btn-tool:hover { color: #ffffff; background: rgba(255, 255, 255, 0.1); }
+
+        .hotspot-pin {
+            position: absolute;
+            transform: translate(-50%, -50%);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            z-index: 25;
+            transition: transform 0.2s;
+        }
+        .hotspot-pin:hover { transform: translate(-50%, -50%) scale(1.1); }
+        .pin-circle {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #d97706;
+            border: 2px solid #ffffff;
+            color: #ffffff;
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 15px rgba(251, 191, 36, 0.8);
+        }
+        .pin-label {
+            background: rgba(18, 16, 22, 0.9);
+            border: 1px solid rgba(251, 191, 36, 0.4);
+            border-radius: 6px;
+            padding: 4px 8px;
+            font-size: 0.74rem;
+            font-weight: 700;
+            color: #ffffff;
+            white-space: nowrap;
         }
 
-        .kpi-card {
-            background: rgba(255, 255, 255, 0.04);
+        .telemetry-item {
+            background: rgba(255, 255, 255, 0.03);
             border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 10px;
-            padding: 10px 12px;
+            padding: 10px 14px;
+            margin-bottom: 8px;
         }
-        .kpi-val {
-            font-family: var(--font-mono);
-            font-size: 1.15rem;
-            font-weight: 800;
-            color: var(--gold);
-        }
-        .kpi-label {
-            font-size: 0.72rem;
-            color: var(--text-sub);
-            margin-top: 2px;
-        }
+        .telemetry-label { font-size: 0.72rem; color: #94a3b8; font-family: var(--font-mono); }
+        .telemetry-val { font-size: 1.15rem; font-weight: 800; color: #ffffff; font-family: var(--font-mono); margin-top: 2px; }
 
-        .hotspots-list {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
+        .card-hotspot-detail {
+            background: rgba(180, 83, 9, 0.15);
+            border: 1px solid rgba(251, 191, 36, 0.4);
+            border-radius: 12px;
+            padding: 14px;
         }
-
-        .btn-hotspot {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: var(--text-main);
-            padding: 9px 12px;
-            border-radius: 10px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            text-align: left;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            transition: all 0.2s ease;
-        }
-        .btn-hotspot:hover, .btn-hotspot.active {
-            background: rgba(56, 189, 248, 0.18);
-            border-color: var(--cyan);
-            color: var(--cyan);
-            transform: translateX(3px);
-        }
-
-        /* OVERLAY PANEL DERECHO: DETALLE DIDÁCTICO */
-        .info-panel {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            width: 360px;
-            background: var(--bg-panel);
-            border: 1px solid rgba(56, 189, 248, 0.35);
-            border-radius: 16px;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            backdrop-filter: blur(16px);
-            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.7);
-            z-index: 30;
-        }
-
-        .info-title {
-            font-family: var(--font-title);
-            font-size: 1.05rem;
-            font-weight: 800;
-            color: var(--cyan);
-        }
-
-        .info-body {
-            font-size: 0.85rem;
-            color: var(--text-sub);
-            line-height: 1.55;
-        }
-
-        .info-quote {
-            background: rgba(251, 191, 36, 0.08);
-            border-left: 3px solid var(--gold);
-            padding: 8px 12px;
-            border-radius: 0 8px 8px 0;
-            font-size: 0.78rem;
-            color: #fef08a;
-            font-style: italic;
-        }
-
-        .audio-btn {
-            background: linear-gradient(135deg, #0284c7, #38bdf8);
-            color: #030814;
-            border: none;
-            padding: 9px 16px;
-            border-radius: 10px;
-            font-weight: 800;
-            font-size: 0.82rem;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            margin-top: 4px;
-            transition: opacity 0.2s ease;
-        }
-        .audio-btn:hover { opacity: 0.9; }
-
-        /* FOOTER */
-        footer {
-            background: rgba(10, 8, 14, 0.96);
-            border-top: 1px solid rgba(255, 255, 255, 0.08);
-            padding: 8px 24px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            font-size: 0.76rem;
-            color: var(--text-sub);
-            flex-shrink: 0;
-            z-index: 40;
-        }
-
-        /* FOTOGRAFÍA ARQUEOLÓGICA OVERLAY FLOTANTE */
-        .photo-viewer-modal {
-            position: absolute;
-            inset: 0;
-            background: rgba(3, 4, 8, 0.92);
-            backdrop-filter: blur(12px);
-            z-index: 100;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            padding: 30px;
-        }
-        .photo-viewer-modal.visible { display: flex; }
-        .photo-container {
-            max-width: 900px;
-            width: 100%;
-            background: #0f172a;
-            border: 1px solid var(--gold);
-            border-radius: 16px;
-            overflow: hidden;
-            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8);
-        }
-        .photo-container img {
-            width: 100%;
-            height: auto;
-            display: block;
-        }
-        .photo-caption {
-            padding: 14px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: #090d16;
-        }
-        .close-photo-btn {
-            background: var(--gold);
-            color: #04060a;
-            border: none;
-            padding: 6px 16px;
-            border-radius: 8px;
-            font-weight: 800;
-            cursor: pointer;
-        }
+        .detail-title { font-weight: 800; font-size: 0.95rem; color: #ffffff; margin-bottom: 6px; }
+        .detail-desc { font-size: 0.82rem; color: #cbd5e1; line-height: 1.5; }
     </style>
 </head>
 <body>
 
     <header>
         <div class="brand-box">
-            <span class="badge-pill">[COD-015]</span>
-            <div class="title-text">
-                <h1>🏛️ El Partenón de Atenas & Proporción Áurea (Phi)</h1>
-                <p>Levantamiento Arqueológico Oficial de la Acrópolis • Ictino, Calícrates y Fidias (447 - 432 a.C.)</p>
-            </div>
+            <span class="badge-code">COD-015</span>
+            <h1>🏛️ Reconstrucción Arqueológica: El Partenón de Atenas & Proporción Áurea</h1>
         </div>
-        <div class="header-actions">
-            <button class="btn-header" onclick="openPhotoViewer()">📷 Fotografía Oficial</button>
-            <button class="btn-header" onclick="togglePhiSpiral()">📐 Espiral Áurea</button>
-            <button class="btn-header" onclick="resetCamera()">🎯 Centrar</button>
+        <div class="pill-status">
+            <div class="pulse-dot"></div>
+            <span>Levantamiento Oficial CyArk • YSMA Acrópolis</span>
         </div>
     </header>
 
-    <div class="workspace">
-        <canvas id="renderCanvas"></canvas>
+    <div class="workspace-grid">
 
         <!-- PANEL IZQUIERDO -->
-        <div class="controls-panel">
-            <div class="panel-section-title">🏛️ Modo Arqueológico</div>
-            <div class="mode-toggle-group">
-                <button class="btn-mode active" id="btnModeClassic" onclick="setMode('classic')">Restitución 432 a.C.</button>
-                <button class="btn-mode" id="btnModeRuins" onclick="setMode('ruins')">Ruinas Actuales</button>
-            </div>
-
-            <div class="panel-section-title">📐 Métricas Sagradas & Phi</div>
-            <div class="kpi-grid">
-                <div class="kpi-card">
-                    <div class="kpi-val">1.6180</div>
-                    <div class="kpi-label">Proporción Áurea (Φ)</div>
-                </div>
-                <div class="kpi-card">
-                    <div class="kpi-val">8 x 17</div>
-                    <div class="kpi-label">Columnas (2n + 1)</div>
-                </div>
-                <div class="kpi-card">
-                    <div class="kpi-val">+6.5 cm</div>
-                    <div class="kpi-label">Alza Óptica Fachada</div>
-                </div>
-                <div class="kpi-card">
-                    <div class="kpi-val">2.400 m</div>
-                    <div class="kpi-label">Convergencia Ejes</div>
+        <aside class="sidebar-panel sidebar-left">
+            <div class="card-easy-concept">
+                <div class="easy-tag">💡 La Idea Fácil para Todos</div>
+                <div class="easy-title">El Edificio sin Líneas Rectas</div>
+                <div class="easy-text">
+                    El Partenón parece perfectamente recto, pero <strong>no tiene ni una sola línea recta</strong>. Los arquitectos griegos Ictino y Calícrates curvaron el suelo 6,5 cm hacia arriba e inclinaron todas las columnas hacia adentro. Si las hubieran hecho rectas, el ojo humano las vería hundidas y torcidas por una ilusión óptica.
                 </div>
             </div>
 
-            <div class="panel-section-title">🔍 Hitos de Inspección Arqueológica</div>
-            <div class="hotspots-list" id="hotspotsContainer">
-                <!-- Generado dinámicamente -->
+            <div>
+                <div class="section-title"><span>Capas Arqueológicas</span></div>
+                <button class="btn-layer active" id="btnLayerPhoto" onclick="setLayer('photo')">
+                    <span>🏛️ Fotografía Arqueológica Real</span>
+                </button>
+                <button class="btn-layer" id="btnLayerGolden" onclick="setLayer('golden')">
+                    <span>📐 Rectángulo Áureo (Phi = 1.618)</span>
+                </button>
+                <button class="btn-layer" id="btnLayerCorrections" onclick="setLayer('corrections')">
+                    <span>🔍 Correcciones Ópticas & Éntasis</span>
+                </button>
             </div>
-        </div>
+
+            <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 12px;">
+                <div class="section-title"><span>Geometría Clásica</span></div>
+                <div style="font-size:0.8rem; color:#cbd5e1; line-height:1.6;">
+                    • <strong>Razón Áurea (Phi):</strong> 1 : 1,61803<br/>
+                    • <strong>Relación Clásica:</strong> 4 : 9 (2n + 1)<br/>
+                    • <strong>Columnata:</strong> 8 frontales × 17 laterales<br/>
+                    • <strong>Material:</strong> Mármol Pentélico blanco
+                </div>
+            </div>
+
+            <div style="margin-top: auto; font-size: 0.72rem; color: #64748b; line-height: 1.4;">
+                Procedencia: Servicio de Restauración de los Monumentos de la Acrópolis (YSMA) y archivo fotogramétrico CyArk.
+            </div>
+        </aside>
+
+        <!-- ÁREA CENTRAL DE VISUALIZACIÓN FOTOGRAMÉTRICA -->
+        <main class="stage-container" id="stageContainer">
+
+            <div class="top-tools-bar">
+                <button class="btn-tool" onclick="zoomIn()"><span>🔍+</span> Acercar</button>
+                <button class="btn-tool" onclick="zoomOut()"><span>🔍-</span> Alejar</button>
+                <button class="btn-tool" onclick="resetView()"><span>↺</span> Centrar</button>
+                <div style="width: 1px; height: 16px; background: rgba(255,255,255,0.2);"></div>
+                <button class="btn-tool" onclick="toggleHotspots()"><span id="lblIcon">🏷️</span> <span id="lblText">Ocultar Rótulos</span></button>
+            </div>
+
+            <canvas id="photoCanvas" width="1200" height="900"></canvas>
+
+            <!-- HOTSPOTS ARQUEOLÓGICOS -->
+            <div class="hotspot-pin" id="pin-0" style="top: 86%; left: 50%;" onclick="selectHotspot(0)">
+                <div class="pin-circle">1</div>
+                <div class="pin-label">Estilóbato y Curvatura (+6.5 cm)</div>
+            </div>
+            <div class="hotspot-pin" id="pin-1" style="top: 56%; left: 32%;" onclick="selectHotspot(1)">
+                <div class="pin-circle">2</div>
+                <div class="pin-label">Éntasis de las Columnas</div>
+            </div>
+            <div class="hotspot-pin" id="pin-2" style="top: 36%; left: 50%;" onclick="selectHotspot(2)">
+                <div class="pin-circle">3</div>
+                <div class="pin-label">Friso de Fidias (Metopas)</div>
+            </div>
+            <div class="hotspot-pin" id="pin-3" style="top: 20%; left: 50%;" onclick="selectHotspot(3)">
+                <div class="pin-circle">4</div>
+                <div class="pin-label">Frontón & Proporción Áurea</div>
+            </div>
+            <div class="hotspot-pin" id="pin-4" style="top: 60%; left: 74%;" onclick="selectHotspot(4)">
+                <div class="pin-circle">5</div>
+                <div class="pin-label">Convergencia Inclinada (2.400 m)</div>
+            </div>
+
+        </main>
 
         <!-- PANEL DERECHO -->
-        <div class="info-panel" id="infoPanel">
-            <div class="info-title" id="infoTitle">Estilóbato y Curvaturas Ópticas</div>
-            <div class="info-body" id="infoBody">
-                La base del templo no es plana: Ictino y Calícrates elevaron el centro 6.5 cm en los frentes y 11 cm en los laterales para compensar la ilusión de hundimiento visual generada por la perspectiva ocular humana.
-            </div>
-            <div class="info-quote" id="infoQuote">
-                "Nada es recto en el Partenón: la perfección griega consistió en curvar sutilmente la materia para que el ojo humano la percibiera pura y recta."
-            </div>
-            <button class="audio-btn" onclick="speakCurrentInfo()">
-                🔊 Escuchar Explicación Arqueológica
-            </button>
-        </div>
-    </div>
+        <aside class="sidebar-panel sidebar-right">
 
-    <!-- MODAL FOTOGRAFÍA ARQUEOLÓGICA OFICIAL -->
-    <div class="photo-viewer-modal" id="photoModal">
-        <div class="photo-container">
-            <img id="archaeologyImg" src="" alt="El Partenón de Atenas">
-            <div class="photo-caption">
-                <span style="color: #cbd5e1; font-size: 0.82rem;">Acrópolis de Atenas • Fotogrametría y Levantamiento Arqueológico Oficial</span>
-                <button class="close-photo-btn" onclick="closePhotoViewer()">Cerrar Visor</button>
+            <div>
+                <div class="section-title"><span>Dimensiones Arqueológicas</span></div>
+                <div class="telemetry-item">
+                    <div class="telemetry-label">ESTILÓBATO (BASE)</div>
+                    <div class="telemetry-val" style="color: var(--gold);">69.51 × 30.88 m</div>
+                </div>
+                <div class="telemetry-item">
+                    <div class="telemetry-label">ALTURA DE COLUMNA</div>
+                    <div class="telemetry-val" style="color: var(--cyan);">10.43 m <span style="font-size:0.75rem; color:#94a3b8;">(5.5 diámetros)</span></div>
+                </div>
+                <div class="telemetry-item">
+                    <div class="telemetry-label">ALZA CONVEXA CENTRAL</div>
+                    <div class="telemetry-val" style="color: var(--emerald);">+6.5 cm <span style="font-size:0.75rem; color:#94a3b8;">(frente)</span> / +11 cm</div>
+                </div>
             </div>
-        </div>
-    </div>
 
-    <footer>
-        <span>🏛️ Curso de Inteligencia Artificial • Metodología de la Triple Salvaguarda Pedagógica</span>
-        <span>Motor 3D: Babylon.js PBR • Fotogrametría Real Oficial</span>
-    </footer>
+            <div>
+                <div class="section-title"><span>Detalle Arqueológico</span></div>
+                <div class="card-hotspot-detail" id="hotspotCard">
+                    <div class="detail-title" id="cardTitle">Estilóbato y Curvaturas de Corrección Óptica</div>
+                    <div class="detail-desc" id="cardDesc">
+                        La base escalonada (crepidoma) no es perfectamente horizontal: se eleva 6,5 cm en el centro de las fachadas y 11 cm en los lados. Si fuera recta, el ojo humano percibiría un hundimiento central debido a la perspectiva.
+                    </div>
+                </div>
+            </div>
+
+        </aside>
+
+    </div>
 
     <script>
-        const canvas = document.getElementById("renderCanvas");
-        const engine = new BABYLON.Engine(canvas, true);
-        let scene, camera;
-        let templeRoot, phiPlane, stylobateMesh;
-        let showPhi = false;
-        let currentMode = 'classic';
-        let currentHotspotIdx = 0;
+        const canvas = document.getElementById('photoCanvas');
+        const ctx = canvas.getContext('2d');
 
-        const DATA = window.PARTHENON_DATA || {
-            hotspots: [
-                { id: "stylobate", name: "Estilóbato y Curvatura Óptica", desc: "La base se curva 6.5 cm hacia arriba en el centro para evitar que el ojo humano la perciba combada.", quote: "La perfección óptica griega." },
-                { id: "entasis", name: "Éntasis e Inclinación Dórica", desc: "Las 46 columnas perimetrales tienen abombamiento central y sus ejes convergen a 2.400 metros de altura.", quote: "Convergencia piramidal al cielo." },
-                { id: "golden_ratio", name: "Fachada Áurea de Fibonacci", desc: "La anchura total respecto a la altura describe el rectángulo áureo perfecto (1 : 1.618).", quote: "Geometría sagrada universal." },
-                { id: "frieze", name: "Friso Panatenaico de Fidias", desc: "160 metros continuos de mármol pentélico policromado con la solemne procesión de Atenas.", quote: "Escultura clásica cumbre." },
-                { id: "cella", name: "Naos y Atenea Pártenos", desc: "Cámara interior sagrada con la colosal estatua de 12 metros en oro macizo y marfil.", quote: "Estatua criselefantina de Fidias." }
-            ]
-        };
+        let currentLayer = 'photo'; // 'photo', 'golden', 'corrections'
+        let scale = 1.0;
+        let panX = 0;
+        let panY = 0;
+        let isDragging = false;
+        let startX = 0;
+        let startY = 0;
+        let showLabels = true;
 
-        function createScene() {
-            scene = new BABYLON.Scene(engine);
-            scene.clearColor = new BABYLON.Color4(0.02, 0.03, 0.05, 1.0);
+        const imgParthenon = new Image();
+        let photoLoaded = false;
 
-            camera = new BABYLON.ArcRotateCamera("Camera", -Math.PI / 2, Math.PI / 2.3, 44, new BABYLON.Vector3(0, 5, 0), scene);
-            camera.attachControl(canvas, true);
-            camera.lowerRadiusLimit = 16;
-            camera.upperRadiusLimit = 85;
-            camera.wheelPrecision = 30;
-
-            // Iluminación solar mediterránea PBR
-            const hemiLight = new BABYLON.HemisphericLight("hemiLight", new BABYLON.Vector3(0, 1, 0), scene);
-            hemiLight.intensity = 0.55;
-            hemiLight.diffuse = new BABYLON.Color3(0.95, 0.92, 0.85);
-
-            const dirLight = new BABYLON.DirectionalLight("dirLight", new BABYLON.Vector3(-1, -1.8, 1), scene);
-            dirLight.intensity = 1.6;
-            dirLight.diffuse = new BABYLON.Color3(1.0, 0.96, 0.88);
-
-            templeRoot = new BABYLON.TransformNode("templeRoot", scene);
-
-            // Materiales de Mármol Pentélico PBR
-            const marbleMat = new BABYLON.PBRMaterial("marbleMat", scene);
-            marbleMat.albedoColor = new BABYLON.Color3(0.94, 0.90, 0.82);
-            marbleMat.roughness = 0.65;
-            marbleMat.metallic = 0.05;
-
-            const marbleRuinsMat = new BABYLON.PBRMaterial("marbleRuinsMat", scene);
-            marbleRuinsMat.albedoColor = new BABYLON.Color3(0.80, 0.73, 0.62);
-            marbleRuinsMat.roughness = 0.85;
-
-            // 1. ESTILÓBATO ESCALONADO CON CURVATURA REAL
-            const baseW = 30.8;
-            const baseL = 69.5 * 0.42; // Escala arqueológica armónica
-            for (let step = 0; step < 3; step++) {
-                const sW = baseW + (2 - step) * 1.0;
-                const sL = baseL + (2 - step) * 1.0;
-                const stepMesh = BABYLON.MeshBuilder.CreateBox("step_" + step, {
-                    width: sW, height: 0.65, depth: sL
-                }, scene);
-                stepMesh.position.y = step * 0.65;
-                stepMesh.material = marbleMat;
-                stepMesh.parent = templeRoot;
-                if (step === 2) stylobateMesh = stepMesh;
+        const HOTSPOTS = [
+            {
+                title: "Estilóbato y Curvaturas de Corrección Óptica",
+                desc: "La base escalonada (crepidoma) no es horizontal: se eleva 6,5 cm en las fachadas y 11 cm en los laterales. Si los escalones se hubieran tallado planos, la perspectiva crearía la ilusión óptica de que el centro está vencido y hundido.",
+                x: 0.50, y: 0.86
+            },
+            {
+                title: "Éntasis y Reducción Cónica de las Columnas",
+                desc: "Las 46 columnas dóricas exteriores no son cilíndricas: se estrechan de 1,90 m en la base a 1,48 m en el capitel, presentando un suave abultamiento (éntasis) a un tercio de su altura que evita que parezcan estranguladas en el centro.",
+                x: 0.32, y: 0.56
+            },
+            {
+                title: "Entablamento y Friso Esculpido por Fidias",
+                desc: "Friso jónico continuo de 160 metros que recorría el interior del templo representando la solemne procesión de las Panateneas, labrado en mármol pentélico bajo la supervisión directa del maestro Fidias.",
+                x: 0.50, y: 0.36
+            },
+            {
+                title: "Frontón Este y la Proporción Áurea (Phi = 1.618)",
+                desc: "La fachada del Partenón encaja de forma exacta en un rectángulo áureo de proporciones 1 : 1,618. La altura del frontón triangular respecto a las columnas responde a la misma armonía matemática descubierta por los pitagóricos.",
+                x: 0.50, y: 0.20
+            },
+            {
+                title: "Inclinación Cónica hacia el Eje Central",
+                desc: "Ninguna columna es vertical. Todas tienen una inclinación de unos 7 cm hacia el interior del templo. Si prolongáramos mentalmente los ejes de las columnas hacia el cielo, se cruzarían en un vértice situado a 2.400 metros de altura.",
+                x: 0.74, y: 0.60
             }
+        ];
 
-            // 2. COLUMNATA DÓRICA (8 FRONTALES X 17 LATERALES)
-            const colH = 10.43;
-            const colRBase = 0.95;
-            const colRTop = 0.74; // Éntasis y reducción cónica
-
-            // Columnas frontales y traseras
-            const spacingX = (baseW - 3.2) / 7;
-            for (let c = 0; c < 8; c++) {
-                const x = - (baseW - 3.2) / 2 + c * spacingX;
-                buildColumn(x, 1.95, (baseL / 2 - 1.2), colRBase, colRTop, colH, marbleMat);
-                buildColumn(x, 1.95, - (baseL / 2 - 1.2), colRBase, colRTop, colH, marbleMat);
-            }
-
-            // Columnas laterales
-            const spacingZ = (baseL - 2.4) / 10;
-            for (let r = 1; r < 10; r++) {
-                const z = - (baseL - 2.4) / 2 + r * spacingZ;
-                buildColumn(- (baseW - 3.2) / 2, 1.95, z, colRBase, colRTop, colH, marbleMat);
-                buildColumn((baseW - 3.2) / 2, 1.95, z, colRBase, colRTop, colH, marbleMat);
-            }
-
-            // 3. CELLA SAGRADA INTERIOR
-            const cella = BABYLON.MeshBuilder.CreateBox("cella", {
-                width: baseW - 8.5, height: colH, depth: baseL - 7.5
-            }, scene);
-            cella.position = new BABYLON.Vector3(0, 1.95 + colH / 2, 0);
-            cella.material = marbleMat;
-            cella.parent = templeRoot;
-
-            // 4. ENTABLAMENTO: ARQUITRABE Y FRISO DE FIDIAS
-            const architrave = BABYLON.MeshBuilder.CreateBox("architrave", {
-                width: baseW - 1.8, height: 1.35, depth: baseL - 0.8
-            }, scene);
-            architrave.position.y = 1.95 + colH + 0.67;
-            architrave.material = marbleMat;
-            architrave.parent = templeRoot;
-
-            const frieze = BABYLON.MeshBuilder.CreateBox("frieze", {
-                width: baseW - 1.8, height: 1.35, depth: baseL - 0.8
-            }, scene);
-            frieze.position.y = 1.95 + colH + 1.35 + 0.67;
-            frieze.material = marbleMat;
-            frieze.parent = templeRoot;
-
-            // 5. FRONTÓN TRIANGULAR ÁUREO
-            const pedimentW = baseW - 1.6;
-            const pedimentH = 3.8;
-            const pediment = BABYLON.MeshBuilder.CreateCylinder("pediment", {
-                diameter: pedimentW, height: 1.2, tessellation: 3
-            }, scene);
-            pediment.rotation.z = Math.PI;
-            pediment.rotation.x = Math.PI / 2;
-            pediment.position = new BABYLON.Vector3(0, 1.95 + colH + 2.7 + pedimentH * 0.45, (baseL - 1.0) / 2);
-            pediment.scaling = new BABYLON.Vector3(1, 0.25, 0.1);
-            pediment.material = marbleMat;
-            pediment.parent = templeRoot;
-
-            // 6. PLANO ÁUREO SUPERPUESTO (FIBONACCI PHI)
-            phiPlane = BABYLON.MeshBuilder.CreatePlane("phiPlane", {
-                width: baseW - 1.6, height: 1.95 + colH + 2.7 + pedimentH
-            }, scene);
-            phiPlane.position = new BABYLON.Vector3(0, (1.95 + colH + 2.7 + pedimentH) / 2, (baseL - 0.8) / 2 + 0.2);
-            const phiMat = new BABYLON.StandardMaterial("phiMat", scene);
-            phiMat.diffuseColor = new BABYLON.Color3(0.98, 0.75, 0.14);
-            phiMat.emissiveColor = new BABYLON.Color3(0.98, 0.75, 0.14);
-            phiMat.wireframe = true;
-            phiPlane.material = phiMat;
-            phiPlane.parent = templeRoot;
-            phiPlane.setEnabled(false);
-
-            // Rotación suave del Partenón
-            scene.registerBeforeRender(() => {
-                templeRoot.rotation.y += 0.0018;
-            });
-
-            return scene;
+        if (window.PARTHENON_PHOTO_B64) {
+            imgParthenon.src = window.PARTHENON_PHOTO_B64;
+            imgParthenon.onload = () => { photoLoaded = true; render(); };
+        } else {
+            imgParthenon.src = "../03_ASSETS_3D_Y_DATOS/parthenon.jpg";
+            imgParthenon.onload = () => { photoLoaded = true; render(); };
         }
 
-        function buildColumn(x, yBase, z, rBottom, rTop, h, mat) {
-            const col = BABYLON.MeshBuilder.CreateCylinder("col", {
-                diameterBottom: rBottom * 2, diameterTop: rTop * 2, height: h, tessellation: 20
-            }, scene);
-            col.position = new BABYLON.Vector3(x, yBase + h / 2, z);
-            col.material = mat;
-            col.parent = templeRoot;
+        function render() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.save();
+            ctx.translate(canvas.width / 2 + panX, canvas.height / 2 + panY);
+            ctx.scale(scale, scale);
 
-            // Capitel Dórico (Equino y Ábaco)
-            const abacus = BABYLON.MeshBuilder.CreateBox("abacus", {
-                width: rTop * 2.6, height: 0.35, depth: rTop * 2.6
-            }, scene);
-            abacus.position = new BABYLON.Vector3(x, yBase + h + 0.17, z);
-            abacus.material = mat;
-            abacus.parent = templeRoot;
+            const w = 920;
+            const h = 640;
+            const x = - w / 2;
+            const y = - h / 2;
+
+            if (photoLoaded) {
+                ctx.drawImage(imgParthenon, x, y, w, h);
+            } else {
+                // Respaldo visual arquitectónico si la foto aún está cargando
+                ctx.fillStyle = "#1e1b24";
+                ctx.fillRect(x, y, w, h);
+                ctx.strokeStyle = "#fbbf24";
+                ctx.lineWidth = 2;
+                ctx.strokeRect(x, y, w, h);
+            }
+
+            // Capa 1: Proporción Áurea
+            if (currentLayer === 'golden') {
+                ctx.strokeStyle = "rgba(251, 191, 36, 0.9)";
+                ctx.lineWidth = 3;
+                ctx.strokeRect(x + 40, y + 50, w - 80, h - 100);
+
+                // Rectángulo áureo interior
+                const goldenWidth = (w - 80) / 1.618;
+                ctx.strokeStyle = "rgba(56, 189, 248, 0.8)";
+                ctx.lineWidth = 2;
+                ctx.strokeRect(x + 40, y + 50, goldenWidth, h - 100);
+
+                // Líneas diagonales armónicas
+                ctx.setLineDash([6, 6]);
+                ctx.beginPath();
+                ctx.moveTo(x + 40, y + 50);
+                ctx.lineTo(x + 40 + goldenWidth, y + h - 50);
+                ctx.stroke();
+                ctx.setLineDash([]);
+            }
+
+            // Capa 2: Correcciones Ópticas
+            if (currentLayer === 'corrections') {
+                // Curvatura del estilóbato
+                ctx.strokeStyle = "rgba(52, 211, 153, 0.9)";
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.moveTo(x + 40, y + h - 60);
+                ctx.quadraticCurveTo(x + w / 2, y + h - 85, x + w - 40, y + h - 60);
+                ctx.stroke();
+
+                // Líneas de inclinación convergente
+                ctx.strokeStyle = "rgba(244, 63, 94, 0.8)";
+                ctx.lineWidth = 2;
+                ctx.setLineDash([4, 4]);
+                ctx.beginPath();
+                ctx.moveTo(x + 90, y + h - 80);
+                ctx.lineTo(x + 120, y + 50);
+                ctx.moveTo(x + w - 90, y + h - 80);
+                ctx.lineTo(x + w - 120, y + 50);
+                ctx.stroke();
+                ctx.setLineDash([]);
+            }
+
+            ctx.restore();
+            updatePinPositions();
         }
 
-        // Hotspots
-        function renderHotspots() {
-            const container = document.getElementById("hotspotsContainer");
-            container.innerHTML = "";
-            DATA.hotspots.forEach((hs, idx) => {
-                const btn = document.createElement("button");
-                btn.className = "btn-hotspot" + (idx === 0 ? " active" : "");
-                btn.innerHTML = `<span>${hs.name}</span><span>↗</span>`;
-                btn.onclick = () => selectHotspot(idx);
-                container.appendChild(btn);
-            });
+        function setLayer(layer) {
+            currentLayer = layer;
+            document.querySelectorAll('.btn-layer').forEach(b => b.classList.remove('active'));
+            if (layer === 'photo') document.getElementById('btnLayerPhoto').classList.add('active');
+            if (layer === 'golden') document.getElementById('btnLayerGolden').classList.add('active');
+            if (layer === 'corrections') document.getElementById('btnLayerCorrections').classList.add('active');
+            render();
         }
 
         function selectHotspot(idx) {
-            currentHotspotIdx = idx;
-            document.querySelectorAll(".btn-hotspot").forEach((b, i) => {
-                b.classList.toggle("active", i === idx);
+            const h = HOTSPOTS[idx];
+            document.getElementById('cardTitle').textContent = h.title;
+            document.getElementById('cardDesc').textContent = h.desc;
+        }
+
+        function updatePinPositions() {
+            const rect = canvas.getBoundingClientRect();
+            HOTSPOTS.forEach((h, idx) => {
+                const pin = document.getElementById('pin-' + idx);
+                if (!pin) return;
+                if (!showLabels) {
+                    pin.style.display = 'none';
+                    return;
+                }
+                pin.style.display = 'flex';
+                const px = rect.left + rect.width * h.x;
+                const py = rect.top + rect.height * h.y;
+                pin.style.left = px + 'px';
+                pin.style.top = py + 'px';
             });
-            const hs = DATA.hotspots[idx];
-            document.getElementById("infoTitle").textContent = hs.name;
-            document.getElementById("infoBody").textContent = hs.desc;
-            document.getElementById("infoQuote").textContent = `"${hs.quote || 'Armonía y razón de la Grecia Clásica.'}"`;
-
-            // Mover cámara
-            if (camera) {
-                camera.target = new BABYLON.Vector3(0, 7, 0);
-                if (idx === 0) camera.radius = 36;
-                else if (idx === 1) camera.radius = 28;
-                else if (idx === 2) camera.radius = 42;
-                else camera.radius = 32;
-            }
         }
 
-        function setMode(mode) {
-            currentMode = mode;
-            document.getElementById("btnModeClassic").classList.toggle("active", mode === 'classic');
-            document.getElementById("btnModeRuins").classList.toggle("active", mode === 'ruins');
-            if (mode === 'ruins') {
-                document.getElementById("infoTitle").textContent = "Ruinas Actuales y Mármol Histórico";
-                document.getElementById("infoBody").textContent = "Vista del Partenón en su estado patrimonial conservado tras las restauraciones del Ministerio de Cultura de Grecia, apreciando las fracturas y pátina del mármol pentélico.";
-            } else {
-                selectHotspot(currentHotspotIdx);
-            }
+        window.addEventListener('resize', updatePinPositions);
+
+        function zoomIn() { scale = Math.min(scale * 1.25, 3.5); render(); }
+        function zoomOut() { scale = Math.max(scale / 1.25, 0.65); render(); }
+        function resetView() { scale = 1.0; panX = 0; panY = 0; render(); }
+        function toggleHotspots() {
+            showLabels = !showLabels;
+            document.getElementById('lblText').textContent = showLabels ? 'Ocultar Rótulos' : 'Mostrar Rótulos';
+            updatePinPositions();
         }
 
-        function togglePhiSpiral() {
-            showPhi = !showPhi;
-            if (phiPlane) phiPlane.setEnabled(showPhi);
-        }
-
-        function resetCamera() {
-            if (camera) {
-                camera.alpha = -Math.PI / 2;
-                camera.beta = Math.PI / 2.3;
-                camera.radius = 44;
-                camera.target = new BABYLON.Vector3(0, 5, 0);
-            }
-        }
-
-        function openPhotoViewer() {
-            const modal = document.getElementById("photoModal");
-            const img = document.getElementById("archaeologyImg");
-            img.src = window.PARTHENON_RUINS_SVG_B64 || "";
-            modal.classList.add("visible");
-        }
-
-        function closePhotoViewer() {
-            document.getElementById("photoModal").classList.remove("visible");
-        }
-
-        function speakCurrentInfo() {
-            if (!('speechSynthesis' in window)) {
-                alert("La síntesis de voz no está soportada en este navegador.");
-                return;
-            }
-            window.speechSynthesis.cancel();
-            const text = document.getElementById("infoTitle").textContent + ". " + document.getElementById("infoBody").textContent;
-            const utter = new SpeechSynthesisUtterance(text);
-            utter.lang = 'es-ES';
-            utter.rate = 0.95;
-            window.speechSynthesis.speak(utter);
-        }
-
-        // Inicialización
-        window.addEventListener("DOMContentLoaded", () => {
-            renderHotspots();
-            createScene();
-            engine.runRenderLoop(() => {
-                if (scene) scene.render();
-            });
-            window.addEventListener("resize", () => engine.resize());
+        // Paneo
+        canvas.addEventListener('mousedown', e => {
+            isDragging = true;
+            startX = e.clientX - panX;
+            startY = e.clientY - panY;
         });
+        window.addEventListener('mousemove', e => {
+            if (!isDragging) return;
+            panX = e.clientX - startX;
+            panY = e.clientY - startY;
+            render();
+        });
+        window.addEventListener('mouseup', () => { isDragging = false; });
+
+        setTimeout(render, 150);
     </script>
 </body>
 </html>
