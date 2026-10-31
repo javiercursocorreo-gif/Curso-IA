@@ -6,17 +6,19 @@
 
 ---
 
-## 📊 RESUMEN DE PROGRESO Y CALENDARIO (LOTES DE 5 SESIONES)
+## 📊 RESUMEN DEL NUEVO PLAN MAESTRO NASA EYES 3D (38 SESIONES: 03 A 40)
+*Arquitectura 100% interactiva en tiempo real sin talleres de código, con visores oficiales de NASA Eyes, tarjeta HUD flotante de exploración didáctica y botones de salto rápido a lunas y naves asociadas.*
 
-| Bloque / Día | Sesiones | Estado | Contenido Principal |
-| :--- | :---: | :---: | :--- |
-| **Fase 1 (Completada)** | **01 a 14** | ✅ **100% HECHO** | Pulmones, Corazón, Pompeya, Ojo, Sistema Solar, Cerebro, Luna, Motor CAD, T-Rex, Molar, Stradivarius, Helix, ADN, Júpiter. |
-| **Lote 1 (Completado)** | **15 a 19** | ✅ **100% HECHO** | Partenón, Hígado, Tutankamón, Neurona Piramidal, Saturno y Anillos. |
-| **Lote 2 (Día 2 / Próximo Chat)** | **20 a 24** | ⏳ **PENDIENTE** | Mano Humana, Escala Cósmica, Esfera de Dyson, Termodinámica Molecular, 11 Dimensiones / Calabi-Yau. |
-| **Lote 3 (Día 3 / Chat 3)** | **25 a 29** | ⏳ **PENDIENTE** | Relatividad Especial, Agujero Negro Supermasivo, Átomo y Orbitales, Tabla Periódica, Doble Rendija Cuántica. |
-| **Lote 4 (Día 4 / Chat 4)** | **30 a 34** | ⏳ **PENDIENTE** | Computación Cuántica & Bloch, Arrecife de Coral, Red Trófica Fluvial, Mitocondria & ATP, Telómeros & Telomerasa. |
-| **Lote 5 (Día 5 / Chat 5)** | **35 a 39** | ⏳ **PENDIENTE** | Selva Tropical & Ríos Voladores, Canales Iónicos & Neurotoxinas, Piel Humana, Columna Vertebral, Iridiscencia Óptica. |
-| **Lote 6 (Día 6 / Chat 6)** | **40** | ⏳ **PENDIENTE** | Regeneración Tisular & Colágeno + Compilación Maestra Final (01 a 40) y Cierre del Bloque COD. |
+| Lote / Chat | Sesiones | Contenido Principal (NASA Eyes Oficial) | Estado |
+| :--- | :---: | :--- | :---: |
+| **Lote 1** | **03 a 07** | Sistema Solar en Vivo, Tierra & Clima, ISS Tripulada, Luna & Artemisa, El Sol & Sonda Parker | ⏳ **PENDIENTE** |
+| **Lote 2** | **08 a 12** | Mercurio & BepiColombo, Telescopio Hubble, Venus Infierno, Marte Rojo, Curiosity & Perseverance | ⏳ **PENDIENTE** |
+| **Lote 3** | **13 a 17** | Ingenuity & Lunas Fobos/Deimos, James Webb (JWST), Deep Space Network (DSN Madrid), Radar Asteroides NEOs, Ceres & Vesta | ⏳ **PENDIENTE** |
+| **Lote 4** | **18 a 22** | Defensa Planetaria DART, Psyche Mundo de Metal, Cometa Rosetta & Halley, Júpiter & Juno, Europa Océano Submarino | ⏳ **PENDIENTE** |
+| **Lote 5** | **23 a 27** | Ío Volcánico de Azufre, Ganimedes & Calisto (JUICE), Observatorios Chandra & Roman, Saturno & Cassini, Titán & Dragonfly | ⏳ **PENDIENTE** |
+| **Lote 6** | **28 a 32** | Encélado Géiseres, Mimas & Jápeto Bipolares, Voyager 1 & 2 Interestelar, Urano Inclinado & Miranda, Neptuno Vientos | ⏳ **PENDIENTE** |
+| **Lote 7** | **33 a 37** | Tritón Criovolcanes, Plutón & Caronte (New Horizons), Arrokoth Kuiper, Atlas 5.500 Exoplanetas, TRAPPIST-1 Siete Tierras | ⏳ **PENDIENTE** |
+| **Lote 8** | **38 a 40** | Tierras Gemelas Kepler-186f/452b, Mundos Extremos & Lava, Gran Síntesis Cósmica & Cierre Bloque COD | ⏳ **PENDIENTE** |
 
 ---
 
@@ -24,28 +26,32 @@
 
 ---
 
-### 🟢 HERENCIA LOTE 1 (DÍA 1 / CHAT 1) • SESIONES 15 A 19 (5 SESIONES)
-*Copia el siguiente bloque completo y pégalo en el nuevo chat para iniciar el Día 1:*
+### 🟢 HERENCIA LOTE 1 (DÍA 1 / CHAT 1) • SESIONES 03 A 07 (5 SESIONES NASA EYES)
+*Copia el siguiente bloque completo y pégalo en el nuevo chat para iniciar el Lote 1:*
 
 ```markdown
-# HERENCIA PARA EL NUEVO CHAT: LOTE 1 [COD-015 A COD-019]
+# HERENCIA PARA EL NUEVO CHAT: LOTE 1 NASA EYES [COD-003 A COD-007]
 
 ### 1. OBJETIVO DEL TURNO
-Auditar, reconstruir y blindar 5 simuladores interactivos y sus 5 fichas didácticas oficiales en PDF de las sesiones 15 a 19, erradicando dibujos procedurales o mallas toscas de Babylon.js y sustituyéndolos por Three.js / visores fotográficos de alta resolución con datos científicos reales en Base64.
+Construir y blindar 5 simuladores científicos 3D oficiales basados en NASA Eyes y sus 5 fichas didácticas oficiales de 1 página en PDF (sin talleres de copiado de código) correspondientes a las sesiones 03 a 07:
+- Cero dibujos inventados y cero mallas toscas.
+- Formato oficial: Visor interactivo en pantalla completa con incrustación oficial de NASA Eyes + tarjeta flotante HUD translúcida con botón [Ocultar / Mostrar info] + botones de navegación rápida a lunas y naves asociadas.
+- Ficha didáctica oficial de 1 página (ReportLab): Explicación científica del fenómeno y controles, acreditación oficial (NASA/JPL/Caltech) y 3 preguntas para reflexionar con Gemini en clase.
 
-### 2. CATÁLOGO OFICIAL DEL LOTE 1 (SESIONES 15 A 19)
-- **Sesión 15 [COD-015]:** El Partenón de Atenas & Proporción Áurea (Acrópolis / Fotogrametría arquitectónica).
-- **Sesión 16 [COD-016]:** Hígado Humano y Sistema Hepatobiliar (NIH 3D Print Exchange / TAC médica).
-- **Sesión 17 [COD-017]:** Faraón Tutankamón y Máscara de Oro (Tumba KV62 / Museo de El Cairo).
-- **Sesión 18 [COD-018]:** Neurona Piramidal Cortical y Sinapsis (NeuroMorpho.Org / NIH).
-- **Sesión 19 [COD-019]:** Saturno, Anillos y División de Cassini (NASA Cassini).
+### 2. CATÁLOGO OFICIAL DEL LOTE 1 (SESIONES 03 A 07)
+1. **Sesión 03 [COD-003]:** El Sistema Solar en Tiempo Real (`https://eyes.nasa.gov/apps/solar-system/#/home?embed=true`). Salto a mundos interiores/exteriores y planetas.
+2. **Sesión 04 [COD-004]:** La Tierra y el Clima en Vivo (`https://eyes.nasa.gov/apps/earth/#/`). Monitor satelital de CO₂, nivel del mar, ozono polar y corrientes oceánicas en vivo.
+3. **Sesión 05 [COD-005]:** Estación Espacial Internacional (ISS) (`https://eyes.nasa.gov/apps/solar-system/#/sc_iss?embed=true`). Órbita baja a 400 km, módulos de investigación y vida astronauta.
+4. **Sesión 06 [COD-006]:** La Luna y el Programa Artemisa (`https://eyes.nasa.gov/apps/solar-system/#/moon?embed=true`). Relieve 3D de la Luna, cráteres con hielo de agua, lugares de alunizaje Apolo y nave Orión (`#/sc_orion`).
+5. **Sesión 07 [COD-007]:** El Sol y la Sonda Parker (`https://eyes.nasa.gov/apps/solar-system/#/sun?embed=true`). Corona solar, viento solar y la sonda Parker Solar Probe (`#/sc_parker_solar_probe`).
 
 ### 3. REGLAS TÉCNICAS OBLIGATORIAS
-1. **Activos Reales en Base64:** Guardados en `SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/`. Prohibido inventar geometrías en canvas procedural.
-2. **Fichas Didácticas de 1 Página:** Scripts `build_pdf_cod_015.py` a `build_pdf_cod_019.py` en `00. SCRIPTS_PYTHON/`.
-3. **Prompts Maestros Blindados:** Con URLs oficiales libres de CORS, scripts de Babylon/Three.js y prohibición explícita de canvas.
-4. **Modo 100% Silencioso:** Cero preguntas intermedias, cero ventanas de submit/aprobación.
-5. **Entrega Final:** Un único bloque terminal correlativo `[COMANDO 01]` para compilar los 5 PDFs, abrir en Safari y desplegar a GitHub.
+1. **Doble Despliegue de Simuladores HTML:** Crear/actualizar en:
+   - `SIMULADORES_INTERACTIVOS/01_SIMULADORES/`
+   - `CLASES/EXPORTACION_FICHAS_CLASSROOM_PDF/100. [SESSIONS] TERNAS_LISTAS_PARA_CLASSROOM/0X_Sesion/`
+2. **Fichas Didácticas de 1 Página:** Actualizar/crear `build_pdf_cod_003.py` a `build_pdf_cod_007.py` en `00. SCRIPTS_PYTHON/` con la nueva estructura oficial (ReportLab Platypus, márgenes 36pt, interlineado ajustado a 1 página estricta).
+3. **Modo 100% Silencioso y Cero Submits:** Trabajo desatendido de principio a fin, sin preguntas intermedias ni confirmaciones.
+4. **Entrega Final:** Un único bloque terminal correlativo `[COMANDO 01]` que compile los 5 PDFs, abra los 5 simuladores en Safari para validación visual y despliegue todo a GitHub Pages (`git add -A`, `git commit`, `git push origin main`).
 
 INSTRUCCIÓN: Procede directamente en silencio de principio a fin.
 ```

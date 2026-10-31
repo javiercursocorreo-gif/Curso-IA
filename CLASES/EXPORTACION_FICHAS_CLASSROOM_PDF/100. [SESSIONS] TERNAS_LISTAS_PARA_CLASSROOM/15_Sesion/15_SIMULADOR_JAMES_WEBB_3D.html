@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sesión 15 • Simulador Fotográfico Real: Telescopio Espacial James Webb (JWST) • NASA / ESA / CSA [COD-015]</title>
+    <!-- Fuentes Tipográficas Oficiales -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+    <!-- Astrofotografía Científica Oficial en Base64 Autónomo (NASA JWST Primary Mirror Cleanroom) -->
+    <script src="../../../../SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/jwst_photo_b64.js"></script>
+    <script src="../../../../../SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/jwst_photo_b64.js"></script>
+    <style>
+        :root {
+            --bg-base: #010206;
+            --bg-panel: rgba(8, 12, 22, 0.94);
+            --jwst-gold: #fbbf24;
+            --jwst-amber: #f59e0b;
+            --jwst-glow: rgba(251, 191, 36, 0.4);
+            --ir-magenta: #f43f5e;
+            --cyan-space: #38bdf8;
+            --text-main: #f8fafc;
+            --text-sub: #cbd5e1;
+            --font-title: 'Cinzel', serif;
+            --font-sans: 'Inter', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+        html, body {
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            font-family: var(--font-sans);
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            font-size: 14px;
+        }
+
+        header {
+            background: linear-gradient(180deg, rgba(12, 16, 28, 0.98) 0%, rgba(12, 16, 28, 0.88) 100%);
+            backdrop-filter: blur(14px);
+            border-bottom: 1px solid rgba(251, 191, 36, 0.35);
+            padding: 10px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+            z-index: 50;
+        }
+
+        .header-title-box { display: flex; align-items: center; gap: 14px; }
+        .badge-code {
+            background: rgba(251, 191, 36, 0.18);
+            color: var(--jwst-gold);
+            border: 1px solid rgba(251, 191, 36, 0.5);
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            font-weight: 800;
+            padding: 4px 10px;
+            border-radius: 8px;
+        }
+
+        h1 {
+            font-family: var(--font-title);
+            font-size: 1.22rem;
+            font-weight: 800;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .pill-status {
+            background: rgba(56, 189, 248, 0.12);
+            color: var(--cyan-space);
+            border: 1px solid rgba(56, 189, 248, 0.4);
+            font-size: 0.82rem;
+            font-weight: 700;
+            padding: 5px 13px;
+            border-radius: 9999px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .pulse-dot {
+            width: 8px; height: 8px; border-radius: 50%;
+            background: #fbbf24; box-shadow: 0 0 10px #fbbf24;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+        .workspace-grid {
+            flex: 1;
+            min-height: 0;
+            display: grid;
+            grid-template-columns: 340px 1fr 360px;
+            background: #010204;
+        }
+
+        .sidebar {
+            background: var(--bg-panel);
+            backdrop-filter: blur(16px);
+            padding: 18px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            z-index: 20;
+            border-right: 1px solid rgba(251, 191, 36, 0.2);
+        }
+        .sidebar-right {
+            border-right: none;
+            border-left: 1px solid rgba(251, 191, 36, 0.2);
+        }
+
+        .card-concept {
+            background: linear-gradient(135deg, rgba(251, 191, 36, 0.15) 0%, rgba(10, 14, 24, 0.95) 100%);
+            border: 1.5px solid var(--jwst-gold);
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6);
+        }
+        .card-concept h2 {
+            font-family: var(--font-title);
+            color: var(--jwst-gold);
+            font-size: 1.05rem;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .card-concept p {
+            color: var(--text-sub);
+            font-size: 0.85rem;
+            line-height: 1.45;
+        }
+
+        .section-label {
+            font-family: var(--font-mono);
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--cyan-space);
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .detail-box {
+            background: rgba(15, 23, 42, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 14px;
+        }
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            font-size: 0.84rem;
+        }
+        .detail-item:last-child { border-bottom: none; }
+        .detail-name { color: #94a3b8; }
+        .detail-val { color: #f1f5f9; font-weight: 600; font-family: var(--font-mono); text-align: right; }
+
+        .citation-box {
+            background: rgba(56, 189, 248, 0.08);
+            border-left: 3px solid var(--cyan-space);
+            padding: 12px 14px;
+            border-radius: 0 8px 8px 0;
+            font-size: 0.80rem;
+            color: #94a3b8;
+            line-height: 1.45;
+        }
+        .citation-box b { color: var(--cyan-space); }
+
+        .viewer-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: radial-gradient(circle at center, #090e1c 0%, #010206 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        canvas {
+            width: 100%;
+            height: 100%;
+            cursor: grab;
+            display: block;
+        }
+        canvas:active { cursor: grabbing; }
+
+        .hud-badge {
+            position: absolute;
+            top: 18px;
+            left: 20px;
+            background: rgba(8, 12, 22, 0.85);
+            border: 1px solid rgba(251, 191, 36, 0.3);
+            backdrop-filter: blur(10px);
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-family: var(--font-mono);
+            font-size: 0.80rem;
+            color: var(--jwst-gold);
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .controls-overlay {
+            position: absolute;
+            bottom: 20px;
+            display: flex;
+            gap: 10px;
+            background: rgba(8, 12, 22, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(12px);
+            padding: 8px 14px;
+            border-radius: 40px;
+            z-index: 10;
+        }
+
+        .btn-ctrl {
+            background: rgba(30, 41, 59, 0.8);
+            color: #f8fafc;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            padding: 7px 14px;
+            border-radius: 20px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn-ctrl:hover {
+            background: rgba(251, 191, 36, 0.25);
+            border-color: var(--jwst-gold);
+            color: var(--jwst-gold);
+        }
+        .btn-ctrl.active {
+            background: var(--jwst-gold);
+            color: #010206;
+            border-color: var(--jwst-gold);
+            font-weight: 700;
+        }
+
+        .hotspot-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .hotspot-item {
+            background: rgba(15, 23, 42, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+            padding: 10px 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .hotspot-item:hover, .hotspot-item.active {
+            background: rgba(251, 191, 36, 0.15);
+            border-color: var(--jwst-gold);
+            transform: translateX(4px);
+        }
+        .hotspot-num {
+            display: inline-block;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: var(--jwst-gold);
+            color: #010206;
+            text-align: center;
+            line-height: 22px;
+            font-weight: 800;
+            font-size: 0.75rem;
+            margin-right: 8px;
+            font-family: var(--font-mono);
+        }
+        .hotspot-name {
+            font-weight: 700;
+            color: #f1f5f9;
+            font-size: 0.86rem;
+        }
+        .hotspot-sub {
+            font-size: 0.75rem;
+            color: #94a3b8;
+            margin-top: 3px;
+            margin-left: 30px;
+        }
+
+        .info-card {
+            background: linear-gradient(180deg, rgba(15, 23, 42, 0.9) 0%, rgba(8, 12, 22, 0.95) 100%);
+            border: 1px solid var(--cyan-space);
+            border-radius: 12px;
+            padding: 16px;
+        }
+        .info-card h3 {
+            font-family: var(--font-title);
+            color: var(--cyan-space);
+            font-size: 0.98rem;
+            margin-bottom: 8px;
+        }
+        .info-card p {
+            color: var(--text-sub);
+            font-size: 0.82rem;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-title-box">
+            <span class="badge-code">[COD-015]</span>
+            <h1>🔭 Telescopio Espacial James Webb (JWST) • NASA / ESA / CSA</h1>
+        </div>
+        <div class="pill-status">
+            <div class="pulse-dot"></div>
+            <span>ÓRBITA HALO L2 • 1.5M KM DE LA TIERRA</span>
+        </div>
+    </header>
+
+    <div class="workspace-grid">
+        <!-- Sidebar Izquierda: Fundamentos Científicos y Óptica -->
+        <aside class="sidebar">
+            <div class="card-concept">
+                <h2>🛰️ El Observatorio Infrarrojo</h2>
+                <p>El <b>James Webb Space Telescope (JWST)</b> es el observatorio espacial más complejo de la historia humana. Equipado con un espejo primario de 6,5 metros de diámetro formado por <b>18 segmentos hexagonales de berilio ultraligero revestidos de oro puro</b>, opera en el punto gravitacional de Lagrange L2 para desvelar las primeras galaxias del Universo.</p>
+            </div>
+
+            <div>
+                <div class="section-label">Especificaciones Técnicas</div>
+                <div class="detail-box">
+                    <div class="detail-item">
+                        <span class="detail-name">Apertura Primaria:</span>
+                        <span class="detail-val">6,5 metros (21,3 ft)</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-name">Segmentos Hexagonales:</span>
+                        <span class="detail-val">18 × 1,32 m (Berilio-Oro)</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-name">Espesor Capa de Oro:</span>
+                        <span class="detail-val">100 nm (48,25 gramos tot.)</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-name">Protección Térmica:</span>
+                        <span class="detail-val">5 capas Kapton (21×14 m)</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-name">Temp. Criogénica MIRI:</span>
+                        <span class="detail-val">6,7 Kelvin (-266,45 °C)</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-name">Rango Espectral:</span>
+                        <span class="detail-val">0,6 a 28,3 micrómetros (IR)</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="citation-box">
+                <b>Acreditación Científica Oficial:</b> Fotografía científica de alta resolución capturada durante el ensamblaje e inspección óptica en la sala limpia (Cleanroom) del <b>NASA Goddard Space Flight Center (GSFC)</b> y <b>Northrop Grumman Aerospace</b>. Textura respaldada en Base64 autónomo para ejecución 100% offline sin dependencias externas.
+            </div>
+        </aside>
+
+        <!-- Visor Fotográfico Interactivo Central -->
+        <main class="viewer-container">
+            <div class="hud-badge" id="hudBadge">ZOOM: 100% • MODO: ÓPTICO REAL NASA GSFC</div>
+            <canvas id="photoCanvas"></canvas>
+
+            <div class="controls-overlay">
+                <button class="btn-ctrl active" id="btnOptical" onclick="setMode('optical')">🔍 Óptico Real</button>
+                <button class="btn-ctrl" id="btnIr" onclick="setMode('ir')">🔴 Infrarrojo MIRI</button>
+                <button class="btn-ctrl" id="btnHex" onclick="setMode('hex')">⬡ Segmentos Espejo</button>
+                <button class="btn-ctrl" id="btnPins" onclick="togglePins()">📍 Rótulos</button>
+                <button class="btn-ctrl" onclick="zoomIn()">➕</button>
+                <button class="btn-ctrl" onclick="zoomOut()">➖</button>
+                <button class="btn-ctrl" onclick="resetView()">🔄 Centrar</button>
+            </div>
+        </main>
+
+        <!-- Sidebar Derecha: Componentes Anatómicos del Telescopio -->
+        <aside class="sidebar sidebar-right">
+            <div class="info-card">
+                <h3 id="infoTitle">1. Espejo Primario de Berilio-Oro</h3>
+                <p id="infoDesc">Constituido por 18 segmentos hexagonales de berilio de grado óptico O-30. Cada segmento mide 1,32 m, pesa solo 20 kg y está recubierto con una lámina de oro de 100 nm vaporizada al vacío con una capa protectora de dióxido de silicio (SiO2). Refleja el 98% de la radiación infrarroja cósmica.</p>
+            </div>
+
+            <div>
+                <div class="section-label">Puntos Anatómicos de Exploración</div>
+                <div class="hotspot-list" id="hotspotList">
+                    <!-- Rellenado dinámico por JS -->
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <script>
+        const HOTSPOTS = [
+            {
+                id: 1,
+                name: "Espejo Primario (18 Hexágonos)",
+                sub: "Malla de 6,5 m en Berilio y Oro Puro",
+                x: 0.50, y: 0.38,
+                desc: "Conjunto parabólico de 18 segmentos hexagonales independientes calibrados mediante 126 actuadores mecánicos nanométricos traseros. Proporciona un área colectora de 25,4 m², cinco veces mayor que la del telescopio Hubble."
+            },
+            {
+                id: 2,
+                name: "Espejo Secundario y Mástiles",
+                sub: "Trípode Plegable de Fibra de Carbono",
+                x: 0.50, y: 0.22,
+                desc: "Espejo circular convexo de 0,74 metros montado en la cúspide de tres mástiles de fibra de carbono de 7,6 metros de longitud. Dirige la luz concentrada hacia el subsistema óptico terciario central y los instrumentos científicos."
+            },
+            {
+                id: 3,
+                name: "Escudo Térmico Parasol (Sunshield)",
+                sub: "5 Membranas de Kapton del Tamaño de una Pista de Tenis",
+                x: 0.50, y: 0.76,
+                desc: "Estructura de cinco capas de poliamida Kapton aluminizada y silicio dopado (21 × 14 m). Bloquea la radiación del Sol, la Tierra y la Luna, rebajando la temperatura desde +85 °C en el lado caliente hasta -233 °C (40 K) en los instrumentos."
+            },
+            {
+                id: 4,
+                name: "Módulo de Instrumentos (ISIM)",
+                sub: "NIRCam, NIRSpec, MIRI y FGS/NIRISS",
+                x: 0.52, y: 0.48,
+                desc: "Ubicado detrás del espejo primario. Aloja las cuatro cargas útiles científicas de vanguardia. La cámara e interferómetro MIRI cuenta con su propio criorefrigerador activo de helio en bucle cerrado a 6,7 Kelvin (-266 °C)."
+            },
+            {
+                id: 5,
+                name: "Bus de la Nave Espacial",
+                sub: "Telemetría, Rastreadores Estelares y Propulsión",
+                x: 0.50, y: 0.88,
+                desc: "Aloja las computadoras de a bordo, giróscopos de alta precisión, antenas de comunicación en banda Ka y tanques de combustible dinitrógeno-hidracina que mantienen la órbita de halo en L2 durante más de 20 años."
+            },
+            {
+                id: 6,
+                name: "Panel Solar y Antena de Alta Ganancia",
+                sub: "Generación de 2.000 W y Transmisión a Tierra",
+                x: 0.35, y: 0.82,
+                desc: "Matriz fotovoltaica articulada que suministra 2 kW de energía continua en el lado cálido del parasol. La antena parabólica transmite datos de alta tasa (28 Mbps) a la Red del Espacio Profundo (DSN) de la NASA."
+            }
+        ];
+
+        const canvas = document.getElementById("photoCanvas");
+        const ctx = canvas.getContext("2d");
+
+        let img = new Image();
+        let imgLoaded = false;
+        let scale = 1.0;
+        let panX = 0, panY = 0;
+        let isDragging = false;
+        let startX, startY;
+        let viewMode = 'optical'; // 'optical', 'ir', 'hex'
+        let showPins = true;
+        let selectedHotspot = 1;
+
+        function initImage() {
+            if (window.JWST_PHOTO_B64) {
+                img.src = window.JWST_PHOTO_B64;
+            } else {
+                img.src = "https://upload.wikimedia.org/wikipedia/commons/e/e0/James_Webb_Space_Telescope_mirror.jpg";
+            }
+            img.onload = () => {
+                imgLoaded = true;
+                fitToScreen();
+                render();
+            };
+        }
+
+        function resizeCanvas() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight;
+            if (imgLoaded) {
+                fitToScreen();
+                render();
+            }
+        }
+        window.addEventListener("resize", resizeCanvas);
+        resizeCanvas();
+
+        function fitToScreen() {
+            scale = Math.min((canvas.width - 60) / img.width, (canvas.height - 60) / img.height);
+            panX = (canvas.width - img.width * scale) / 2;
+            panY = (canvas.height - img.height * scale) / 2;
+        }
+
+        function render() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "#010206";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            if (!imgLoaded) {
+                ctx.fillStyle = "#fbbf24";
+                ctx.font = "bold 16px var(--font-mono)";
+                ctx.textAlign = "center";
+                ctx.fillText("CARGANDO ASTROFOTOGRAFÍA CIENTÍFICA JWST NASA GSFC...", canvas.width / 2, canvas.height / 2);
+                return;
+            }
+
+            ctx.save();
+            ctx.translate(panX, panY);
+            ctx.scale(scale, scale);
+
+            if (viewMode === 'ir') {
+                ctx.filter = "hue-rotate(290deg) contrast(1.4) saturate(1.6)";
+            } else if (viewMode === 'hex') {
+                ctx.filter = "contrast(1.2) brightness(0.95)";
+            } else {
+                ctx.filter = "none";
+            }
+
+            ctx.drawImage(img, 0, 0);
+
+            // Resalte de los segmentos hexagonales en modo "hex"
+            if (viewMode === 'hex') {
+                ctx.save();
+                ctx.strokeStyle = "rgba(251, 191, 36, 0.85)";
+                ctx.lineWidth = 3;
+                const cx = img.width * 0.50;
+                const cy = img.height * 0.38;
+                const r = img.width * 0.22;
+                ctx.beginPath();
+                for (let i = 0; i < 6; i++) {
+                    const angle = (Math.PI / 3) * i;
+                    const x = cx + r * Math.cos(angle);
+                    const y = cy + (r * 0.88) * Math.sin(angle);
+                    if (i === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                }
+                ctx.closePath();
+                ctx.stroke();
+                ctx.fillStyle = "rgba(251, 191, 36, 0.95)";
+                ctx.font = "bold 14px var(--font-mono)";
+                ctx.fillText("18 SEGMENTOS HEXAGONALES • 6,5 M APERTURA PRIMARIA", cx - 180, cy - r * 0.95);
+                ctx.restore();
+            }
+
+            ctx.restore();
+
+            // Marcadores Hotspots
+            if (showPins) {
+                HOTSPOTS.forEach(h => {
+                    const px = panX + (h.x * img.width) * scale;
+                    const py = panY + (h.y * img.height) * scale;
+                    const isSel = (h.id === selectedHotspot);
+
+                    ctx.beginPath();
+                    ctx.arc(px, py, isSel ? 16 : 12, 0, Math.PI * 2);
+                    ctx.fillStyle = isSel ? "rgba(251, 191, 36, 0.4)" : "rgba(245, 158, 11, 0.25)";
+                    ctx.fill();
+                    ctx.lineWidth = isSel ? 2.5 : 1.5;
+                    ctx.strokeStyle = isSel ? "#fbbf24" : "#f59e0b";
+                    ctx.stroke();
+
+                    ctx.beginPath();
+                    ctx.arc(px, py, 9, 0, Math.PI * 2);
+                    ctx.fillStyle = isSel ? "#fbbf24" : "#f59e0b";
+                    ctx.fill();
+
+                    ctx.fillStyle = "#010206";
+                    ctx.font = "bold 10px var(--font-mono)";
+                    ctx.textAlign = "center";
+                    ctx.textBaseline = "middle";
+                    ctx.fillText(h.id, px, py);
+                });
+            }
+
+            const modeLabels = {
+                'optical': 'ÓPTICO NATURAL NASA GSFC',
+                'ir': 'INFRARROJO TÉRMICO MIRI (Falso Color)',
+                'hex': 'SEGMENTACIÓN HEXAGONAL DE BERILIO'
+            };
+            document.getElementById("hudBadge").innerText = `ZOOM: ${Math.round(scale * 100)}% • MODO: ${modeLabels[viewMode]}`;
+        }
+
+        canvas.addEventListener("mousedown", (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const mx = e.clientX - rect.left;
+            const my = e.clientY - rect.top;
+
+            let clickedPin = false;
+            HOTSPOTS.forEach(h => {
+                const px = panX + (h.x * img.width) * scale;
+                const py = panY + (h.y * img.height) * scale;
+                const dist = Math.hypot(mx - px, my - py);
+                if (dist <= 20) {
+                    selectHotspot(h.id);
+                    clickedPin = true;
+                }
+            });
+
+            if (!clickedPin) {
+                isDragging = true;
+                startX = mx - panX;
+                startY = my - panY;
+            }
+        });
+
+        canvas.addEventListener("mousemove", (e) => {
+            if (!isDragging) return;
+            const rect = canvas.getBoundingClientRect();
+            panX = e.clientX - rect.left - startX;
+            panY = e.clientY - rect.top - startY;
+            render();
+        });
+
+        window.addEventListener("mouseup", () => { isDragging = false; });
+
+        canvas.addEventListener("wheel", (e) => {
+            e.preventDefault();
+            const zoomFactor = e.deltaY < 0 ? 1.15 : 0.85;
+            zoom(zoomFactor, e.clientX, e.clientY);
+        });
+
+        function zoom(factor, cx, cy) {
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = cx ? cx - rect.left : canvas.width / 2;
+            const mouseY = cy ? cy - rect.top : canvas.height / 2;
+
+            const newScale = Math.max(0.3, Math.min(6.0, scale * factor));
+            panX = mouseX - (mouseX - panX) * (newScale / scale);
+            panY = mouseY - (mouseY - panY) * (newScale / scale);
+            scale = newScale;
+            render();
+        }
+
+        function zoomIn() { zoom(1.25); }
+        function zoomOut() { zoom(0.8); }
+        function resetView() { fitToScreen(); render(); }
+
+        function setMode(mode) {
+            viewMode = mode;
+            document.getElementById("btnOptical").classList.toggle("active", mode === 'optical');
+            document.getElementById("btnIr").classList.toggle("active", mode === 'ir');
+            document.getElementById("btnHex").classList.toggle("active", mode === 'hex');
+            render();
+        }
+
+        function togglePins() {
+            showPins = !showPins;
+            document.getElementById("btnPins").classList.toggle("active", showPins);
+            render();
+        }
+
+        function selectHotspot(id) {
+            selectedHotspot = id;
+            const h = HOTSPOTS.find(item => item.id === id);
+            if (h) {
+                document.getElementById("infoTitle").innerText = `${h.id}. ${h.name}`;
+                document.getElementById("infoDesc").innerText = h.desc;
+                updateHotspotListUI();
+                render();
+            }
+        }
+
+        function updateHotspotListUI() {
+            const listEl = document.getElementById("hotspotList");
+            listEl.innerHTML = "";
+            HOTSPOTS.forEach(h => {
+                const item = document.createElement("div");
+                item.className = `hotspot-item ${h.id === selectedHotspot ? 'active' : ''}`;
+                item.onclick = () => selectHotspot(h.id);
+                item.innerHTML = `
+                    <div>
+                        <span class="hotspot-num">${h.id}</span>
+                        <span class="hotspot-name">${h.name}</span>
+                    </div>
+                    <div class="hotspot-sub">${h.sub}</div>
+                `;
+                listEl.appendChild(item);
+            });
+        }
+
+        updateHotspotListUI();
+        initImage();
+    </script>
+</body>
+</html>
+

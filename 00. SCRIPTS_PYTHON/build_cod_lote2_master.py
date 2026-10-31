@@ -8,7 +8,7 @@ Ejecuta la generación de las 10 Fichas Didácticas Oficiales en PDF:
 - COD-012: Nebulosa Helix 'El Ojo de Dios' (NASA Hubble & Spitzer)
 - COD-013: Doble Hélice de ADN (Protein Data Bank / Cristalografía)
 - COD-014: Auroras Ultravioletas de Júpiter (NASA Cassini & Hubble)
-- COD-015: El Partenón de Atenas & Proporción Áurea (Acrópolis)
+- COD-015: Telescopio Espacial James Webb (JWST • NASA / ESA / CSA)
 - COD-016: Hígado Humano y Sistema Hepatobiliar (NIH 3D)
 - COD-017: Faraón Tutankamón y Máscara de Oro (Tumba KV62)
 - COD-018: Neurona Piramidal Cortical y Sinapsis (NeuroMorpho.Org / NIH)
@@ -35,7 +35,7 @@ TASKS = [
     ("COD-012 (Nebulosa Helix 3D)", build_cod_012_taller_3d_pdf),
     ("COD-013 (Doble Hélice ADN 3D)", build_cod_013_taller_3d_pdf),
     ("COD-014 (Auroras de Júpiter 3D)", build_cod_014_taller_3d_pdf),
-    ("COD-015 (Partenón de Atenas 3D)", build_cod_015_taller_3d_pdf),
+    ("COD-015 (James Webb JWST 3D)", build_cod_015_taller_3d_pdf),
     ("COD-016 (Hígado Humano 3D)", build_cod_016_taller_3d_pdf),
     ("COD-017 (Máscara Tutankamón 3D)", build_cod_017_taller_3d_pdf),
     ("COD-018 (Neurona Piramidal 3D)", build_cod_018_taller_3d_pdf),
