@@ -46,12 +46,13 @@ Construir y blindar 5 simuladores científicos 3D oficiales basados en NASA Eyes
 5. **Sesión 07 [COD-007]:** El Sol y la Sonda Parker (`https://eyes.nasa.gov/apps/solar-system/#/sun?embed=true`). Corona solar, viento solar y la sonda Parker Solar Probe (`#/sc_parker_solar_probe`).
 
 ### 3. REGLAS TÉCNICAS OBLIGATORIAS
-1. **Doble Despliegue de Simuladores HTML:** Crear/actualizar en:
+1. **Documento de Enlaces Centralizado:** El nuevo chat debe consultar directamente `INVENTARIO_MAESTRO_ENLACES_NASA_EYES.md` (o `INDICE_MAESTRO_SIMULACIONES_INTERACTIVAS_ESPACIO_3D.html`), donde están catalogadas todas las URLs oficiales, los parámetros `?embed=true` y los sub-enlaces de salto rápido de cada sesión.
+2. **Doble Despliegue de Simuladores HTML:** Crear/actualizar en:
    - `SIMULADORES_INTERACTIVOS/01_SIMULADORES/`
    - `CLASES/EXPORTACION_FICHAS_CLASSROOM_PDF/100. [SESSIONS] TERNAS_LISTAS_PARA_CLASSROOM/0X_Sesion/`
-2. **Fichas Didácticas de 1 Página:** Actualizar/crear `build_pdf_cod_003.py` a `build_pdf_cod_007.py` en `00. SCRIPTS_PYTHON/` con la nueva estructura oficial (ReportLab Platypus, márgenes 36pt, interlineado ajustado a 1 página estricta).
-3. **Modo 100% Silencioso y Cero Submits:** Trabajo desatendido de principio a fin, sin preguntas intermedias ni confirmaciones.
-4. **Entrega Final:** Un único bloque terminal correlativo `[COMANDO 01]` que compile los 5 PDFs, abra los 5 simuladores en Safari para validación visual y despliegue todo a GitHub Pages (`git add -A`, `git commit`, `git push origin main`).
+3. **Fichas Didácticas de 1 Página:** Actualizar/crear `build_pdf_cod_003.py` a `build_pdf_cod_007.py` en `00. SCRIPTS_PYTHON/` con la nueva estructura oficial (ReportLab Platypus, márgenes 36pt, interlineado ajustado a 1 página estricta).
+4. **Modo 100% Silencioso y Cero Submits:** Trabajo desatendido de principio a fin, sin preguntas intermedias ni confirmaciones.
+5. **Entrega Final:** Un único bloque terminal correlativo `[COMANDO 01]` que compile los 5 PDFs, abra los 5 simuladores en Safari para validación visual y despliegue todo a GitHub Pages (`git add -A`, `git commit`, `git push origin main`).
 
 INSTRUCCIÓN: Procede directamente en silencio de principio a fin.
 ```

@@ -45,6 +45,9 @@
     1. **Explicación didáctica y científica del simulador:** qué fenómeno reproduce en tiempo real, órganos/estructuras visibles y controles de interacción 360°, corte y parámetros.
     2. **Procedencia oficial y fuentes científicas:** acreditación rigurosa de las instituciones científicas (NIH, NASA, Z-Anatomy, CyArk, etc.), técnicas de captura médica/orbital (MRI 7T, tomografía, fotogrametría LiDAR) y calidad de datos.
     3. **Guía de exploración en el aula & preguntas para conversar con Gemini:** preguntas de reflexión y aprendizaje para que los alumnos dialoguen con Gemini mientras observan el modelo en pantalla.
+- **Inventario Central de Enlaces NASA Eyes 3D:**
+  - Todas las URLs oficiales, parámetros `?embed=true` y botones de salto rápido de las 38 sesiones del espacio (Sesiones 03 a 40) están catalogados de forma permanente en `INVENTARIO_MAESTRO_ENLACES_NASA_EYES.md` (en la raíz) y en `SIMULADORES_INTERACTIVOS/02_INDICES_Y_CATALOGOS/INVENTARIO_MAESTRO_ENLACES_NASA_EYES.md`.
+  - El índice visual interactivo navegable para alumnos y profesor está disponible en `INDICE_MAESTRO_SIMULACIONES_INTERACTIVAS_ESPACIO_3D.html`.
 
 ## Regla de Despliegue: Todo se Sube a GitHub Siempre (GitHub Pages & Classroom)
 - **Subida Obligatoria a GitHub en Cada Turno:**
