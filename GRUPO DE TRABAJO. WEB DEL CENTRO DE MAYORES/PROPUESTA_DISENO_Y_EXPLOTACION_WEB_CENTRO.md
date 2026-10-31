@@ -69,6 +69,7 @@ Diseñado para que los alumnos mayores trabajen de forma autónoma sin miedo a c
 * **Asistente Gemini Contextual (Tono Cercano y Humano):**
   Al pulsar `🪄 Pulir y enriquecer con IA`, la inteligencia artificial transforma las notas breves del alumno en un texto cálido, entusiasta y perfectamente redactado (evitando formalismos fríos como *"Nos complace anunciarles..."* y usando expresiones naturales como *"¡Nos vamos de excursión! Pásate a hablar con el Administrador para reservar tu sitio..."*).
 * **Vista Previa en Vivo:** Según escribe el alumno, a la derecha se renderiza la tarjeta exacta tal y como saldrá en la web pública.
+* **Pestaña de Estadísticas y Telemetría en el Backend:** Panel de métricas en tiempo real con datos de visitas diarias, mensuales y anuales; desglose exacto por dispositivo (**Móvil: 70%, Tablet: 20%, Ordenador: 10%**); secciones más consultadas (Excursiones, Menús, Talleres); horas punta de consulta (mañanas y tardes de baile); y métricas de accesibilidad (cuántas veces se pulsa el botón de lectura en voz alta).
 * **Bandeja del Administrador:** Permite guardar como borrador para que la coordinadora del centro solo tenga que hacer clic en `✓ Aprobar` antes de que el contenido sea visible.
 
 ---
