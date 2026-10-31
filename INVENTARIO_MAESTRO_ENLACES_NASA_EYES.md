@@ -29,24 +29,28 @@
 
 #### Sesión 04 [COD-004]: La Tierra y el Clima en Vivo
 - **URL Embed Principal:** `https://eyes.nasa.gov/apps/earth/#/`
-- **Sub-enlaces de Signos Vitales:**
+- **Sub-enlaces de Signos Vitales (Comprobados):**
   - Dióxido de Carbono (CO₂): `https://eyes.nasa.gov/apps/earth/#/vital-signs/carbon-dioxide`
   - Nivel Global del Mar: `https://eyes.nasa.gov/apps/earth/#/vital-signs/sea-level`
   - Capa de Ozono Polar: `https://eyes.nasa.gov/apps/earth/#/vital-signs/ozone`
   - Temperatura Superficial: `https://eyes.nasa.gov/apps/earth/#/vital-signs/global-temperature`
+  - Humedad del Suelo: `https://eyes.nasa.gov/apps/earth/#/vital-signs/soil-moisture`
+  - Monóxido de Carbono: `https://eyes.nasa.gov/apps/earth/#/vital-signs/carbon-monoxide`
+- **Nota Satélites:** En `apps/earth/#/` los satélites se inspeccionan pinchando directamente sobre su etiqueta flotante en el globo 3D (no admiten enrutamiento por hash de URL).
 
 #### Sesión 05 [COD-005]: Estación Espacial Internacional (ISS)
 - **URL Embed Principal:** `https://eyes.nasa.gov/apps/solar-system/#/sc_iss?embed=true`
-- **Sub-enlaces de Salto Rápido:**
+- **Sub-enlaces de Salto Rápido (Comprobados):**
   - La Tierra desde órbita: `https://eyes.nasa.gov/apps/solar-system/#/earth`
-  - Telescopio Hubble en órbita: `https://eyes.nasa.gov/apps/solar-system/#/sc_hubble`
+  - Sistema Solar Global: `https://eyes.nasa.gov/apps/solar-system/#/home`
+- **Nota Hubble:** El telescopio Hubble pertenece al visor Exo / LEO y no responde a rutas directas dentro del motor Solar System; no incluir botón directo en este simulador.
 
 #### Sesión 06 [COD-006]: La Luna y el Programa Artemisa
 - **URL Embed Principal:** `https://eyes.nasa.gov/apps/solar-system/#/moon?embed=true`
-- **Sub-enlaces de Salto Rápido:**
-  - Nave Artemisa Orion: `https://eyes.nasa.gov/apps/solar-system/#/sc_orion`
-  - La Tierra: `https://eyes.nasa.gov/apps/solar-system/#/earth`
-  - Lunar Reconnaissance Orbiter (LRO): `https://eyes.nasa.gov/apps/solar-system/#/sc_lro`
+- **Sub-enlaces de Salto Rápido (Comprobados):**
+  - Vista desde la Tierra: `https://eyes.nasa.gov/apps/solar-system/#/earth`
+  - Sistema Solar Global: `https://eyes.nasa.gov/apps/solar-system/#/home`
+- **Nota LRO / Artemisa:** No forzar botones externos no validados por hash; la exploración selenográfica se realiza mediante zoom 360° en la propia Luna.
 
 ---
 
@@ -54,9 +58,10 @@
 
 #### Sesión 07 [COD-007]: El Sol y la Sonda Parker
 - **URL Embed Principal:** `https://eyes.nasa.gov/apps/solar-system/#/sun?embed=true`
-- **Sub-enlaces de Salto Rápido:**
-  - Parker Solar Probe: `https://eyes.nasa.gov/apps/solar-system/#/sc_parker_solar_probe`
-  - Observatorio Solar SOHO: `https://eyes.nasa.gov/apps/solar-system/#/sc_soho`
+- **Sub-enlaces de Salto Rápido (Comprobados):**
+  - Sonda Parker Solar Probe: `https://eyes.nasa.gov/apps/solar-system/#/sc_parker_solar_probe`
+  - Sistema Solar Global: `https://eyes.nasa.gov/apps/solar-system/#/home`
+- **Nota Mercurio:** No mezclar Mercurio en el visor del Sol (Mercurio dispone de su propia sesión monográfica dedicada en COD-008).
 
 #### Sesión 08 [COD-008]: Mercurio y BepiColombo
 - **URL Embed Principal:** `https://eyes.nasa.gov/apps/solar-system/#/mercury?embed=true`
