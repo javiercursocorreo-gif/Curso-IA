@@ -2,24 +2,25 @@
 # -*- coding: utf-8 -*-
 """
 build_pdf_cod_003.py
-Genera la Ficha Didáctica Oficial de 1 Página (Letter/A4):
-4. COD-003_Taller_Crea_tu_Propio_Simulador_3D_con_Gemini.pdf
-para la Sesión 03 del Curso de IA (Simulador Arqueológico Pompeya HD y Reconstrucción del 79 d.C.).
+Ficha Didáctica Oficial de 1 Página (Letter):
+Simulador Científico 3D Oficial: El Sistema Solar en Tiempo Real (NASA Eyes) [COD-003]
+Estructura científica estricta: Explicación, Controles 360°, Acreditación Oficial (NASA/JPL)
+y 3 Preguntas de Reflexión para dialogar con Gemini en el aula.
 """
 
 import os
 import sys
+import shutil
 
 OUTPUT_DIR = "/Users/externo/Library/Mobile Documents/com~apple~CloudDocs/PERSONAL/CLASES DE TECNOLOGÍA/CURSO-IA/CLASES/EXPORTACION_FICHAS_CLASSROOM_PDF/100. [SESSIONS] TERNAS_LISTAS_PARA_CLASSROOM/03_Sesion"
 PDF_PATH = os.path.join(OUTPUT_DIR, "4. COD-003_Taller_Crea_tu_Propio_Simulador_3D_con_Gemini.pdf")
-LOCAL_BACKUP = "/Users/externo/Library/Mobile Documents/com~apple~CloudDocs/PERSONAL/CLASES DE TECNOLOGÍA/CURSO-IA/SIMULADORES_INTERACTIVOS/02_INDICES_Y_CATALOGOS/03_COD-003_Taller_Simulador_Pompeya_HD.pdf"
+ALT_PDF_PATH = os.path.join(OUTPUT_DIR, "4. COD-003_Simulador_Sistema_Solar_NASA_Eyes.pdf")
+LOCAL_BACKUP = "/Users/externo/Library/Mobile Documents/com~apple~CloudDocs/PERSONAL/CLASES DE TECNOLOGÍA/CURSO-IA/SIMULADORES_INTERACTIVOS/02_INDICES_Y_CATALOGOS/03_COD-003_Simulador_Sistema_Solar_3D.pdf"
 
 def build_cod_003_taller_3d_pdf(output_path=PDF_PATH):
     dest_path = output_path
     try:
         os.makedirs(os.path.dirname(dest_path), exist_ok=True)
-        with open(dest_path, "wb") as _:
-            pass
     except Exception:
         dest_path = LOCAL_BACKUP
         os.makedirs(os.path.dirname(dest_path), exist_ok=True)
@@ -35,146 +36,135 @@ def build_cod_003_taller_3d_pdf(output_path=PDF_PATH):
         rightMargin=36, leftMargin=36, topMargin=22, bottomMargin=20
     )
     styles = getSampleStyleSheet()
-    
+
+    c_primary = colors.HexColor('#0284C7')
+    c_gold = colors.HexColor('#D97706')
+    c_dark = colors.HexColor('#0F172A')
+    c_slate = colors.HexColor('#334155')
+
     style_header = ParagraphStyle(
         'HeaderStyle', parent=styles['Normal'],
-        fontName='Helvetica-Bold', fontSize=8.0,
-        textColor=colors.HexColor('#B45309'), alignment=1, spaceAfter=1
+        fontName='Helvetica-Bold', fontSize=8.0, leading=9.5,
+        textColor=c_gold, alignment=1, spaceAfter=1
     )
-    style_block = ParagraphStyle(
-        'BlockStyle', parent=styles['Normal'],
-        fontName='Helvetica-Bold', fontSize=9.8,
-        textColor=colors.HexColor('#0F172A'), alignment=1, spaceAfter=4
+    style_subhead = ParagraphStyle(
+        'SubheadStyle', parent=styles['Normal'],
+        fontName='Helvetica-Bold', fontSize=9.5, leading=11.5,
+        textColor=c_dark, alignment=1, spaceAfter=3
     )
     style_title = ParagraphStyle(
         'TitleStyle', parent=styles['Heading1'],
-        fontName='Helvetica-Bold', fontSize=11.8, leading=14.2,
-        textColor=colors.HexColor('#0F172A'), spaceAfter=3
+        fontName='Helvetica-Bold', fontSize=11.5, leading=14.0,
+        textColor=c_dark, spaceAfter=3
     )
-    style_section_h = ParagraphStyle(
-        'SectionHStyle', parent=styles['Heading2'],
-        fontName='Helvetica-Bold', fontSize=8.8, leading=11.2,
-        textColor=colors.HexColor('#92400E'), spaceBefore=3, spaceAfter=2
+    style_sec_h = ParagraphStyle(
+        'SecHStyle', parent=styles['Heading2'],
+        fontName='Helvetica-Bold', fontSize=8.8, leading=11.0,
+        textColor=c_primary, spaceBefore=2, spaceAfter=2
     )
     style_body = ParagraphStyle(
         'BodyStyle', parent=styles['BodyText'],
-        fontName='Helvetica', fontSize=7.9, leading=10.5,
-        textColor=colors.HexColor('#1E293B'), spaceAfter=2
+        fontName='Helvetica', fontSize=8.1, leading=10.6,
+        textColor=c_slate, spaceAfter=2
     )
-    style_task = ParagraphStyle(
-        'TaskStyle', parent=styles['Normal'],
+    style_box_text = ParagraphStyle(
+        'BoxTextStyle', parent=styles['Normal'],
         fontName='Helvetica', fontSize=7.7, leading=10.1,
-        textColor=colors.HexColor('#0F172A')
+        textColor=c_dark
     )
-    style_prompt = ParagraphStyle(
-        'PromptStyle', parent=styles['Normal'],
-        fontName='Helvetica', fontSize=7.4, leading=9.8,
-        textColor=colors.HexColor('#0F172A')
+    style_q_num = ParagraphStyle(
+        'QNumStyle', parent=styles['Normal'],
+        fontName='Helvetica-Bold', fontSize=7.8, leading=10.2,
+        textColor=c_primary
     )
 
     story = []
+
+    # Cabecera Oficial
     story.append(Paragraph("CURSO DE INTELIGENCIA ARTIFICIAL Y TECNOLOGÍA PARA ADULTOS MAYORES (60+)", style_header))
-    story.append(Paragraph("BLOQUE IV: CIENCIA INTERACTIVA & TALLER DE CÓDIGO CON GEMINI [COD]", style_block))
-    story.append(HRFlowable(width="100%", thickness=1.2, color=colors.HexColor('#B45309'), spaceAfter=4))
+    story.append(Paragraph("BLOQUE IV: CIENCIA Y SIMULADORES 3D INTERACTIVOS • EXPLORACIÓN ESPACIAL [COD]", style_subhead))
+    story.append(HRFlowable(width="100%", thickness=1.2, color=c_primary, spaceAfter=4))
 
-    story.append(Paragraph("<b>[COD-003] Taller: Crea tu simulador de Pompeya HD y Reconstrucción del 79 d.C.</b>", style_title))
+    # Título de la Ficha
+    story.append(Paragraph("<b>[COD-003] Simulador 3D Oficial: El Sistema Solar en Tiempo Real (NASA Eyes)</b>", style_title))
 
-    story.append(Paragraph("💡 <b>Misión Didáctica • Arqueología e Historia Visual con Gemini:</b>", style_section_h))
+    # Sección 1: Explicación Didáctica
+    story.append(Paragraph("🔭 <b>Fenómeno Científico y Observación en Tiempo Real:</b>", style_sec_h))
     story.append(Paragraph(
-        "En esta sesión pedirás a la Inteligencia Artificial construir un visor interactivo de comparación temporal deslizante entre las ruinas excavadas de la ciudad romana de <b>Pompeya</b> y su reconstrucción arqueológica en el año 79 d.C. "
-        "<b>Sin saber programar:</b> pedirás el código a Gemini con el prompt maestro, lo probarás en el <b>Taller de Pruebas</b> y comprobarás cómo un deslizador central revela los frescos policromados y mosaicos originales sobre las ruinas.",
+        "Este simulador oficial reproduce las <b>posiciones exactas en tiempo real</b> de los 8 planetas, planetas enanos como Plutón y Ceres, más de 120 lunas y sondas interestelares históricas como Voyager 1 y New Horizons. "
+        "A través del motor oficial <b>NASA Eyes on the Solar System</b>, el alumno contempla la mecánica celeste kepleriana sin simplificaciones: las velocidades orbitales diferenciales (Mercurio a 47 km/s frente a Neptuno a 5,4 km/s), la inclinación de los planos orbitales y la inmensidad del vacío cósmico a escala astronómica.",
         style_body
     ))
+    story.append(Spacer(1, 2))
 
-    # Lista de Tareas (Checklist Guiado)
-    story.append(Paragraph("📋 <b>Lista de Tareas del Alumno (Paso a Paso en 2 Pestañas):</b>", style_section_h))
-    task_rows = [
-        [Paragraph("<b>✅ Tarea 1 • Pídele el código a Gemini (Pestaña 1):</b> "
-                   "Abre Gemini (<i>gemini.google.com</i>). Copia el <b>Prompt Maestro</b> inferior, pégalo en el chat y pulsa Enviar.", style_task)],
-        [Paragraph("<b>✅ Tarea 2 • Copia el código generado por la IA:</b> "
-                   "En la respuesta de Gemini, haz clic en el botón <b>«Copiar código»</b> situado en la esquina superior del bloque.", style_task)],
-        [Paragraph("<b>✅ Tarea 3 • Abre el Taller Oficial de Pruebas (Pestaña 2):</b> "
-                   "En el mapa de la Sesión 03, pulsa <b>«🚀 Abrir Taller Interactivo de Pruebas ↗»</b>.", style_task)],
-        [Paragraph("<b>✅ Tarea 4 • Pega con Ctrl+V y pulsa «Ejecutar Creación»:</b> "
-                   "Pega el código con <b>Ctrl+V</b> (o Cmd+V en Mac) y haz clic en <b>«▶️ Ejecutar Creación»</b>. ¡Desliza el control para viajar al año 79 d.C.!", style_task)],
-        [Paragraph("<b>✅ Tarea 5 • Descubre la Demo completa:</b> "
-                   "Pulsa el botón <b>«🏛️ Pompeya HD»</b> en el taller (o <b>«🏛️ Ver Simulador Pompeya HD ↗»</b> en el mapa) para inspeccionar la Domus romana.", style_task)],
+    # Sección 2: Controles 360°
+    story.append(Paragraph("🎮 <b>Controles del Visor 3D & Guía de Interacción en el Aula:</b>", style_sec_h))
+    ctrl_data = [
+        [Paragraph("<b>🖱️ Giro y Órbita 360°:</b> Haz clic izquierdo y arrastra en cualquier dirección para rotar la perspectiva tridimensional del Sistema Solar desde cualquier ángulo cenital o eclíptico.", style_box_text)],
+        [Paragraph("<b>🔍 Zoom Continuo:</b> Usa la rueda del ratón para pasar de la vista panorámica del plano solar al detalle minucioso de la atmósfera de Júpiter o los anillos de Saturno.", style_box_text)],
+        [Paragraph("<b>🎯 Enfoque Instantáneo:</b> Haz doble clic sobre cualquier planeta, satélite o nave para fijar la cámara y descender automáticamente hasta su superficie.", style_box_text)],
+        [Paragraph("<b>⏱️ Línea de Tiempo:</b> Puedes acelerar los días o retroceder siglos con la barra temporal inferior de NASA Eyes para comprobar conjunciones pasadas o futuras.", style_box_text)],
     ]
-    t_table = Table(task_rows, colWidths=[letter[0] - 72])
-    t_table.setStyle(TableStyle([
-        ('BACKGROUND', (0,0), (-1,-1), colors.HexColor('#FEF3C7')),
-        ('BOX', (0,0), (-1,-1), 1, colors.HexColor('#B45309')),
-        ('TOPPADDING', (0,0), (-1,-1), 1.5),
-        ('BOTTOMPADDING', (0,0), (-1,-1), 1.5),
+    t_ctrl = Table(ctrl_data, colWidths=[letter[0] - 72])
+    t_ctrl.setStyle(TableStyle([
+        ('BACKGROUND', (0,0), (-1,-1), colors.HexColor('#F8FAFC')),
+        ('BOX', (0,0), (-1,-1), 1, colors.HexColor('#94A3B8')),
+        ('TOPPADDING', (0,0), (-1,-1), 2.0),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 2.0),
         ('LEFTPADDING', (0,0), (-1,-1), 7),
         ('RIGHTPADDING', (0,0), (-1,-1), 7),
     ]))
-    story.append(t_table)
-    story.append(Spacer(1, 3))
+    story.append(t_ctrl)
+    story.append(Spacer(1, 2))
 
-    # Recuadro de Prompt Maestro
-    story.append(Paragraph("🧠 <b>Prompt Maestro para Copiar y Pegar en Gemini:</b>", style_section_h))
-    prompt_text = (
-        "<b>Copia exactamente este texto en Gemini:</b><br/>"
-        "<i>\"Genera el código de programación (HTML y JavaScript) que voy a copiar y pegar en el Taller de Pruebas de mi curso para crear un visor comparativo interactivo de Pompeya HD con fotografías arqueológicas oficiales.<br/>"
-        "Requisitos del código:<br/>"
-        "1. Entrega el programa en un único bloque de código para que yo pulse directamente «Copiar código» y lo pegue con Ctrl+V en mi simulador.<br/>"
-        "2. Incluye en la cabecera el script oficial con las fotografías de alta resolución en Base64:<br/>"
-        "&lt;script src=&quot;https://javiercursocorreo-gif.github.io/Curso-IA/SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/pompeii_photos_b64.js&quot;&gt;&lt;/script&gt;<br/>"
-        "3. Crea un visor interactivo de doble capa superpuesta con las imágenes oficiales: fondo con las ruinas reales (window.POMPEII_RUINS_B64) y capa superior con la reconstrucción fidedigna del 79 d.C. (window.POMPEII_RECON_B64).<br/>"
-        "4. Añade un deslizador divisor central (before/after slider) que el alumno pueda arrastrar con el ratón de izquierda a derecha, revelando en tiempo real las columnas con estuco, el impluvium y los frescos romanos sobre las ruinas.<br/>"
-        "5. Incorpora un selector de zoom interactivo y fichas explicativas de los elementos arquitectónicos de la Domus romana.<br/>"
-        "6. Escribe exclusivamente el bloque de código para que al copiarlo a mi simulador genere el visor de Pompeya HD inmediatamente.\"</i>"
+    # Sección 3: Procedencia Oficial
+    story.append(Paragraph("🏛️ <b>Procedencia Institucional y Calidad Científica de los Datos:</b>", style_sec_h))
+    prov_text = (
+        "• <b>Institución Acreditada:</b> Desarrollado por el <b>Jet Propulsion Laboratory (JPL) de la NASA</b> y el <b>California Institute of Technology (Caltech)</b>.<br/>"
+        "• <b>Precisión Telemétrica:</b> Las trayectorias se basan en el sistema matemático de efemérides planetarias <b>DE440</b> de JPL, utilizado por los directores de vuelo de la NASA para la navegación real de misiones interplanetarias. Cero dibujos inventados o mallas ficticias: datos 100% científicos y auditables."
     )
-    p_table = Table([[Paragraph(prompt_text, style_prompt)]], colWidths=[letter[0] - 72])
-    p_table.setStyle(TableStyle([
-        ('BACKGROUND', (0,0), (-1,-1), colors.HexColor('#F8FAFC')),
-        ('BOX', (0,0), (-1,-1), 1, colors.HexColor('#64748B')),
+    t_prov = Table([[Paragraph(prov_text, style_box_text)]], colWidths=[letter[0] - 72])
+    t_prov.setStyle(TableStyle([
+        ('BACKGROUND', (0,0), (-1,-1), colors.HexColor('#ECFDF5')),
+        ('BOX', (0,0), (-1,-1), 1, colors.HexColor('#10B981')),
+        ('TOPPADDING', (0,0), (-1,-1), 3.0),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 3.0),
+        ('LEFTPADDING', (0,0), (-1,-1), 7),
+        ('RIGHTPADDING', (0,0), (-1,-1), 7),
+    ]))
+    story.append(t_prov)
+    story.append(Spacer(1, 2))
+
+    # Sección 4: Preguntas para Gemini
+    story.append(Paragraph("💬 <b>Guía de Exploración en el Aula & Preguntas para Dialogar con Gemini:</b>", style_sec_h))
+    q_data = [
+        [Paragraph("<b>Pregunta 1 • Velocidades Orbitales:</b> <i>«Gemini, observando el simulador de NASA Eyes veo que Mercurio se mueve rapidísimo alrededor del Sol mientras que Saturno y Urano van muy lentos. ¿Por qué ocurre esto según la tercera ley de Kepler y la gravedad solar?»</i>", style_box_text)],
+        [Paragraph("<b>Pregunta 2 • El Vacío Espacial:</b> <i>«Gemini, cuando alejo el zoom en NASA Eyes los planetas casi desaparecen y solo se ve oscuridad. ¿Por qué es tan difícil viajar entre mundos y qué distancia real separa a la Tierra de Marte en su punto más cercano?»</i>", style_box_text)],
+        [Paragraph("<b>Pregunta 3 • Las Sondas Voyager:</b> <i>«Gemini, pulso en Voyager 1 en el simulador y veo que está lejísimos, fuera del plano de los planetas. ¿Hacia dónde se dirige ahora mismo y qué mensaje lleva grabado en su disco de oro?»</i>", style_box_text)],
+    ]
+    t_q = Table(q_data, colWidths=[letter[0] - 72])
+    t_q.setStyle(TableStyle([
+        ('BACKGROUND', (0,0), (-1,-1), colors.HexColor('#EFF6FF')),
+        ('BOX', (0,0), (-1,-1), 1, colors.HexColor('#3B82F6')),
         ('TOPPADDING', (0,0), (-1,-1), 2.5),
         ('BOTTOMPADDING', (0,0), (-1,-1), 2.5),
         ('LEFTPADDING', (0,0), (-1,-1), 7),
         ('RIGHTPADDING', (0,0), (-1,-1), 7),
     ]))
-    story.append(p_table)
-    story.append(Spacer(1, 3))
-
-    # Desafío Extra
-    story.append(Paragraph("🌟 <b>El Reto Extra (Para Alumnos Curiosos):</b>", style_section_h))
-    story.append(Paragraph(
-        "👉 <b>¡Pídele a Gemini que modifique tu código!</b> En la misma conversación dile: "
-        "<i>«Añade una lupa de aumento al pasar el ratón para inspeccionar el mosaico del suelo»</i> o "
-        "<i>«Coloca un botón que reproduzca el sonido ambiental de una calle romana con fuentes de agua»</i>. "
-        "Vuelve a copiar el código, pégalo en tu Taller y ¡mira cómo tu visor cobra vida en directo!",
-        style_body
-    ))
-    story.append(Spacer(1, 2))
-
-    # Apartado Técnico al final
-    story.append(Paragraph("🔬 <b>¿De dónde proceden los modelos hiperrealistas y cómo se ha montado el objeto 3D?</b>", style_section_h))
-    tech_text = (
-        "• <b>Origen de las fotografías y levantamientos arqueológicos (<i>pompeii_photos_b64.js</i>):</b> Proceden de los archivos oficiales del <b>Parco Archeologico di Pompei (Ministero della Cultura, Italia)</b> y de los programas de digitalización patrimonial de la <b>UNESCO</b>, con ortofotografías gigapíxel de la Domus de los Menandro y la Casa de los Vettii.<br/>"
-        "• <b>Cómo se ha montado el objeto en la Demo y en el Taller:</b> Las imágenes de alta definición se empaquetan en Base64 para garantizar carga offline instantánea sin latencia. Un canvas interactivo de composición bicapa calcula el recorte geométrico (`clip-path`) en tiempo real al mover el ratón, permitiendo la comparación arqueológica fluida a 60 fps."
-    )
-    tech_table = Table([[Paragraph(tech_text, style_task)]], colWidths=[letter[0] - 72])
-    tech_table.setStyle(TableStyle([
-        ('BACKGROUND', (0,0), (-1,-1), colors.HexColor('#ECFDF5')),
-        ('BOX', (0,0), (-1,-1), 1, colors.HexColor('#059669')),
-        ('TOPPADDING', (0,0), (-1,-1), 3),
-        ('BOTTOMPADDING', (0,0), (-1,-1), 3),
-        ('LEFTPADDING', (0,0), (-1,-1), 7),
-        ('RIGHTPADDING', (0,0), (-1,-1), 7),
-    ]))
-    story.append(tech_table)
+    story.append(t_q)
 
     doc.build(story)
-    if dest_path != LOCAL_BACKUP:
-        try:
-            import shutil
-            os.makedirs(os.path.dirname(LOCAL_BACKUP), exist_ok=True)
-            shutil.copy2(dest_path, LOCAL_BACKUP)
-        except Exception:
-            pass
+
+    # Duplicar con nombre alternativo y respaldo local
+    try:
+        shutil.copy2(dest_path, ALT_PDF_PATH)
+        os.makedirs(os.path.dirname(LOCAL_BACKUP), exist_ok=True)
+        shutil.copy2(dest_path, LOCAL_BACKUP)
+    except Exception:
+        pass
+
     print(f"✅ PDF COD-003 generado con éxito en: {dest_path}")
+    return dest_path
 
 if __name__ == '__main__':
     try:

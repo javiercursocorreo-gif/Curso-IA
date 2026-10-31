@@ -4,9 +4,9 @@
 build_cod_lote1_master.py
 Compilador Maestro del LOTE 1 [COD] (Sesiones 01 a 10):
 - Genera las 10 Fichas Didácticas Oficiales en PDF (COD-001 a COD-010).
-- Sincroniza y distribuye los 10 Simuladores HTML interactivos hacia
+- Sincroniza y distribuye los Simuladores HTML interactivos hacia
   SIMULADORES_INTERACTIVOS/01_SIMULADORES/ y las carpetas de sesión.
-- Establece la Triple Salvaguarda Pedagógica en el Lote 1 al 100%.
+- Sesiones 03 a 07: Simuladores Científicos Oficiales NASA Eyes 3D.
 """
 
 import os
@@ -36,28 +36,28 @@ LOTE_1_SIMS = [
     },
     {
         "num": 3,
-        "src_name": "SIMULADOR_POMPEYA_3D.html",
-        "aliases": ["SIMULADOR_POMPEYA_3D.html"]
+        "src_name": "SIMULADOR_SISTEMA_SOLAR_3D.html",
+        "aliases": ["SIMULADOR_SISTEMA_SOLAR_3D.html", "3. COD-003_Simulador_Sistema_Solar_3D.html", "COD_003_SIMULADOR.html"]
     },
     {
         "num": 4,
-        "src_name": "SIMULADOR_OJO_HUMANO_3D.html",
-        "aliases": ["SIMULADOR_OJO_HUMANO_3D.html"]
+        "src_name": "SIMULADOR_TIERRA_CLIMA_3D.html",
+        "aliases": ["SIMULADOR_TIERRA_CLIMA_3D.html", "3. COD-004_Simulador_Tierra_Clima_3D.html", "COD_004_SIMULADOR.html"]
     },
     {
         "num": 5,
-        "src_name": "SIMULADOR_SISTEMA_SOLAR_3D.html",
-        "aliases": ["SIMULADOR_SISTEMA_SOLAR_3D.html"]
+        "src_name": "SIMULADOR_ESTACION_ESPACIAL_ISS_3D.html",
+        "aliases": ["SIMULADOR_ESTACION_ESPACIAL_ISS_3D.html", "SIMULADOR_ISS_3D.html", "3. COD-005_Simulador_ISS_3D.html", "COD_005_SIMULADOR.html"]
     },
     {
         "num": 6,
-        "src_name": "SIMULADOR_CEREBRO_3D.html",
-        "aliases": ["SIMULADOR_CEREBRO_3D.html", "SIMULADOR_CEREBRO_HUMANO_3D.html"]
+        "src_name": "SIMULADOR_LUNA_ARTEMISA_3D.html",
+        "aliases": ["SIMULADOR_LUNA_ARTEMISA_3D.html", "SIMULADOR_LUNA_3D.html", "3. COD-006_Simulador_Luna_Artemisa_3D.html", "COD_006_SIMULADOR.html"]
     },
     {
         "num": 7,
-        "src_name": "SIMULADOR_LUNA_3D.html",
-        "aliases": ["SIMULADOR_LUNA_3D.html"]
+        "src_name": "SIMULADOR_SOL_SONDA_PARKER_3D.html",
+        "aliases": ["SIMULADOR_SOL_SONDA_PARKER_3D.html", "SIMULADOR_SOL_3D.html", "3. COD-007_Simulador_Sol_Parker_3D.html", "COD_007_SIMULADOR.html"]
     },
     {
         "num": 8,
@@ -109,17 +109,15 @@ def generate_all_pdfs():
 
     # 005
     try:
-        from build_pdf_cod_005 import build_pure_python_cod_005, PDF_PATH as P5
-        build_pure_python_cod_005(P5)
-        print(f"✅ PDF COD-005 generado con éxito en: {P5}")
+        from build_pdf_cod_005 import build_cod_005_taller_3d_pdf
+        build_cod_005_taller_3d_pdf()
     except Exception as e:
         print(f"  ❌ Error COD-005: {e}")
 
     # 006
     try:
-        from build_pdf_cod_006 import build_pure_python_cod_006, PDF_PATH as P6
-        build_pure_python_cod_006(P6)
-        print(f"✅ PDF COD-006 generado con éxito en: {P6}")
+        from build_pdf_cod_006 import build_cod_006_taller_3d_pdf
+        build_cod_006_taller_3d_pdf()
     except Exception as e:
         print(f"  ❌ Error COD-006: {e}")
 
@@ -191,4 +189,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-

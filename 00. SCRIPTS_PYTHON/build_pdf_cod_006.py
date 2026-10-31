@@ -2,24 +2,26 @@
 # -*- coding: utf-8 -*-
 """
 build_pdf_cod_006.py
-Genera la Ficha Didáctica Oficial de 1 Página (Letter/A4):
-4. COD-006_Taller_Crea_tu_Propio_Simulador_3D_con_Gemini.pdf
-para la Sesión 06 del Curso de IA (Simulador 3D del Encéfalo Humano, Lóbulos y Sinapsis Z-Anatomy).
+Ficha Didáctica Oficial de 1 Página (Letter):
+Simulador Científico 3D Oficial: La Luna y el Programa Artemisa (NASA Eyes) [COD-006]
+Estructura científica estricta: Explicación, Controles 360°, Acreditación Oficial (NASA/LRO/JPL)
+y 3 Preguntas de Reflexión para dialogar con Gemini en el aula.
 """
 
 import os
 import sys
+import shutil
 
 OUTPUT_DIR = "/Users/externo/Library/Mobile Documents/com~apple~CloudDocs/PERSONAL/CLASES DE TECNOLOGÍA/CURSO-IA/CLASES/EXPORTACION_FICHAS_CLASSROOM_PDF/100. [SESSIONS] TERNAS_LISTAS_PARA_CLASSROOM/06_Sesion"
 PDF_PATH = os.path.join(OUTPUT_DIR, "6. COD-006_Taller_Crea_tu_Propio_Simulador_3D_con_Gemini.pdf")
-LOCAL_BACKUP = "/Users/externo/Library/Mobile Documents/com~apple~CloudDocs/PERSONAL/CLASES DE TECNOLOGÍA/CURSO-IA/SIMULADORES_INTERACTIVOS/02_INDICES_Y_CATALOGOS/06_COD-006_Taller_Simulador_Cerebro_Humano_3D.pdf"
+ALT_PDF_PATH_4 = os.path.join(OUTPUT_DIR, "4. COD-006_Taller_Crea_tu_Propio_Simulador_3D_con_Gemini.pdf")
+ALT_PDF_PATH_NAME = os.path.join(OUTPUT_DIR, "4. COD-006_Simulador_Luna_Artemisa_NASA_Eyes.pdf")
+LOCAL_BACKUP = "/Users/externo/Library/Mobile Documents/com~apple~CloudDocs/PERSONAL/CLASES DE TECNOLOGÍA/CURSO-IA/SIMULADORES_INTERACTIVOS/02_INDICES_Y_CATALOGOS/06_COD-006_Simulador_Luna_Artemisa_3D.pdf"
 
 def build_cod_006_taller_3d_pdf(output_path=PDF_PATH):
     dest_path = output_path
     try:
         os.makedirs(os.path.dirname(dest_path), exist_ok=True)
-        with open(dest_path, "wb") as _:
-            pass
     except Exception:
         dest_path = LOCAL_BACKUP
         os.makedirs(os.path.dirname(dest_path), exist_ok=True)
@@ -35,148 +37,135 @@ def build_cod_006_taller_3d_pdf(output_path=PDF_PATH):
         rightMargin=36, leftMargin=36, topMargin=22, bottomMargin=20
     )
     styles = getSampleStyleSheet()
-    
+
+    c_primary = colors.HexColor('#0284C7')
+    c_orange = colors.HexColor('#EA580C')
+    c_dark = colors.HexColor('#0F172A')
+    c_slate = colors.HexColor('#334155')
+
     style_header = ParagraphStyle(
         'HeaderStyle', parent=styles['Normal'],
-        fontName='Helvetica-Bold', fontSize=8.0,
-        textColor=colors.HexColor('#0284C7'), alignment=1, spaceAfter=1
+        fontName='Helvetica-Bold', fontSize=8.0, leading=9.5,
+        textColor=c_orange, alignment=1, spaceAfter=1
     )
-    style_block = ParagraphStyle(
-        'BlockStyle', parent=styles['Normal'],
-        fontName='Helvetica-Bold', fontSize=9.8,
-        textColor=colors.HexColor('#0F172A'), alignment=1, spaceAfter=4
+    style_subhead = ParagraphStyle(
+        'SubheadStyle', parent=styles['Normal'],
+        fontName='Helvetica-Bold', fontSize=9.5, leading=11.5,
+        textColor=c_dark, alignment=1, spaceAfter=3
     )
     style_title = ParagraphStyle(
         'TitleStyle', parent=styles['Heading1'],
-        fontName='Helvetica-Bold', fontSize=11.8, leading=14.2,
-        textColor=colors.HexColor('#0F172A'), spaceAfter=3
+        fontName='Helvetica-Bold', fontSize=11.5, leading=14.0,
+        textColor=c_dark, spaceAfter=3
     )
-    style_section_h = ParagraphStyle(
-        'SectionHStyle', parent=styles['Heading2'],
-        fontName='Helvetica-Bold', fontSize=8.8, leading=11.2,
-        textColor=colors.HexColor('#0369A1'), spaceBefore=3, spaceAfter=2
+    style_sec_h = ParagraphStyle(
+        'SecHStyle', parent=styles['Heading2'],
+        fontName='Helvetica-Bold', fontSize=8.8, leading=11.0,
+        textColor=c_primary, spaceBefore=2, spaceAfter=2
     )
     style_body = ParagraphStyle(
         'BodyStyle', parent=styles['BodyText'],
-        fontName='Helvetica', fontSize=7.9, leading=10.5,
-        textColor=colors.HexColor('#1E293B'), spaceAfter=2
+        fontName='Helvetica', fontSize=8.1, leading=10.6,
+        textColor=c_slate, spaceAfter=2
     )
-    style_task = ParagraphStyle(
-        'TaskStyle', parent=styles['Normal'],
+    style_box_text = ParagraphStyle(
+        'BoxTextStyle', parent=styles['Normal'],
         fontName='Helvetica', fontSize=7.7, leading=10.1,
-        textColor=colors.HexColor('#0F172A')
-    )
-    style_prompt = ParagraphStyle(
-        'PromptStyle', parent=styles['Normal'],
-        fontName='Helvetica', fontSize=7.4, leading=9.8,
-        textColor=colors.HexColor('#0F172A')
+        textColor=c_dark
     )
 
     story = []
+
+    # Cabecera Oficial
     story.append(Paragraph("CURSO DE INTELIGENCIA ARTIFICIAL Y TECNOLOGÍA PARA ADULTOS MAYORES (60+)", style_header))
-    story.append(Paragraph("BLOQUE IV: CIENCIA INTERACTIVA & TALLER DE CÓDIGO CON GEMINI [COD]", style_block))
-    story.append(HRFlowable(width="100%", thickness=1.2, color=colors.HexColor('#0284C7'), spaceAfter=4))
+    story.append(Paragraph("BLOQUE IV: CIENCIA Y SIMULADORES 3D INTERACTIVOS • EXPLORACIÓN LUNAR [COD]", style_subhead))
+    story.append(HRFlowable(width="100%", thickness=1.2, color=c_orange, spaceAfter=4))
 
-    story.append(Paragraph("<b>[COD-006] Taller: Crea tu simulador 3D del Cerebro Humano y Sinapsis</b>", style_title))
+    # Título de la Ficha
+    story.append(Paragraph("<b>[COD-006] Simulador 3D Oficial: La Luna y el Programa Artemisa (NASA Eyes)</b>", style_title))
 
-    story.append(Paragraph("💡 <b>Misión Didáctica • Neurociencia Anatómica con Gemini:</b>", style_section_h))
+    # Sección 1: Explicación Didáctica
+    story.append(Paragraph("🌕 <b>Topografía Lunar y el Retorno Humano con Artemisa:</b>", style_sec_h))
     story.append(Paragraph(
-        "En esta sesión pedirás a la Inteligencia Artificial generar el código completo para construir un visor tridimensional del <b>encéfalo humano</b> con circunvoluciones reales de Z-Anatomy, corte sagital y destellos de sinapsis neuronales. "
-        "<b>Sin saber programar:</b> pedirás el código a Gemini con el prompt maestro, lo probarás en el <b>Taller de Pruebas</b> y explorarás los cuatro lóbulos cerebrales (frontal, parietal, temporal y occipital) con rotación 360°.",
+        "Este simulador sumerge al alumno en la <b>geología y relieve 3D hiperrealista de la Luna</b> a partir de los mapas altimétricos láser del orbitador LRO (Lunar Reconnaissance Orbiter). "
+        "Permite explorar los oscuros mares de lava basáltica solidificada, las tierras altas cribadas por impactos de meteoritos y los valles del polo sur lunar (como el cráter Shackleton), donde el sol incide en rasante y el fondo permanece en tinieblas eternas a -240 °C, albergando millones de toneladas de hielo de agua vitales para abastecer la futura base lunar permanente del <b>Programa Artemisa</b> y la nave tripulada <b>Orión</b>.",
         style_body
     ))
+    story.append(Spacer(1, 2))
 
-    # Lista de Tareas (Checklist Guiado)
-    task_rows = [
-        [Paragraph("<b>✅ Tarea 1 • Pídele el código a Gemini (Pestaña 1):</b> "
-                   "Abre Gemini (<i>gemini.google.com</i>). Copia el <b>Prompt Maestro</b> inferior, pégalo en el chat y pulsa Enviar.", style_task)],
-        [Paragraph("<b>✅ Tarea 2 • Copia el código generado por la IA:</b> "
-                   "En la respuesta de Gemini, haz clic en el botón <b>«Copiar código»</b> situado en la esquina superior del bloque.", style_task)],
-        [Paragraph("<b>✅ Tarea 3 • Abre el Taller Oficial de Pruebas (Pestaña 2):</b> "
-                   "En el mapa de la Sesión 06, pulsa <b>«🚀 Abrir Taller Interactivo de Pruebas ↗»</b>.", style_task)],
-        [Paragraph("<b>✅ Tarea 4 • Pega con Ctrl+V y pulsa «Ejecutar Creación»:</b> "
-                   "Pega el código con <b>Ctrl+V</b> (o Cmd+V en Mac) y haz clic en <b>«▶️ Ejecutar Creación»</b>. ¡Tu cerebro 3D cobrará vida con sinapsis luminosas!", style_task)],
-        [Paragraph("<b>✅ Tarea 5 • Descubre la Demo completa:</b> "
-                   "Pulsa el botón <b>«🧠 Cerebro 3D»</b> en el taller (o <b>«🧠 Ver Simulador Cerebro 3D ↗»</b> en el mapa) para ver el corte sagital profundo.", style_task)],
+    # Sección 2: Controles 360°
+    story.append(Paragraph("🎮 <b>Controles del Visor 3D & Guía de Interacción en el Aula:</b>", style_sec_h))
+    ctrl_data = [
+        [Paragraph("<b>🖱️ Exploración de la Cara Oculta:</b> Haz clic izquierdo y rota la Luna para descubrir la cara que jamás vemos desde la Tierra, mucho más accidentada y repleta de cráteres.", style_box_text)],
+        [Paragraph("<b>🔍 Acercamiento a los Cráteres:</b> Usa la rueda del ratón para descender hacia los cráteres Tycho y Copérnico, apreciando sus impresionantes rayos de eyección blanca.", style_box_text)],
+        [Paragraph("<b>🚀 La Nave Artemisa Orión:</b> Pulsa 'Nave Artemisa Orión' en la botonera inferior para volar en paralelo con la cápsula espacial de última generación de la NASA.", style_box_text)],
+        [Paragraph("<b>🛰️ Orbitador Lunar LRO:</b> Inspecciona el satélite LRO que lleva más de una década cartografiando cada metro de la corteza lunar con láser.", style_box_text)],
     ]
-    t_table = Table(task_rows, colWidths=[letter[0] - 72])
-    t_table.setStyle(TableStyle([
-        ('BACKGROUND', (0,0), (-1,-1), colors.HexColor('#F0F9FF')),
-        ('BOX', (0,0), (-1,-1), 1, colors.HexColor('#0284C7')),
-        ('TOPPADDING', (0,0), (-1,-1), 1.5),
-        ('BOTTOMPADDING', (0,0), (-1,-1), 1.5),
+    t_ctrl = Table(ctrl_data, colWidths=[letter[0] - 72])
+    t_ctrl.setStyle(TableStyle([
+        ('BACKGROUND', (0,0), (-1,-1), colors.HexColor('#F8FAFC')),
+        ('BOX', (0,0), (-1,-1), 1, colors.HexColor('#94A3B8')),
+        ('TOPPADDING', (0,0), (-1,-1), 2.0),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 2.0),
         ('LEFTPADDING', (0,0), (-1,-1), 7),
         ('RIGHTPADDING', (0,0), (-1,-1), 7),
     ]))
-    story.append(t_table)
-    story.append(Spacer(1, 3))
+    story.append(t_ctrl)
+    story.append(Spacer(1, 2))
 
-    # Recuadro de Prompt Maestro
-    story.append(Paragraph("🧠 <b>Prompt Maestro para Copiar y Pegar en Gemini:</b>", style_section_h))
-    prompt_text = (
-        "<b>Copia exactamente este texto en Gemini:</b><br/>"
-        "<i>\"Genera el código de programación (HTML y JavaScript con Three.js) que voy a copiar y pegar en el Taller de Pruebas de mi curso para crear un simulador 3D del cerebro humano con el modelo anatómico oficial de Z-Anatomy.<br/>"
-        "Requisitos del código:<br/>"
-        "1. Entrega el programa en un único bloque de código para que yo pulse directamente «Copiar código» y lo pegue con Ctrl+V en mi simulador.<br/>"
-        "2. Incluye en la cabecera las librerías Three.js, OrbitControls y el script del modelo cerebral en Base64:<br/>"
-        "&lt;script src=&quot;https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js&quot;&gt;&lt;/script&gt;<br/>"
-        "&lt;script src=&quot;https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js&quot;&gt;&lt;/script&gt;<br/>"
-        "&lt;script src=&quot;https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js&quot;&gt;&lt;/script&gt;<br/>"
-        "&lt;script src=&quot;https://javiercursocorreo-gif.github.io/Curso-IA/SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/brain_b64.js&quot;&gt;&lt;/script&gt;<br/>"
-        "3. Carga el encéfalo anatómico real con GLTFLoader parseando window.BRAIN_GLB_B64 (o modelo cortical Three.js con textura PBR de circunvoluciones y surcos) sobre fondo azul noche (#030712) e iluminación médica.<br/>"
-        "4. Configura cámara orbital 360°, rotación suave con el ratón y destellos luminosos de pulsos sinápticos que recorran la corteza cerebral emulando la actividad bioeléctrica neuronal.<br/>"
-        "5. Añade botones para destacar los lóbulos Frontal (azul), Temporal (verde), Parietal (amarillo) y Occipital (rosa).<br/>"
-        "6. Escribe exclusivamente el bloque de código para que al copiarlo a mi simulador genere el Cerebro 3D inmediatamente.\"</i>"
+    # Sección 3: Procedencia Oficial
+    story.append(Paragraph("🏛️ <b>Procedencia Institucional y Calidad Científica de los Datos:</b>", style_sec_h))
+    prov_text = (
+        "• <b>Institución Acreditada:</b> Desarrollado por el <b>Jet Propulsion Laboratory (JPL)</b> y el <b>Goddard Space Flight Center (GSFC) de la NASA</b>.<br/>"
+        "• <b>Altimetría Láser Real LOLA:</b> El relieve 3D utiliza la cuadrícula topográfica oficial del instrumento LOLA (Lunar Orbiter Laser Altimeter), con millones de puntos de elevación reales. Las trayectorias de la nave Orión y del orbitador LRO se sincronizan con las coordenadas de telemetría de vuelo del Centro Espacial Johnson."
     )
-    p_table = Table([[Paragraph(prompt_text, style_prompt)]], colWidths=[letter[0] - 72])
-    p_table.setStyle(TableStyle([
-        ('BACKGROUND', (0,0), (-1,-1), colors.HexColor('#F8FAFC')),
-        ('BOX', (0,0), (-1,-1), 1, colors.HexColor('#64748B')),
+    t_prov = Table([[Paragraph(prov_text, style_box_text)]], colWidths=[letter[0] - 72])
+    t_prov.setStyle(TableStyle([
+        ('BACKGROUND', (0,0), (-1,-1), colors.HexColor('#ECFDF5')),
+        ('BOX', (0,0), (-1,-1), 1, colors.HexColor('#10B981')),
+        ('TOPPADDING', (0,0), (-1,-1), 3.0),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 3.0),
+        ('LEFTPADDING', (0,0), (-1,-1), 7),
+        ('RIGHTPADDING', (0,0), (-1,-1), 7),
+    ]))
+    story.append(t_prov)
+    story.append(Spacer(1, 2))
+
+    # Sección 4: Preguntas para Gemini
+    story.append(Paragraph("💬 <b>Guía de Exploración en el Aula & Preguntas para Dialogar con Gemini:</b>", style_sec_h))
+    q_data = [
+        [Paragraph("<b>Pregunta 1 • El Hielo de Agua Lunar:</b> <i>«Gemini, observando el polo sur de la Luna en NASA Eyes, ¿cómo es posible que haya hielo de agua en los cráteres oscuros si la Luna no tiene atmósfera y el sol la calienta a más de 120 °C?»</i>", style_box_text)],
+        [Paragraph("<b>Pregunta 2 • Apolo vs. Artemisa:</b> <i>«Gemini, ¿qué diferencias tecnológicas fundamentales existen entre las misiones Apolo de 1969 y el actual programa Artemisa de la NASA para volver a la Luna con astronautas?»</i>", style_box_text)],
+        [Paragraph("<b>Pregunta 3 • La Cara Oculta:</b> <i>«Gemini, al rotar la Luna veo que la cara oculta casi no tiene mares oscuros como la cara visible. ¿Por qué las dos caras de la Luna son tan diferentes geológicamente?»</i>", style_box_text)],
+    ]
+    t_q = Table(q_data, colWidths=[letter[0] - 72])
+    t_q.setStyle(TableStyle([
+        ('BACKGROUND', (0,0), (-1,-1), colors.HexColor('#EFF6FF')),
+        ('BOX', (0,0), (-1,-1), 1, colors.HexColor('#3B82F6')),
         ('TOPPADDING', (0,0), (-1,-1), 2.5),
         ('BOTTOMPADDING', (0,0), (-1,-1), 2.5),
         ('LEFTPADDING', (0,0), (-1,-1), 7),
         ('RIGHTPADDING', (0,0), (-1,-1), 7),
     ]))
-    story.append(p_table)
-    story.append(Spacer(1, 3))
-
-    # Desafío Extra
-    story.append(Paragraph("🌟 <b>El Reto Extra (Para Alumnos Curiosos):</b>", style_section_h))
-    story.append(Paragraph(
-        "👉 <b>¡Pídele a Gemini que modifique tu código!</b> En la misma conversación dile: "
-        "<i>«Añade un botón de corte sagital para separar los dos hemisferios y ver el cuerpo calloso interior»</i> o "
-        "<i>«Aumenta la frecuencia de los destellos sinápticos para simular un proceso de concentración y memoria»</i>. "
-        "Vuelve a copiar el código, pégalo en tu Taller y ¡mira cómo tu cerebro responde en directo!",
-        style_body
-    ))
-    story.append(Spacer(1, 2))
-
-    # Apartado Técnico al final
-    story.append(Paragraph("🔬 <b>¿De dónde proceden los modelos hiperrealistas y cómo se ha montado el objeto 3D?</b>", style_section_h))
-    tech_text = (
-        "• <b>Origen del modelo neuroanatómico (<i>Z-Anatomy / Human Connectome Project</i>):</b> Procedente del atlas de código abierto <b>Z-Anatomy</b> y reconstrucciones por <b>resonancia magnética de alto campo (7 Tesla)</b> del <i>Human Connectome Project</i>, con mallas anatómicas reales de las circunvoluciones y surcos de la corteza telencefálica.<br/>"
-        "• <b>Cómo se ha montado el objeto en la Demo y en el Taller:</b> La malla se transporta en Base64 en <i>brain_b64.js</i>. En <b>Three.js</b>, un sistema de partículas de GPU calcula los pulsos bioeléctricos sinusoidales a lo largo de los tractos axonales, permitiendo observar las sinapsis neuronales con luz emisiva bioluminiscente sin ralentizar el navegador."
-    )
-    tech_table = Table([[Paragraph(tech_text, style_task)]], colWidths=[letter[0] - 72])
-    tech_table.setStyle(TableStyle([
-        ('BACKGROUND', (0,0), (-1,-1), colors.HexColor('#ECFDF5')),
-        ('BOX', (0,0), (-1,-1), 1, colors.HexColor('#059669')),
-        ('TOPPADDING', (0,0), (-1,-1), 3),
-        ('BOTTOMPADDING', (0,0), (-1,-1), 3),
-        ('LEFTPADDING', (0,0), (-1,-1), 7),
-        ('RIGHTPADDING', (0,0), (-1,-1), 7),
-    ]))
-    story.append(tech_table)
+    story.append(t_q)
 
     doc.build(story)
-    if dest_path != LOCAL_BACKUP:
-        try:
-            import shutil
-            os.makedirs(os.path.dirname(LOCAL_BACKUP), exist_ok=True)
-            shutil.copy2(dest_path, LOCAL_BACKUP)
-        except Exception:
-            pass
+
+    # Duplicar con nombres alternativos y respaldo local
+    try:
+        shutil.copy2(dest_path, ALT_PDF_PATH_4)
+        shutil.copy2(dest_path, ALT_PDF_PATH_NAME)
+        os.makedirs(os.path.dirname(LOCAL_BACKUP), exist_ok=True)
+        shutil.copy2(dest_path, LOCAL_BACKUP)
+    except Exception:
+        pass
+
     print(f"✅ PDF COD-006 generado con éxito en: {dest_path}")
+    return dest_path
+
+# Alias para compatibilidad con compiladores
+def build_pure_python_cod_006(dest=PDF_PATH):
+    return build_cod_006_taller_3d_pdf(dest)
 
 if __name__ == '__main__':
     try:

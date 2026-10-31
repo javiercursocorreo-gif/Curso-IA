@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sesión 05 • NASA Eyes: Estación Espacial Internacional (ISS) [COD-005]</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-base: #02040a;
+            --bg-panel: rgba(8, 14, 26, 0.94);
+            --iss-cyan: #38bdf8;
+            --iss-silver: #e2e8f0;
+            --text-main: #f8fafc;
+            --text-sub: #cbd5e1;
+            --font-title: 'Cinzel', serif;
+            --font-sans: 'Inter', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+        html, body {
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            font-family: var(--font-sans);
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            font-size: 14px;
+        }
+
+        header {
+            background: linear-gradient(180deg, rgba(8, 14, 26, 0.98) 0%, rgba(8, 14, 26, 0.88) 100%);
+            backdrop-filter: blur(14px);
+            border-bottom: 1px solid rgba(56, 189, 248, 0.35);
+            padding: 9px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+            z-index: 50;
+        }
+
+        .header-title-box { display: flex; align-items: center; gap: 12px; }
+        .badge-code {
+            background: rgba(56, 189, 248, 0.18);
+            color: var(--iss-cyan);
+            border: 1px solid rgba(56, 189, 248, 0.5);
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            font-weight: 800;
+            padding: 4px 10px;
+            border-radius: 8px;
+            letter-spacing: 0.05em;
+        }
+
+        h1 {
+            font-family: var(--font-title);
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-nasa {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            background: linear-gradient(135deg, #0369a1 0%, #0284c7 100%);
+            border: 1px solid #38bdf8;
+            color: #ffffff;
+            font-size: 0.82rem;
+            font-weight: 700;
+            padding: 6px 14px;
+            border-radius: 8px;
+            text-decoration: none;
+            box-shadow: 0 0 12px rgba(56, 189, 248, 0.35);
+            transition: all 0.2s ease;
+        }
+        .btn-nasa:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 0 18px rgba(56, 189, 248, 0.55);
+        }
+
+        .btn-quick {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            color: var(--text-sub);
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.80rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.18s;
+        }
+        .btn-quick:hover {
+            background: rgba(56, 189, 248, 0.15);
+            border-color: var(--iss-cyan);
+            color: #fff;
+        }
+
+        .iframe-container {
+            flex: 1;
+            position: relative;
+            width: 100%;
+            height: 100%;
+            background: #000;
+        }
+
+        iframe#nasaEyesFrame {
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: block;
+        }
+
+        /* TARJETA FLOTANTE HUD TRANSLÚCIDA CON GUÍA COMPLETA */
+        .hud-card {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: 420px;
+            max-width: calc(100vw - 40px);
+            max-height: calc(100vh - 120px);
+            background: rgba(8, 14, 26, 0.94);
+            backdrop-filter: blur(18px);
+            border: 1px solid rgba(56, 189, 248, 0.45);
+            border-radius: 14px;
+            padding: 16px 18px;
+            box-shadow: 0 14px 44px rgba(0, 0, 0, 0.85);
+            z-index: 45;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            overflow-y: auto;
+            transition: all 0.25s ease;
+        }
+        .hud-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+            padding-bottom: 8px;
+        }
+        .hud-badge {
+            font-size: 0.74rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--iss-cyan);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .hud-close-btn {
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.15);
+            color: #cbd5e1;
+            font-size: 0.78rem;
+            font-weight: 700;
+            cursor: pointer;
+            padding: 3px 8px;
+            border-radius: 6px;
+            transition: all 0.15s;
+        }
+        .hud-close-btn:hover { color: #fff; background: rgba(255,255,255,0.2); }
+        .hud-section { margin-top: 4px; }
+        .hud-section-title {
+            font-size: 0.78rem;
+            font-weight: 800;
+            color: var(--iss-cyan);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .hud-body {
+            font-size: 0.81rem;
+            line-height: 1.45;
+            color: #e2e8f0;
+            user-select: text;
+        }
+        .hud-body p { margin-bottom: 6px; }
+        .hud-tips {
+            background: rgba(56, 189, 248, 0.09);
+            border-left: 3px solid var(--iss-cyan);
+            padding: 8px 10px;
+            border-radius: 0 6px 6px 0;
+            margin-top: 6px;
+            font-size: 0.77rem;
+            color: #bae6fd;
+            line-height: 1.4;
+            user-select: text;
+        }
+        .gemini-box {
+            background: rgba(56, 189, 248, 0.08);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            border-radius: 8px;
+            padding: 8px 10px;
+            margin-top: 6px;
+            font-size: 0.77rem;
+            line-height: 1.4;
+            color: #bae6fd;
+            user-select: text;
+        }
+        .gemini-box b { color: var(--iss-cyan); }
+        .gemini-q {
+            margin-top: 5px;
+            padding-left: 6px;
+            border-left: 2px solid var(--iss-cyan);
+            font-style: italic;
+        }
+        .hud-footer {
+            margin-top: 6px;
+            font-size: 0.70rem;
+            color: #94a3b8;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            padding-top: 6px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        /* BARRA INFERIOR DE ACCESOS RÁPIDOS */
+        .bottom-nav {
+            position: absolute;
+            bottom: 18px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(8, 14, 26, 0.92);
+            backdrop-filter: blur(14px);
+            border: 1px solid rgba(56, 189, 248, 0.45);
+            border-radius: 9999px;
+            padding: 6px 16px;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.75);
+            z-index: 40;
+            flex-wrap: wrap;
+            justify-content: center;
+            max-width: 95vw;
+        }
+        .bottom-label {
+            font-size: 0.75rem;
+            font-weight: 800;
+            color: var(--iss-cyan);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-right: 4px;
+        }
+        .nav-pill {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            color: var(--text-sub);
+            padding: 5px 12px;
+            border-radius: 9999px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+        .nav-pill:hover, .nav-pill.active {
+            background: rgba(56, 189, 248, 0.25);
+            border-color: var(--iss-cyan);
+            color: #fff;
+            transform: translateY(-1px);
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-title-box">
+            <span class="badge-code">COD-005</span>
+            <div>
+                <h1>🛰️ Estación Espacial Internacional (ISS) • NASA Eyes 3D</h1>
+            </div>
+        </div>
+        <div class="header-controls">
+            <a href="https://eyes.nasa.gov/apps/solar-system/#/sc_iss" target="_blank" class="btn-nasa">
+                🚀 NASA Eyes ISS ↗
+            </a>
+            <button class="btn-quick" id="hudToggleBtn" onclick="toggleHUD()" title="Mostrar u Ocultar Guía">
+                ℹ️ Ocultar Guía
+            </button>
+            <button class="btn-quick" onclick="toggleFullscreen()" title="Pantalla Completa">
+                ⛶ Pantalla Completa
+            </button>
+        </div>
+    </header>
+
+    <div class="iframe-container" id="frameBox">
+        <!-- Tarjeta Flotante HUD con Información Completa -->
+        <div class="hud-card" id="hudCard">
+            <div class="hud-header">
+                <span class="hud-badge">🔬 Laboratorio Orbital • NASA / ESA / JAXA</span>
+                <button class="hud-close-btn" onclick="toggleHUD()">Ocultar ✕</button>
+            </div>
+            
+            <div class="hud-section">
+                <div class="hud-section-title">🔭 Fenómeno Científico en Tiempo Real</div>
+                <div class="hud-body">
+                    <p>La Estación Espacial Internacional (ISS) orbita en la órbita baja terrestre (LEO) a <b>408 km de altitud media a una velocidad vertiginosa de 27.600 km/h</b> (7,66 km/s), completando una vuelta al planeta cada 90 minutos y viviendo 16 amaneceres al día.</p>
+                    <p>Explora su arquitectura de más de 450 toneladas: los módulos científicos de EE.UU. (Destiny), Europa (Columbus) y Japón (Kibo), la Cúpula panorámica con vistas a la atmósfera y los 2.500 m² de paneles solares fotovoltaicos.</p>
+                </div>
+            </div>
+
+            <div class="hud-section">
+                <div class="hud-section-title">🎮 Controles de Exploración 360°</div>
+                <div class="hud-tips">
+                    • <b>Giro Orbital 360°:</b> Clic izquierdo y arrastra para examinar cada módulo y antena de la ISS.<br/>
+                    • <b>Zoom de Detalle:</b> Rueda del ratón para acercarte a los adaptadores de atraque (IDA) de SpaceX y Soyuz.<br/>
+                    • <b>Perspectiva Terrestre:</b> Pulsa "Tierra bajo la ISS" para apreciar el tamaño de los continentes a 400 km.<br/>
+                    • <b>Comparativa Orbital:</b> Pulsa "Telescopio Hubble" para comparar órbitas e instrumentación.
+                </div>
+            </div>
+
+            <div class="hud-section">
+                <div class="hud-section-title">💬 Preguntas para Dialogar con Gemini en Clase</div>
+                <div class="gemini-box">
+                    <b>Copia y conversa con Gemini mientras miras el modelo:</b>
+                    <div class="gemini-q">1. «Gemini, la Estación Espacial orbita a casi 28.000 km/h a 400 km de altitud. ¿Por qué los astronautas experimentan ingravidez si la gravedad terrestre a esa cota es aún un 90% de la que tenemos en la superficie?»</div>
+                    <div class="gemini-q">2. «Gemini, observando la maqueta 3D de la ISS, ¿qué funciones cumplen los módulos Destiny (EE.UU.), Columbus (Europa) y Kibo (Japón) en el estudio de nuevos materiales y biología celular?»</div>
+                    <div class="gemini-q">3. «Gemini, pulso en el Telescopio Hubble en órbita. ¿Por qué el Hubble está a más de 530 km de altitud (más alto que la ISS) y cómo fueron las históricas misiones del transbordador para repararlo?»</div>
+                </div>
+            </div>
+
+            <div class="hud-footer">
+                <span>Fuente: NASA Eyes on the Solar System • JPL</span>
+                <span>Auditado 100% Sin dibujos inventados</span>
+            </div>
+        </div>
+
+        <iframe 
+            id="nasaEyesFrame"
+            src="https://eyes.nasa.gov/apps/solar-system/#/sc_iss?embed=true" 
+            allowfullscreen 
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture">
+        </iframe>
+
+        <!-- Barra Inferior de Navegación Rápida -->
+        <div class="bottom-nav">
+            <span class="bottom-label">🛰️ Misiones Orbitales:</span>
+            <button class="nav-pill active" onclick="loadTarget('sc_iss')">Estación Espacial ISS</button>
+            <button class="nav-pill" onclick="loadTarget('earth')">Tierra bajo la ISS</button>
+            <button class="nav-pill" onclick="loadTarget('sc_hubble')">Telescopio Hubble</button>
+            <button class="nav-pill" onclick="loadTarget('sc_orion')">Nave Artemisa Orión</button>
+            <button class="nav-pill" onclick="loadTarget('home')">Sistema Solar Global</button>
+        </div>
+    </div>
+
+    <script>
+        function loadTarget(target) {
+            const frame = document.getElementById('nasaEyesFrame');
+            frame.src = `https://eyes.nasa.gov/apps/solar-system/#/${target}?embed=true`;
+            document.querySelectorAll('.nav-pill').forEach(btn => btn.classList.remove('active'));
+            if (event && event.target) {
+                event.target.classList.add('active');
+            }
+        }
+
+        function toggleHUD() {
+            const hud = document.getElementById('hudCard');
+            const btn = document.getElementById('hudToggleBtn');
+            if (hud.style.display === 'none') {
+                hud.style.display = 'flex';
+                btn.textContent = 'ℹ️ Ocultar Guía';
+            } else {
+                hud.style.display = 'none';
+                btn.textContent = 'ℹ️ Mostrar Guía';
+            }
+        }
+
+        function toggleFullscreen() {
+            const box = document.getElementById('frameBox');
+            if (!document.fullscreenElement) {
+                box.requestFullscreen().catch(err => alert(`Pantalla completa: ${err.message}`));
+            } else {
+                document.exitFullscreen();
+            }
+        }
+    </script>
+</body>
+</html>

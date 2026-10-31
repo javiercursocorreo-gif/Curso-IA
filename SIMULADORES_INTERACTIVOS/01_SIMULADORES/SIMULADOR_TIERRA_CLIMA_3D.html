@@ -8,7 +8,7 @@
     <style>
         :root {
             --bg-base: #02040a;
-            --bg-panel: rgba(8, 14, 26, 0.92);
+            --bg-panel: rgba(8, 14, 26, 0.94);
             --earth-blue: #38bdf8;
             --climate-green: #34d399;
             --text-main: #f8fafc;
@@ -127,31 +127,36 @@
             display: block;
         }
 
-        /* TARJETA FLOTANTE HUD TRANSLÚCIDA */
+        /* TARJETA FLOTANTE HUD TRANSLÚCIDA CON GUÍA COMPLETA */
         .hud-card {
             position: absolute;
             top: 20px;
             left: 20px;
-            max-width: 380px;
-            background: rgba(8, 14, 26, 0.90);
-            backdrop-filter: blur(16px);
-            border: 1px solid rgba(56, 189, 248, 0.4);
+            width: 420px;
+            max-width: calc(100vw - 40px);
+            max-height: calc(100vh - 120px);
+            background: rgba(8, 14, 26, 0.94);
+            backdrop-filter: blur(18px);
+            border: 1px solid rgba(56, 189, 248, 0.45);
             border-radius: 14px;
             padding: 16px 18px;
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.75);
+            box-shadow: 0 14px 44px rgba(0, 0, 0, 0.85);
             z-index: 45;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            overflow-y: auto;
             transition: all 0.25s ease;
         }
         .hud-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 10px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.12);
             padding-bottom: 8px;
         }
         .hud-badge {
-            font-size: 0.72rem;
+            font-size: 0.74rem;
             font-weight: 800;
             text-transform: uppercase;
             letter-spacing: 0.08em;
@@ -161,35 +166,73 @@
             gap: 6px;
         }
         .hud-close-btn {
-            background: transparent;
-            border: none;
-            color: #94a3b8;
-            font-size: 1rem;
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.15);
+            color: #cbd5e1;
+            font-size: 0.78rem;
+            font-weight: 700;
             cursor: pointer;
-            padding: 2px 6px;
-            border-radius: 4px;
+            padding: 3px 8px;
+            border-radius: 6px;
+            transition: all 0.15s;
         }
-        .hud-close-btn:hover { color: #fff; background: rgba(255,255,255,0.1); }
+        .hud-close-btn:hover { color: #fff; background: rgba(255,255,255,0.2); }
+        .hud-section { margin-top: 4px; }
+        .hud-section-title {
+            font-size: 0.78rem;
+            font-weight: 800;
+            color: var(--earth-blue);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
         .hud-body {
-            font-size: 0.82rem;
+            font-size: 0.81rem;
             line-height: 1.45;
             color: #e2e8f0;
+            user-select: text;
         }
-        .hud-body p { margin-bottom: 8px; }
+        .hud-body p { margin-bottom: 6px; }
         .hud-tips {
-            background: rgba(56, 189, 248, 0.08);
+            background: rgba(56, 189, 248, 0.09);
             border-left: 3px solid var(--earth-blue);
-            padding: 6px 10px;
+            padding: 8px 10px;
             border-radius: 0 6px 6px 0;
-            margin-top: 10px;
-            font-size: 0.78rem;
+            margin-top: 6px;
+            font-size: 0.77rem;
             color: #bae6fd;
+            line-height: 1.4;
+            user-select: text;
+        }
+        .gemini-box {
+            background: rgba(52, 211, 153, 0.08);
+            border: 1px solid rgba(52, 211, 153, 0.3);
+            border-radius: 8px;
+            padding: 8px 10px;
+            margin-top: 6px;
+            font-size: 0.77rem;
+            line-height: 1.4;
+            color: #a7f3d0;
+            user-select: text;
+        }
+        .gemini-box b { color: var(--climate-green); }
+        .gemini-q {
+            margin-top: 5px;
+            padding-left: 6px;
+            border-left: 2px solid var(--climate-green);
+            font-style: italic;
         }
         .hud-footer {
-            margin-top: 10px;
+            margin-top: 6px;
             font-size: 0.70rem;
             color: #94a3b8;
-            text-align: right;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            padding-top: 6px;
+            display: flex;
+            justify-content: space-between;
         }
 
         /* BARRA INFERIOR DE ACCESOS RÁPIDOS */
@@ -253,7 +296,7 @@
                 🚀 NASA Earth Oficial ↗
             </a>
             <button class="btn-quick" id="hudToggleBtn" onclick="toggleHUD()" title="Mostrar u Ocultar Guía">
-                ℹ️ Ocultar Guía HUD
+                ℹ️ Ocultar Guía
             </button>
             <button class="btn-quick" onclick="toggleFullscreen()" title="Pantalla Completa">
                 ⛶ Pantalla Completa
@@ -262,21 +305,44 @@
     </header>
 
     <div class="iframe-container" id="frameBox">
-        <!-- Tarjeta Flotante HUD -->
+        <!-- Tarjeta Flotante HUD con Información Completa -->
         <div class="hud-card" id="hudCard">
             <div class="hud-header">
-                <span class="hud-badge">🛰️ Signos Vitales del Planeta • NASA Earth</span>
-                <button class="hud-close-btn" onclick="toggleHUD()" title="Cerrar">✕</button>
+                <span class="hud-badge">🛰️ Signos Vitales del Planeta • NASA Earth Science</span>
+                <button class="hud-close-btn" onclick="toggleHUD()">Ocultar ✕</button>
             </div>
-            <div class="hud-body">
-                <p>Estás visualizando los <b>signos vitales de nuestro planeta en tiempo real</b> a través de la constelación de satélites climáticos de la NASA (OCO-2, GRACE, Sentinel y Aqua).</p>
-                <p>Monitoriza los niveles globales de dióxido de carbono (CO₂), la temperatura oceánica, la capa de ozono antártica y la altimetría del nivel del mar.</p>
-                <div class="hud-tips">
-                    💡 <b>Controles 360°:</b> Arrastra con el ratón para rotar el globo terráqueo. Rueda para zoom sobre cualquier continente u océano. Usa los botones inferiores para cambiar de capa satelital.
+            
+            <div class="hud-section">
+                <div class="hud-section-title">🔭 Fenómeno Científico en Tiempo Real</div>
+                <div class="hud-body">
+                    <p>Monitoreo satelital continuo de los <b>signos vitales de la biósfera y atmósfera terrestre</b> alimentado en directo por la flota de satélites heliosincrónicos de la NASA (OCO-2, GRACE-FO, Aqua, Terra y Sentinel-6 Michael Freilich).</p>
+                    <p>Permite visualizar el mapa térmico de corrientes oceánicas, concentraciones de CO₂ en partes por millón (ppm), la altimetría de ascenso del nivel del mar y el espesor de la capa de ozono estratosférico en la Antártida.</p>
                 </div>
             </div>
+
+            <div class="hud-section">
+                <div class="hud-section-title">🎮 Controles de Exploración 360°</div>
+                <div class="hud-tips">
+                    • <b>Rotación del Globo:</b> Arrastra con clic izquierdo para girar la Tierra en cualquier coordenada.<br/>
+                    • <b>Zoom continuo:</b> Rueda del ratón para acercarte a cuencas fluviales, glaciares o corrientes marinas.<br/>
+                    • <b>Capas Temáticas:</b> Usa la barra inferior para activar mapas de CO₂, Nivel del Mar o Hielo Ártico.<br/>
+                    • <b>Flota Satelital:</b> Pulsa "Satélites en Órbita" para rastrear las trayectorias de los sensores en vivo.
+                </div>
+            </div>
+
+            <div class="hud-section">
+                <div class="hud-section-title">💬 Preguntas para Dialogar con Gemini en Clase</div>
+                <div class="gemini-box">
+                    <b>Copia y conversa con Gemini mientras miras el modelo:</b>
+                    <div class="gemini-q">1. «Gemini, en la capa de CO₂ de NASA Earth veo concentraciones mucho más intensas en el hemisferio norte que en el sur. ¿Por qué ocurre este patrón y cómo influyen las estaciones del año?»</div>
+                    <div class="gemini-q">2. «Gemini, activando la capa de Nivel del Mar, ¿cuántos milímetros al año está aumentando la altura media de los océanos según las mediciones satelitales altimétricas y qué causa ese incremento?»</div>
+                    <div class="gemini-q">3. «Gemini, veo la constelación de satélites orbitando la Tierra. ¿Qué instrumentos lleva la misión GRACE-FO para medir la masa de agua subterránea y el deshielo polar mediante micro-gravedad?»</div>
+                </div>
+            </div>
+
             <div class="hud-footer">
-                Fuente: NASA Earth Science Division • JPL
+                <span>Fuente: NASA Earth Science Division • JPL</span>
+                <span>Auditado 100% Sin dibujos inventados</span>
             </div>
         </div>
 
@@ -314,11 +380,11 @@
             const hud = document.getElementById('hudCard');
             const btn = document.getElementById('hudToggleBtn');
             if (hud.style.display === 'none') {
-                hud.style.display = 'block';
-                btn.textContent = 'ℹ️ Ocultar Guía HUD';
+                hud.style.display = 'flex';
+                btn.textContent = 'ℹ️ Ocultar Guía';
             } else {
                 hud.style.display = 'none';
-                btn.textContent = 'ℹ️ Mostrar Guía HUD';
+                btn.textContent = 'ℹ️ Mostrar Guía';
             }
         }
 

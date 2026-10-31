@@ -2,24 +2,25 @@
 # -*- coding: utf-8 -*-
 """
 build_pdf_cod_004.py
-Genera la Ficha Didáctica Oficial de 1 Página (Letter/A4):
-4. COD-004_Taller_Crea_tu_Propio_Simulador_3D_con_Gemini.pdf
-para la Sesión 04 del Curso de IA (Simulador 3D del Ojo Humano, Córnea, Cristalino y Retina).
+Ficha Didáctica Oficial de 1 Página (Letter):
+Simulador Científico 3D Oficial: La Tierra y el Clima en Vivo (NASA Eyes on the Earth) [COD-004]
+Estructura científica estricta: Explicación, Controles 360°, Acreditación Oficial (NASA Earth/JPL)
+y 3 Preguntas de Reflexión para dialogar con Gemini en el aula.
 """
 
 import os
 import sys
+import shutil
 
 OUTPUT_DIR = "/Users/externo/Library/Mobile Documents/com~apple~CloudDocs/PERSONAL/CLASES DE TECNOLOGÍA/CURSO-IA/CLASES/EXPORTACION_FICHAS_CLASSROOM_PDF/100. [SESSIONS] TERNAS_LISTAS_PARA_CLASSROOM/04_Sesion"
 PDF_PATH = os.path.join(OUTPUT_DIR, "4. COD-004_Taller_Crea_tu_Propio_Simulador_3D_con_Gemini.pdf")
-LOCAL_BACKUP = "/Users/externo/Library/Mobile Documents/com~apple~CloudDocs/PERSONAL/CLASES DE TECNOLOGÍA/CURSO-IA/SIMULADORES_INTERACTIVOS/02_INDICES_Y_CATALOGOS/04_COD-004_Taller_Simulador_Ojo_Humano_3D.pdf"
+ALT_PDF_PATH = os.path.join(OUTPUT_DIR, "4. COD-004_Simulador_Tierra_Clima_NASA_Eyes.pdf")
+LOCAL_BACKUP = "/Users/externo/Library/Mobile Documents/com~apple~CloudDocs/PERSONAL/CLASES DE TECNOLOGÍA/CURSO-IA/SIMULADORES_INTERACTIVOS/02_INDICES_Y_CATALOGOS/04_COD-004_Simulador_Tierra_Clima_3D.pdf"
 
 def build_cod_004_taller_3d_pdf(output_path=PDF_PATH):
     dest_path = output_path
     try:
         os.makedirs(os.path.dirname(dest_path), exist_ok=True)
-        with open(dest_path, "wb") as _:
-            pass
     except Exception:
         dest_path = LOCAL_BACKUP
         os.makedirs(os.path.dirname(dest_path), exist_ok=True)
@@ -35,147 +36,130 @@ def build_cod_004_taller_3d_pdf(output_path=PDF_PATH):
         rightMargin=36, leftMargin=36, topMargin=22, bottomMargin=20
     )
     styles = getSampleStyleSheet()
-    
+
+    c_primary = colors.HexColor('#0284C7')
+    c_blue = colors.HexColor('#0369A1')
+    c_dark = colors.HexColor('#0F172A')
+    c_slate = colors.HexColor('#334155')
+
     style_header = ParagraphStyle(
         'HeaderStyle', parent=styles['Normal'],
-        fontName='Helvetica-Bold', fontSize=8.0,
-        textColor=colors.HexColor('#0F766E'), alignment=1, spaceAfter=1
+        fontName='Helvetica-Bold', fontSize=8.0, leading=9.5,
+        textColor=c_blue, alignment=1, spaceAfter=1
     )
-    style_block = ParagraphStyle(
-        'BlockStyle', parent=styles['Normal'],
-        fontName='Helvetica-Bold', fontSize=9.8,
-        textColor=colors.HexColor('#0F172A'), alignment=1, spaceAfter=4
+    style_subhead = ParagraphStyle(
+        'SubheadStyle', parent=styles['Normal'],
+        fontName='Helvetica-Bold', fontSize=9.5, leading=11.5,
+        textColor=c_dark, alignment=1, spaceAfter=3
     )
     style_title = ParagraphStyle(
         'TitleStyle', parent=styles['Heading1'],
-        fontName='Helvetica-Bold', fontSize=11.8, leading=14.2,
-        textColor=colors.HexColor('#0F172A'), spaceAfter=3
+        fontName='Helvetica-Bold', fontSize=11.5, leading=14.0,
+        textColor=c_dark, spaceAfter=3
     )
-    style_section_h = ParagraphStyle(
-        'SectionHStyle', parent=styles['Heading2'],
-        fontName='Helvetica-Bold', fontSize=8.8, leading=11.2,
-        textColor=colors.HexColor('#0D9488'), spaceBefore=3, spaceAfter=2
+    style_sec_h = ParagraphStyle(
+        'SecHStyle', parent=styles['Heading2'],
+        fontName='Helvetica-Bold', fontSize=8.8, leading=11.0,
+        textColor=c_primary, spaceBefore=2, spaceAfter=2
     )
     style_body = ParagraphStyle(
         'BodyStyle', parent=styles['BodyText'],
-        fontName='Helvetica', fontSize=7.9, leading=10.5,
-        textColor=colors.HexColor('#1E293B'), spaceAfter=2
+        fontName='Helvetica', fontSize=8.1, leading=10.6,
+        textColor=c_slate, spaceAfter=2
     )
-    style_task = ParagraphStyle(
-        'TaskStyle', parent=styles['Normal'],
+    style_box_text = ParagraphStyle(
+        'BoxTextStyle', parent=styles['Normal'],
         fontName='Helvetica', fontSize=7.7, leading=10.1,
-        textColor=colors.HexColor('#0F172A')
-    )
-    style_prompt = ParagraphStyle(
-        'PromptStyle', parent=styles['Normal'],
-        fontName='Helvetica', fontSize=7.4, leading=9.8,
-        textColor=colors.HexColor('#0F172A')
+        textColor=c_dark
     )
 
     story = []
+
+    # Cabecera Oficial
     story.append(Paragraph("CURSO DE INTELIGENCIA ARTIFICIAL Y TECNOLOGÍA PARA ADULTOS MAYORES (60+)", style_header))
-    story.append(Paragraph("BLOQUE IV: CIENCIA INTERACTIVA & TALLER DE CÓDIGO CON GEMINI [COD]", style_block))
-    story.append(HRFlowable(width="100%", thickness=1.2, color=colors.HexColor('#0F766E'), spaceAfter=4))
+    story.append(Paragraph("BLOQUE IV: CIENCIA Y SIMULADORES 3D INTERACTIVOS • CIENCIAS DE LA TIERRA [COD]", style_subhead))
+    story.append(HRFlowable(width="100%", thickness=1.2, color=c_primary, spaceAfter=4))
 
-    story.append(Paragraph("<b>[COD-004] Taller: Crea tu propio simulador 3D del ojo humano y la visión</b>", style_title))
+    # Título de la Ficha
+    story.append(Paragraph("<b>[COD-004] Simulador 3D Oficial: La Tierra y el Clima en Vivo (NASA Eyes on the Earth)</b>", style_title))
 
-    story.append(Paragraph("💡 <b>Misión Didáctica • Óptica y Anatomía Ocular con Gemini:</b>", style_section_h))
+    # Sección 1: Explicación Didáctica
+    story.append(Paragraph("🌍 <b>Signos Vitales del Planeta y Observación en Tiempo Real:</b>", style_sec_h))
     story.append(Paragraph(
-        "En esta sesión pedirás a la Inteligencia Artificial generar el código completo para construir un modelo anatómico tridimensional interactivo del <b>globo ocular humano</b> con corte sagital, capas ópticas y refracción de luz. "
-        "<b>Sin saber programar:</b> pedirás el código a Gemini con el prompt maestro, lo probarás en el <b>Taller de Pruebas</b> y comprobarás cómo la córnea, el iris, el cristalino y la retina se visualizan con rotación 360°.",
+        "A través de <b>NASA Eyes on the Earth</b>, el alumno accede a una visión global en directo de la biosfera terrestre monitorizada por más de 20 satélites en órbita activa. "
+        "El visor permite rastrear los 'signos vitales' del planeta: concentraciones globales de dióxido de carbono (CO₂) medidas por el satélite OCO-2, la evolución de la capa de ozono polar con el instrumento OMI, anomalías térmicas en la superficie marina y variaciones milimétricas en el nivel medio del mar mediante radares altimétricos como Jason y Sentinel-6 Michael Freilich.",
         style_body
     ))
+    story.append(Spacer(1, 2))
 
-    # Lista de Tareas (Checklist Guiado)
-    story.append(Paragraph("📋 <b>Lista de Tareas del Alumno (Paso a Paso en 2 Pestañas):</b>", style_section_h))
-    task_rows = [
-        [Paragraph("<b>✅ Tarea 1 • Pídele el código a Gemini (Pestaña 1):</b> "
-                   "Abre Gemini (<i>gemini.google.com</i>). Copia el <b>Prompt Maestro</b> inferior, pégalo en el chat y pulsa Enviar.", style_task)],
-        [Paragraph("<b>✅ Tarea 2 • Copia el código generado por la IA:</b> "
-                   "En la respuesta de Gemini, haz clic en el botón <b>«Copiar código»</b> situado en la esquina superior del bloque.", style_task)],
-        [Paragraph("<b>✅ Tarea 3 • Abre el Taller Oficial de Pruebas (Pestaña 2):</b> "
-                   "En el mapa de la Sesión 04, pulsa <b>«🚀 Abrir Taller Interactivo de Pruebas ↗»</b>.", style_task)],
-        [Paragraph("<b>✅ Tarea 4 • Pega con Ctrl+V y pulsa «Ejecutar Creación»:</b> "
-                   "Pega el código con <b>Ctrl+V</b> (o Cmd+V en Mac) y haz clic en <b>«▶️ Ejecutar Creación»</b>. ¡Tu ojo 3D rotará y podrás explorarlo en 360° con el ratón!", style_task)],
-        [Paragraph("<b>✅ Tarea 5 • Descubre la Demo completa:</b> "
-                   "Pulsa el botón <b>«👁️ Ojo Humano 3D»</b> en el taller (o <b>«👁️ Ver Simulador Ojo Humano ↗»</b> en el mapa) para ver la refracción de rayos luminosos.", style_task)],
+    # Sección 2: Controles 360°
+    story.append(Paragraph("🎮 <b>Controles del Visor 3D & Guía de Interacción en el Aula:</b>", style_sec_h))
+    ctrl_data = [
+        [Paragraph("<b>🖱️ Rotación Global 360°:</b> Arrastra con el ratón para rotar el globo terráqueo e inspeccionar cualquier continente, cordillera o cuenca oceánica.", style_box_text)],
+        [Paragraph("<b>🔍 Acercamiento Continuo:</b> Usa la rueda del ratón para descender desde la vista espacial global hasta los valles y costas con resolución fotográfica.", style_box_text)],
+        [Paragraph("<b>🛰️ Selector de Capas Climáticas:</b> Usa los botones inferiores para alternar entre el mapa de CO₂, temperatura superficial, nivel del mar y ozono.", style_box_text)],
+        [Paragraph("<b>📡 Satélites en Órbita Viva:</b> Pulsa en 'Satélites en Órbita' para ver la posición física en tiempo real de cada nave espacial que orbita sobre nuestras cabezas.", style_box_text)],
     ]
-    t_table = Table(task_rows, colWidths=[letter[0] - 72])
-    t_table.setStyle(TableStyle([
-        ('BACKGROUND', (0,0), (-1,-1), colors.HexColor('#F0FDFA')),
-        ('BOX', (0,0), (-1,-1), 1, colors.HexColor('#0F766E')),
-        ('TOPPADDING', (0,0), (-1,-1), 1.5),
-        ('BOTTOMPADDING', (0,0), (-1,-1), 1.5),
+    t_ctrl = Table(ctrl_data, colWidths=[letter[0] - 72])
+    t_ctrl.setStyle(TableStyle([
+        ('BACKGROUND', (0,0), (-1,-1), colors.HexColor('#F8FAFC')),
+        ('BOX', (0,0), (-1,-1), 1, colors.HexColor('#94A3B8')),
+        ('TOPPADDING', (0,0), (-1,-1), 2.0),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 2.0),
         ('LEFTPADDING', (0,0), (-1,-1), 7),
         ('RIGHTPADDING', (0,0), (-1,-1), 7),
     ]))
-    story.append(t_table)
-    story.append(Spacer(1, 3))
+    story.append(t_ctrl)
+    story.append(Spacer(1, 2))
 
-    # Recuadro de Prompt Maestro
-    story.append(Paragraph("🧠 <b>Prompt Maestro para Copiar y Pegar en Gemini:</b>", style_section_h))
-    prompt_text = (
-        "<b>Copia exactamente este texto en Gemini:</b><br/>"
-        "<i>\"Genera el código de programación (HTML y JavaScript con Three.js) que voy a copiar y pegar en el Taller de Pruebas de mi curso para crear un simulador 3D anatómico del ojo humano y la visión con fuentes biomédicas oficiales.<br/>"
-        "Requisitos del código:<br/>"
-        "1. Entrega el programa en un único bloque de código para que yo pulse directamente «Copiar código» y lo pegue con Ctrl+V en mi simulador.<br/>"
-        "2. Incluye en la cabecera las librerías oficiales de Three.js y OrbitControls:<br/>"
-        "&lt;script src=&quot;https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js&quot;&gt;&lt;/script&gt;<br/>"
-        "&lt;script src=&quot;https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js&quot;&gt;&lt;/script&gt;<br/>"
-        "3. Modela el globo ocular con su esclerótica blanca vascularizada, una córnea transparente convexa en el polo anterior, un iris fotográfico circular pigmentado con pupila central y un cristalino biconvexo translúcido interior sobre fondo oscuro (#060913).<br/>"
-        "4. Configura controles orbitales 360°, zoom suave con la rueda del ratón y un modo de corte sagital o transparencia que permita ver la retina interior y el nacimiento del nervio óptico posterior.<br/>"
-        "5. Añade botones para trazar la trayectoria de rayos de luz que convergen en la fóvea central de la retina.<br/>"
-        "6. Escribe exclusivamente el bloque de código para que al copiarlo a mi simulador genere el Ojo Humano 3D inmediatamente.\"</i>"
+    # Sección 3: Procedencia Oficial
+    story.append(Paragraph("🏛️ <b>Procedencia Institucional y Calidad Científica de los Datos:</b>", style_sec_h))
+    prov_text = (
+        "• <b>Institución Acreditada:</b> Desarrollado por la <b>NASA Earth Science Division</b> y el <b>Jet Propulsion Laboratory (JPL)</b>.<br/>"
+        "• <b>Datos Satelitales Certificados:</b> Las capas visuales proceden de telemetría directa calibrada diariamente por misiones orbitales (Aqua, Terra, GRACE-FO, OCO-2 y Sentinel). No contiene proyecciones artísticas simuladas: cada gradiente de color refleja mediciones físicas reales de radiometría y espectrometría."
     )
-    p_table = Table([[Paragraph(prompt_text, style_prompt)]], colWidths=[letter[0] - 72])
-    p_table.setStyle(TableStyle([
-        ('BACKGROUND', (0,0), (-1,-1), colors.HexColor('#F8FAFC')),
-        ('BOX', (0,0), (-1,-1), 1, colors.HexColor('#64748B')),
+    t_prov = Table([[Paragraph(prov_text, style_box_text)]], colWidths=[letter[0] - 72])
+    t_prov.setStyle(TableStyle([
+        ('BACKGROUND', (0,0), (-1,-1), colors.HexColor('#ECFDF5')),
+        ('BOX', (0,0), (-1,-1), 1, colors.HexColor('#10B981')),
+        ('TOPPADDING', (0,0), (-1,-1), 3.0),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 3.0),
+        ('LEFTPADDING', (0,0), (-1,-1), 7),
+        ('RIGHTPADDING', (0,0), (-1,-1), 7),
+    ]))
+    story.append(t_prov)
+    story.append(Spacer(1, 2))
+
+    # Sección 4: Preguntas para Gemini
+    story.append(Paragraph("💬 <b>Guía de Exploración en el Aula & Preguntas para Dialogar con Gemini:</b>", style_sec_h))
+    q_data = [
+        [Paragraph("<b>Pregunta 1 • El Ciclo del CO₂:</b> <i>«Gemini, observando la capa de CO₂ en NASA Earth veo zonas con tonos rojos más intensos en el hemisferio norte. ¿Por qué cambia la concentración de dióxido de carbono entre las estaciones del año según la vegetación?»</i>", style_box_text)],
+        [Paragraph("<b>Pregunta 2 • El Nivel del Mar:</b> <i>«Gemini, en el simulador veo la capa de nivel del mar con el satélite Sentinel-6. ¿Cómo consigue un satélite en el espacio medir la altura del agua en la Tierra con precisión de milímetros?»</i>", style_box_text)],
+        [Paragraph("<b>Pregunta 3 • La Capa de Ozono:</b> <i>«Gemini, al mirar el polo sur en NASA Eyes veo el mapa de ozono. ¿Cómo ha evolucionado el agujero de la capa de ozono antártica gracias al Protocolo de Montreal y cómo nos protege?»</i>", style_box_text)],
+    ]
+    t_q = Table(q_data, colWidths=[letter[0] - 72])
+    t_q.setStyle(TableStyle([
+        ('BACKGROUND', (0,0), (-1,-1), colors.HexColor('#EFF6FF')),
+        ('BOX', (0,0), (-1,-1), 1, colors.HexColor('#3B82F6')),
         ('TOPPADDING', (0,0), (-1,-1), 2.5),
         ('BOTTOMPADDING', (0,0), (-1,-1), 2.5),
         ('LEFTPADDING', (0,0), (-1,-1), 7),
         ('RIGHTPADDING', (0,0), (-1,-1), 7),
     ]))
-    story.append(p_table)
-    story.append(Spacer(1, 3))
-
-    # Desafío Extra
-    story.append(Paragraph("🌟 <b>El Reto Extra (Para Alumnos Curiosos):</b>", style_section_h))
-    story.append(Paragraph(
-        "👉 <b>¡Pídele a Gemini que modifique tu código!</b> En la misma conversación dile: "
-        "<i>«Añade un deslizador para simular cómo se dilata y contrae la pupila según la intensidad de la luz»</i> o "
-        "<i>«Muestra cómo cambia el enfoque de objetos cercanos y lejanos modificando la curvatura del cristalino (acomodación ocular)»</i>. "
-        "Vuelve a copiar el código, pégalo en tu Taller y ¡mira cómo tu ojo responde en directo!",
-        style_body
-    ))
-    story.append(Spacer(1, 2))
-
-    # Apartado Técnico al final
-    story.append(Paragraph("🔬 <b>¿De dónde proceden los modelos hiperrealistas y cómo se ha montado el objeto 3D?</b>", style_section_h))
-    tech_text = (
-        "• <b>Origen de los datos anatómicos oculares:</b> Proceden del <b>National Eye Institute (NEI)</b> y de los repositorios de tomografía de coherencia óptica (OCT) del <b>NIH (National Institutes of Health, EE. UU.)</b>, con mediciones micrométricas de espesores corneales, índice de refracción del humor acuoso (n=1.336) y curvatura anatómica de la fóvea retiniana.<br/>"
-        "• <b>Cómo se ha montado el objeto en la Demo y en el Taller:</b> En el motor <b>Three.js</b>, las distintas mallas se ensamblan con materiales MeshPhysicalMaterial con transmisión de luz real (fresnel, roughness dieléctrico y refracción), permitiendo ver a través de la córnea hacia las estructuras internas del ojo con iluminación de laboratorio."
-    )
-    tech_table = Table([[Paragraph(tech_text, style_task)]], colWidths=[letter[0] - 72])
-    tech_table.setStyle(TableStyle([
-        ('BACKGROUND', (0,0), (-1,-1), colors.HexColor('#ECFDF5')),
-        ('BOX', (0,0), (-1,-1), 1, colors.HexColor('#059669')),
-        ('TOPPADDING', (0,0), (-1,-1), 3),
-        ('BOTTOMPADDING', (0,0), (-1,-1), 3),
-        ('LEFTPADDING', (0,0), (-1,-1), 7),
-        ('RIGHTPADDING', (0,0), (-1,-1), 7),
-    ]))
-    story.append(tech_table)
+    story.append(t_q)
 
     doc.build(story)
-    if dest_path != LOCAL_BACKUP:
-        try:
-            import shutil
-            os.makedirs(os.path.dirname(LOCAL_BACKUP), exist_ok=True)
-            shutil.copy2(dest_path, LOCAL_BACKUP)
-        except Exception:
-            pass
+
+    # Duplicar con nombre alternativo y respaldo local
+    try:
+        shutil.copy2(dest_path, ALT_PDF_PATH)
+        os.makedirs(os.path.dirname(LOCAL_BACKUP), exist_ok=True)
+        shutil.copy2(dest_path, LOCAL_BACKUP)
+    except Exception:
+        pass
+
     print(f"✅ PDF COD-004 generado con éxito en: {dest_path}")
+    return dest_path
 
 if __name__ == '__main__':
     try:

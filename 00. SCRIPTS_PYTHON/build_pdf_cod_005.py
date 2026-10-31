@@ -2,24 +2,25 @@
 # -*- coding: utf-8 -*-
 """
 build_pdf_cod_005.py
-Genera la Ficha Didáctica Oficial de 1 Página (Letter/A4):
-4. COD-005_Taller_Crea_tu_Propio_Simulador_3D_con_Gemini.pdf
-para la Sesión 05 del Curso de IA (Simulador 3D del Sistema Solar Kepleriano, NASA y Órbitas Planetarias).
+Ficha Didáctica Oficial de 1 Página (Letter):
+Simulador Científico 3D Oficial: Estación Espacial Internacional (ISS) (NASA Eyes) [COD-005]
+Estructura científica estricta: Explicación, Controles 360°, Acreditación Oficial (NASA/JPL)
+y 3 Preguntas de Reflexión para dialogar con Gemini en el aula.
 """
 
 import os
 import sys
+import shutil
 
 OUTPUT_DIR = "/Users/externo/Library/Mobile Documents/com~apple~CloudDocs/PERSONAL/CLASES DE TECNOLOGÍA/CURSO-IA/CLASES/EXPORTACION_FICHAS_CLASSROOM_PDF/100. [SESSIONS] TERNAS_LISTAS_PARA_CLASSROOM/05_Sesion"
 PDF_PATH = os.path.join(OUTPUT_DIR, "4. COD-005_Taller_Crea_tu_Propio_Simulador_3D_con_Gemini.pdf")
-LOCAL_BACKUP = "/Users/externo/Library/Mobile Documents/com~apple~CloudDocs/PERSONAL/CLASES DE TECNOLOGÍA/CURSO-IA/SIMULADORES_INTERACTIVOS/02_INDICES_Y_CATALOGOS/05_COD-005_Taller_Simulador_Sistema_Solar_3D.pdf"
+ALT_PDF_PATH = os.path.join(OUTPUT_DIR, "4. COD-005_Simulador_ISS_NASA_Eyes.pdf")
+LOCAL_BACKUP = "/Users/externo/Library/Mobile Documents/com~apple~CloudDocs/PERSONAL/CLASES DE TECNOLOGÍA/CURSO-IA/SIMULADORES_INTERACTIVOS/02_INDICES_Y_CATALOGOS/05_COD-005_Simulador_ISS_3D.pdf"
 
 def build_cod_005_taller_3d_pdf(output_path=PDF_PATH):
     dest_path = output_path
     try:
         os.makedirs(os.path.dirname(dest_path), exist_ok=True)
-        with open(dest_path, "wb") as _:
-            pass
     except Exception:
         dest_path = LOCAL_BACKUP
         os.makedirs(os.path.dirname(dest_path), exist_ok=True)
@@ -35,146 +36,134 @@ def build_cod_005_taller_3d_pdf(output_path=PDF_PATH):
         rightMargin=36, leftMargin=36, topMargin=22, bottomMargin=20
     )
     styles = getSampleStyleSheet()
-    
+
+    c_primary = colors.HexColor('#0284C7')
+    c_blue = colors.HexColor('#0369A1')
+    c_dark = colors.HexColor('#0F172A')
+    c_slate = colors.HexColor('#334155')
+
     style_header = ParagraphStyle(
         'HeaderStyle', parent=styles['Normal'],
-        fontName='Helvetica-Bold', fontSize=8.0,
-        textColor=colors.HexColor('#D97706'), alignment=1, spaceAfter=1
+        fontName='Helvetica-Bold', fontSize=8.0, leading=9.5,
+        textColor=c_blue, alignment=1, spaceAfter=1
     )
-    style_block = ParagraphStyle(
-        'BlockStyle', parent=styles['Normal'],
-        fontName='Helvetica-Bold', fontSize=9.8,
-        textColor=colors.HexColor('#0F172A'), alignment=1, spaceAfter=4
+    style_subhead = ParagraphStyle(
+        'SubheadStyle', parent=styles['Normal'],
+        fontName='Helvetica-Bold', fontSize=9.5, leading=11.5,
+        textColor=c_dark, alignment=1, spaceAfter=3
     )
     style_title = ParagraphStyle(
         'TitleStyle', parent=styles['Heading1'],
-        fontName='Helvetica-Bold', fontSize=11.8, leading=14.2,
-        textColor=colors.HexColor('#0F172A'), spaceAfter=3
+        fontName='Helvetica-Bold', fontSize=11.5, leading=14.0,
+        textColor=c_dark, spaceAfter=3
     )
-    style_section_h = ParagraphStyle(
-        'SectionHStyle', parent=styles['Heading2'],
-        fontName='Helvetica-Bold', fontSize=8.8, leading=11.2,
-        textColor=colors.HexColor('#B45309'), spaceBefore=3, spaceAfter=2
+    style_sec_h = ParagraphStyle(
+        'SecHStyle', parent=styles['Heading2'],
+        fontName='Helvetica-Bold', fontSize=8.8, leading=11.0,
+        textColor=c_primary, spaceBefore=2, spaceAfter=2
     )
     style_body = ParagraphStyle(
         'BodyStyle', parent=styles['BodyText'],
-        fontName='Helvetica', fontSize=7.9, leading=10.5,
-        textColor=colors.HexColor('#1E293B'), spaceAfter=2
+        fontName='Helvetica', fontSize=8.1, leading=10.6,
+        textColor=c_slate, spaceAfter=2
     )
-    style_task = ParagraphStyle(
-        'TaskStyle', parent=styles['Normal'],
+    style_box_text = ParagraphStyle(
+        'BoxTextStyle', parent=styles['Normal'],
         fontName='Helvetica', fontSize=7.7, leading=10.1,
-        textColor=colors.HexColor('#0F172A')
-    )
-    style_prompt = ParagraphStyle(
-        'PromptStyle', parent=styles['Normal'],
-        fontName='Helvetica', fontSize=7.4, leading=9.8,
-        textColor=colors.HexColor('#0F172A')
+        textColor=c_dark
     )
 
     story = []
+
+    # Cabecera Oficial
     story.append(Paragraph("CURSO DE INTELIGENCIA ARTIFICIAL Y TECNOLOGÍA PARA ADULTOS MAYORES (60+)", style_header))
-    story.append(Paragraph("BLOQUE IV: CIENCIA INTERACTIVA & TALLER DE CÓDIGO CON GEMINI [COD]", style_block))
-    story.append(HRFlowable(width="100%", thickness=1.2, color=colors.HexColor('#D97706'), spaceAfter=4))
+    story.append(Paragraph("BLOQUE IV: CIENCIA Y SIMULADORES 3D INTERACTIVOS • EXPLORACIÓN ESPACIAL [COD]", style_subhead))
+    story.append(HRFlowable(width="100%", thickness=1.2, color=c_primary, spaceAfter=4))
 
-    story.append(Paragraph("<b>[COD-005] Taller: Crea tu simulador 3D del Sistema Solar Kepleriano (NASA)</b>", style_title))
+    # Título de la Ficha
+    story.append(Paragraph("<b>[COD-005] Simulador 3D Oficial: Estación Espacial Internacional (ISS) en Tiempo Real</b>", style_title))
 
-    story.append(Paragraph("💡 <b>Misión Didáctica • Astronomía Dinámica y Órbitas con Gemini:</b>", style_section_h))
+    # Sección 1: Explicación Didáctica
+    story.append(Paragraph("🛰️ <b>El Mayor Laboratorio Científico Fuera de la Tierra:</b>", style_sec_h))
     story.append(Paragraph(
-        "En esta sesión pedirás a la Inteligencia Artificial generar el código completo para construir un planetario tridimensional del <b>Sistema Solar</b> con física kepleriana real, el Sol radiante y texturas fotográficas satelitales oficiales de la NASA. "
-        "<b>Sin saber programar:</b> pedirás el código a Gemini con el prompt maestro, lo probarás en el <b>Taller de Pruebas</b> y contemplarás los planetas orbitando a su velocidad relativa real con rotación 360°.",
+        "La <b>Estación Espacial Internacional (ISS)</b> es la mayor estructura construida por la humanidad en el espacio: mide 109 metros de largo (el tamaño de un campo de fútbol) y orbita la Tierra a 400 kilómetros de altitud a una velocidad de <b>27.600 km/h</b>. "
+        "A través de este simulador oficial de NASA Eyes, el alumno puede inspeccionar en 360° los 8 colosales paneles solares de silicio que generan 120 kilovatios de electricidad, la viga maestra de celosía integrada y los módulos presurizados donde los astronautas viven en microgravedad permanente, realizando experimentos biomédicos y de ciencia de materiales.",
         style_body
     ))
+    story.append(Spacer(1, 2))
 
-    # Lista de Tareas (Checklist Guiado)
-    task_rows = [
-        [Paragraph("<b>✅ Tarea 1 • Pídele el código a Gemini (Pestaña 1):</b> "
-                   "Abre Gemini (<i>gemini.google.com</i>). Copia el <b>Prompt Maestro</b> inferior, pégalo en el chat y pulsa Enviar.", style_task)],
-        [Paragraph("<b>✅ Tarea 2 • Copia el código generado por la IA:</b> "
-                   "En la respuesta de Gemini, haz clic en el botón <b>«Copiar código»</b> situado en la esquina superior del bloque.", style_task)],
-        [Paragraph("<b>✅ Tarea 3 • Abre el Taller Oficial de Pruebas (Pestaña 2):</b> "
-                   "En el mapa de la Sesión 05, pulsa <b>«🚀 Abrir Taller Interactivo de Pruebas ↗»</b>.", style_task)],
-        [Paragraph("<b>✅ Tarea 4 • Pega con Ctrl+V y pulsa «Ejecutar Creación»:</b> "
-                   "Pega el código con <b>Ctrl+V</b> (o Cmd+V en Mac) y haz clic en <b>«▶️ Ejecutar Creación»</b>. ¡Los planetas orbitarán en 3D en tu pantalla!", style_task)],
-        [Paragraph("<b>✅ Tarea 5 • Descubre la Demo completa:</b> "
-                   "Pulsa el botón <b>«🌌 Sistema Solar 3D»</b> en el taller (o <b>«🌌 Ver Simulador Sistema Solar ↗»</b> en el mapa) para ver el Vórtice Galáctico.", style_task)],
+    # Sección 2: Controles 360°
+    story.append(Paragraph("🎮 <b>Controles del Visor 3D & Guía de Interacción en el Aula:</b>", style_sec_h))
+    ctrl_data = [
+        [Paragraph("<b>🖱️ Inspección Exterior 360°:</b> Haz clic izquierdo y arrastra para rotar la estación y observar los módulos Columbus (Europa), Kibo (Japón), Destiny (EE.UU.) y Zvezda (Rusia).", style_box_text)],
+        [Paragraph("<b>🔍 Zoom de Detalle Tecnológico:</b> Usa la rueda del ratón para aproximarte a las escotillas de acoplamiento de las cápsulas Crew Dragon o a la Cúpula de observación.", style_box_text)],
+        [Paragraph("<b>🌍 Salto a la Tierra en Órbita:</b> Pulsa el botón 'Tierra desde Órbita' en la botonera inferior para contemplar la curvatura del planeta exactamente como la ven los tripulantes.", style_box_text)],
+        [Paragraph("<b>🔭 Telescopio Hubble:</b> Salta con un clic a inspeccionar el telescopio Hubble que orbita a 540 km de altitud en la misma región orbital.", style_box_text)],
     ]
-    t_table = Table(task_rows, colWidths=[letter[0] - 72])
-    t_table.setStyle(TableStyle([
-        ('BACKGROUND', (0,0), (-1,-1), colors.HexColor('#FEF3C7')),
-        ('BOX', (0,0), (-1,-1), 1, colors.HexColor('#D97706')),
-        ('TOPPADDING', (0,0), (-1,-1), 1.5),
-        ('BOTTOMPADDING', (0,0), (-1,-1), 1.5),
+    t_ctrl = Table(ctrl_data, colWidths=[letter[0] - 72])
+    t_ctrl.setStyle(TableStyle([
+        ('BACKGROUND', (0,0), (-1,-1), colors.HexColor('#F8FAFC')),
+        ('BOX', (0,0), (-1,-1), 1, colors.HexColor('#94A3B8')),
+        ('TOPPADDING', (0,0), (-1,-1), 2.0),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 2.0),
         ('LEFTPADDING', (0,0), (-1,-1), 7),
         ('RIGHTPADDING', (0,0), (-1,-1), 7),
     ]))
-    story.append(t_table)
-    story.append(Spacer(1, 3))
+    story.append(t_ctrl)
+    story.append(Spacer(1, 2))
 
-    # Recuadro de Prompt Maestro
-    story.append(Paragraph("🧠 <b>Prompt Maestro para Copiar y Pegar en Gemini:</b>", style_section_h))
-    prompt_text = (
-        "<b>Copia exactamente este texto en Gemini:</b><br/>"
-        "<i>\"Genera el código de programación (HTML y JavaScript con Three.js) que voy a copiar y pegar en el Taller de Pruebas de mi curso para crear un planetario 3D del Sistema Solar con texturas satelitales oficiales de la NASA.<br/>"
-        "Requisitos del código:<br/>"
-        "1. Entrega el programa en un único bloque de código para que yo pulse directamente «Copiar código» y lo pegue con Ctrl+V en mi simulador.<br/>"
-        "2. Incluye en la cabecera las librerías oficiales de Three.js y OrbitControls:<br/>"
-        "&lt;script src=&quot;https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js&quot;&gt;&lt;/script&gt;<br/>"
-        "&lt;script src=&quot;https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js&quot;&gt;&lt;/script&gt;<br/>"
-        "3. Crea el Sol central brillante con luz puntual y los planetas orbitando a distancias proporcionales con la 3ª Ley de Kepler sobre fondo espacial negro con estrellas.<br/>"
-        "4. Aplica directamente a la Tierra la textura satelital real de la NASA libre de CORS: https://cdn.jsdelivr.net/gh/mrdoob/three.js@dev/examples/textures/planets/earth_atmos_2048.jpg y a la Luna la textura https://cdn.jsdelivr.net/gh/mrdoob/three.js@dev/examples/textures/planets/moon_1024.jpg mediante THREE.TextureLoader.<br/>"
-        "5. Configura una cámara orbital con rotación 360°, zoom suave con la rueda del ratón y trazas de las órbitas elípticas en líneas tenues.<br/>"
-        "6. Escribe exclusivamente el bloque de código para que al copiarlo a mi simulador genere el Sistema Solar 3D inmediatamente.\"</i>"
+    # Sección 3: Procedencia Oficial
+    story.append(Paragraph("🏛️ <b>Procedencia Institucional y Calidad Científica de los Datos:</b>", style_sec_h))
+    prov_text = (
+        "• <b>Institución Acreditada:</b> Desarrollado por el <b>Jet Propulsion Laboratory (JPL) de la NASA</b> en colaboración con el Centro Espacial Johnson (JSC Houston).<br/>"
+        "• <b>Modelo de Ingeniería 1:1:</b> La geometría de la ISS procede directamente de los archivos CAD de ingeniería de la NASA y la ESA. La posición y orientación de la estación se calculan mediante datos telemétricos y vectores de estado NORAD en tiempo real, reflejando su vuelo auténtico sobre la superficie terrestre."
     )
-    p_table = Table([[Paragraph(prompt_text, style_prompt)]], colWidths=[letter[0] - 72])
-    p_table.setStyle(TableStyle([
-        ('BACKGROUND', (0,0), (-1,-1), colors.HexColor('#F8FAFC')),
-        ('BOX', (0,0), (-1,-1), 1, colors.HexColor('#64748B')),
+    t_prov = Table([[Paragraph(prov_text, style_box_text)]], colWidths=[letter[0] - 72])
+    t_prov.setStyle(TableStyle([
+        ('BACKGROUND', (0,0), (-1,-1), colors.HexColor('#ECFDF5')),
+        ('BOX', (0,0), (-1,-1), 1, colors.HexColor('#10B981')),
+        ('TOPPADDING', (0,0), (-1,-1), 3.0),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 3.0),
+        ('LEFTPADDING', (0,0), (-1,-1), 7),
+        ('RIGHTPADDING', (0,0), (-1,-1), 7),
+    ]))
+    story.append(t_prov)
+    story.append(Spacer(1, 2))
+
+    # Sección 4: Preguntas para Gemini
+    story.append(Paragraph("💬 <b>Guía de Exploración en el Aula & Preguntas para Dialogar con Gemini:</b>", style_sec_h))
+    q_data = [
+        [Paragraph("<b>Pregunta 1 • Vida en Microgravedad:</b> <i>«Gemini, observando la ISS en NASA Eyes a 400 km de altura, ¿por qué los astronautas flotan en su interior? ¿Es porque no hay gravedad o porque la estación está en una caída libre continua alrededor de la Tierra?»</i>", style_box_text)],
+        [Paragraph("<b>Pregunta 2 • Amaneceres cada 90 Minutos:</b> <i>«Gemini, si la ISS viaja a 27.600 km/h y tarda solo 90 minutos en dar una vuelta completa a la Tierra, ¿cuántos amaneceres y puestas de sol ven los astronautas cada 24 horas y cómo logran dormir?»</i>", style_box_text)],
+        [Paragraph("<b>Pregunta 3 • Radiación y Blindaje:</b> <i>«Gemini, al mirar los módulos presurizados de la estación, ¿cómo se protegen los tripulantes del impacto de micrometeoritos y de la intensa radiación cósmica fuera de la atmósfera?»</i>", style_box_text)],
+    ]
+    t_q = Table(q_data, colWidths=[letter[0] - 72])
+    t_q.setStyle(TableStyle([
+        ('BACKGROUND', (0,0), (-1,-1), colors.HexColor('#EFF6FF')),
+        ('BOX', (0,0), (-1,-1), 1, colors.HexColor('#3B82F6')),
         ('TOPPADDING', (0,0), (-1,-1), 2.5),
         ('BOTTOMPADDING', (0,0), (-1,-1), 2.5),
         ('LEFTPADDING', (0,0), (-1,-1), 7),
         ('RIGHTPADDING', (0,0), (-1,-1), 7),
     ]))
-    story.append(p_table)
-    story.append(Spacer(1, 3))
-
-    # Desafío Extra
-    story.append(Paragraph("🌟 <b>El Reto Extra (Para Alumnos Curiosos):</b>", style_section_h))
-    story.append(Paragraph(
-        "👉 <b>¡Pídele a Gemini que modifique tu código!</b> En la misma conversación dile: "
-        "<i>«Añade los anillos de Saturno con inclinación de 27°»</i> o "
-        "<i>«Coloca un botón para acelerar el tiempo de órbita y ver a Mercurio dar 4 vueltas completas por cada año terrestre»</i>. "
-        "Vuelve a copiar el código, pégalo en tu Taller y ¡mira cómo tu Sistema Solar responde en directo!",
-        style_body
-    ))
-    story.append(Spacer(1, 2))
-
-    # Apartado Técnico al final
-    story.append(Paragraph("🔬 <b>¿De dónde proceden los modelos hiperrealistas y cómo se ha montado el objeto 3D?</b>", style_section_h))
-    tech_text = (
-        "• <b>Origen de las texturas satelitales y efemérides (<i>NASA JPL / Solar System Dynamics</i>):</b> Los mapas esféricos de superficie proceden de las misiones espaciales <b>NASA Blue Marble (satélites Terra/Aqua)</b>, <b>LRO</b> y <b>Cassini-Huygens</b>, con parámetros orbitales exactos calibrados según la base de datos de efemérides <i>HORIZONS</i> del JPL.<br/>"
-        "• <b>Cómo se ha montado el objeto en la Demo y en el Taller:</b> En <b>Three.js</b>, la velocidad angular de cada planeta se calcula en cada fotograma mediante la 3ª Ley de Kepler ($T^2 \\propto a^3$), garantizando que Mercurio orbite 4 veces más rápido que la Tierra y Júpiter complete su órbita en 11.86 años relativos."
-    )
-    tech_table = Table([[Paragraph(tech_text, style_task)]], colWidths=[letter[0] - 72])
-    tech_table.setStyle(TableStyle([
-        ('BACKGROUND', (0,0), (-1,-1), colors.HexColor('#ECFDF5')),
-        ('BOX', (0,0), (-1,-1), 1, colors.HexColor('#059669')),
-        ('TOPPADDING', (0,0), (-1,-1), 3),
-        ('BOTTOMPADDING', (0,0), (-1,-1), 3),
-        ('LEFTPADDING', (0,0), (-1,-1), 7),
-        ('RIGHTPADDING', (0,0), (-1,-1), 7),
-    ]))
-    story.append(tech_table)
+    story.append(t_q)
 
     doc.build(story)
-    if dest_path != LOCAL_BACKUP:
-        try:
-            import shutil
-            os.makedirs(os.path.dirname(LOCAL_BACKUP), exist_ok=True)
-            shutil.copy2(dest_path, LOCAL_BACKUP)
-        except Exception:
-            pass
+
+    # Duplicar con nombre alternativo y respaldo local
+    try:
+        shutil.copy2(dest_path, ALT_PDF_PATH)
+        os.makedirs(os.path.dirname(LOCAL_BACKUP), exist_ok=True)
+        shutil.copy2(dest_path, LOCAL_BACKUP)
+    except Exception:
+        pass
+
     print(f"✅ PDF COD-005 generado con éxito en: {dest_path}")
+    return dest_path
+
+# Alias para compatibilidad con compiladores
+def build_pure_python_cod_005(dest=PDF_PATH):
+    return build_cod_005_taller_3d_pdf(dest)
 
 if __name__ == '__main__':
     try:
