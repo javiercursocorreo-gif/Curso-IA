@@ -15,6 +15,14 @@
 
 # REGLAS DEL PROYECTO (CURSO-IA)
 
+## Protocolo de Asistente Personal Proactivo (Briefing Diario al Iniciar Sesión)
+- **Briefing Matutino / Inicio de Chat:**
+  - En el primer turno de cada día o al iniciar una conversación, el asistente debe actuar como un auténtico Asistente Personal proactivo.
+  - Debe consultar la fecha actual y el estado de `PLAN_MAESTRO_SIMULADORES_Y_TALLERES_COD.md`, e informar de inmediato al usuario en un recuadro claro:
+    1. Qué lote de 5 sesiones toca hacer hoy del Plan COD (o si ya está completado).
+    2. Si es martes o jueves, recordar la bitácora de clases de las 14:00.
+    3. Entregarle directamente el bloque de trabajo o herencia listo sin que el usuario tenga que recordar buscarlo.
+
 ## Flujo de Trabajo Automatizado y Cero Interrupciones (Auto-Execution)
 - **PROHIBICIÓN ABSOLUTA DE SUBMITS Y VENTANAS DE APROBACIÓN EN EL CHAT:**
   - El asistente tiene **TERMINANTEMENTE PROHIBIDO** ejecutar comandos o acciones que provoquen la aparición de botones de "Submit", "Aprobar", confirmaciones o ventanas emergentes en la pantalla del usuario.
