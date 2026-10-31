@@ -10,9 +10,9 @@
 
 | Bloque / Día | Sesiones | Estado | Contenido Principal |
 | :--- | :---: | :---: | :--- |
-| **Completado** | **01 a 14** | ✅ **100% HECHO** | Pulmones, Corazón, Pompeya, Ojo, Sistema Solar, Cerebro, Luna, Motor CAD, T-Rex, Molar, Stradivarius, Helix, ADN, Júpiter. |
-| **Lote 1 (Día 1 / Chat 1)** | **15 a 19** | ⏳ **PENDIENTE** | Partenón, Hígado, Tutankamón, Neurona Piramidal, Saturno y Anillos. |
-| **Lote 2 (Día 2 / Chat 2)** | **20 a 24** | ⏳ **PENDIENTE** | Mano Humana, Escala Cósmica, Esfera de Dyson, Termodinámica Molecular, 11 Dimensiones / Calabi-Yau. |
+| **Fase 1 (Completada)** | **01 a 14** | ✅ **100% HECHO** | Pulmones, Corazón, Pompeya, Ojo, Sistema Solar, Cerebro, Luna, Motor CAD, T-Rex, Molar, Stradivarius, Helix, ADN, Júpiter. |
+| **Lote 1 (Completado)** | **15 a 19** | ✅ **100% HECHO** | Partenón, Hígado, Tutankamón, Neurona Piramidal, Saturno y Anillos. |
+| **Lote 2 (Día 2 / Próximo Chat)** | **20 a 24** | ⏳ **PENDIENTE** | Mano Humana, Escala Cósmica, Esfera de Dyson, Termodinámica Molecular, 11 Dimensiones / Calabi-Yau. |
 | **Lote 3 (Día 3 / Chat 3)** | **25 a 29** | ⏳ **PENDIENTE** | Relatividad Especial, Agujero Negro Supermasivo, Átomo y Orbitales, Tabla Periódica, Doble Rendija Cuántica. |
 | **Lote 4 (Día 4 / Chat 4)** | **30 a 34** | ⏳ **PENDIENTE** | Computación Cuántica & Bloch, Arrecife de Coral, Red Trófica Fluvial, Mitocondria & ATP, Telómeros & Telomerasa. |
 | **Lote 5 (Día 5 / Chat 5)** | **35 a 39** | ⏳ **PENDIENTE** | Selva Tropical & Ríos Voladores, Canales Iónicos & Neurotoxinas, Piel Humana, Columna Vertebral, Iridiscencia Óptica. |
@@ -69,9 +69,9 @@ Auditar, reconstruir y blindar 5 simuladores interactivos y sus 5 fichas didáct
 - **Sesión 24 [COD-024]:** Las 11 Dimensiones, Espacios Calabi-Yau y Teoría M (CERN / Ed Witten).
 
 ### 3. REGLAS TÉCNICAS OBLIGATORIAS
-1. **Activos Reales en Base64:** Guardados en `SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/`. Cero mallas toscas inventadas.
-2. **Fichas Didácticas de 1 Página:** Scripts `build_pdf_cod_020.py` a `build_pdf_cod_024.py` en `00. SCRIPTS_PYTHON/`.
-3. **Prompts Maestros Blindados:** Con URLs oficiales libres de CORS y variables Base64.
+1. **Cero Dibujos Animados y Cero Babylon.js:** Queda terminantemente prohibido usar dibujos animados, mallas toscas o trazados vectoriales Bézier procedurales. Solo Visores Fotográficos Interactivos de Alta Resolución (Three.js o Canvas fotográfico) basados en escaneos y fotos reales.
+2. **Activos Reales en Base64:** Guardados en `SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/` en formato `*_photo_b64.js`.
+3. **Fichas Didácticas de 1 Página:** Scripts `build_pdf_cod_020.py` a `build_pdf_cod_024.py` en `00. SCRIPTS_PYTHON/` con la nueva estructura científica (explicación, fuentes institucionales y preguntas para Gemini).
 4. **Modo 100% Silencioso:** Cero preguntas intermedias, cero ventanas de submit/aprobación.
 5. **Entrega Final:** Un único bloque terminal correlativo `[COMANDO 01]` para compilar los 5 PDFs, abrir en Safari y desplegar a GitHub.
 
@@ -97,9 +97,9 @@ Auditar, reconstruir y blindar 5 simuladores interactivos y sus 5 fichas didáct
 - **Sesión 29 [COD-029]:** Experimento de la Doble Rendija y Dualidad Onda-Partícula (Young / Davisson-Germer).
 
 ### 3. REGLAS TÉCNICAS OBLIGATORIAS
-1. **Activos Reales en Base64:** Guardados en `SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/`.
-2. **Fichas Didácticas de 1 Página:** Scripts `build_pdf_cod_025.py` a `build_pdf_cod_029.py` en `00. SCRIPTS_PYTHON/`.
-3. **Prompts Maestros Blindados:** Prohibir canvas procedural y suministrar texturas científicas reales.
+1. **Cero Dibujos Animados y Cero Babylon.js:** Queda terminantemente prohibido usar dibujos animados, mallas toscas o trazados vectoriales Bézier procedurales. Solo Visores Fotográficos Interactivos de Alta Resolución (Three.js o Canvas fotográfico) basados en escaneos y fotos reales.
+2. **Activos Reales en Base64:** Guardados en `SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/` en formato `*_photo_b64.js`.
+3. **Fichas Didácticas de 1 Página:** Scripts `build_pdf_cod_025.py` a `build_pdf_cod_029.py` en `00. SCRIPTS_PYTHON/` con la nueva estructura científica (explicación, fuentes institucionales y preguntas para Gemini).
 4. **Modo 100% Silencioso:** Cero preguntas intermedias, cero ventanas de submit/aprobación.
 5. **Entrega Final:** Un único bloque terminal correlativo `[COMANDO 01]` para compilar los 5 PDFs, abrir en Safari y desplegar a GitHub.
 
@@ -125,9 +125,9 @@ Auditar, reconstruir y blindar 5 simuladores interactivos y sus 5 fichas didáct
 - **Sesión 34 [COD-034]:** Telómeros, Telomerasa y Límite de Hayflick (NIH Genética del envejecimiento).
 
 ### 3. REGLAS TÉCNICAS OBLIGATORIAS
-1. **Activos Reales en Base64:** Guardados en `SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/`.
-2. **Fichas Didácticas de 1 Página:** Scripts `build_pdf_cod_030.py` a `build_pdf_cod_034.py` en `00. SCRIPTS_PYTHON/`.
-3. **Prompts Maestros Blindados:** Con datos atómicos/cristalográficos reales y prohibición de canvas.
+1. **Cero Dibujos Animados y Cero Babylon.js:** Queda terminantemente prohibido usar dibujos animados, mallas toscas o trazados vectoriales Bézier procedurales. Solo Visores Fotográficos Interactivos de Alta Resolución (Three.js o Canvas fotográfico) basados en escaneos y fotos reales.
+2. **Activos Reales en Base64:** Guardados en `SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/` en formato `*_photo_b64.js`.
+3. **Fichas Didácticas de 1 Página:** Scripts `build_pdf_cod_030.py` a `build_pdf_cod_034.py` en `00. SCRIPTS_PYTHON/` con la nueva estructura científica (explicación, fuentes institucionales y preguntas para Gemini).
 4. **Modo 100% Silencioso:** Cero preguntas intermedias, cero ventanas de submit/aprobación.
 5. **Entrega Final:** Un único bloque terminal correlativo `[COMANDO 01]` para compilar los 5 PDFs, abrir en Safari y desplegar a GitHub.
 
@@ -153,9 +153,9 @@ Auditar, reconstruir y blindar 5 simuladores interactivos y sus 5 fichas didáct
 - **Sesión 39 [COD-039]:** Iridiscencia Óptica y Nanocristales (Microscopía Electrónica).
 
 ### 3. REGLAS TÉCNICAS OBLIGATORIAS
-1. **Activos Reales en Base64:** Guardados en `SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/`.
-2. **Fichas Didácticas de 1 Página:** Scripts `build_pdf_cod_035.py` a `build_pdf_cod_039.py` en `00. SCRIPTS_PYTHON/`.
-3. **Prompts Maestros Blindados:** Con fuentes acreditadas y sin cuadrículas de ajedrez en canvas.
+1. **Cero Dibujos Animados y Cero Babylon.js:** Queda terminantemente prohibido usar dibujos animados, mallas toscas o trazados vectoriales Bézier procedurales. Solo Visores Fotográficos Interactivos de Alta Resolución (Three.js o Canvas fotográfico) basados en escaneos y fotos reales.
+2. **Activos Reales en Base64:** Guardados en `SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/` en formato `*_photo_b64.js`.
+3. **Fichas Didácticas de 1 Página:** Scripts `build_pdf_cod_035.py` a `build_pdf_cod_039.py` en `00. SCRIPTS_PYTHON/` con la nueva estructura científica (explicación, fuentes institucionales y preguntas para Gemini).
 4. **Modo 100% Silencioso:** Cero preguntas intermedias, cero ventanas de submit/aprobación.
 5. **Entrega Final:** Un único bloque terminal correlativo `[COMANDO 01]` para compilar los 5 PDFs, abrir en Safari y desplegar a GitHub.
 
@@ -174,7 +174,7 @@ INSTRUCCIÓN: Procede directamente en silencio de principio a fin.
 Completar la sesión 40 final [COD-040] (Regeneración Tisular, Matriz de Colágeno y Células Madre), compilar la totalidad de los 40 PDFs oficiales del bloque COD (COD-001 a COD-040), verificar la sincronización de mapas y cerrar definitivamente el Bloque IV [COD].
 
 ### 2. TAREAS PRINCIPALES:
-1. Reconstruir el simulador 40 con microscopía real en Base64.
+1. Reconstruir el simulador 40 con microscopía real en Base64 (cero dibujos animados).
 2. Actualizar y blindar `build_pdf_cod_040.py` en ReportLab (1 página).
 3. Compilar los 40 PDFs oficiales con `build_cod_lote1_master.py` a `build_cod_lote4_master.py`.
 4. Validar visualmente en Safari y desplegar todo a GitHub Pages y Classroom.
@@ -185,7 +185,7 @@ INSTRUCCIÓN: Procede directamente en silencio de principio a fin y entrega el c
 ---
 
 ## ⚙️ REGLAS TÉCNICAS INQUEBRANTABLES
-1. **Prohibición de Babylon.js y Mallas Procedurales:** Todo visor debe ser Three.js o Visor Fotográfico HD interactivo en Canvas/SVG con activos reales en Base64 (`_photo_b64.js` / `_b64.js`).
+1. **Prohibición Total de Dibujos Animados y Babylon.js:** Todo visor debe ser Three.js o Visor Fotográfico HD interactivo en Canvas con activos reales en Base64 (`_photo_b64.js`). Prohibido cualquier trazado procedural o caricaturesco.
 2. **Fuentes Científicas Acreditadas:** NIH, NASA, ESA, The Met, PDB, CERN, Smithsonian, CyArk.
 3. **Ficha Oficial de 1 Página:** ReportLab Platypus, márgenes 36pt, interlineado 9.8-10.5pt para evitar desbordes a página 2.
 4. **Blindaje de Prompts para Gemini:** Prohibir explícitamente canvas procedurales y suministrar URLs públicas oficiales libres de CORS y variables Base64.

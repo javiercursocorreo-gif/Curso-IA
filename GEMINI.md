@@ -69,14 +69,14 @@
     echo "=== [COMANDO XX] FINALIZADO CON ÉXITO ==="
     ```
 
-## Estándar de Simulaciones 3D: Motor Babylon.js y Modelos Científicos Hiperrealistas
-- **Prohibición de Mallas Inventadas o Procedurales Primitivas:**
-  - Queda terminantemente prohibido generar órganos o artefactos mediante esferas, conos o cilindros básicos deformados por código (evitar acabados toscos o irreales).
-  - Toda simulación anatómica o científica debe emplear modelos 3D hiperrealistas reales (`.glb` / `.gltf`) procedentes de fuentes y repositorios científicos contrastados (NIH 3D Print Exchange, resonancias médicas reales, fotogrametría PBR 4K, NASA).
-- **Motor 3D Predeterminado (Babylon.js):**
-  - El motor estándar y prioritario para los laboratorios y simuladores 3D es **Babylon.js** (`babylon.js` + `babylonjs.loaders.min.js`), con sistema PBR, iluminación médica y shaders orgánicos.
-- **Arquitectura de Carga y Autonomía (Base64 + CDN Fallback):**
-  - Los modelos científicos deben estar respaldados en archivos `_b64.js` en `03_ASSETS_3D_Y_DATOS/` (ej. `brain_b64.js`, `heart_b64.js`, `lungs_b64.js`) para garantizar funcionamiento 100% offline y autónomo sin problemas de CORS ni caídas de servidor.
+## Estándar de Simuladores Científicos: Visores Fotográficos Interactivos de Alta Resolución (Three.js / HTML5 Canvas)
+- **Prohibición Total de Dibujos Animados y Mallas Procedurales Inventadas:**
+  - Queda terminantemente prohibido generar dibujos animados, trazados vectoriales Bézier ficticios en canvas 2D, o mallas primitivas deformadas por código.
+  - Toda simulación debe ser un **Visor Fotográfico Interactivo de Alta Resolución** o una escena Three.js basada en escaneos y fotografías científicas reales (microscopía confocal, resonancias magnéticas, tomografías axiales, fotografías orbitales de NASA/ESA, fotogrametrías de museos).
+- **Prohibición Total de Babylon.js:**
+  - Babylon.js queda estrictamente prohibido en todo el proyecto. Se utiliza exclusivamente Three.js o el motor nativo de visualización fotográfica interactiva en HTML5 Canvas con zoom, rotación, filtros y puntos de interés anatómicos.
+- **Arquitectura de Carga y Autonomía (Base64 Offline):**
+  - Todas las fotografías y escaneos de alta resolución deben estar respaldados en archivos `_photo_b64.js` en `SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/` para garantizar funcionamiento 100% offline, sin dependencias externas ni bloqueos de CORS.
 
 ## Validación Visual Inmediata: Lanzamiento Automático en Safari (Respeto de Reposo de Pantalla)
 - **Apertura Local Inmediata en Navegador Nativo (Safari):**
