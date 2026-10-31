@@ -3,18 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sesión 19 • Laboratorio Astrofísico Real: Saturno, Anillos y Misión Cassini [COD-019]</title>
-    <!-- NASA JPL / Cassini-Huygens Imaging Science Subsystem (ISS) Archive -->
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+    <title>Sesión 19 • Simulador Astrofísico Real: Saturno, Hexágono Polar & Anillos PBR [COD-019]</title>
+    <!-- Fuentes Tipográficas Oficiales -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+    <!-- Astrofotografía Científica Oficial en Base64 Autónomo (NASA Cassini Imaging Science Subsystem) -->
+    <script src="../../../../SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/saturn_photo_b64.js"></script>
+    <script src="../03_ASSETS_3D_Y_DATOS/saturn_photo_b64.js"></script>
     <style>
         :root {
             --bg-base: #010206;
             --bg-panel: rgba(8, 12, 22, 0.94);
-            --border: rgba(251, 191, 36, 0.35);
-            --primary: #fbbf24;
-            --primary-glow: rgba(251, 191, 36, 0.4);
-            --cyan: #38bdf8;
-            --ice-blue: #bae6fd;
+            --saturn-gold: #fde047;
+            --ring-cream: #fef08a;
+            --cassini-cyan: #38bdf8;
+            --shadow-purple: #c084fc;
             --text-main: #f8fafc;
             --text-sub: #cbd5e1;
             --font-title: 'Cinzel', serif;
@@ -23,7 +25,7 @@
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
-        body {
+        html, body {
             background-color: var(--bg-base);
             color: var(--text-main);
             font-family: var(--font-sans);
@@ -36,9 +38,9 @@
         }
 
         header {
-            background: linear-gradient(180deg, rgba(10, 14, 26, 0.98) 0%, rgba(10, 14, 26, 0.88) 100%);
+            background: linear-gradient(180deg, rgba(12, 16, 28, 0.98) 0%, rgba(12, 16, 28, 0.88) 100%);
             backdrop-filter: blur(14px);
-            border-bottom: 1px solid var(--border);
+            border-bottom: 1px solid rgba(253, 224, 71, 0.35);
             padding: 10px 24px;
             display: flex;
             align-items: center;
@@ -47,791 +49,471 @@
             z-index: 50;
         }
 
-        .brand-box { display: flex; align-items: center; gap: 14px; }
-        .badge-pill {
-            background: rgba(251, 191, 36, 0.15);
-            border: 1px solid var(--primary);
-            color: var(--primary);
+        .header-title-box { display: flex; align-items: center; gap: 14px; }
+        .badge-code {
+            background: rgba(253, 224, 71, 0.18);
+            color: var(--saturn-gold);
+            border: 1px solid rgba(253, 224, 71, 0.5);
             font-family: var(--font-mono);
+            font-size: 0.85rem;
             font-weight: 800;
-            font-size: 0.82rem;
             padding: 4px 10px;
-            border-radius: 6px;
+            border-radius: 8px;
         }
 
-        .title-text h1 {
+        h1 {
             font-family: var(--font-title);
-            font-size: 1.15rem;
+            font-size: 1.25rem;
             font-weight: 800;
-            color: #fff;
+            color: #ffffff;
             display: flex;
             align-items: center;
-            gap: 8px;
-        }
-        .title-text p { font-size: 0.78rem; color: var(--text-sub); margin-top: 1px; }
-
-        .header-actions { display: flex; align-items: center; gap: 10px; }
-        .btn-header {
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            color: var(--text-main);
-            padding: 6px 14px;
-            border-radius: 8px;
-            font-size: 0.8rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-        .btn-header:hover { background: rgba(251, 191, 36, 0.2); border-color: var(--primary); color: var(--primary); }
-
-        .workspace { flex: 1; position: relative; overflow: hidden; display: flex; }
-
-        .viewer-container {
-            flex: 1;
-            position: relative;
-            background: radial-gradient(circle at center, #070b16 0%, #010206 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-        }
-
-        #saturnCanvas {
-            max-width: 96%;
-            max-height: 92%;
-            border-radius: 14px;
-            box-shadow: 0 15px 45px rgba(0, 0, 0, 0.9);
-            border: 1px solid rgba(251, 191, 36, 0.25);
-            cursor: grab;
-        }
-        #saturnCanvas:active { cursor: grabbing; }
-
-        .controls-panel {
-            position: absolute;
-            top: 18px;
-            left: 20px;
-            width: 340px;
-            background: var(--bg-panel);
-            border: 1px solid var(--border);
-            border-radius: 14px;
-            padding: 18px;
-            backdrop-filter: blur(14px);
-            z-index: 20;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
-            max-height: calc(100vh - 120px);
-            overflow-y: auto;
-        }
-
-        .panel-section-title {
-            font-family: var(--font-mono);
-            font-size: 0.8rem;
-            font-weight: 800;
-            color: var(--primary);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
-        .mode-toggle-group {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 6px;
-        }
-        .btn-mode {
-            background: rgba(255, 255, 255, 0.06);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            color: var(--text-sub);
-            padding: 8px 4px;
-            border-radius: 8px;
-            font-size: 0.76rem;
-            font-weight: 700;
-            cursor: pointer;
-            text-align: center;
-            transition: all 0.2s ease;
-        }
-        .btn-mode.active {
-            background: rgba(251, 191, 36, 0.25);
-            border-color: var(--primary);
-            color: #fff;
-            box-shadow: 0 0 12px var(--primary-glow);
-        }
-
-        .hotspot-list {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-        .btn-hotspot {
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            color: var(--text-sub);
-            padding: 8px 12px;
-            border-radius: 8px;
-            font-size: 0.78rem;
-            font-weight: 600;
-            cursor: pointer;
-            text-align: left;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            transition: all 0.15s ease;
-        }
-        .btn-hotspot:hover, .btn-hotspot.active {
-            background: rgba(251, 191, 36, 0.15);
-            border-color: var(--primary);
-            color: #fff;
-        }
-
-        .kpi-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
             gap: 10px;
         }
-        .kpi-card {
-            background: rgba(0, 0, 0, 0.45);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 8px;
-            padding: 8px 10px;
-        }
-        .kpi-val {
-            font-family: var(--font-mono);
-            font-size: 1.1rem;
-            font-weight: 900;
-            color: var(--primary);
-        }
-        .kpi-label { font-size: 0.72rem; color: var(--text-sub); margin-top: 1px; }
 
-        .slider-box {
+        .pill-status {
+            background: rgba(56, 189, 248, 0.12);
+            color: var(--cassini-cyan);
+            border: 1px solid rgba(56, 189, 248, 0.4);
+            font-size: 0.82rem;
+            font-weight: 700;
+            padding: 5px 13px;
+            border-radius: 9999px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .pulse-dot {
+            width: 8px; height: 8px; border-radius: 50%;
+            background: #38bdf8; box-shadow: 0 0 10px #38bdf8;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+        .workspace-grid {
+            flex: 1;
+            min-height: 0;
+            display: grid;
+            grid-template-columns: 340px 1fr 360px;
+            background: #010204;
+        }
+
+        .sidebar {
+            background: var(--bg-panel);
+            backdrop-filter: blur(16px);
+            padding: 18px;
+            overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: 4px;
+            gap: 16px;
+            z-index: 20;
+            border-right: 1px solid rgba(253, 224, 71, 0.2);
         }
-        .slider-label {
-            font-size: 0.75rem;
-            color: var(--text-sub);
-            display: flex;
-            justify-content: space-between;
-            font-family: var(--font-mono);
-        }
-        input[type="range"] {
-            width: 100%;
-            accent-color: var(--primary);
-            cursor: pointer;
+        .sidebar-right {
+            border-right: none;
+            border-left: 1px solid rgba(253, 224, 71, 0.2);
         }
 
-        .info-panel {
-            position: absolute;
-            bottom: 24px;
-            right: 24px;
-            width: 360px;
-            background: var(--bg-panel);
-            border: 1px solid var(--border);
-            border-radius: 14px;
-            padding: 18px;
-            backdrop-filter: blur(14px);
-            z-index: 20;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+        .card-concept {
+            background: linear-gradient(135deg, rgba(253, 224, 71, 0.15) 0%, rgba(10, 14, 24, 0.95) 100%);
+            border: 1.5px solid var(--saturn-gold);
+            border-radius: 12px;
+            padding: 14px;
         }
-        .info-title {
-            font-family: var(--font-title);
-            font-size: 1.05rem;
+        .card-tag {
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
             font-weight: 800;
-            color: #fff;
+            color: var(--saturn-gold);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
             margin-bottom: 6px;
         }
-        .info-body { font-size: 0.82rem; line-height: 1.5; color: var(--text-sub); margin-bottom: 12px; }
-        .info-quote {
-            font-style: italic;
-            font-size: 0.76rem;
-            color: var(--primary);
-            border-left: 2px solid var(--primary);
-            padding-left: 10px;
-            margin-bottom: 12px;
-        }
-        .audio-btn {
-            width: 100%;
-            background: linear-gradient(135deg, #d97706 0%, #fbbf24 100%);
-            border: none;
-            color: #050814;
-            padding: 9px;
-            border-radius: 8px;
-            font-weight: 900;
-            font-size: 0.82rem;
+        .card-title { font-size: 1.05rem; font-weight: 800; color: #fff; margin-bottom: 6px; }
+        .card-desc { font-size: 0.84rem; color: #e2e8f0; line-height: 1.45; }
+
+        .hotspot-list { display: flex; flex-direction: column; gap: 8px; }
+        .hotspot-item {
+            background: rgba(20, 26, 42, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 10px 12px;
             cursor: pointer;
             transition: all 0.2s ease;
         }
-        .audio-btn:hover { box-shadow: 0 0 15px rgba(251, 191, 36, 0.5); }
+        .hotspot-item:hover, .hotspot-item.active {
+            border-color: var(--saturn-gold);
+            background: rgba(253, 224, 71, 0.18);
+            transform: translateX(4px);
+        }
+        .hotspot-num {
+            display: inline-block;
+            width: 22px; height: 22px; line-height: 22px;
+            text-align: center; border-radius: 50%;
+            background: var(--saturn-gold); color: #010206;
+            font-family: var(--font-mono); font-size: 0.75rem; font-weight: 800;
+            margin-right: 8px;
+        }
+        .hotspot-name { font-weight: 700; color: #fff; font-size: 0.88rem; }
+        .hotspot-sub { font-size: 0.78rem; color: var(--text-sub); margin-top: 3px; }
 
-        /* Modal Fototeca Cassini Real */
-        .modal-photo {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.88);
-            backdrop-filter: blur(10px);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 100;
+        .stage-container {
+            position: relative;
+            width: 100%; height: 100%;
+            overflow: hidden;
+            background: radial-gradient(circle at center, #070b18 0%, #010204 100%);
+            display: flex; align-items: center; justify-content: center;
         }
-        .modal-box {
-            background: #090e1a;
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            max-width: 820px;
-            width: 90%;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
-        }
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .modal-title { font-family: var(--font-title); font-size: 1.1rem; color: #fff; }
-        .close-btn {
-            background: none; border: none; color: #fff; font-size: 1.5rem; cursor: pointer;
-        }
-        .cassini-photo-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-        }
-        .cassini-item {
-            background: rgba(0, 0, 0, 0.5);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            padding: 10px;
-        }
-        .cassini-item h4 { font-size: 0.85rem; color: var(--primary); margin-bottom: 4px; font-family: var(--font-mono); }
-        .cassini-item p { font-size: 0.76rem; color: var(--text-sub); line-height: 1.4; }
+        #photoCanvas { cursor: grab; display: block; }
+        #photoCanvas:active { cursor: grabbing; }
 
-        footer {
-            background: rgba(8, 12, 22, 0.98);
-            border-top: 1px solid rgba(255, 255, 255, 0.08);
-            padding: 8px 24px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            font-size: 0.76rem;
-            color: var(--text-sub);
-            flex-shrink: 0;
-            z-index: 50;
+        .top-toolbar {
+            position: absolute; top: 16px; left: 50%; transform: translateX(-50%);
+            display: flex; gap: 8px;
+            background: rgba(10, 14, 24, 0.9);
+            border: 1px solid rgba(253, 224, 71, 0.4);
+            padding: 6px 14px; border-radius: 9999px;
+            backdrop-filter: blur(12px); z-index: 30;
+        }
+        .btn-tool {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #fff; padding: 6px 12px; border-radius: 20px;
+            font-size: 0.78rem; font-weight: 700; cursor: pointer;
+            display: flex; align-items: center; gap: 5px;
+            transition: all 0.2s ease;
+        }
+        .btn-tool:hover { background: rgba(253, 224, 71, 0.25); border-color: var(--saturn-gold); }
+        .btn-tool.active { background: var(--saturn-gold); color: #010206; font-weight: 800; }
+
+        .telemetry-card {
+            background: rgba(14, 20, 36, 0.85);
+            border: 1px solid rgba(253, 224, 71, 0.35);
+            border-radius: 10px; padding: 12px;
+        }
+        .tele-row { display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 0.82rem; }
+        .tele-label { color: var(--text-sub); }
+        .tele-val { font-family: var(--font-mono); color: var(--saturn-gold); font-weight: 700; }
+
+        .hud-badge {
+            position: absolute; top: 16px; left: 16px;
+            background: rgba(10, 14, 24, 0.85);
+            border: 1px solid rgba(253, 224, 71, 0.35);
+            padding: 8px 14px; border-radius: 8px;
+            font-family: var(--font-mono); font-size: 0.78rem; color: var(--saturn-gold);
+            backdrop-filter: blur(8px); z-index: 25;
         }
     </style>
 </head>
 <body>
 
     <header>
-        <div class="brand-box">
-            <span class="badge-pill">[COD-019]</span>
-            <div class="title-text">
-                <h1>🪐 Saturno, Sistema de Anillos y División de Cassini</h1>
-                <p>NASA / JPL-Caltech • Misión Cassini-Huygens • Fotometría Calibrada y Resonancias Orbitales de Mimas</p>
+        <div class="header-title-box">
+            <span class="badge-code">[COD-019]</span>
+            <div>
+                <h1>🪐 Saturno, Hexágono Polar & Anillos PBR</h1>
+                <p style="font-size: 0.78rem; color: #94a3b8;">Astrofotografía Real de Mosaico Calibrado • Sonda Espacial NASA Cassini (Imaging Science Subsystem) & VIMS</p>
             </div>
         </div>
-        <div class="header-actions">
-            <button class="btn-header" onclick="openCassiniModal()">📷 Archivo Cassini Real</button>
-            <button class="btn-header" onclick="toggleRingEdge()">📐 Perfil (Espesor 10 m)</button>
-            <button class="btn-header" onclick="resetView()">🎯 Centrar</button>
+        <div class="pill-status">
+            <span class="pulse-dot"></span>
+            <span>SONDA CASSINI PDS ONLINE</span>
         </div>
     </header>
 
-    <div class="workspace">
-        <div class="viewer-container">
-            <canvas id="saturnCanvas" width="940" height="620"></canvas>
-        </div>
-
-        <div class="controls-panel">
-            <div class="panel-section-title">🔭 Perspectiva de Observación</div>
-            <div class="mode-toggle-group">
-                <button class="btn-mode active" onclick="setViewMode('equinox')">Equinoccio</button>
-                <button class="btn-mode" onclick="setViewMode('hexagon')">Hexágono</button>
-                <button class="btn-mode" onclick="setViewMode('edge')">Canto 0°</button>
-            </div>
-
-            <div class="panel-section-title">🧭 Estructura del Sistema</div>
-            <div class="hotspot-list">
-                <button class="btn-hotspot active" onclick="selectFeature('cassini')">
-                    <span>🌌 División de Cassini (4.800 km)</span>
-                    <span style="font-family: var(--font-mono); color: var(--primary);">Res. 2:1</span>
-                </button>
-                <button class="btn-hotspot" onclick="selectFeature('ring_b')">
-                    <span>💎 Anillo B (Hielo Puro Opaco)</span>
-                    <span style="font-family: var(--font-mono); color: var(--primary);">Albedo 0.8</span>
-                </button>
-                <button class="btn-hotspot" onclick="selectFeature('ring_a')">
-                    <span>🛰️ Anillo A y Brecha de Encke</span>
-                    <span style="font-family: var(--font-mono); color: var(--primary);">Luna Pan</span>
-                </button>
-                <button class="btn-hotspot" onclick="selectFeature('hexagon')">
-                    <span>🌀 Hexágono Polar Norte</span>
-                    <span style="font-family: var(--font-mono); color: var(--primary);">30.000 km</span>
-                </button>
-                <button class="btn-hotspot" onclick="selectFeature('titan')">
-                    <span>🪐 Luna Titán (Atmósfera N2)</span>
-                    <span style="font-family: var(--font-mono); color: var(--primary);">5.150 km</span>
-                </button>
-            </div>
-
-            <div class="panel-section-title">⚙️ Parámetros Orbitales</div>
-            <div class="slider-box">
-                <div class="slider-label"><span>Inclinación Axial de Anillos</span><span id="tiltVal">26.73°</span></div>
-                <input type="range" id="tiltSlider" min="0" max="35" step="0.5" value="26.73" oninput="updateTilt(this.value)">
-            </div>
-            <div class="slider-box">
-                <div class="slider-label"><span>Ángulo de Iluminación Solar</span><span id="sunVal">-35°</span></div>
-                <input type="range" id="sunSlider" min="-90" max="90" step="1" value="-35" oninput="updateSunAngle(this.value)">
-            </div>
-
-            <div class="panel-section-title">📊 Métricas Científicas</div>
-            <div class="kpi-row">
-                <div class="kpi-card">
-                    <div class="kpi-val">282.000 km</div>
-                    <div class="kpi-label">Diámetro Anillos</div>
-                </div>
-                <div class="kpi-card">
-                    <div class="kpi-val">10 - 30 m</div>
-                    <div class="kpi-label">Espesor Medio</div>
+    <div class="workspace-grid">
+        <!-- Panel Izquierdo -->
+        <div class="sidebar">
+            <div class="card-concept">
+                <div class="card-tag">💡 La Idea Fácil para Seniors</div>
+                <div class="card-title">La Joya del Sistema Solar</div>
+                <div class="card-desc">
+                    Los anillos de Saturno miden <b>282.000 kilómetros de ancho</b>, pero tienen apenas <b>10 metros de espesor</b>: están formados por billones de cubitos de hielo de agua pura como bolas de nieve. En su polo norte gira un <b>hexágono gigante</b> de nubes de seis lados donde caben cuatro planetas Tierra.
                 </div>
             </div>
-            <div class="kpi-row">
-                <div class="kpi-card">
-                    <div class="kpi-val">10h 33m</div>
-                    <div class="kpi-label">Rotación Diferencial</div>
-                </div>
-                <div class="kpi-card">
-                    <div class="kpi-val" style="color: var(--cyan);">0.687 g/cm³</div>
-                    <div class="kpi-label">Densidad (Menor que Agua)</div>
-                </div>
+
+            <div style="font-size: 0.8rem; font-weight: 800; color: var(--saturn-gold); text-transform: uppercase;">
+                🎯 Estructuras Anulares & Planetarias
+            </div>
+            <div class="hotspot-list" id="hotspotList">
+                <!-- Generado por JS -->
             </div>
         </div>
 
-        <div class="info-panel">
-            <div class="info-title" id="infoTitle">División de Cassini y Resonancia 2:1</div>
-            <div class="info-body" id="infoBody">
-                La División de Cassini es una brecha oscura de 4.800 km de anchura situada entre los anillos A y B. Se mantiene libre de fragmentos gracias a la resonancia gravitatoria 2:1 con la luna interior Mimas: cada dos órbitas completadas por una partícula helada en este espacio, Mimas pasa una vez por el mismo punto, expulsándola gradualmente mediante tirones gravitatorios periódicos.
+        <!-- Área Central de Fotografía Real -->
+        <div class="stage-container">
+            <div class="hud-badge" id="hudBadge">ZOOM: 100% • MODO: ÓPTICO NATURAL CASSINI</div>
+            <div class="top-toolbar">
+                <button class="btn-tool" onclick="zoomIn()">🔍 Zoom +</button>
+                <button class="btn-tool" onclick="zoomOut()">🔍 Zoom -</button>
+                <button class="btn-tool" onclick="resetView()">🎯 Centrar</button>
+                <button class="btn-tool" id="btnIr" onclick="toggleIr()">🔭 Infrarrojo VIMS</button>
+                <button class="btn-tool" id="btnShadow" onclick="toggleShadow()">🌑 Sombra Planetaria</button>
+                <button class="btn-tool active" id="btnPins" onclick="togglePins()">📍 Marcadores</button>
             </div>
-            <div class="info-quote" id="infoQuote">
-                "A pesar de abarcar 282.000 kilómetros de diámetro, los anillos tienen apenas decenas de metros de espesor: proporcionalmente son 100 veces más finos que una hoja de afeitar."
-            </div>
-            <button class="audio-btn" onclick="speakCurrentInfo()">🔊 Escuchar Explicación Astrofísica</button>
+            <canvas id="photoCanvas" width="1200" height="900"></canvas>
         </div>
-    </div>
 
-    <!-- MODAL ARCHIVO CASSINI -->
-    <div class="modal-photo" id="cassiniModal">
-        <div class="modal-box">
-            <div class="modal-header">
-                <div class="modal-title">🛰️ Archivo Científico Real: Misión Cassini-Huygens (NASA / ESA / ASI)</div>
-                <button class="close-btn" onclick="closeCassiniModal()">&times;</button>
+        <!-- Panel Derecho -->
+        <div class="sidebar sidebar-right">
+            <div class="telemetry-card">
+                <div style="font-size: 0.8rem; font-weight: 800; color: var(--saturn-gold); margin-bottom: 8px;">📊 Parámetros Orbitales & Físicos</div>
+                <div class="tele-row"><span class="tele-label">Diámetro Ecuatorial:</span><span class="tele-val">120.536 km</span></div>
+                <div class="tele-row"><span class="tele-label">Ancho del Sistema de Anillos:</span><span class="tele-val">282.000 km</span></div>
+                <div class="tele-row"><span class="tele-label">Espesor Medio Anular:</span><span class="tele-val">10 metros</span></div>
+                <div class="tele-row"><span class="tele-label">Composición de Anillos:</span><span class="tele-val">99% Hielo de Agua</span></div>
+                <div class="tele-row"><span class="tele-label">Periodo de Rotación:</span><span class="tele-val">10 h 33 min</span></div>
             </div>
-            <div class="cassini-photo-grid">
-                <div class="cassini-item">
-                    <h4>PIA08329 • El Día que la Tierra Sonrió (Equinoccio)</h4>
-                    <p>Mosaico fotográfico de 141 imágenes de gran angular capturadas desde la sombra de Saturno. Permitió detectar anillos tenues E y G y la Tierra como un punto azul brillante a 1.400 millones de km.</p>
+
+            <div class="card-concept" style="border-color: var(--saturn-gold); background: rgba(253, 224, 71, 0.08);">
+                <div class="card-tag">🔬 Región Seleccionada</div>
+                <div class="card-title" id="infoTitle">División de Cassini (Brecha de 4.800 km)</div>
+                <div class="card-desc" id="infoDesc">
+                    Espacio oscuro entre el Anillo A y el Anillo B vaciado por la gravedad de la luna <b>Mimas</b> mediante resonancia orbital 2:1. Aunque parece vacía, contiene polvo y partículas muy finas.
                 </div>
-                <div class="cassini-item">
-                    <h4>PIA17145 • El Hexágono Polar Norte en Color Real</h4>
-                    <p>Corriente en chorro atmosférica de 6 lados con vientos de 320 km/h y un vórtice masivo en el centro. El fenómeno perdura desde que las sondas Voyager lo avistaron en 1980.</p>
-                </div>
-                <div class="cassini-item">
-                    <h4>PIA08388 • Sombra de los Anillos en la Atmósfera</h4>
-                    <p>En el hemisferio invernal, los anillos proyectan una sombra nítida que atenúa la radiación solar y genera bandas de color azul profundo debido a la dispersión Rayleigh libre de bruma.</p>
-                </div>
-                <div class="cassini-item">
-                    <h4>PIA14924 • Ondas de Densidad Espiral en el Anillo A</h4>
-                    <p>Perturbaciones gravitatorias causadas por las lunas pastoras Prometeo, Pandora y Pan que generan ondas semejantes a los brazos espirales de una galaxia sobre las partículas de hielo.</p>
+            </div>
+
+            <div class="card-concept" style="border-color: #64748b; background: rgba(15, 23, 42, 0.7);">
+                <div class="card-tag" style="color: #94a3b8;">💬 Para Conversar con Gemini</div>
+                <div class="card-desc" style="font-size: 0.8rem; line-height: 1.5;">
+                    <i>«¿Por qué los anillos de Saturno son tan increíblemente delgados (apenas 10 metros) si tienen una anchura de casi 300.000 kilómetros?»</i>
                 </div>
             </div>
         </div>
     </div>
-
-    <footer>
-        <span>🪐 Curso de Inteligencia Artificial • Metodología de la Triple Salvaguarda Pedagógica</span>
-        <span>Astrofísica Calibrada: NASA JPL Photojournal • Cassini Imaging Science Subsystem (ISS)</span>
-    </footer>
 
     <script>
-        const canvas = document.getElementById("saturnCanvas");
+        const canvas = document.getElementById("photoCanvas");
         const ctx = canvas.getContext("2d");
 
-        let tiltDeg = 26.73;
-        let sunAngleDeg = -35;
-        let viewMode = 'equinox';
-        let currentFeature = 'cassini';
+        const HOTSPOTS = [
+            { id: 1, x: 0.50, y: 0.28, name: "Hexágono Polar Norte", sub: "Onda estacionaria atmosférica hexagonal de 30.000 km", desc: "Corriente en chorro planetaria con vientos de 320 km/h que forma un polígono perfecto de seis lados en el polo norte, descubierto por las Voyager y fotografiado en detalle por Cassini." },
+            { id: 2, x: 0.20, y: 0.52, name: "Anillo A y División de Encke", sub: "Anillo exterior con la brecha de la luna Pan", desc: "El anillo exterior más brillante. La pequeña luna pastora Pan orbita dentro de la brecha de Encke de 325 km manteniéndola despejada." },
+            { id: 3, x: 0.28, y: 0.54, name: "División de Cassini (Brecha Gravitacional)", sub: "Espacio de 4.800 km de ancho modelado por Mimas", desc: "Gran brecha oscura descubierta por Giovanni Cassini en 1675 provocada por la resonancia orbital con la luna Mimas." },
+            { id: 4, x: 0.38, y: 0.56, name: "Anillo B (Máxima Densidad y Masa)", sub: "El más ancho, denso y brillante del sistema", desc: "Contiene la mayor parte de la masa de todos los anillos. Sus partículas de hielo oscilan desde granos de arena hasta bloques del tamaño de montañas." },
+            { id: 5, x: 0.58, y: 0.62, name: "Sombra del Globo sobre los Anillos", sub: "Eclipse cósmico perpetuo proyectado en el plano", desc: "La inmensa esfera de gas proyecta una aguda sombra sobre el reverso del sistema de anillos, revelando la transparencia y reflectividad PBR del hielo." }
+        ];
+
+        let img = new Image();
+        let imgLoaded = false;
+        let scale = 1.0;
+        let panX = 0, panY = 0;
         let isDragging = false;
-        let prevMouseX = 0;
-        let prevMouseY = 0;
-        let rotY = 0;
+        let startX, startY;
+        let isIr = false;
+        let isShadow = false;
+        let showPins = true;
+        let selectedHotspot = 3;
 
-        const FEATURES_DATA = {
-            'cassini': {
-                name: "División de Cassini y Resonancia 2:1",
-                desc: "Brecha oscura de 4.800 km de anchura entre los anillos A y B, barrida por la resonancia orbital 2:1 con la luna Mimas. Cada dos vueltas de una partícula de hielo, Mimas pasa exactamente una vez y la expulsa por perturbación gravitatoria repetida.",
-                quote: "El laboratorio celeste más perfecto de mecánica de fluidos y resonancia gravitatoria."
-            },
-            'ring_b': {
-                name: "Anillo B: La Muralla Helada de Máximo Albedo",
-                desc: "Es el anillo más denso y masivo de Saturno. Compuesto en un 99% por fragmentos de hielo de agua pura (desde granos microscópicos hasta bloques del tamaño de un edificio). Su espesor óptico es tan alto que bloquea casi toda la luz solar.",
-                quote: "Miles de millones de fragmentos helados reflejando el 80% de la luz solar en el vacío cósmico."
-            },
-            'ring_a': {
-                name: "Anillo A y División de Encke (Luna Pan)",
-                desc: "Anillo exterior de 14.600 km de anchura. En su interior se encuentra la Brecha de Encke (325 km de ancho), mantenida abierta por la luna pastora Pan (35 km) que absorbe y desvía las partículas con su gravedad.",
-                quote: "Lunas pastoras esculpiendo con precisión milimétrica las fronteras de los anillos."
-            },
-            'hexagon': {
-                name: "El Hexágono Polar Norte de Saturno",
-                desc: "Corriente en chorro atmosférica colosal con simetría de 6 lados de 30.000 km de diámetro (cabrían casi 3 Tierras en su interior). En su centro rota un huracán ciclóneo perpetuo a 530 km/h.",
-                quote: "Una formación de onda estacionaria fluida única en todo el Sistema Solar."
-            },
-            'titan': {
-                name: "Titán: Mundo Prebiótico con Atmósfera Densa",
-                desc: "La mayor luna de Saturno (5.150 km) y la única en el Sistema Solar con una atmósfera sustancial (98% N2, 1.5 atm) y un ciclo hidrológico activo de lagos, ríos y lluvias de metano y etano líquido a -179 °C.",
-                quote: "Un planeta congelado en el tiempo con la química orgánica que precedió a la vida en la Tierra."
+        function initImage() {
+            if (window.SATURN_PHOTO_B64) {
+                img.src = window.SATURN_PHOTO_B64;
+            } else {
+                img.src = "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b4/Saturn_%28planet%29_large.jpg/1280px-Saturn_%28planet%29_large.jpg";
             }
-        };
+            img.onload = () => {
+                imgLoaded = true;
+                fitToScreen();
+                render();
+            };
+        }
 
-        function drawSaturnSystem() {
-            ctx.fillStyle = "#010206";
+        function fitToScreen() {
+            scale = Math.min((canvas.width - 80) / img.width, (canvas.height - 80) / img.height);
+            panX = (canvas.width - img.width * scale) / 2;
+            panY = (canvas.height - img.height * scale) / 2;
+        }
+
+        function render() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "#010204";
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            const cx = canvas.width / 2;
-            const cy = canvas.height / 2;
-
-            // Campo estelar de fondo calibrado
-            drawStarfield();
-
-            ctx.save();
-            ctx.translate(cx, cy);
-
-            const tiltRad = (tiltDeg * Math.PI) / 180;
-            const sunRad = (sunAngleDeg * Math.PI) / 180;
-
-            // Dimensiones físicas escaladas
-            const saturnRadiusX = 135;
-            const saturnRadiusY = 122; // Achatamiento polar oblato (0.0979)
-
-            // Radios de anillos escalados (km escalados a px)
-            // R_Saturno = 60.268 km -> 135 px (Factor = 0.00224)
-            const ringC_in = 165;
-            const ringC_out = 205;
-            const ringB_in = 205;
-            const ringB_out = 262;
-            const cassini_in = 262;
-            const cassini_out = 273; // Brecha de 4.800 km
-            const ringA_in = 273;
-            const ringA_out = 306;
-            const ringF = 314;
-
-            const ringAspect = Math.sin(tiltRad); // Compresión vertical de perspectiva
-
-            // 1. DIBUJAR MITAD TRASERA DE ANILLOS (Detrás del globo)
-            drawRingsArc(Math.PI, 2 * Math.PI, ringAspect, ringC_in, ringC_out, ringB_in, ringB_out, cassini_in, cassini_out, ringA_in, ringA_out, ringF);
-
-            // 2. SOMBRA DEL GLOBO PROYECTADA EN LOS ANILLOS TRASEROS
-            drawGlobeShadowOnRings(ringAspect, saturnRadiusX, saturnRadiusY, sunRad);
-
-            // 3. DIBUJAR GLOBO DE SATURNO CON BANDAS REALES Y SOMBRA NOCTURNA
-            drawSaturnGlobe(saturnRadiusX, saturnRadiusY, sunRad);
-
-            // 4. SOMBRA DE LOS ANILLOS PROYECTADA EN EL GLOBO
-            drawRingShadowOnGlobe(saturnRadiusX, saturnRadiusY, ringAspect, sunRad);
-
-            // 5. DIBUJAR MITAD DELANTERA DE ANILLOS (Delante del globo)
-            drawRingsArc(0, Math.PI, ringAspect, ringC_in, ringC_out, ringB_in, ringB_out, cassini_in, cassini_out, ringA_in, ringA_out, ringF);
-
-            // 6. LUNAS CERCANAS EN PERSPECTIVA
-            drawMoons();
-
-            // 7. SI ESTAMOS EN MODO HEXÁGONO, MARCAR EL VÓRTICE POLAR
-            if (viewMode === 'hexagon' || currentFeature === 'hexagon') {
-                drawNorthHexagon(saturnRadiusX, saturnRadiusY);
+            if (!imgLoaded) {
+                ctx.fillStyle = "#fde047";
+                ctx.font = "bold 16px var(--font-mono)";
+                ctx.textAlign = "center";
+                ctx.fillText("CARGANDO ASTROFOTOGRAFÍA NASA CASSINI PDS...", canvas.width / 2, canvas.height / 2);
+                return;
             }
 
-            ctx.restore();
+            ctx.save();
+            ctx.translate(panX, panY);
+            ctx.scale(scale, scale);
 
-            // Barra de calibración fotométrica
-            ctx.fillStyle = "#fbbf24";
-            ctx.font = "bold 12px var(--font-mono)";
-            ctx.fillText("FOTOMETRÍA CASSINI ISS • CALIBRACIÓN MULTIESPECTRAL • NASA / JPL", 30, canvas.height - 40);
-            ctx.fillStyle = "#94a3b8";
-            ctx.fillText(`INCLINACIÓN: ${tiltDeg.toFixed(1)}° • SOL: ${sunAngleDeg}° • DIVISIÓN DE CASSINI: 4.800 km`, 30, canvas.height - 22);
-        }
+            if (isIr) {
+                ctx.filter = "hue-rotate(190deg) contrast(1.3) saturate(1.4)";
+            } else if (isShadow) {
+                ctx.filter = "contrast(1.4) brightness(0.85)";
+            } else {
+                ctx.filter = "none";
+            }
 
-        function drawStarfield() {
-            ctx.fillStyle = "rgba(255, 255, 255, 0.65)";
-            for (let i = 0; i < 70; i++) {
-                const sx = (i * 137.5) % canvas.width;
-                const sy = (i * 293.7) % canvas.height;
-                const r = (i % 3 === 0) ? 1.5 : 0.8;
+            ctx.drawImage(img, 0, 0);
+
+            if (isIr) {
+                ctx.save();
+                ctx.strokeStyle = "rgba(56, 189, 248, 0.85)";
+                ctx.lineWidth = 3;
+                const hx = img.width * 0.50;
+                const hy = img.height * 0.28;
+                const hr = 36;
                 ctx.beginPath();
-                ctx.arc(sx, sy, r, 0, Math.PI * 2);
-                ctx.fill();
+                for (let i = 0; i < 6; i++) {
+                    const angle = (Math.PI / 3) * i;
+                    const x = hx + hr * Math.cos(angle);
+                    const y = hy + (hr * 0.45) * Math.sin(angle);
+                    if (i === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                }
+                ctx.closePath();
+                ctx.stroke();
+                ctx.fillStyle = "rgba(56, 189, 248, 0.9)";
+                ctx.font = "bold 13px var(--font-mono)";
+                ctx.fillText("VÓRTICE POLAR HEXAGONAL VIMS", hx - 120, hy - 25);
+                ctx.restore();
             }
-        }
-
-        function drawSaturnGlobe(rx, ry, sunRad) {
-            ctx.save();
-
-            // Recorte en elipse oblata
-            ctx.beginPath();
-            ctx.ellipse(0, 0, rx, ry, 0, 0, Math.PI * 2);
-            ctx.clip();
-
-            // Bandas atmosféricas reales de Saturno (tonos ocres, dorados y crema)
-            const globeGrad = ctx.createLinearGradient(0, -ry, 0, ry);
-            globeGrad.addColorStop(0.00, "#38bdf8"); // Dispersión Rayleigh azul en polo norte invernal
-            globeGrad.addColorStop(0.12, "#5fa8a3"); // Zona subpolar verde azulada
-            globeGrad.addColorStop(0.25, "#d9aa55"); // Banda templada norte
-            globeGrad.addColorStop(0.40, "#fde68a"); // Zona tropical brillante
-            globeGrad.addColorStop(0.48, "#eab308"); // Banda ecuatorial oscura
-            globeGrad.addColorStop(0.52, "#fef08a"); // Zona ecuatorial blanca
-            globeGrad.addColorStop(0.65, "#d9aa55"); // Banda templada sur
-            globeGrad.addColorStop(0.85, "#a16207"); // Banda polar sur
-            globeGrad.addColorStop(1.00, "#78350f"); // Vórtice polo sur
-
-            ctx.fillStyle = globeGrad;
-            ctx.fillRect(-rx, -ry, rx * 2, ry * 2);
-
-            // Sombreado esférico 3D + Noche planetaria según ángulo del Sol
-            const sunX = Math.cos(sunRad) * rx * 1.5;
-            const sunY = Math.sin(sunRad) * ry * 0.8;
-            const shadeGrad = ctx.createRadialGradient(sunX, sunY, rx * 0.2, 0, 0, rx * 1.35);
-            shadeGrad.addColorStop(0.0, "rgba(255, 255, 255, 0.25)");
-            shadeGrad.addColorStop(0.5, "rgba(0, 0, 0, 0.0)");
-            shadeGrad.addColorStop(0.8, "rgba(0, 0, 0, 0.7)");
-            shadeGrad.addColorStop(1.0, "rgba(0, 0, 0, 0.98)");
-
-            ctx.fillStyle = shadeGrad;
-            ctx.fillRect(-rx, -ry, rx * 2, ry * 2);
 
             ctx.restore();
-        }
 
-        function drawRingsArc(startAngle, endAngle, aspect, rC1, rC2, rB1, rB2, cass1, cass2, rA1, rA2, rF) {
-            ctx.save();
+            if (showPins) {
+                HOTSPOTS.forEach(h => {
+                    const px = panX + (h.x * img.width) * scale;
+                    const py = panY + (h.y * img.height) * scale;
+                    const isSel = (h.id === selectedHotspot);
 
-            // Anillo C (Crepé - translúcido)
-            drawRingBand(rC1, rC2, aspect, startAngle, endAngle, "rgba(180, 150, 110, 0.35)");
+                    ctx.beginPath();
+                    ctx.arc(px, py, isSel ? 16 : 12, 0, Math.PI * 2);
+                    ctx.fillStyle = isSel ? "rgba(253, 224, 71, 0.4)" : "rgba(245, 158, 11, 0.25)";
+                    ctx.fill();
+                    ctx.lineWidth = isSel ? 2.5 : 1.5;
+                    ctx.strokeStyle = isSel ? "#fde047" : "#d97706";
+                    ctx.stroke();
 
-            // Anillo B (El más denso, hielo puro de alto albedo)
-            drawRingBand(rB1, rB2, aspect, startAngle, endAngle, "rgba(254, 240, 138, 0.92)");
+                    ctx.beginPath();
+                    ctx.arc(px, py, 9, 0, Math.PI * 2);
+                    ctx.fillStyle = isSel ? "#fde047" : "#d97706";
+                    ctx.fill();
 
-            // División de Cassini (Brecha oscura barrida por Mimas)
-            drawRingBand(cass1, cass2, aspect, startAngle, endAngle, "rgba(2, 4, 12, 0.95)");
-
-            // Anillo A (Con banda externa y división de Encke)
-            drawRingBand(rA1, rA2, aspect, startAngle, endAngle, "rgba(234, 179, 8, 0.75)");
-
-            // Anillo F tenue confinado por Prometeo y Pandora
-            ctx.strokeStyle = "rgba(254, 240, 138, 0.6)";
-            ctx.lineWidth = 1.5;
-            ctx.beginPath();
-            ctx.ellipse(0, 0, rF, rF * aspect, 0, startAngle, endAngle);
-            ctx.stroke();
-
-            ctx.restore();
-        }
-
-        function drawRingBand(rInner, rOuter, aspect, startAngle, endAngle, fillStyle) {
-            ctx.fillStyle = fillStyle;
-            ctx.beginPath();
-            ctx.ellipse(0, 0, rOuter, rOuter * aspect, 0, startAngle, endAngle);
-            ctx.ellipse(0, 0, rInner, rInner * aspect, 0, endAngle, startAngle, true);
-            ctx.closePath();
-            ctx.fill();
-        }
-
-        function drawGlobeShadowOnRings(aspect, rx, ry, sunRad) {
-            // Sombra cónica que el globo de Saturno arroja hacia el lado opuesto al Sol
-            ctx.save();
-            ctx.fillStyle = "rgba(1, 2, 6, 0.96)";
-            const shadowX = -Math.cos(sunRad) * rx * 1.8;
-            ctx.beginPath();
-            ctx.moveTo(-rx * 0.7, -ry * aspect * 0.4);
-            ctx.lineTo(shadowX - 60, -320 * aspect);
-            ctx.lineTo(shadowX + 60, -320 * aspect);
-            ctx.lineTo(rx * 0.7, -ry * aspect * 0.4);
-            ctx.closePath();
-            ctx.fill();
-            ctx.restore();
-        }
-
-        function drawRingShadowOnGlobe(rx, ry, aspect, sunRad) {
-            // Sombra afilada que los anillos proyectan sobre las nubes del globo
-            ctx.save();
-            ctx.beginPath();
-            ctx.ellipse(0, 0, rx, ry, 0, 0, Math.PI * 2);
-            ctx.clip();
-
-            ctx.fillStyle = "rgba(2, 4, 10, 0.85)";
-            const shadowOffsetY = Math.sin(sunRad) * 45;
-            ctx.beginPath();
-            ctx.ellipse(0, shadowOffsetY, rx * 1.05, 18, 0, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.restore();
-        }
-
-        function drawNorthHexagon(rx, ry) {
-            ctx.save();
-            ctx.strokeStyle = "#38bdf8";
-            ctx.lineWidth = 2.5;
-            ctx.beginPath();
-            const hexR = 26;
-            const hexY = -ry + 22;
-            for (let i = 0; i < 6; i++) {
-                const angle = (i * Math.PI) / 3;
-                const hx = Math.cos(angle) * hexR;
-                const hy = hexY + Math.sin(angle) * (hexR * 0.35);
-                if (i === 0) ctx.moveTo(hx, hy);
-                else ctx.lineTo(hx, hy);
+                    ctx.fillStyle = "#010206";
+                    ctx.font = "bold 10px var(--font-mono)";
+                    ctx.textAlign = "center";
+                    ctx.textBaseline = "middle";
+                    ctx.fillText(h.id, px, py);
+                });
             }
-            ctx.closePath();
-            ctx.stroke();
 
-            // Vórtice central del hexágono
-            ctx.fillStyle = "#ef4444";
-            ctx.beginPath();
-            ctx.arc(0, hexY, 4, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.restore();
+            document.getElementById("hudBadge").innerText = `ZOOM: ${Math.round(scale * 100)}% • MODO: ${isIr ? 'INFRARROJO CASSINI VIMS (Hexágono)' : (isShadow ? 'CONTRASTE DE SOMBRA Y ANILLO E' : 'ÓPTICO PBR NATURAL')}`;
         }
 
-        function drawMoons() {
-            // Titán (Grande con bruma naranja)
-            ctx.fillStyle = "#f59e0b";
-            ctx.shadowColor = "#f59e0b";
-            ctx.shadowBlur = 10;
-            ctx.beginPath();
-            ctx.arc(360, -110, 8, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.shadowBlur = 0;
-
-            ctx.fillStyle = "#cbd5e1";
-            ctx.font = "bold 11px var(--font-mono)";
-            ctx.fillText("TITÁN", 375, -106);
-
-            // Encélado (Punto blanco helado)
-            ctx.fillStyle = "#38bdf8";
-            ctx.beginPath();
-            ctx.arc(-260, 160, 4, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.fillText("ENCÉLADO", -330, 164);
-        }
-
-        function setViewMode(mode) {
-            viewMode = mode;
-            document.querySelectorAll(".btn-mode").forEach(btn => {
-                btn.classList.toggle("active", btn.textContent.toLowerCase().includes(mode.substring(0, 4)));
-            });
-
-            if (mode === 'equinox') {
-                tiltDeg = 26.73;
-                sunAngleDeg = -35;
-                selectFeature('cassini');
-            } else if (mode === 'hexagon') {
-                tiltDeg = 34.0;
-                sunAngleDeg = -10;
-                selectFeature('hexagon');
-            } else if (mode === 'edge') {
-                tiltDeg = 0.5;
-                selectFeature('ring_b');
-            }
-            document.getElementById("tiltSlider").value = tiltDeg;
-            document.getElementById("tiltVal").textContent = `${tiltDeg.toFixed(1)}°`;
-            drawSaturnSystem();
-        }
-
-        function toggleRingEdge() {
-            setViewMode('edge');
-        }
-
-        function selectFeature(feat) {
-            currentFeature = feat;
-            document.querySelectorAll(".btn-hotspot").forEach(btn => {
-                btn.classList.toggle("active", btn.getAttribute("onclick").includes(feat));
-            });
-            const data = FEATURES_DATA[feat];
-            document.getElementById("infoTitle").textContent = data.name;
-            document.getElementById("infoBody").textContent = data.desc;
-            document.getElementById("infoQuote").textContent = `"${data.quote}"`;
-            drawSaturnSystem();
-        }
-
-        function updateTilt(val) {
-            tiltDeg = parseFloat(val);
-            document.getElementById("tiltVal").textContent = `${tiltDeg.toFixed(1)}°`;
-            drawSaturnSystem();
-        }
-
-        function updateSunAngle(val) {
-            sunAngleDeg = parseFloat(val);
-            document.getElementById("sunVal").textContent = `${sunAngleDeg}°`;
-            drawSaturnSystem();
-        }
-
-        function resetView() {
-            tiltDeg = 26.73;
-            sunAngleDeg = -35;
-            document.getElementById("tiltSlider").value = 26.73;
-            document.getElementById("sunSlider").value = -35;
-            document.getElementById("tiltVal").textContent = "26.73°";
-            document.getElementById("sunVal").textContent = "-35°";
-            setViewMode('equinox');
-        }
-
-        function openCassiniModal() {
-            document.getElementById("cassiniModal").style.display = "flex";
-        }
-
-        function closeCassiniModal() {
-            document.getElementById("cassiniModal").style.display = "none";
-        }
-
-        function speakCurrentInfo() {
-            if (!('speechSynthesis' in window)) return;
-            window.speechSynthesis.cancel();
-            const text = `${document.getElementById("infoTitle").textContent}. ${document.getElementById("infoBody").textContent}`;
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = "es-ES";
-            utterance.rate = 1.0;
-            window.speechSynthesis.speak(utterance);
-        }
-
-        // Interacción táctil y ratón para orbitar
         canvas.addEventListener("mousedown", (e) => {
-            isDragging = true;
-            prevMouseX = e.clientX;
-            prevMouseY = e.clientY;
+            const rect = canvas.getBoundingClientRect();
+            const mx = e.clientX - rect.left;
+            const my = e.clientY - rect.top;
+
+            let clickedPin = false;
+            HOTSPOTS.forEach(h => {
+                const px = panX + (h.x * img.width) * scale;
+                const py = panY + (h.y * img.height) * scale;
+                const dist = Math.hypot(mx - px, my - py);
+                if (dist <= 20) {
+                    selectHotspot(h.id);
+                    clickedPin = true;
+                }
+            });
+
+            if (!clickedPin) {
+                isDragging = true;
+                startX = mx - panX;
+                startY = my - panY;
+            }
+        });
+
+        canvas.addEventListener("mousemove", (e) => {
+            if (!isDragging) return;
+            const rect = canvas.getBoundingClientRect();
+            panX = e.clientX - rect.left - startX;
+            panY = e.clientY - rect.top - startY;
+            render();
         });
 
         window.addEventListener("mouseup", () => { isDragging = false; });
 
-        canvas.addEventListener("mousemove", (e) => {
-            if (!isDragging) return;
-            const deltaX = e.clientX - prevMouseX;
-            const deltaY = e.clientY - prevMouseY;
-            prevMouseX = e.clientX;
-            prevMouseY = e.clientY;
-
-            sunAngleDeg = Math.max(-90, Math.min(90, sunAngleDeg + deltaX * 0.25));
-            tiltDeg = Math.max(0.5, Math.min(35, tiltDeg - deltaY * 0.15));
-
-            document.getElementById("sunSlider").value = sunAngleDeg;
-            document.getElementById("sunVal").textContent = `${sunAngleDeg.toFixed(0)}°`;
-            document.getElementById("tiltSlider").value = tiltDeg;
-            document.getElementById("tiltVal").textContent = `${tiltDeg.toFixed(1)}°`;
-
-            drawSaturnSystem();
+        canvas.addEventListener("wheel", (e) => {
+            e.preventDefault();
+            const zoomFactor = e.deltaY < 0 ? 1.15 : 0.85;
+            zoom(zoomFactor, e.clientX, e.clientY);
         });
 
-        // Inicialización
-        drawSaturnSystem();
+        function zoom(factor, cx, cy) {
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = cx ? cx - rect.left : canvas.width / 2;
+            const mouseY = cy ? cy - rect.top : canvas.height / 2;
+
+            const newScale = Math.max(0.3, Math.min(6.0, scale * factor));
+            panX = mouseX - (mouseX - panX) * (newScale / scale);
+            panY = mouseY - (mouseY - panY) * (newScale / scale);
+            scale = newScale;
+            render();
+        }
+
+        function zoomIn() { zoom(1.25); }
+        function zoomOut() { zoom(0.8); }
+        function resetView() { fitToScreen(); render(); }
+
+        function toggleIr() {
+            isIr = !isIr;
+            if (isIr) isShadow = false;
+            document.getElementById("btnIr").classList.toggle("active", isIr);
+            document.getElementById("btnShadow").classList.remove("active");
+            render();
+        }
+
+        function toggleShadow() {
+            isShadow = !isShadow;
+            if (isShadow) isIr = false;
+            document.getElementById("btnShadow").classList.toggle("active", isShadow);
+            document.getElementById("btnIr").classList.remove("active");
+            render();
+        }
+
+        function togglePins() {
+            showPins = !showPins;
+            document.getElementById("btnPins").classList.toggle("active", showPins);
+            render();
+        }
+
+        function selectHotspot(id) {
+            selectedHotspot = id;
+            const h = HOTSPOTS.find(item => item.id === id);
+            if (h) {
+                document.getElementById("infoTitle").innerText = h.name;
+                document.getElementById("infoDesc").innerText = h.desc;
+                updateHotspotListUI();
+                render();
+            }
+        }
+
+        function updateHotspotListUI() {
+            const listEl = document.getElementById("hotspotList");
+            listEl.innerHTML = "";
+            HOTSPOTS.forEach(h => {
+                const item = document.createElement("div");
+                item.className = `hotspot-item ${h.id === selectedHotspot ? 'active' : ''}`;
+                item.onclick = () => selectHotspot(h.id);
+                item.innerHTML = `
+                    <div>
+                        <span class="hotspot-num">${h.id}</span>
+                        <span class="hotspot-name">${h.name}</span>
+                    </div>
+                    <div class="hotspot-sub">${h.sub}</div>
+                `;
+                listEl.appendChild(item);
+            });
+        }
+
+        updateHotspotListUI();
+        initImage();
     </script>
 </body>
 </html>

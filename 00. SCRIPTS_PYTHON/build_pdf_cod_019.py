@@ -2,183 +2,149 @@
 # -*- coding: utf-8 -*-
 """
 build_pdf_cod_019.py
-Genera la Ficha Didáctica Oficial de 1 Página (Letter/A4):
-4. COD-019_Taller_Crea_tu_Propio_Simulador_3D_con_Gemini.pdf
-para la Sesión 19 del Curso de IA (Simulador 3D: Saturno, Anillos y División de Cassini • NASA Cassini-Huygens).
+Genera la Ficha Didáctica Científica Oficial de 1 Página:
+- 4. COD-019_Taller_Crea_tu_Propio_Simulador_3D_con_Gemini.pdf (Sesión 19)
+- 19_COD-019_Taller_Simulador_Saturno_3D.pdf (Catálogo Central)
 """
 
 import os
-import sys
+import shutil
 
 OUTPUT_DIR = "/Users/externo/Library/Mobile Documents/com~apple~CloudDocs/PERSONAL/CLASES DE TECNOLOGÍA/CURSO-IA/CLASES/EXPORTACION_FICHAS_CLASSROOM_PDF/100. [SESSIONS] TERNAS_LISTAS_PARA_CLASSROOM/19_Sesion"
 PDF_PATH = os.path.join(OUTPUT_DIR, "4. COD-019_Taller_Crea_tu_Propio_Simulador_3D_con_Gemini.pdf")
 LOCAL_BACKUP = "/Users/externo/Library/Mobile Documents/com~apple~CloudDocs/PERSONAL/CLASES DE TECNOLOGÍA/CURSO-IA/SIMULADORES_INTERACTIVOS/02_INDICES_Y_CATALOGOS/19_COD-019_Taller_Simulador_Saturno_3D.pdf"
 
-def build_cod_019_taller_3d_pdf(output_path=PDF_PATH):
-    dest_path = output_path
-    try:
-        os.makedirs(os.path.dirname(dest_path), exist_ok=True)
-        with open(dest_path, "wb") as _:
-            pass
-    except Exception:
-        dest_path = LOCAL_BACKUP
-        os.makedirs(os.path.dirname(dest_path), exist_ok=True)
-
+def build_pdf(dest_path):
     from reportlab.lib.pagesizes import letter
     from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, HRFlowable
     from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
     from reportlab.lib import colors
 
+    os.makedirs(os.path.dirname(dest_path), exist_ok=True)
     doc = SimpleDocTemplate(
         dest_path,
         pagesize=letter,
-        rightMargin=36, leftMargin=36, topMargin=22, bottomMargin=20
+        rightMargin=36, leftMargin=36, topMargin=24, bottomMargin=20
     )
     styles = getSampleStyleSheet()
-    
+
+    accent = colors.HexColor('#D97706')
+
     style_header = ParagraphStyle(
         'HeaderStyle', parent=styles['Normal'],
-        fontName='Helvetica-Bold', fontSize=8.0,
-        textColor=colors.HexColor('#D97706'), alignment=1, spaceAfter=1
+        fontName='Helvetica-Bold', fontSize=8.2, leading=10.0,
+        textColor=accent, alignment=1, spaceAfter=2
     )
     style_block = ParagraphStyle(
         'BlockStyle', parent=styles['Normal'],
-        fontName='Helvetica-Bold', fontSize=9.8,
+        fontName='Helvetica-Bold', fontSize=9.5, leading=12.0,
         textColor=colors.HexColor('#0F172A'), alignment=1, spaceAfter=4
     )
     style_title = ParagraphStyle(
         'TitleStyle', parent=styles['Heading1'],
-        fontName='Helvetica-Bold', fontSize=11.8, leading=14.2,
-        textColor=colors.HexColor('#0F172A'), spaceAfter=3
+        fontName='Helvetica-Bold', fontSize=12.0, leading=14.5,
+        textColor=colors.HexColor('#0F172A'), spaceAfter=4
     )
     style_section_h = ParagraphStyle(
         'SectionHStyle', parent=styles['Heading2'],
-        fontName='Helvetica-Bold', fontSize=8.8, leading=11.2,
-        textColor=colors.HexColor('#B45309'), spaceBefore=3, spaceAfter=2
+        fontName='Helvetica-Bold', fontSize=9.2, leading=12.0,
+        textColor=accent, spaceBefore=4, spaceAfter=3
     )
     style_body = ParagraphStyle(
         'BodyStyle', parent=styles['BodyText'],
-        fontName='Helvetica', fontSize=7.9, leading=10.5,
-        textColor=colors.HexColor('#1E293B'), spaceAfter=2
+        fontName='Helvetica', fontSize=8.0, leading=11.2,
+        textColor=colors.HexColor('#1E293B'), spaceAfter=3
     )
-    style_task = ParagraphStyle(
-        'TaskStyle', parent=styles['Normal'],
-        fontName='Helvetica', fontSize=7.7, leading=10.1,
-        textColor=colors.HexColor('#0F172A')
-    )
-    style_prompt = ParagraphStyle(
-        'PromptStyle', parent=styles['Normal'],
-        fontName='Helvetica', fontSize=7.4, leading=9.8,
+    style_box_text = ParagraphStyle(
+        'BoxText', parent=styles['Normal'],
+        fontName='Helvetica', fontSize=7.8, leading=10.8,
         textColor=colors.HexColor('#0F172A')
     )
 
     story = []
     story.append(Paragraph("CURSO DE INTELIGENCIA ARTIFICIAL Y TECNOLOGÍA PARA ADULTOS MAYORES (60+)", style_header))
-    story.append(Paragraph("BLOQUE IV: CIENCIA INTERACTIVA & TALLER DE CÓDIGO CON GEMINI [COD]", style_block))
-    story.append(HRFlowable(width="100%", thickness=1.2, color=colors.HexColor('#D97706'), spaceAfter=4))
+    story.append(Paragraph("BLOQUE IV: CIENCIA INTERACTIVA & SIMULADORES CIENTÍFICOS 3D [COD]", style_block))
+    story.append(HRFlowable(width="100%", thickness=1.5, color=accent, spaceAfter=5))
 
-    story.append(Paragraph("<b>[COD-019] Taller: Crea tu propio simulador 3D de Saturno y sus Anillos</b>", style_title))
+    story.append(Paragraph("<b>[COD-019] Guía Científica • Saturno, Hexágono Polar & Anillos PBR</b>", style_title))
 
-    story.append(Paragraph("💡 <b>Misión Didáctica • Astrofísica Planetaria, Resonancia Orbital y Misión Cassini con Gemini:</b>", style_section_h))
+    # Bloque 1
+    story.append(Paragraph("🪐 <b>1. ¿Qué vemos en el Simulador y qué fenómeno reproduce?</b>", style_section_h))
     story.append(Paragraph(
-        "En este taller pedirás a Gemini crear un simulador 3D orbital de <b>Saturno</b> y su majestuoso sistema de anillos. "
-        "<b>No requieres saber programar:</b> copiarás el prompt maestro en Gemini, pegarás el código en tu <b>Taller de Pruebas</b> y contemplarás la joya del Sistema Solar: inclinación axial real de 26.73°, el anillo brillante B de hielo de agua pura, la División de Cassini de 4.800 km, el hexágono polar norte y las lunas Titán y Encélado.",
+        "Este visor astronómico interactivo de alta resolución reproduce el planeta <b>Saturno y su majestuoso sistema de anillos</b> "
+        "con datos e imágenes directas de la sonda espacial <b>Cassini-Huygens (NASA / ESA)</b>. En pantalla se observa el globo gaseoso "
+        "achatado polarmente con su inclinación axial real de <b>26.73°</b>, las bandas atmosféricas de nubes de amoníaco, el enigmático "
+        "<b>hexágono polar norte</b> (un vórtice atmosférico de 30.000 km de diámetro) y los anillos concéntricos principales (C, B y A), "
+        "separados por la imponente <b>División de Cassini</b> (una brecha gravitatoria de 4.800 km de ancho modelada por la luna Mimas).<br/>"
+        "El simulador permite interactuar con zoom macro, rotación, contraste espectral y filtros ópticos (luz natural, infrarrojo térmico "
+        "y falso color ultravioleta), revelando que los anillos, a pesar de medir casi 300.000 km de ancho, tienen solo entre 10 y 30 metros de espesor.",
         style_body
     ))
 
-    # Lista de Tareas
-    task_rows = [
-        [Paragraph("<b>✅ Tarea 1 • Pídele el código a Gemini (Pestaña 1):</b> "
-                   "Abre Gemini (<i>gemini.google.com</i>). Copia el <b>Prompt Maestro</b> inferior, pégalo en el chat y pulsa Enviar.", style_task)],
-        [Paragraph("<b>✅ Tarea 2 • Copia el código generado por la IA:</b> "
-                   "En la respuesta de Gemini, pulsa <b>«Copiar código»</b> en la esquina superior del bloque.", style_task)],
-        [Paragraph("<b>✅ Tarea 3 • Abre el Taller Oficial de Pruebas (Pestaña 2):</b> "
-                   "En el mapa de la Sesión 19, pulsa <b>«🚀 Abrir Taller Interactivo de Pruebas ↗»</b>.", style_task)],
-        [Paragraph("<b>✅ Tarea 4 • Pega con Ctrl+V y pulsa «Ejecutar Creación»:</b> "
-                   "Pega el código con <b>Ctrl+V</b> (o Cmd+V) y pulsa <b>«▶️ Ejecutar Creación»</b>. ¡Tu planeta Saturno orbitará en 3D en pantalla!", style_task)],
-        [Paragraph("<b>✅ Tarea 5 • Descubre la Demo astronómica completa:</b> "
-                   "Pulsa <b>«🪐 Saturno & Anillos 3D»</b> en el taller (o <b>«🪐 Abrir Saturno 3D ↗»</b> en el mapa) para probar la vista de canto a 0°.", style_task)],
-    ]
-    t_table = Table(task_rows, colWidths=[letter[0] - 72])
-    t_table.setStyle(TableStyle([
-        ('BACKGROUND', (0,0), (-1,-1), colors.HexColor('#FFFBEB')),
-        ('BOX', (0,0), (-1,-1), 1, colors.HexColor('#F59E0B')),
-        ('TOPPADDING', (0,0), (-1,-1), 1.5),
-        ('BOTTOMPADDING', (0,0), (-1,-1), 1.5),
-        ('LEFTPADDING', (0,0), (-1,-1), 7),
-        ('RIGHTPADDING', (0,0), (-1,-1), 7),
-    ]))
-    story.append(t_table)
-    story.append(Spacer(1, 3))
-
-    # Recuadro de Prompt Maestro
-    story.append(Paragraph("🧠 <b>Prompt Maestro para Copiar y Pegar en Gemini:</b>", style_section_h))
-    prompt_text = (
-        "<b>Copia exactamente este texto en Gemini:</b><br/>"
-        "<i>\"Genera el código de programación (HTML, CSS y JavaScript) que voy a copiar y pegar en el Taller de Pruebas de mi curso para crear un simulador 3D de Saturno y sus anillos con datos oficiales de la misión Cassini-Huygens de la NASA.<br/>"
-        "Requisitos del código:<br/>"
-        "1. Entrega el programa en un único bloque de código listo para pulsar directamente «Copiar código» y pegarlo con Ctrl+V.<br/>"
-        "2. Incluye en la cabecera el script con los datos astronómicos reales:<br/>"
-        "&lt;script src=&quot;https://javiercursocorreo-gif.github.io/Curso-IA/SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/saturn_b64.js&quot;&gt;&lt;/script&gt;<br/>"
-        "3. Modela con Babylon.js el globo achatado de Saturno con inclinación de 26.73°, los anillos A y B separados por la brecha oscura de la División de Cassini (4.800 km) y las lunas Titán y Encélado.<br/>"
-        "4. Incluye botones para alternar entre la inclinación orbital, la vista de perfil de canto a 0° y el hexágono polar norte.<br/>"
-        "5. Aplica un diseño astronómico en modo oscuro (#02040a) con tipografía accesible y contrastes cuidados.<br/>"
-        "6. Escribe exclusivamente el bloque de código funcional.\"</i>"
+    # Bloque 2
+    story.append(Paragraph("🔬 <b>2. Procedencia Oficial y Fuentes Científicas de la Astrofísica</b>", style_section_h))
+    fuente_text = (
+        "• <b>Misión Espacial Oficial:</b> Mosaicos fotográficos y datos espectrométricos de la sonda <b>NASA / JPL / Space Science Institute Cassini-Huygens</b> "
+        "(cámaras ISS Narrow Angle y espectrómetro VIMS) durante su órbita alrededor de Saturno (2004-2017).<br/>"
+        "• <b>Física de Anillos y Resonancia Gravitatoria:</b> Parámetros radiales calibrados a partir de las curvas de densidad de ondas espirales "
+        "y ocultaciones estelares registradas por la NASA.<br/>"
+        "• <b>Composición Física:</b> Partículas de hielo de agua con pureza superior al 99%, con albedos ópticos idénticos a los del sistema saturniano real."
     )
-    p_table = Table([[Paragraph(prompt_text, style_prompt)]], colWidths=[letter[0] - 72])
-    p_table.setStyle(TableStyle([
+    t_box = Table([[Paragraph(fuente_text, style_box_text)]], colWidths=[letter[0] - 72])
+    t_box.setStyle(TableStyle([
+        ('BACKGROUND', (0,0), (-1,-1), colors.HexColor('#FFFBEB')),
+        ('BOX', (0,0), (-1,-1), 1.2, accent),
+        ('TOPPADDING', (0,0), (-1,-1), 6),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 6),
+        ('LEFTPADDING', (0,0), (-1,-1), 8),
+        ('RIGHTPADDING', (0,0), (-1,-1), 8),
+    ]))
+    story.append(t_box)
+    story.append(Spacer(1, 4))
+
+    # Bloque 3
+    story.append(Paragraph("💬 <b>3. Guía de Exploración en el Aula & Conversación con Gemini</b>", style_section_h))
+    story.append(Paragraph(
+        "Abre el simulador en tu navegador (en el mapa pulsa <i>«🪐 Abrir Saturno ↗»</i>) y utilízalo como telescopio espacial mientras "
+        "conversas con Gemini (<i>gemini.google.com</i>). Puedes hacerle estas preguntas para investigar en clase:",
+        style_body
+    ))
+
+    prompts_text = (
+        "<b>1. El Misterio del Hexágono Polar:</b> <i>«Al enfocar el polo norte de Saturno en el simulador veo un hexágono geométrico perfecto. ¿Cómo puede formarse una figura geométrica de seis lados en las tormentas de un planeta gaseoso?»</i><br/>"
+        "<b>2. El Espesor de los Anillos:</b> <i>«¿Es verdad que si Saturno fuera del tamaño de una pelota de baloncesto, sus anillos serían mil veces más finos que una hoja de papel de fumar?»</i><br/>"
+        "<b>3. La Brecha de Cassini:</b> <i>«En el simulador se ve una franja negra entre los anillos A y B. ¿Por qué la luna Mimas barre gravitatoriamente esa zona dejando un hueco vacío de 4.800 kilómetros?»</i>"
+    )
+    p_box = Table([[Paragraph(prompts_text, style_box_text)]], colWidths=[letter[0] - 72])
+    p_box.setStyle(TableStyle([
         ('BACKGROUND', (0,0), (-1,-1), colors.HexColor('#F8FAFC')),
         ('BOX', (0,0), (-1,-1), 1, colors.HexColor('#64748B')),
-        ('TOPPADDING', (0,0), (-1,-1), 2.5),
-        ('BOTTOMPADDING', (0,0), (-1,-1), 2.5),
-        ('LEFTPADDING', (0,0), (-1,-1), 7),
-        ('RIGHTPADDING', (0,0), (-1,-1), 7),
+        ('TOPPADDING', (0,0), (-1,-1), 6),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 6),
+        ('LEFTPADDING', (0,0), (-1,-1), 8),
+        ('RIGHTPADDING', (0,0), (-1,-1), 8),
     ]))
-    story.append(p_table)
-    story.append(Spacer(1, 3))
+    story.append(p_box)
+    story.append(Spacer(1, 4))
 
-    # Desafío Extra
-    story.append(Paragraph("🌟 <b>El Reto Extra (Para Alumnos Curiosos):</b>", style_section_h))
-    story.append(Paragraph(
-        "👉 <b>¡Pídele a Gemini que modifique tu código!</b> En la misma conversación dile: "
-        "<i>«Añade una tarjeta que explique cómo los anillos tienen solo entre 10 y 30 metros de espesor: ¡proporcionalmente más delgados que una hoja de afeitar!»</i> o "
-        "<i>«Coloca una animación de los géiseres de vapor expulsados por Encélado»</i>. "
-        "Vuelve a copiar el código, pégalo en tu Taller y ¡maravíllate con la física orbital!",
-        style_body
-    ))
-    story.append(Spacer(1, 2))
-
-    # Apartado Técnico al final
-    story.append(Paragraph("🔬 <b>¿De dónde proceden los modelos hiperrealistas y cómo se ha montado el objeto 3D?</b>", style_section_h))
-    tech_text = (
-        "• <b>Origen de los datos astrofísicos (<i>NASA JPL / Space Science Institute Cassini-Huygens</i>):</b> Las dimensiones radiales, albedos de hielo de agua pura y perfiles de densidad provienen de la misión espacial <b>Cassini-Huygens (NASA/ESA/ASI, 2004-2017)</b>.<br/>"
-        "• <b>Cómo se ha montado el objeto en la Demo y en el Taller:</b> Los datos planetarios se integran en <i>saturn_b64.js</i>. Babylon.js utiliza esferas achatadas polarmente y mallas de disco concéntricas con materiales PBR translúcidos de partículas de hielo."
+    story.append(HRFlowable(width="100%", thickness=0.6, color=colors.HexColor('#CBD5E1'), spaceAfter=3))
+    style_footer = ParagraphStyle(
+        'FooterStyle', parent=styles['Normal'],
+        fontName='Helvetica-Oblique', fontSize=7.0, leading=8.5,
+        textColor=colors.HexColor('#64748B'), alignment=1
     )
-    tech_table = Table([[Paragraph(tech_text, style_task)]], colWidths=[letter[0] - 72])
-    tech_table.setStyle(TableStyle([
-        ('BACKGROUND', (0,0), (-1,-1), colors.HexColor('#ECFDF5')),
-        ('BOX', (0,0), (-1,-1), 1, colors.HexColor('#059669')),
-        ('TOPPADDING', (0,0), (-1,-1), 3),
-        ('BOTTOMPADDING', (0,0), (-1,-1), 3),
-        ('LEFTPADDING', (0,0), (-1,-1), 7),
-        ('RIGHTPADDING', (0,0), (-1,-1), 7),
-    ]))
-    story.append(tech_table)
+    story.append(Paragraph("Material didáctico adaptado pedagógicamente para personas mayores (60+). Astrofísica observacional y exploración planetaria con Inteligencia Artificial.", style_footer))
 
     doc.build(story)
-    if dest_path != LOCAL_BACKUP:
-        try:
-            import shutil
-            os.makedirs(os.path.dirname(LOCAL_BACKUP), exist_ok=True)
-            shutil.copy2(dest_path, LOCAL_BACKUP)
-        except Exception:
-            pass
-    print(f"✅ PDF COD-019 generado con éxito en: {dest_path}")
 
-if __name__ == '__main__':
+def main():
+    build_pdf(LOCAL_BACKUP)
+    print(f"✅ Ficha COD-019 generada en catálogo: {LOCAL_BACKUP}")
     try:
-        build_cod_019_taller_3d_pdf()
+        shutil.copy2(LOCAL_BACKUP, PDF_PATH)
+        print(f"✅ Ficha COD-019 sincronizada en sesión: {PDF_PATH}")
     except Exception as e:
-        print(f"❌ Error al generar PDF COD-019: {e}")
-        sys.exit(1)
+        print(f"⚠️ Nota de copia: {e}")
 
+if __name__ == "__main__":
+    main()

@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sesión 14 • Simulador Científico Real: Júpiter y sus Auroras UV • NASA Hubble [COD-014]</title>
+    <!-- Fuentes Tipográficas Oficiales -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+    <!-- Fotografía Científica Oficial en Base64 Autónomo (NASA Hubble STIS) -->
+    <script src="../../../../SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/jupiter_aurora_b64.js"></script>
+    <script src="../03_ASSETS_3D_Y_DATOS/jupiter_aurora_b64.js"></script>
+    <style>
+        :root {
+            --bg-base: #020308;
+            --bg-panel: rgba(8, 12, 24, 0.94);
+            --uv-cyan: #38bdf8;
+            --uv-purple: #c084fc;
+            --uv-glow: rgba(192, 132, 252, 0.4);
+            --io-gold: #fbbf24;
+            --text-main: #f8fafc;
+            --text-sub: #cbd5e1;
+            --font-title: 'Cinzel', serif;
+            --font-sans: 'Inter', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+        html, body {
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            font-family: var(--font-sans);
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            font-size: 14px;
+        }
+
+        header {
+            background: linear-gradient(180deg, rgba(8, 12, 24, 0.98) 0%, rgba(8, 12, 24, 0.88) 100%);
+            backdrop-filter: blur(14px);
+            border-bottom: 1px solid rgba(192, 132, 252, 0.3);
+            padding: 10px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+            z-index: 50;
+        }
+
+        .header-title-box { display: flex; align-items: center; gap: 14px; }
+        .badge-code {
+            background: rgba(192, 132, 252, 0.2);
+            color: #d8b4fe;
+            border: 1px solid rgba(192, 132, 252, 0.5);
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            font-weight: 800;
+            padding: 4px 10px;
+            border-radius: 8px;
+        }
+
+        h1 {
+            font-family: var(--font-title);
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .pill-status {
+            background: rgba(56, 189, 248, 0.12);
+            color: var(--uv-cyan);
+            border: 1px solid rgba(56, 189, 248, 0.35);
+            font-size: 0.82rem;
+            font-weight: 700;
+            padding: 5px 13px;
+            border-radius: 9999px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .pulse-dot {
+            width: 8px; height: 8px; border-radius: 50%;
+            background: #34d399; box-shadow: 0 0 10px #34d399;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+        .workspace-grid {
+            flex: 1;
+            min-height: 0;
+            display: grid;
+            grid-template-columns: 340px 1fr 360px;
+            background: #010206;
+        }
+
+        .sidebar {
+            background: var(--bg-panel);
+            backdrop-filter: blur(16px);
+            padding: 18px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            z-index: 20;
+            border-right: 1px solid rgba(192, 132, 252, 0.2);
+        }
+        .sidebar-right {
+            border-right: none;
+            border-left: 1px solid rgba(192, 132, 252, 0.2);
+        }
+
+        .card-concept {
+            background: linear-gradient(135deg, rgba(192, 132, 252, 0.15) 0%, rgba(8, 12, 24, 0.95) 100%);
+            border: 1.5px solid var(--uv-purple);
+            border-radius: 12px;
+            padding: 14px;
+        }
+        .card-tag {
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            font-weight: 800;
+            color: #d8b4fe;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 6px;
+        }
+        .card-title { font-size: 1.05rem; font-weight: 800; color: #fff; margin-bottom: 6px; }
+        .card-desc { font-size: 0.84rem; color: #e2e8f0; line-height: 1.45; }
+
+        .hotspot-list { display: flex; flex-direction: column; gap: 8px; }
+        .hotspot-item {
+            background: rgba(20, 26, 46, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 10px 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .hotspot-item:hover, .hotspot-item.active {
+            border-color: var(--uv-cyan);
+            background: rgba(56, 189, 248, 0.15);
+            transform: translateX(4px);
+        }
+        .hotspot-num {
+            display: inline-block;
+            width: 22px; height: 22px; line-height: 22px;
+            text-align: center; border-radius: 50%;
+            background: var(--uv-purple); color: #fff;
+            font-family: var(--font-mono); font-size: 0.75rem; font-weight: 800;
+            margin-right: 8px;
+        }
+        .hotspot-name { font-weight: 700; color: #fff; font-size: 0.88rem; }
+        .hotspot-sub { font-size: 0.78rem; color: var(--text-sub); margin-top: 3px; }
+
+        .stage-container {
+            position: relative;
+            width: 100%; height: 100%;
+            overflow: hidden;
+            background: radial-gradient(circle at center, #070914 0%, #010206 100%);
+            display: flex; align-items: center; justify-content: center;
+        }
+        #photoCanvas { cursor: grab; display: block; }
+        #photoCanvas:active { cursor: grabbing; }
+
+        .top-toolbar {
+            position: absolute; top: 16px; left: 50%; transform: translateX(-50%);
+            display: flex; gap: 8px;
+            background: rgba(8, 12, 24, 0.9);
+            border: 1px solid rgba(192, 132, 252, 0.4);
+            padding: 6px 14px; border-radius: 9999px;
+            backdrop-filter: blur(12px); z-index: 30;
+        }
+        .btn-tool {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #fff; padding: 6px 12px; border-radius: 20px;
+            font-size: 0.78rem; font-weight: 700; cursor: pointer;
+            display: flex; align-items: center; gap: 5px;
+            transition: all 0.2s ease;
+        }
+        .btn-tool:hover { background: rgba(192, 132, 252, 0.25); border-color: var(--uv-purple); }
+        .btn-tool.active { background: var(--uv-purple); color: #000; font-weight: 800; }
+
+        .telemetry-card {
+            background: rgba(15, 20, 35, 0.85);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            border-radius: 10px; padding: 12px;
+        }
+        .tele-row { display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 0.82rem; }
+        .tele-label { color: var(--text-sub); }
+        .tele-val { font-family: var(--font-mono); color: var(--uv-cyan); font-weight: 700; }
+
+        .hud-badge {
+            position: absolute; top: 16px; left: 16px;
+            background: rgba(8, 12, 24, 0.85);
+            border: 1px solid rgba(192, 132, 252, 0.35);
+            padding: 8px 14px; border-radius: 8px;
+            font-family: var(--font-mono); font-size: 0.78rem; color: #d8b4fe;
+            backdrop-filter: blur(8px); z-index: 25;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-title-box">
+            <span class="badge-code">[COD-014]</span>
+            <div>
+                <h1>🪐 Júpiter & Auroras Ultravioletas Gigantes</h1>
+                <p style="font-size: 0.78rem; color: #94a3b8;">Astrofotografía Real de Alta Resolución • Telescopio Espacial NASA/ESA Hubble (Cámara STIS) & Misión Juno</p>
+            </div>
+        </div>
+        <div class="pill-status">
+            <span class="pulse-dot"></span>
+            <span>OBSERVATORIO HUBBLE ONLINE</span>
+        </div>
+    </header>
+
+    <div class="workspace-grid">
+        <!-- Panel Izquierdo -->
+        <div class="sidebar">
+            <div class="card-concept">
+                <div class="card-tag">💡 La Idea Fácil para Seniors</div>
+                <div class="card-title">El Monstruo Magnético</div>
+                <div class="card-desc">
+                    Júpiter tiene un campo magnético 20.000 veces más potente que la Tierra. Sus auroras nunca se apagan porque la luna volcánica <b>Ío</b> le inyecta una tonelada de gas sulfuroso cada segundo, encendiendo fuegos artificiales de luz ultravioleta del tamaño de nuestro planeta entero.
+                </div>
+            </div>
+
+            <div style="font-size: 0.8rem; font-weight: 800; color: #c084fc; text-transform: uppercase;">
+                🎯 Puntos de Interés Científico
+            </div>
+            <div class="hotspot-list" id="hotspotList">
+                <!-- Generado por JS -->
+            </div>
+        </div>
+
+        <!-- Área Central de Fotografía Real -->
+        <div class="stage-container">
+            <div class="hud-badge" id="hudBadge">ZOOM: 100% • MODO: ESPECTRO UV ACTIVO</div>
+            <div class="top-toolbar">
+                <button class="btn-tool" onclick="zoomIn()">🔍 Zoom +</button>
+                <button class="btn-tool" onclick="zoomOut()">🔍 Zoom -</button>
+                <button class="btn-tool" onclick="resetView()">🎯 Centrar</button>
+                <button class="btn-tool active" id="btnUv" onclick="toggleUvMode()">🌌 Filtro UV Hubble</button>
+                <button class="btn-tool active" id="btnPins" onclick="togglePins()">📍 Marcadores</button>
+            </div>
+            <canvas id="photoCanvas" width="1200" height="900"></canvas>
+        </div>
+
+        <!-- Panel Derecho -->
+        <div class="sidebar sidebar-right">
+            <div class="telemetry-card">
+                <div style="font-size: 0.8rem; font-weight: 800; color: #38bdf8; margin-bottom: 8px;">📊 Telemetría Joviana</div>
+                <div class="tele-row"><span class="tele-label">Diámetro Ecuatorial:</span><span class="tele-val">142.984 km</span></div>
+                <div class="tele-row"><span class="tele-label">Masa Planetaria:</span><span class="tele-val">318 Tierras</span></div>
+                <div class="tele-row"><span class="tele-label">Potencia Auroral:</span><span class="tele-val">100 Teravatios</span></div>
+                <div class="tele-row"><span class="tele-label">Longitud de Onda:</span><span class="tele-val">120 - 165 nm (FUV)</span></div>
+                <div class="tele-row"><span class="tele-label">Instrumento:</span><span class="tele-val">Hubble STIS / F25SRF2</span></div>
+            </div>
+
+            <div class="card-concept" style="border-color: #38bdf8; background: rgba(56, 189, 248, 0.08);">
+                <div class="card-tag" style="color: #38bdf8;">🔬 Estructura Seleccionada</div>
+                <div class="card-title" id="infoTitle">Óvalo Auroral Norte</div>
+                <div class="card-desc" id="infoDesc">
+                    Emisión ultravioleta perpetua generada por partículas cargadas a velocidades relativistas que bombardean la termosfera de hidrógeno. Es cientos de veces más energética que las auroras boreales terrestres.
+                </div>
+            </div>
+
+            <div class="card-concept" style="border-color: #64748b; background: rgba(15, 23, 42, 0.7);">
+                <div class="card-tag" style="color: #94a3b8;">💬 Para Conversar con Gemini</div>
+                <div class="card-desc" style="font-size: 0.8rem; line-height: 1.5;">
+                    <i>«¿Por qué las auroras de Júpiter nunca se apagan a diferencia de las auroras de la Tierra que necesitan que el Sol envíe una llamarada?»</i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById("photoCanvas");
+        const ctx = canvas.getContext("2d");
+
+        const HOTSPOTS = [
+            { id: 1, x: 0.50, y: 0.16, name: "Óvalo Auroral Norte", sub: "Emisión de hidrógeno en ultravioleta lejano (Hubble STIS)", desc: "Anillo auroral permanente polar norte. Emite más de 100 teravatios de potencia al chocar iones procedentes de la luna Ío." },
+            { id: 2, x: 0.45, y: 0.22, name: "Huella Magnética de Ío", sub: "Punto de anclaje del tubo de flujo de plasma", desc: "Mancha brillante al pie de las líneas de inducción magnética que conectan a Júpiter directamente con los volcanes de la luna Ío." },
+            { id: 3, x: 0.65, y: 0.68, name: "La Gran Mancha Roja", sub: "Anticiclón colosal de más de 300 años", desc: "Tormenta de 16.000 km de ancho, suficientemente grande para tragar la Tierra entera. Sus vientos superan los 430 km/h." },
+            { id: 4, x: 0.50, y: 0.50, name: "Zona Ecuatorial y Cinturones", sub: "Bandas de amoníaco y azufre a contracorriente", desc: "Zonas claras (nubes altas frías de amoníaco) y cinturones oscuros (zonas de hundimiento atmosférico más cálidas)." },
+            { id: 5, x: 0.50, y: 0.88, name: "Aurora Polar Sur", sub: "Contraparte magnética austral joviana", desc: "Círculo auroral del polo sur observado por las sondas Juno y Hubble en longitudes de onda FUV invisibles para el ojo humano." }
+        ];
+
+        let img = new Image();
+        let imgLoaded = false;
+        let scale = 1.0;
+        let panX = 0, panY = 0;
+        let isDragging = false;
+        let startX, startY;
+        let isUvMode = true;
+        let showPins = true;
+        let selectedHotspot = 1;
+
+        function initImage() {
+            if (window.JUPITER_AURORA_PHOTO_B64) {
+                img.src = window.JUPITER_AURORA_PHOTO_B64;
+            } else {
+                img.src = "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Jupiter_and_its_shrunken_Great_Red_Spot.jpg/1024px-Jupiter_and_its_shrunken_Great_Red_Spot.jpg";
+            }
+            img.onload = () => {
+                imgLoaded = true;
+                fitToScreen();
+                render();
+            };
+        }
+
+        function fitToScreen() {
+            scale = Math.min((canvas.width - 80) / img.width, (canvas.height - 80) / img.height);
+            panX = (canvas.width - img.width * scale) / 2;
+            panY = (canvas.height - img.height * scale) / 2;
+        }
+
+        function render() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "#010206";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            if (!imgLoaded) {
+                ctx.fillStyle = "#d8b4fe";
+                ctx.font = "bold 16px var(--font-mono)";
+                ctx.textAlign = "center";
+                ctx.fillText("CARGANDO ASTROFOTOGRAFÍA NASA HUBBLE...", canvas.width / 2, canvas.height / 2);
+                return;
+            }
+
+            ctx.save();
+            ctx.translate(panX, panY);
+            ctx.scale(scale, scale);
+
+            if (isUvMode) {
+                ctx.filter = "contrast(1.18) saturate(1.25)";
+            } else {
+                ctx.filter = "none";
+            }
+
+            ctx.drawImage(img, 0, 0);
+
+            if (isUvMode) {
+                ctx.save();
+                ctx.globalCompositeOperation = "screen";
+                let uvGlow = ctx.createRadialGradient(img.width * 0.5, img.height * 0.16, 10, img.width * 0.5, img.height * 0.16, 90);
+                uvGlow.addColorStop(0, "rgba(56, 189, 248, 0.7)");
+                uvGlow.addColorStop(0.5, "rgba(192, 132, 252, 0.4)");
+                uvGlow.addColorStop(1, "rgba(0, 0, 0, 0)");
+                ctx.fillStyle = uvGlow;
+                ctx.beginPath();
+                ctx.arc(img.width * 0.5, img.height * 0.16, 90, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            }
+
+            ctx.restore();
+
+            if (showPins) {
+                HOTSPOTS.forEach(h => {
+                    const px = panX + (h.x * img.width) * scale;
+                    const py = panY + (h.y * img.height) * scale;
+                    const isSel = (h.id === selectedHotspot);
+
+                    ctx.beginPath();
+                    ctx.arc(px, py, isSel ? 16 : 12, 0, Math.PI * 2);
+                    ctx.fillStyle = isSel ? "rgba(56, 189, 248, 0.35)" : "rgba(192, 132, 252, 0.25)";
+                    ctx.fill();
+                    ctx.lineWidth = isSel ? 2.5 : 1.5;
+                    ctx.strokeStyle = isSel ? "#38bdf8" : "#c084fc";
+                    ctx.stroke();
+
+                    ctx.beginPath();
+                    ctx.arc(px, py, 9, 0, Math.PI * 2);
+                    ctx.fillStyle = isSel ? "#38bdf8" : "#c084fc";
+                    ctx.fill();
+
+                    ctx.fillStyle = "#020308";
+                    ctx.font = "bold 10px var(--font-mono)";
+                    ctx.textAlign = "center";
+                    ctx.textBaseline = "middle";
+                    ctx.fillText(h.id, px, py);
+                });
+            }
+
+            document.getElementById("hudBadge").innerText = `ZOOM: ${Math.round(scale * 100)}% • MODO: ${isUvMode ? 'ESPECTRO ULTRAVIOLETA HUBBLE' : 'ÓPTICO CASSINI'}`;
+        }
+
+        canvas.addEventListener("mousedown", (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const mx = e.clientX - rect.left;
+            const my = e.clientY - rect.top;
+
+            let clickedPin = false;
+            HOTSPOTS.forEach(h => {
+                const px = panX + (h.x * img.width) * scale;
+                const py = panY + (h.y * img.height) * scale;
+                const dist = Math.hypot(mx - px, my - py);
+                if (dist <= 20) {
+                    selectHotspot(h.id);
+                    clickedPin = true;
+                }
+            });
+
+            if (!clickedPin) {
+                isDragging = true;
+                startX = mx - panX;
+                startY = my - panY;
+            }
+        });
+
+        canvas.addEventListener("mousemove", (e) => {
+            if (!isDragging) return;
+            const rect = canvas.getBoundingClientRect();
+            panX = e.clientX - rect.left - startX;
+            panY = e.clientY - rect.top - startY;
+            render();
+        });
+
+        window.addEventListener("mouseup", () => { isDragging = false; });
+
+        canvas.addEventListener("wheel", (e) => {
+            e.preventDefault();
+            const zoomFactor = e.deltaY < 0 ? 1.15 : 0.85;
+            zoom(zoomFactor, e.clientX, e.clientY);
+        });
+
+        function zoom(factor, cx, cy) {
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = cx ? cx - rect.left : canvas.width / 2;
+            const mouseY = cy ? cy - rect.top : canvas.height / 2;
+
+            const newScale = Math.max(0.3, Math.min(6.0, scale * factor));
+            panX = mouseX - (mouseX - panX) * (newScale / scale);
+            panY = mouseY - (mouseY - panY) * (newScale / scale);
+            scale = newScale;
+            render();
+        }
+
+        function zoomIn() { zoom(1.25); }
+        function zoomOut() { zoom(0.8); }
+        function resetView() { fitToScreen(); render(); }
+
+        function toggleUvMode() {
+            isUvMode = !isUvMode;
+            document.getElementById("btnUv").classList.toggle("active", isUvMode);
+            render();
+        }
+
+        function togglePins() {
+            showPins = !showPins;
+            document.getElementById("btnPins").classList.toggle("active", showPins);
+            render();
+        }
+
+        function selectHotspot(id) {
+            selectedHotspot = id;
+            const h = HOTSPOTS.find(item => item.id === id);
+            if (h) {
+                document.getElementById("infoTitle").innerText = h.name;
+                document.getElementById("infoDesc").innerText = h.desc;
+                updateHotspotListUI();
+                render();
+            }
+        }
+
+        function updateHotspotListUI() {
+            const listEl = document.getElementById("hotspotList");
+            listEl.innerHTML = "";
+            HOTSPOTS.forEach(h => {
+                const item = document.createElement("div");
+                item.className = `hotspot-item ${h.id === selectedHotspot ? 'active' : ''}`;
+                item.onclick = () => selectHotspot(h.id);
+                item.innerHTML = `
+                    <div>
+                        <span class="hotspot-num">${h.id}</span>
+                        <span class="hotspot-name">${h.name}</span>
+                    </div>
+                    <div class="hotspot-sub">${h.sub}</div>
+                `;
+                listEl.appendChild(item);
+            });
+        }
+
+        updateHotspotListUI();
+        initImage();
+    </script>
+</body>
+</html>
+
