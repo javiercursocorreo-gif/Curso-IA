@@ -14,8 +14,8 @@
 | Lote / Chat | Sesiones | Contenido Principal (NASA Eyes Oficial) | Estado |
 | :--- | :---: | :--- | :---: |
 | **Lote 1** | **03 a 07** | Sistema Solar en Vivo, Tierra & Clima, ISS Tripulada, Luna & Artemisa, El Sol & Sonda Parker | ✅ **COMPLETADO & MAPAS ACTUALIZADOS** |
-| **Lote 2** | **08 a 12** | Mercurio & BepiColombo, Telescopio Hubble, Venus Infierno, Marte Rojo, Curiosity & Perseverance | ✅ **COMPLETADO & MAPAS ACTUALIZADOS** |
-| **Lote 3** | **13 a 17** | Ingenuity & Lunas Fobos/Deimos, James Webb (JWST), Deep Space Network (DSN Madrid), Radar Asteroides NEOs, Ceres & Vesta | ⏳ **SIGUIENTE LOTE** |
+| **Lote 2** | **08 a 12** | Mercurio & BepiColombo, Telescopio Roman, Venus Infierno, Marte MRO & MAVEN, Lunas Fobos & Deimos | ✅ **COMPLETADO & MAPAS ACTUALIZADOS** |
+| **Lote 3** | **13 a 17** | James Webb (JWST), Deep Space Network (DSN), Radar Asteroides NEOs, Ceres & Vesta (Dawn), DART Dimorphos | ⏳ **SIGUIENTE LOTE** |
 | **Lote 4** | **18 a 22** | Defensa Planetaria DART, Psyche Mundo de Metal, Cometa Rosetta & Halley, Júpiter & Juno, Europa Océano Submarino | ⏳ **PENDIENTE** |
 | **Lote 5** | **23 a 27** | Ío Volcánico de Azufre, Ganimedes & Calisto (JUICE), Observatorios Chandra & Roman, Saturno & Cassini, Titán & Dragonfly | ⏳ **PENDIENTE** |
 | **Lote 6** | **28 a 32** | Encélado Géiseres, Mimas & Jápeto Bipolares, Voyager 1 & 2 Interestelar, Urano Inclinado & Miranda, Neptuno Vientos | ⏳ **PENDIENTE** |
@@ -47,10 +47,10 @@
 ```markdown
 # HERENCIA LOTE 2 NASA EYES [ESPACIO-008 A ESPACIO-012] • EJECUTADO CON ÉXITO
 1. Sesión 08 [ESPACIO-008]: Mercurio y BepiColombo (SIMULADOR_MERCURIO_BEPICOLOMBO_3D.html)
-2. Sesión 09 [ESPACIO-009]: Telescopio Espacial Nancy Grace Roman (SIMULADOR_TELESCOPIO_ROMAN_3D.html)
-3. Sesión 10 [ESPACIO-010]: Venus: El Infierno Volcánico (SIMULADOR_VENUS_INFIERNO_3D.html)
-4. Sesión 11 [ESPACIO-011]: Marte: Geografía y Misterios (SIMULADOR_MARTE_GEOGRAFIA_3D.html)
-5. Sesión 12 [ESPACIO-012]: Curiosity y Perseverance en Marte (SIMULADOR_ROVERS_MARTE_CURIOSITY_PERSEVERANCE_3D.html)
+2. Sesión 09 [ESPACIO-009]: Telescopio Espacial Nancy Grace Roman (SIMULADOR_TELESCOPIO_ROMAN_3D.html) • Identificador: `sc_roman_space_telescope`
+3. Sesión 10 [ESPACIO-010]: Venus: El Infierno Volcánico (SIMULADOR_VENUS_INFIERNO_3D.html) • Sonda Magallanes calibrada temporalmente a 1991 en órbita de Venus (`time=1991-01-01T12:00:00.000+00:00`)
+4. Sesión 11 [ESPACIO-011]: Marte: Geografía y Misterios (SIMULADOR_MARTE_GEOGRAFIA_3D.html) • Identificador oficial MRO: `sc_mars_reconnaissance_orbiter` y MAVEN: `sc_maven`
+5. Sesión 12 [ESPACIO-012]: Las Lunas de Marte: Fobos y Deimos (SIMULADOR_LUNAS_MARTE_FOBOS_DEIMOS_3D.html) • Fobos (`phobos`), Deimos (`deimos`) y Marte (`mars`)
 *Estado: 100% blindado con tarjetas HUD autoportantes, mapas MAPA_SESION_08 a 12 actualizados con botón único a pantalla completa, índice maestro actualizado (10 desplegados) y desplegado a GitHub Pages.*
 ```
 
@@ -64,47 +64,64 @@
 
 ### 1. OBJETIVO DEL TURNO
 Construir y blindar los 5 simuladores científicos 3D oficiales basados en NASA Eyes correspondientes a las sesiones 13 a 17 y actualizar sus respectivos mapas de sesión para Classroom:
-- Cero dibujos inventados y cero mallas toscas.
-- Formato oficial: Visor interactivo en pantalla completa con incrustación oficial de NASA Eyes + tarjeta flotante HUD translúcida con botón [Ocultar / Mostrar info] + botones de navegación rápida a lunas y naves asociadas.
-- ESTÁNDAR PEDAGÓGICO AUTOPORTANTE: Cero necesidad de PDFs externos. La propia tarjeta flotante HUD del simulador contiene toda la guía didáctica:
+- Cero dibujos inventados y cero mallas toscas. Prohibición total de Babylon.js. Exclusivamente Three.js o incrustaciones oficiales de NASA Eyes 3D.
+- Prohibición total de rovers o vehículos de tierra (el motor orbital no renderiza mallas sobre la superficie marciana). Solo naves espaciales y cuerpos celestes reales orbitantes.
+- Formato oficial: Visor interactivo en pantalla completa con incrustación oficial de NASA Eyes + tarjeta flotante HUD translúcida con botón [Ocultar / Mostrar info] + barra inferior de navegación limpia (máximo 3 a 4 botones).
+- ESTÁNDAR PEDAGÓGICO AUTOPORTANTE: Cero necesidad de PDFs externos ni talleres de código. La propia tarjeta flotante HUD del simulador contiene toda la guía didáctica:
   1. Fenómeno científico en tiempo real con datos orbitales exactos de NASA JPL / Caltech.
   2. Guía de controles de navegación 360° y zoom continuo.
   3. Cuadro de diálogo interactivo con 3 preguntas clave para que los alumnos conversen con Gemini en clase mientras observan el modelo en pantalla.
   4. Acreditación rigurosa de fuentes científicas oficiales (NASA/JPL/ESA/JAXA).
 - ACTUALIZACIÓN DE MAPAS DE SESIÓN (MAPA_SESION_13 A 17):
-  En cada `MAPA_SESION_XX.html`, actualizar la tarjeta #10 con la etiqueta `[ESPACIO]`, título de la sesión y botón directo de lanzamiento al simulador HTML 3D, eliminando enlaces a talleres de código o PDFs antiguos.
+  En cada `MAPA_SESION_XX.html`, actualizar el recurso didáctico #10 con la etiqueta `[ESPACIO]`, título astronómico oficial y botón directo de lanzamiento que abra el simulador 3D a pantalla completa, eliminando enlaces a talleres de código o probadores obsoletos.
 - ACTUALIZACIÓN DEL ÍNDICE MAESTRO (INDICE_MAESTRO_SIMULACIONES_INTERACTIVAS_ESPACIO_3D.html):
-  Enlazar los 5 botones de lanzamiento a sus simuladores locales.
+  Enlazar los 5 botones de lanzamiento a sus simuladores locales y marcar estado como desplegado.
 
 ### 2. CATÁLOGO OFICIAL DEL LOTE 3 (SESIONES 13 A 17)
-*Nota: Consulta INVENTARIO_MAESTRO_ENLACES_NASA_EYES.md donde tienes todas las URLs, parámetros y saltos rápidos exactos.*
-1. **Sesión 13 [ESPACIO-013]:** Ingenuity y las Lunas de Marte (Fobos y Deimos)
-   - URL Embed: `https://eyes.nasa.gov/apps/solar-system/#/sc_ingenuity?embed=true`
-   - Sub-enlaces de salto rápido: Luna Fobos (`#/phobos`), Luna Deimos (`#/deimos`), Rover Perseverance (`#/sc_perseverance`), Globo de Marte (`#/mars`).
-2. **Sesión 14 [ESPACIO-014]:** Telescopio Espacial James Webb (JWST)
-   - URL Embed: `https://eyes.nasa.gov/apps/solar-system/#/sc_jwst?embed=true`
-   - Sub-enlaces de salto rápido: Telescopio Hubble (`#/sc_hubble`), Telescopio Roman (`#/sc_roman`), Punto L2 Sol-Tierra (`#/earth`), Sistema Solar (`#/home`).
-3. **Sesión 15 [ESPACIO-015]:** Deep Space Network (DSN Madrid, Goldstone, Canberra)
-   - URL Embed: `https://eyes.nasa.gov/apps/dsn-now/dsn.html`
-   - Sub-enlaces de salto rápido: Sonda Voyager 1 (`#/sc_voyager_1`), New Horizons (`#/sc_new_horizons`), Parker Solar Probe (`#/sc_parker_solar_probe`).
-4. **Sesión 16 [ESPACIO-016]:** Radar de Asteroides y Misiones Cercanas a la Tierra (NEOs)
-   - URL Embed: `https://eyes.nasa.gov/apps/asteroids/#/home`
-   - Sub-enlaces de salto rápido: Misión DART (`#/sc_dart`), OSIRIS-REx (`#/sc_osiris_rex`), Asteroide Apofis (`#/apophis`).
-5. **Sesión 17 [ESPACIO-017]:** Ceres y Vesta: Los Reyes del Cinturón de Asteroides
-   - URL Embed: `https://eyes.nasa.gov/apps/solar-system/#/ceres?embed=true`
-   - Sub-enlaces de salto rápido: Protoplaneta Vesta (`#/vesta`), Sonda Dawn (`#/sc_dawn`), Júpiter (`#/jupiter`), Sistema Solar (`#/home`).
+*Nota: Identificadores oficiales estrictos extraídos de INVENTARIO_MAESTRO_ENLACES_NASA_EYES.md:*
+1. **Sesión 13 [ESPACIO-013]:** Telescopio Espacial James Webb (JWST)
+   - Archivo: `SIMULADOR_TELESCOPIO_JAMES_WEBB_3D.html`
+   - URL Embed Principal: `https://eyes.nasa.gov/apps/solar-system/#/sc_jwst?embed=true`
+   - Botones inferiores (3-4 máx): `🔭 Telescopio Webb (L2)` (`sc_jwst`, activo), `🛰️ Telescopio Hubble` (`sc_hubble`), `🌌 Sistema Solar Global` (`home`).
+2. **Sesión 14 [ESPACIO-014]:** Deep Space Network (DSN) y las Sondas Interestelares
+   - Archivo: `SIMULADOR_RED_ESPACIO_PROFUNDO_DSN_3D.html`
+   - URL Embed Principal: `https://eyes.nasa.gov/apps/dsn-now/dsn.html`
+   - Botones inferiores: `📡 Antenas DSN en Vivo` (`dsn.html`), `🛰️ Voyager 1 (Interestelar)` (`sc_voyager_1`), `🛰️ New Horizons (Plutón)` (`sc_new_horizons`), `🌌 Sistema Solar Global` (`home`).
+3. **Sesión 15 [ESPACIO-015]:** Radar de Asteroides y Misiones Cercanas a la Tierra (NEOs)
+   - Archivo: `SIMULADOR_ASTEROIDES_NEOS_RADAR_3D.html`
+   - URL Embed Principal: `https://eyes.nasa.gov/apps/asteroids/#/home`
+   - Botones inferiores: `☄️ Radar Asteroides Cercanos` (`home`), `🚀 Misión DART` (`sc_dart`), `🚀 Misión OSIRIS-REx` (`sc_osiris_rex`).
+4. **Sesión 16 [ESPACIO-016]:** Ceres y Vesta: Los Reyes del Cinturón de Asteroides (Misión Dawn)
+   - Archivo: `SIMULADOR_CERES_VESTA_CINTURON_3D.html`
+   - URL Embed Principal: `https://eyes.nasa.gov/apps/solar-system/#/ceres?embed=true`
+   - Botones inferiores: `🪐 Planeta Enano Ceres` (`ceres`, activo), `🪐 Protoplaneta Vesta` (`vesta`), `🛰️ Sonda Dawn` (`sc_dawn`), `🌌 Sistema Solar Global` (`home`).
+5. **Sesión 17 [ESPACIO-017]:** Defensa Planetaria: Misión DART y el Impacto en Dimorphos
+   - Archivo: `SIMULADOR_DEFENSA_PLANETARIA_DART_3D.html`
+   - URL Embed Principal: `https://eyes.nasa.gov/apps/solar-system/#/sc_dart?embed=true`
+   - Botones inferiores: `🚀 Sonda DART (Impactador)` (`sc_dart`, activo), `🪨 Asteroide Didymos` (`didymos`), `🌌 Sistema Solar Global` (`home`).
 
-### 3. REGLAS TÉCNICAS OBLIGATORIAS
-1. **Documento de Enlaces Centralizado:** Consultar `INVENTARIO_MAESTRO_ENLACES_NASA_EYES.md`.
-2. **Doble Despliegue de Simuladores HTML y Actualización de Mapas:**
-   - Crear/actualizar en `SIMULADORES_INTERACTIVOS/01_SIMULADORES/`
+### 3. APRENDIZAJES Y REGLAS TÉCNICAS OBLIGATORIAS (LECCIONES DE ORO)
+1. **Regla Estricta de Botones de Navegación (Planeta + Sondas de la Misión + Sistema Solar):**
+   - La barra inferior solo debe contener:
+     1. El **propio planeta o cuerpo principal** de la sesión (activo al cargar).
+     2. Las **sondas o naves orbitales DIRECTAMENTE vinculadas a esa misión** (y NADA MÁS: prohibido meter telescopios no vinculados, otros planetas o destinos inventados que sobrecarguen la interfaz).
+     3. El **Sistema Solar Global** (`home`).
+2. **Obligación de Autocomprobación Previa y Poda Temprana (Cero Trabajo de Depuración para el Usuario):**
+   - El asistente tiene la obligación estricta de autocomprobar tú mismo que cada identificador y botón funciona en el motor de NASA Eyes.
+   - Si una sonda o activo no se mueve, no carga o no se renderiza (como ocurrió con los rovers de superficie en Marte), **NO SE HACE, NO SE INVENTA NI SE COMPLICA LA VIDA: SE QUITA Y SE SUSTITUYE DE INMEDIATO POR UN ACTIVO ORBITAL O LUNA QUE SÍ FUNCIONE AL 100%**.
+   - Esto libera al usuario de cualquier trabajo de depuración; todo lo entregado debe funcionar a la primera.
+3. **Identificadores Oficiales de Catálogo:** Prohibido inventar o acortar nombres. Usar siempre los nombres exactos confirmados (`sc_jwst`, `sc_voyager_1`, `sc_new_horizons`, `sc_dart`, `sc_dawn`).
+4. **Blindaje de Script JavaScript (`loadTarget`):**
+   - Asegurar que `loadTarget(target, btnElement)` gestione parámetros con `const sep = target.includes('?') ? '&' : '?'; newFrame.src = ...`
+   - Prohibido código o llaves huérfanas fuera de funciones que puedan provocar `SyntaxError`.
+5. **Doble Despliegue de Simuladores HTML y Actualización de Mapas:**
+   - Crear en `SIMULADORES_INTERACTIVOS/01_SIMULADORES/`
    - Copiar a `CLASES/EXPORTACION_FICHAS_CLASSROOM_PDF/100. [SESSIONS] TERNAS_LISTAS_PARA_CLASSROOM/XX_Sesion/`
-   - Actualizar el recurso #10 en `MAPA_SESION_XX.html` de cada sesión.
-3. **Sin Fichas PDF Externas:** Todo el contenido didáctico va integrado en el propio HUD del simulador HTML.
-4. **Modo 100% Silencioso y Cero Submits:** Trabajo desatendido de principio a fin, sin preguntas intermedias ni ventanas emergentes.
-5. **Entrega Final:** Un único bloque terminal correlativo `[COMANDO 01]` que abra los 5 mapas en Safari para validación visual inmediata y despliegue todo a GitHub Pages (`git add -A`, `git commit`, `git push origin main`).
+   - Actualizar el recurso didáctico #10 en `MAPA_SESION_XX.html` de cada una de las 5 sesiones.
+6. **Modo 100% Silencioso y Cero Submits:** Trabajo desatendido de principio a fin, sin preguntas intermedias ni ventanas emergentes.
+7. **Entrega Final:** Un único bloque terminal correlativo `[COMANDO 01]` que abra los 5 simuladores en Safari para inspección inmediata y despliegue todo a GitHub (`git add -A`, `git commit`, `git push origin main`).
 
-INSTRUCCIÓN: Procede directamente en silencio de principio a fin.
+INSTRUCCIÓN: Procede directamente en silencio de principio a fin con el Lote 3.
 ```
 
 ---

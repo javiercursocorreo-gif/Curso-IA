@@ -138,6 +138,36 @@
     1. **Taller Interactivo de Pruebas:** Para que el alumno experimente la generación de código con Gemini y vea su aplicación nacer en directo.
     2. **Simulador 3D Oficial Garantizado:** Botón directo a la aplicación final hiperrealista depurada, asegurando que el 100% de los alumnos disfrute de la experiencia completa sin atascos ni dependencias de variabilidad de la IA.
 
+## Estándar Oficial de Navegación y Calibración en NASA Eyes 3D [ESPACIO]
+- **Catálogo Estricto de Identificadores (Prohibición de Abreviaturas Inventadas):**
+  - El motor de NASA Eyes requiere estrictamente los nombres exactos registrados en su base de datos de telemetría. Queda prohibido inventar o acortar nombres:
+    - Telescopio Roman: `sc_roman_space_telescope` (nunca `sc_roman`).
+    - Mars Reconnaissance Orbiter: `sc_mars_reconnaissance_orbiter` (nunca `sc_mro`).
+    - Sonda Parker: `sc_parker_solar_probe`.
+    - MAVEN: `sc_maven`.
+    - BepiColombo: `sc_bepicolombo`.
+    - Nave Orión (Artemisa): `sc_artemis_1`.
+    - Estación Espacial: `sc_iss`.
+    - Telescopio James Webb: `sc_jwst`.
+- **Prohibición Total de Rovers y Activos de Suelo en el Motor Orbital:**
+  - El motor `apps/solar-system/` de NASA Eyes renderiza exclusivamente cuerpos celestes y naves en órbita o vuelo espacial; NO renderiza rovers en tierra ni mallas sobre la superficie marciana (Perseverance, Curiosity). Intentar cargarlos produce un lienzo vacío o inerte.
+  - Toda sesión que involucre vehículos de superficie queda sustituida de inmediato por cuerpos y lunas reales orbitantes (ej. Sesión 12: Las Lunas de Marte, Fobos y Deimos).
+- **Calibración Temporal Obligatoria de Sondas Históricas (`time=YYYY-MM-DDTHH:MM:SS`):**
+  - Cuando una sonda histórica fue lanzada o desplegada desde órbita terrestre (ej. Magallanes desplegada por el transbordador espacial Atlantis en 1989), sin un parámetro temporal el visor la muestra en su inicio sobrevolando la Tierra (azul con nubes).
+  - Para situarla en su planeta destino, es obligatorio inyectar la marca temporal UTC de su misión activa (ej. Magallanes en órbita de Venus: `sc_magellan?time=1991-01-01T12:00:00.000+00:00`).
+- **Diseño Minimalista de Barra Inferior de Navegación (Planeta + Sondas de la Misión + Sistema Solar):**
+  - La barra inferior debe ser minimalista, limpia y contener EXCLUSIVAMENTE (3 a 4 botones máximo):
+    1. El **propio planeta o cuerpo principal** de la sesión (activo al cargar).
+    2. Las **sondas o naves orbitales DIRECTAMENTE vinculadas a esa misión** (ej. Orión en Luna, Parker en Sol, BepiColombo en Mercurio, MRO y MAVEN en Marte, Deimos en Fobos).
+    3. El **Sistema Solar Global** (`home`).
+    - Queda terminantemente prohibido saturar la barra con destinos ajenos, telescopios no vinculados u otros planetas secundarios.
+- **Obligación de Autocomprobación Previa y Poda Temprana (Cero Trabajo de Depuración para el Usuario):**
+  - El asistente tiene la obligación estricta de autocomprobar y verificar que cada identificador y enlace funciona realmente en el motor de NASA Eyes antes de entregar la tarea.
+  - Si una sonda o activo no se mueve, no carga o no existe como malla 3D (como ocurrió con los rovers de superficie en Marte), **NO SE INVENTA, NO SE COMPLICA LA VIDA, SE ELIMINA Y SE SUSTITUYE DE INMEDIATO POR UN CUERPO O NAVE ORBITAL QUE SÍ FUNCIONE AL 100%**.
+  - El usuario jamás debe realizar tareas de depuración ni probar enlaces rotos: todo lo entregado debe funcionar impecablemente al primer clic.
+- **Blindaje de Script JavaScript (`loadTarget`):**
+  - La función `loadTarget(target, btnElement)` debe gestionar limpiamente los parámetros de URL con `const sep = target.includes('?') ? '&' : '?'; newFrame.src = ...` y evitar cualquier código o llave duplicada fuera de la función que provoque `SyntaxError`.
+
 ## Módulo Especializado de Música y Web MIDI (CURSO_MUSICA)
 - Para cualquier trabajo en el módulo `CURSO_MUSICA/` (Atril Digital, Korg EK-50, Web MIDI, partituras y canciones), rigen de forma prioritaria las reglas de oro y arquitectura establecidas en `CURSO_MUSICA/AGENTS.md` y `CURSO_MUSICA/GEMINI.md`:
   - Cero intervención manual del usuario en el teclado Korg EK-50 (todo automatizado por Web MIDI).
