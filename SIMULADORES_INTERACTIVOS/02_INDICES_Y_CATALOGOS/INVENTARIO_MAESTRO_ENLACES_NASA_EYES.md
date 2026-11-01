@@ -75,11 +75,12 @@
   - Sistema Solar Global: `https://eyes.nasa.gov/apps/solar-system/#/home`
 - **Nota Telescopio Roman:** El observatorio insignia de gran campo de la NASA (lanzamiento 2027) con espejo de 2,4 m idéntico al del Hubble pero con un campo de visión 100 veces mayor para cartografiar energía oscura y exoplanetas en L2. Sustituye al Hubble en el Bloque 2 con modelo oficial 3D verificado en NASA Eyes. Barra inferior unificada a 2 botones (Objetivo principal + Sistema Solar Global).
 
-#### Sesión 10 [COD-010]: Venus: El Infierno Volcánico
+#### Sesión 10 [ESPACIO-010]: Venus: El Infierno Volcánico
 - **URL Embed Principal:** `https://eyes.nasa.gov/apps/solar-system/#/venus?embed=true`
-- **Sub-enlaces de Salto Rápido:**
-  - Sonda Magallanes (Radar): `https://eyes.nasa.gov/apps/solar-system/#/sc_magellan`
+- **Sub-enlaces de Salto Rápido (Comprobados):**
+  - Sonda Magallanes (en órbita de Venus, 1991): `https://eyes.nasa.gov/apps/solar-system/#/sc_magellan?time=1991-01-01T12:00:00.000+00:00`
   - Sistema Solar Global: `https://eyes.nasa.gov/apps/solar-system/#/home`
+- **Nota Magallanes y Atmósfera:** En luz visible real, Venus aparece como un globo liso amarillento debido a su densa capa de nubes de ácido sulfúrico. Para la sonda Magallanes, se requiere fijar la marca temporal en 1991 (`time=1991-01-01...`) para situarla en su órbita operativa de cartografía por radar alrededor de Venus; sin dicho parámetro, NASA Eyes la posiciona en su fecha de lanzamiento (mayo de 1989) recién desacoplada del transbordador espacial Atlantis en órbita terrestre (Tierra de fondo).
 
 ---
 
