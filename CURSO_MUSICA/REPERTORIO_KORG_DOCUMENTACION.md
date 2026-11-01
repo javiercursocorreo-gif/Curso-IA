@@ -496,11 +496,10 @@ Esta sección recopila los descubrimientos críticos de ingeniería realizados d
   1. *🎻 1. STS Strings & Pad:* Cuerdas orquestales románticas en Upper 1 (String Ensemble 1, PC 48) a volumen 126 con Cutoff abierto y Warm Pad en Upper 2 (PC 89).
   2. *🎻 2. The Strings (KbdSet 61):* Gran masa de cuerdas sinfónicas que enciende Upper 1 y 2 con coro en Lower.
   3. *🎹 3. Grand Piano 011 & Strings:* Capa dual acústica con Grand Piano 011 en Upper 1 y Cuerdas en Upper 2.
-* **Integración Visual de Partitura (2 Hojas PNG de Alta Resolución):**
-  - Cero partituras incrustadas de MuseScore (eliminados iframes externos).
-  - Visor nativo táctil de 2 hojas para `CANCIONES PDF/I Can't help falling in love wtih you 1.png` y `2.png` con pestañas instantáneas `[ 📄 Hoja 1 ]` y `[ 📄 Hoja 2 ]`.
-  - Modo Pantalla Completa Total con HUD flotante de botones táctiles 1, 2 y 3.
-  - Enlace directo oficial a MuseScore Web: `https://musescore.com/user/27886870/scores/5762856`.
+* **Integración Visual de Partitura (Exclusiva en Modo Pantalla Completa):**
+  - Cero partituras incrustadas en el cuerpo de la ficha principal (eliminado todo recuadro inline para una ficha 100% limpia y ligera).
+  - La visualización de la partitura reside exclusivamente en el **Modo Pantalla Completa Total** con selector táctil para las 2 hojas PNG (`[ 📄 Hoja 1 ]` y `[ 📄 Hoja 2 ]`) y HUD flotante de botones táctiles 1, 2 y 3.
+  - Enlace directo oficial a MuseScore Web en la cabecera: `https://musescore.com/user/27886870/scores/5762856`.
 * **Estructura Armónica Canónica:**
   - Estrofa: C ➔ Em ➔ Am ➔ F ➔ C ➔ G ➔ F ➔ G ➔ Am ➔ F ➔ C ➔ G ➔ C
   - Puente: Em ➔ B7 ➔ Em ➔ B7 ➔ Em ➔ B7 ➔ A7 ➔ Dm ➔ G ➔ C ➔ Em ➔ Am ➔ F ➔ C ➔ G ➔ F ➔ G ➔ Am ➔ F ➔ C ➔ G ➔ C
