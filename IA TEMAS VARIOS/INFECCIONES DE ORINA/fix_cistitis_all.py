@@ -4,18 +4,18 @@
 fix_cistitis_all.py
 Corrige con máxima precisión los dos libros Excel y el informe PDF:
 1. 'Seguimiento cistitis resumen.xlsx':
-   - Pauta de Cefixima actualizada a 10 DÍAS (en vez de 7).
+   - Pauta de Cefixima: 10 DÍAS EN TOTAL (3 días previos iniciados el 28/10 + 7 días adicionales pautados por el Dr. Membrillo el 31/10).
    - Línea 37: Columnas C y D combinadas (C37:D37) con 'Furantoina 50 mg. (PROFILAXIS) . Fin 31/3'.
-   - Línea 31: Ajuste de texto (wrap_text=True) y altura generosa (60pt) para que se lea todo íntegro.
+   - Línea 31: Ajuste de texto (wrap_text=True) y altura generosa (65pt) para que se lea todo íntegro.
    - Línea 43: Justificación a la IZQUIERDA en 'PRUEBAS REALIZADAS'.
    - Fechas nativas en columna A con applyNumberFormat=1 en styles.xml para visualización perfecta en Excel.
    - Tipografía Calibri 16pt en todas las celdas de datos con recuadros completos.
 2. 'Seguimiento cistitis.xlsx':
-   - Cefixima actualizada a 10 DÍAS.
+   - Cefixima: 10 días en total (3 previos + 7 adicionales).
    - Fechas nativas DD/MM/YYYY con applyNumberFormat=1.
    - Eliminación de filas residuales vacías al final.
 3. 'Infecciones de orina.pdf':
-   - Actualización de la pauta de Cefixima a 10 días y recompilación con ReportLab.
+   - Actualización de la pauta exacta de Cefixima (10 días en total: 3 previos + 7 adicionales) y recompilación con ReportLab.
 """
 
 import os
@@ -50,7 +50,6 @@ def enforce_apply_number_format(xlsx_path):
             content = zin.read(item.filename)
             if item.filename == 'xl/styles.xml':
                 tree = ET.fromstring(content)
-                # Buscar cellXfs
                 for cell_xfs in tree.iter('{http://schemas.openxmlformats.org/spreadsheetml/2006/main}cellXfs'):
                     for xf in cell_xfs.iter('{http://schemas.openxmlformats.org/spreadsheetml/2006/main}xf'):
                         num_fmt = xf.attrib.get('numFmtId', '0')
@@ -80,19 +79,18 @@ def update_resumen():
     border_col_f = Border(left=thin, right=thick, top=thin, bottom=thin)
     border_year = Border(left=thick, right=thick, top=thick, bottom=thick)
     
-    # 1. Ajustar Línea 41 (28/10/2026): Cefixima a 10 DÍAS (no 7)
+    # 1. Ajustar Línea 41 (28/10/2026): Cefixima 10 DÍAS (3 previos + 7 adicionales)
     ws.cell(row=41, column=4, value="10 días")
     ws.cell(row=41, column=4).alignment = Alignment(horizontal="center", vertical="center")
     ws.cell(row=41, column=4).font = font_data
     
-    com_41 = "Segundo episodio. Uróloga receta Cefixima 10 días. Eco urológica Virgen del Mar. Cultivo cambia a E. Coli sensible Ceftazidima. Dr. Membrillo ratifica Cefixima 10 días."
+    com_41 = "Segundo episodio. Uróloga receta Cefixima (28/10). Llevaba 3 días tomándola al salir cultivo E. Coli; Dr. Membrillo pauta completar 7 días más (10 días en total). Eco urológica Virgen del Mar."
     ws.cell(row=41, column=6, value=com_41)
     ws.cell(row=41, column=6).alignment = Alignment(horizontal="left", vertical="center", wrap_text=True)
     ws.cell(row=41, column=6).font = font_data
     ws.row_dimensions[41].height = 55
     
     # 2. Ajustar Línea 37: Columnas C y D combinadas (C37:D37)
-    # Primero descombinar si ya estuviera para evitar conflictos
     for rng in list(ws.merged_cells.ranges):
         if "C37" in str(rng) or "D37" in str(rng):
             ws.unmerge_cells(str(rng))
@@ -136,8 +134,7 @@ def update_resumen():
     ws.cell(row=43, column=6).border = Border(right=thick, top=thin, bottom=thin)
     ws.row_dimensions[43].height = 32
 
-    # 5. Asegurar formato de fecha 'd-m-yyyy' en todas las celdas de fecha de la columna A
-    # Fechas de episodios
+    # 5. Formato de fecha nativo en toda la columna A
     fechas_dict = {
         4: datetime.date(2013, 7, 1),
         7: datetime.date(2014, 1, 1),
@@ -200,7 +197,7 @@ def update_detalle():
             cell_a.number_format = 'DD/MM/YYYY'
             cell_a.alignment = Alignment(horizontal="center", vertical="center")
             
-    # 2. Re-escribir con total pulcritud las filas de Octubre 2026 (61 a 64) con Cefixima 10 DÍAS
+    # 2. Filas 61 a 64 con la explicación exacta de los 10 días (3 previos + 7 adicionales)
     registros = [
         {
             "fecha": datetime.date(2026, 10, 14),
@@ -210,7 +207,7 @@ def update_detalle():
             "urgencias": "si. Hospital La Moraleja (Dra. García Ron)",
             "resultados": "Sistemático de orina positivo (pH 8.5, Nitritos +, Leucocitos 3+, piuria, bacteriuria). Se encarga cultivo",
             "tiras": "si",
-            "medicacion": "Furantoina por petición nuestra (en urgencias querían Cefixima)",
+            "medicacion": "Furantoina por petición nuestra (en urgencias querían recetar Cefixima)",
             "se_pasa": "mejora en 3-4 días",
             "obs": "Escribimos por email al Dr. Membrillo (Medicina Interna) que lleva el seguimiento de cistitis de repetición. Dice que OK y que le escribamos cuando esté el cultivo."
         },
@@ -234,9 +231,9 @@ def update_detalle():
             "urgencias": "si. Urgencias Hosp. La Moraleja (Dr. Díaz Urquizo) + Consulta Uróloga de guardia",
             "resultados": "Analítica de urgencias positiva. Se encarga nuevo cultivo. Ecografía urológica realizada ese mismo día en Hosp. Virgen del Mar (a la espera de resultado)",
             "tiras": "si",
-            "medicacion": "Cefixima 10 días prescrita por la Uróloga",
-            "se_pasa": "10 días",
-            "obs": "En urgencias encontramos hueco con una uróloga presencial y subimos a consulta. Receta Cefixima 10 días y pide ECO urológica. Escribimos al Dr. Membrillo informando del nuevo episodio; nos pide avisarle al salir el cultivo."
+            "medicacion": "Cefixima prescrita por la Uróloga (inicio de toma el 28/10)",
+            "se_pasa": "en curso",
+            "obs": "En urgencias encontramos hueco con una uróloga presencial y subimos a consulta. Receta Cefixima y pide ECO urológica. Escribimos al Dr. Membrillo informando del nuevo episodio; nos pide avisarle al salir el cultivo."
         },
         {
             "fecha": datetime.date(2026, 10, 31),
@@ -246,13 +243,12 @@ def update_detalle():
             "urgencias": "no",
             "resultados": "Cultivo positivo: Cambio de bacteria a Escherichia coli (BLEE negativo). Sensible a Ceftazidima (≤0.12), Cefotaxima y Cefuroxima (4.0). Resistente a Ciprofloxacino (≥4.0), Septrin y Augmentine",
             "tiras": "no",
-            "medicacion": "Cefixima (completar 10 días en total)",
+            "medicacion": "Cefixima 10 días en total (3 días previos desde el 28/10 + 7 adicionales indicados por Dr. Membrillo)",
             "se_pasa": "10 días",
-            "obs": "Enviamos antibiograma al Dr. Membrillo. Contesta: «Tranquila. Si es sensible a ceftazidima, es sensible a cefuroxima. Completamos 10 días de tratamiento con la cefixima desde que empezaste, y luego escríbame contándome si queda algún síntoma una semana tras terminar el tratamiento»."
+            "obs": "Enviamos antibiograma al Dr. Membrillo. Ya llevaba 3 días tomando Cefixima. Contesta: «Tranquila. Si es sensible a ceftazidima, es sensible a cefuroxima. Completamos 7 días de tratamiento con la cefixima desde que empezaste [es decir, 7 adicionales, completando 10 días en total], y luego escríbame contándome si queda algún síntoma una semana tras terminar el tratamiento»."
         }
     ]
     
-    # Escribir filas 61 a 64
     for idx, reg in enumerate(registros, start=61):
         c1 = ws.cell(row=idx, column=1, value=reg["fecha"])
         c2 = ws.cell(row=idx, column=2, value=reg["causa"])
@@ -274,9 +270,8 @@ def update_detalle():
             cell.border = box_border
             if col != 1:
                 cell.alignment = Alignment(vertical="center", wrap_text=True)
-        ws.row_dimensions[idx].height = 45
+        ws.row_dimensions[idx].height = 50
 
-    # 3. Limpiar y eliminar filas residuales posteriores a la 64
     if ws.max_row > 64:
         for r in range(65, ws.max_row + 1):
             for c in range(1, 12):
@@ -290,26 +285,27 @@ def update_detalle():
 
 
 def update_pdf():
-    print(f"--> [3/3] Actualizando pauta a 10 días en el informe PDF...")
-    # Leer build_infecciones_orina_pdf.py y actualizar '7 días' a '10 días' en el contexto de Cefixima
+    print(f"--> [3/3] Actualizando pauta a 10 días totales en el informe PDF...")
     with open(PDF_SCRIPT, 'r', encoding='utf-8') as f:
         code = f.read()
         
-    code = code.replace("Pauta prescrita por el urólogo (7 días).", "Pauta prescrita por el urólogo (10 días).")
-    code = code.replace("completar 7 días con la cefixima", "completar 10 días con la cefixima")
-    code = code.replace("completar 7 días y evaluar", "completar 10 días y evaluar")
-    code = code.replace("Pauta de 7 días activa", "Pauta de 10 días activa")
-    code = code.replace("7 días completos de Cefixima", "10 días completos de Cefixima")
-    code = code.replace("Completamos 7 días de tratamiento con la cefixima", "Completamos 10 días de tratamiento con la cefixima")
+    code = code.replace("Pauta prescrita por el urólogo (7 días).", "Pauta de 10 días en total (3 previos iniciados en urgencias + 7 adicionales pautados por el Dr. Membrillo).")
+    code = code.replace("Pauta prescrita por el urólogo (10 días).", "Pauta de 10 días en total (3 previos iniciados en urgencias + 7 adicionales pautados por el Dr. Membrillo).")
+    code = code.replace("completar 7 días con la cefixima", "completar 10 días en total con la cefixima (3 previos + 7 adicionales)")
+    code = code.replace("completar 10 días con la cefixima", "completar 10 días en total con la cefixima (3 previos + 7 adicionales)")
+    code = code.replace("completar 7 días y evaluar", "completar 10 días en total y evaluar")
+    code = code.replace("Pauta de 7 días activa", "Pauta de 10 días activa (3 previos + 7 post-cultivo)")
+    code = code.replace("Pauta de 10 días activa", "Pauta de 10 días activa (3 previos + 7 post-cultivo)")
+    code = code.replace("7 días completos de Cefixima", "10 días completos de Cefixima (3 previos + 7 adicionales)")
+    code = code.replace("10 días completos de Cefixima", "10 días completos de Cefixima (3 previos + 7 adicionales)")
     
     with open(PDF_SCRIPT, 'w', encoding='utf-8') as f:
         f.write(code)
         
-    print(f"  ✓ Script {os.path.basename(PDF_SCRIPT)} actualizado a pauta de 10 días.")
+    print(f"  ✓ Script {os.path.basename(PDF_SCRIPT)} actualizado con la aclaración exacta de los 10 días.")
 
 if __name__ == '__main__':
     update_resumen()
     update_detalle()
     update_pdf()
-    print("🎉 Proceso finalizado: Todas las correcciones de formato, fechas y duración aplicadas con éxito.")
-
+    print("🎉 Proceso finalizado: Pauta de 10 días (3 previos + 7 adicionales) y formatos 100% sincronizados.")

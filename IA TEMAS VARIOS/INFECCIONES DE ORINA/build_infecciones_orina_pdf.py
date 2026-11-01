@@ -230,7 +230,7 @@ def build_pdf(output_path=PDF_PATH):
             Paragraph("<font color='#15803D'><b>SENSIBLE</b></font>", table_cell),
             Paragraph("Subrogada", table_cell),
             Paragraph("Oral", table_cell),
-            Paragraph("<b>Pauta prescrita por el urólogo (10 días).</b> Sensible por equivalencia directa con Ceftazidima / Cefotaxima de 3.ª gen.", table_cell)
+            Paragraph("<b>Pauta de 10 días en total (3 previos iniciados en urgencias + 7 adicionales pautados por el Dr. Membrillo).</b> Sensible por equivalencia directa con Ceftazidima / Cefotaxima de 3.ª gen.", table_cell)
         ],
         [
             Paragraph("Cefuroxima axetil (orina)", table_cell_bold),
@@ -464,7 +464,7 @@ def build_pdf(output_path=PDF_PATH):
         ],
         [
             Paragraph("<b>Cefalosporinas Orales</b><br/>(Cefixima / Cefuroxima)", table_cell_bold),
-            Paragraph("<font color='#15803D'><b>SÍ (Sensible)</b></font><br/>Pauta de 10 días activa", table_cell),
+            Paragraph("<font color='#15803D'><b>SÍ (Sensible)</b></font><br/>Pauta de 10 días activa (3 previos + 7 post-cultivo)", table_cell),
             Paragraph("<font color='#15803D'><b>SÍ (Sensible)</b></font><br/>Cefuroxima sensible", table_cell),
             Paragraph("<b>FÁRMACO REY:</b> Eficaz y activo en ambos cultivos. Excelente opción oral con cobertura de espectro seguro sin resistencias.", table_cell)
         ],
@@ -517,7 +517,7 @@ def build_pdf(output_path=PDF_PATH):
     # SECCIÓN 5: Plan de Acción y Signos de Alarma
     alarm_html = (
         "<b>Plan Terapéutico en Curso, Recomendaciones y Signos de Alarma:</b><br/>"
-        "• <b>Cumplimiento Estricto de la Pauta:</b> Completar los <b>10 días completos de Cefixima</b> pautados por el urólogo, sin suspender el fármaco aunque desaparezcan las molestias urinarias, para erradicar cualquier reservorio vesical.<br/>"
+        "• <b>Cumplimiento Estricto de la Pauta:</b> Completar los <b>10 días completos de Cefixima (3 previos + 7 adicionales)</b> pautados por el urólogo, sin suspender el fármaco aunque desaparezcan las molestias urinarias, para erradicar cualquier reservorio vesical.<br/>"
         "• <b>Seguimiento Post-Tratamiento:</b> Contactar con el urólogo una semana tras finalizar el ciclo antibiótico, informando de la ausencia de síntomas o de cualquier molestia residual.<br/>"
         "• <b>Signos de Alarma de Infección Alta (Pielonefritis):</b> Si aparece <b>fiebre (> 38 ºC)</b>, dolor en la zona lumbar/espalda baja, escalofríos intensos, náuseas o vómitos, se debe acudir de inmediato a Urgencias Médicas.<br/>"
         "• <b>Hidratación y Soporte de Microbiota:</b> Mantener una ingesta abundante de líquidos (1,5 a 2 litros diarios de agua) para favorecer el lavado vesical. Al finalizar el ciclo antibiótico, se recomienda restaurar la flora vaginal y vesical mediante probióticos específicos ricos en <i>Lactobacillus</i>.<br/>"
