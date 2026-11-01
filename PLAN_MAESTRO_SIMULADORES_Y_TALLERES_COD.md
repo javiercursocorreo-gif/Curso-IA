@@ -14,8 +14,8 @@
 | Lote / Chat | Sesiones | Contenido Principal (NASA Eyes Oficial) | Estado |
 | :--- | :---: | :--- | :---: |
 | **Lote 1** | **03 a 07** | Sistema Solar en Vivo, Tierra & Clima, ISS Tripulada, Luna & Artemisa, El Sol & Sonda Parker | ✅ **COMPLETADO & MAPAS ACTUALIZADOS** |
-| **Lote 2** | **08 a 12** | Mercurio & BepiColombo, Telescopio Hubble, Venus Infierno, Marte Rojo, Curiosity & Perseverance | ⏳ **SIGUIENTE LOTE** |
-| **Lote 3** | **13 a 17** | Ingenuity & Lunas Fobos/Deimos, James Webb (JWST), Deep Space Network (DSN Madrid), Radar Asteroides NEOs, Ceres & Vesta | ⏳ **PENDIENTE** |
+| **Lote 2** | **08 a 12** | Mercurio & BepiColombo, Telescopio Hubble, Venus Infierno, Marte Rojo, Curiosity & Perseverance | ✅ **COMPLETADO & MAPAS ACTUALIZADOS** |
+| **Lote 3** | **13 a 17** | Ingenuity & Lunas Fobos/Deimos, James Webb (JWST), Deep Space Network (DSN Madrid), Radar Asteroides NEOs, Ceres & Vesta | ⏳ **SIGUIENTE LOTE** |
 | **Lote 4** | **18 a 22** | Defensa Planetaria DART, Psyche Mundo de Metal, Cometa Rosetta & Halley, Júpiter & Juno, Europa Océano Submarino | ⏳ **PENDIENTE** |
 | **Lote 5** | **23 a 27** | Ío Volcánico de Azufre, Ganimedes & Calisto (JUICE), Observatorios Chandra & Roman, Saturno & Cassini, Titán & Dragonfly | ⏳ **PENDIENTE** |
 | **Lote 6** | **28 a 32** | Encélado Géiseres, Mimas & Jápeto Bipolares, Voyager 1 & 2 Interestelar, Urano Inclinado & Miranda, Neptuno Vientos | ⏳ **PENDIENTE** |
@@ -42,14 +42,28 @@
 
 ---
 
-### 🟢 HERENCIA LOTE 2 (DÍA 2 / CHAT 2) • SESIONES 08 A 12 (5 SESIONES NASA EYES)
-*Copia el siguiente bloque completo y pégalo en el nuevo chat para iniciar el Lote 2:*
+### 🟢 HERENCIA LOTE 2 (DÍA 2 / CHAT 2) • SESIONES 08 A 12 (5 SESIONES NASA EYES) [EJECUTADO]
 
 ```markdown
-# HERENCIA PARA EL NUEVO CHAT: LOTE 2 NASA EYES [ESPACIO-008 A ESPACIO-012]
+# HERENCIA LOTE 2 NASA EYES [ESPACIO-008 A ESPACIO-012] • EJECUTADO CON ÉXITO
+1. Sesión 08 [ESPACIO-008]: Mercurio y BepiColombo (SIMULADOR_MERCURIO_BEPICOLOMBO_3D.html)
+2. Sesión 09 [ESPACIO-009]: Telescopio Espacial Hubble (SIMULADOR_TELESCOPIO_HUBBLE_3D.html)
+3. Sesión 10 [ESPACIO-010]: Venus: El Infierno Volcánico (SIMULADOR_VENUS_INFIERNO_3D.html)
+4. Sesión 11 [ESPACIO-011]: Marte: Geografía y Misterios (SIMULADOR_MARTE_GEOGRAFIA_3D.html)
+5. Sesión 12 [ESPACIO-012]: Curiosity y Perseverance en Marte (SIMULADOR_ROVERS_MARTE_CURIOSITY_PERSEVERANCE_3D.html)
+*Estado: 100% blindado con tarjetas HUD autoportantes, mapas MAPA_SESION_08 a 12 actualizados con botón único a pantalla completa, índice maestro actualizado y desplegado a GitHub Pages.*
+```
+
+---
+
+### 🟢 HERENCIA LOTE 3 (DÍA 3 / CHAT 3) • SESIONES 13 A 17 (5 SESIONES NASA EYES)
+*Copia el siguiente bloque completo y pégalo en el nuevo chat para iniciar el Lote 3:*
+
+```markdown
+# HERENCIA PARA EL NUEVO CHAT: LOTE 3 NASA EYES [ESPACIO-013 A ESPACIO-017]
 
 ### 1. OBJETIVO DEL TURNO
-Construir y blindar los 5 simuladores científicos 3D oficiales basados en NASA Eyes correspondientes a las sesiones 08 a 12 y actualizar sus respectivos mapas de sesión para Classroom:
+Construir y blindar los 5 simuladores científicos 3D oficiales basados en NASA Eyes correspondientes a las sesiones 13 a 17 y actualizar sus respectivos mapas de sesión para Classroom:
 - Cero dibujos inventados y cero mallas toscas.
 - Formato oficial: Visor interactivo en pantalla completa con incrustación oficial de NASA Eyes + tarjeta flotante HUD translúcida con botón [Ocultar / Mostrar info] + botones de navegación rápida a lunas y naves asociadas.
 - ESTÁNDAR PEDAGÓGICO AUTOPORTANTE: Cero necesidad de PDFs externos. La propia tarjeta flotante HUD del simulador contiene toda la guía didáctica:
@@ -57,32 +71,34 @@ Construir y blindar los 5 simuladores científicos 3D oficiales basados en NASA 
   2. Guía de controles de navegación 360° y zoom continuo.
   3. Cuadro de diálogo interactivo con 3 preguntas clave para que los alumnos conversen con Gemini en clase mientras observan el modelo en pantalla.
   4. Acreditación rigurosa de fuentes científicas oficiales (NASA/JPL/ESA/JAXA).
-- ACTUALIZACIÓN DE MAPAS DE SESIÓN (MAPA_SESION_08 A 12):
+- ACTUALIZACIÓN DE MAPAS DE SESIÓN (MAPA_SESION_13 A 17):
   En cada `MAPA_SESION_XX.html`, actualizar la tarjeta #10 con la etiqueta `[ESPACIO]`, título de la sesión y botón directo de lanzamiento al simulador HTML 3D, eliminando enlaces a talleres de código o PDFs antiguos.
+- ACTUALIZACIÓN DEL ÍNDICE MAESTRO (INDICE_MAESTRO_SIMULACIONES_INTERACTIVAS_ESPACIO_3D.html):
+  Enlazar los 5 botones de lanzamiento a sus simuladores locales.
 
-### 2. CATÁLOGO OFICIAL DEL LOTE 2 (SESIONES 08 A 12)
+### 2. CATÁLOGO OFICIAL DEL LOTE 3 (SESIONES 13 A 17)
 *Nota: Consulta INVENTARIO_MAESTRO_ENLACES_NASA_EYES.md donde tienes todas las URLs, parámetros y saltos rápidos exactos.*
-1. **Sesión 08 [ESPACIO-008]:** Mercurio y la Misión BepiColombo
-   - URL Embed: `https://eyes.nasa.gov/apps/solar-system/#/mercury?embed=true`
-   - Sub-enlaces de salto rápido: BepiColombo (`#/sc_bepicolombo`), MESSENGER (`#/sc_messenger`), Sol (`#/sun`), Sistema Solar (`#/home`).
-2. **Sesión 09 [ESPACIO-009]:** Telescopio Espacial Hubble
-   - URL Embed: `https://eyes.nasa.gov/apps/solar-system/#/sc_hubble?embed=true`
-   - Sub-enlaces de salto rápido: Telescopio James Webb (`#/sc_jwst`), Estación Espacial ISS (`#/sc_iss`), Tierra LEO (`#/earth`), Sistema Solar (`#/home`).
-3. **Sesión 10 [ESPACIO-010]:** Venus: El Infierno Volcánico y Efecto Invernadero Desbocado
-   - URL Embed: `https://eyes.nasa.gov/apps/solar-system/#/venus?embed=true`
-   - Sub-enlaces de salto rápido: Sonda Magallanes Radar (`#/sc_magellan`), Misión Futura VERITAS (`#/sc_veritas`), Tierra (`#/earth`), Sistema Solar (`#/home`).
-4. **Sesión 11 [ESPACIO-011]:** Marte: Geografía, Cañones Gigantes y Misterios
-   - URL Embed: `https://eyes.nasa.gov/apps/solar-system/#/mars?embed=true`
-   - Sub-enlaces de salto rápido: Mars Reconnaissance Orbiter (`#/sc_mro`), Sonda MAVEN (`#/sc_maven`), Lunas Fobos/Deimos (`#/phobos`), Sistema Solar (`#/home`).
-5. **Sesión 12 [ESPACIO-012]:** Curiosity y Perseverance: La Flota Robótica en Marte
-   - URL Embed: `https://eyes.nasa.gov/apps/solar-system/#/sc_perseverance?embed=true`
-   - Sub-enlaces de salto rápido: Rover Curiosity (`#/sc_curiosity`), Globo de Marte (`#/mars`), Helicóptero Ingenuity (`#/sc_ingenuity`), Sistema Solar (`#/home`).
+1. **Sesión 13 [ESPACIO-013]:** Ingenuity y las Lunas de Marte (Fobos y Deimos)
+   - URL Embed: `https://eyes.nasa.gov/apps/solar-system/#/sc_ingenuity?embed=true`
+   - Sub-enlaces de salto rápido: Luna Fobos (`#/phobos`), Luna Deimos (`#/deimos`), Rover Perseverance (`#/sc_perseverance`), Globo de Marte (`#/mars`).
+2. **Sesión 14 [ESPACIO-014]:** Telescopio Espacial James Webb (JWST)
+   - URL Embed: `https://eyes.nasa.gov/apps/solar-system/#/sc_jwst?embed=true`
+   - Sub-enlaces de salto rápido: Telescopio Hubble (`#/sc_hubble`), Telescopio Roman (`#/sc_roman`), Punto L2 Sol-Tierra (`#/earth`), Sistema Solar (`#/home`).
+3. **Sesión 15 [ESPACIO-015]:** Deep Space Network (DSN Madrid, Goldstone, Canberra)
+   - URL Embed: `https://eyes.nasa.gov/apps/dsn-now/dsn.html`
+   - Sub-enlaces de salto rápido: Sonda Voyager 1 (`#/sc_voyager_1`), New Horizons (`#/sc_new_horizons`), Parker Solar Probe (`#/sc_parker_solar_probe`).
+4. **Sesión 16 [ESPACIO-016]:** Radar de Asteroides y Misiones Cercanas a la Tierra (NEOs)
+   - URL Embed: `https://eyes.nasa.gov/apps/asteroids/#/home`
+   - Sub-enlaces de salto rápido: Misión DART (`#/sc_dart`), OSIRIS-REx (`#/sc_osiris_rex`), Asteroide Apofis (`#/apophis`).
+5. **Sesión 17 [ESPACIO-017]:** Ceres y Vesta: Los Reyes del Cinturón de Asteroides
+   - URL Embed: `https://eyes.nasa.gov/apps/solar-system/#/ceres?embed=true`
+   - Sub-enlaces de salto rápido: Protoplaneta Vesta (`#/vesta`), Sonda Dawn (`#/sc_dawn`), Júpiter (`#/jupiter`), Sistema Solar (`#/home`).
 
 ### 3. REGLAS TÉCNICAS OBLIGATORIAS
-1. **Documento de Enlaces Centralizado:** Consultar `INVENTARIO_MAESTRO_ENLACES_NASA_EYES.md` (o `INDICE_MAESTRO_SIMULACIONES_INTERACTIVAS_ESPACIO_3D.html`).
+1. **Documento de Enlaces Centralizado:** Consultar `INVENTARIO_MAESTRO_ENLACES_NASA_EYES.md`.
 2. **Doble Despliegue de Simuladores HTML y Actualización de Mapas:**
    - Crear/actualizar en `SIMULADORES_INTERACTIVOS/01_SIMULADORES/`
-   - Copiar a `CLASES/EXPORTACION_FICHAS_CLASSROOM_PDF/100. [SESSIONS] TERNAS_LISTAS_PARA_CLASSROOM/0X_Sesion/`
+   - Copiar a `CLASES/EXPORTACION_FICHAS_CLASSROOM_PDF/100. [SESSIONS] TERNAS_LISTAS_PARA_CLASSROOM/XX_Sesion/`
    - Actualizar el recurso #10 en `MAPA_SESION_XX.html` de cada sesión.
 3. **Sin Fichas PDF Externas:** Todo el contenido didáctico va integrado en el propio HUD del simulador HTML.
 4. **Modo 100% Silencioso y Cero Submits:** Trabajo desatendido de principio a fin, sin preguntas intermedias ni ventanas emergentes.
@@ -90,11 +106,6 @@ Construir y blindar los 5 simuladores científicos 3D oficiales basados en NASA 
 
 INSTRUCCIÓN: Procede directamente en silencio de principio a fin.
 ```
-
----
-
-### 🟢 HERENCIA LOTE 3 (DÍA 3 / CHAT 3) • SESIONES 13 A 17 (5 SESIONES NASA EYES)
-*Sesiones 13 a 17: Ingenuity & Lunas Fobos/Deimos, James Webb (JWST), Deep Space Network (DSN Madrid), Radar Asteroides NEOs, Ceres & Vesta.*
 
 ---
 
