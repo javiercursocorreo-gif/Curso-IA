@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sesión 14 • NASA Eyes: Deep Space Network (DSN) y Sondas Interestelares [ESPACIO-014]</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-base: #02040a;
+            --bg-panel: rgba(8, 14, 26, 0.94);
+            --cyan-accent: #38bdf8;
+            --blue-glow: #0284c7;
+            --text-main: #f8fafc;
+            --text-sub: #cbd5e1;
+            --font-title: 'Cinzel', serif;
+            --font-sans: 'Inter', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+        html, body {
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            font-family: var(--font-sans);
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            font-size: 14px;
+        }
+
+        header {
+            background: linear-gradient(180deg, rgba(8, 14, 26, 0.98) 0%, rgba(8, 14, 26, 0.88) 100%);
+            backdrop-filter: blur(14px);
+            border-bottom: 1px solid rgba(56, 189, 248, 0.35);
+            padding: 9px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+            z-index: 50;
+        }
+
+        .header-title-box { display: flex; align-items: center; gap: 12px; }
+        .badge-code {
+            background: rgba(56, 189, 248, 0.18);
+            color: var(--cyan-accent);
+            border: 1px solid rgba(56, 189, 248, 0.5);
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            font-weight: 800;
+            padding: 4px 10px;
+            border-radius: 8px;
+            letter-spacing: 0.05em;
+        }
+
+        h1 {
+            font-family: var(--font-title);
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-nasa {
+            background: #0b3d91;
+            border: 1px solid rgba(56, 189, 248, 0.4);
+            color: #ffffff;
+            font-size: 0.78rem;
+            font-weight: 700;
+            padding: 5px 12px;
+            border-radius: 6px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+        .btn-nasa:hover {
+            background: #1e40af;
+            border-color: #38bdf8;
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.3);
+        }
+
+        .btn-quick {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: var(--text-main);
+            font-size: 0.78rem;
+            font-weight: 600;
+            padding: 5px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .btn-quick:hover {
+            background: rgba(255, 255, 255, 0.18);
+            border-color: var(--cyan-accent);
+        }
+
+        .iframe-container {
+            flex: 1;
+            position: relative;
+            width: 100%;
+            height: 100%;
+            background: #000;
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: block;
+        }
+
+        .hud-card {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 360px;
+            max-height: calc(100vh - 120px);
+            background: var(--bg-panel);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(56, 189, 248, 0.45);
+            border-radius: 14px;
+            padding: 16px 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 11px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.85);
+            z-index: 1000;
+            pointer-events: auto;
+            overflow-y: auto;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .hud-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 8px;
+        }
+        .hud-badge {
+            font-family: var(--font-mono);
+            font-size: 0.73rem;
+            font-weight: 800;
+            color: var(--cyan-accent);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .hud-close-btn {
+            background: none;
+            border: none;
+            color: #94a3b8;
+            font-size: 0.85rem;
+            cursor: pointer;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+        .hud-close-btn:hover { color: #fff; background: rgba(255,255,255,0.1); }
+
+        .hud-section { display: flex; flex-direction: column; gap: 4px; }
+        .hud-section-title {
+            font-size: 0.76rem;
+            font-weight: 800;
+            color: #ffffff;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .hud-body {
+            color: var(--text-sub);
+            font-size: 0.82rem;
+            line-height: 1.45;
+        }
+        .hud-body b { color: #fff; font-weight: 700; }
+
+        .hud-tips {
+            background: rgba(56, 189, 248, 0.1);
+            border-left: 3px solid var(--cyan-accent);
+            padding: 8px 10px;
+            border-radius: 0 6px 6px 0;
+            font-size: 0.78rem;
+            color: #cbd5e1;
+            line-height: 1.4;
+        }
+
+        .gemini-box {
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px dashed rgba(56, 189, 248, 0.4);
+            border-radius: 8px;
+            padding: 9px 11px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .gemini-box b { color: #38bdf8; font-size: 0.77rem; text-transform: uppercase; }
+        .gemini-q {
+            background: rgba(0, 0, 0, 0.35);
+            padding: 6px 8px;
+            border-radius: 5px;
+            font-size: 0.78rem;
+            color: #e2e8f0;
+            line-height: 1.35;
+            cursor: text;
+            user-select: text;
+        }
+
+        .hud-footer {
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            padding-top: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.70rem;
+            color: #64748b;
+        }
+
+        .bottom-nav {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+            background: rgba(8, 14, 26, 0.92);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(56, 189, 248, 0.4);
+            border-radius: 9999px;
+            padding: 6px 14px;
+            align-items: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+            z-index: 40;
+            flex-wrap: wrap;
+            justify-content: center;
+            max-width: 95vw;
+        }
+        .bottom-label {
+            font-size: 0.75rem;
+            font-weight: 800;
+            color: var(--cyan-accent);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-right: 4px;
+        }
+        .nav-pill {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            color: var(--text-sub);
+            padding: 5px 12px;
+            border-radius: 9999px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+        .nav-pill:hover, .nav-pill.active {
+            background: rgba(56, 189, 248, 0.25);
+            border-color: var(--cyan-accent);
+            color: #fff;
+            transform: translateY(-1px);
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-title-box">
+            <span class="badge-code">ESPACIO-014</span>
+            <div>
+                <h1>📡 Deep Space Network (DSN) y Sondas Interestelares • NASA Eyes 3D</h1>
+            </div>
+        </div>
+        <div class="header-controls">
+            <a href="https://eyes.nasa.gov/apps/dsn-now/dsn.html" target="_blank" class="btn-nasa">
+                🚀 NASA DSN Now Oficial ↗
+            </a>
+            <button class="btn-quick" id="hudToggleBtn" onclick="toggleHUD()" title="Mostrar u Ocultar Guía">
+                ℹ️ Ocultar Guía
+            </button>
+            <button class="btn-quick" onclick="toggleFullscreen()" title="Pantalla Completa">
+                ⛶ Pantalla Completa
+            </button>
+        </div>
+    </header>
+
+    <div class="iframe-container" id="frameBox">
+        <iframe 
+            id="nasaEyesFrame"
+            src="https://eyes.nasa.gov/apps/dsn-now/dsn.html" 
+            allowfullscreen 
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture">
+        </iframe>
+
+        <!-- Tarjeta Flotante HUD con Información Completa -->
+        <div class="hud-card" id="hudCard">
+            <div class="hud-header">
+                <span class="hud-badge">📡 Telecomunicaciones • NASA JPL / Caltech</span>
+                <button class="hud-close-btn" onclick="toggleHUD()">Ocultar ✕</button>
+            </div>
+            
+            <div class="hud-section">
+                <div class="hud-section-title">📡 Red de Telecomunicaciones en Tiempo Real</div>
+                <div class="hud-body">
+                    <p>La Red del Espacio Profundo (DSN) es la infraestructura que mantiene comunicada a la Tierra con todas las sondas robóticas del sistema solar y el espacio interestelar:</p>
+                    <p>• <b>Tres Complejos a 120° de Longitud:</b> <b>Robledo de Chavela (Madrid, España)</b>, <b>Goldstone (California, EE.UU.)</b> y <b>Canberra (Australia)</b> garantizan enlace continuo 24 horas al día mientras la Tierra rota.</p>
+                    <p>• <b>Antenas Gigantes de 70 Metros:</b> Capaces de captar señales de radio increíblemente tenues (menos de una milmillonésima de vatio) procedentes de la <b>Voyager 1</b> a más de 24.000 millones de km de distancia en el medio interestelar, con un retraso superior a 44 horas luz entre ida y vuelta.</p>
+                </div>
+            </div>
+
+            <div class="hud-section">
+                <div class="hud-section-title">🎮 Controles y Telemetría en Vivo</div>
+                <div class="hud-tips">
+                    • <b>Panel DSN Now en Directo:</b> Observa qué antena de Madrid, Goldstone o Canberra está activa ahora mismo transmitiendo (rojo subida) o recibiendo datos (verde bajada).<br/>
+                    • <b>Inspección de Naves:</b> Pincha en cualquier antena para ver la nave con la que se comunica, la banda de radiofrecuencia (S, X, Ka) y la velocidad de datos en kbps.<br/>
+                    • <b>Sondas en 3D:</b> Usa los botones inferiores para saltar a los modelos 3D orbitales de <b>Voyager 1</b> y <b>New Horizons</b>.<br/>
+                    • <b>Sistema Solar Global:</b> Abre la vista planetaria para ver la posición física de las naves en el espacio profundo.
+                </div>
+            </div>
+
+            <div class="hud-section">
+                <div class="hud-section-title">💬 Preguntas para Dialogar con Gemini en Clase</div>
+                <div class="gemini-box">
+                    <b>Copia y conversa con Gemini mientras miras el modelo:</b>
+                    <div class="gemini-q">1. «Gemini, ¿cómo funciona la Red del Espacio Profundo (DSN) y por qué las tres estaciones principales están separadas 120° en Madrid (España), Goldstone (EE.UU.) y Canberra (Australia)?»</div>
+                    <div class="gemini-q">2. «Gemini, la sonda Voyager 1 se encuentra en el espacio interestelar a más de 24.000 millones de km de la Tierra. ¿Cuántas horas tarda su señal en llegar a la antena de Robledo de Chavela?»</div>
+                    <div class="gemini-q">3. «Gemini, ¿cómo consiguen las antenas parabólicas de 70 metros amplificar señales de radio espaciales que llegan con una potencia de apenas una fracción de attovatio?»</div>
+                </div>
+            </div>
+
+            <div class="hud-footer">
+                <span>Fuente: NASA JPL • Deep Space Network</span>
+                <span>Auditado 100% Sin dibujos inventados</span>
+            </div>
+        </div>
+
+        <!-- Barra Inferior de Navegación Rápida Minimalista -->
+        <div class="bottom-nav">
+            <span class="bottom-label">📡 Espacio Profundo:</span>
+            <button class="nav-pill active" onclick="loadTarget('dsn', this)">📡 Antenas DSN en Vivo</button>
+            <button class="nav-pill" onclick="loadTarget('sc_voyager_1', this)">🛰️ Voyager 1 (Interestelar)</button>
+            <button class="nav-pill" onclick="loadTarget('sc_new_horizons', this)">🛰️ New Horizons (Plutón)</button>
+            <button class="nav-pill" onclick="loadTarget('home', this)">🌌 Sistema Solar Global</button>
+        </div>
+    </div>
+
+    <script>
+        function loadTarget(target, btnElement) {
+            const oldFrame = document.getElementById('nasaEyesFrame');
+            const newFrame = document.createElement('iframe');
+            newFrame.id = 'nasaEyesFrame';
+            newFrame.allowFullscreen = true;
+            newFrame.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture');
+            if (target === 'dsn') {
+                newFrame.src = 'https://eyes.nasa.gov/apps/dsn-now/dsn.html';
+            } else {
+                newFrame.src = `https://eyes.nasa.gov/apps/solar-system/#/${target}?embed=true`;
+            }
+            oldFrame.replaceWith(newFrame);
+            document.querySelectorAll('.nav-pill').forEach(btn => btn.classList.remove('active'));
+            if (btnElement) {
+                btnElement.classList.add('active');
+            }
+        }
+
+        function toggleHUD() {
+            const hud = document.getElementById('hudCard');
+            const btn = document.getElementById('hudToggleBtn');
+            if (hud.style.display === 'none') {
+                hud.style.display = 'flex';
+                btn.textContent = 'ℹ️ Ocultar Guía';
+            } else {
+                hud.style.display = 'none';
+                btn.textContent = 'ℹ️ Mostrar Guía';
+            }
+        }
+
+        function toggleFullscreen() {
+            const box = document.getElementById('frameBox');
+            if (!document.fullscreenElement) {
+                box.requestFullscreen().catch(err => alert(`Pantalla completa: ${err.message}`));
+            } else {
+                document.exitFullscreen();
+            }
+        }
+    </script>
+</body>
+</html>
+
