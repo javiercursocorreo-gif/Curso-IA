@@ -94,14 +94,14 @@
   - Sistema Solar Global: `https://eyes.nasa.gov/apps/solar-system/#/home`
 - **Nota Satélites:** Permite alternar con un clic directo entre el globo 3D de Marte y los dos grandes satélites de investigación científica en órbita marciana: MRO (imágenes de resolución métrica) y MAVEN (dinámica y pérdida atmosférica).
 
-#### Sesión 12 [ESPACIO-012]: Curiosity y Perseverance en Marte
-- **URL Embed Principal:** `https://eyes.nasa.gov/apps/solar-system/#/sc_perseverance?embed=true`
+#### Sesión 12 [ESPACIO-012]: Las Lunas de Marte: Fobos y Deimos
+- **URL Embed Principal:** `https://eyes.nasa.gov/apps/solar-system/#/phobos?embed=true`
 - **Sub-enlaces de Salto Rápido (Comprobados):**
-  - Rover Perseverance: `https://eyes.nasa.gov/apps/solar-system/#/sc_perseverance`
-  - Rover Curiosity: `https://eyes.nasa.gov/apps/solar-system/#/sc_curiosity`
+  - Luna Fobos (Cráter Stickney): `https://eyes.nasa.gov/apps/solar-system/#/phobos`
+  - Luna Deimos (Luna Exterior): `https://eyes.nasa.gov/apps/solar-system/#/deimos`
   - Globo de Marte: `https://eyes.nasa.gov/apps/solar-system/#/mars`
   - Sistema Solar Global: `https://eyes.nasa.gov/apps/solar-system/#/home`
-- **Nota Rovers:** Permite alternar con un clic directo entre los dos grandes rovers nucleares en superficie marciana (Perseverance en Jezero y Curiosity en Gale/Sharp) y la vista global del planeta.
+- **Nota Lunas Marcianas:** Sustituye a los rovers de superficie (que NASA Eyes no renderiza en el motor orbital). Permite examinar los modelos 3D hiperrealistas de los dos asteroides capturados por la gravedad de Marte, destacando el descomunal cráter Stickney de 9 km en Fobos y la comparativa de órbita con Deimos.
 
 #### Sesión 13 [COD-013]: Ingenuity y las Lunas de Marte
 - **URL Embed Principal:** `https://eyes.nasa.gov/apps/solar-system/#/sc_ingenuity?embed=true`
