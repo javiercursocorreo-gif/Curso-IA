@@ -69,9 +69,14 @@
   - Sonda BepiColombo (ESA/JAXA): `https://eyes.nasa.gov/apps/solar-system/#/sc_bepicolombo`
   - Sonda MESSENGER (NASA): `https://eyes.nasa.gov/apps/solar-system/#/sc_messenger`
 
-#### Sesión 09 [COD-009]: Telescopio Espacial Hubble
-- **Estado:** ⚪ No Disponible en NASA Eyes (Eliminado).
-- **Nota Científica:** NASA Eyes no dispone de modelo 3D activo para el Telescopio Hubble (`sc_hubble` no existe en su motor). Por cumplimiento estricto del protocolo de fidelidad científica y la prohibición total de mallas artificiales o sustitutos de terceros, esta simulación se elimina del catálogo y del mapa de sesión.
+#### Sesión 09 [ESPACIO-009]: Telescopio Espacial Nancy Grace Roman
+- **URL Embed Principal:** `https://eyes.nasa.gov/apps/solar-system/#/sc_roman?embed=true`
+- **Sub-enlaces de Salto Rápido:**
+  - Telescopio James Webb (JWST): `https://eyes.nasa.gov/apps/solar-system/#/sc_jwst`
+  - La Tierra y Punto Lagrange L2: `https://eyes.nasa.gov/apps/solar-system/#/earth`
+  - Estación Espacial ISS: `https://eyes.nasa.gov/apps/solar-system/#/sc_iss`
+  - Sistema Solar Global: `https://eyes.nasa.gov/apps/solar-system/#/home`
+- **Nota Telescopio Roman:** El observatorio insignia de gran campo de la NASA (lanzamiento 2027) con espejo de 2,4 m idéntico al del Hubble pero con un campo de visión 100 veces mayor para cartografiar energía oscura y exoplanetas en L2. Sustituye al Hubble en el Bloque 2 con modelo oficial 3D verificado en NASA Eyes.
 
 #### Sesión 10 [COD-010]: Venus: El Infierno Volcánico
 - **URL Embed Principal:** `https://eyes.nasa.gov/apps/solar-system/#/venus?embed=true`
