@@ -70,10 +70,13 @@
   - Sonda MESSENGER (NASA): `https://eyes.nasa.gov/apps/solar-system/#/sc_messenger`
 
 #### Sesión 09 [COD-009]: Telescopio Espacial Hubble
-- **URL Embed Principal:** `https://eyes.nasa.gov/apps/solar-system/#/sc_hubble?embed=true`
+- **URL Embed Principal:** `https://sketchfab.com/models/bdd5161f099c4767bc061df181e9b37c/embed?autostart=1&ui_theme=dark` (Modelo 3D Oficial NASA)
 - **Sub-enlaces de Salto Rápido:**
-  - Telescopio James Webb: `https://eyes.nasa.gov/apps/solar-system/#/sc_jwst`
+  - Telescopio James Webb (JWST): `https://eyes.nasa.gov/apps/solar-system/#/sc_jwst`
   - La Tierra en órbita LEO: `https://eyes.nasa.gov/apps/solar-system/#/earth`
+  - Estación Espacial ISS: `https://eyes.nasa.gov/apps/solar-system/#/sc_iss`
+  - Telescopio Nancy Roman: `https://eyes.nasa.gov/apps/solar-system/#/sc_roman`
+- **Nota Técnica Hubble:** El telescopio Hubble no dispone de ruta propia `sc_hubble` en NASA Eyes Solar System. Se renderiza mediante el modelo 3D oficial de la NASA en alta definición con rotación 360°, compuerta de apertura y zoom, manteniendo botones de salto rápido al James Webb y Tierra en NASA Eyes.
 
 #### Sesión 10 [COD-010]: Venus: El Infierno Volcánico
 - **URL Embed Principal:** `https://eyes.nasa.gov/apps/solar-system/#/venus?embed=true`
