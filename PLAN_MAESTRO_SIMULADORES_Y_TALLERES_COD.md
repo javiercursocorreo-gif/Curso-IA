@@ -47,11 +47,11 @@
 ```markdown
 # HERENCIA LOTE 2 NASA EYES [ESPACIO-008 A ESPACIO-012] • EJECUTADO CON ÉXITO
 1. Sesión 08 [ESPACIO-008]: Mercurio y BepiColombo (SIMULADOR_MERCURIO_BEPICOLOMBO_3D.html)
-2. Sesión 09 [ESPACIO-009]: Telescopio Espacial Hubble (SIMULADOR_TELESCOPIO_HUBBLE_3D.html)
+2. Sesión 09: [ELIMINADO - Telescopio Hubble no disponible en NASA Eyes; cero mallas inventadas]
 3. Sesión 10 [ESPACIO-010]: Venus: El Infierno Volcánico (SIMULADOR_VENUS_INFIERNO_3D.html)
 4. Sesión 11 [ESPACIO-011]: Marte: Geografía y Misterios (SIMULADOR_MARTE_GEOGRAFIA_3D.html)
 5. Sesión 12 [ESPACIO-012]: Curiosity y Perseverance en Marte (SIMULADOR_ROVERS_MARTE_CURIOSITY_PERSEVERANCE_3D.html)
-*Estado: 100% blindado con tarjetas HUD autoportantes, mapas MAPA_SESION_08 a 12 actualizados con botón único a pantalla completa, índice maestro actualizado y desplegado a GitHub Pages.*
+*Estado: 100% blindado con tarjetas HUD autoportantes, mapas MAPA_SESION_08, 10, 11 y 12 con botón único a pantalla completa, Sesión 09 limpia sin sustitutos artificiales, índice maestro actualizado (9 desplegados) y subido a GitHub Pages.*
 ```
 
 ---
