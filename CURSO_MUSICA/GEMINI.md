@@ -161,6 +161,7 @@
   1. *Armadura y Tonalidad:* 1 bemol en Si♭ indica tonalidad canónica de **Fa Mayor (F)**.
   2. *Estilo y Tempo:* **Estilo 042 (6/8 Ballad)** a **70 BPM** para el compás ternario clásico.
   3. *Terna de Cuerdas STS (Web MIDI):* 1. STS Strings & Pad (cuerdas orquestales con brillo y reverb) · 2. The Strings (Keyboard Set 61 con capas de violines y coro en Lower) · 3. Grand Piano 011 & Strings (capa acústica dual). Visor de imagen responsivo y modal a pantalla completa integrado.
-- **Lección 6.40 (Persistencia y Blindaje del Servidor Wi-Fi para iPad - v144):**
-  1. *Inmune a SIGHUP:* Lanzamiento con `nohup python3 -m http.server 8888 --bind 0.0.0.0 --directory "CURSO_MUSICA" > /tmp/korg_server_8888.log 2>&1 &` para que no se apague al cerrar la terminal.
-  2. *Detección de Red y mDNS:* Extracción dinámica de `ipconfig getifaddr en0` y alias Bonjour `$(hostname -s).local` para garantizar acceso instantáneo desde iPad sin importar cambios de IP por DHCP.
+- **Lección 6.40 (Persistencia y Blindaje del Servidor Wi-Fi para iPad a 0 Segundos - v144):**
+  1. *Lanzamiento Nativo Directo:* `cd CURSO_MUSICA` y ejecución de `nohup python3 -m http.server 8888 > /tmp/korg_server_8888.log 2>&1 &` para evitar colisiones de rutas relativas o argumentos de directorio.
+  2. *Inmune a SIGHUP y Purga de Procesos:* Desacoplado de la terminal mediante `nohup` y purga de procesos zombis con `pkill -9 -f "http.server 8888"` y `lsof -ti:8888 | xargs kill -9`.
+  3. *Detección de Red y Portapapeles:* Extracción dinámica de `ipconfig getifaddr en0`, alias Bonjour `$(hostname -s).local` y copia al portapapeles (`pbcopy`) para pegar la URL al instante en el iPad. Lanzador `INICIAR_SERVIDOR_LOCAL.command` sincronizado.

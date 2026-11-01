@@ -498,11 +498,13 @@ Esta sección recopila los descubrimientos críticos de ingeniería realizados d
   3. **Botón 3 (🎹 3. Grand Piano 011 & Strings):** Capa dual acústica con Grand Piano 011 en Upper 1 y Cuerdas cálidas en Upper 2 para momentos reflexivos.
 * **Integración Visual y Partitura:** Ficha [CANCION_25_CANT_HELP_FALLING_IN_LOVE.html](file:///Users/externo/Library/Mobile%20Documents/com~apple~CloudDocs/PERSONAL/CLASES%20DE%20TECNOLOGÍA/CURSO-IA/CURSO_MUSICA/CANCION_25_CANT_HELP_FALLING_IN_LOVE.html) dotada de visor responsivo de imagen para la partitura `CANCIONES PDF/I Can't help falling in love wtih you.png` y modal de pantalla completa total con HUD flotante de botones táctiles (1, 2 y 3).
 
-### 6.38. Persistencia y Blindaje del Servidor Wi-Fi para iPad (v144)
-* **Diagnóstico del Fallo de Conexión en iPad:** Al ejecutar comandos de terminal sin desacoplador de procesos, macOS zsh envía una señal `SIGHUP` al terminar el script, matando el proceso de `python3 -m http.server` en segundo plano. Asimismo, omitir el argumento `--directory "CURSO_MUSICA"` provocaba que el iPad intentara leer la raíz de carpetas en vez del atril directo, y no forzar `--bind 0.0.0.0` podía restringir la escucha a localhost.
-* **Solución de Blindaje Permanente:**
-  1. **Uso de `nohup` y `0.0.0.0`:** Se lanza `nohup python3 -m http.server 8888 --bind 0.0.0.0 --directory "CURSO_MUSICA" > /tmp/korg_server_8888.log 2>&1 &` para que el proceso sobreviva al cierre de la terminal.
-  2. **Detección Dinámica de IP y mDNS (.local):** Se resuelve la IP Wi-Fi real mediante `ipconfig getifaddr en0` y el alias Bonjour `http://<nombre-mac>.local:8888/` para garantizar acceso inmediato desde Safari o Web MIDI Browser en el iPad sin verse afectado por cambios de asignación DHCP del router.
+### 6.38. Persistencia y Blindaje del Servidor Wi-Fi para iPad a 0 Segundos (v144)
+* **Diagnóstico del Fallo de Conexión en iPad:** Al ejecutar comandos de terminal sin desacoplador de procesos, macOS zsh envía una señal `SIGHUP` al terminar el script, matando el proceso de `python3 -m http.server` en segundo plano. Además, pasar parámetros cruzados como `--directory` en ciertas versiones de Python de macOS provocaba colisiones con el puerto, impidiendo levantar el socket.
+* **Solución de Blindaje Permanente a 0 Segundos:**
+  1. **Lanzamiento Nativo Directo en `CURSO_MUSICA`:** Se hace `cd CURSO_MUSICA` y se ejecuta `nohup python3 -m http.server 8888 > /tmp/korg_server_8888.log 2>&1 &` sin intermediarios ni rutas relativas complejas.
+  2. **Purga Forzada Previa:** `pkill -9 -f "http.server 8888"` y `lsof -ti:8888 | xargs kill -9` aseguran que ningún proceso zombi bloquee el puerto 8888.
+  3. **Detección Dinámica de IP y mDNS (.local):** Se resuelve la IP Wi-Fi real mediante `ipconfig getifaddr en0` y el alias Bonjour `http://<nombre-mac>.local:8888/`, copiando automáticamente la dirección al portapapeles con `pbcopy` para pegarla al instante en el iPad.
+  4. **Lanzador de Escritorio Blindado:** Actualizado el archivo ejecutable `INICIAR_SERVIDOR_LOCAL.command` para doble clic directo.
 
 ---
 *Manual redactado y sellado para el proyecto CURSO-IA / CURSO_MUSICA. Todos los derechos reservados.*
