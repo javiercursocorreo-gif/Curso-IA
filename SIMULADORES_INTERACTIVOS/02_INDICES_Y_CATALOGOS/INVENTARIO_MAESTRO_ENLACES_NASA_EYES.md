@@ -72,11 +72,8 @@
 #### Sesión 09 [ESPACIO-009]: Telescopio Espacial Nancy Grace Roman
 - **URL Embed Principal:** `https://eyes.nasa.gov/apps/solar-system/#/sc_roman?embed=true`
 - **Sub-enlaces de Salto Rápido:**
-  - Telescopio James Webb (JWST): `https://eyes.nasa.gov/apps/solar-system/#/sc_jwst`
-  - La Tierra y Punto Lagrange L2: `https://eyes.nasa.gov/apps/solar-system/#/earth`
-  - Estación Espacial ISS: `https://eyes.nasa.gov/apps/solar-system/#/sc_iss`
   - Sistema Solar Global: `https://eyes.nasa.gov/apps/solar-system/#/home`
-- **Nota Telescopio Roman:** El observatorio insignia de gran campo de la NASA (lanzamiento 2027) con espejo de 2,4 m idéntico al del Hubble pero con un campo de visión 100 veces mayor para cartografiar energía oscura y exoplanetas en L2. Sustituye al Hubble en el Bloque 2 con modelo oficial 3D verificado en NASA Eyes.
+- **Nota Telescopio Roman:** El observatorio insignia de gran campo de la NASA (lanzamiento 2027) con espejo de 2,4 m idéntico al del Hubble pero con un campo de visión 100 veces mayor para cartografiar energía oscura y exoplanetas en L2. Sustituye al Hubble en el Bloque 2 con modelo oficial 3D verificado en NASA Eyes. Barra inferior unificada a 2 botones (Objetivo principal + Sistema Solar Global).
 
 #### Sesión 10 [COD-010]: Venus: El Infierno Volcánico
 - **URL Embed Principal:** `https://eyes.nasa.gov/apps/solar-system/#/venus?embed=true`
