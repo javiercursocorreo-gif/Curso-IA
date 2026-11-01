@@ -48,9 +48,9 @@
 #### Sesión 06 [COD-006]: La Luna y el Programa Artemisa
 - **URL Embed Principal:** `https://eyes.nasa.gov/apps/solar-system/#/moon?embed=true`
 - **Sub-enlaces de Salto Rápido (Comprobados):**
-  - Vista desde la Tierra: `https://eyes.nasa.gov/apps/solar-system/#/earth`
+  - Nave Orión de Artemisa (Misión Lunar): `https://eyes.nasa.gov/apps/solar-system/#/sc_artemis_1`
   - Sistema Solar Global: `https://eyes.nasa.gov/apps/solar-system/#/home`
-- **Nota LRO / Artemisa:** No forzar botones externos no validados por hash; la exploración selenográfica se realiza mediante zoom 360° en la propia Luna.
+- **Nota Artemisa:** Permite alternar con un clic directo entre el relieve 3D de la Luna y la nave espacial tripulada Orión en trayectoria lunar.
 
 ---
 
@@ -67,10 +67,10 @@
 - **URL Embed Principal:** `https://eyes.nasa.gov/apps/solar-system/#/mercury?embed=true`
 - **Sub-enlaces de Salto Rápido:**
   - Sonda BepiColombo (ESA/JAXA): `https://eyes.nasa.gov/apps/solar-system/#/sc_bepicolombo`
-  - Sonda MESSENGER (NASA): `https://eyes.nasa.gov/apps/solar-system/#/sc_messenger`
+  - Sistema Solar Global: `https://eyes.nasa.gov/apps/solar-system/#/home`
 
 #### Sesión 09 [ESPACIO-009]: Telescopio Espacial Nancy Grace Roman
-- **URL Embed Principal:** `https://eyes.nasa.gov/apps/solar-system/#/sc_roman?embed=true`
+- **URL Embed Principal:** `https://eyes.nasa.gov/apps/solar-system/#/sc_roman_space_telescope?embed=true`
 - **Sub-enlaces de Salto Rápido:**
   - Sistema Solar Global: `https://eyes.nasa.gov/apps/solar-system/#/home`
 - **Nota Telescopio Roman:** El observatorio insignia de gran campo de la NASA (lanzamiento 2027) con espejo de 2,4 m idéntico al del Hubble pero con un campo de visión 100 veces mayor para cartografiar energía oscura y exoplanetas en L2. Sustituye al Hubble en el Bloque 2 con modelo oficial 3D verificado en NASA Eyes. Barra inferior unificada a 2 botones (Objetivo principal + Sistema Solar Global).
@@ -79,7 +79,7 @@
 - **URL Embed Principal:** `https://eyes.nasa.gov/apps/solar-system/#/venus?embed=true`
 - **Sub-enlaces de Salto Rápido:**
   - Sonda Magallanes (Radar): `https://eyes.nasa.gov/apps/solar-system/#/sc_magellan`
-  - Misión Futura VERITAS: `https://eyes.nasa.gov/apps/solar-system/#/sc_veritas`
+  - Sistema Solar Global: `https://eyes.nasa.gov/apps/solar-system/#/home`
 
 ---
 
