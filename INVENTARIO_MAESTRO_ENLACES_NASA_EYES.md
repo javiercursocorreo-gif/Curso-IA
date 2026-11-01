@@ -137,11 +137,13 @@
   - Protoplaneta Vesta: `https://eyes.nasa.gov/apps/solar-system/#/vesta`
   - Sonda Dawn: `https://eyes.nasa.gov/apps/solar-system/#/sc_dawn`
 
-#### Sesión 18 [COD-018]: Defensa Planetaria: Misión DART
+#### Sesión 17 [ESPACIO-017]: Defensa Planetaria: Misión DART
 - **URL Embed Principal:** `https://eyes.nasa.gov/apps/solar-system/#/sc_dart?embed=true`
 - **Sub-enlaces de Salto Rápido:**
-  - Asteroide Bennu: `https://eyes.nasa.gov/apps/solar-system/#/bennu`
-  - Sonda OSIRIS-REx: `https://eyes.nasa.gov/apps/solar-system/#/sc_osiris_rex`
+  - Asteroide Didymos y Dimorphos (Eyes on Asteroids): `https://eyes.nasa.gov/apps/asteroids/#/asteroids/didymos`
+  - Momento del Impacto DART (26 Sept 2022): `https://eyes.nasa.gov/apps/asteroids/#/missions/sc_dart?time=2022-09-26T23:14:08.000+00:00`
+  - Sistema Solar Global: `https://eyes.nasa.gov/apps/solar-system/#/home`
+- **Nota Didymos:** Didymos es un asteroide binario NEO de 780 m con su luna Dimorphos de 160 m; su modelo 3D detallado reside en el motor oficial *Eyes on Asteroids* (`apps/asteroids/#/asteroids/didymos`), mientras que la sonda espacial DART reside en `apps/solar-system/#/sc_dart`. El simulador enlaza limpiamente ambos motores oficiales.
 
 #### Sesión 19 [COD-019]: Psyche: El Asteroide de Oro y Níquel
 - **URL Embed Principal:** `https://eyes.nasa.gov/apps/solar-system/#/psyche?embed=true`

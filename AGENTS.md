@@ -159,6 +159,8 @@
   - El asistente tiene la obligación estricta de autocomprobar y verificar que cada identificador y enlace funciona realmente en el motor de NASA Eyes antes de entregar la tarea.
   - Si una sonda o activo no se mueve, no carga o no existe como malla 3D (como ocurrió con los rovers de superficie en Marte), **NO SE INVENTA, NO SE COMPLICA LA VIDA, SE ELIMINA Y SE SUSTITUYE DE INMEDIATO POR UN CUERPO O NAVE ORBITAL QUE SÍ FUNCIONE AL 100%**.
   - El usuario jamás debe realizar tareas de depuración ni probar enlaces rotos: todo lo entregado debe funcionar impecablemente al primer clic.
+- **Diferenciación de Motores: Solar System vs Eyes on Asteroids (Didymos, NEOs e Impactos):**
+  - El motor `apps/solar-system/` solo indexa cuerpos celestes mayores y protoplanetas (Ceres, Vesta, Bennu, Psyche). Los asteroides cercanos a la Tierra (NEOs) menores como **Didymos (780 m) y Dimorphos (160 m)** no disponen de ruta directa en `solar-system` y residen en el motor dedicado **`apps/asteroids/#/asteroids/didymos`** y **`apps/asteroids/#/missions/sc_dart?time=2022-09-26T23:14:08.000+00:00`**. La función `loadTarget` debe enrutar limpiamente a cada motor correspondiente según el cuerpo seleccionado.
 - **Blindaje de Script JavaScript (`loadTarget`):**
   - La función `loadTarget(target, btnElement)` debe gestionar limpiamente los parámetros de URL con `const sep = target.includes('?') ? '&' : '?'; newFrame.src = ...` y evitar cualquier código o llave duplicada fuera de la función que provoque `SyntaxError`.
 

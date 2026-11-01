@@ -64,7 +64,7 @@
 2. Sesión 14 [ESPACIO-014]: Deep Space Network DSN y Sondas Interestelares (SIMULADOR_RED_ESPACIO_PROFUNDO_DSN_3D.html) • `dsn.html`, `sc_voyager_1`, `sc_new_horizons`
 3. Sesión 15 [ESPACIO-015]: Radar de Asteroides y Misiones Cercanas NEOs (SIMULADOR_ASTEROIDES_NEOS_RADAR_3D.html) • `eyes.nasa.gov/apps/asteroids/#/home`
 4. Sesión 16 [ESPACIO-016]: Ceres y Vesta: Reyes del Cinturón de Asteroides (SIMULADOR_CERES_VESTA_CINTURON_3D.html) • `ceres`, `vesta`, `sc_dawn`
-5. Sesión 17 [ESPACIO-017]: Defensa Planetaria: Misión DART y Dimorphos (SIMULADOR_DEFENSA_PLANETARIA_DART_3D.html) • `sc_dart`, `didymos`
+5. Sesión 17 [ESPACIO-017]: Defensa Planetaria: Misión DART y Dimorphos (SIMULADOR_DEFENSA_PLANETARIA_DART_3D.html) • Sonda DART (`sc_dart`), Asteroide Didymos (`apps/asteroids/#/asteroids/didymos`) y Momento del Impacto (`apps/asteroids/#/missions/sc_dart?time=2022-09-26T23:14:08.000+00:00`)
 *Estado: 100% blindado con tarjetas HUD autoportantes, mapas MAPA_SESION_13 a 17 actualizados con botón único a pantalla completa, índice maestro actualizado (15 desplegados) y desplegado a GitHub Pages.*
 ```
 
