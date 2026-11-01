@@ -67,10 +67,10 @@ CSV_ROWS = [
     {
         "num": 3,
         "file_suffix": "3_GEMINI_NOTEBOOK",
-        "tema": "Monográfico 3. NotebookLM: Tu Cuaderno Inteligente",
-        "titulo": "Ejemplo de Prueba: Guia de NotebookLM (PDF)",
-        "desc": "Tu biblioteca personal inteligente: cómo subir documentos familiares o recuerdos para resumir, hacer preguntas y generar guiones.",
-        "url": GITHUB_BASE + "CLASES/2.%20INTRODUCCION_NLM/1.%20PRESENTACI%C3%93N%20A%20LOS%20ALUMNOS/%2A.Guia_de_NotebookLM.pdf",
+        "tema": "Monográfico 3. Gemini Notebook: Tu Cuaderno Inteligente",
+        "titulo": "Guía Visual de Gemini Notebook (PDF)",
+        "desc": "Manual de usuario visual: organiza fuentes (PDF, audio, YouTube), conversa con citas exactas, explora Studio y revisa presentaciones slide por slide.",
+        "url": GITHUB_BASE + "CLASES/2.%20INTRODUCCION_NLM/1.%20PRESENTACI%C3%93N%20A%20LOS%20ALUMNOS/Gui%CC%81a_Visual_de_Gemini_Notebook.pdf",
         "type": "pdf"
     },
     # MONOGRÁFICO 4 (ANTES 3)

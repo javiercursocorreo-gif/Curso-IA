@@ -404,8 +404,8 @@ def generate_ia_unified_csv():
         [
             '',
             'MONOGRAFICOS',
-            'Monográfico 2. NotebookLM: Tu Cuaderno Inteligente',
-            'Cuadro de mando interactivo del Monográfico 2: Guía oficial (PDF), portal de NotebookLM, fichas de práctica guiada, fuentes de prueba (Apolo 11) y resultados generados por IA.',
+            'Monográfico 2. Gemini Notebook (antes NotebookLM): Tu Cuaderno Inteligente',
+            'Cuadro de mando interactivo del Monográfico 2: Guía Visual oficial (PDF), portal de Gemini Notebook, fichas de práctica guiada, fuentes de prueba (Apolo 11) y resultados generados por IA.',
             'https://javiercursocorreo-gif.github.io/Curso-IA/CLASES/2.%20INTRODUCCION_NLM/MAPA_CLASE_2_NLM.html'
         ],
         [
