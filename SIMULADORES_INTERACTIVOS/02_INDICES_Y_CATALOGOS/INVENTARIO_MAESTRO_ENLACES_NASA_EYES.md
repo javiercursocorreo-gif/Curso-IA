@@ -85,11 +85,13 @@
 
 ### 🔴 BLOQUE 3: MARTE Y LA FLOTA ROBÓTICA (SESIONES 11 A 15)
 
-#### Sesión 11 [COD-011]: Marte: Geografía y Misterios
+#### Sesión 11 [ESPACIO-011]: Marte: Geografía y Misterios
 - **URL Embed Principal:** `https://eyes.nasa.gov/apps/solar-system/#/mars?embed=true`
-- **Sub-enlaces de Salto Rápido:**
+- **Sub-enlaces de Salto Rápido (Comprobados):**
   - Mars Reconnaissance Orbiter (MRO): `https://eyes.nasa.gov/apps/solar-system/#/sc_mro`
-  - MAVEN (Atmósfera marciana): `https://eyes.nasa.gov/apps/solar-system/#/sc_maven`
+  - Sonda MAVEN (Atmósfera marciana): `https://eyes.nasa.gov/apps/solar-system/#/sc_maven`
+  - Sistema Solar Global: `https://eyes.nasa.gov/apps/solar-system/#/home`
+- **Nota Satélites:** Permite alternar con un clic directo entre el globo 3D de Marte y los dos grandes satélites de investigación científica en órbita marciana: MRO (imágenes de resolución métrica) y MAVEN (dinámica y pérdida atmosférica).
 
 #### Sesión 12 [COD-012]: Curiosity y Perseverance en Marte
 - **URL Embed Principal:** `https://eyes.nasa.gov/apps/solar-system/#/sc_perseverance?embed=true`
