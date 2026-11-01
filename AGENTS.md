@@ -38,13 +38,16 @@
 - **Fuentes Científicas Reales e Hiperrealistas:** Prohibido el uso de geometrías toscas, esferas lisas o modelos abstractos ("huevos"). Todos los activos visuales deben ser fotografías científicas de alta resolución o escaneos reales procedentes de repositorios científicos acreditados (NIH, NASA, microtomografía CT, microscopía electrónica TEM, CyArk, etc.).
 - **Almacenamiento Centralizado y Portabilidad:** Todas las fotografías y escaneos deben guardarse en `SIMULADORES_INTERACTIVOS/03_ASSETS_3D_Y_DATOS/` en formato original (`.jpg`/`.png`/`.glb`) y disponer de su correspondiente contenedor autónomo Base64 (`_photo_b64.js`) para garantizar el funcionamiento 100% offline sin dependencias externas.
 
-## Nueva Estructura Oficial de las Fichas Científicas [COD] (Sin Talleres ni Copia de Código)
-- **Fichas Orientadas a la Exploración Científica Directa:**
-  - Tras la supresión de los antiguos 'Talleres de Pruebas' para dejar exclusivamente los **Simuladores 3D Científicos Interactivos**, las fichas didácticas oficiales del bloque `[COD]` eliminan las listas de tareas de copiado de código y los prompts técnicos de programación.
-  - La estructura oficial estándar de 1 página se compone de:
-    1. **Explicación didáctica y científica del simulador:** qué fenómeno reproduce en tiempo real, órganos/estructuras visibles y controles de interacción 360°, corte y parámetros.
-    2. **Procedencia oficial y fuentes científicas:** acreditación rigurosa de las instituciones científicas (NIH, NASA, Z-Anatomy, CyArk, etc.), técnicas de captura médica/orbital (MRI 7T, tomografía, fotogrametría LiDAR) y calidad de datos.
-    3. **Guía de exploración en el aula & preguntas para conversar con Gemini:** preguntas de reflexión y aprendizaje para que los alumnos dialoguen con Gemini mientras observan el modelo en pantalla.
+## Estándar Oficial del Bloque Espacial 3D: Etiqueta [ESPACIO] (Sesiones 03 a 40)
+- **Separación de Etiquetas: [COD] (01-02) vs [ESPACIO] (03-40):**
+  - La etiqueta `[COD]` queda reservada de forma exclusiva a las Sesiones 01 y 02 (Biomedicina y Código 3D).
+  - A partir de la Sesión 03 y hasta la 40, todas las 38 sesiones del espacio pasan a denominarse oficialmente **`[ESPACIO]`** (denominación adoptada expresamente para evitar cualquier confusión fonética o visual con la etiqueta `[EST]` de Estilos de Imagen IA).
+- **Cero Fichas PDF Externas (Estándar Autoportante):**
+  - Para todas las simulaciones de `[ESPACIO]`, no se generan fichas PDF externas.
+  - Toda la experiencia didáctica, explicaciones científicas, guía de controles 360°, diálogo interactivo con 3 preguntas para conversar con Gemini y acreditación de fuentes oficiales (NASA/JPL/ESA) residen de forma 100% autónoma dentro de la **Tarjeta Flotante HUD** del propio simulador interactivo HTML.
+- **Integración Directa en Mapas de Classroom (MAPA_SESION_XX.html):**
+  - En Google Classroom se enlaza directamente el mapa interactivo de cada sesión (`MAPA_SESION_XX.html`).
+  - En dicho mapa, el recurso interactivo #10 cuenta con la etiqueta **`[ESPACIO]`**, el título de la simulación astronómica y un botón directo y prominente que abre el simulador 3D en pantalla completa, eliminando enlaces a talleres de código o probadores obsoletos.
 - **Inventario Central de Enlaces NASA Eyes 3D:**
   - Todas las URLs oficiales, parámetros `?embed=true` y botones de salto rápido de las 38 sesiones del espacio (Sesiones 03 a 40) están catalogados de forma permanente en `INVENTARIO_MAESTRO_ENLACES_NASA_EYES.md` (en la raíz) y en `SIMULADORES_INTERACTIVOS/02_INDICES_Y_CATALOGOS/INVENTARIO_MAESTRO_ENLACES_NASA_EYES.md`.
   - El índice visual interactivo navegable para alumnos y profesor está disponible en `INDICE_MAESTRO_SIMULACIONES_INTERACTIVAS_ESPACIO_3D.html`.
