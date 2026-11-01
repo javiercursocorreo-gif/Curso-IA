@@ -89,7 +89,7 @@
 #### Sesión 11 [ESPACIO-011]: Marte: Geografía y Misterios
 - **URL Embed Principal:** `https://eyes.nasa.gov/apps/solar-system/#/mars?embed=true`
 - **Sub-enlaces de Salto Rápido (Comprobados):**
-  - Mars Reconnaissance Orbiter (MRO): `https://eyes.nasa.gov/apps/solar-system/#/sc_mro`
+  - Mars Reconnaissance Orbiter (MRO): `https://eyes.nasa.gov/apps/solar-system/#/sc_mars_reconnaissance_orbiter`
   - Sonda MAVEN (Atmósfera marciana): `https://eyes.nasa.gov/apps/solar-system/#/sc_maven`
   - Sistema Solar Global: `https://eyes.nasa.gov/apps/solar-system/#/home`
 - **Nota Satélites:** Permite alternar con un clic directo entre el globo 3D de Marte y los dos grandes satélites de investigación científica en órbita marciana: MRO (imágenes de resolución métrica) y MAVEN (dinámica y pérdida atmosférica).
