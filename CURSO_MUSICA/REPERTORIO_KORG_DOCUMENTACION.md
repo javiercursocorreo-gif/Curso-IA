@@ -489,14 +489,16 @@ Esta sección recopila los descubrimientos críticos de ingeniería realizados d
      - *Carácter Acústico:* Arreglo cinematográfico de gran balada de los 90 (estilo *My Heart Will Go On* de Céline Dion).
      - *Veredicto:* Requiere calibrar el balance de volumen (Dial `[STYLE]` hacia abajo o `CC 07` en Web MIDI) para que la delicadeza de la guitarra corte la mezcla de la orquesta. Si se busca un clímax épico, la guitarra puede ser sustituida por cuerdas masivas o flauta irlandesa.
 
-### 6.37. Creación de la Ficha 25: Can't Help Falling in Love (Elvis Presley) (v143)
+### 6.37. Creación de la Ficha 25: Can't Help Falling in Love (Elvis Presley) (v144)
 * **Tonalidad Identificada:** Armadura con un bemol en la línea de Si ($B\flat$) ➔ **Fa Mayor ($F$)**.
 * **Compás y Rítmica:** Compás ternario 6/8 o 12/8 balada lenta. Se asigna de fábrica el **Estilo 042 (6/8 Ballad)** a **70 BPM**, el tempo exacto y fluido para acompañar el balanceo romántico de la melodía.
 * **Terna de Cuerdas STS y Acústica (Web MIDI 1-Tap):**
   1. **Botón 1 (🎻 1. STS Strings & Pad):** Cuerdas orquestales románticas en Upper 1 (String Ensemble 1, PC 48) a volumen alto 126 con Cutoff abierto y Reverb amplia, con un lecho suave de Warm Pad en Upper 2 (PC 89).
   2. **Botón 2 (🎻 2. The Strings - Keyboard Set 61):** Gran masa de cuerdas sinfónicas que enciende físicamente Upper 1 y Upper 2 con coro en Lower.
   3. **Botón 3 (🎹 3. Grand Piano 011 & Strings):** Capa dual acústica con Grand Piano 011 en Upper 1 y Cuerdas cálidas en Upper 2 para momentos reflexivos.
-* **Integración Visual y Partitura:** Ficha [CANCION_25_CANT_HELP_FALLING_IN_LOVE.html](file:///Users/externo/Library/Mobile%20Documents/com~apple~CloudDocs/PERSONAL/CLASES%20DE%20TECNOLOGÍA/CURSO-IA/CURSO_MUSICA/CANCION_25_CANT_HELP_FALLING_IN_LOVE.html) dotada de visor responsivo de imagen para la partitura `CANCIONES PDF/I Can't help falling in love wtih you.png` y modal de pantalla completa total con HUD flotante de botones táctiles (1, 2 y 3).
+* **Integración Visual y Partitura Oficial Dual:**
+  - Integrado el visor embebido interactivo de la partitura oficial de MuseScore de Dick Schmitt (`scores/6797274`) tanto en la ficha como en el **Modo Pantalla Completa Total** con HUD flotante de botones 1, 2 y 3.
+  - Soporte de imagen local propia desacoplado: si el usuario sube un archivo personalizado, se conmuta automáticamente; si no, la partitura oficial de MuseScore se muestra al 100% de forma instantánea sin mensajes de error ni pantallas vacías.
 
 ### 6.38. Persistencia y Blindaje del Servidor Wi-Fi para iPad a 0 Segundos (v144)
 * **Diagnóstico del Fallo de Conexión en iPad:** Al ejecutar comandos de terminal sin desacoplador de procesos, macOS zsh envía una señal `SIGHUP` al terminar el script, matando el proceso de `python3 -m http.server` en segundo plano. Además, pasar parámetros cruzados como `--directory` en ciertas versiones de Python de macOS provocaba colisiones con el puerto, impidiendo levantar el socket.
