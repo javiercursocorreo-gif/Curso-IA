@@ -93,11 +93,14 @@
   - Sistema Solar Global: `https://eyes.nasa.gov/apps/solar-system/#/home`
 - **Nota Satélites:** Permite alternar con un clic directo entre el globo 3D de Marte y los dos grandes satélites de investigación científica en órbita marciana: MRO (imágenes de resolución métrica) y MAVEN (dinámica y pérdida atmosférica).
 
-#### Sesión 12 [COD-012]: Curiosity y Perseverance en Marte
+#### Sesión 12 [ESPACIO-012]: Curiosity y Perseverance en Marte
 - **URL Embed Principal:** `https://eyes.nasa.gov/apps/solar-system/#/sc_perseverance?embed=true`
-- **Sub-enlaces de Salto Rápido:**
+- **Sub-enlaces de Salto Rápido (Comprobados):**
+  - Rover Perseverance: `https://eyes.nasa.gov/apps/solar-system/#/sc_perseverance`
   - Rover Curiosity: `https://eyes.nasa.gov/apps/solar-system/#/sc_curiosity`
   - Globo de Marte: `https://eyes.nasa.gov/apps/solar-system/#/mars`
+  - Sistema Solar Global: `https://eyes.nasa.gov/apps/solar-system/#/home`
+- **Nota Rovers:** Permite alternar con un clic directo entre los dos grandes rovers nucleares en superficie marciana (Perseverance en Jezero y Curiosity en Gale/Sharp) y la vista global del planeta.
 
 #### Sesión 13 [COD-013]: Ingenuity y las Lunas de Marte
 - **URL Embed Principal:** `https://eyes.nasa.gov/apps/solar-system/#/sc_ingenuity?embed=true`
