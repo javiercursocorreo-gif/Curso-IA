@@ -3,10 +3,11 @@
 """
 patch_excel_autofit.py
 Ajuste integral de tamaño y formato para Microsoft Excel (Mac y Windows):
-- 'Seguimiento cistitis resumen.xlsx': Anchos holgados, altos adaptados, applyAlignment=1 y wrapText=1.
-- 'Seguimiento cistitis.xlsx': Anchos originales compactos (SIN ensanchar columnas),
-  calculando dinámicamente la altura exacta de cada fila según el número de líneas
-  para que ningún comentario ni resultado quede cortado.
+- 'Seguimiento cistitis resumen.xlsx': Anchos compactos (no exagerados),
+  cálculo dinámico automático de altura de fila para que ningún comentario quede cortado,
+  applyAlignment=1 y wrapText=1 en todas las celdas.
+- 'Seguimiento cistitis.xlsx': Anchos originales compactos (sin ensanchar columnas),
+  cálculo dinámico automático de altura de fila según el número de líneas envueltas.
 """
 
 import os
@@ -24,14 +25,14 @@ def patch_resumen(target_path=None):
     xlsx_path = target_path or EXCEL_RESUMEN
     if not os.path.exists(xlsx_path):
         return
-    print(f"--> Ajustando {os.path.basename(xlsx_path)}...")
+    print(f"--> Ajustando {os.path.basename(xlsx_path)} (anchos compactos y alturas dinámicas)...")
     temp_zip = xlsx_path + ".tmp"
     
     with zipfile.ZipFile(xlsx_path, 'r') as zin, zipfile.ZipFile(temp_zip, 'w', compression=zipfile.ZIP_DEFLATED) as zout:
         for item in zin.infolist():
             content = zin.read(item.filename)
             
-            # 1. Parchear styles.xml
+            # 1. Parchear styles.xml (wrapText y applyAlignment)
             if item.filename == 'xl/styles.xml':
                 root = ET.fromstring(content)
                 cell_xfs = root.find(f'{{{NS}}}cellXfs')
@@ -48,26 +49,26 @@ def patch_resumen(target_path=None):
                         al.attrib['vertical'] = 'center'
                 content = ET.tostring(root, encoding='utf-8', xml_declaration=True)
                 
-            # 2. Parchear sheet1.xml
+            # 2. Parchear sheet1.xml (anchos compactos no exagerados y alturas dinámicas)
             elif item.filename == 'xl/worksheets/sheet1.xml':
                 root = ET.fromstring(content)
                 
-                # Actualizar anchos de columna
+                # Anchos compactos equilibrados (no tan anchos)
                 cols = root.find(f'{{{NS}}}cols')
                 if cols is None:
                     cols = ET.Element(f'{{{NS}}}cols')
                     root.insert(1, cols)
                 cols.clear()
                 
-                widths = {
-                    1: 22.0,  # A: Episodios / Fechas
-                    2: 28.0,  # B: Germen
-                    3: 52.0,  # C: Medicamento / Vacuna
-                    4: 40.0,  # D: Duración / Profilaxis
-                    5: 42.0,  # E: Doctor / Urgencias
-                    6: 110.0, # F: Causa / Comentarios extensos
+                compact_widths = {
+                    1: 18.0,  # A: Episodios / Fechas
+                    2: 22.0,  # B: Germen
+                    3: 38.0,  # C: Medicamento / Vacuna
+                    4: 20.0,  # D: Duración / Profilaxis (cabe '0-0-1, 6 meses')
+                    5: 30.0,  # E: Doctor / Urgencias
+                    6: 52.0,  # F: Causa / Comentarios compactos
                 }
-                for c_idx, w in widths.items():
+                for c_idx, w in compact_widths.items():
                     ET.SubElement(cols, f'{{{NS}}}col', {
                         'min': str(c_idx),
                         'max': str(c_idx),
@@ -78,26 +79,60 @@ def patch_resumen(target_path=None):
                 ET.SubElement(cols, f'{{{NS}}}col', {
                     'min': '7',
                     'max': '16384',
-                    'width': '12.0',
+                    'width': '10.8',
                     'customWidth': '1'
                 })
                 
-                # Altos de fila calculados
-                custom_hts = {
-                    1: 35.0, 2: 38.0, 3: 34.0, 4: 55.0, 6: 34.0, 7: 55.0,
-                    11: 65.0, 12: 65.0, 15: 34.0, 16: 55.0, 18: 34.0, 19: 65.0,
-                    21: 34.0, 23: 65.0, 25: 55.0, 27: 34.0, 28: 65.0, 29: 55.0,
-                    31: 75.0, 32: 60.0, 33: 55.0, 34: 60.0, 35: 55.0, 37: 65.0,
-                    39: 34.0, 40: 85.0, 41: 135.0, 43: 36.0, 44: 42.0, 45: 42.0,
-                    46: 42.0, 47: 80.0
-                }
+                # Capacidad aprox de caracteres por línea a 16pt Calibri
+                col_chars = {'A': 14, 'B': 18, 'C': 30, 'D': 16, 'E': 24, 'F': 40}
                 
                 sheetData = root.find(f'{{{NS}}}sheetData')
                 if sheetData is not None:
                     for row in sheetData:
                         r_idx = int(row.attrib.get('r', 0))
-                        ht = custom_hts.get(r_idx, 46.0 if r_idx > 2 else 32.0)
-                        row.attrib['ht'] = str(ht)
+                        if r_idx in [3, 6, 15, 18, 21, 27, 39]: # Años divisores
+                            row.attrib['ht'] = '34.0'
+                            row.attrib['customHeight'] = '1'
+                            continue
+                            
+                        max_lines = 1
+                        for c in row.findall(f'{{{NS}}}c'):
+                            ref = c.attrib.get('r', '')
+                            col_letter = ''.join([ch for ch in ref if ch.isalpha()])
+                            limit = col_chars.get(col_letter, 25)
+                            txt = ''.join(c.itertext()).strip()
+                            if txt and not txt.isdigit():
+                                words = txt.split()
+                                lines = 1
+                                curr_len = 0
+                                for word in words:
+                                    add_len = len(word) + (1 if curr_len else 0)
+                                    if curr_len + add_len <= limit:
+                                        curr_len += add_len
+                                    else:
+                                        lines += 1
+                                        curr_len = len(word)
+                                if lines > max_lines:
+                                    max_lines = lines
+                        
+                        # A 16pt Calibri, cada línea mide ~22pt + 14pt de margen
+                        calc_ht = max(38.0, max_lines * 22.0 + 14.0)
+                        
+                        # Ajustes finos específicos para asegurar holgura perfecta
+                        if r_idx == 41:
+                            calc_ht = max(calc_ht, 175.0) # Comentario de 230 chars (7 líneas)
+                        elif r_idx == 40:
+                            calc_ht = max(calc_ht, 105.0) # Comentario de 115 chars (4 líneas)
+                        elif r_idx == 47:
+                            calc_ht = max(calc_ht, 85.0)  # Conclusión eco
+                        elif r_idx in [28, 31]:
+                            calc_ht = max(calc_ht, 80.0)  # 3 líneas
+                        elif r_idx in [1, 4, 9, 11, 12, 16, 19, 23, 32, 33, 34, 37]:
+                            calc_ht = max(calc_ht, 60.0)  # 2 líneas
+                        elif r_idx > 47:
+                            calc_ht = 32.0               # Filas vacías finales
+                            
+                        row.attrib['ht'] = f"{calc_ht:.1f}"
                         row.attrib['customHeight'] = '1'
                         
                 content = ET.tostring(root, encoding='utf-8', xml_declaration=True)
@@ -105,7 +140,7 @@ def patch_resumen(target_path=None):
             zout.writestr(item, content)
             
     os.replace(temp_zip, xlsx_path)
-    print(f"  ✓ {os.path.basename(xlsx_path)} ajustado al 100%.")
+    print(f"  ✓ {os.path.basename(xlsx_path)} ajustado al 100% (anchos compactos y alturas calculadas).")
 
 def patch_detalle(target_path=None):
     xlsx_path = target_path or EXCEL_DETALLE
@@ -175,7 +210,6 @@ def patch_detalle(target_path=None):
                 
                 col_letter_map = {'A': 13.5, 'B': 20.8, 'C': 11.5, 'D': 10.8, 'E': 13.8, 'F': 16.5, 'G': 12.5, 'H': 28.2, 'I': 10.5, 'J': 44.5}
                 
-                # Calcular altura dinámica de fila según texto real y ancho compacto
                 sheetData = root.find(f'{{{NS}}}sheetData')
                 if sheetData is not None:
                     for row in sheetData:
@@ -205,10 +239,8 @@ def patch_detalle(target_path=None):
                                 if lines > max_lines:
                                     max_lines = lines
                         
-                        # Cada línea en fuente 11pt mide ~16pt + 8pt de margen vertical
                         calc_ht = max(26.0, max_lines * 16.0 + 8.0)
                         
-                        # Garantizar holgura extra en filas clave
                         if r_idx == 64:
                             calc_ht = max(calc_ht, 250.0)
                         elif r_idx == 63:
