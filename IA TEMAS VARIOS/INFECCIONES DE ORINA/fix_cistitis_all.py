@@ -5,7 +5,7 @@ fix_cistitis_all.py
 Corrige con máxima precisión los dos libros Excel y el informe PDF:
 1. 'Seguimiento cistitis resumen.xlsx':
    - Pauta de Cefixima: 10 DÍAS EN TOTAL (3 días previos iniciados el 28/10 + 7 días adicionales pautados por el Dr. Membrillo el 31/10).
-   - Línea 37: Columnas C y D combinadas (C37:D37) con 'Furantoina 50 mg. (PROFILAXIS) . Fin 31/3'.
+   - Línea 37: Celdas independientes C37 ('Furantoina 50 mg. (PROFILAXIS) . Fin 31/3') y D37 ('0-0-1, 6 meses').
    - Línea 31: Ajuste de texto (wrap_text=True) y altura generosa (65pt) para que se lea todo íntegro.
    - Línea 43: Justificación a la IZQUIERDA en 'PRUEBAS REALIZADAS'.
    - Fechas nativas en columna A con applyNumberFormat=1 en styles.xml para visualización perfecta en Excel.
@@ -33,7 +33,7 @@ except ImportError:
     import openpyxl
     from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 
-BASE_DIR = "/Users/externo/Library/Mobile Documents/com~apple~CloudDocs/PERSONAL/CLASES DE TECNOLOGÍA/CURSO-IA/IA TEMAS VARIOS/INFECCIONES DE ORINA"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 EXCEL_RESUMEN = os.path.join(BASE_DIR, "Seguimiento cistitis resumen.xlsx")
 EXCEL_DETALLE = os.path.join(BASE_DIR, "Seguimiento cistitis.xlsx")
 PDF_SCRIPT = os.path.join(BASE_DIR, "build_infecciones_orina_pdf.py")
@@ -84,25 +84,26 @@ def update_resumen():
     ws.cell(row=41, column=4).alignment = Alignment(horizontal="center", vertical="center")
     ws.cell(row=41, column=4).font = font_data
     
-    com_41 = "Segundo episodio. Uróloga receta Cefixima (28/10). Llevaba 3 días tomándola al salir cultivo E. Coli; Dr. Membrillo pauta completar 7 días más (10 días en total). Eco urológica Virgen del Mar."
+    com_41 = "Segundo episodio. Uróloga receta Cefixima (28/10). Llevaba 3 días tomándola al salir cultivo E. Coli; Dr. Membrillo pauta completar 7 días más (10 días en total). Eco urológica Virgen del Mar (estudio sin alteraciones relevantes)."
     ws.cell(row=41, column=6, value=com_41)
     ws.cell(row=41, column=6).alignment = Alignment(horizontal="left", vertical="center", wrap_text=True)
     ws.cell(row=41, column=6).font = font_data
     ws.row_dimensions[41].height = 55
     
-    # 2. Ajustar Línea 37: Columnas C y D combinadas (C37:D37)
+    # 2. Ajustar Línea 37: Celdas C37 y D37 separadas (sin combinar)
     for rng in list(ws.merged_cells.ranges):
         if "C37" in str(rng) or "D37" in str(rng):
             ws.unmerge_cells(str(rng))
             
-    ws.merge_cells("C37:D37")
     c37 = ws.cell(row=37, column=3, value="Furantoina 50 mg. (PROFILAXIS) . Fin 31/3")
     c37.font = font_data
     c37.alignment = Alignment(horizontal="left", vertical="center", wrap_text=True)
-    c37.border = Border(left=thin, right=thin, top=thin, bottom=thin)
+    c37.border = border_mid
     
-    d37 = ws.cell(row=37, column=4)
-    d37.border = Border(left=thin, right=thin, top=thin, bottom=thin)
+    d37 = ws.cell(row=37, column=4, value="0-0-1, 6 meses")
+    d37.font = font_data
+    d37.alignment = Alignment(horizontal="center", vertical="center", wrap_text=True)
+    d37.border = border_mid
     
     ws.cell(row=37, column=5, value="Dr. Moraga").font = font_data
     ws.cell(row=37, column=5).alignment = Alignment(horizontal="left", vertical="center")
@@ -111,7 +112,7 @@ def update_resumen():
     ws.cell(row=37, column=1).border = border_col_a
     ws.cell(row=37, column=2).border = border_mid
     ws.cell(row=37, column=6).border = border_col_f
-    ws.row_dimensions[37].height = 42
+    ws.row_dimensions[37].height = 55
 
     # 3. Ajustar Línea 31: wrap_text=True en todas las celdas y altura de 65pt
     for col_idx in range(1, 7):
@@ -173,8 +174,25 @@ def update_resumen():
         cell.border = border_col_a
         cell.alignment = Alignment(horizontal="center", vertical="center")
 
+    # Actualizar Línea 47 (ECO Urológica 28/10/2026 - Virgen del Mar)
+    ws.cell(row=47, column=4, value="Estudio sin alteraciones relevantes")
+    ws.cell(row=47, column=4).font = font_data
+    ws.cell(row=47, column=4).alignment = Alignment(horizontal="center", vertical="center", wrap_text=True)
+    ws.cell(row=47, column=4).border = border_mid
+    
+    ws.cell(row=47, column=6, value="Realizada el 28/10/2026 en Hosp. Virgen del Mar. Conclusión diagnóstica: Estudio sin alteraciones relevantes")
+    ws.cell(row=47, column=6).font = font_data
+    ws.cell(row=47, column=6).alignment = Alignment(horizontal="left", vertical="center", wrap_text=True)
+    ws.cell(row=47, column=6).border = border_col_f
+    ws.row_dimensions[47].height = 42
+
     wb.save(EXCEL_RESUMEN)
     enforce_apply_number_format(EXCEL_RESUMEN)
+    try:
+        from patch_excel_autofit import patch_resumen
+        patch_resumen()
+    except Exception as e:
+        print(f"  (Auto-fit resumen: {e})")
     print(f"✅ {os.path.basename(EXCEL_RESUMEN)} guardado con éxito.")
 
 
@@ -229,11 +247,11 @@ def update_detalle():
             "sintoma": "Segundo episodio: dolor y escozor intenso",
             "infeccion": "si",
             "urgencias": "si. Urgencias Hosp. La Moraleja (Dr. Díaz Urquizo) + Consulta Uróloga de guardia",
-            "resultados": "Analítica de urgencias positiva. Se encarga nuevo cultivo. Ecografía urológica realizada ese mismo día en Hosp. Virgen del Mar (a la espera de resultado)",
+            "resultados": "Analítica de urgencias positiva. Se encarga nuevo cultivo. Ecografía urológica realizada ese mismo día en Hosp. Virgen del Mar: Estudio sin alteraciones relevantes",
             "tiras": "si",
             "medicacion": "Cefixima prescrita por la Uróloga (inicio de toma el 28/10)",
             "se_pasa": "en curso",
-            "obs": "En urgencias encontramos hueco con una uróloga presencial y subimos a consulta. Receta Cefixima y pide ECO urológica. Escribimos al Dr. Membrillo informando del nuevo episodio; nos pide avisarle al salir el cultivo."
+            "obs": "En urgencias encontramos hueco con una uróloga presencial y subimos a consulta. Receta Cefixima y pide ECO urológica. Escribimos al Dr. Membrillo informando del nuevo episodio; nos pide avisarle al salir el cultivo. Informe ECO recibido: Estudio sin alteraciones relevantes."
         },
         {
             "fecha": datetime.date(2026, 10, 31),
@@ -281,6 +299,11 @@ def update_detalle():
                 
     wb.save(EXCEL_DETALLE)
     enforce_apply_number_format(EXCEL_DETALLE)
+    try:
+        from patch_excel_autofit import patch_detalle
+        patch_detalle()
+    except Exception as e:
+        print(f"  (Auto-fit detalle: {e})")
     print(f"✅ {os.path.basename(EXCEL_DETALLE)} guardado con éxito.")
 
 
