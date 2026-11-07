@@ -2,14 +2,14 @@
 # -*- coding: utf-8 -*-
 """
 generar_pdf_guia_nlm.py
-Genera 'GUIA_COMPLETA_ALUMNO_NOTEBOOKLM_Y_PRACTICAS.pdf' en formato profesional,
-vistoso y con bloques de color, unificando teoría de pantalla y taller práctico sistemático.
+Genera 'GUIA_COMPLETA_ALUMNO_NOTEBOOKLM_Y_PRACTICAS.pdf' con diseño amplio, espaciado,
+cero solapamientos, interlineado holgado para personas mayores y casos de prueba
+exhaustivos botón a botón para el panel Studio (con prompts de estilo, infografías y fuentes reales).
 100% Python nativo estándar (sin ReportLab, sin pip, sin dependencias externas).
 """
 
 import os
 import sys
-import datetime
 
 OUTPUT_DIR = os.path.dirname(os.path.abspath(__file__))
 PDF_OUTPUT = os.path.join(OUTPUT_DIR, "GUIA_COMPLETA_ALUMNO_NOTEBOOKLM_Y_PRACTICAS.pdf")
@@ -54,8 +54,8 @@ def wrap_text(text, max_chars):
             lines.append(' '.join(cur))
     return lines or ['']
 
-class ColorfulPDFWriter:
-    def __init__(self, page_width=595.28, page_height=841.89): # A4 standard
+class RobustPDFWriter:
+    def __init__(self, page_width=595.28, page_height=841.89): # A4
         self.w = page_width
         self.h = page_height
         self.pages = []
@@ -84,28 +84,10 @@ class ColorfulPDFWriter:
     def line(self, x1, y1, x2, y2):
         self.current_stream.append(f"{x1:.2f} {y1:.2f} m {x2:.2f} {y2:.2f} l S\n")
 
-    def draw_text(self, x, y, text, font="F1", size=10, r=0, g=0, b=0):
+    def draw_text(self, x, y, text, font="F1", size=9.5, r=0, g=0, b=0):
         self.set_fill_color(r, g, b)
         escaped = escape_pdf_text(text)
         self.current_stream.append(f"BT /{font} {size} Tf {x:.2f} {y:.2f} Td ({escaped}) Tj ET\n")
-
-    def draw_header_footer(self, page_num, total_pages):
-        # Header (página > 1)
-        if page_num > 1:
-            self.set_fill_color(0.08, 0.15, 0.35)
-            self.rect(36, self.h - 22, self.w - 72, 2.5, fill=True, stroke=False)
-            self.draw_text(36, self.h - 34, "MONOGRÁFICO 2: GUÍA VISUAL COMPLETA Y TALLER NOTEBOOKLM", "F2", 8, 0.15, 0.35, 0.65)
-            self.draw_text(self.w - 180, self.h - 34, "Curso de IA para Adultos Mayores", "F1", 8, 0.45, 0.5, 0.58)
-            self.set_stroke_color(0.85, 0.88, 0.92)
-            self.set_line_width(0.5)
-            self.line(36, self.h - 38, self.w - 36, self.h - 38)
-
-        # Footer (todas las páginas)
-        self.set_stroke_color(0.85, 0.88, 0.92)
-        self.set_line_width(0.5)
-        self.line(36, 32, self.w - 36, 32)
-        self.draw_text(36, 20, "Guía Didáctica Oficial • Aprendizaje Activo con IA para Seniors, Hijos y Nietos", "F1", 7.5, 0.45, 0.5, 0.58)
-        self.draw_text(self.w - 105, 20, f"Página {page_num} de {total_pages}", "F2", 8, 0.15, 0.35, 0.65)
 
     def write_to_file(self, filename):
         f1_idx, f2_idx, f3_idx = 3, 4, 5
@@ -158,319 +140,493 @@ class ColorfulPDFWriter:
             trailer = f"trailer\n<< /Size {len(all_objs) + 1} /Root 1 0 R >>\nstartxref\n{xref_start}\n%%EOF\n".encode('ascii')
             f.write(trailer)
 
-def construir_guia_pdf():
-    # Generamos primero las páginas para calcular el total
-    writer = ColorfulPDFWriter()
+class FlowLayoutPDF:
+    def __init__(self, writer):
+        self.w = writer
+        self.margin_x = 40
+        self.content_w = self.w.w - (self.margin_x * 2)
+        self.top_y = self.w.h - 55
+        self.bottom_y = 50
+        self.y = self.top_y
+        self.page_num = 1
+        self.w.start_page()
 
-    # Estructura del contenido dividida en páginas lógicas para que quede impecable
-    # PÁGINA 1: Portada, Qué es NotebookLM y El Mapa de las 3 Zonas
-    writer.start_page()
-    y = writer.h - 40
+    def check_space(self, height_needed):
+        if self.y - height_needed < self.bottom_y:
+            self.w.end_page()
+            self.page_num += 1
+            self.w.start_page()
+            self.y = self.top_y
 
-    # Banda azul superior
-    writer.set_fill_color(0.12, 0.25, 0.55)
-    writer.rect(36, y, writer.w - 72, 5, fill=True, stroke=False)
-    y -= 18
+    def add_section_header(self, title, color_rgb=(0.12, 0.25, 0.55)):
+        self.check_space(38)
+        self.y -= 10
+        self.w.set_fill_color(color_rgb[0], color_rgb[1], color_rgb[2])
+        self.w.rect(self.margin_x, self.y - 4, self.content_w, 20, fill=True, stroke=False)
+        self.w.draw_text(self.margin_x + 10, self.y + 2, title.upper(), "F2", 9.2, 1, 1, 1)
+        self.y -= 26
+
+    def add_paragraph(self, text, font="F1", size=8.5, color=(0.2, 0.22, 0.26), line_spacing=13, max_chars=84):
+        lines = wrap_text(text, max_chars)
+        h = len(lines) * line_spacing
+        self.check_space(h + 6)
+        for l in lines:
+            self.w.draw_text(self.margin_x, self.y, l, font, size, color[0], color[1], color[2])
+            self.y -= line_spacing
+        self.y -= 4
+
+    def add_card_box(self, title, items, badge_text=None, border_color=(0.85, 0.88, 0.92), bg_color=(0.98, 0.98, 0.99), title_color=(0.12, 0.25, 0.55)):
+        # Calcular altura total
+        line_spacing = 13.5
+        total_lines = 0
+        rendered_items = []
+        for it in items:
+            it_lines = wrap_text(it, max_chars=80)
+            rendered_items.append(it_lines)
+            total_lines += len(it_lines)
+
+        h_box = 24 + (total_lines * line_spacing) + 10
+        self.check_space(h_box + 12)
+
+        # Dibujar fondo y borde
+        self.w.set_fill_color(bg_color[0], bg_color[1], bg_color[2])
+        self.w.set_stroke_color(border_color[0], border_color[1], border_color[2])
+        self.w.set_line_width(0.7)
+        self.w.rect(self.margin_x, self.y - h_box + 14, self.content_w, h_box, fill=True, stroke=True)
+
+        # Título y Badge
+        self.w.draw_text(self.margin_x + 12, self.y - 2, title, "F2", 9, title_color[0], title_color[1], title_color[2])
+        if badge_text:
+            badge_x = self.margin_x + self.content_w - 90
+            self.w.set_fill_color(title_color[0], title_color[1], title_color[2])
+            self.w.rect(badge_x, self.y - 4, 80, 13, fill=True, stroke=False)
+            self.w.draw_text(badge_x + 6, self.y - 1, badge_text, "F2", 7.2, 1, 1, 1)
+
+        ty = self.y - 17
+        for it_lines in rendered_items:
+            for idx_l, line in enumerate(it_lines):
+                prefix = "- " if idx_l == 0 else "  "
+                fnt = "F2" if (idx_l == 0 and ":" in line) else "F1"
+                self.w.draw_text(self.margin_x + 16, ty, prefix + line, fnt, 8.2, 0.20, 0.22, 0.26)
+                ty -= line_spacing
+
+        self.y = self.y - h_box - 4
+
+    def add_prompt_box(self, label, prompt_text):
+        lines = wrap_text(prompt_text, max_chars=78)
+        line_spacing = 12.5
+        h = len(lines) * line_spacing + 24
+        self.check_space(h + 10)
+
+        # Caja de código / prompt con borde suave
+        self.w.set_fill_color(0.96, 0.98, 0.97)
+        self.w.set_stroke_color(0.20, 0.60, 0.40)
+        self.w.set_line_width(0.8)
+        self.w.rect(self.margin_x + 8, self.y - h + 14, self.content_w - 16, h, fill=True, stroke=True)
+
+        self.w.draw_text(self.margin_x + 18, self.y - 1, label, "F2", 8, 0.10, 0.45, 0.25)
+        ty = self.y - 15
+        for l in lines:
+            self.w.draw_text(self.margin_x + 22, ty, l, "F3", 7.8, 0.12, 0.16, 0.20)
+            ty -= line_spacing
+
+        self.y = self.y - h - 6
+
+def generar_pdf_completo():
+    writer = RobustPDFWriter()
+    flow = FlowLayoutPDF(writer)
+
+    # -------------------------------------------------------------
+    # PÁGINA 1: CABECERA & FUNDAMENTOS
+    # -------------------------------------------------------------
+    # Barra azul superior decorativa
+    flow.w.set_fill_color(0.12, 0.25, 0.55)
+    flow.w.rect(flow.margin_x, flow.y, flow.content_w, 5, fill=True, stroke=False)
+    flow.y -= 20
 
     # Badge de cabecera
-    writer.set_fill_color(0.90, 0.94, 0.99)
-    writer.set_stroke_color(0.70, 0.82, 0.95)
-    writer.rect(36, y - 10, 310, 15, fill=True, stroke=True)
-    writer.draw_text(42, y - 7, "CURSO DE IA PARA PERSONAS MAYORES • MONOGRÁFICO 2", "F2", 7.5, 0.12, 0.35, 0.70)
-    y -= 26
+    flow.w.set_fill_color(0.90, 0.94, 0.99)
+    flow.w.set_stroke_color(0.70, 0.82, 0.95)
+    flow.w.rect(flow.margin_x, flow.y - 10, 310, 16, fill=True, stroke=True)
+    flow.w.draw_text(flow.margin_x + 8, flow.y - 7, "CURSO DE IA PARA PERSONAS MAYORES (60+) • MONOGRÁFICO 2", "F2", 7.8, 0.12, 0.35, 0.70)
+    flow.y -= 28
 
     # Título Principal
-    writer.draw_text(36, y, "MANUAL VISUAL COMPLETO Y TALLER: NOTEBOOKLM", "F2", 15.5, 0.10, 0.18, 0.38)
-    y -= 15
-    writer.draw_text(36, y, "Tu Archivador Privado, Cuaderno Inteligente y Estudio Activo para Hijos y Nietos", "F3", 9.5, 0.35, 0.40, 0.48)
-    y -= 14
-    writer.set_stroke_color(0.85, 0.88, 0.92)
-    writer.line(36, y, writer.w - 36, y)
-    y -= 18
+    flow.w.draw_text(flow.margin_x, flow.y, "MANUAL VISUAL COMPLETO Y TALLER: NOTEBOOKLM", "F2", 15.5, 0.10, 0.18, 0.38)
+    flow.y -= 16
+    flow.w.draw_text(flow.margin_x, flow.y, "Tu Cuaderno Inteligente, Archivador Privado y Estudio Activo para Hijos y Nietos", "F3", 9.8, 0.35, 0.40, 0.48)
+    flow.y -= 16
+    flow.w.set_stroke_color(0.85, 0.88, 0.92)
+    flow.w.line(flow.margin_x, flow.y, flow.margin_x + flow.content_w, flow.y)
+    flow.y -= 16
 
-    # BLOQUE 1: De lo público a lo privado
-    writer.set_fill_color(0.15, 0.35, 0.65) # Cabecera azul
-    writer.rect(36, y - 4, writer.w - 72, 17, fill=True, stroke=False)
-    writer.draw_text(44, y + 1, "1. EL GRAN CAMBIO: DE LO PÚBLICO (BUSCADORES) A TU ARCHIVADOR PRIVADO", "F2", 8.8, 1, 1, 1)
-    y -= 20
+    # SECCIÓN 1: DE LO PÚBLICO A LO PRIVADO
+    flow.add_section_header("1. EL GRAN CAMBIO: DE LO PÚBLICO (BUSCADORES) A TU ARCHIVADOR PRIVADO", (0.15, 0.35, 0.65))
+
+    flow.add_paragraph(
+        "A diferencia del Gemini abierto o ChatGPT (que leen todo internet y pueden especular o inventar datos), "
+        "NotebookLM funciona como un ARCHIVADOR CERRADO CON CANDADO. Solo lee estrictamente los papeles, textos y vídeos "
+        "que tú decides subirle. Seguridad absoluta y rigor documental para personas mayores."
+    )
 
     # Tabla comparativa
-    filas_comp = [
+    tabla_datos = [
         ("Concepto", "Gemini Público / ChatGPT Abierto", "Gemini Notebook (NotebookLM)"),
-        ("Origen de datos", "Rastrea todo internet y webs no verificadas.", "SOLO lee tus documentos y papeles subidos."),
-        ("Riesgo de invención", "Puede tener 'alucinaciones' o inventar datos.", "Cero alucinaciones: se ciñe a tus fuentes."),
+        ("Origen de datos", "Rastrea millones de webs no verificadas.", "SOLO lee tus propios documentos subidos."),
+        ("Riesgo de invención", "Puede tener 'alucinaciones' o inventar datos.", "Cero alucinaciones: se ciñe a la verdad de tus papeles."),
         ("Regla de la Verdad", "Rellena lagunas con suposiciones.", "Si no figura, responde: 'No aparece en las fuentes'."),
-        ("Privacidad", "Modelos públicos abiertos.", "Privado y cerrado: no entrena modelos con tus datos.")
+        ("Privacidad", "Modelos públicos abiertos.", "Privado: tus datos jamás se usan para entrenar la IA.")
     ]
-
-    col_w = [105, 205, 213]
-    for idx_f, (c1, c2, c3) in enumerate(filas_comp):
-        bg = (0.94, 0.96, 0.99) if idx_f == 0 else ((0.98, 0.98, 0.99) if idx_f % 2 == 1 else (1, 1, 1))
-        writer.set_fill_color(bg[0], bg[1], bg[2])
-        writer.set_stroke_color(0.85, 0.88, 0.92)
-        writer.rect(36, y - 9, writer.w - 72, 13, fill=True, stroke=True)
+    col_w = [115, 195, 205]
+    flow.check_space(len(tabla_datos) * 16 + 10)
+    for idx_f, (c1, c2, c3) in enumerate(tabla_datos):
+        bg = (0.92, 0.95, 0.99) if idx_f == 0 else ((0.98, 0.98, 0.99) if idx_f % 2 == 1 else (1, 1, 1))
+        flow.w.set_fill_color(bg[0], bg[1], bg[2])
+        flow.w.set_stroke_color(0.85, 0.88, 0.92)
+        flow.w.rect(flow.margin_x, flow.y - 10, flow.content_w, 14, fill=True, stroke=True)
 
         fnt = "F2" if idx_f == 0 else "F1"
-        col_txt = (0.12, 0.25, 0.55) if idx_f == 0 else (0.15, 0.18, 0.22)
-        writer.draw_text(40, y - 6, c1, "F2" if idx_f > 0 else fnt, 7.8, col_txt[0], col_txt[1], col_txt[2])
-        writer.draw_text(145, y - 6, c2, fnt, 7.8, 0.40, 0.45, 0.50 if idx_f > 0 else col_txt[2])
-        writer.draw_text(350, y - 6, c3, "F2" if idx_f > 0 else fnt, 7.8, 0.10, 0.45, 0.30 if idx_f > 0 else col_txt[2])
-        y -= 13
+        col_t = (0.12, 0.25, 0.55) if idx_f == 0 else (0.15, 0.18, 0.22)
+        flow.w.draw_text(flow.margin_x + 6, flow.y - 6.5, c1, "F2" if idx_f > 0 else fnt, 7.8, col_t[0], col_t[1], col_t[2])
+        flow.w.draw_text(flow.margin_x + 125, flow.y - 6.5, c2, fnt, 7.8, 0.40, 0.45, 0.50 if idx_f > 0 else col_t[2])
+        flow.w.draw_text(flow.margin_x + 325, flow.y - 6.5, c3, "F2" if idx_f > 0 else fnt, 7.8, 0.10, 0.45, 0.30 if idx_f > 0 else col_t[2])
+        flow.y -= 14
+    flow.y -= 12
 
-    y -= 10
     # Callout acceso
-    writer.set_fill_color(0.92, 0.97, 0.94)
-    writer.set_stroke_color(0.35, 0.70, 0.50)
-    writer.rect(36, y - 18, writer.w - 72, 22, fill=True, stroke=True)
-    writer.draw_text(44, y - 6, "ACCESO DIRECTO:", "F2", 8, 0.08, 0.45, 0.28)
-    writer.draw_text(130, y - 6, "Entra en notebooklm.google.com con tu cuenta Gmail. Cero contraseñas nuevas.", "F1", 8, 0.15, 0.20, 0.25)
-    writer.draw_text(44, y - 15, "CAPACIDAD ENORME: Hasta 50 fuentes por cuaderno y 500.000 palabras por fuente (PDF, Word, TXT, YouTube, Audio).", "F3", 7.5, 0.30, 0.35, 0.40)
-    y -= 30
+    flow.add_card_box(
+        "ACCESO DIRECTO Y CAPACIDAD DOCUMENTAL",
+        [
+            "Dirección web: Entra en notebooklm.google.com en Chrome, Safari o Edge.",
+            "Tu llave habitual: Inicia sesión con tu correo Gmail. No necesitas contraseñas nuevas ni registros complejos.",
+            "Capacidad enorme: Admite hasta 50 fuentes por cuaderno y hasta 500.000 palabras por fuente individual (PDF, Word, TXT, YouTube, Audio)."
+        ],
+        badge_text="ACCESO FÁCIL",
+        border_color=(0.35, 0.70, 0.50),
+        bg_color=(0.95, 0.98, 0.96),
+        title_color=(0.08, 0.45, 0.28)
+    )
 
-    # BLOQUE 2: Las 3 Zonas de la Pantalla Real
-    writer.set_fill_color(0.30, 0.20, 0.55) # Cabecera morada
-    writer.rect(36, y - 4, writer.w - 72, 17, fill=True, stroke=False)
-    writer.draw_text(44, y + 1, "2. EL MAPA DE LA PANTALLA REAL: LAS TRES COLUMNAS PRINCIPALES", "F2", 8.8, 1, 1, 1)
-    y -= 22
+    # -------------------------------------------------------------
+    # SECCIÓN 2: EL MAPA DE LA PANTALLA REAL (3 ZONAS)
+    # -------------------------------------------------------------
+    flow.add_section_header("2. EL MAPA DE LA PANTALLA REAL: LAS TRES COLUMNAS PRINCIPALES", (0.30, 0.20, 0.55))
 
-    # 3 Cajas horizontales representativas
-    zonas = [
-        ("ZONA 1 (IZQUIERDA): EL ARCHIVADOR", [
-            "Boton '+ Añadir fuentes' (sube PDF, Word, TXT, MP3, YouTube, Docs).",
-            "Casillas [v] para marcar o desmarcar cada documento.",
-            "Regla de Aislamiento: la IA SOLO lee las fuentes con casilla marcada.",
-            "Permite cruzar datos o analizar un solo papel sin contaminar."
-        ], (0.15, 0.35, 0.65), (0.93, 0.96, 0.99)),
-        ("ZONA 2 (CENTRAL): CONVERSACIÓN Y RESUMEN", [
-            "Guia del Cuaderno: resumen estructurado automatico nada mas subir fuentes.",
-            "Chips de preguntas sugeridas: un clic y arranca el analisis.",
-            "Campo de Pregunta (Prompt): habla normal como a un bibliotecario.",
-            "Citas Exactas [1]: haz clic y subraya en amarillo el documento original."
-        ], (0.08, 0.48, 0.35), (0.92, 0.97, 0.94)),
-        ("ZONA 3 (DERECHA): EL PANEL STUDIO (FÁBRICA)", [
-            "Icono Chincheta (Pin): guarda respuestas utiles en el corcho permanente.",
-            "9 Botones automaticos en 1 clic (FAQ, Guia estudio, Cronologia...).",
-            "Presentaciones Diapositiva por Diapositiva con boton 'Revisar' en vivo.",
-            "Audio Overview: podcast a dos voces debatiendo amistosamente tus papeles."
-        ], (0.75, 0.42, 0.10), (0.99, 0.96, 0.91))
+    flow.add_paragraph("La pantalla de NotebookLM está dividida en 3 columnas limpias y organizadas de izquierda a derecha:")
+
+    flow.add_card_box(
+        "ZONA 1 (IZQUIERDA): EL ARCHIVADOR (PANEL DE FUENTES)",
+        [
+            "Botón '+ Añadir fuentes': Carga documentos PDF, Word (.docx), textos planos (.txt), enlaces de YouTube y audios MP3.",
+            "Casillas de Verificación [v]: Cada fuente tiene un recuadro a su izquierda para activarla o desactivarla.",
+            "Regla de Aislamiento: NotebookLM SOLO lee las fuentes con la casilla marcada. Si dejas una sola marcada, la IA 'olvida' temporalmente las demás. Permite analizar un papel sin mezclar datos."
+        ],
+        badge_text="COLUMNA 1",
+        border_color=(0.15, 0.35, 0.65),
+        bg_color=(0.94, 0.96, 0.99),
+        title_color=(0.15, 0.35, 0.65)
+    )
+
+    flow.add_card_box(
+        "ZONA 2 (CENTRAL): CONVERSACIÓN, RESUMEN Y CITAS EXACTAS",
+        [
+            "Guía del Cuaderno: Resumen general automático estructurado nada más subir tus papeles, sin tener que escribir nada.",
+            "Chips de preguntas sugeridas: Botones interactivos con preguntas inteligentes listas para pulsar con un solo clic.",
+            "Campo de Pregunta (Prompt): Escribe con naturalidad cotidiana, como a un bibliotecario amigo que se ha leído tus textos.",
+            "Citas Exactas [1], [2]: Al pulsar el número al final de una frase, la pantalla salta al documento original y subraya en amarillo brillante el párrafo exacto de donde sacó la información. Verificación al 100%."
+        ],
+        badge_text="COLUMNA 2",
+        border_color=(0.08, 0.48, 0.35),
+        bg_color=(0.93, 0.97, 0.94),
+        title_color=(0.08, 0.48, 0.35)
+    )
+
+    flow.add_card_box(
+        "ZONA 3 (DERECHA): EL PANEL STUDIO (LA FÁBRICA DE IDEAS)",
+        [
+            "Icono Chincheta (Pin): Pasa el ratón sobre cualquier respuesta útil del chat y pulsa la chincheta para anclarla como Nota fija en el corcho permanente.",
+            "Fábrica Creativa en 1 Clic: Genera presentaciones completas, resúmenes de vídeo, infografías, podcasts y guías de estudio sin escribir instrucciones largas."
+        ],
+        badge_text="COLUMNA 3",
+        border_color=(0.75, 0.42, 0.10),
+        bg_color=(0.99, 0.96, 0.91),
+        title_color=(0.75, 0.42, 0.10)
+    )
+
+    # -------------------------------------------------------------
+    # SECCIÓN 3: CASO DE ESTUDIO (LA LLEGADA A LA LUNA 1969)
+    # -------------------------------------------------------------
+    flow.add_section_header("3. CASO DE ESTUDIO: LA LLEGADA A LA LUNA (20 DE JULIO DE 1969)", (0.08, 0.48, 0.35))
+
+    flow.add_paragraph("Para realizar las prácticas del taller, disponemos en la carpeta de 3 fuentes reales complementarias:")
+
+    flow.add_card_box(
+        "FUENTE 1: RECUERDO FAMILIAR EN MADRID (TEXTO TXT)",
+        [
+            "Archivo: EJEMPLO_A_FUENTE_TEXTO_RECUERDO_LUNA_1969.txt",
+            "Contenido humano: La noche calurosa de julio en Madrid, la televisión Telefunken en blanco y negro, la voz inolvidable de Jesús Hermida y las lágrimas del abuelo que nació viajando en carro de mulas y vio al hombre pisar la Luna."
+        ],
+        badge_text="HUMANO",
+        border_color=(0.70, 0.30, 0.30),
+        bg_color=(0.99, 0.95, 0.95),
+        title_color=(0.60, 0.15, 0.20)
+    )
+
+    flow.add_card_box(
+        "FUENTE 2: HISTORIA TÉCNICA DEL PROGRAMA APOLO 11 (DOCUMENTO PDF)",
+        [
+            "Archivo: EJEMPLO_A_FUENTE_HISTORIA_APOLO_11.pdf",
+            "Contenido científico: La hazaña de 400.000 ingenieros de la NASA, el cohete Saturno V, el ordenador de navegación AGC con solo 4 KB de memoria RAM y el papel decisivo de la estación española de Fresnedillas de la Oliva (Madrid)."
+        ],
+        badge_text="CIENCIA",
+        border_color=(0.15, 0.35, 0.65),
+        bg_color=(0.94, 0.96, 0.99),
+        title_color=(0.15, 0.35, 0.65)
+    )
+
+    flow.add_card_box(
+        "FUENTE 3: CONMEMORACIÓN DE LOS 50 AÑOS (VÍDEO DE YOUTUBE)",
+        [
+            "Enlace web: https://www.youtube.com/watch?v=Wbh9VAuZcUM (Euronews en español)",
+            "Contenido audiovisual: Reportaje conmemorativo de los 50 años del alunizaje, declaraciones de historiadores y la mirada hacia el programa Artemis."
+        ],
+        badge_text="VÍDEO",
+        border_color=(0.80, 0.45, 0.10),
+        bg_color=(0.99, 0.96, 0.91),
+        title_color=(0.80, 0.45, 0.10)
+    )
+
+    # -------------------------------------------------------------
+    # SECCIÓN 4: FASE 1 DEL TALLER (ZONA CENTRAL, CITAS Y CHINCHETA)
+    # -------------------------------------------------------------
+    flow.add_section_header("4. TALLER PRÁCTICO: FASE 1 (ZONA CENTRAL, CITAS Y CHINCHETA)", (0.15, 0.35, 0.65))
+
+    flow.add_card_box(
+        "PASO 1.1: OBSERVACIÓN DE LA GUÍA DEL CUADERNO AUTOMÁTICA",
+        [
+            "Acción: Con las 3 fuentes marcadas [v], dirige la mirada al centro de la pantalla.",
+            "Qué observar: NotebookLM ha generado por sí mismo un resumen general sin que hayas escrito nada, reconociendo el tema común y ofreciendo botones interactivos (chips) de preguntas sugeridas para empezar."
+        ],
+        badge_text="OBSERVACIÓN",
+        border_color=(0.85, 0.88, 0.92),
+        bg_color=(1, 1, 1),
+        title_color=(0.12, 0.25, 0.55)
+    )
+
+    flow.add_card_box(
+        "PASO 1.2: PRÁCTICA DE AISLAMIENTO CON CASILLAS DE VERIFICACIÓN",
+        [
+            "Ejercicio A (Solo TXT): Desmarca el PDF y el vídeo. Deja marcado ÚNICAMENTE el TXT de recuerdos. Escribe en el chat: 'Resume en 3 líneas la emoción familiar vivida en el salón madrileño'. Observa cómo solo habla del salón.",
+            "Ejercicio B (Solo PDF): Desmarca el TXT y marca ÚNICAMENTE el PDF técnico. Escribe en el chat: 'Resume en 3 puntos técnicos los datos más asombrosos del Saturno V y el ordenador AGC'. Observa cómo responde sin mezclar recuerdos personales."
+        ],
+        badge_text="AISLAMIENTO",
+        border_color=(0.85, 0.88, 0.92),
+        bg_color=(1, 1, 1),
+        title_color=(0.12, 0.25, 0.55)
+    )
+
+    flow.add_card_box(
+        "PASO 1.3: BÚSQUEDA QUIRÚRGICA Y COMPROBACIÓN DE CITAS [1]",
+        [
+            "Acción: Marca las 3 fuentes a la vez [v]. Escribe en el campo de preguntas: '¿Qué marca era la televisión familiar y cuánta memoria RAM tenía el ordenador de la nave Apolo 11?'.",
+            "Comprobación obligatoria: Haz clic sobre el número [1] o [2] al final de la respuesta. Verás cómo la pantalla salta sola al documento original y subraya en amarillo brillante 'Telefunken' y '4 kilobytes de memoria RAM'. Comprobación directa sin dudas."
+        ],
+        badge_text="CITAS [1]",
+        border_color=(0.85, 0.88, 0.92),
+        bg_color=(1, 1, 1),
+        title_color=(0.12, 0.25, 0.55)
+    )
+
+    flow.add_card_box(
+        "PASO 1.4: FIJAR COMO NOTA PERMANENTE EN EL CORCHO DE STUDIO (PIN)",
+        [
+            "Acción: Escribe en el chat: 'Compara en una tabla la vivencia humana del salón con la frialdad técnica de los 4 KB de RAM'.",
+            "Paso de la Chincheta: Pasa el ratón sobre la tabla de respuesta y haz clic en el icono de la Chincheta (Pin).",
+            "Resultado: La tabla viaja al panel derecho (Studio) y se convierte en una Nota permanente. No se borrará aunque salgas del navegador."
+        ],
+        badge_text="CHINCHETA",
+        border_color=(0.85, 0.88, 0.92),
+        bg_color=(1, 1, 1),
+        title_color=(0.12, 0.25, 0.55)
+    )
+
+    # -------------------------------------------------------------
+    # SECCIÓN 5: CASOS DE PRUEBA EXHAUSTIVOS EN EL PANEL STUDIO
+    # -------------------------------------------------------------
+    flow.add_section_header("5. PANEL STUDIO: CASOS DE PRUEBA EXHAUSTIVOS BOTÓN A BOTÓN", (0.75, 0.42, 0.10))
+
+    flow.add_paragraph(
+        "El Panel Studio es la fábrica de productos terminados. A continuación probaremos cada uno de sus botones "
+        "principales con ejemplos prácticos reales, enseñando cómo usarlos en modo automático o guiados con prompts de estilo:"
+    )
+
+    # BOTÓN 1: PRESENTACIONES
+    flow.add_card_box(
+        "BOTÓN 1: PRESENTACIÓN (SLIDES) CON PROMPT DE ESTILO Y REVISIÓN EN VIVO",
+        [
+            "Para qué sirve: Genera una presentación completa en diapositivas con un visor interactivo slide por slide.",
+            "Fuentes a marcar: Marca en la izquierda [v] TXT de recuerdos + [v] PDF de la NASA (deja desmarcado el vídeo).",
+            "Cómo usar el Prompt de Estilo: Pulsa el botón 'Presentación'. En la casilla de personalización escribe el prompt editorial:",
+            "La función 'Revisar' en vivo: Abre la presentación. Con las flechas hojeas cada diapositiva. Pulsa el botón 'Revisar' (o Ajustar) dentro de la presentación para pedir cambios sobre la marcha (ej. 'haz la letra más grande' o 'destaca la frase del carro de mulas'). El control pedagógico siempre es tuyo."
+        ],
+        badge_text="PRESENTACIÓN",
+        border_color=(0.15, 0.35, 0.65),
+        bg_color=(0.95, 0.97, 0.99),
+        title_color=(0.15, 0.35, 0.65)
+    )
+    flow.add_prompt_box(
+        "PROMPT RECOMENDADO PARA PRESENTACIÓN SOBRIA Y ELEGANTE:",
+        "Crea una presentación con un estilo visual sobrio, elegante y de crónica documental histórica. "
+        "Utiliza una paleta espacial limpia (azul marino profundo, gris grafito y blanco de alto contraste), "
+        "con tipografía grande y muy legible para personas mayores. Estructura las diapositivas equilibrando el rigor técnico "
+        "de la NASA con la emoción humana del recuerdo familiar en Madrid, incorporando frases textuales entrecomilladas y "
+        "evitando totalmente ilustraciones infantiles o colores estridentes."
+    )
+
+    # BOTÓN 2: INFOGRAFÍAS
+    flow.add_card_box(
+        "BOTÓN 2: INFOGRAFÍAS VISUALES (AUTOMÁTICAS VS CON PROMPT DE ESTILO)",
+        [
+            "Para qué sirve: Convierte textos densos en esquemas gráficos visuales con iconos, cifras grandes y cajas de resumen.",
+            "Modo Automático (1 Clic): Deja marcado solo el vídeo de YouTube [v] y pulsa 'Infografía'. Creará un resumen gráfico directo.",
+            "Modo con Prompt de Estilo: Marca las 3 fuentes [v] y escribe en la casilla de estilo:",
+            "Ver los resultados en carpeta: En la carpeta '4. RESULTADOS DEL EJEMPLO' tienes preparadas las infografías generadas con 1 fuente, con solo YouTube y con las 3 fuentes combinadas para que compares la riqueza visual."
+        ],
+        badge_text="INFOGRAFÍA",
+        border_color=(0.10, 0.50, 0.40),
+        bg_color=(0.94, 0.98, 0.96),
+        title_color=(0.10, 0.50, 0.40)
+    )
+    flow.add_prompt_box(
+        "PROMPT RECOMENDADO PARA INFOGRAFÍA DIDÁCTICA:",
+        "Genera una infografía estructurada tipo panel resumen con tres bloques visuales conectados: "
+        "1. La Noche en el Salón Madrileño (cifras humanas). 2. El Desafío de la NASA y Fresnedillas (400.000 ingenieros y 4 KB). "
+        "3. El Legado 50 Años Después. Utiliza recuadros limpios, viñetas claras y tipografía nítida."
+    )
+
+    # BOTÓN 3: RESUMEN DE VÍDEO
+    flow.add_card_box(
+        "BOTÓN 3: RESUMEN DE VÍDEO (FUSIÓN MULTIMEDIA EN 1 CLIC)",
+        [
+            "Para qué sirve: Transforma tus documentos y notas en una pieza audiovisual dinámica con voz en off y transiciones.",
+            "Práctica del taller: Marca las 3 fuentes a la vez [v] (TXT + PDF + YouTube).",
+            "Acción: Pulsa directamente el botón 'Resumen de vídeo' en Studio (sin necesidad de escribir ningún prompt en el chat).",
+            "Qué hace la IA: Lee al mismo tiempo la vivencia del salón, los datos de Fresnedillas y el reportaje de Euronews, fundiéndolos en un vídeo conmemorativo listo para proyectar en clase (disponible en la carpeta de resultados)."
+        ],
+        badge_text="VÍDEO",
+        border_color=(0.65, 0.20, 0.25),
+        bg_color=(0.99, 0.95, 0.95),
+        title_color=(0.65, 0.20, 0.25)
+    )
+
+    # BOTÓN 4: AUDIO OVERVIEW
+    flow.add_card_box(
+        "BOTÓN 4: AUDIO OVERVIEW (LA TERTULIA DE RADIO / PODCAST A 2 VOCES)",
+        [
+            "Para qué sirve: Genera un programa de radio conversacional donde dos locutores en español discuten tus documentos.",
+            "Práctica del taller: Con las 3 fuentes marcadas, pulsa 'Generar Audio' en la parte superior de Studio.",
+            "La experiencia del alumno: En un par de minutos tienes un archivo de audio MP3 (disponible en '4. RESULTADOS DEL EJEMPLO'). Pulsas Play y escuchas a los locutores debatir con humor y cercanía sobre cómo un abuelo que nació en carro de mulas vio la Luna por la tele Telefunken."
+        ],
+        badge_text="PODCAST",
+        border_color=(0.75, 0.42, 0.10),
+        bg_color=(0.99, 0.96, 0.91),
+        title_color=(0.75, 0.42, 0.10)
+    )
+
+    # BOTÓN 5: ESTUDIO ACTIVO PARA HIJOS Y NIETOS (TARJETAS FLASHCARDS Y MAPAS)
+    flow.add_card_box(
+        "BOTÓN 5: ESTUDIO ACTIVO PARA HIJOS Y NIETOS (TARJETAS FLASHCARDS Y MAPAS)",
+        [
+            "Para qué sirve: Ayudar a hijos y nietos a estudiar temarios de colegio, instituto o universidad de forma interactiva.",
+            "Tarjetas de Repaso (Flashcards): Pulsa 'Guía de estudio' o pídele en el chat: 'Genera 5 tarjetas de memoria con pregunta por delante y respuesta oculta'. El alumno puede preguntar a sus nietos para que adivinen y giren la tarjeta.",
+            "Mapas Mentales de Estudio: Pídele a la IA que organice temas densos de historia o biología en un esquema visual ramificado: Causas -> Desarrollo -> Consecuencias.",
+            "Grabadora Móvil en Vivo: En la app de móvil puedes grabar hasta 1 hora continua (incluso con la pantalla apagada) para registrar una clase, una consulta médica o dictar recuerdos familiares que se archivan solos como fuentes."
+        ],
+        badge_text="FAMILIA",
+        border_color=(0.35, 0.20, 0.60),
+        bg_color=(0.97, 0.95, 0.99),
+        title_color=(0.35, 0.20, 0.60)
+    )
+
+    # BOTÓN 6 Y 7: PREGUNTAS FRECUENTES (FAQ) Y CRONOLOGÍA
+    flow.add_card_box(
+        "BOTONES 6 Y 7: PREGUNTAS FRECUENTES (FAQ), CRONOLOGÍA Y DOCUMENTO INFORMATIVO",
+        [
+            "Preguntas Frecuentes (FAQ): Pulsa el botón 'Preguntas frecuentes' para generar un cuestionario con las 6 dudas clave que tendría cualquier persona curiosa sobre la misión Apolo 11 y Fresnedillas.",
+            "Cronología / Línea de Tiempo: Pulsa 'Línea de tiempo' para extraer todas las fechas y horas de los textos ordenadas de principio a fin (desde el despegue en Cabo Cañaveral hasta el amarizaje en el Pacífico).",
+            "Documento Informativo (Briefing): Pulsa 'Documento informativo' para obtener un informe formal de 2 páginas con introducción, análisis y conclusiones listo para imprimir."
+        ],
+        badge_text="AUTO EN 1 CLIC",
+        border_color=(0.20, 0.35, 0.50),
+        bg_color=(0.95, 0.97, 0.98),
+        title_color=(0.15, 0.25, 0.40)
+    )
+
+    # -------------------------------------------------------------
+    # SECCIÓN 6: CHECKLIST DE AUTOEVALUACIÓN DEL ALUMNO
+    # -------------------------------------------------------------
+    flow.add_section_header("6. CHECKLIST DE AUTOEVALUACIÓN Y COMPETENCIAS DEL ALUMNO", (0.12, 0.25, 0.55))
+
+    checklist_items = [
+        ("Paso 1", "Sé entrar en notebooklm.google.com con mi cuenta Gmail y pulsar 'Nuevo cuaderno'."),
+        ("Paso 2", "Sé añadir archivos PDF, Word, TXT y enlaces de YouTube con el botón '+ Añadir fuentes'."),
+        ("Paso 3", "Sé observar la 'Guía del cuaderno' central con el resumen automático y preguntas sugeridas."),
+        ("Paso 4", "Sé marcar y desmarcar las casillas [v] para aislar una sola fuente y analizarla sin mezclar."),
+        ("Paso 5", "Sé hacer preguntas en el chat y pulsar las citas [1] para verificar el texto subrayado en amarillo."),
+        ("Paso 6", "Sé guardar respuestas clave en el corcho permanente de Studio con el icono de la Chincheta (Pin)."),
+        ("Paso 7", "Sé generar una Presentación sobria y utilizar el botón 'Revisar' en vivo para ajustar diapositivas."),
+        ("Paso 8", "Sé crear Infografías automáticas y con prompts de estilo visual estructurado."),
+        ("Paso 9", "Sé pulsar el botón 'Resumen de vídeo' para fundir las 3 fuentes en una pieza audiovisual."),
+        ("Paso 10", "Sé escuchar la tertulia de radio Audio Overview generada exclusivamente de mis documentos."),
+        ("Paso 11", "Sé usar NotebookLM para crear tarjetas de repaso (flashcards) y mapas de estudio para hijos y nietos.")
     ]
 
-    for titulo_z, lineas_z, col_borde, col_fondo in zonas:
-        h_box = len(lineas_z) * 11 + 20
-        writer.set_fill_color(col_fondo[0], col_fondo[1], col_fondo[2])
-        writer.set_stroke_color(col_borde[0], col_borde[1], col_borde[2])
-        writer.rect(36, y - h_box + 8, writer.w - 72, h_box, fill=True, stroke=True)
+    flow.check_space(len(checklist_items) * 16 + 20)
+    for paso, desc_c in checklist_items:
+        flow.w.draw_text(flow.margin_x + 4, flow.y, f"[  ] {paso}:", "F2", 7.6, 0.12, 0.25, 0.55)
+        flow.w.draw_text(flow.margin_x + 85, flow.y, desc_c, "F1", 7.6, 0.18, 0.22, 0.26)
+        flow.w.draw_text(flow.margin_x + flow.content_w - 95, flow.y, "[  ] SÍ  /  [  ] DUDAS", "F2", 7.2, 0.45, 0.50, 0.55)
+        flow.y -= 14.5
 
-        writer.draw_text(44, y - 2, titulo_z, "F2", 8.2, col_borde[0], col_borde[1], col_borde[2])
-        ty = y - 14
-        for lz in lineas_z:
-            writer.draw_text(52, ty, "- " + lz, "F1", 7.5, 0.20, 0.22, 0.26)
-            ty -= 10.5
-        y = y - h_box - 4
+    flow.y -= 10
+    # Reglas de oro finales
+    flow.add_card_box(
+        "LAS TRES REGLAS DE ORO EN CLASE",
+        [
+            "1ª Regla (La Materia Prima): La calidad de las respuestas dependerá siempre de la claridad de los papeles que subas.",
+            "2ª Regla (Comprobación Obligatoria): Pulsa siempre las citas [1] para ver el subrayado amarillo con tus propios ojos.",
+            "3ª Regla (Exploración sin Miedo): Prueba todos los botones de Studio. En el ordenador no se puede romper nada."
+        ],
+        badge_text="RECUERDA",
+        border_color=(0.75, 0.42, 0.10),
+        bg_color=(0.99, 0.97, 0.93),
+        title_color=(0.75, 0.42, 0.10)
+    )
 
-    writer.end_page()
+    flow.w.end_page()
 
-    # PÁGINA 2: Caso de Estudio (La Luna 1969), Fase 1 y Fase 2 del Taller
-    writer.start_page()
-    y = writer.h - 50
+    # DIBUJAR HEADER Y FOOTER EN CADA PÁGINA
+    total_pages = len(writer.pages)
+    for i in range(total_pages):
+        p_num = i + 1
+        footer_stream = (
+            f"\nBT /F1 7.5 Tf {flow.margin_x:.2f} 22.00 Td (Guia Didactica Oficial - Manual Visual y Taller Practico NotebookLM) Tj ET\n"
+            f"BT /F2 8.0 Tf {flow.margin_x + flow.content_w - 95:.2f} 22.00 Td (Pagina {p_num} de {total_pages}) Tj ET\n"
+            f"0.850 0.880 0.920 RG\n0.50 w\n{flow.margin_x:.2f} 32.00 m {flow.margin_x + flow.content_w:.2f} 32.00 l S\n"
+        )
+        if p_num > 1:
+            header_stream = (
+                f"\nBT /F2 8.0 Tf {flow.margin_x:.2f} {writer.h - 30:.2f} Td (MONOGRAFICO 2: MANUAL VISUAL Y TALLER NOTEBOOKLM) Tj ET\n"
+                f"BT /F1 8.0 Tf {flow.margin_x + flow.content_w - 180:.2f} {writer.h - 30:.2f} Td (Curso de IA para Adultos Mayores) Tj ET\n"
+                f"0.850 0.880 0.920 RG\n0.50 w\n{flow.margin_x:.2f} {writer.h - 34:.2f} m {flow.margin_x + flow.content_w:.2f} {writer.h - 34:.2f} l S\n"
+            )
+        else:
+            header_stream = ""
 
-    writer.set_fill_color(0.08, 0.48, 0.35) # Verde esmeralda
-    writer.rect(36, y - 4, writer.w - 72, 17, fill=True, stroke=False)
-    writer.draw_text(44, y + 1, "3. CASO DE ESTUDIO DEL TALLER: LA LLEGADA A LA LUNA (20 DE JULIO DE 1969)", "F2", 8.8, 1, 1, 1)
-    y -= 22
-
-    # Fuentes del taller
-    fuentes_info = [
-        ("FUENTE 1 (Texto TXT)", "EJEMPLO_A_FUENTE_TEXTO_RECUERDO_LUNA_1969.txt", "Emocion humana: Noche calurosa en Madrid, tele Telefunken en B/N, voz de Hermida y lagrimas del abuelo (carro de mulas)."),
-        ("FUENTE 2 (Documento PDF)", "EJEMPLO_A_FUENTE_HISTORIA_APOLO_11.pdf", "Rigor cientifico: 400.000 ingenieros, Saturno V, ordenador AGC con solo 4 KB de RAM y estacion de Fresnedillas (Madrid)."),
-        ("FUENTE 3 (Video YouTube)", "https://www.youtube.com/watch?v=Wbh9VAuZcUM", "Conmemoracion oficial: Reportaje Euronews (50 años), declaraciones de historiadores y futuras misiones Artemis.")
-    ]
-
-    for tipo, nombre, desc in fuentes_info:
-        writer.set_fill_color(0.97, 0.98, 0.99)
-        writer.set_stroke_color(0.85, 0.88, 0.92)
-        writer.rect(36, y - 24, writer.w - 72, 28, fill=True, stroke=True)
-
-        writer.draw_text(44, y - 4, tipo, "F2", 8, 0.15, 0.35, 0.65)
-        writer.draw_text(160, y - 4, nombre, "F3", 7.5, 0.40, 0.45, 0.50)
-        lines_d = wrap_text(desc, max_chars=88)
-        ty = y - 14
-        for ld in lines_d:
-            writer.draw_text(44, ty, ld, "F1", 7.5, 0.20, 0.25, 0.30)
-            ty -= 9.5
-        y -= 33
-
-    y -= 6
-    # FASE 1: Zona Central Paso a Paso
-    writer.set_fill_color(0.15, 0.35, 0.65)
-    writer.rect(36, y - 4, writer.w - 72, 17, fill=True, stroke=False)
-    writer.draw_text(44, y + 1, "4. TALLER PRÁCTICO: FASE 1 (ZONA CENTRAL, RESÚMENES, CITAS Y CHINCHETA)", "F2", 8.8, 1, 1, 1)
-    y -= 22
-
-    pasos_fase1 = [
-        ("1.1. Resumen Automatico Inicial", "Con las 3 fuentes marcadas [v], mira al centro: NotebookLM ha creado la 'Guia del cuaderno' sola sin teclear nada, identificando el tema comun y sugiriendo preguntas."),
-        ("1.2. Practica de Aislamiento con Casillas", "Desmarca PDF y YouTube. Con solo TXT escribe: 'Resume en 3 lineas los recuerdos familiares y la emocion de la noche'. Desmarca TXT y activa solo PDF: 'Resume en 3 puntos tecnicos el Apolo 11'."),
-        ("1.3. Busqueda Quirurgica y Citas [1]", "Marca las 3 fuentes [v]. Pregunta: '¿Que marca era la television familiar y cuanta RAM tenia la nave?'. Haz clic en la cita [1] o [2] al final: la pantalla salta al texto original y subraya Telefunken y 4 KB en amarillo fosforito."),
-        ("1.4. Fijar como Nota Permanente (Pin)", "Pasa el raton sobre la respuesta comparativa y pulsa la Chincheta (Pin). La respuesta vuela al panel derecho (Studio) y se queda anclada para siempre, sin borrarse nunca.")
-    ]
-
-    for num_p, desc_p in pasos_fase1:
-        lines_p = wrap_text(desc_p, max_chars=86)
-        h_p = len(lines_p) * 10 + 16
-        writer.set_fill_color(1, 1, 1)
-        writer.set_stroke_color(0.85, 0.88, 0.92)
-        writer.rect(36, y - h_p + 8, writer.w - 72, h_p, fill=True, stroke=True)
-
-        writer.draw_text(44, y - 2, num_p, "F2", 8, 0.12, 0.25, 0.55)
-        ty = y - 12
-        for lp in lines_p:
-            writer.draw_text(44, ty, lp, "F1", 7.5, 0.22, 0.25, 0.30)
-            ty -= 9.5
-        y = y - h_p - 3
-
-    y -= 4
-    # FASE 2: Studio y los 9 botones automáticos
-    writer.set_fill_color(0.75, 0.42, 0.10)
-    writer.rect(36, y - 4, writer.w - 72, 17, fill=True, stroke=False)
-    writer.draw_text(44, y + 1, "5. TALLER PRÁCTICO: FASE 2 (PANEL STUDIO Y LOS 9 BOTONES AUTOMÁTICOS)", "F2", 8.8, 1, 1, 1)
-    y -= 18
-
-    writer.draw_text(40, y, "Paso clave: Desmarca TXT y PDF. Deja marcado ÚNICAMENTE el video de YouTube [v].", "F2", 8, 0.65, 0.35, 0.05)
-    y -= 12
-
-    botones_studio = [
-        ("1. Preguntas Frecuentes (FAQ)", "Cuestionario con las dudas clave resueltas a partir del video."),
-        ("2. Guia de Estudio", "Temario educativo con preguntas de repaso y conceptos clave."),
-        ("3. Cronologia / Linea de Tiempo", "Rastrea y ordena todas las fechas mencionadas cronologicamente."),
-        ("4. Documento Informativo (Briefing)", "Informe formal y ejecutivo listo para imprimir o enviar por email."),
-        ("5. Puntos Clave / Ideas Destacadas", "Decalogo con las perlas de informacion mas importantes en viñetas."),
-        ("6. Audio Overview (Podcast)", "Tertulia a dos voces amena y cercana explicando tus documentos.")
-    ]
-
-    for b_tit, b_desc in botones_studio:
-        writer.draw_text(44, y, "[  ] " + b_tit + ":", "F2", 7.5, 0.15, 0.20, 0.25)
-        writer.draw_text(210, y, b_desc, "F1", 7.5, 0.40, 0.45, 0.50)
-        y -= 11.5
-
-    writer.end_page()
-
-    # PÁGINA 3: Presentación revisable, Resumen de Vídeo, Estudio para Hijos/Nietos y Checklist
-    writer.start_page()
-    y = writer.h - 50
-
-    # FASE 3: Presentación con Estilo y Revisión en Vivo
-    writer.set_fill_color(0.15, 0.35, 0.65)
-    writer.rect(36, y - 4, writer.w - 72, 17, fill=True, stroke=False)
-    writer.draw_text(44, y + 1, "6. PRESENTACIÓN CON ESTILO VISUAL Y REVISIÓN «SLIDE POR SLIDE» EN VIVO", "F2", 8.8, 1, 1, 1)
-    y -= 20
-
-    pasos_pres = [
-        ("Paso 3.1: Seleccion de Fuentes", "Marca TXT [v] + PDF [v] (deja desmarcado el video)."),
-        ("Paso 3.2: Boton Presentacion + Prompt de Estilo", "En Studio pulsa 'Presentacion'. En la casilla escribe: 'Crea una presentacion con estilo sobrio, elegante y cronica documental. Paleta limpia espacial (azul marino profundo y blanco de alto contraste), letra grande para personas mayores, equilibrando rigor NASA y emocion del salon en Madrid, evitando ilustraciones infantiles.'"),
-        ("Paso 3.3: La Clave de la Revision en Vivo", "Abre la presentacion resultante. Con las flechas hojeas slide por slide. Pulsa el boton 'Revisar' (o Ajustar): puedes pedir ajustes sobre la marcha en clase. El control pedagogico siempre es tuyo.")
-    ]
-
-    for tit_pr, desc_pr in pasos_pres:
-        lines_pr = wrap_text(desc_pr, max_chars=86)
-        h_pr = len(lines_pr) * 10 + 15
-        writer.set_fill_color(1, 1, 1)
-        writer.set_stroke_color(0.85, 0.88, 0.92)
-        writer.rect(36, y - h_pr + 8, writer.w - 72, h_pr, fill=True, stroke=True)
-
-        writer.draw_text(44, y - 2, tit_pr, "F2", 8, 0.12, 0.25, 0.55)
-        ty = y - 11
-        for lpr in lines_pr:
-            writer.draw_text(44, ty, lpr, "F1", 7.5, 0.20, 0.22, 0.26)
-            ty -= 9.5
-        y = y - h_pr - 3
-
-    y -= 4
-    # FASE 4: Gran Resumen de Vídeo (3 fuentes juntas)
-    writer.set_fill_color(0.65, 0.20, 0.25) # Rojo cereza
-    writer.rect(36, y - 4, writer.w - 72, 17, fill=True, stroke=False)
-    writer.draw_text(44, y + 1, "7. EL GRAN RESUMEN DE VÍDEO (FUSIÓN DE LAS 3 FUENTES JUNTAS)", "F2", 8.8, 1, 1, 1)
-    y -= 20
-
-    writer.set_fill_color(0.99, 0.95, 0.95)
-    writer.set_stroke_color(0.85, 0.70, 0.70)
-    writer.rect(36, y - 22, writer.w - 72, 26, fill=True, stroke=True)
-    writer.draw_text(44, y - 4, "PASO: Marca las 3 fuentes a la vez [v] (TXT + PDF + YouTube). Pulsa 'Resumen de video' en Studio.", "F2", 8, 0.60, 0.15, 0.20)
-    writer.draw_text(44, y - 13, "NotebookLM funde la vivencia del salon madrileño, el Saturno V y la conmemoracion de Euronews en un video", "F1", 7.5, 0.25, 0.25, 0.25)
-    writer.draw_text(44, y - 21, "resumen multimedia completo y moderno, listo para proyectar y comentar en clase sin escribir prompts.", "F1", 7.5, 0.25, 0.25, 0.25)
-    y -= 32
-
-    # FASE 5: Estudio activo para Hijos y Nietos
-    writer.set_fill_color(0.35, 0.20, 0.60) # Morado didáctico
-    writer.rect(36, y - 4, writer.w - 72, 17, fill=True, stroke=False)
-    writer.draw_text(44, y + 1, "8. NOTEBOOKLM COMO HERRAMIENTA DE ESTUDIO ACTIVO PARA HIJOS Y NIETOS", "F2", 8.8, 1, 1, 1)
-    y -= 20
-
-    items_estudio = [
-        ("Tarjetas de Repaso (Flashcards)", "Tarjetas interactivas con preguntas por delante que se dan la vuelta con la respuesta al hacer clic. Ideales para memorizar fechas, formulas o vocabulario de idiomas de forma amena."),
-        ("Mapas Conceptuales y Esquemas", "Pide a la IA que estructure temas densos de 30 paginas en un mapa visual con causas, hechos y consecuencias conectadas."),
-        ("Grabadora Movil de Bolsillo", "En el telefono movil puedes grabar hasta 1 hora continua (incluso con la pantalla apagada) para registrar consultas medicas, clases o dictar tus memorias familiares; al parar, se transcribe y archiva sola.")
-    ]
-
-    for tit_e, desc_e in items_estudio:
-        lines_e = wrap_text(desc_e, max_chars=86)
-        h_e = len(lines_e) * 9.5 + 15
-        writer.set_fill_color(0.97, 0.95, 0.99)
-        writer.set_stroke_color(0.80, 0.70, 0.90)
-        writer.rect(36, y - h_e + 8, writer.w - 72, h_e, fill=True, stroke=True)
-
-        writer.draw_text(44, y - 2, tit_e, "F2", 8, 0.35, 0.20, 0.60)
-        ty = y - 11
-        for le in lines_e:
-            writer.draw_text(44, ty, le, "F1", 7.5, 0.20, 0.22, 0.26)
-            ty -= 9.5
-        y = y - h_e - 3
-
-    y -= 4
-    # CHECKLIST DE AUTOEVALUACIÓN DEL ALUMNO
-    writer.set_fill_color(0.12, 0.23, 0.54)
-    writer.rect(36, y - 4, writer.w - 72, 16, fill=True, stroke=False)
-    writer.draw_text(44, y + 1, "9. CHECKLIST DE AUTOEVALUACIÓN Y COMPETENCIAS DEL ALUMNO", "F2", 8.5, 1, 1, 1)
-    y -= 18
-
-    checklist = [
-        ("Paso 1", "Se entrar a notebooklm.google.com con mi cuenta Gmail y crear un nuevo cuaderno."),
-        ("Paso 2", "Se subir archivos TXT, PDF y enlaces de YouTube mediante el boton '+ Añadir fuentes'."),
-        ("Paso 3", "Se localizar el Resumen Central y utilizar los chips sugeridos para arrancar la conversacion."),
-        ("Paso 4", "Se usar las casillas [v] para aislar una sola fuente y analizarla por separado sin mezclar."),
-        ("Paso 5", "Se hacer preguntas en el chat y pulsar las citas [1] para verificar el subrayado en amarillo."),
-        ("Paso 6", "Se fijar cualquier respuesta util como Nota permanente en Studio con la chincheta (Pin)."),
-        ("Paso 7", "He probado los 9 botones de Studio con YouTube (FAQ, Guia, Cronologia, Resumen)."),
-        ("Paso 8", "Se generar la Presentacion sobria (TXT+PDF) y utilizar el boton 'Revisar' en vivo."),
-        ("Paso 9", "Se crear el Resumen de Video con las 3 fuentes y usar NLM para ayudar a estudiar a mi familia.")
-    ]
-
-    for paso_n, paso_txt in checklist:
-        writer.draw_text(40, y, f"[  ] {paso_n}:", "F2", 7.2, 0.12, 0.25, 0.55)
-        writer.draw_text(115, y, paso_txt, "F1", 7.2, 0.20, 0.25, 0.30)
-        writer.draw_text(writer.w - 95, y, "[  ] SI  /  [  ] DUDAS", "F2", 7.0, 0.45, 0.50, 0.55)
-        y -= 11
-
-    writer.end_page()
-
-    # Escribir encabezados y números de página reales (3 páginas en total)
-    total_p = len(writer.pages)
-    for p_num in range(1, total_p + 1):
-        # Inyectar pie y encabezado en el stream de la página
-        pass
-
-    # Aplicar draw_header_footer en cada página
-    for i in range(len(writer.pages)):
-        # Añadimos al final del stream de cada página el pie
-        writer.pages[i] += f"\nBT /F1 7.5 Tf 36 20 Td (Guia Didactica Oficial - Aprendizaje Activo con IA para Seniors, Hijos y Nietos) Tj ET\n"
-        writer.pages[i] += f"BT /F2 8 Tf {writer.w - 110} 20 Td (Pagina {i+1} de {total_p}) Tj ET\n"
-        writer.pages[i] += f"0.850 0.880 0.920 RG\n0.50 w\n36.00 32.00 m {writer.w - 36:.2f} 32.00 l S\n"
-        if i > 0:
-            writer.pages[i] += f"BT /F2 8 Tf 36 {writer.h - 32:.2f} Td (MONOGRAFICO 2: GUIA VISUAL COMPLETA Y TALLER NOTEBOOKLM) Tj ET\n"
-            writer.pages[i] += f"BT /F1 8 Tf {writer.w - 180} {writer.h - 32:.2f} Td (Curso de IA para Adultos Mayores) Tj ET\n"
-            writer.pages[i] += f"0.850 0.880 0.920 RG\n0.50 w\n36.00 {writer.h - 36:.2f} m {writer.w - 36:.2f} {writer.h - 36:.2f} l S\n"
+        writer.pages[i] += footer_stream + header_stream
 
     writer.write_to_file(PDF_OUTPUT)
-    print(f"✅ PDF generado exitosamente: {PDF_OUTPUT} ({total_p} páginas)")
+    print(f"✅ PDF generado exitosamente: {PDF_OUTPUT} ({total_pages} páginas, diseño holgado y sin solapamientos)")
 
 if __name__ == "__main__":
-    construir_guia_pdf()
+    generar_pdf_completo()
