@@ -252,7 +252,7 @@ def generar_pdf_completo():
     flow.y -= 28
 
     # Título Principal
-    flow.w.draw_text(flow.margin_x, flow.y, "MANUAL VISUAL COMPLETO Y TALLER: NOTEBOOKLM", "F2", 15.5, 0.10, 0.18, 0.38)
+    flow.w.draw_text(flow.margin_x, flow.y, "MANUAL VISUAL COMPLETO Y TALLER: GEMINI NOTEBOOK", "F2", 15.5, 0.10, 0.18, 0.38)
     flow.y -= 16
     flow.w.draw_text(flow.margin_x, flow.y, "Tu Cuaderno Inteligente, Archivador Privado y Estudio Activo para Hijos y Nietos", "F3", 9.8, 0.35, 0.40, 0.48)
     flow.y -= 16
@@ -265,13 +265,13 @@ def generar_pdf_completo():
 
     flow.add_paragraph(
         "A diferencia del Gemini abierto o ChatGPT (que leen todo internet y pueden especular o inventar datos), "
-        "NotebookLM funciona como un ARCHIVADOR CERRADO CON CANDADO. Solo lee estrictamente los papeles, textos y vídeos "
+        "Gemini Notebook funciona como un ARCHIVADOR CERRADO CON CANDADO. Solo lee estrictamente los papeles, textos y vídeos "
         "que tú decides subirle. Seguridad absoluta y rigor documental para personas mayores."
     )
 
     # Tabla comparativa
     tabla_datos = [
-        ("Concepto", "Gemini Público / ChatGPT Abierto", "Gemini Notebook (NotebookLM)"),
+        ("Concepto", "Gemini Público / ChatGPT Abierto", "Gemini Notebook"),
         ("Origen de datos", "Rastrea millones de webs no verificadas.", "SOLO lee tus propios documentos subidos."),
         ("Riesgo de invención", "Puede tener 'alucinaciones' o inventar datos.", "Cero alucinaciones: se ciñe a la verdad de tus papeles."),
         ("Regla de la Verdad", "Rellena lagunas con suposiciones.", "Si no figura, responde: 'No aparece en las fuentes'."),
@@ -297,7 +297,7 @@ def generar_pdf_completo():
     flow.add_card_box(
         "ACCESO DIRECTO Y CAPACIDAD DOCUMENTAL",
         [
-            "Dirección web: Entra en notebooklm.google.com en Chrome, Safari o Edge.",
+            "Dirección web: Entrar en Chrome.",
             "Tu llave habitual: Inicia sesión con tu correo Gmail. No necesitas contraseñas nuevas ni registros complejos.",
             "Capacidad enorme: Admite hasta 50 fuentes por cuaderno y hasta 500.000 palabras por fuente individual (PDF, Word, TXT, YouTube, Audio)."
         ],
@@ -312,14 +312,14 @@ def generar_pdf_completo():
     # -------------------------------------------------------------
     flow.add_section_header("2. EL MAPA DE LA PANTALLA REAL: LAS TRES COLUMNAS PRINCIPALES", (0.30, 0.20, 0.55))
 
-    flow.add_paragraph("La pantalla de NotebookLM está dividida en 3 columnas limpias y organizadas de izquierda a derecha:")
+    flow.add_paragraph("La pantalla de Gemini Notebook está dividida en 3 columnas limpias y organizadas de izquierda a derecha:")
 
     flow.add_card_box(
         "ZONA 1 (IZQUIERDA): EL ARCHIVADOR (PANEL DE FUENTES)",
         [
-            "Botón '+ Añadir fuentes': Carga documentos PDF, Word (.docx), textos planos (.txt), enlaces de YouTube y audios MP3.",
+            "Botón '+ Añadir fuentes': Carga documentos PDF, Word (.docx), textos planos (.txt), enlaces de YouTube y audios MP3. Además, ahora cuenta con un botón directo para cargar tus propias grabaciones hechas por ti.",
             "Casillas de Verificación [v]: Cada fuente tiene un recuadro a su izquierda para activarla o desactivarla.",
-            "Regla de Aislamiento: NotebookLM SOLO lee las fuentes con la casilla marcada. Si dejas una sola marcada, la IA 'olvida' temporalmente las demás. Permite analizar un papel sin mezclar datos."
+            "Regla de Aislamiento: Gemini Notebook SOLO lee las fuentes con la casilla marcada. Si dejas una sola marcada, la IA 'olvida' temporalmente las demás. Permite analizar un papel sin mezclar datos."
         ],
         badge_text="COLUMNA 1",
         border_color=(0.15, 0.35, 0.65),
@@ -405,7 +405,7 @@ def generar_pdf_completo():
         "PASO 1.1: OBSERVACIÓN DE LA GUÍA DEL CUADERNO AUTOMÁTICA",
         [
             "Acción: Con las 3 fuentes marcadas [v], dirige la mirada al centro de la pantalla.",
-            "Qué observar: NotebookLM ha generado por sí mismo un resumen general sin que hayas escrito nada, reconociendo el tema común y ofreciendo botones interactivos (chips) de preguntas sugeridas para empezar."
+            "Qué observar: Gemini Notebook ha generado por sí mismo un resumen general sin que hayas escrito nada, reconociendo el tema común y ofreciendo botones interactivos (chips) de preguntas sugeridas para empezar."
         ],
         badge_text="OBSERVACIÓN",
         border_color=(0.85, 0.88, 0.92),
@@ -465,8 +465,9 @@ def generar_pdf_completo():
         "BOTÓN 1: PRESENTACIÓN (SLIDES) CON PROMPT DE ESTILO Y REVISIÓN EN VIVO",
         [
             "Para qué sirve: Genera una presentación completa en diapositivas con un visor interactivo slide por slide.",
+            "Nueva función paso a paso: Ahora puedes crear presentaciones y vídeos paso a paso; la herramienta te saca un esquema línea por línea antes de hacer la presentación final, permitiéndote revisar y validar el contenido diapositiva a diapositiva.",
             "Fuentes a marcar: Marca en la izquierda [v] TXT de recuerdos + [v] PDF de la NASA (deja desmarcado el vídeo).",
-            "Cómo usar el Prompt de Estilo: Pulsa el botón 'Presentación'. En la casilla de personalización escribe el prompt editorial:",
+            "Cómo usar el Prompt de Estilo: Pulsa el botón 'Presentación'. En la casilla de personalización escribe el prompt editorial (que tienes disponible más abajo en el recuadro verde):",
             "La función 'Revisar' en vivo: Abre la presentación. Con las flechas hojeas cada diapositiva. Pulsa el botón 'Revisar' (o Ajustar) dentro de la presentación para pedir cambios sobre la marcha (ej. 'haz la letra más grande' o 'destaca la frase del carro de mulas'). El control pedagógico siempre es tuyo."
         ],
         badge_text="PRESENTACIÓN",
@@ -485,12 +486,12 @@ def generar_pdf_completo():
 
     # BOTÓN 2: INFOGRAFÍAS
     flow.add_card_box(
-        "BOTÓN 2: INFOGRAFÍAS VISUALES (AUTOMÁTICAS VS CON PROMPT DE ESTILO)",
+        "BOTÓN 2: INFOGRAFÍAS VISUALES (AUTOMÁTICAS, ESTILOS PREESTABLECIDOS Y PROMPTS)",
         [
             "Para qué sirve: Convierte textos densos en esquemas gráficos visuales con iconos, cifras grandes y cajas de resumen.",
-            "Modo Automático (1 Clic): Deja marcado solo el vídeo de YouTube [v] y pulsa 'Infografía'. Creará un resumen gráfico directo.",
-            "Modo con Prompt de Estilo: Marca las 3 fuentes [v] y escribe en la casilla de estilo:",
-            "Ver los resultados en carpeta: En la carpeta '4. RESULTADOS DEL EJEMPLO' tienes preparadas las infografías generadas con 1 fuente, con solo YouTube y con las 3 fuentes combinadas para que compares la riqueza visual."
+            "Práctica de estilos visuales: Haz al menos dos infografías de prueba con estilos diferentes de los que vienen preestablecidos; prueba obligatoriamente el estilo 'Científico' y el estilo 'Anime' para comparar cómo transforma los datos y la estética.",
+            "Modo Automático vs Personalizado: Deja marcada una fuente para generar una infografía en 1 clic, o escribe en la casilla de estilo el prompt estructurado:",
+            "Ver los resultados en carpeta: En la carpeta '4. RESULTADOS DEL EJEMPLO' puedes comparar las distintas infografías generadas."
         ],
         badge_text="INFOGRAFÍA",
         border_color=(0.10, 0.50, 0.40),
@@ -506,9 +507,10 @@ def generar_pdf_completo():
 
     # BOTÓN 3: RESUMEN DE VÍDEO
     flow.add_card_box(
-        "BOTÓN 3: RESUMEN DE VÍDEO (FUSIÓN MULTIMEDIA EN 1 CLIC)",
+        "BOTÓN 3: RESUMEN DE VÍDEO (FUSIÓN MULTIMEDIA EN 1 CLIC Y PASO A PASO)",
         [
             "Para qué sirve: Transforma tus documentos y notas en una pieza audiovisual dinámica con voz en off y transiciones.",
+            "Creación guiada paso a paso: Al igual que en las presentaciones, ahora puedes crear vídeos paso a paso visualizando previamente un esquema línea por línea para revisar el guión antes de generar el vídeo definitivo.",
             "Práctica del taller: Marca las 3 fuentes a la vez [v] (TXT + PDF + YouTube).",
             "Acción: Pulsa directamente el botón 'Resumen de vídeo' en Studio (sin necesidad de escribir ningún prompt en el chat).",
             "Qué hace la IA: Lee al mismo tiempo la vivencia del salón, los datos de Fresnedillas y el reportaje de Euronews, fundiéndolos en un vídeo conmemorativo listo para proyectar en clase (disponible en la carpeta de resultados)."
@@ -548,15 +550,15 @@ def generar_pdf_completo():
         title_color=(0.35, 0.20, 0.60)
     )
 
-    # BOTÓN 6 Y 7: PREGUNTAS FRECUENTES (FAQ) Y CRONOLOGÍA
+    # BOTÓN 6: INFORME (NUEVA FUNCIÓN OFICIAL)
     flow.add_card_box(
-        "BOTONES 6 Y 7: PREGUNTAS FRECUENTES (FAQ), CRONOLOGÍA Y DOCUMENTO INFORMATIVO",
+        "BOTÓN 6: INFORME (NUEVA FUNCIÓN OFICIAL DE DOCUMENTO ESTRUCTURADO)",
         [
-            "Preguntas Frecuentes (FAQ): Pulsa el botón 'Preguntas frecuentes' para generar un cuestionario con las 6 dudas clave que tendría cualquier persona curiosa sobre la misión Apolo 11 y Fresnedillas.",
-            "Cronología / Línea de Tiempo: Pulsa 'Línea de tiempo' para extraer todas las fechas y horas de los textos ordenadas de principio a fin (desde el despegue en Cabo Cañaveral hasta el amarizaje en el Pacífico).",
-            "Documento Informativo (Briefing): Pulsa 'Documento informativo' para obtener un informe formal de 2 páginas con introducción, análisis y conclusiones listo para imprimir."
+            "Nueva función Informe: Las antiguas opciones de preguntas frecuentes y cronología han sido sustituidas por la función oficial 'Informe'.",
+            "Para qué sirve: Genera un informe documental riguroso, formal y estructurado de todas tus fuentes seleccionadas, organizando antecedentes, análisis detallado y conclusiones.",
+            "Cómo utilizarlo: Pulsa directamente el botón 'Informe' en el panel Studio. Obtendrás un texto ejecutivo completo, listo para estudiar, imprimir o compartir con hijos, nietos o colegas."
         ],
-        badge_text="AUTO EN 1 CLIC",
+        badge_text="INFORME",
         border_color=(0.20, 0.35, 0.50),
         bg_color=(0.95, 0.97, 0.98),
         title_color=(0.15, 0.25, 0.40)
@@ -568,17 +570,17 @@ def generar_pdf_completo():
     flow.add_section_header("6. CHECKLIST DE AUTOEVALUACIÓN Y COMPETENCIAS DEL ALUMNO", (0.12, 0.25, 0.55))
 
     checklist_items = [
-        ("Paso 1", "Sé entrar en notebooklm.google.com con mi cuenta Gmail y pulsar 'Nuevo cuaderno'."),
-        ("Paso 2", "Sé añadir archivos PDF, Word, TXT y enlaces de YouTube con el botón '+ Añadir fuentes'."),
+        ("Paso 1", "Sé entrar en Chrome con mi cuenta Gmail y pulsar 'Nuevo cuaderno'."),
+        ("Paso 2", "Sé añadir archivos PDF, Word, TXT, YouTube y grabaciones propias con '+ Añadir fuentes'."),
         ("Paso 3", "Sé observar la 'Guía del cuaderno' central con el resumen automático y preguntas sugeridas."),
         ("Paso 4", "Sé marcar y desmarcar las casillas [v] para aislar una sola fuente y analizarla sin mezclar."),
         ("Paso 5", "Sé hacer preguntas en el chat y pulsar las citas [1] para verificar el texto subrayado en amarillo."),
         ("Paso 6", "Sé guardar respuestas clave en el corcho permanente de Studio con el icono de la Chincheta (Pin)."),
-        ("Paso 7", "Sé generar una Presentación sobria y utilizar el botón 'Revisar' en vivo para ajustar diapositivas."),
-        ("Paso 8", "Sé crear Infografías automáticas y con prompts de estilo visual estructurado."),
-        ("Paso 9", "Sé pulsar el botón 'Resumen de vídeo' para fundir las 3 fuentes en una pieza audiovisual."),
-        ("Paso 10", "Sé escuchar la tertulia de radio Audio Overview generada exclusivamente de mis documentos."),
-        ("Paso 11", "Sé usar NotebookLM para crear tarjetas de repaso (flashcards) y mapas de estudio para hijos y nietos.")
+        ("Paso 7", "Sé generar Presentaciones paso a paso con esquema previo y usar 'Revisar' en vivo."),
+        ("Paso 8", "Sé crear Infografías probando al menos 2 estilos distintos (Científico y Anime)."),
+        ("Paso 9", "Sé crear un Resumen de vídeo paso a paso fundiendo fuentes en una pieza audiovisual."),
+        ("Paso 10", "Sé escuchar la tertulia de radio Audio Overview y generar un Informe estructurado en Studio."),
+        ("Paso 11", "Sé usar Gemini Notebook para crear tarjetas de repaso (flashcards) y mapas de estudio para hijos y nietos.")
     ]
 
     flow.check_space(len(checklist_items) * 16 + 20)
@@ -610,13 +612,13 @@ def generar_pdf_completo():
     for i in range(total_pages):
         p_num = i + 1
         footer_stream = (
-            f"\nBT /F1 7.5 Tf {flow.margin_x:.2f} 22.00 Td (Guia Didactica Oficial - Manual Visual y Taller Practico NotebookLM) Tj ET\n"
+            f"\nBT /F1 7.5 Tf {flow.margin_x:.2f} 22.00 Td (Guia Didactica Oficial - Manual Visual y Taller Practico Gemini Notebook) Tj ET\n"
             f"BT /F2 8.0 Tf {flow.margin_x + flow.content_w - 95:.2f} 22.00 Td (Pagina {p_num} de {total_pages}) Tj ET\n"
             f"0.850 0.880 0.920 RG\n0.50 w\n{flow.margin_x:.2f} 32.00 m {flow.margin_x + flow.content_w:.2f} 32.00 l S\n"
         )
         if p_num > 1:
             header_stream = (
-                f"\nBT /F2 8.0 Tf {flow.margin_x:.2f} {writer.h - 30:.2f} Td (MONOGRAFICO 2: MANUAL VISUAL Y TALLER NOTEBOOKLM) Tj ET\n"
+                f"\nBT /F2 8.0 Tf {flow.margin_x:.2f} {writer.h - 30:.2f} Td (MONOGRAFICO 2: MANUAL VISUAL Y TALLER GEMINI NOTEBOOK) Tj ET\n"
                 f"BT /F1 8.0 Tf {flow.margin_x + flow.content_w - 180:.2f} {writer.h - 30:.2f} Td (Curso de IA para Adultos Mayores) Tj ET\n"
                 f"0.850 0.880 0.920 RG\n0.50 w\n{flow.margin_x:.2f} {writer.h - 34:.2f} m {flow.margin_x + flow.content_w:.2f} {writer.h - 34:.2f} l S\n"
             )
