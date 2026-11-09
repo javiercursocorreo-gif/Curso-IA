@@ -536,7 +536,7 @@ Esta sección recopila los descubrimientos críticos de ingeniería realizados d
   - Em7 [Sol-Si-Re-Mi] ➔ Bm [Fa♯-Si-Re] [Doble pivote Si-Re]
   - C [Sol-Do-Mi] ➔ B♭ [Fa-Si♭-Re] [Movimiento paralelo de semitono hacia el acorde mágico de la BSO Ghost]
 
-### 6.39. Arquitectura Modular Independiente en Canción 25: Desacoplamiento de 3 Estilos Canónicos vs 3 Voces Oficiales con 066 Oct.Strings (v161)
+### 6.39. Arquitectura Modular Independiente en Canción 25: Desacoplamiento de 3 Estilos Canónicos vs 3 Voces Oficiales con 066 Oct.Strings (v162)
 * **Principio de Diseño:** Superación del modelo de combinaciones fijas en favor de un sistema modular 100% libre donde el intérprete conmuta de forma independiente la base rítmica de acompañamiento y la paleta tímbrica melódica, sin reinicios accidentales de compás ni cambios forzados de instrumento.
 * **Bloque 1 · Selector Rítmico / 3 Estilos Canónicos Elvis (Canal 16 MIDI):**
   - **🥁 Estilo 041 (Love Ballad · 80 BPM):** `Bank MSB 32, LSB 2, PC 8`. Acompañamiento pop-balada suave y elegante calibrado a 80 BPM para una pulsación fluida y expresiva.
