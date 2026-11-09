@@ -37,29 +37,61 @@
 
 ---
 
-## 🔬 2. PATRONES DE REACTIVIDAD POR FAMILIAS CLÍNICAS
+## 🔬 2. PATRONES DE REACTIVIDAD POR FAMILIAS CLÍNICAS (TOTALIDAD DE MEDICAMENTOS EVALUADOS)
+
+*(Listado ordenado por familias para facilitar la labor diagnóstica del especialista, sin hipótesis técnicas ni juicios teóricos ajenos a la consulta).*
 
 ### A. Antibióticos Betalactámicos (Aminopenicilinas: Amoxicilina)
-* **Manifestación:** Sarpullido en pecho (1997, Clamoxil) y picores cutáneos con palpitaciones (2017, Amoxicilina 750).
-* **Interpretación:** Reactividad cutánea reproducible con intervalo de 20 años. Sugiere hipersensibilidad no mediada por IgE inmediata o prueba RAST limítrofe (en analítica previa de 26/11/2002: Amoxicilina RAST <0,35 Clase 0/1 limítrofe).
+* **Medicamentos:** Clamoxil (1997) y Amoxicilina 750 (2017).
+* **Manifestación:** Sarpullido en pecho (1997) y picores cutáneos con palpitaciones (2017, 11 comprimidos).
+* **Interpretación:** Reactividad cutánea reproducible con intervalo de 20 años. Sugiere hipersensibilidad no mediada por IgE inmediata o prueba RAST limítrofe (analítica previa de 26/11/2002: Amoxicilina RAST <0,35 Clase 0/1 limítrofe).
 
 ### B. Antibióticos Fluorquinolonas (Ciprofloxacino, Ofloxacino, Levofloxacino)
+* **Medicamentos:** Velmonit 500 (1999), Surnox (2001) y Levofloxacino 500 (2025).
 * **Manifestación:**
   * *Ciprofloxacino (1999):* Sarpullido en pecho y agitación (suspendido a los 3 días).
-  * *Ofloxacino (2001):* Picores en espalda que **cedieron espontáneamente al 6º día** completando la pauta.
+  * *Ofloxacino (2001):* Picores en espalda que **cedieron espontáneamente al 6º día** completando 18 pastillas.
   * *Levofloxacino (2025):* Picores en brazos/axilas (pastillas 1-3) y piernas (pastillas 4-6), que **desaparecieron el 7º día** tratados con crema de urea.
-* **Interpretación:** Efecto de activación de mastocitos por vía directa (receptor MRGPRX2, típico de quinolonas) más que reacción alérgica IgE verdadera, lo que explica que los picores puedan atenuarse o ceder conforme avanza el tratamiento.
+* **Interpretación:** Activación mastocitaria directa (vía receptor MRGPRX2, propio de quinolonas) más que alergia IgE clásica, lo que justifica que el prurito tienda a remitir o agotarse durante el tratamiento continuado.
 
-### C. Macrólidos (Claritromicina vs Azitromicina)
-* **Claritromicina (Klacid Unidia 2006):** Picores crecientes e intolerables en piernas con palpitaciones (suspendido de urgencia a la 3ª toma).
-* **Azitromicina (2015):** Picores breves en brazos que **desaparecieron a las 3 horas**, con tolerancia total en tomas posteriores y en 2017.
-* **Interpretación:** Clara divergencia entre macrólidos de 14 átomos (Claritromicina, no tolerada) y azálidos de 15 átomos (Azitromicina, tolerada).
+### C. Macrólidos (14 vs 15 átomos: Claritromicina vs Azitromicina)
+* **Medicamentos:** Klacid Unidia 500 (2006) y Azitromicina 500 (2015, 2017).
+* **Manifestación:**
+  * *Claritromicina (2006):* Picores crecientes e intolerables en piernas con palpitaciones (suspendido de urgencia a la 3ª toma).
+  * *Azitromicina (2015):* Picores breves en brazos que **desaparecieron a las 3 horas**, con tolerancia total en tomas posteriores y en 2017.
+* **Interpretación:** Clara divergencia entre macrólidos de 14 átomos (Claritromicina, intolerada) y azálidos de 15 átomos (Azitromicina, tolerada y de elección).
 
 ### D. Fármacos Hipolipemiantes (Ezetimiba y Pitavastatina vs Atorvastatina)
-* **Ezetimiba (agosto 2026):** Prurito cutáneo durante 15 días continuados que requirió **Aerius diario y crema de urea**.
-* **Pitavastatina (octubre 2026):** Picores a la tercera semana que requirieron Aerius y suspensión.
-* **Atorvastatina (2022 a 2026): CERO PICORES.**
-* **Interpretación:** El prurito es dependiente de molécula específica y no de clase. La Atorvastatina no genera histaminoliberación ni prurito en el paciente.
+* **Medicamentos:** Ezetimiba 10 mg (2026), Pitavastatina (2026) y Atorvastatina 20 mg (2022-2026).
+* **Manifestación:**
+  * *Ezetimiba (agosto 2026):* Prurito cutáneo durante 15 días continuados que requirió **Aerius diario y crema de urea**.
+  * *Pitavastatina (octubre 2026):* Picores a la tercera semana que requirieron Aerius y suspensión.
+  * *Atorvastatina (2022 a 2026): CERO PICORES (Control negativo).*
+* **Interpretación:** El prurito es selectivo por molécula y no de clase. La Atorvastatina es neutra, tolerada y mantiene el LDL en 64 sin ninguna reactividad cutánea.
+
+### E. Corticoides (Tópico Nasal vs Infiltración Parenteral de Depósito)
+* **Medicamentos:** Nasonex spray nasal (Feb 2024) e Infiltración de corticoides en cresta ilíaca izq. (Mayo 2024).
+* **Manifestación:**
+  * *Nasonex (2024):* Pequeños picores aleatorios con la 1ª inhalación que **se pasaron al poco rato** (días siguientes con tolerancia 100%).
+  * *Infiltración (2024):* Picores corporales durante 5 días que **remitieron por completo y de forma espontánea** al aclararse el depósito corticoideo.
+* **Interpretación:** Prurito transitorio autolimitado asociado al pico de absorción o aclaramiento, sin afectación mucosa respiratoria ni anafilaxia.
+
+### F. Otros Antibióticos (Sulfamidas y Tetraciclinas)
+* **Medicamentos:** Brongenit (Sulfametoxazol + Trimetoprima, 1999) y Vibracina (Doxiciclina, 1999).
+* **Manifestación:**
+  * *Brongenit (1999):* Picores a la 3ª pastilla y agitación (suspendido a la 6ª pastilla).
+  * *Vibracina (1999):* Tomado 7 días completos; el último día brotó sarpullido en el costado que remitió en días posteriores.
+* **Interpretación:** Erupciones tardías o reactividad a sulfamidas; disbiosis secundaria resuelta.
+
+### G. Fármacos Menores (Sistema Nervioso Central, Suplementación, Tópicos y Fitoterapia)
+* **Medicamentos:** Alprazolam 0,25 (2004), Benerva Vitamina B1 (2003-2004), Micosport crema (2004), Permixon 160 (2022, 2025) y Proctoial rectal (2023).
+* **Manifestación:**
+  * *Alprazolam (2004):* Picores sin granos (pinchitos) que **duraron 5 días y se pasaron solos**.
+  * *Benerva Vit B1 (2003-04):* Prurito y granos en frente/pecho o pie que **remitieron a los 5 días**.
+  * *Micosport (2004):* Granos papulosos al 7º día tras curar la micosis; remisión tras suspender.
+  * *Permixon (2022, 2025):* Picores leves en extremidades (en 2022 cedieron al retirar; en 2025 tolerado en continuación).
+  * *Proctoial rectal (2023):* Escozor y picor perianal local de contacto mucoso.
+* **Interpretación:** Eventos cutáneos benignos, autolimitados en unos 5 días o circunscritos a irritación local de aplicación tópica.
 
 ---
 
