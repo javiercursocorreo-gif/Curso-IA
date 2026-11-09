@@ -536,13 +536,13 @@ Esta sección recopila los descubrimientos críticos de ingeniería realizados d
   - Em7 [Sol-Si-Re-Mi] ➔ Bm [Fa♯-Si-Re] [Doble pivote Si-Re]
   - C [Sol-Do-Mi] ➔ B♭ [Fa-Si♭-Re] [Movimiento paralelo de semitono hacia el acorde mágico de la BSO Ghost]
 
-### 6.39. Arquitectura Modular Independiente en Canción 25: Desacoplamiento de 3 Estilos Canónicos vs 3 Voces Oficiales con 066 Oct.Strings (v162)
-* **Principio de Diseño:** Superación del modelo de combinaciones fijas en favor de un sistema modular 100% libre donde el intérprete conmuta de forma independiente la base rítmica de acompañamiento y la paleta tímbrica melódica, sin reinicios accidentales de compás ni cambios forzados de instrumento.
-* **Bloque 1 · Selector Rítmico / 3 Estilos Canónicos Elvis (Canal 16 MIDI):**
+### 6.39. Arquitectura Minimalista en Canción 25: Exclusividad HUD Flotante de Partitura (v163)
+* **Principio de Diseño:** Depuración visual absoluta de la ficha. Se suprimen las botoneras redundantes de estilos e instrumentos del cuerpo principal, centralizando el 100% del control rítmico y tímbrico en el **HUD Flotante de 3 Filas del Modo Pantalla Completa**. La ficha principal queda limpia y dedicada al análisis armónico, voice leading y calibración de transporte.
+* **Bloque 1 · Selector Rítmico / 3 Estilos Canónicos Elvis (Exclusivo en HUD Atril):**
   - **🥁 Estilo 041 (Love Ballad · 80 BPM):** `Bank MSB 32, LSB 2, PC 8`. Acompañamiento pop-balada suave y elegante calibrado a 80 BPM para una pulsación fluida y expresiva.
   - **🥁 Estilo 051 (Slow Rock 2):** `Bank MSB 32, LSB 3, PC 2`. Pulso clásico ternario en 12/8 estilo Elvis con acentuación baladista.
   - **🥁 Estilo 042 (Natural Beat):** `Bank MSB 32, LSB 2, PC 9`. Base de ritmo natural envolvente y orgánico con balance acústico perfecto para Elvis.
-* **Bloque 2 · Selector Tímbrico / Melodía (La Terna Oficial con 066 Oct.Strings):**
+* **Bloque 2 · Selector Tímbrico / Melodía (Exclusivo en HUD Atril):**
   - **🎵 STS Harmonica Oficial:** Calibración idéntica a la fórmula de Hallelujah: Harmonica solista limpia universal GM2 (`MSB 121, LSB 0, PC 22`), volumen 124, vibrato analógico (`CC 01 = 52`, `CC 77 = 70`), reverb acústico (`CC 91 = 120`), chorus espacial (`CC 93 = 75`), Upper 2 y Upper 3 silenciados para máxima pureza tímbrica y sin batimento, y mano izquierda Lower con coro celestial `Choir Aahs` (`MSB 121, LSB 0, PC 52`) a octava estándar.
   - **🎷 STS Noizy Tenor:** Saxo tenor solista cálido (`MSB 121, LSB 1, PC 66`, volumen 127, reverb 118) emparejado orgánicamente con el sintetizador ambiental `Warm Pad` (`MSB 121, LSB 0, PC 89`) en Upper 2 y cuerdas suaves en Lower.
   - **🎻 066 Oct.Strings:** Selección directa del Keyboard Set del panel **`066 (Oct.Strings)`** (`Bank MSB 33, LSB 0, PC 65`) que muestra exactamente **066 Oct.Strings** en la pantalla del teclado, con cuerdas en octavas brillantes, Warm Pad de soporte y coro cálido en Lower.
