@@ -142,7 +142,7 @@ El Korg EK-50 se conecta al iPad o Mac mediante un cable USB estándar (USB tipo
 * **20. Nights in White Satin** (The Moody Blues): Mi menor ($Em$) · Estilo: 042 60s Soul / Slow Rock a 54 BPM · Flauta Traversa & Cuerdas Sinfónicas. Score MuseScore [#26691493](https://musescore.com/user/33531210/scores/26691493).
 * **22. Killing Me Softly with His Song** (Roberta Flack): Lab Mayor ($A\flat$) / Fa menor ($Fm$) · Estilo: 041 Love Ballad a 92 BPM · Piano Acústico & Flauta. Score MuseScore [#26680561](https://musescore.com/user/33531210/scores/26680561).
 * **24. Stand by Me** (Ben E. King): La Mayor ($A$) · Estilo: 042 60s Soul a 118 BPM · Bajo Acústico, Cuerdas Staccato & Saxo. Score MuseScore [#26693062](https://musescore.com/user/33531210/scores/26693062).
-* **25. Can't Help Falling in Love** (Elvis Presley / Hugo Peretti): Fa Mayor ($F$ - Armadura: 1 bemol Si$\flat$) · Estilo: 042 6/8 Ballad a 68 BPM · Terna Web MIDI Cuerdas: 1. STS Strings & Pad / 2. The Strings (Keyboard Set 61) / 3. Grand Piano 011 & Strings. Partitura en imagen PNG `CANCIONES PDF/I Can't help falling in love wtih you.png` con visor a pantalla completa.
+* **25. Can't Help Falling in Love** (Elvis Presley / Hugo Peretti): Do Mayor ($C$) a 70 BPM · 3 Estilos Korg con STS: 1. Estilo 052 Unpl.SlRock (12Str.Guitar) / 2. Estilo 050 Slow Rock 1 (Hybrid EP) / 3. Estilo 041 Love Ballad (Strings Ens.). Partitura completa de 2 hojas continuas en PNG (`CANCIONES PDF/I Can't help falling in love wtih you 1.png` y `2.png`) integrada en ficha y en modo atril digital fullscreen. Score MuseScore [#5762856](https://musescore.com/user/27886870/scores/5762856).
 
 #### 🌴 Categoría 4: Boleros & Ritmos Latinos — 4 Obras
 * **4. Cuando Calienta el Sol** (Los Hermanos Rigual / Luis Miguel): Do Mayor ($C$) · Estilo 174 Beguine 1 a 112 BPM · Órgano de Percusión & Cuerdas.
@@ -489,16 +489,16 @@ Esta sección recopila los descubrimientos críticos de ingeniería realizados d
      - *Carácter Acústico:* Arreglo cinematográfico de gran balada de los 90 (estilo *My Heart Will Go On* de Céline Dion).
      - *Veredicto:* Requiere calibrar el balance de volumen (Dial `[STYLE]` hacia abajo o `CC 07` en Web MIDI) para que la delicadeza de la guitarra corte la mezcla de la orquesta. Si se busca un clímax épico, la guitarra puede ser sustituida por cuerdas masivas o flauta irlandesa.
 
-### 6.37. Creación de la Ficha 25: Can't Help Falling in Love (Elvis Presley) (v146)
-* **Tonalidad Canónica:** **Do Mayor ($C$)**, 0 alteraciones (teclas blancas) a **70 BPM** en compás 6/8 con Estilo 042 (6/8 Ballad).
+### 6.37. Creación y Calibración de la Ficha 25: Can't Help Falling in Love (Elvis Presley) (v147)
+* **Tonalidad Canónica:** **Do Mayor ($C$)**, 0 alteraciones (teclas blancas) a **70 BPM** en compás 6/8.
 * **Transposer Automático Korg EK-50 (+2 st):** Botón 1-Tap que transpone el teclado a Re Mayor ($D$) para sonar en la tonalidad original de Elvis Presley tocando en Do Mayor.
-* **Terna STS Web MIDI:**
-  1. *🎻 1. STS Strings & Pad:* Cuerdas orquestales románticas en Upper 1 (String Ensemble 1, PC 48) a volumen 126 con Cutoff abierto y Warm Pad en Upper 2 (PC 89).
-  2. *🎻 2. The Strings (KbdSet 61):* Gran masa de cuerdas sinfónicas que enciende Upper 1 y 2 con coro en Lower.
-  3. *🎹 3. Grand Piano 011 & Strings:* Capa dual acústica con Grand Piano 011 en Upper 1 y Cuerdas en Upper 2.
-* **Integración Visual de Partitura (Exclusiva en Modo Pantalla Completa):**
-  - Cero partituras incrustadas en el cuerpo de la ficha principal (eliminado todo recuadro inline para una ficha 100% limpia y ligera).
-  - La visualización de la partitura reside exclusivamente en el **Modo Pantalla Completa Total** con selector táctil para las 2 hojas PNG (`[ 📄 Hoja 1 ]` y `[ 📄 Hoja 2 ]`) y HUD flotante de botones táctiles 1, 2 y 3.
+* **Terna de 3 Estilos Oficiales Korg con STS de Fábrica:**
+  1. *🎸 1. Unplugged Slow Rock (Estilo 052):* Versión Original de estudio 1961 · STS: `12Str.Guitar` (Guitarra acústica de 12 cuerdas arpegiada en tresillos & escobillas en batería) · MSB=32, LSB=3, PC=3.
+  2. *🎹 2. Slow Rock 1 (Estilo 050):* Versión Balada Clásica · STS: `Hybrid EP` (Piano eléctrico vintage de tímbrica cálida & ritmo 6/8 marcado) · MSB=32, LSB=3, PC=1.
+  3. *🎻 3. Love Ballad (Estilo 041):* Versión Orquestal Las Vegas · STS: `Strings Ens.` (Masa de cuerdas sinfónicas orquestales & coros envolventes) · MSB=32, LSB=2, PC=8.
+* **Integración Visual de Partitura (2 Hojas Continuas):**
+  - Mostrada de forma continua tanto en el cuerpo de la ficha como en el **Modo Atril Pantalla Completa**, permitiendo deslizar suavemente entre la Hoja 1 (Estrofa/Estribillo) y la Hoja 2 (Puente/Clímax) sin interrupciones durante la interpretación.
+  - HUD flotante con botones táctiles para salto directo entre Hoja 1 y Hoja 2, y selección instantánea de los 3 estilos.
   - Enlace directo oficial a MuseScore Web en la cabecera: `https://musescore.com/user/27886870/scores/5762856`.
 * **Estructura Armónica Canónica:**
   - Estrofa: C ➔ Em ➔ Am ➔ F ➔ C ➔ G ➔ F ➔ G ➔ Am ➔ F ➔ C ➔ G ➔ C
