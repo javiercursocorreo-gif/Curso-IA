@@ -536,8 +536,8 @@ Esta sección recopila los descubrimientos críticos de ingeniería realizados d
   - Em7 [Sol-Si-Re-Mi] ➔ Bm [Fa♯-Si-Re] [Doble pivote Si-Re]
   - C [Sol-Do-Mi] ➔ B♭ [Fa-Si♭-Re] [Movimiento paralelo de semitono hacia el acorde mágico de la BSO Ghost]
 
-### 6.39. Arquitectura Minimalista en Canción 25: Exclusividad HUD Flotante de Partitura (v163)
-* **Principio de Diseño:** Depuración visual absoluta de la ficha. Se suprimen las botoneras redundantes de estilos e instrumentos del cuerpo principal, centralizando el 100% del control rítmico y tímbrico en el **HUD Flotante de 3 Filas del Modo Pantalla Completa**. La ficha principal queda limpia y dedicada al análisis armónico, voice leading y calibración de transporte.
+### 6.39. Arquitectura Minimalista en Canción 25: Exclusividad HUD Flotante con Selector de Tempo (70/80/90 BPM) (v164)
+* **Principio de Diseño:** Depuración visual absoluta de la ficha. Se suprimen las botoneras redundantes de estilos, instrumentos y selectores de velocidad del cuerpo principal, centralizando el 100% del control rítmico, tímbrico y metronómico en el **HUD Flotante de 3 Filas del Modo Pantalla Completa**. Se amplía el margen superior de scroll (`padding-top: max(185px, ...)`) para que la partitura comience limpiamente bajo la barra flotante sin tapar jamás los títulos de la Hoja 1.
 * **Bloque 1 · Selector Rítmico / 3 Estilos Canónicos Elvis (Exclusivo en HUD Atril):**
   - **🥁 Estilo 041 (Love Ballad · 80 BPM):** `Bank MSB 32, LSB 2, PC 8`. Acompañamiento pop-balada suave y elegante calibrado a 80 BPM para una pulsación fluida y expresiva.
   - **🥁 Estilo 051 (Slow Rock 2):** `Bank MSB 32, LSB 3, PC 2`. Pulso clásico ternario en 12/8 estilo Elvis con acentuación baladista.
@@ -549,8 +549,8 @@ Esta sección recopila los descubrimientos críticos de ingeniería realizados d
 * **HUD Flotante de Pantalla Completa en 3 Líneas Independientes:**
   - **Línea 1 (Superior):** Selector de 3 Estilos (`🥁 Estilos: [ 041 Love Ballad (80 BPM) ] [ 051 Slow Rock ] [ 042 Natural Beat ]`).
   - **Línea 2 (Intermedia):** Selector de Sonidos (`🎹 Sonidos: [ 🎵 STS Harmonica ] [ 🎷 STS Noizy Tenor ] [ 🎻 066 Oct.Strings ]`).
-  - **Línea 3 (Inferior):** Controles de Navegación y Retorno (`[ Hoja 1 ] [ Hoja 2 ] [ ☀️ Atril Siempre Encendido ] [ ⬅ Repertorio ] [ ✕ Volver a la Ficha ]`).
-  - Scroll vertical continuo de 2 hojas al 96vw con padding superior adaptado (`145px`) para garantizar visualización total sin oclusiones en iPad.
+  - **Línea 3 (Inferior):** Hojas, Tempo y Retorno (`[ Hoja 1 ] [ Hoja 2 ] [ ⏱️ 70 BPM ] [ 80 BPM ] [ 90 BPM ] [ ☀️ Siempre Encendido ] [ ⬅ Repertorio ] [ ✕ Cerrar ]`).
+  - Scroll vertical continuo de 2 hojas al 96vw con padding superior adaptado (`185px`) para garantizar visualización total de los controles y de la partitura sin solapamiento en iPad.
 * **Motor Anti-Apagado Oficial NoSleep.js (Rich Tibbett) con Indicador Visual:**
   - Integración nativa de la librería oficial `nosleep.min.js` (estándar mundial de la industria que reproduce el stream de vídeo nativo en segundo plano desbloqueado mediante interacción táctil) junto a W3C WakeLock. Incorpora botón/indicador de estado en cabecera y en HUD flotante ("☀️ Atril Activo · Siempre Encendido") para garantizar que el iPad permanezca encendido sin apagarse nunca.
 
