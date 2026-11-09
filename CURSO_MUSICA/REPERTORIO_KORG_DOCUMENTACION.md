@@ -626,5 +626,12 @@ Esta sección recopila los descubrimientos críticos de ingeniería realizados d
   - Se eliminan todos los botones redundantes de estilos y sonidos del cuerpo principal de la ficha.
   - La selección de ritmos y timbres queda centralizada **exclusivamente en el HUD flotante de la partitura a pantalla completa**, logrando una vista inicial limpia, diáfana y centrada en la partitura y la progresión armónica.
 
+### 6.48. Especificación de Hoja de Ruta: Carruseles de Partituras por Familias de Acompañamiento y Sonidos Afines (v174)
+* **Concepto de "Carro de Botones Compartido":**
+  - Músicos y teclistas suelen organizar su repertorio por bloques de estilo acústico afín (ej. baladas lentas en 6/8 o 4/4 que comparten timbres solistas como armónica, saxo tenor, cuerdas en octavas o piano de cola).
+  - En lugar de salir al menú general de canciones, recargar la página y volver a configurar el teclado, la nueva arquitectura permitirá:
+    1. Mantener un único panel HUD flotante de control escénico ("el carro de botones") calibrado para esa familia sonora.
+    2. Incorporar un **carrusel / selector deslizante horizontal de partituras** en la parte inferior o lateral, permitiendo al músico pasar de una canción a otra con un solo toque táctil (swipe o flechas) sin alterar la configuración del Korg EK-50.
+
 ---
 *Manual redactado y sellado para el proyecto CURSO-IA / CURSO_MUSICA. Todos los derechos reservados.*
