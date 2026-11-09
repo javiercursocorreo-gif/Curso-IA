@@ -379,11 +379,11 @@
                 <div style="font-size:0.82rem; color:#fef3c7; margin-top:5px;">Estilo <b>051 (Slow Rock 2)</b> · STS: Noizy Tenor Sax & Warm Pad · 70 BPM</div>
             </button>
 
-            <!-- BOTÓN 3: ESTILO 041 LOVE BALLAD (ORQUESTAL LAS VEGAS) -->
+            <!-- BOTÓN 3: ESTILO 042 + INSTRUMENTO 066 (OCT.STRINGS) -->
             <button class="btn-korg-preset" data-preset="3" onclick="cargarPreset3LoveBallad(this)" style="border-color:#a855f7; background:linear-gradient(180deg, #581c87 0%, #3b0764 100%);">
-                <div style="font-size:0.75rem; color:#e9d5ff; font-weight:800; text-transform:uppercase;">3. Orquestal / Las Vegas</div>
-                <div style="font-size:1.15rem; font-weight:900; margin-top:3px;">🎻 3. Love Ballad</div>
-                <div style="font-size:0.82rem; color:#f3e8ff; margin-top:5px;">Estilo <b>041 (Love Ballad)</b> · STS: Strings Ens. (Masa de Cuerdas Sinfónicas & Coros) · 70 BPM</div>
+                <div style="font-size:0.75rem; color:#e9d5ff; font-weight:800; text-transform:uppercase;">3. Orquestal / Cuerdas en Octavas</div>
+                <div style="font-size:1.15rem; font-weight:900; margin-top:3px;">🎻 3. Instrumento 066 (Oct.Strings)</div>
+                <div style="font-size:0.82rem; color:#f3e8ff; margin-top:5px;">Estilo <b>042</b> · KbdSet: <b>066 (Oct.Strings)</b> · Masa orquestal en octavas · 70 BPM</div>
             </button>
         </div>
 
@@ -607,7 +607,7 @@
             🎷 2. Slow Rock 051
         </button>
         <button data-preset="3" onclick="cargarPreset3LoveBallad(this)" style="background:linear-gradient(180deg, #581c87 0%, #3b0764 100%); color:#fff; border:1px solid #a855f7; padding:8px 12px; border-radius:8px; font-weight:900; font-size:0.84rem; cursor:pointer; touch-action:manipulation; box-shadow:0 2px 8px rgba(168,85,247,0.35);">
-            🎻 3. Love Ballad 041
+            🎻 3. Estilo 042 / Inst 066
         </button>
         <!-- SELECTOR DE HOJA EN PANTALLA COMPLETA -->
         <div style="display:flex; gap:4px; margin:0 4px;">
@@ -885,37 +885,60 @@ async function cargarPreset2SlowRock(btn = null) {
     } catch(e) { if (log) log.innerHTML = `⚠️ Error: ${e.message}`; }
 }
 
-// BOTÓN 3: Estilo 041 Love Ballad (STS: Strings Ens. - Orquestal / Las Vegas)
+// BOTÓN 3: Estilo 042 + Instrumento 066 (KbdSet 066 Oct.Strings)
 async function cargarPreset3LoveBallad(btn = null) {
     sincronizarPresetActivo(3, btn);
     const log = document.getElementById('log-midi');
     if (!midiOutput && (!midiAccessInstance || obtenerSalidasDisponibles().length === 0)) await conectarMIDI();
     try {
-        // Estilo 041 (Love Ballad): Bank MSB 32, LSB 2, PC 8
-        await asegurarEstiloKorg(32, 2, 8, 41);
+        // Estilo 042 (Slow Rock 6/8): Bank MSB 32, LSB 2, PC 9
+        await asegurarEstiloKorg(32, 2, 9, 42);
 
-        // Upper 1 (Canal 1): String Ensemble 1 (MSB 121, LSB 0, PC 48)
+        // Activar en panel Korg el Keyboard Set 066 (Oct.Strings)
+        enviarMidiGlobal([0xB0 | 0, 0x00, 33]);
+        enviarMidiGlobal([0xB0 | 0, 0x20, 0]);
+        enviarMidiGlobal([0xC0 | 0, 65]); // PC 65 = 066 Oct.Strings
+        enviarMidiGlobal([0xB0 | 15, 0x00, 33]);
+        enviarMidiGlobal([0xB0 | 15, 0x20, 0]);
+        enviarMidiGlobal([0xC0 | 15, 65]);
+
+        await new Promise(r => setTimeout(r, 60));
+
+        // Upper 1 (Canal 1): St. Strings (MSB 121, LSB 0, PC 48)
         enviarMidiGlobal([0xB0 | 0, 0x00, 121]);
         enviarMidiGlobal([0xB0 | 0, 0x20, 0]);
         enviarMidiGlobal([0xC0 | 0, 48]);
-        enviarMidiGlobal([0xB0 | 0, 0x07, 126]);
-        enviarMidiGlobal([0xB0 | 0, 0x5B, 120]);
+        enviarMidiGlobal([0xB0 | 0, 0x07, 127]);
+        enviarMidiGlobal([0xB0 | 0, 0x5B, 122]);
 
-        // Upper 2 (Canal 2): Warm Pad (MSB 121, LSB 0, PC 89)
+        // Upper 2 (Canal 2): St. Strings Octava (MSB 121, LSB 0, PC 48)
         enviarMidiGlobal([0xB0 | 1, 0x00, 121]);
         enviarMidiGlobal([0xB0 | 1, 0x20, 0]);
-        enviarMidiGlobal([0xC0 | 1, 89]);
-        enviarMidiGlobal([0xB0 | 1, 0x07, 100]);
+        enviarMidiGlobal([0xC0 | 1, 48]);
+        enviarMidiGlobal([0xB0 | 1, 0x07, 110]);
         enviarMidiGlobal([0xB0 | 1, 0x5B, 115]);
 
-        // Upper 3 (Canal 3): Silenciado
-        enviarMidiGlobal([0xB0 | 2, 0x07, 0]);
+        // Upper 3 (Canal 3): StringQuart (MSB 121, LSB 0, PC 49)
+        enviarMidiGlobal([0xB0 | 2, 0x00, 121]);
+        enviarMidiGlobal([0xB0 | 2, 0x20, 0]);
+        enviarMidiGlobal([0xC0 | 2, 49]);
+        enviarMidiGlobal([0xB0 | 2, 0x07, 95]);
+        enviarMidiGlobal([0xB0 | 2, 0x5B, 110]);
+
+        // Lower (Canal 4 / Mano Izquierda): Oh-Ah Voices (MSB 121, LSB 0, PC 52)
+        enviarMidiGlobal([0xB0 | 3, 0x00, 121]);
+        enviarMidiGlobal([0xB0 | 3, 0x20, 0]);
+        enviarMidiGlobal([0xC0 | 3, 52]);
+        enviarMidiGlobal([0xB0 | 3, 0x07, 110]);
+        enviarMidiGlobal([0xB0 | 3, 0x5B, 95]);
 
         aplicarOctavaSuperior(octavaActual);
         if (transposicionActual !== 0) aplicarTransposicionMidi(transposicionActual);
-        if (log) log.innerHTML = `🎻 <b>3. Love Ballad (Estilo 041)</b> cargado · STS: Strings Ens. a ${tempoActual} BPM.`;
+        if (log) log.innerHTML = `🎻 <b>3. Instrumento 066 (Oct.Strings)</b> con <b>Estilo 042</b> cargado a ${tempoActual} BPM.`;
     } catch(e) { if (log) log.innerHTML = `⚠️ Error: ${e.message}`; }
 }
+const cargarPreset3OctStrings = cargarPreset3LoveBallad;
+const cargarPreset3Strings = cargarPreset3LoveBallad;
 
 // Compatibilidad de alias para llamadas heredadas
 const cargarPreset1Strings = cargarPreset1Unplugged;
