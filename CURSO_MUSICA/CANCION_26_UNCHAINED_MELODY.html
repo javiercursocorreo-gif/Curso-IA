@@ -869,15 +869,132 @@
         }
     }
 
+        // ==============================================================================
+    // TRIPLE ESCUDO ANTI-APAGADO CONTINUO IPAD (WAKELOCK + WEB AUDIO SILENT + CANVAS VIDEO 60 MIN)
     // ==============================================================================
-    // INICIALIZACIÓN
-    // ==============================================================================
-    window.addEventListener('DOMContentLoaded', async () => {
-        await conectarMIDI();
-        // Cargar por defecto Preset 1 (Unplugged Slow Rock)
-        sincronizarPresetActivo(1);
-    });
-</script>
+    let wakeLockInstance = null;
+    let videoAntiSleep = null;
+    let audioCtxAntiSleep = null;
+    let canvasPulseTimer = null;
+    let temporizadorInactividad = null;
 
+    // 1. Capa W3C WakeLock API (Safari iOS / iPadOS 16.4+)
+    async function activarWakeLock() {
+        if ('wakeLock' in navigator) {
+            try {
+                if (!wakeLockInstance) {
+                    wakeLockInstance = await navigator.wakeLock.request('screen');
+                    wakeLockInstance.addEventListener('release', () => { wakeLockInstance = null; });
+                }
+            } catch(e) {}
+        }
+    }
+
+    // 2. Capa Web Audio Inaudible (Mantiene el subsistema de audio de iOS activo; iPadOS NUNCA apaga la pantalla con audio activo)
+    function activarWebAudioKeepAwake() {
+        try {
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            if (!audioCtxAntiSleep && AudioContext) {
+                audioCtxAntiSleep = new AudioContext();
+                const osc = audioCtxAntiSleep.createOscillator();
+                const gain = audioCtxAntiSleep.createGain();
+                gain.gain.value = 0.00001; // Inaudible pero activo para el kernel de iOS
+                osc.connect(gain);
+                gain.connect(audioCtxAntiSleep.destination);
+                osc.start(0);
+            }
+            if (audioCtxAntiSleep && audioCtxAntiSleep.state === 'suspended') {
+                audioCtxAntiSleep.resume().catch(()=>{});
+            }
+        } catch(e) {}
+    }
+
+    // 3. Capa Canvas Stream Video Activo (Loop de fotogramas continuo de 1 fps para WebKit sobre HTTP)
+    function activarCanvasVideoKeepAwake() {
+        try {
+            if (!videoAntiSleep) {
+                videoAntiSleep = document.createElement('video');
+                videoAntiSleep.setAttribute('playsinline', '');
+                videoAntiSleep.setAttribute('webkit-playsinline', '');
+                videoAntiSleep.setAttribute('muted', '');
+                videoAntiSleep.setAttribute('loop', '');
+                videoAntiSleep.muted = true;
+                videoAntiSleep.style.position = 'fixed';
+                videoAntiSleep.style.top = '-100px';
+                videoAntiSleep.style.left = '-100px';
+                videoAntiSleep.style.width = '2px';
+                videoAntiSleep.style.height = '2px';
+                videoAntiSleep.style.opacity = '0.001';
+                videoAntiSleep.style.pointerEvents = 'none';
+
+                const canvas = document.createElement('canvas');
+                canvas.width = 16;
+                canvas.height = 16;
+                const ctx = canvas.getContext('2d');
+                ctx.fillStyle = '#000000';
+                ctx.fillRect(0, 0, 16, 16);
+
+                if (!canvasPulseTimer) {
+                    let pulse = 0;
+                    canvasPulseTimer = setInterval(() => {
+                        pulse = (pulse + 1) % 2;
+                        ctx.fillStyle = pulse ? '#000000' : '#010101';
+                        ctx.fillRect(0, 0, 16, 16);
+                    }, 1000);
+                }
+
+                if (canvas.captureStream) {
+                    videoAntiSleep.srcObject = canvas.captureStream(2);
+                }
+                document.body.appendChild(videoAntiSleep);
+            }
+            if (videoAntiSleep && videoAntiSleep.paused) {
+                videoAntiSleep.play().catch(()=>{});
+            }
+        } catch(e) {}
+    }
+
+    // Activador unificado del Triple Escudo
+    function asegurarPantallaDespierta() {
+        activarWakeLock();
+        activarWebAudioKeepAwake();
+        activarCanvasVideoKeepAwake();
+
+        if (temporizadorInactividad) clearTimeout(temporizadorInactividad);
+        // Garantiza 60 minutos ininterrumpidos de atril sin apagado
+        temporizadorInactividad = setTimeout(() => {
+            if (wakeLockInstance) { try { wakeLockInstance.release(); wakeLockInstance = null; } catch(e){} }
+            if (videoAntiSleep) { try { videoAntiSleep.pause(); } catch(e){} }
+            if (audioCtxAntiSleep) { try { audioCtxAntiSleep.suspend(); } catch(e){} }
+        }, 60 * 60 * 1000);
+    }
+
+    // Despertar inmediato ante cualquier interacción física (toque, scroll, tecla)
+    ['touchstart', 'touchend', 'pointerdown', 'mousedown', 'click', 'scroll', 'keydown'].forEach(evt => {
+        document.addEventListener(evt, () => asegurarPantallaDespierta(), { passive: true });
+    });
+
+    document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') {
+            asegurarPantallaDespierta();
+        }
+    });
+
+    // ==============================================================================
+    // INICIALIZACIÓN DE LA APLICACIÓN
+    // ==============================================================================
+    async function iniciarApp() {
+        asegurarPantallaDespierta();
+        await conectarMIDI();
+        if (typeof sincronizarPresetActivo === 'function') sincronizarPresetActivo(1);
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', iniciarApp);
+    } else {
+        iniciarApp();
+    }
+
+</script>
 </body>
 </html>
