@@ -143,6 +143,7 @@ El Korg EK-50 se conecta al iPad o Mac mediante un cable USB estándar (USB tipo
 * **22. Killing Me Softly with His Song** (Roberta Flack): Lab Mayor ($A\flat$) / Fa menor ($Fm$) · Estilo: 041 Love Ballad a 92 BPM · Piano Acústico & Flauta. Score MuseScore [#26680561](https://musescore.com/user/33531210/scores/26680561).
 * **24. Stand by Me** (Ben E. King): La Mayor ($A$) · Estilo: 042 60s Soul a 118 BPM · Bajo Acústico, Cuerdas Staccato & Saxo. Score MuseScore [#26693062](https://musescore.com/user/33531210/scores/26693062).
 * **25. Can't Help Falling in Love** (Elvis Presley / Hugo Peretti): Do Mayor ($C$) a 70 BPM · 3 Estilos Korg con STS: 1. Estilo 052 Unpl.SlRock (12Str.Guitar) / 2. Estilo 050 Slow Rock 1 (Hybrid EP) / 3. Estilo 041 Love Ballad (Strings Ens.). Partitura completa de 2 hojas continuas en PNG (`CANCIONES PDF/I Can't help falling in love wtih you 1.png` y `2.png`) integrada en ficha y en modo atril digital fullscreen. Score MuseScore [#5762856](https://musescore.com/user/27886870/scores/5762856).
+* **26. Unchained Melody** (The Righteous Brothers / Alex North & Hy Zaret - BSO *Ghost*): Sol Mayor ($G$) a 65 BPM (4/4 en tresillos / 12/8 feel) · 3 Estilos Korg con STS: 1. Estilo 052 Unpl.SlRock (12Str.Guitar) / 2. Estilo 051 Slow Rock 2 (Noizy Tenor Sax) / 3. Estilo 041 Love Ballad (Strings Ens.). Partitura completa de 2 hojas continuas en PNG (`CANCIONES PDF/Unchained Melody 1.png` y `2.png`) integrada en ficha y en modo atril digital fullscreen. Score MuseScore [#7668671](https://musescore.com/user/35258469/scores/7668671).
 
 #### 🌴 Categoría 4: Boleros & Ritmos Latinos — 4 Obras
 * **4. Cuando Calienta el Sol** (Los Hermanos Rigual / Luis Miguel): Do Mayor ($C$) · Estilo 174 Beguine 1 a 112 BPM · Órgano de Percusión & Cuerdas.
@@ -511,6 +512,29 @@ Esta sección recopila los descubrimientos críticos de ingeniería realizados d
   - C [Do-Mi-Sol] (Fund) ➔ G [Si-Re-Sol] (1ª Inv) [Pivote Sol]
   - Em [Mi-Sol-Si] (Fund) ➔ B7 [Re♯-Fa♯-La-Si] (1ª Inv) [Pivote Si]
   - A7 [Do♯-Mi-Sol-La] (Fund) ➔ Dm [Re-Fa-La] (Fund) [Pivote La]
+
+### 6.38. Creación de la Ficha 26: Unchained Melody (The Righteous Brothers / BSO Ghost) (v148)
+* **Tonalidad Canónica:** **Sol Mayor ($G$)**, 1 alteración (Fa♯) a **65 BPM** en compás 4/4 con subdivisión continua en tresillos (sensación 12/8).
+* **Transposer Automático Korg EK-50 (+5 st):** Botón 1-Tap que transporta a Do Mayor para tocar con posiciones blancas sin sostenidos si el alumno lo prefiere.
+* **Terna de 3 Estilos Oficiales Korg con STS de Fábrica:**
+  1. *🎸 1. Unplugged Slow Rock (Estilo 052):* Versión Íntima (Intro y Estrofas) · STS: `12Str.Guitar` (Guitarra acústica de 12 cuerdas arpegiada en tresillos & escobillas suaves) · MSB=32, LSB=3, PC=3.
+  2. *🎷 2. Slow Rock 2 & Saxo Soul (Estilo 051):* Versión Righteous Brothers · STS: `Noizy Tenor` (Saxo Tenor Solista cálido y expresivo con reverb) · MSB=32, LSB=3, PC=2.
+  3. *🎻 3. Love Ballad (Estilo 041):* Versión Gran Clímax BSO Ghost · STS: `Strings Ens.` (Masa de cuerdas sinfónicas orquestales & coros) · MSB=32, LSB=2, PC=8.
+* **Integración Visual de Partitura (2 Hojas Continuas):**
+  - Desplegada de forma continua en el cuerpo de la ficha y en el **Modo Atril Pantalla Completa**, permitiendo deslizar suavemente entre la Hoja 1 (Estrofa/Puente) y la Hoja 2 (Reexposición/Clímax) sin interrupciones durante la interpretación.
+  - HUD flotante con botones táctiles para salto directo entre Hoja 1 y Hoja 2, y selección instantánea de los 3 estilos.
+  - Enlace directo oficial a MuseScore Web en la cabecera: `https://musescore.com/user/35258469/scores/7668671`.
+* **Estructura Armónica Canónica:**
+  - Estrofa (I - vi - IV - V): G ➔ Em ➔ C ➔ D ➔ G ➔ Em ➔ D (Casilla 1 y 2)
+  - Sección B: G ➔ D ➔ Em7 ➔ Bm ➔ C ➔ D ➔ G
+  - Puente ("Lonely rivers flow..."): C ➔ D ➔ C ➔ B♭ ➔ C ➔ D ➔ G
+* **Guía de Conducción Suave con Inversiones Clave (Voice Leading):**
+  - G [Sol-Si-Re] (Fund) ➔ Em [Sol-Si-Mi] (1ª Inv) [Doble pivote Sol-Si]
+  - Em [Sol-Si-Mi] (1ª Inv) ➔ C [Sol-Do-Mi] (2ª Inv) [Doble pivote Sol-Mi]
+  - C [Sol-Do-Mi] (2ª Inv) ➔ D [Fa♯-La-Re] (1ª Inv)
+  - D [Fa♯-La-Re] ➔ G [Sol-Si-Re] [Pivote Re]
+  - Em7 [Sol-Si-Re-Mi] ➔ Bm [Fa♯-Si-Re] [Doble pivote Si-Re]
+  - C [Sol-Do-Mi] ➔ B♭ [Fa-Si♭-Re] [Movimiento paralelo de semitono hacia el acorde mágico de la BSO Ghost]
 
 ---
 *Manual redactado y sellado para el proyecto CURSO-IA / CURSO_MUSICA. Todos los derechos reservados.*
