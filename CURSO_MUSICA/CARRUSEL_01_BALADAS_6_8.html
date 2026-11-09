@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Carrusel Baladas 6/8">
+    <meta name="theme-color" content="#000000">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%23000'/%3E%3Ctext x='50' y='70' font-size='60' text-anchor='middle' fill='%2338bdf8'%3E🎡%3C/text%3E%3C/svg%3E">
+    <title>Carrusel 1 · Baladas 6/8 Korg EK-50 (v174)</title>
+    <!-- Librería oficial NoSleep.js (Rich Tibbett) para iPadOS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/nosleep/0.12.0/NoSleep.min.js"></script>
+    <style>
+        :root {
+            --bg-color: #000000;
+            --surface-color: #0f172a;
+            --surface-border: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent-blue: #38bdf8;
+            --accent-amber: #f59e0b;
+            --accent-purple: #c084fc;
+            --accent-green: #10b981;
+        }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Destello Neón Táctil Inmediato (0 ms) */
+        @keyframes destelloPulsacion {
+            0% {
+                filter: brightness(2.8) contrast(1.4);
+                transform: scale(0.94);
+                box-shadow: 0 0 35px #ffffff, 0 0 70px #38bdf8, inset 0 0 20px rgba(255,255,255,0.95);
+                border-color: #ffffff !important;
+                outline: 3px solid #ffffff;
+            }
+            35% {
+                filter: brightness(2.1) contrast(1.2);
+                transform: scale(1.05);
+                box-shadow: 0 0 45px #ffffff, 0 0 80px #f59e0b, inset 0 0 25px rgba(255,255,255,0.8);
+                border-color: #fde68a !important;
+                outline: 2px solid #fde68a;
+            }
+            100% {
+                filter: brightness(1) contrast(1);
+                transform: scale(1);
+                box-shadow: none;
+                outline: none;
+            }
+        }
+        .btn-flash-active {
+            animation: destelloPulsacion 0.45s cubic-bezier(0.2, 0.9, 0.3, 1) forwards !important;
+            position: relative;
+            z-index: 1000005 !important;
+        }
+        button:active {
+            filter: brightness(2.4) contrast(1.3) !important;
+            transform: scale(0.95) !important;
+        }
+
+        .btn-tempo {
+            background: #1e293b;
+            color: #cbd5e1;
+            border: 1px solid #334155;
+            padding: 5px 10px;
+            border-radius: 8px;
+            font-weight: 800;
+            font-size: 0.80rem;
+            cursor: pointer;
+            touch-action: manipulation;
+        }
+        .btn-tempo.active-tempo {
+            background: #0284c7 !important;
+            border-color: #38bdf8 !important;
+            color: #ffffff !important;
+            box-shadow: 0 0 12px rgba(56, 189, 248, 0.5) !important;
+        }
+
+        /* Filtro Pantalla Negra OLED para Partituras */
+        .score-dark-mode {
+            filter: invert(0.92) hue-rotate(180deg) contrast(1.18) brightness(0.96) !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.95) !important;
+        }
+
+        /* Pestañas del Carrusel de Canciones */
+        .carousel-tab-btn {
+            background: #1e293b;
+            color: #cbd5e1;
+            border: 1px solid #475569;
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-weight: 800;
+            font-size: 0.88rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+            touch-action: manipulation;
+            white-space: nowrap;
+        }
+        .carousel-tab-btn.active-song {
+            background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%) !important;
+            border-color: #38bdf8 !important;
+            color: #ffffff !important;
+            box-shadow: 0 0 18px rgba(56, 189, 248, 0.6) !important;
+            transform: scale(1.02);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ============================================================================== -->
+    <!-- BARRA FLOTANTE FIJA SUPERIOR (EL CARRO DE BOTONES COMPARTIDO EN 3 LÍNEAS)     -->
+    <!-- ============================================================================== -->
+    <div style="position:fixed; top:max(6px, env(safe-area-inset-top)); left:50%; transform:translateX(-50%); z-index:1000000; background:rgba(11, 15, 23, 0.96); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); border:1px solid rgba(56, 189, 248, 0.65); border-radius:14px; padding:8px 14px; display:flex; flex-direction:column; align-items:center; gap:6px; box-shadow:0 10px 35px rgba(0,0,0,0.9), 0 0 18px rgba(56,189,248,0.35); max-width:98vw; width:max-content; justify-content:center;">
+        
+        <!-- LÍNEA 1: RITMOS / ESTILOS DE LA FAMILIA BALADAS 6/8 -->
+        <div style="display:flex; align-items:center; gap:8px; justify-content:center; flex-wrap:wrap;">
+            <span style="font-size:0.75rem; color:#93c5fd; font-weight:800; text-transform:uppercase; letter-spacing:0.5px;">🥁 Estilos:</span>
+            <button class="hud-style-btn" data-style="42" onclick="activarEstilo(42, this)" style="background:#0284c7; color:#fff; border:1px solid #38bdf8; padding:6px 12px; border-radius:8px; font-weight:800; font-size:0.84rem; cursor:pointer; touch-action:manipulation;">
+                042 Natural Beat
+            </button>
+            <button class="hud-style-btn" data-style="51" onclick="activarEstilo(51, this)" style="background:#1e293b; color:#cbd5e1; border:1px solid #475569; padding:6px 12px; border-radius:8px; font-weight:800; font-size:0.84rem; cursor:pointer; touch-action:manipulation;">
+                051 Slow Rock 2
+            </button>
+            <button class="hud-style-btn" data-style="41" onclick="activarEstilo(41, this)" style="background:#1e293b; color:#cbd5e1; border:1px solid #475569; padding:6px 12px; border-radius:8px; font-weight:800; font-size:0.84rem; cursor:pointer; touch-action:manipulation;">
+                041 Love Ballad
+            </button>
+        </div>
+
+        <!-- LÍNEA 2: TIMBRES / SONIDOS DEL CARRO ESCÉNICO KORG EK-50 -->
+        <div style="display:flex; align-items:center; gap:8px; justify-content:center; flex-wrap:wrap; padding-top:2px; border-top:1px solid rgba(255,255,255,0.1); width:100%;">
+            <span style="font-size:0.75rem; color:#fde047; font-weight:800; text-transform:uppercase; letter-spacing:0.5px;">🎹 Sonidos:</span>
+            <button class="hud-sound-btn" data-sound="armonica" onclick="activarInstrumento('armonica', this)" style="background:#0284c7; color:#fff; border:1px solid #38bdf8; padding:6px 12px; border-radius:8px; font-weight:800; font-size:0.84rem; cursor:pointer; touch-action:manipulation;">
+                🎵 STS Harmonica
+            </button>
+            <button class="hud-sound-btn" data-sound="saxo" onclick="activarInstrumento('saxo', this)" style="background:#1e293b; color:#cbd5e1; border:1px solid #475569; padding:6px 12px; border-radius:8px; font-weight:800; font-size:0.84rem; cursor:pointer; touch-action:manipulation;">
+                🎷 Tenor Sax
+            </button>
+            <button class="hud-sound-btn" data-sound="066" onclick="activarInstrumento('066', this)" style="background:#1e293b; color:#cbd5e1; border:1px solid #475569; padding:6px 12px; border-radius:8px; font-weight:800; font-size:0.84rem; cursor:pointer; touch-action:manipulation;">
+                🎻 066 Oct.Strings
+            </button>
+        </div>
+
+        <!-- LÍNEA 3: CONTROLES, TEMPOS, BATERÍA Y RETORNO -->
+        <div style="display:flex; align-items:center; gap:8px; justify-content:center; flex-wrap:wrap; padding-top:2px; border-top:1px solid rgba(255,255,255,0.1); width:100%;">
+            <span style="font-size:0.75rem; color:#38bdf8; font-weight:800; text-transform:uppercase; letter-spacing:0.5px;">⏱️ Tempo:</span>
+            <div style="display:flex; gap:4px;">
+                <button class="btn-tempo" onclick="cambiarTempo(65, this)">65 BPM</button>
+                <button class="btn-tempo" onclick="cambiarTempo(70, this)">70 BPM</button>
+                <button class="btn-tempo active-tempo" onclick="cambiarTempo(80, this)">80 BPM</button>
+            </div>
+            <button onclick="iniciarRitmoKorg(this)" style="background:#065f46; color:#a7f3d0; border:1px solid #10b981; padding:5px 10px; border-radius:8px; font-weight:800; font-size:0.80rem; cursor:pointer; touch-action:manipulation;" title="Iniciar Ritmo Korg">
+                ▶️ Ritmo
+            </button>
+            <button onclick="detenerRitmoKorg(this)" style="background:#7f1d1d; color:#fecaca; border:1px solid #ef4444; padding:5px 10px; border-radius:8px; font-weight:800; font-size:0.80rem; cursor:pointer; touch-action:manipulation;" title="Parar Ritmo Korg">
+                ⏹️ Parar
+            </button>
+            <button class="btn-nosleep-toggle" onclick="toggleNoSleepManual(this)" style="background:#065f46; color:#a7f3d0; border:1px solid #10b981; padding:5px 10px; border-radius:8px; font-weight:800; font-size:0.80rem; cursor:pointer; touch-action:manipulation;">
+                ☀️ Siempre Encendido
+            </button>
+            <button class="btn-smart-dim-toggle" onclick="toggleSmartDimming(this)" style="background:#0284c7; color:#ffffff; border:1px solid #38bdf8; padding:5px 10px; border-radius:8px; font-weight:800; font-size:0.80rem; cursor:pointer; touch-action:manipulation;" title="Atenuador Inteligente de Ahorro de Batería en 60s">
+                🌙 Ahorro (60s)
+            </button>
+            <button class="btn-dark-score-toggle" onclick="toggleModoPartituraNegra(this)" style="background:#0284c7; color:#ffffff; border:1px solid #38bdf8; padding:5px 10px; border-radius:8px; font-weight:800; font-size:0.80rem; cursor:pointer; touch-action:manipulation;" title="Alternar entre pantalla negra OLED y fondo blanco">
+                🌓 Pantalla Negra (ON)
+            </button>
+            <a class="btn-back" href="REPERTORIO_KORG_EK50.html?v=174" style="background:#1e293b; color:#93c5fd; border:1px solid #334155; padding:5px 12px; border-radius:8px; font-weight:800; font-size:0.80rem; text-decoration:none;">
+                ⬅ Repertorio
+            </a>
+        </div>
+    </div>
+
+    <!-- ============================================================================== -->
+    <!-- CONTENEDOR PRINCIPAL CON SCROLL VERTICAL CONTINUO (PANTALLA COMPLETA 100% NEGRA)-->
+    <!-- ============================================================================== -->
+    <div id="modal-score-scroll-container" style="width:100vw; height:100vh; overflow-y:auto; -webkit-overflow-scrolling:touch; padding-top:max(185px, calc(env(safe-area-inset-top) + 175px)); padding-bottom:60px; box-sizing:border-box; background:#000000; display:flex; flex-direction:column; align-items:center; gap:20px;">
+        
+        <!-- BARRA FLOTANTE DEL CARRUSEL DE CANCIONES (SELECTOR RÁPIDO ENTRE OBRAS AFINES) -->
+        <div style="position:sticky; top:max(170px, calc(env(safe-area-inset-top) + 160px)); z-index:900000; background:rgba(15, 23, 42, 0.95); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); border:1px solid #334155; border-radius:12px; padding:8px 14px; display:flex; align-items:center; gap:10px; box-shadow:0 6px 20px rgba(0,0,0,0.8); max-width:96vw; overflow-x:auto;">
+            <button onclick="cambiarCancionRelativa(-1)" style="background:#1e293b; color:#93c5fd; border:1px solid #475569; padding:8px 12px; border-radius:8px; font-weight:900; font-size:0.9rem; cursor:pointer; touch-action:manipulation;" title="Canción Anterior">
+                ◀ Ant
+            </button>
+
+            <!-- PESTAÑAS DE CANCIONES DEL CARRUSEL -->
+            <button id="tab-song-25" class="carousel-tab-btn active-song" onclick="seleccionarCancionCarrusel(25, this)">
+                <span>🎵 25. Can't Help Falling in Love</span>
+                <span style="font-size:0.75rem; background:rgba(255,255,255,0.2); padding:2px 6px; border-radius:4px;">Do / Re Elvis</span>
+            </button>
+
+            <button id="tab-song-26" class="carousel-tab-btn" onclick="seleccionarCancionCarrusel(26, this)">
+                <span>🎻 26. Unchained Melody</span>
+                <span style="font-size:0.75rem; background:rgba(255,255,255,0.2); padding:2px 6px; border-radius:4px;">Sol Mayor</span>
+            </button>
+
+            <button onclick="cambiarCancionRelativa(1)" style="background:#1e293b; color:#93c5fd; border:1px solid #475569; padding:8px 12px; border-radius:8px; font-weight:900; font-size:0.9rem; cursor:pointer; touch-action:manipulation;" title="Canción Siguiente">
+                Sig ▶
+            </button>
+        </div>
+
+        <!-- BADGE DINÁMICO DE CANCIÓN EN PANTALLA -->
+        <div id="carrusel-song-badge" style="background:rgba(56, 189, 248, 0.15); border:1px solid #38bdf8; color:#93c5fd; font-weight:800; font-size:0.92rem; padding:6px 20px; border-radius:20px; text-align:center; max-width:94vw;">
+            🎵 <b>Canción 25: Can't Help Falling in Love</b> · Elvis Presley (Do Mayor · 70-80 BPM)
+        </div>
+
+        <!-- HOJA 1 DE LA PARTITURA -->
+        <div id="hoja-anchor-1" style="width:100%; max-width:96vw; display:flex; flex-direction:column; align-items:center;">
+            <div id="badge-hoja-1" style="background:rgba(56, 189, 248, 0.2); border:1px solid #38bdf8; color:#38bdf8; font-weight:800; font-size:0.85rem; padding:5px 16px; border-radius:20px; margin-bottom:10px;">
+                📄 HOJA 1 DE 2 · Estrofa & Estribillo
+            </div>
+            <img id="partitura-img-hoja1" class="score-dark-mode"
+                 src="CANCIONES%20PDF/I%20Can't%20help%20falling%20in%20love%20wtih%20you%201.png" 
+                 alt="Partitura Hoja 1" 
+                 style="max-width:96vw; width:auto; border-radius:10px; box-shadow:0 8px 30px rgba(0,0,0,0.85); object-fit:contain;">
+        </div>
+
+        <!-- HOJA 2 DE LA PARTITURA -->
+        <div id="hoja-anchor-2" style="width:100%; max-width:96vw; display:flex; flex-direction:column; align-items:center;">
+            <div id="badge-hoja-2" style="background:rgba(168, 85, 247, 0.2); border:1px solid #a855f7; color:#c084fc; font-weight:800; font-size:0.85rem; padding:5px 16px; border-radius:20px; margin-bottom:10px;">
+                📄 HOJA 2 DE 2 · Puente, Clímax & Final
+            </div>
+            <img id="partitura-img-hoja2" class="score-dark-mode"
+                 src="CANCIONES%20PDF/I%20Can't%20help%20falling%20in%20love%20wtih%20you%202.png" 
+                 alt="Partitura Hoja 2" 
+                 style="max-width:96vw; width:auto; border-radius:10px; box-shadow:0 8px 30px rgba(0,0,0,0.85); object-fit:contain; margin-bottom:30px;">
+        </div>
+
+    </div>
+
+    <!-- ============================================================================== -->
+    <!-- OVERLAY ATENUADOR INTELIGENTE (SMART DIMMING EN 60s PARA AHORRO DE BATERÍA)    -->
+    <!-- ============================================================================== -->
+    <div id="smart-dim-overlay" onclick="despertarPantallaManual(event)" style="position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:2000000; opacity:0; pointer-events:none; transition:opacity 1.2s cubic-bezier(0.2,0.8,0.3,1); display:flex; flex-direction:column; align-items:center; justify-content:center; backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px); touch-action:manipulation;">
+        <div style="background:rgba(15,23,42,0.95); border:2px solid #38bdf8; border-radius:20px; padding:22px 34px; text-align:center; box-shadow:0 0 45px rgba(56,189,248,0.45); max-width:90vw;">
+            <div style="font-size:2.6rem; margin-bottom:8px;">🌙</div>
+            <div style="font-size:1.2rem; font-weight:900; color:#ffffff; letter-spacing:0.5px;">Atenuador Inteligente Activo</div>
+            <div style="font-size:0.88rem; color:#93c5fd; margin-top:6px;">Ahorrando batería en el atril · Pantalla atenuada al 15%</div>
+            <div style="margin-top:16px; display:inline-block; background:#0284c7; color:#fff; font-weight:800; font-size:0.86rem; padding:9px 20px; border-radius:10px; box-shadow:0 0 16px rgba(56,189,248,0.5);">
+                👆 Toca cualquier parte para reactivar
+            </div>
+        </div>
+    </div>
+
+<script>
+    // ==============================================================================
+    // DATOS DE LAS CANCIONES DEL CARRUSEL 1 (BALADAS 6/8 COMPARTIDAS)
+    // ==============================================================================
+    const CANCIONES_CARRUSEL = {
+        25: {
+            id: 25,
+            titulo: "Can't Help Falling in Love",
+            autor: "Elvis Presley (1961)",
+            tonalidad: "Do Mayor (C) · 0 Alteraciones · +2 st Elvis",
+            tempoSugerido: 80,
+            hoja1: "CANCIONES%20PDF/I%20Can't%20help%20falling%20in%20love%20wtih%20you%201.png",
+            hoja2: "CANCIONES%20PDF/I%20Can't%20help%20falling%20in%20love%20wtih%20you%202.png",
+            badge1: "📄 HOJA 1 DE 2 · Estrofa & Estribillo",
+            badge2: "📄 HOJA 2 DE 2 · Puente, Clímax & Final"
+        },
+        26: {
+            id: 26,
+            titulo: "Unchained Melody",
+            autor: "The Righteous Brothers (BSO Ghost)",
+            tonalidad: "Sol Mayor (G) · 1 Sostenido (F#)",
+            tempoSugerido: 65,
+            hoja1: "CANCIONES%20PDF/Unchained%20Melody%201.png",
+            hoja2: "CANCIONES%20PDF/Unchained%20Melody%202.png",
+            badge1: "📄 HOJA 1 DE 2 · Estrofa, Casillas 1 y 2 & Inicio del Puente",
+            badge2: "📄 HOJA 2 DE 2 · Reexposición, Clímax & Gran Final"
+        }
+    };
+
+    let cancionActualId = 25;
+    const listaIds = [25, 26];
+
+    function seleccionarCancionCarrusel(id, btn = null) {
+        if (btn) dispararDestelloBoton(btn);
+        const data = CANCIONES_CARRUSEL[id];
+        if (!data) return;
+        cancionActualId = id;
+
+        // 1. Actualizar pestañas activas
+        listaIds.forEach(num => {
+            const tab = document.getElementById(`tab-song-${num}`);
+            if (tab) tab.classList.toggle('active-song', num === id);
+        });
+
+        // 2. Intercambio instantáneo de partituras (0 ms)
+        const img1 = document.getElementById('partitura-img-hoja1');
+        const img2 = document.getElementById('partitura-img-hoja2');
+        if (img1) img1.src = data.hoja1;
+        if (img2) img2.src = data.hoja2;
+
+        const b1 = document.getElementById('badge-hoja-1');
+        const b2 = document.getElementById('badge-hoja-2');
+        if (b1) b1.innerText = data.badge1;
+        if (b2) b2.innerText = data.badge2;
+
+        const mainBadge = document.getElementById('carrusel-song-badge');
+        if (mainBadge) {
+            mainBadge.innerHTML = `🎵 <b>Canción ${data.id}: ${data.titulo}</b> · ${data.autor} (${data.tonalidad})`;
+        }
+
+        // 3. Ajustar tempo sugerido sin tocar instrumentos Korg
+        cambiarTempo(data.tempoSugerido);
+
+        // 4. Scroll suave al inicio de la partitura
+        const scrollCont = document.getElementById('modal-score-scroll-container');
+        if (scrollCont) scrollCont.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function cambiarCancionRelativa(delta) {
+        const idx = listaIds.indexOf(cancionActualId);
+        let nextIdx = idx + delta;
+        if (nextIdx < 0) nextIdx = listaIds.length - 1;
+        if (nextIdx >= listaIds.length) nextIdx = 0;
+        const nextId = listaIds[nextIdx];
+        const nextTab = document.getElementById(`tab-song-${nextId}`);
+        seleccionarCancionCarrusel(nextId, nextTab);
+    }
+
+    // ==============================================================================
+    // SOPORTE DE GESTOS TÁCTILES SWIPE EN IPAD (DESLIZAR PARTITURA IZQ / DCHA)
+    // ==============================================================================
+    let touchStartX = 0;
+    let touchStartY = 0;
+    const scrollContainer = document.getElementById('modal-score-scroll-container');
+
+    if (scrollContainer) {
+        scrollContainer.addEventListener('touchstart', (e) => {
+            if (e.touches && e.touches[0]) {
+                touchStartX = e.touches[0].clientX;
+                touchStartY = e.touches[0].clientY;
+            }
+        }, { passive: true });
+
+        scrollContainer.addEventListener('touchend', (e) => {
+            if (e.changedTouches && e.changedTouches[0]) {
+                const diffX = e.changedTouches[0].clientX - touchStartX;
+                const diffY = e.changedTouches[0].clientY - touchStartY;
+                // Si el desplazamiento horizontal supera 80px y es mayor que el vertical, cambiar canción
+                if (Math.abs(diffX) > 80 && Math.abs(diffX) > Math.abs(diffY)) {
+                    if (diffX < 0) {
+                        cambiarCancionRelativa(1);  // Swipe izquierda: Siguiente canción
+                    } else {
+                        cambiarCancionRelativa(-1); // Swipe derecha: Canción anterior
+                    }
+                }
+            }
+        }, { passive: true });
+    }
+
+    // ==============================================================================
+    // CONTROL WEB MIDI KORG EK-50 (EL CARRO ESCÉNICO COMPARTIDO)
+    // ==============================================================================
+    let midiAccessInstance = null;
+    let midiOutput = null;
+    let conectandoMIDI = false;
+    let tempoActual = 80;
+    let octavaActual = 0;
+    let transposicionActual = 0;
+
+    function extraerPuertos(mapOrList) {
+        if (!mapOrList) return [];
+        return (typeof mapOrList.values === 'function') ? Array.from(mapOrList.values()) : Array.from(mapOrList);
+    }
+
+    function obtenerSalidasDisponibles() {
+        return midiAccessInstance ? extraerPuertos(midiAccessInstance.outputs) : [];
+    }
+
+    function enviarMidiGlobal(bytes) {
+        obtenerSalidasDisponibles().forEach(port => { try { port.send(bytes); } catch(e){} });
+    }
+
+    function bindPorts() {
+        if (!midiAccessInstance) return null;
+        const outputs = extraerPuertos(midiAccessInstance.outputs);
+        const korg = outputs.find(o => o && o.name && (
+            o.name.toLowerCase().includes('ek-50') || 
+            o.name.toLowerCase().includes('korg') ||
+            o.name.toLowerCase().includes('usb')
+        ));
+        midiOutput = korg || null;
+
+        if (midiAccessInstance.inputs) {
+            extraerPuertos(midiAccessInstance.inputs).forEach(inp => {
+                try {
+                    inp.onmidimessage = () => {
+                        if (typeof reiniciarTemporizadorDimming === 'function') {
+                            reiniciarTemporizadorDimming();
+                        }
+                    };
+                } catch(e){}
+            });
+        }
+        return midiOutput;
+    }
+
+    async function conectarMIDI() {
+        if (conectandoMIDI) return null;
+        conectandoMIDI = true;
+        if (!navigator.requestMIDIAccess) {
+            conectandoMIDI = false;
+            return null;
+        }
+        try {
+            const m = await navigator.requestMIDIAccess({ sysex: true }).catch(() => navigator.requestMIDIAccess({ sysex: false }));
+            midiAccessInstance = m;
+            conectandoMIDI = false;
+            midiAccessInstance.onstatechange = () => bindPorts();
+            return bindPorts();
+        } catch(e) {
+            conectandoMIDI = false;
+            return null;
+        }
+    }
+
+    // ==============================================================================
+    // CONTROL DE ESTILOS Y TIMBRES DEL KORG EK-50 (CANAL 16 & CANALES 0-3)
+    // ==============================================================================
+    function actualizarEstilosActivosUI(idEstilo) {
+        document.querySelectorAll('.hud-style-btn').forEach(b => {
+            const matches = b.getAttribute('data-style') === String(idEstilo);
+            if (matches) {
+                b.style.background = '#0284c7';
+                b.style.borderColor = '#38bdf8';
+                b.style.color = '#ffffff';
+                b.style.boxShadow = '0 0 14px rgba(56, 189, 248, 0.7)';
+                b.style.outline = '2px solid #ffffff';
+            } else {
+                b.style.background = '#1e293b';
+                b.style.borderColor = '#475569';
+                b.style.color = '#cbd5e1';
+                b.style.boxShadow = 'none';
+                b.style.outline = 'none';
+            }
+        });
+    }
+
+    function actualizarSonidosActivosUI(tipo) {
+        document.querySelectorAll('.hud-sound-btn').forEach(b => {
+            const matches = b.getAttribute('data-sound') === String(tipo);
+            if (matches) {
+                b.style.background = tipo === 'armonica' ? 'linear-gradient(180deg, #0284c7 0%, #0369a1 100%)' :
+                                     tipo === 'saxo' ? 'linear-gradient(180deg, #d97706 0%, #b45309 100%)' :
+                                     'linear-gradient(180deg, #9333ea 0%, #7e22ce 100%)';
+                b.style.borderColor = '#ffffff';
+                b.style.color = '#ffffff';
+                b.style.boxShadow = '0 0 14px rgba(255,255,255,0.7)';
+                b.style.outline = '2px solid #ffffff';
+            } else {
+                b.style.background = '#1e293b';
+                b.style.borderColor = '#475569';
+                b.style.color = '#cbd5e1';
+                b.style.boxShadow = 'none';
+                b.style.outline = 'none';
+            }
+        });
+    }
+
+    async function activarEstilo(idEstilo, btn = null) {
+        if (btn) dispararDestelloBoton(btn);
+        actualizarEstilosActivosUI(idEstilo);
+        if (!midiOutput && (!midiAccessInstance || obtenerSalidasDisponibles().length === 0)) await conectarMIDI();
+        try {
+            if (idEstilo === 42) {
+                // 042 Natural Beat: MSB 32, LSB 2, PC 9
+                enviarMidiGlobal([0xB0 | 15, 0x00, 32]);
+                enviarMidiGlobal([0xB0 | 15, 0x20, 2]);
+                enviarMidiGlobal([0xC0 | 15, 9]);
+                actualizarSonidosActivosUI('armonica');
+                cambiarTempo(80);
+            } else if (idEstilo === 51) {
+                // 051 Slow Rock 2: MSB 32, LSB 3, PC 2
+                enviarMidiGlobal([0xB0 | 15, 0x00, 32]);
+                enviarMidiGlobal([0xB0 | 15, 0x20, 3]);
+                enviarMidiGlobal([0xC0 | 15, 2]);
+                actualizarSonidosActivosUI('saxo');
+                cambiarTempo(70);
+            } else if (idEstilo === 41) {
+                // 041 Love Ballad: MSB 32, LSB 2, PC 8
+                enviarMidiGlobal([0xB0 | 15, 0x00, 32]);
+                enviarMidiGlobal([0xB0 | 15, 0x20, 2]);
+                enviarMidiGlobal([0xC0 | 15, 8]);
+                actualizarSonidosActivosUI('066');
+                cambiarTempo(80);
+            }
+        } catch(e){}
+    }
+
+    async function activarInstrumento(tipo, btn = null) {
+        if (btn) dispararDestelloBoton(btn);
+        actualizarSonidosActivosUI(tipo);
+        if (!midiOutput && (!midiAccessInstance || obtenerSalidasDisponibles().length === 0)) await conectarMIDI();
+        try {
+            if (tipo === 'armonica') {
+                // STS Harmonica: Sweet Harm. de fábrica (MSB 121, LSB 2, PC 22)
+                enviarMidiGlobal([0xB0 | 0, 0x00, 121]);
+                enviarMidiGlobal([0xB0 | 0, 0x20, 2]);
+                enviarMidiGlobal([0xC0 | 0, 22]);
+                enviarMidiGlobal([0xB0 | 0, 0x07, 126]);
+                enviarMidiGlobal([0xB0 | 0, 0x0B, 127]);
+                enviarMidiGlobal([0xB0 | 0, 0x5B, 38]);
+                enviarMidiGlobal([0xB0 | 0, 0x5D, 0]);
+                enviarMidiGlobal([0xB0 | 0, 0x01, 0]);
+                enviarMidiGlobal([0xB0 | 0, 0x48, 64]);
+                enviarMidiGlobal([0xB0 | 1, 0x07, 0]);
+                enviarMidiGlobal([0xB0 | 2, 0x07, 0]);
+                enviarMidiGlobal([0xB0 | 3, 0x00, 121]);
+                enviarMidiGlobal([0xB0 | 3, 0x20, 0]);
+                enviarMidiGlobal([0xC0 | 3, 48]);
+                enviarMidiGlobal([0xB0 | 3, 0x07, 100]);
+            } else if (tipo === 'saxo') {
+                // Tenor Sax clásico de fábrica (MSB 121, LSB 0, PC 66)
+                enviarMidiGlobal([0xB0 | 0, 0x00, 121]);
+                enviarMidiGlobal([0xB0 | 0, 0x20, 0]);
+                enviarMidiGlobal([0xC0 | 0, 66]);
+                enviarMidiGlobal([0xB0 | 0, 0x07, 126]);
+                enviarMidiGlobal([0xB0 | 0, 0x0B, 127]);
+                enviarMidiGlobal([0xB0 | 0, 0x5B, 46]);
+                enviarMidiGlobal([0xB0 | 0, 0x5D, 0]);
+                enviarMidiGlobal([0xB0 | 1, 0x07, 0]);
+                enviarMidiGlobal([0xB0 | 2, 0x07, 0]);
+                enviarMidiGlobal([0xB0 | 3, 0x00, 121]);
+                enviarMidiGlobal([0xB0 | 3, 0x20, 0]);
+                enviarMidiGlobal([0xC0 | 3, 48]);
+                enviarMidiGlobal([0xB0 | 3, 0x07, 100]);
+            } else if (tipo === '066') {
+                // Keyboard Set 066 Oct.Strings oficial (MSB 121, LSB 8, PC 48)
+                enviarMidiGlobal([0xB0 | 0, 0x00, 121]);
+                enviarMidiGlobal([0xB0 | 0, 0x20, 8]);
+                enviarMidiGlobal([0xC0 | 0, 48]);
+                enviarMidiGlobal([0xB0 | 0, 0x07, 126]);
+                enviarMidiGlobal([0xB0 | 0, 0x5B, 50]);
+                enviarMidiGlobal([0xB0 | 1, 0x00, 121]);
+                enviarMidiGlobal([0xB0 | 1, 0x20, 0]);
+                enviarMidiGlobal([0xC0 | 1, 48]);
+                enviarMidiGlobal([0xB0 | 1, 0x07, 95]);
+                enviarMidiGlobal([0xB0 | 2, 0x07, 0]);
+                enviarMidiGlobal([0xB0 | 3, 0x00, 121]);
+                enviarMidiGlobal([0xB0 | 3, 0x20, 0]);
+                enviarMidiGlobal([0xC0 | 3, 52]);
+                enviarMidiGlobal([0xB0 | 3, 0x07, 105]);
+            }
+        } catch(e){}
+    }
+
+    // ==============================================================================
+    // RELOJ MIDI CLOCK (0xF8), START (0xFA), STOP (0xFC) Y TEMPO
+    // ==============================================================================
+    let midiClockTimer = null;
+
+    function activarRelojMidi(bpm) {
+        if (midiClockTimer) clearInterval(midiClockTimer);
+        const msPerTick = (60000 / (bpm * 24));
+        midiClockTimer = setInterval(() => { enviarMidiGlobal([0xF8]); }, msPerTick);
+    }
+
+    function cambiarTempo(bpm, btn = null) {
+        if (btn) dispararDestelloBoton(btn);
+        tempoActual = bpm;
+        document.querySelectorAll('.btn-tempo').forEach(b => {
+            const txt = b.innerText || '';
+            b.classList.toggle('active-tempo', txt.includes(`${bpm} BPM`));
+        });
+        activarRelojMidi(bpm);
+    }
+
+    function iniciarRitmoKorg(btn = null) {
+        if (btn) dispararDestelloBoton(btn);
+        activarRelojMidi(tempoActual);
+        enviarMidiGlobal([0xFA]);
+    }
+
+    function detenerRitmoKorg(btn = null) {
+        if (btn) dispararDestelloBoton(btn);
+        enviarMidiGlobal([0xFC]);
+    }
+
+    function dispararDestelloBoton(el) {
+        if (!el) return;
+        el.classList.remove('btn-flash-active');
+        void el.offsetWidth;
+        el.classList.add('btn-flash-active');
+        setTimeout(() => { if (el) el.classList.remove('btn-flash-active'); }, 450);
+    }
+
+    // ==============================================================================
+    // PANTALLA NEGRA OLED (MODO PARTITURA NOCTURNA)
+    // ==============================================================================
+    let modoPartituraNegra = true;
+
+    function toggleModoPartituraNegra(btn = null) {
+        if (btn) dispararDestelloBoton(btn);
+        modoPartituraNegra = !modoPartituraNegra;
+        aplicarModoPartituraNegraUI(modoPartituraNegra);
+    }
+
+    function aplicarModoPartituraNegraUI(activo) {
+        const img1 = document.getElementById('partitura-img-hoja1');
+        const img2 = document.getElementById('partitura-img-hoja2');
+        if (img1) img1.classList.toggle('score-dark-mode', activo);
+        if (img2) img2.classList.toggle('score-dark-mode', activo);
+
+        const txt = activo ? '🌓 Pantalla Negra (ON)' : '☀️ Fondo Blanco';
+        const bg = activo ? '#0284c7' : '#1e293b';
+        const border = activo ? '#38bdf8' : '#475569';
+        const color = activo ? '#ffffff' : '#cbd5e1';
+
+        document.querySelectorAll('.btn-dark-score-toggle').forEach(b => {
+            b.innerText = txt;
+            b.style.background = bg;
+            b.style.borderColor = border;
+            b.style.color = color;
+        });
+    }
+
+    // ==============================================================================
+    // MOTOR DE ATENUADOR INTELIGENTE (SMART DIMMING EN 60s)
+    // ==============================================================================
+    let atenuadorHabilitado = true;
+    let pantallaAtenuada = false;
+    let smartDimTimer = null;
+    const TIEMPO_INACTIVIDAD_MS = 60000;
+
+    function reiniciarTemporizadorDimming() {
+        if (pantallaAtenuada) {
+            despertarPantalla();
+            return;
+        }
+        if (smartDimTimer) clearTimeout(smartDimTimer);
+        if (atenuadorHabilitado) {
+            smartDimTimer = setTimeout(atenuarPantalla, TIEMPO_INACTIVIDAD_MS);
+        }
+    }
+
+    function atenuarPantalla() {
+        if (!atenuadorHabilitado || pantallaAtenuada) return;
+        pantallaAtenuada = true;
+        const ov = document.getElementById('smart-dim-overlay');
+        if (ov) {
+            ov.style.transition = 'opacity 1.2s cubic-bezier(0.2,0.8,0.3,1)';
+            ov.style.opacity = '1';
+            ov.style.pointerEvents = 'auto';
+        }
+    }
+
+    function despertarPantalla() {
+        if (!pantallaAtenuada) return;
+        pantallaAtenuada = false;
+        const ov = document.getElementById('smart-dim-overlay');
+        if (ov) {
+            ov.style.transition = 'opacity 0.12s ease';
+            ov.style.opacity = '0';
+            ov.style.pointerEvents = 'none';
+        }
+        if (smartDimTimer) clearTimeout(smartDimTimer);
+        if (atenuadorHabilitado) {
+            smartDimTimer = setTimeout(atenuarPantalla, TIEMPO_INACTIVIDAD_MS);
+        }
+    }
+
+    function despertarPantallaManual(e) {
+        if (e) { e.preventDefault(); e.stopPropagation(); }
+        despertarPantalla();
+    }
+
+    function toggleSmartDimming(btn = null) {
+        if (btn) dispararDestelloBoton(btn);
+        atenuadorHabilitado = !atenuadorHabilitado;
+        if (!atenuadorHabilitado) {
+            if (smartDimTimer) clearTimeout(smartDimTimer);
+            despertarPantalla();
+        } else {
+            reiniciarTemporizadorDimming();
+        }
+        actualizarIndicadoresSmartDimUI(atenuadorHabilitado);
+    }
+
+    function actualizarIndicadoresSmartDimUI(activo) {
+        const estadoTexto = activo ? '🌙 Ahorro (60s)' : '☀️ Ahorro (Off)';
+        const fondoColor = activo ? '#0284c7' : '#1e293b';
+        const bordeColor = activo ? '#38bdf8' : '#475569';
+        const textoColor = activo ? '#ffffff' : '#94a3b8';
+
+        document.querySelectorAll('.btn-smart-dim-toggle').forEach(b => {
+            b.innerText = estadoTexto;
+            b.style.background = fondoColor;
+            b.style.borderColor = bordeColor;
+            b.style.color = textoColor;
+        });
+    }
+
+    ['touchstart', 'touchend', 'touchmove', 'pointerdown', 'pointermove', 'mousedown', 'mousemove', 'keydown', 'scroll'].forEach(evt => {
+        window.addEventListener(evt, () => { reiniciarTemporizadorDimming(); }, { passive: true });
+    });
+
+    // ==============================================================================
+    // MOTOR DE PANTALLA ACTIVA INFALIBLE PARA IPADOS (NOSLEEP.JS + WAKELOCK)
+    // ==============================================================================
+    let noSleepInstance = null;
+    let pantallaBloqueada = false;
+
+    function activarNoSleepInfalible() {
+        if (pantallaBloqueada) return;
+        try {
+            if (!noSleepInstance && typeof NoSleep !== 'undefined') noSleepInstance = new NoSleep();
+            if (noSleepInstance && !noSleepInstance.isEnabled) {
+                noSleepInstance.enable();
+                pantallaBloqueada = true;
+            }
+        } catch(e) {}
+        if ('wakeLock' in navigator) navigator.wakeLock.request('screen').catch(()=>{});
+        actualizarIndicadoresNoSleepUI(true);
+    }
+
+    function toggleNoSleepManual(btn = null) {
+        if (btn) dispararDestelloBoton(btn);
+        if (!noSleepInstance && typeof NoSleep !== 'undefined') noSleepInstance = new NoSleep();
+        if (pantallaBloqueada) {
+            try { if (noSleepInstance) noSleepInstance.disable(); } catch(e){}
+            pantallaBloqueada = false;
+            actualizarIndicadoresNoSleepUI(false);
+        } else {
+            try { if (noSleepInstance) noSleepInstance.enable(); } catch(e){}
+            if ('wakeLock' in navigator) navigator.wakeLock.request('screen').catch(()=>{});
+            pantallaBloqueada = true;
+            actualizarIndicadoresNoSleepUI(true);
+        }
+    }
+
+    function actualizarIndicadoresNoSleepUI(activo) {
+        const estadoTexto = activo ? '☀️ Siempre Encendido' : '🌙 Reposo Normal';
+        const fondoColor = activo ? '#065f46' : '#1e293b';
+        const bordeColor = activo ? '#10b981' : '#475569';
+        const textoColor = activo ? '#a7f3d0' : '#94a3b8';
+
+        document.querySelectorAll('.btn-nosleep-toggle').forEach(b => {
+            b.innerText = estadoTexto;
+            b.style.background = fondoColor;
+            b.style.borderColor = bordeColor;
+            b.style.color = textoColor;
+        });
+    }
+
+    ['touchstart', 'touchend', 'pointerdown', 'mousedown', 'click'].forEach(evt => {
+        document.addEventListener(evt, () => { if (!pantallaBloqueada) activarNoSleepInfalible(); }, { passive: true });
+    });
+
+    // ==============================================================================
+    // INICIALIZACIÓN
+    // ==============================================================================
+    async function iniciarApp() {
+        actualizarEstilosActivosUI(42);
+        actualizarSonidosActivosUI('armonica');
+        activarNoSleepInfalible();
+        actualizarIndicadoresSmartDimUI(true);
+        aplicarModoPartituraNegraUI(true);
+        reiniciarTemporizadorDimming();
+        await conectarMIDI();
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', iniciarApp);
+    } else {
+        iniciarApp();
+    }
+</script>
+</body>
+</html>

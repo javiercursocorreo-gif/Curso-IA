@@ -626,12 +626,18 @@ Esta sección recopila los descubrimientos críticos de ingeniería realizados d
   - Se eliminan todos los botones redundantes de estilos y sonidos del cuerpo principal de la ficha.
   - La selección de ritmos y timbres queda centralizada **exclusivamente en el HUD flotante de la partitura a pantalla completa**, logrando una vista inicial limpia, diáfana y centrada en la partitura y la progresión armónica.
 
-### 6.48. Especificación de Hoja de Ruta: Carruseles de Partituras por Familias de Acompañamiento y Sonidos Afines (v174)
-* **Concepto de "Carro de Botones Compartido":**
-  - Músicos y teclistas suelen organizar su repertorio por bloques de estilo acústico afín (ej. baladas lentas en 6/8 o 4/4 que comparten timbres solistas como armónica, saxo tenor, cuerdas en octavas o piano de cola).
-  - En lugar de salir al menú general de canciones, recargar la página y volver a configurar el teclado, la nueva arquitectura permitirá:
-    1. Mantener un único panel HUD flotante de control escénico ("el carro de botones") calibrado para esa familia sonora.
-    2. Incorporar un **carrusel / selector deslizante horizontal de partituras** en la parte inferior o lateral, permitiendo al músico pasar de una canción a otra con un solo toque táctil (swipe o flechas) sin alterar la configuración del Korg EK-50.
+### 6.48. Implementación del Primer Carrusel Escénico: Baladas 6/8 con Carro de Botones Compartido (v174)
+* **Concepto de "Carro de Botones Compartido" y Protección del Repertorio:**
+  - Se crea la vista autónoma `CARRUSEL_01_BALADAS_6_8.html` sin tocar ni modificar ninguna de las fichas individuales existentes (`CANCION_25`, `CANCION_26`, etc.), garantizando la preservación total del repertorio clásico.
+  - El sistema unifica las obras afines de balada lenta 6/8 (*Can't Help Falling in Love* y *Unchained Melody*) bajo un único panel de control escénico persistente:
+    1. **Fila 1 (Estilos):** `042 Natural Beat`, `051 Slow Rock 2`, `041 Love Ballad`.
+    2. **Fila 2 (Sonidos Oficiales Korg):** `🎵 STS Harmonica` (`121, 2, 22`), `🎷 Tenor Sax` (`121, 0, 66`), `🎻 066 Oct.Strings` (`121, 8, 48`).
+    3. **Fila 3 (Herramientas de Atril):** Tempos rápidos (65, 70, 80 BPM), Start/Stop MIDI, NoSleep.js, Atenuador Inteligente (Smart Dimming 60s) y Modo Partitura Negra OLED.
+  - **Selector Horizontal y Swipe Táctil (0 ms de corte):**
+    - Pestañas sticky fijas `[ ◀ Ant ]`, `[ 🎵 25. Can't Help Falling in Love ]`, `[ 🎻 26. Unchained Melody ]`, `[ Sig ▶ ]` con soporte de gestos de deslizamiento táctil horizontal en iPad.
+    - El cambio de partitura conmuta las páginas en el DOM sin reiniciar la conexión Web MIDI ni provocar saltos ni silencios en el Korg EK-50.
+  - **Acceso Directo desde el Menú de Repertorio:**
+    - Botón de acceso directo en la cabecera superior y banner de gran formato sobre la cuadrícula general de canciones en `REPERTORIO_KORG_EK50.html` e `index.html`.
 
 ---
 *Manual redactado y sellado para el proyecto CURSO-IA / CURSO_MUSICA. Todos los derechos reservados.*
