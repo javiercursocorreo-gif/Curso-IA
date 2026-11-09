@@ -142,7 +142,7 @@ El Korg EK-50 se conecta al iPad o Mac mediante un cable USB estándar (USB tipo
 * **20. Nights in White Satin** (The Moody Blues): Mi menor ($Em$) · Estilo: 042 60s Soul / Slow Rock a 54 BPM · Flauta Traversa & Cuerdas Sinfónicas. Score MuseScore [#26691493](https://musescore.com/user/33531210/scores/26691493).
 * **22. Killing Me Softly with His Song** (Roberta Flack): Lab Mayor ($A\flat$) / Fa menor ($Fm$) · Estilo: 041 Love Ballad a 92 BPM · Piano Acústico & Flauta. Score MuseScore [#26680561](https://musescore.com/user/33531210/scores/26680561).
 * **24. Stand by Me** (Ben E. King): La Mayor ($A$) · Estilo: 042 60s Soul a 118 BPM · Bajo Acústico, Cuerdas Staccato & Saxo. Score MuseScore [#26693062](https://musescore.com/user/33531210/scores/26693062).
-* **25. Can't Help Falling in Love** (Elvis Presley / Hugo Peretti): Do Mayor ($C$) a 70/80/90 BPM · 3 Estilos Korg con STS de fábrica: 1. Estilo 042 Natural Beat (STS Harmonica limpia sin eco) / 2. Estilo 051 Slow Rock 2 (STS Noizy Tenor Sax) / 3. Estilo 041 Love Ballad (STS Strings Ens.). Motor de sincronización MIDI Clock (0xF8) a 24 pulsos/negra con arranque/parada de ritmo (0xFA/0xFC), supresión de botones redundantes de paginación en HUD y presets 1-Tap integrados en scroll vertical continuo de 2 hojas (v168). Score MuseScore [#5762856](https://musescore.com/user/27886870/scores/5762856).
+* **25. Can't Help Falling in Love** (Elvis Presley / Hugo Peretti): Do Mayor ($C$) a 70/80/90 BPM · 3 Estilos Korg con timbres dedicados: 1. Estilo 042 Natural Beat (STS Harmonica limpia sin eco) / 2. Estilo 051 Slow Rock 2 (Tenor Sax solista clásico `MSB 121, LSB 0, PC 66`) / 3. Estilo 041 Love Ballad (STS Strings Ens.). Motor de sincronización MIDI Clock (0xF8) a 24 pulsos/negra con arranque/parada de ritmo (0xFA/0xFC) y presets 1-Tap integrados en scroll vertical continuo de 2 hojas (v169). Score MuseScore [#5762856](https://musescore.com/user/27886870/scores/5762856).
 * **26. Unchained Melody** (The Righteous Brothers / Alex North & Hy Zaret - BSO *Ghost*): Sol Mayor ($G$) a 65 BPM (4/4 en tresillos / 12/8 feel) · 3 Estilos Korg con STS: 1. Estilo 052 Unpl.SlRock (12Str.Guitar) / 2. Estilo 051 Slow Rock 2 (Noizy Tenor Sax) / 3. Estilo 041 Love Ballad (Strings Ens.). Partitura completa de 2 hojas continuas en PNG (`CANCIONES PDF/Unchained Melody 1.png` y `2.png`) integrada en ficha y en modo atril digital fullscreen. Score MuseScore [#7668671](https://musescore.com/user/35258469/scores/7668671).
 
 #### 🌴 Categoría 4: Boleros & Ritmos Latinos — 4 Obras
@@ -578,6 +578,30 @@ Esta sección recopila los descubrimientos críticos de ingeniería realizados d
 ### 6.42. Supresión de Botones de Paginación en HUD y Optimización de Pantalla Completa en Canción 25 (v168)
 * **Despeje y Simplificación de la Línea 3 del HUD:**
   - Se eliminan los botones redundantes de "Hoja 1" y "Hoja 2" de la barra flotante superior. Dado que ambas hojas de partitura se visualizan de forma natural una debajo de otra en scroll vertical continuo al 96vw, la navegación táctil es directa con el dedo, eliminando elementos innecesarios y permitiendo una disposición limpia y cómoda para los selectores de tempo (70/80/90 BPM) y los botones de ritmo (Iniciar / Parar).
+
+### 6.43. Configuración de Sonido 2 a Tenor Sax Clásico en Canción 25 (v169)
+* **Asignación del Saxo Tenor Tradicional:**
+  - El Sonido 2 se calibra a **Tenor Sax** (`MSB 121, LSB 0, PC 66` en Upper 1) en sustitución del anterior Noizy Tenor, ofreciendo un tono redondo, lírico y cálido sin asperezas ni soplos exagerados, arropado por Warm Pad (`MSB 121, LSB 0, PC 89`) en Upper 2 y cuerdas de acompañamiento en Lower.
+  - Sincronizado en el Botón 2 de la ficha principal y en la Línea 2 del HUD flotante.
+
+### 6.44. Metodología Definitiva de Calibración de Sonidos Korg EK-50 "A la Primera" & Blindaje de Pantalla Activa iPad (v170)
+* **El Origen de los Problemas y el Fin de las Invenciones:**
+  - En versiones previas se cometieron dos errores sistemáticos inaceptables:
+    1. **Sobreescritura de STS con timbres GM distorsionados:** Cuando el usuario pedía el STS de un estilo (ej. la armónica de NaturalBeat 042), se sobreescribía Upper 1 con un sonido General MIDI plano (`MSB 121, LSB 0, PC 22`) inflado con reverberación artificial (CC91=122), arruinando la calidez de la voz de fábrica del teclado.
+    2. **Sustitución no solicitada de sonidos:** Se reemplazó el sonido `066 Oct.Strings` pedido por el usuario por un genérico `Strings Ensemble`.
+* **Metodología Canónica Infalible "A la Primera" para Todas las Canciones:**
+  - **Regla 1 (Fidelidad Absoluta al Requerimiento del Usuario):** Prohibición terminante de sustituir o inventar timbres. Lo que el usuario pide se mantiene textualmente en código, botones, HUD y descripciones.
+  - **Regla 2 (Uso Estricto del Voice Name List Oficial Korg EK-50):** Toda asignación de sonido se extrae directamente del catálogo de fábrica:
+    - **Sonido 1 (STS Harmonica Oficial):** Estilo 042 NaturalBeat con su STS nativo *Sweet Harm.* (`MSB 121, LSB 2, PC 22`), reverb natural suave (CC91=38) y cuerdas en Lower sin eco artificial ni vibrato exagerado.
+    - **Sonido 2 (Tenor Sax Clásico):** Saxo Tenor solista tradicional (`MSB 121, LSB 0, PC 66`), lírico y redondo, eliminando definitivamente la voz áspera *Noizy Tenor*.
+    - **Sonido 3 (066 Oct.Strings Oficial):** Keyboard Set 066 del Korg con *Oct.Strings* en octavas reales (`MSB 121, LSB 8, PC 48`), *St. Strings* orquestales en Upper 2 y coro *Oh-Ah Voices* en Lower.
+* **Resolución Definitiva del Apagado de Pantalla en iPad (Modo Atril):**
+  - **Causa Raíz Técnica en iPadOS:** Safari móvil desactiva la API estándar `navigator.wakeLock` bajo protocolos HTTP locales (`http://ip:8888`), y los vídeos en bucle base64 de `NoSleep.js` son pausados por el gestor de energía de iOS tras 2-3 minutos de inactividad táctil.
+  - **Solución Hardware Inmediata (Estándar de Músicos de Atril):** En el iPad, ir a **Ajustes > Pantalla y brillo > Bloqueo automático > NUNCA** (o 15 minutos). Es el ajuste obligatorio que aplican todos los profesionales de atriles digitales (ForScore / MobileSheets).
+  - **Triple Blindaje Software en el Navegador:**
+    1. **Canal de Audio Permanente:** Un pulso Web Audio inaudible programado cada 25 segundos que mantiene despierto el subsistema multimedia de WebKit.
+    2. **Ticker Gráfico Activo en `<canvas>`:** Renderizado continuo a 60 fps mediante `requestAnimationFrame` en un micro-canvas invisible de 2x2 píxeles, impidiendo que el motor gráfico de iOS entre en reposo.
+    3. **Stream de Vídeo en Línea NoSleep.js** auto-activado en el primer toque táctil de la pantalla.
 
 ---
 *Manual redactado y sellado para el proyecto CURSO-IA / CURSO_MUSICA. Todos los derechos reservados.*
