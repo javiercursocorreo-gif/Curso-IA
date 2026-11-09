@@ -142,7 +142,7 @@ El Korg EK-50 se conecta al iPad o Mac mediante un cable USB estándar (USB tipo
 * **20. Nights in White Satin** (The Moody Blues): Mi menor ($Em$) · Estilo: 042 60s Soul / Slow Rock a 54 BPM · Flauta Traversa & Cuerdas Sinfónicas. Score MuseScore [#26691493](https://musescore.com/user/33531210/scores/26691493).
 * **22. Killing Me Softly with His Song** (Roberta Flack): Lab Mayor ($A\flat$) / Fa menor ($Fm$) · Estilo: 041 Love Ballad a 92 BPM · Piano Acústico & Flauta. Score MuseScore [#26680561](https://musescore.com/user/33531210/scores/26680561).
 * **24. Stand by Me** (Ben E. King): La Mayor ($A$) · Estilo: 042 60s Soul a 118 BPM · Bajo Acústico, Cuerdas Staccato & Saxo. Score MuseScore [#26693062](https://musescore.com/user/33531210/scores/26693062).
-* **25. Can't Help Falling in Love** (Elvis Presley / Hugo Peretti): Do Mayor ($C$) a 70 BPM · 3 Estilos Korg con STS: 1. Estilo 042 (STS Armónica +1 Octava) / 2. Estilo 051 (Instrumento 066 Oct.Strings) / 3. Estilo 051 (STS Noizy Tenor Sax & Warm Pad). Partitura completa de 2 hojas en visualización horizontal en paralelo (Modo Atril iPad) tanto integrada en la ficha como a pantalla completa. Score MuseScore [#5762856](https://musescore.com/user/27886870/scores/5762856).
+* **25. Can't Help Falling in Love** (Elvis Presley / Hugo Peretti): Do Mayor ($C$) a 70 BPM · 3 Estilos Korg con STS: 1. Estilo 042 (STS Armónica +1 Octava) / 2. Estilo 051 Slow Rock 2 (Noizy Tenor Sax) / 3. Estilo 042 (Instrumento 066 Oct.Strings). Partitura completa de 2 hojas continuas en PNG (`CANCIONES PDF/I Can't help falling in love wtih you 1.png` y `2.png`) disponible exclusivamente en modo atril digital fullscreen. Score MuseScore [#5762856](https://musescore.com/user/27886870/scores/5762856).
 * **26. Unchained Melody** (The Righteous Brothers / Alex North & Hy Zaret - BSO *Ghost*): Sol Mayor ($G$) a 65 BPM (4/4 en tresillos / 12/8 feel) · 3 Estilos Korg con STS: 1. Estilo 052 Unpl.SlRock (12Str.Guitar) / 2. Estilo 051 Slow Rock 2 (Noizy Tenor Sax) / 3. Estilo 041 Love Ballad (Strings Ens.). Partitura completa de 2 hojas continuas en PNG (`CANCIONES PDF/Unchained Melody 1.png` y `2.png`) integrada en ficha y en modo atril digital fullscreen. Score MuseScore [#7668671](https://musescore.com/user/35258469/scores/7668671).
 
 #### 🌴 Categoría 4: Boleros & Ritmos Latinos — 4 Obras
@@ -490,16 +490,16 @@ Esta sección recopila los descubrimientos críticos de ingeniería realizados d
      - *Carácter Acústico:* Arreglo cinematográfico de gran balada de los 90 (estilo *My Heart Will Go On* de Céline Dion).
      - *Veredicto:* Requiere calibrar el balance de volumen (Dial `[STYLE]` hacia abajo o `CC 07` en Web MIDI) para que la delicadeza de la guitarra corte la mezcla de la orquesta. Si se busca un clímax épico, la guitarra puede ser sustituida por cuerdas masivas o flauta irlandesa.
 
-### 6.37. Creación y Calibración de la Ficha 25: Can't Help Falling in Love (Elvis Presley) (v149)
+### 6.37. Creación y Calibración de la Ficha 25: Can't Help Falling in Love (Elvis Presley) (v147)
 * **Tonalidad Canónica:** **Do Mayor ($C$)**, 0 alteraciones (teclas blancas) a **70 BPM** en compás 6/8.
 * **Transposer Automático Korg EK-50 (+2 st):** Botón 1-Tap que transpone el teclado a Re Mayor ($D$) para sonar en la tonalidad original de Elvis Presley tocando en Do Mayor.
-* **Terna de 3 Presets Oficiales Korg con Estilos y Sonidos:**
+* **Terna de 3 Estilos Oficiales Korg con STS de Fábrica:**
   1. *🎵 1. STS Armónica (+1 Octava) (Estilo 042):* Melodía solista expresiva · STS: `Harmonica` GM2 oficial (PC 22 con modulación/vibrato CC01=52 y eco amplio) elevada +1 octava arriba (+12 semitonos) & Estilo 042 (Slow Rock 6/8) · MSB=32, LSB=2, PC=9.
-  2. *🎻 2. Instrumento 066 (Oct.Strings) (Estilo 051):* Versión Orquestal en Octavas · KbdSet: `066 (Oct.Strings)` (Masa orquestal de violines en octavas & coros envolventes) & Estilo 051 (Slow Rock 2) · MSB=32, LSB=3, PC=2 (Estilo 051) y MSB=33, LSB=0, PC=65 (KbdSet 066).
-  3. *🎷 3. Slow Rock 2 & Saxo Soul (Estilo 051):* Versión Balada Soul · STS: `Noizy Tenor Sax` (Saxo Tenor solista cálido y expresivo con reverb) & `Warm Pad` · MSB=32, LSB=3, PC=2.
-* **Integración Visual de Partitura Horizontal (2 Hojas en Paralelo para iPad):**
-  - Mostrada en paralelo horizontal (lado a lado) tanto en el cuerpo de la ficha como en el **Modo Atril Pantalla Completa**, adaptada a la vista apaisada del iPad en el atril del Korg EK-50 sin scroll vertical innecesario.
-  - HUD flotante con botones táctiles para alternar entre vista combinada de 2 hojas en paralelo o visualización individual de Hoja 1 y Hoja 2, y selección instantánea de los estilos.
+  2. *🎷 2. Slow Rock 2 & Saxo Soul (Estilo 051):* Versión Balada Soul · STS: `Noizy Tenor Sax` (Saxo Tenor solista cálido y expresivo con reverb) & `Warm Pad` · MSB=32, LSB=3, PC=2.
+  3. *🎻 3. Instrumento 066 (Oct.Strings) (Estilo 042):* Versión Orquestal en Octavas · KbdSet: `066 (Oct.Strings)` (Masa orquestal de violines en octavas & coros envolventes) & Estilo 042 (Slow Rock 6/8) · MSB=32, LSB=2, PC=9 (Estilo) y MSB=33, LSB=0, PC=65 (KbdSet 066).
+* **Integración Visual de Partitura (2 Hojas Continuas):**
+  - Mostrada de forma continua tanto en el cuerpo de la ficha como en el **Modo Atril Pantalla Completa**, permitiendo deslizar suavemente entre la Hoja 1 (Estrofa/Estribillo) y la Hoja 2 (Puente/Clímax) sin interrupciones durante la interpretación.
+  - HUD flotante con botones táctiles para salto directo entre Hoja 1 y Hoja 2, y selección instantánea de los 3 estilos.
   - Enlace directo oficial a MuseScore Web en la cabecera: `https://musescore.com/user/27886870/scores/5762856`.
 * **Estructura Armónica Canónica:**
   - Estrofa: C ➔ Em ➔ Am ➔ F ➔ C ➔ G ➔ F ➔ G ➔ Am ➔ F ➔ C ➔ G ➔ C
