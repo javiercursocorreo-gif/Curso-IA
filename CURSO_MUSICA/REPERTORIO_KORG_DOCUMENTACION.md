@@ -536,17 +536,16 @@ Esta sección recopila los descubrimientos críticos de ingeniería realizados d
   - Em7 [Sol-Si-Re-Mi] ➔ Bm [Fa♯-Si-Re] [Doble pivote Si-Re]
   - C [Sol-Do-Mi] ➔ B♭ [Fa-Si♭-Re] [Movimiento paralelo de semitono hacia el acorde mágico de la BSO Ghost]
 
-### 6.39. Arquitectura Modular Independiente en Canción 25: Desacoplamiento Estilos vs Instrumentos & Reflejo en Pantalla LCD (v152)
+### 6.39. Arquitectura Modular Independiente en Canción 25: Desacoplamiento Estilos vs 3 STS Auténticos (v153)
 * **Principio de Diseño:** Superación del modelo de combinaciones fijas en favor de un sistema modular 100% libre donde el intérprete conmuta de forma independiente la base rítmica de acompañamiento y la paleta tímbrica melódica, sin reinicios accidentales de compás ni cambios forzados de instrumento.
 * **Bloque 1 · Selector Rítmico / Estilos (Canal 16 MIDI):**
   - **🥁 Estilo 041 (Love Ballad):** `Bank MSB 32, LSB 2, PC 8`. Acompañamiento pop-balada suave, elegante y orgánico.
   - **🥁 Estilo 051 (Slow Rock 2):** `Bank MSB 32, LSB 3, PC 2`. Pulso clásico ternario en 12/8 estilo Elvis con acentuación baladista.
-* **Bloque 2 · Selector Tímbrico / Melodía con Sincronización en Pantalla LCD (Banco MSB 33 en Canales 16 & 0):**
-  - **Diagnóstico del Display LCD:** El procesador de pantalla del Korg EK-50 solo actualiza el rótulo del sonido cuando recibe comandos de **Keyboard Set (Banco MSB 33)** en el canal de control global (Canal 16). Los mensajes GM2 directos (MSB 121) alteran el sintetizador interno pero no refrescan el LCD del teclado.
-  - **🎵 STS Harmonica (029):** Carga en pantalla `029 Harmonica` mediante `Bank MSB 33, LSB 2, PC 8` en Canales 16 y 0, seguido del refinamiento oficial `Sweet Harm.` (`MSB 121, LSB 1, PC 22`) a volumen 127 con +1 octava (`cambiarOctava(12)`), vibrato analógico (`CC 01 = 54`, `CC 77 = 72`), eco amplio (`CC 91 = 122`) y colchón de cuerdas cálidas en mano izquierda Lower (`i3 Strings` `MSB 121, LSB 0, PC 48`).
-  - **🎷 STS Noizy Tenor (101):** Carga en pantalla `101 Tenor Sax` mediante `Bank MSB 33, LSB 10, PC 0` en Canales 16 y 0, seguido del saxo tenor solista cálido (`MSB 121, LSB 1, PC 66`) emparejado con sintetizador ambiental `Warm Pad` (`MSB 121, LSB 0, PC 89`).
-  - **🎻 Inst 066 (Oct.Strings):** Carga en pantalla `066 Oct.Strings` mediante `Bank MSB 33, LSB 6, PC 5` en Canales 16 y 0, con `St. Strings` en octavas para Upper 1 & 2 y coro celestial `Oh-Ah Voices` (`MSB 121, LSB 0, PC 52`) en Lower.
-* **HUD Flotante de Pantalla Completa Total:** Sincronización bidireccional inmediata en el atril de iPad entre los botones de la ficha y el HUD superior flotante, permitiendo alternar entre los 2 ritmos y los 3 sonidos al vuelo mientras se lee la partitura en scroll vertical de 2 hojas continuas (96vw de ancho).
+* **Bloque 2 · Selector Tímbrico / Melodía (La Terna de 3 STS Auténticos de Fábrica):**
+  - **🎵 STS Harmonica:** Sonido oficial Korg `Sweet Harm.` (`MSB 121, LSB 1, PC 22`) a volumen máximo melódico 127 con elevación de +1 octava (`cambiarOctava(12)`), vibrato analógico (`CC 01 = 54`, `CC 77 = 72`), eco amplio (`CC 91 = 122`), refuerzo idéntico en Upper 2 y colchón de cuerdas cálidas en mano izquierda Lower (`i3 Strings` `MSB 121, LSB 0, PC 48`). (Eliminada la inyección de 029 genérico).
+  - **🎷 STS Noizy Tenor:** Saxo tenor solista cálido (`MSB 121, LSB 1, PC 66`, volumen 127, reverb 118) emparejado orgánicamente con el sintetizador ambiental `Warm Pad` (`MSB 121, LSB 0, PC 89`) en Upper 2 y cuerdas suaves en Lower. (Eliminada la inyección de 101 genérico).
+  - **🎻 STS Strings Ensemble:** La masa sinfónica orquestal oficial de cuerdas de fábrica (`String Ensemble 1` `MSB 121, LSB 0, PC 48`, volumen 126, reverb 120) reforzada con `Warm Pad` (`MSB 121, LSB 0, PC 89`) en Upper 2 y coro celestial `Oh-Ah Voices` (`MSB 121, LSB 0, PC 52`) en Lower. Sustituye al sonido 066.
+* **HUD Flotante de Pantalla Completa Total:** Sincronización bidireccional inmediata en el atril de iPad entre los botones de la ficha y el HUD superior flotante, permitiendo alternar entre los 2 ritmos y los 3 STS al vuelo mientras se lee la partitura en scroll vertical de 2 hojas continuas (96vw de ancho).
 
 ---
 *Manual redactado y sellado para el proyecto CURSO-IA / CURSO_MUSICA. Todos los derechos reservados.*
