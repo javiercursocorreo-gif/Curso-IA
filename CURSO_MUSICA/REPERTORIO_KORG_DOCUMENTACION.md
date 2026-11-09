@@ -536,19 +536,20 @@ Esta sección recopila los descubrimientos críticos de ingeniería realizados d
   - Em7 [Sol-Si-Re-Mi] ➔ Bm [Fa♯-Si-Re] [Doble pivote Si-Re]
   - C [Sol-Do-Mi] ➔ B♭ [Fa-Si♭-Re] [Movimiento paralelo de semitono hacia el acorde mágico de la BSO Ghost]
 
-### 6.39. Arquitectura Minimalista en Canción 25: Exclusividad HUD Flotante con Selector de Tempo (70/80/90 BPM) (v164)
+### 6.39. Sincronización Total de Pantalla LCD Korg EK-50 con Bank 33 en Sonidos (029, 101 y 066) y HUD Flotante (v165)
 * **Principio de Diseño:** Depuración visual absoluta de la ficha. Se suprimen las botoneras redundantes de estilos, instrumentos y selectores de velocidad del cuerpo principal, centralizando el 100% del control rítmico, tímbrico y metronómico en el **HUD Flotante de 3 Filas del Modo Pantalla Completa**. Se amplía el margen superior de scroll (`padding-top: max(185px, ...)`) para que la partitura comience limpiamente bajo la barra flotante sin tapar jamás los títulos de la Hoja 1.
+* **Sincronización Visual LCD Física del Korg EK-50 (Canal 16 & Canal 1):**
+  - Para que el usuario pueda verificar instantáneamente en la pantalla del teclado qué sonido está activo, cada botón envía el cambio de Keyboard Set mediante **Bank MSB 33** al **Canal 16 Global** (actualiza el display LCD) y al **Canal 1 (Upper 1)**, seguido de la calibración de capas analógicas:
+  1. **🎵 029 Harmonica:** `Bank MSB 33, LSB 2, PC 8` en Canal 16 y Canal 1 (actualiza el LCD del Korg a **`029 Harmonica`**). Refuerzo en Upper 1 con `Sweet Harmonica` (`MSB 121, LSB 1, PC 22`, volumen 127, vibrato analógico CC01=54, CC77=72, reverb amplio CC91=122, release CC72=80), Upper 2 con `Sweet Harmonica`, Lower con `i3 Strings` (`MSB 121, LSB 0, PC 48`) y elevación melódica a +1 Octava (+12 st).
+  2. **🎷 101 Tenor Sax:** `Bank MSB 33, LSB 10, PC 0` en Canal 16 y Canal 1 (actualiza el LCD del Korg a **`101 Tenor Sax`**). Refuerzo en Upper 1 con `Noizy Tenor Sax` (`MSB 121, LSB 1, PC 66`, volumen 127, reverb 118), Upper 2 con `Warm Pad` (`MSB 121, LSB 0, PC 89`) y Lower con cuerdas suaves.
+  3. **🎻 066 Oct.Strings:** `Bank MSB 33, LSB 6, PC 5` en Canal 16 y Canal 1 (actualiza el LCD del Korg a **`066 Oct.Strings`**). Refuerzo en Upper 1 con `St. Strings` (`MSB 121, LSB 0, PC 48`, volumen 127, reverb 122), Upper 2 con octava, Upper 3 con `StringQuart` y Lower con `Oh-Ah Voices` (`MSB 121, LSB 0, PC 52`).
 * **Bloque 1 · Selector Rítmico / 3 Estilos Canónicos Elvis (Exclusivo en HUD Atril):**
   - **🥁 Estilo 041 (Love Ballad · 80 BPM):** `Bank MSB 32, LSB 2, PC 8`. Acompañamiento pop-balada suave y elegante calibrado a 80 BPM para una pulsación fluida y expresiva.
   - **🥁 Estilo 051 (Slow Rock 2):** `Bank MSB 32, LSB 3, PC 2`. Pulso clásico ternario en 12/8 estilo Elvis con acentuación baladista.
   - **🥁 Estilo 042 (Natural Beat):** `Bank MSB 32, LSB 2, PC 9`. Base de ritmo natural envolvente y orgánico con balance acústico perfecto para Elvis.
-* **Bloque 2 · Selector Tímbrico / Melodía (Exclusivo en HUD Atril):**
-  - **🎵 STS Harmonica Oficial:** Calibración idéntica a la fórmula de Hallelujah: Harmonica solista limpia universal GM2 (`MSB 121, LSB 0, PC 22`), volumen 124, vibrato analógico (`CC 01 = 52`, `CC 77 = 70`), reverb acústico (`CC 91 = 120`), chorus espacial (`CC 93 = 75`), Upper 2 y Upper 3 silenciados para máxima pureza tímbrica y sin batimento, y mano izquierda Lower con coro celestial `Choir Aahs` (`MSB 121, LSB 0, PC 52`) a octava estándar.
-  - **🎷 STS Noizy Tenor:** Saxo tenor solista cálido (`MSB 121, LSB 1, PC 66`, volumen 127, reverb 118) emparejado orgánicamente con el sintetizador ambiental `Warm Pad` (`MSB 121, LSB 0, PC 89`) en Upper 2 y cuerdas suaves en Lower.
-  - **🎻 066 Oct.Strings:** Selección directa del Keyboard Set del panel **`066 (Oct.Strings)`** (`Bank MSB 33, LSB 0, PC 65`) que muestra exactamente **066 Oct.Strings** en la pantalla del teclado, con cuerdas en octavas brillantes, Warm Pad de soporte y coro cálido en Lower.
 * **HUD Flotante de Pantalla Completa en 3 Líneas Independientes:**
   - **Línea 1 (Superior):** Selector de 3 Estilos (`🥁 Estilos: [ 041 Love Ballad (80 BPM) ] [ 051 Slow Rock ] [ 042 Natural Beat ]`).
-  - **Línea 2 (Intermedia):** Selector de Sonidos (`🎹 Sonidos: [ 🎵 STS Harmonica ] [ 🎷 STS Noizy Tenor ] [ 🎻 066 Oct.Strings ]`).
+  - **Línea 2 (Intermedia):** Selector de Sonidos (`🎹 Sonidos: [ 🎵 029 Harmonica ] [ 🎷 101 Tenor Sax ] [ 🎻 066 Oct.Strings ]`).
   - **Línea 3 (Inferior):** Hojas, Tempo y Retorno (`[ Hoja 1 ] [ Hoja 2 ] [ ⏱️ 70 BPM ] [ 80 BPM ] [ 90 BPM ] [ ☀️ Siempre Encendido ] [ ⬅ Repertorio ] [ ✕ Cerrar ]`).
   - Scroll vertical continuo de 2 hojas al 96vw con padding superior adaptado (`185px`) para garantizar visualización total de los controles y de la partitura sin solapamiento en iPad.
 * **Motor Anti-Apagado Oficial NoSleep.js (Rich Tibbett) con Indicador Visual:**
