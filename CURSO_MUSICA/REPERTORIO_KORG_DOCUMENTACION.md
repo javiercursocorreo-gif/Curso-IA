@@ -494,7 +494,7 @@ Esta sección recopila los descubrimientos críticos de ingeniería realizados d
 * **Tonalidad Canónica:** **Do Mayor ($C$)**, 0 alteraciones (teclas blancas) a **70 BPM** en compás 6/8.
 * **Transposer Automático Korg EK-50 (+2 st):** Botón 1-Tap que transpone el teclado a Re Mayor ($D$) para sonar en la tonalidad original de Elvis Presley tocando en Do Mayor.
 * **Terna de 3 Estilos Oficiales Korg con STS de Fábrica:**
-  1. *🎵 1. STS Armónica (+1 Octava) (Estilo 042):* Melodía solista expresiva · STS: `Harmonica` GM2 oficial (PC 22 con modulación/vibrato CC01=52 y eco amplio) elevada +1 octava arriba (+12 semitonos) & Estilo 042 (Slow Rock 6/8) · MSB=32, LSB=2, PC=9.
+  1. *🎵 1. STS Harmonica (+1 Octava) (Estilo 042):* Melodía solista expresiva · STS oficial propio de fábrica de Style 042: `Sweet Harm.` (Bank MSB 121, LSB 1, PC 22) con modulación/vibrato CC01=54, CC77=72 y eco amplio en Upper 1 y 2, y cuerdas `i3 Strings` en Lower. Elevada +1 octava arriba (+12 st) & Estilo 042 (Slow Rock 6/8) · MSB=32, LSB=2, PC=9. Eliminado cualquier código numérico erróneo (029).
   2. *🎷 2. Slow Rock 2 & Saxo Soul (Estilo 051):* Versión Balada Soul · STS: `Noizy Tenor Sax` (Saxo Tenor solista cálido y expresivo con reverb) & `Warm Pad` · MSB=32, LSB=3, PC=2.
   3. *🎻 3. Instrumento 066 (Oct.Strings) (Estilo 042):* Versión Orquestal en Octavas · KbdSet: `066 (Oct.Strings)` (Masa orquestal de violines en octavas & coros envolventes) & Estilo 042 (Slow Rock 6/8) · MSB=32, LSB=2, PC=9 (Estilo) y MSB=33, LSB=0, PC=65 (KbdSet 066).
 * **Integración Visual de Partitura (2 Hojas Continuas):**
