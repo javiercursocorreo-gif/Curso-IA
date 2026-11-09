@@ -536,7 +536,7 @@ Esta sección recopila los descubrimientos críticos de ingeniería realizados d
   - Em7 [Sol-Si-Re-Mi] ➔ Bm [Fa♯-Si-Re] [Doble pivote Si-Re]
   - C [Sol-Do-Mi] ➔ B♭ [Fa-Si♭-Re] [Movimiento paralelo de semitono hacia el acorde mágico de la BSO Ghost]
 
-### 6.39. Arquitectura Modular Independiente en Canción 25: Desacoplamiento de 3 Estilos Canónicos vs 3 STS Auténticos (v155)
+### 6.39. Arquitectura Modular Independiente en Canción 25: Desacoplamiento de 3 Estilos Canónicos vs 3 STS Auténticos y Cuádruple Escudo Anti-Apagado (v156)
 * **Principio de Diseño:** Superación del modelo de combinaciones fijas en favor de un sistema modular 100% libre donde el intérprete conmuta de forma independiente la base rítmica de acompañamiento y la paleta tímbrica melódica, sin reinicios accidentales de compás ni cambios forzados de instrumento.
 * **Bloque 1 · Selector Rítmico / 3 Estilos Canónicos Elvis (Canal 16 MIDI):**
   - **🥁 Estilo 041 (Love Ballad):** `Bank MSB 32, LSB 2, PC 8`. Acompañamiento pop-balada suave, elegante y orgánico.
@@ -551,6 +551,8 @@ Esta sección recopila los descubrimientos críticos de ingeniería realizados d
   - **Línea 2 (Intermedia):** Selector de Sonidos STS (`🎹 Sonidos: [ 🎵 STS Harmonica ] [ 🎷 STS Noizy Tenor ] [ 🎻 STS Strings Ens. ]`).
   - **Línea 3 (Inferior):** Controles de Navegación y Retorno (`[ Hoja 1 ] [ Hoja 2 ] [ ⬅ Repertorio ] [ ✕ Volver a la Ficha ]`).
   - Scroll vertical continuo de 2 hojas al 96vw con padding superior adaptado (`145px`) para garantizar visualización total sin oclusiones en iPad.
+* **Cuádruple Escudo Anti-Apagado Perpetuo en iPadOS:**
+  - Reemplazado el antiguo canvas stream sintético por un archivo de vídeo H.264 real (`keep_awake_silent.mp4`) embebido en base64 en bucle perpetuo, junto a W3C WakeLock y nodo inaudible CoreAudio Web Audio API, con re-enganche automático cada 15 segundos y sin temporizador que lo apague.
 
 ---
 *Manual redactado y sellado para el proyecto CURSO-IA / CURSO_MUSICA. Todos los derechos reservados.*

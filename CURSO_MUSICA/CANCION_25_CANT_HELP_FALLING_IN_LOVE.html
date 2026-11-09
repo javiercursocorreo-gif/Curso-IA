@@ -332,8 +332,8 @@
     <div class="nav-bar">
         <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
             <a class="btn-back" href="REPERTORIO_KORG_EK50.html?v=154">⬅ Volver al Repertorio</a>
-            <button class="btn-reload" onclick="dispararDestelloBoton(this); window.location.href=window.location.pathname+'?v=155&t='+Date.now()" title="Recargar y actualizar versión sin caché">
-                🔄 Recargar Última Versión (v155)
+            <button class="btn-reload" onclick="dispararDestelloBoton(this); window.location.href=window.location.pathname+'?v=156&t='+Date.now()" title="Recargar y actualizar versión sin caché">
+                🔄 Recargar Última Versión (v156)
             </button>
         </div>
         <div class="midi-bar">
@@ -663,7 +663,7 @@
                 <button id="btn-modal-p1" class="page-tab-btn active-tab" onclick="cambiarHoja(1)" style="padding:6px 14px; font-size:0.82rem;">Hoja 1</button>
                 <button id="btn-modal-p2" class="page-tab-btn" onclick="cambiarHoja(2)" style="padding:6px 14px; font-size:0.82rem;">Hoja 2</button>
             </div>
-            <a class="btn-back" href="REPERTORIO_KORG_EK50.html?v=155" style="background:#1e293b; color:#93c5fd; border:1px solid #334155; padding:6px 14px; border-radius:8px; font-weight:800; font-size:0.82rem; text-decoration:none;">
+            <a class="btn-back" href="REPERTORIO_KORG_EK50.html?v=156" style="background:#1e293b; color:#93c5fd; border:1px solid #334155; padding:6px 14px; border-radius:8px; font-weight:800; font-size:0.82rem; text-decoration:none;">
                 ⬅ Repertorio
             </a>
             <button onclick="cerrarPartituraPantallaCompleta(this)" style="background:#334155; color:#f1f5f9; border:1px solid #475569; padding:6px 16px; border-radius:8px; font-weight:800; font-size:0.82rem; cursor:pointer; touch-action:manipulation;">
@@ -1148,15 +1148,16 @@
     }
 
     // ==============================================================================
-    // MOTOR ANTI-APAGADO CONTINUO IPAD (WAKELOCK + CANVAS STREAM 60 MIN)
-        // ==============================================================================
-    // TRIPLE ESCUDO ANTI-APAGADO CONTINUO IPAD (WAKELOCK + WEB AUDIO SILENT + CANVAS VIDEO 60 MIN)
+    // CUÁDRUPLE ESCUDO ANTI-APAGADO CONTINUO IPAD (BLINDAJE TOTAL PARA IPADOS)
+    // 1. W3C WakeLock API (iOS 16.4+)
+    // 2. MP4 H.264 Real Video Loop Embebido en Base64 (Protocolo estándar No-Sleep)
+    // 3. Web Audio Inaudible (Mantener hilo multimedia del kernel activo)
+    // 4. Temporizador de Keep-Alive Perpetuo (Sin timeout que lo apague)
     // ==============================================================================
     let wakeLockInstance = null;
     let videoAntiSleep = null;
     let audioCtxAntiSleep = null;
-    let canvasPulseTimer = null;
-    let temporizadorInactividad = null;
+    const VIDEO_SILENT_B64 = "data:video/mp4;base64,AAAAIGZ0eXBpc29tAAACAGlzb21pc28yYXZjMW1wNDEAAAAIZnJlZQAABDBtZGF0AAACsAYF//+s3EXpvebZSLeWLNgg2SPu73gyNjQgLSBjb3JlIDE2NSByMzIyMiBiMzU2MDVhIC0gSC4yNjQvTVBFRy00IEFWQyBjb2RlYyAtIENvcHlsZWZ0IDIwMDMtMjAyNSAtIGh0dHA6Ly93d3cudmlkZW9sYW4ub3JnL3gyNjQuaHRtbCAtIG9wdGlvbnM6IGNhYmFjPTEgcmVmPTMgZGVibG9jaz0xOi0zOi0zIGFuYWx5c2U9MHgzOjB4MTEzIG1lPWhleCBzdWJtZT03IHBzeT0xIHBzeV9yZD0yLjAwOjAuNzAgbWl4ZWRfcmVmPTEgbWVfcmFuZ2U9MTYgY2hyb21hX21lPTEgdHJlbGxpcz0xIDh4OGRjdD0xIGNxbT0wIGRlYWR6b25lPTIxLDExIGZhc3RfcHNraXA9MSBjaHJvbWFfcXBfb2Zmc2V0PS00IHRocmVhZHM9MSBsb29rYWhlYWRfdGhyZWFkcz0xIHNsaWNlZF90aHJlYWRzPTAgbnI9MCBkZWNpbWF0ZT0xIGludGVybGFjZWQ9MCBibHVyYXlfY29tcGF0PTAgY29uc3RyYWluZWRfaW50cmE9MCBiZnJhbWVzPTMgYl9weXJhbWlkPTIgYl9hZGFwdD0xIGJfYmlhcz0wIGRpcmVjdD0xIHdlaWdodGI9MSBvcGVuX2dvcD0wIHdlaWdodHA9MiBrZXlpbnQ9MjUwIGtleWludF9taW49MjUgc2NlbmVjdXQ9NDAgaW50cmFfcmVmcmVzaD0wIHJjX2xvb2thaGVhZD00MCByYz1jcmYgbWJ0cmVlPTEgY3JmPTIzLjAgcWNvbXA9MC42MCBxcG1pbj0wIHFwbWF4PTY5IHFwc3RlcD00IGlwX3JhdGlvPTEuNDAgYXE9MToxLjIwAIAAAAAQZYiEABHOf/73iB8yy2+ceQAAAAlBmiRsQRzn/uAAAAAJQZ5CeIdnP7eBAAAACQGeYXRDc5+6gAAAAAkBnmNqQ3OfuoEAAAAPQZpoSahBaJlMCCOc//7hAAAAC0GehkURLDs5/7eBAAAACQGepXRDc5+6gQAAAAkBnqdqQ3OfuoAAAAAPQZqsSahBbJlMCCOc//7gAAAAC0GeykUVLDs5/7eBAAAACQGe6XRDc5+6gAAAAAkBnutqQ3OfuoAAAAAPQZrwSahBbJlMCCGc//7hAAAAC0GfDkUVLDs5/7eBAAAACQGfLXRDc5+6gQAAAAkBny9qQ3OfuoAAAAAPQZs0SahBbJlMCH5z//7gAAAAC0GfUkUVLDs5/7eBAAAACQGfcXRDc5+6gAAAAAkBn3NqQ3OfuoAAAAAPQZt4SahBbJlMCG5z//7hAAAAC0GflkUVLDs5/7eAAAAACQGftXRDc5+6gQAAAAkBn7dqQ3OfuoEAAARkbW9vdgAAAGxtdmhkAAAAAAAAAAAAAAAAAAAD6AAAA+gAAQAAAQAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAA490cmFrAAAAXHRraGQAAAADAAAAAAAAAAAAAAABAAAAAAAAA+gAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAABAAAAAABAAAAAQAAAAAAAkZWR0cwAAABxlbHN0AAAAAAAAAAEAAAPoAAAEAAABAAAAAAMHbWRpYQAAACBtZGhkAAAAAAAAAAAAAAAAAAAyAAAAMgBVxAAAAAAALWhkbHIAAAAAAAAAAHZpZGUAAAAAAAAAAAAAAABWaWRlb0hhbmRsZXIAAAACsm1pbmYAAAAUdm1oZAAAAAEAAAAAAAAAAAAAACRkaW5mAAAAHGRyZWYAAAAAAAAAAQAAAAx1cmwgAAAAAQAAAnJzdGJsAAAAvnN0c2QAAAAAAAAAAQAAAK5hdmMxAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAABAAEABIAAAASAAAAAAAAAABFUxhdmM2Mi4xMS4xMDAgbGlieDI2NAAAAAAAAAAAAAAAGP//AAAANGF2Y0MBZAAK/+EAF2dkAAqs2V7ARAAAAwAEAAADAMg8SJZYAQAGaOvjxMhM/fj4AAAAABBwYXNwAAAAAQAAAAEAAAAUYnRydAAAAAAAACFAAAAAAAAAABhzdHRzAAAAAAAAAAEAAAAZAAACAAAAABRzdHNzAAAAAAAAAAEAAAABAAAA2GN0dHMAAAAAAAAAGQAAAAEAAAQAAAAAAQAACgAAAAABAAAEAAAAAAEAAAAAAAAAAQAAAgAAAAABAAAKAAAAAAEAAAQAAAAAAQAAAAAAAAABAAACAAAAAAEAAAoAAAAAAQAABAAAAAABAAAAAAAAAAEAAAIAAAAAAQAACgAAAAABAAAEAAAAAAEAAAAAAAAAAQAAAgAAAAABAAAKAAAAAAEAAAQAAAAAAQAAAAAAAAABAAACAAAAAAEAAAoAAAAAAQAABAAAAAABAAAAAAAAAAEAAAIAAAAAHHN0c2MAAAAAAAAAAQAAAAEAAAAZAAAAAQAAAHhzdHN6AAAAAAAAAAAAAAAZAAACyAAAAA0AAAANAAAADQAAAA0AAAATAAAADwAAAA0AAAANAAAAEwAAAA8AAAANAAAADQAAABMAAAAPAAAADQAAAA0AAAATAAAADwAAAA0AAAANAAAAEwAAAA8AAAANAAAADQAAABRzdGNvAAAAAAAAAAEAAAAwAAAAYXVkdGEAAABZbWV0YQAAAAAAAAAhaGRscgAAAAAAAAAAbWRpcmFwcGwAAAAAAAAAAAAAAAAsaWxzdAAAACSpdG9vAAAAHGRhdGEAAAABAAAAAExhdmY2Mi4zLjEwMA==";
 
     // 1. Capa W3C WakeLock API (Safari iOS / iPadOS 16.4+)
     async function activarWakeLock() {
@@ -1164,13 +1165,49 @@
             try {
                 if (!wakeLockInstance) {
                     wakeLockInstance = await navigator.wakeLock.request('screen');
-                    wakeLockInstance.addEventListener('release', () => { wakeLockInstance = null; });
+                    wakeLockInstance.addEventListener('release', () => { 
+                        wakeLockInstance = null;
+                        setTimeout(activarWakeLock, 1000);
+                    });
                 }
             } catch(e) {}
         }
     }
 
-    // 2. Capa Web Audio Inaudible (Mantiene el subsistema de audio de iOS activo; iPadOS NUNCA apaga la pantalla con audio activo)
+    // 2. Capa Vídeo H.264 Real en Bucle (No-Sleep Estándar para iOS/iPadOS)
+    function activarVideoRealKeepAwake() {
+        try {
+            if (!videoAntiSleep) {
+                videoAntiSleep = document.createElement('video');
+                videoAntiSleep.setAttribute('playsinline', '');
+                videoAntiSleep.setAttribute('webkit-playsinline', '');
+                videoAntiSleep.setAttribute('muted', '');
+                videoAntiSleep.setAttribute('loop', '');
+                videoAntiSleep.setAttribute('autoplay', '');
+                videoAntiSleep.muted = true;
+                videoAntiSleep.loop = true;
+                videoAntiSleep.playsInline = true;
+                videoAntiSleep.style.position = 'fixed';
+                videoAntiSleep.style.bottom = '0';
+                videoAntiSleep.style.right = '0';
+                videoAntiSleep.style.width = '1px';
+                videoAntiSleep.style.height = '1px';
+                videoAntiSleep.style.opacity = '0.01';
+                videoAntiSleep.style.pointerEvents = 'none';
+                videoAntiSleep.style.zIndex = '-9999';
+                videoAntiSleep.src = VIDEO_SILENT_B64;
+                document.body.appendChild(videoAntiSleep);
+            }
+            if (videoAntiSleep && videoAntiSleep.paused) {
+                const playPromise = videoAntiSleep.play();
+                if (playPromise !== undefined) {
+                    playPromise.catch(() => {});
+                }
+            }
+        } catch(e) {}
+    }
+
+    // 3. Capa Web Audio Inaudible (Mantiene el motor CoreAudio de iPadOS activo)
     function activarWebAudioKeepAwake() {
         try {
             const AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -1178,7 +1215,7 @@
                 audioCtxAntiSleep = new AudioContext();
                 const osc = audioCtxAntiSleep.createOscillator();
                 const gain = audioCtxAntiSleep.createGain();
-                gain.gain.value = 0.00001; // Inaudible pero activo para el kernel de iOS
+                gain.gain.value = 0.00001; // Inaudible pero detectado por CoreAudio
                 osc.connect(gain);
                 gain.connect(audioCtxAntiSleep.destination);
                 osc.start(0);
@@ -1189,67 +1226,19 @@
         } catch(e) {}
     }
 
-    // 3. Capa Canvas Stream Video Activo (Loop de fotogramas continuo de 1 fps para WebKit sobre HTTP)
-    function activarCanvasVideoKeepAwake() {
-        try {
-            if (!videoAntiSleep) {
-                videoAntiSleep = document.createElement('video');
-                videoAntiSleep.setAttribute('playsinline', '');
-                videoAntiSleep.setAttribute('webkit-playsinline', '');
-                videoAntiSleep.setAttribute('muted', '');
-                videoAntiSleep.setAttribute('loop', '');
-                videoAntiSleep.muted = true;
-                videoAntiSleep.style.position = 'fixed';
-                videoAntiSleep.style.top = '-100px';
-                videoAntiSleep.style.left = '-100px';
-                videoAntiSleep.style.width = '2px';
-                videoAntiSleep.style.height = '2px';
-                videoAntiSleep.style.opacity = '0.001';
-                videoAntiSleep.style.pointerEvents = 'none';
-
-                const canvas = document.createElement('canvas');
-                canvas.width = 16;
-                canvas.height = 16;
-                const ctx = canvas.getContext('2d');
-                ctx.fillStyle = '#000000';
-                ctx.fillRect(0, 0, 16, 16);
-
-                if (!canvasPulseTimer) {
-                    let pulse = 0;
-                    canvasPulseTimer = setInterval(() => {
-                        pulse = (pulse + 1) % 2;
-                        ctx.fillStyle = pulse ? '#000000' : '#010101';
-                        ctx.fillRect(0, 0, 16, 16);
-                    }, 1000);
-                }
-
-                if (canvas.captureStream) {
-                    videoAntiSleep.srcObject = canvas.captureStream(2);
-                }
-                document.body.appendChild(videoAntiSleep);
-            }
-            if (videoAntiSleep && videoAntiSleep.paused) {
-                videoAntiSleep.play().catch(()=>{});
-            }
-        } catch(e) {}
-    }
-
-    // Activador unificado del Triple Escudo
+    // Activador Cuádruple Perpetuo
     function asegurarPantallaDespierta() {
         activarWakeLock();
+        activarVideoRealKeepAwake();
         activarWebAudioKeepAwake();
-        activarCanvasVideoKeepAwake();
-
-        if (temporizadorInactividad) clearTimeout(temporizadorInactividad);
-        // Garantiza 60 minutos ininterrumpidos de atril sin apagado
-        temporizadorInactividad = setTimeout(() => {
-            if (wakeLockInstance) { try { wakeLockInstance.release(); wakeLockInstance = null; } catch(e){} }
-            if (videoAntiSleep) { try { videoAntiSleep.pause(); } catch(e){} }
-            if (audioCtxAntiSleep) { try { audioCtxAntiSleep.suspend(); } catch(e){} }
-        }, 60 * 60 * 1000);
     }
 
-    // Despertar inmediato ante cualquier interacción física (toque, scroll, tecla)
+    // Intervalo de vigilancia continua cada 15 segundos para re-enganchar si iOS intenta suspender
+    setInterval(() => {
+        asegurarPantallaDespierta();
+    }, 15000);
+
+    // Activación inmediata ante cualquier interacción física táctil
     ['touchstart', 'touchend', 'pointerdown', 'mousedown', 'click', 'scroll', 'keydown'].forEach(evt => {
         document.addEventListener(evt, () => asegurarPantallaDespierta(), { passive: true });
     });
