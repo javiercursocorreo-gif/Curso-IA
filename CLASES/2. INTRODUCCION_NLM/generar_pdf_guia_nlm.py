@@ -361,12 +361,13 @@ def generar_pdf_completo():
     flow.add_paragraph("Para realizar las prácticas del taller, disponemos en la carpeta de 3 fuentes reales complementarias:")
 
     flow.add_card_box(
-        "FUENTE 1: RECUERDO FAMILIAR EN MADRID (TEXTO TXT)",
+        "FUENTE 1: RECUERDO FAMILIAR EN MADRID (TEXTO TXT - COPIAR Y PEGAR)",
         [
             "Archivo: EJEMPLO_A_FUENTE_TEXTO_RECUERDO_LUNA_1969.txt",
+            "Cómo cargarla: No hace falta descargar el archivo; simplemente abre el texto, cópialo entero y en Gemini Notebook pulsa '+ Añadir fuentes > Texto copiado' para pegarlo directamente.",
             "Contenido humano: La noche calurosa de julio en Madrid, la televisión Telefunken en blanco y negro, la voz inolvidable de Jesús Hermida y las lágrimas del abuelo que nació viajando en carro de mulas y vio al hombre pisar la Luna."
         ],
-        badge_text="HUMANO",
+        badge_text="PEGAR TEXTO",
         border_color=(0.70, 0.30, 0.30),
         bg_color=(0.99, 0.95, 0.95),
         title_color=(0.60, 0.15, 0.20)
@@ -376,9 +377,10 @@ def generar_pdf_completo():
         "FUENTE 2: HISTORIA TÉCNICA DEL PROGRAMA APOLO 11 (DOCUMENTO PDF)",
         [
             "Archivo: EJEMPLO_A_FUENTE_HISTORIA_APOLO_11.pdf",
+            "Cómo cargarla: Haz clic para descargar el PDF a tu ordenador y arrástralo directamente a Gemini Notebook o súbelo con '+ Añadir fuentes > Subir archivos'.",
             "Contenido científico: La hazaña de 400.000 ingenieros de la NASA, el cohete Saturno V, el ordenador de navegación AGC con solo 4 KB de memoria RAM y el papel decisivo de la estación española de Fresnedillas de la Oliva (Madrid)."
         ],
-        badge_text="CIENCIA",
+        badge_text="SUBIR PDF",
         border_color=(0.15, 0.35, 0.65),
         bg_color=(0.94, 0.96, 0.99),
         title_color=(0.15, 0.35, 0.65)
