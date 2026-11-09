@@ -611,5 +611,13 @@ Esta sección recopila los descubrimientos críticos de ingeniería realizados d
   - **Reactivación Instantánea (0 ms):** El atenuador se desactiva y restaura el 100% del brillo de forma inmediata al tocar cualquier punto de la pantalla táctil o al pulsar una tecla en el Korg EK-50 (conectado a los eventos `onmidimessage` de Web MIDI).
   - **Control Manual y Toggle en HUD:** Incorporado botón en la barra superior y en el HUD flotante (`🌙 Ahorro (60s)`) para habilitar o deshabilitar el comportamiento de atenuación según las preferencias del usuario.
 
+### 6.46. Modo Pantalla Negra / Partitura Nocturna para Ahorro Máximo de Batería (v172)
+* **Eliminación del Fogonazo Blanco:**
+  - Las dos páginas de partitura de gran formato representan más del 80% de la superficie visual. Mantenerlas en blanco brillante emite una cantidad masiva de fotones que consume rápidamente la batería del iPad.
+* **Filtro Óptico de Alto Contraste:**
+  - Mediante `filter: invert(0.92) hue-rotate(180deg) contrast(1.18) brightness(0.96)`, el fondo blanco se convierte en negro carbón mate y las notas, pentagramas y textos se transforman en blanco nítido de alta definición.
+  - El contenedor de pantalla completa se establece en negro puro (`#000000`).
+  - Activado por defecto en la carga inicial y conmutador rápido `🌓 Pantalla Negra (ON)` / `☀️ Fondo Blanco` en la cabecera y en el HUD flotante.
+
 ---
 *Manual redactado y sellado para el proyecto CURSO-IA / CURSO_MUSICA. Todos los derechos reservados.*
