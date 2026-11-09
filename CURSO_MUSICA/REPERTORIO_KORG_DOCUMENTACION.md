@@ -536,23 +536,23 @@ Esta sección recopila los descubrimientos críticos de ingeniería realizados d
   - Em7 [Sol-Si-Re-Mi] ➔ Bm [Fa♯-Si-Re] [Doble pivote Si-Re]
   - C [Sol-Do-Mi] ➔ B♭ [Fa-Si♭-Re] [Movimiento paralelo de semitono hacia el acorde mágico de la BSO Ghost]
 
-### 6.39. Arquitectura Modular Independiente en Canción 25: Desacoplamiento de 3 Estilos Canónicos vs 3 STS Auténticos y Cuádruple Escudo Anti-Apagado (v159)
+### 6.39. Arquitectura Modular Independiente en Canción 25: Desacoplamiento de 3 Estilos Canónicos vs 3 STS Auténticos y Motor NoSleep.js Oficial (v160)
 * **Principio de Diseño:** Superación del modelo de combinaciones fijas en favor de un sistema modular 100% libre donde el intérprete conmuta de forma independiente la base rítmica de acompañamiento y la paleta tímbrica melódica, sin reinicios accidentales de compás ni cambios forzados de instrumento.
 * **Bloque 1 · Selector Rítmico / 3 Estilos Canónicos Elvis (Canal 16 MIDI):**
   - **🥁 Estilo 041 (Love Ballad · 80 BPM):** `Bank MSB 32, LSB 2, PC 8`. Acompañamiento pop-balada suave y elegante calibrado a 80 BPM para una pulsación fluida y expresiva.
   - **🥁 Estilo 051 (Slow Rock 2):** `Bank MSB 32, LSB 3, PC 2`. Pulso clásico ternario en 12/8 estilo Elvis con acentuación baladista.
   - **🥁 Estilo 042 (Natural Beat):** `Bank MSB 32, LSB 2, PC 9`. Base de ritmo natural envolvente y orgánico con balance acústico perfecto para Elvis.
 * **Bloque 2 · Selector Tímbrico / Melodía (La Terna de 3 STS Auténticos de Fábrica):**
-  - **🎵 STS Harmonica Oficial:** Calibración idéntica a la fórmula maestra de Hallelujah: Harmonica solista limpia universal GM2 (`MSB 121, LSB 0, PC 22`), volumen 124, vibrato analógico (`CC 01 = 52`, `CC 77 = 70`), reverb acústico (`CC 91 = 120`), chorus espacial (`CC 93 = 75`), Upper 2 y Upper 3 silenciados para máxima pureza tímbrica y sin batimento, y mano izquierda Lower con coro celestial `Choir Aahs` (`MSB 121, LSB 0, PC 52`) a octava estándar. (Eliminada la duplicación de capas y la octava forzada que causaban disonancia).
+  - **🎵 STS Harmonica Oficial:** Calibración idéntica a la fórmula de Hallelujah: Harmonica solista limpia universal GM2 (`MSB 121, LSB 0, PC 22`), volumen 124, vibrato analógico (`CC 01 = 52`, `CC 77 = 70`), reverb acústico (`CC 91 = 120`), chorus espacial (`CC 93 = 75`), Upper 2 y Upper 3 silenciados para máxima pureza tímbrica y sin batimento, y mano izquierda Lower con coro celestial `Choir Aahs` (`MSB 121, LSB 0, PC 52`) a octava estándar.
   - **🎷 STS Noizy Tenor:** Saxo tenor solista cálido (`MSB 121, LSB 1, PC 66`, volumen 127, reverb 118) emparejado orgánicamente con el sintetizador ambiental `Warm Pad` (`MSB 121, LSB 0, PC 89`) en Upper 2 y cuerdas suaves en Lower.
   - **🎻 STS Strings Ensemble:** La masa sinfónica orquestal oficial de cuerdas de fábrica (`String Ensemble 1` `MSB 121, LSB 0, PC 48`, volumen 126, reverb 120) reforzada con `Warm Pad` (`MSB 121, LSB 0, PC 89`) en Upper 2 y coro celestial `Oh-Ah Voices` (`MSB 121, LSB 0, PC 52`) en Lower.
 * **HUD Flotante de Pantalla Completa en 3 Líneas Independientes:**
   - **Línea 1 (Superior):** Selector de 3 Estilos (`🥁 Estilos: [ 041 Love Ballad (80 BPM) ] [ 051 Slow Rock ] [ 042 Natural Beat ]`).
   - **Línea 2 (Intermedia):** Selector de Sonidos STS (`🎹 Sonidos: [ 🎵 STS Harmonica ] [ 🎷 STS Noizy Tenor ] [ 🎻 STS Strings Ens. ]`).
-  - **Línea 3 (Inferior):** Controles de Navegación y Retorno (`[ Hoja 1 ] [ Hoja 2 ] [ ⬅ Repertorio ] [ ✕ Volver a la Ficha ]`).
+  - **Línea 3 (Inferior):** Controles de Navegación y Retorno (`[ Hoja 1 ] [ Hoja 2 ] [ ☀️ Atril Siempre Encendido ] [ ⬅ Repertorio ] [ ✕ Volver a la Ficha ]`).
   - Scroll vertical continuo de 2 hojas al 96vw con padding superior adaptado (`145px`) para garantizar visualización total sin oclusiones en iPad.
-* **Cuádruple Escudo Anti-Apagado Perpetuo en iPadOS:**
-  - Reemplazado el antiguo canvas stream sintético por un archivo de vídeo H.264 real (`keep_awake_silent.mp4`) embebido en base64 en bucle perpetuo, junto a W3C WakeLock y nodo inaudible CoreAudio Web Audio API, con re-enganche automático cada 15 segundos y sin temporizador que lo apague.
+* **Motor Anti-Apagado Oficial NoSleep.js (Rich Tibbett) con Indicador Visual:**
+  - Integración nativa de la librería oficial `nosleep.min.js` (estándar mundial de la industria que reproduce el stream de vídeo nativo en segundo plano desbloqueado mediante interacción táctil) junto a W3C WakeLock. Incorpora botón/indicador de estado en cabecera y en HUD flotante ("☀️ Atril Activo · Siempre Encendido") para garantizar que el iPad permanezca encendido sin apagarse nunca.
 
 ---
 *Manual redactado y sellado para el proyecto CURSO-IA / CURSO_MUSICA. Todos los derechos reservados.*

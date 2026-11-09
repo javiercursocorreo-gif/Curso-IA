@@ -11,6 +11,7 @@
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <title>25. Can't Help Falling in Love · Korg EK-50 (Do Mayor · C)</title>
+    <script src="nosleep.min.js"></script>
     <style>
         :root {
             --bg-color: #0b0f17;
@@ -331,9 +332,12 @@
 <div class="container">
     <div class="nav-bar">
         <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
-            <a class="btn-back" href="REPERTORIO_KORG_EK50.html?v=154">⬅ Volver al Repertorio</a>
-            <button class="btn-reload" onclick="dispararDestelloBoton(this); window.location.href=window.location.pathname+'?v=159&t='+Date.now()" title="Recargar y actualizar versión sin caché">
-                🔄 Recargar Última Versión (v159)
+            <a class="btn-back" href="REPERTORIO_KORG_EK50.html?v=160">⬅ Volver al Repertorio</a>
+            <button class="btn-reload" onclick="dispararDestelloBoton(this); window.location.href=window.location.pathname+'?v=160&t='+Date.now()" title="Recargar y actualizar versión sin caché">
+                🔄 Recargar Última Versión (v160)
+            </button>
+            <button class="btn-nosleep-toggle" onclick="toggleNoSleepManual(this)" style="background:#065f46; color:#a7f3d0; border:1px solid #10b981; padding:10px 14px; border-radius:10px; font-weight:800; font-size:0.85rem; cursor:pointer; touch-action:manipulation;">
+                ☀️ Atril Activo (Siempre Encendido)
             </button>
         </div>
         <div class="midi-bar">
@@ -664,7 +668,10 @@
                 <button id="btn-modal-p1" class="page-tab-btn active-tab" onclick="cambiarHoja(1)" style="padding:6px 14px; font-size:0.82rem;">Hoja 1</button>
                 <button id="btn-modal-p2" class="page-tab-btn" onclick="cambiarHoja(2)" style="padding:6px 14px; font-size:0.82rem;">Hoja 2</button>
             </div>
-            <a class="btn-back" href="REPERTORIO_KORG_EK50.html?v=159" style="background:#1e293b; color:#93c5fd; border:1px solid #334155; padding:6px 14px; border-radius:8px; font-weight:800; font-size:0.82rem; text-decoration:none;">
+            <button class="btn-nosleep-toggle" onclick="toggleNoSleepManual(this)" style="background:#065f46; color:#a7f3d0; border:1px solid #10b981; padding:6px 12px; border-radius:8px; font-weight:800; font-size:0.82rem; cursor:pointer; touch-action:manipulation;">
+                ☀️ Atril Siempre Encendido
+            </button>
+            <a class="btn-back" href="REPERTORIO_KORG_EK50.html?v=160" style="background:#1e293b; color:#93c5fd; border:1px solid #334155; padding:6px 14px; border-radius:8px; font-weight:800; font-size:0.82rem; text-decoration:none;">
                 ⬅ Repertorio
             </a>
             <button onclick="cerrarPartituraPantallaCompleta(this)" style="background:#334155; color:#f1f5f9; border:1px solid #475569; padding:6px 16px; border-radius:8px; font-weight:800; font-size:0.82rem; cursor:pointer; touch-action:manipulation;">
@@ -1147,104 +1154,73 @@
     }
 
     // ==============================================================================
-    // CUÁDRUPLE ESCUDO ANTI-APAGADO CONTINUO IPAD (BLINDAJE TOTAL PARA IPADOS)
-    // 1. W3C WakeLock API (iOS 16.4+)
-    // 2. MP4 H.264 Real Video Loop Embebido en Base64 (Protocolo estándar No-Sleep)
-    // 3. Web Audio Inaudible (Mantener hilo multimedia del kernel activo)
-    // 4. Temporizador de Keep-Alive Perpetuo (Sin timeout que lo apague)
+    // MOTOR DE PANTALLA ACTIVA INFALIBLE PARA IPADOS (NOSLEEP.JS OFICIAL + WAKELOCK)
     // ==============================================================================
-    let wakeLockInstance = null;
-    let videoAntiSleep = null;
-    let audioCtxAntiSleep = null;
-    const VIDEO_SILENT_B64 = "data:video/mp4;base64,AAAAIGZ0eXBpc29tAAACAGlzb21pc28yYXZjMW1wNDEAAAAIZnJlZQAABDBtZGF0AAACsAYF//+s3EXpvebZSLeWLNgg2SPu73gyNjQgLSBjb3JlIDE2NSByMzIyMiBiMzU2MDVhIC0gSC4yNjQvTVBFRy00IEFWQyBjb2RlYyAtIENvcHlsZWZ0IDIwMDMtMjAyNSAtIGh0dHA6Ly93d3cudmlkZW9sYW4ub3JnL3gyNjQuaHRtbCAtIG9wdGlvbnM6IGNhYmFjPTEgcmVmPTMgZGVibG9jaz0xOi0zOi0zIGFuYWx5c2U9MHgzOjB4MTEzIG1lPWhleCBzdWJtZT03IHBzeT0xIHBzeV9yZD0yLjAwOjAuNzAgbWl4ZWRfcmVmPTEgbWVfcmFuZ2U9MTYgY2hyb21hX21lPTEgdHJlbGxpcz0xIDh4OGRjdD0xIGNxbT0wIGRlYWR6b25lPTIxLDExIGZhc3RfcHNraXA9MSBjaHJvbWFfcXBfb2Zmc2V0PS00IHRocmVhZHM9MSBsb29rYWhlYWRfdGhyZWFkcz0xIHNsaWNlZF90aHJlYWRzPTAgbnI9MCBkZWNpbWF0ZT0xIGludGVybGFjZWQ9MCBibHVyYXlfY29tcGF0PTAgY29uc3RyYWluZWRfaW50cmE9MCBiZnJhbWVzPTMgYl9weXJhbWlkPTIgYl9hZGFwdD0xIGJfYmlhcz0wIGRpcmVjdD0xIHdlaWdodGI9MSBvcGVuX2dvcD0wIHdlaWdodHA9MiBrZXlpbnQ9MjUwIGtleWludF9taW49MjUgc2NlbmVjdXQ9NDAgaW50cmFfcmVmcmVzaD0wIHJjX2xvb2thaGVhZD00MCByYz1jcmYgbWJ0cmVlPTEgY3JmPTIzLjAgcWNvbXA9MC42MCBxcG1pbj0wIHFwbWF4PTY5IHFwc3RlcD00IGlwX3JhdGlvPTEuNDAgYXE9MToxLjIwAIAAAAAQZYiEABHOf/73iB8yy2+ceQAAAAlBmiRsQRzn/uAAAAAJQZ5CeIdnP7eBAAAACQGeYXRDc5+6gAAAAAkBnmNqQ3OfuoEAAAAPQZpoSahBaJlMCCOc//7hAAAAC0GehkURLDs5/7eBAAAACQGepXRDc5+6gQAAAAkBnqdqQ3OfuoAAAAAPQZqsSahBbJlMCCOc//7gAAAAC0GeykUVLDs5/7eBAAAACQGe6XRDc5+6gAAAAAkBnutqQ3OfuoAAAAAPQZrwSahBbJlMCCGc//7hAAAAC0GfDkUVLDs5/7eBAAAACQGfLXRDc5+6gQAAAAkBny9qQ3OfuoAAAAAPQZs0SahBbJlMCH5z//7gAAAAC0GfUkUVLDs5/7eBAAAACQGfcXRDc5+6gAAAAAkBn3NqQ3OfuoAAAAAPQZt4SahBbJlMCG5z//7hAAAAC0GflkUVLDs5/7eAAAAACQGftXRDc5+6gQAAAAkBn7dqQ3OfuoEAAARkbW9vdgAAAGxtdmhkAAAAAAAAAAAAAAAAAAAD6AAAA+gAAQAAAQAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAA490cmFrAAAAXHRraGQAAAADAAAAAAAAAAAAAAABAAAAAAAAA+gAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAABAAAAAABAAAAAQAAAAAAAkZWR0cwAAABxlbHN0AAAAAAAAAAEAAAPoAAAEAAABAAAAAAMHbWRpYQAAACBtZGhkAAAAAAAAAAAAAAAAAAAyAAAAMgBVxAAAAAAALWhkbHIAAAAAAAAAAHZpZGUAAAAAAAAAAAAAAABWaWRlb0hhbmRsZXIAAAACsm1pbmYAAAAUdm1oZAAAAAEAAAAAAAAAAAAAACRkaW5mAAAAHGRyZWYAAAAAAAAAAQAAAAx1cmwgAAAAAQAAAnJzdGJsAAAAvnN0c2QAAAAAAAAAAQAAAK5hdmMxAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAABAAEABIAAAASAAAAAAAAAABFUxhdmM2Mi4xMS4xMDAgbGlieDI2NAAAAAAAAAAAAAAAGP//AAAANGF2Y0MBZAAK/+EAF2dkAAqs2V7ARAAAAwAEAAADAMg8SJZYAQAGaOvjxMhM/fj4AAAAABBwYXNwAAAAAQAAAAEAAAAUYnRydAAAAAAAACFAAAAAAAAAABhzdHRzAAAAAAAAAAEAAAAZAAACAAAAABRzdHNzAAAAAAAAAAEAAAABAAAA2GN0dHMAAAAAAAAAGQAAAAEAAAQAAAAAAQAACgAAAAABAAAEAAAAAAEAAAAAAAAAAQAAAgAAAAABAAAKAAAAAAEAAAQAAAAAAQAAAAAAAAABAAACAAAAAAEAAAoAAAAAAQAABAAAAAABAAAAAAAAAAEAAAIAAAAAAQAACgAAAAABAAAEAAAAAAEAAAAAAAAAAQAAAgAAAAABAAAKAAAAAAEAAAQAAAAAAQAAAAAAAAABAAACAAAAAAEAAAoAAAAAAQAABAAAAAABAAAAAAAAAAEAAAIAAAAAHHN0c2MAAAAAAAAAAQAAAAEAAAAZAAAAAQAAAHhzdHN6AAAAAAAAAAAAAAAZAAACyAAAAA0AAAANAAAADQAAAA0AAAATAAAADwAAAA0AAAANAAAAEwAAAA8AAAANAAAADQAAABMAAAAPAAAADQAAAA0AAAATAAAADwAAAA0AAAANAAAAEwAAAA8AAAANAAAADQAAABRzdGNvAAAAAAAAAAEAAAAwAAAAYXVkdGEAAABZbWV0YQAAAAAAAAAhaGRscgAAAAAAAAAAbWRpcmFwcGwAAAAAAAAAAAAAAAAsaWxzdAAAACSpdG9vAAAAHGRhdGEAAAABAAAAAExhdmY2Mi4zLjEwMA==";
+    let noSleepInstance = null;
+    let pantallaBloqueada = false;
 
-    // 1. Capa W3C WakeLock API (Safari iOS / iPadOS 16.4+)
-    async function activarWakeLock() {
+    function activarNoSleepInfalible() {
+        if (pantallaBloqueada) return;
+        try {
+            if (!noSleepInstance && typeof NoSleep !== 'undefined') {
+                noSleepInstance = new NoSleep();
+            }
+            if (noSleepInstance && !noSleepInstance.isEnabled) {
+                noSleepInstance.enable();
+                pantallaBloqueada = true;
+            }
+        } catch(e) {}
+
         if ('wakeLock' in navigator) {
-            try {
-                if (!wakeLockInstance) {
-                    wakeLockInstance = await navigator.wakeLock.request('screen');
-                    wakeLockInstance.addEventListener('release', () => { 
-                        wakeLockInstance = null;
-                        setTimeout(activarWakeLock, 1000);
-                    });
-                }
-            } catch(e) {}
+            navigator.wakeLock.request('screen').catch(()=>{});
+        }
+
+        actualizarIndicadoresNoSleepUI(true);
+    }
+
+    function toggleNoSleepManual(btn = null) {
+        if (btn) dispararDestelloBoton(btn);
+        if (!noSleepInstance && typeof NoSleep !== 'undefined') {
+            noSleepInstance = new NoSleep();
+        }
+        if (pantallaBloqueada) {
+            try { if (noSleepInstance) noSleepInstance.disable(); } catch(e){}
+            pantallaBloqueada = false;
+            actualizarIndicadoresNoSleepUI(false);
+        } else {
+            try { if (noSleepInstance) noSleepInstance.enable(); } catch(e){}
+            if ('wakeLock' in navigator) navigator.wakeLock.request('screen').catch(()=>{});
+            pantallaBloqueada = true;
+            actualizarIndicadoresNoSleepUI(true);
         }
     }
 
-    // 2. Capa Vídeo H.264 Real en Bucle (No-Sleep Estándar para iOS/iPadOS)
-    function activarVideoRealKeepAwake() {
-        try {
-            if (!videoAntiSleep) {
-                videoAntiSleep = document.createElement('video');
-                videoAntiSleep.setAttribute('playsinline', '');
-                videoAntiSleep.setAttribute('webkit-playsinline', '');
-                videoAntiSleep.setAttribute('muted', '');
-                videoAntiSleep.setAttribute('loop', '');
-                videoAntiSleep.setAttribute('autoplay', '');
-                videoAntiSleep.muted = true;
-                videoAntiSleep.loop = true;
-                videoAntiSleep.playsInline = true;
-                videoAntiSleep.style.position = 'fixed';
-                videoAntiSleep.style.bottom = '0';
-                videoAntiSleep.style.right = '0';
-                videoAntiSleep.style.width = '1px';
-                videoAntiSleep.style.height = '1px';
-                videoAntiSleep.style.opacity = '0.01';
-                videoAntiSleep.style.pointerEvents = 'none';
-                videoAntiSleep.style.zIndex = '-9999';
-                videoAntiSleep.src = VIDEO_SILENT_B64;
-                document.body.appendChild(videoAntiSleep);
-            }
-            if (videoAntiSleep && videoAntiSleep.paused) {
-                const playPromise = videoAntiSleep.play();
-                if (playPromise !== undefined) {
-                    playPromise.catch(() => {});
-                }
-            }
-        } catch(e) {}
+    function actualizarIndicadoresNoSleepUI(activo) {
+        const estadoTexto = activo ? '☀️ Atril Activo (Siempre Encendido)' : '🌙 Atril en Reposo Normal';
+        const fondoColor = activo ? '#065f46' : '#1e293b';
+        const bordeColor = activo ? '#10b981' : '#475569';
+        const textoColor = activo ? '#a7f3d0' : '#94a3b8';
+
+        document.querySelectorAll('.btn-nosleep-toggle').forEach(b => {
+            b.innerText = estadoTexto;
+            b.style.background = fondoColor;
+            b.style.borderColor = bordeColor;
+            b.style.color = textoColor;
+        });
+        const log = document.getElementById('log-midi');
+        if (log && activo) log.innerHTML = `☀️ <b>Modo Atril Siempre Encendido ACTIVO</b>. El iPad no se apagará mientras tocas.`;
     }
 
-    // 3. Capa Web Audio Inaudible (Mantiene el motor CoreAudio de iPadOS activo)
-    function activarWebAudioKeepAwake() {
-        try {
-            const AudioContext = window.AudioContext || window.webkitAudioContext;
-            if (!audioCtxAntiSleep && AudioContext) {
-                audioCtxAntiSleep = new AudioContext();
-                const osc = audioCtxAntiSleep.createOscillator();
-                const gain = audioCtxAntiSleep.createGain();
-                gain.gain.value = 0.00001; // Inaudible pero detectado por CoreAudio
-                osc.connect(gain);
-                gain.connect(audioCtxAntiSleep.destination);
-                osc.start(0);
-            }
-            if (audioCtxAntiSleep && audioCtxAntiSleep.state === 'suspended') {
-                audioCtxAntiSleep.resume().catch(()=>{});
-            }
-        } catch(e) {}
-    }
-
-    // Activador Cuádruple Perpetuo
-    function asegurarPantallaDespierta() {
-        activarWakeLock();
-        activarVideoRealKeepAwake();
-        activarWebAudioKeepAwake();
-    }
-
-    // Intervalo de vigilancia continua cada 15 segundos para re-enganchar si iOS intenta suspender
-    setInterval(() => {
-        asegurarPantallaDespierta();
-    }, 15000);
-
-    // Activación inmediata ante cualquier interacción física táctil
-    ['touchstart', 'touchend', 'pointerdown', 'mousedown', 'click', 'scroll', 'keydown'].forEach(evt => {
-        document.addEventListener(evt, () => asegurarPantallaDespierta(), { passive: true });
+    // El primer toque en la pantalla de iPad desbloquea el vídeo inaudible de NoSleep.js
+    ['touchstart', 'touchend', 'pointerdown', 'mousedown', 'click'].forEach(evt => {
+        document.addEventListener(evt, () => {
+            if (!pantallaBloqueada) activarNoSleepInfalible();
+        }, { passive: true });
     });
 
     document.addEventListener('visibilitychange', () => {
-        if (document.visibilityState === 'visible') {
-            asegurarPantallaDespierta();
+        if (document.visibilityState === 'visible' && !pantallaBloqueada) {
+            activarNoSleepInfalible();
         }
     });
 
@@ -1252,9 +1228,9 @@
     // INICIALIZACIÓN DE LA APLICACIÓN
     // ==============================================================================
     async function iniciarApp() {
-        asegurarPantallaDespierta();
         actualizarEstilosActivosUI(41);
         actualizarSonidosActivosUI('armonica');
+        activarNoSleepInfalible();
         await conectarMIDI();
     }
 
