@@ -619,5 +619,12 @@ Esta sección recopila los descubrimientos críticos de ingeniería realizados d
   - El contenedor de pantalla completa se establece en negro puro (`#000000`).
   - Activado por defecto en la carga inicial y conmutador rápido `🌓 Pantalla Negra (ON)` / `☀️ Fondo Blanco` en la cabecera y en el HUD flotante.
 
+### 6.47. Blindaje Anti-Alucinaciones en AGENTS.md / GEMINI.md y Purga de Botones en Pantalla Principal (v173)
+* **Inscripción Obligatoria de Reglas Anti-Alucinación:**
+  - Se incorporan formalmente en `AGENTS.md` y `GEMINI.md` los protocolos de fidelidad textual estricta (prohibición total de renombrar o sustituir sonidos), consulta obligatoria a `Voice Name List.txt` de Korg y calibración acústica con reverb natural.
+* **Purga y Despeje de la Pantalla Principal:**
+  - Se eliminan todos los botones redundantes de estilos y sonidos del cuerpo principal de la ficha.
+  - La selección de ritmos y timbres queda centralizada **exclusivamente en el HUD flotante de la partitura a pantalla completa**, logrando una vista inicial limpia, diáfana y centrada en la partitura y la progresión armónica.
+
 ---
 *Manual redactado y sellado para el proyecto CURSO-IA / CURSO_MUSICA. Todos los derechos reservados.*
