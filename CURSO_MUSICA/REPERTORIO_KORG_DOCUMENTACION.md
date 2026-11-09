@@ -142,7 +142,7 @@ El Korg EK-50 se conecta al iPad o Mac mediante un cable USB estándar (USB tipo
 * **20. Nights in White Satin** (The Moody Blues): Mi menor ($Em$) · Estilo: 042 60s Soul / Slow Rock a 54 BPM · Flauta Traversa & Cuerdas Sinfónicas. Score MuseScore [#26691493](https://musescore.com/user/33531210/scores/26691493).
 * **22. Killing Me Softly with His Song** (Roberta Flack): Lab Mayor ($A\flat$) / Fa menor ($Fm$) · Estilo: 041 Love Ballad a 92 BPM · Piano Acústico & Flauta. Score MuseScore [#26680561](https://musescore.com/user/33531210/scores/26680561).
 * **24. Stand by Me** (Ben E. King): La Mayor ($A$) · Estilo: 042 60s Soul a 118 BPM · Bajo Acústico, Cuerdas Staccato & Saxo. Score MuseScore [#26693062](https://musescore.com/user/33531210/scores/26693062).
-* **25. Can't Help Falling in Love** (Elvis Presley / Hugo Peretti): Do Mayor ($C$) a 70/80/90 BPM · 3 Estilos Korg con STS de fábrica: 1. Estilo 042 Natural Beat (STS Harmonica limpia sin eco) / 2. Estilo 051 Slow Rock 2 (STS Noizy Tenor Sax) / 3. Estilo 041 Love Ballad (STS Strings Ens.). Motor de sincronización MIDI Clock (0xF8) a 24 pulsos/negra con arranque/parada de ritmo (0xFA/0xFC) y presets 1-Tap integrados en ficha y en HUD flotante de 3 filas a pantalla completa (v167). Score MuseScore [#5762856](https://musescore.com/user/27886870/scores/5762856).
+* **25. Can't Help Falling in Love** (Elvis Presley / Hugo Peretti): Do Mayor ($C$) a 70/80/90 BPM · 3 Estilos Korg con STS de fábrica: 1. Estilo 042 Natural Beat (STS Harmonica limpia sin eco) / 2. Estilo 051 Slow Rock 2 (STS Noizy Tenor Sax) / 3. Estilo 041 Love Ballad (STS Strings Ens.). Motor de sincronización MIDI Clock (0xF8) a 24 pulsos/negra con arranque/parada de ritmo (0xFA/0xFC), supresión de botones redundantes de paginación en HUD y presets 1-Tap integrados en scroll vertical continuo de 2 hojas (v168). Score MuseScore [#5762856](https://musescore.com/user/27886870/scores/5762856).
 * **26. Unchained Melody** (The Righteous Brothers / Alex North & Hy Zaret - BSO *Ghost*): Sol Mayor ($G$) a 65 BPM (4/4 en tresillos / 12/8 feel) · 3 Estilos Korg con STS: 1. Estilo 052 Unpl.SlRock (12Str.Guitar) / 2. Estilo 051 Slow Rock 2 (Noizy Tenor Sax) / 3. Estilo 041 Love Ballad (Strings Ens.). Partitura completa de 2 hojas continuas en PNG (`CANCIONES PDF/Unchained Melody 1.png` y `2.png`) integrada en ficha y en modo atril digital fullscreen. Score MuseScore [#7668671](https://musescore.com/user/35258469/scores/7668671).
 
 #### 🌴 Categoría 4: Boleros & Ritmos Latinos — 4 Obras
@@ -574,6 +574,10 @@ Esta sección recopila los descubrimientos críticos de ingeniería realizados d
   - Incorporados botones dedicados de **Iniciar Ritmo** (`0xFA` Real-Time START) y **Parar Ritmo** (`0xFC` Real-Time STOP) tanto en la cabecera de tempo de la ficha como en el HUD flotante, permitiendo al usuario disparar y pausar el acompañamiento rítmico a la velocidad seleccionada directamente desde la pantalla táctil del iPad.
 * **Respuesta Visual Reforzada:**
   - Actualización simultánea por clases CSS y estilos directos de todos los selectores de tempo tanto en la ficha principal como en el HUD flotante del modo atril.
+
+### 6.42. Supresión de Botones de Paginación en HUD y Optimización de Pantalla Completa en Canción 25 (v168)
+* **Despeje y Simplificación de la Línea 3 del HUD:**
+  - Se eliminan los botones redundantes de "Hoja 1" y "Hoja 2" de la barra flotante superior. Dado que ambas hojas de partitura se visualizan de forma natural una debajo de otra en scroll vertical continuo al 96vw, la navegación táctil es directa con el dedo, eliminando elementos innecesarios y permitiendo una disposición limpia y cómoda para los selectores de tempo (70/80/90 BPM) y los botones de ritmo (Iniciar / Parar).
 
 ---
 *Manual redactado y sellado para el proyecto CURSO-IA / CURSO_MUSICA. Todos los derechos reservados.*
