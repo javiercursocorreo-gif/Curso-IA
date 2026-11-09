@@ -603,5 +603,13 @@ Esta sección recopila los descubrimientos críticos de ingeniería realizados d
     2. **Ticker Gráfico Activo en `<canvas>`:** Renderizado continuo a 60 fps mediante `requestAnimationFrame` en un micro-canvas invisible de 2x2 píxeles, impidiendo que el motor gráfico de iOS entre en reposo.
     3. **Stream de Vídeo en Línea NoSleep.js** auto-activado en el primer toque táctil de la pantalla.
 
+### 6.45. Motor de Atenuador Inteligente (Smart Dimming) para Ahorro de Batería en iPad (v171)
+* **El Problema del Consumo Energético en Atril:**
+  - Mantener la pantalla encendida de forma indefinida con dos páginas de partitura en blanco brillante agota rápidamente la batería del iPad si no se encuentra conectado a la red eléctrica.
+* **Arquitectura del Atenuador Inteligente (Smart Dimming):**
+  - **Temporizador de Inactividad Dual (Táctil + MIDI):** Tras 60 segundos sin interacción táctil en la pantalla ni notas tocadas en el teclado Korg EK-50, la aplicación atenúa suavemente la pantalla mediante una capa difusa al 15% de luminosidad (`smart-dim-overlay`).
+  - **Reactivación Instantánea (0 ms):** El atenuador se desactiva y restaura el 100% del brillo de forma inmediata al tocar cualquier punto de la pantalla táctil o al pulsar una tecla en el Korg EK-50 (conectado a los eventos `onmidimessage` de Web MIDI).
+  - **Control Manual y Toggle en HUD:** Incorporado botón en la barra superior y en el HUD flotante (`🌙 Ahorro (60s)`) para habilitar o deshabilitar el comportamiento de atenuación según las preferencias del usuario.
+
 ---
 *Manual redactado y sellado para el proyecto CURSO-IA / CURSO_MUSICA. Todos los derechos reservados.*

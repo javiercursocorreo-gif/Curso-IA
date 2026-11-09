@@ -332,12 +332,15 @@
 <div class="container">
     <div class="nav-bar">
         <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
-            <a class="btn-back" href="REPERTORIO_KORG_EK50.html?v=170">⬅ Volver al Repertorio</a>
-            <button class="btn-reload" onclick="dispararDestelloBoton(this); window.location.href=window.location.pathname+'?v=170&t='+Date.now()" title="Recargar y actualizar versión sin caché">
-                🔄 Recargar Última Versión (v170)
+            <a class="btn-back" href="REPERTORIO_KORG_EK50.html?v=171">⬅ Volver al Repertorio</a>
+            <button class="btn-reload" onclick="dispararDestelloBoton(this); window.location.href=window.location.pathname+'?v=171&t='+Date.now()" title="Recargar y actualizar versión sin caché">
+                🔄 Recargar Última Versión (v171)
             </button>
             <button class="btn-nosleep-toggle" onclick="toggleNoSleepManual(this)" style="background:#065f46; color:#a7f3d0; border:1px solid #10b981; padding:10px 14px; border-radius:10px; font-weight:800; font-size:0.85rem; cursor:pointer; touch-action:manipulation;">
                 ☀️ Atril Activo (Siempre Encendido)
+            </button>
+            <button class="btn-smart-dim-toggle" onclick="toggleSmartDimming(this)" style="background:#1e293b; color:#cbd5e1; border:1px solid #475569; padding:10px 14px; border-radius:10px; font-weight:800; font-size:0.85rem; cursor:pointer; touch-action:manipulation;" title="Atenuador Inteligente automático de batería">
+                🌙 Atenuador Inteligente (60s)
             </button>
         </div>
         <div class="midi-bar">
@@ -675,7 +678,10 @@
             <button class="btn-nosleep-toggle" onclick="toggleNoSleepManual(this)" style="background:#065f46; color:#a7f3d0; border:1px solid #10b981; padding:5px 10px; border-radius:8px; font-weight:800; font-size:0.80rem; cursor:pointer; touch-action:manipulation;">
                 ☀️ Siempre Encendido
             </button>
-            <a class="btn-back" href="REPERTORIO_KORG_EK50.html?v=170" style="background:#1e293b; color:#93c5fd; border:1px solid #334155; padding:5px 12px; border-radius:8px; font-weight:800; font-size:0.80rem; text-decoration:none;">
+            <button class="btn-smart-dim-toggle" onclick="toggleSmartDimming(this)" style="background:#1e293b; color:#cbd5e1; border:1px solid #475569; padding:5px 10px; border-radius:8px; font-weight:800; font-size:0.80rem; cursor:pointer; touch-action:manipulation;" title="Activar/Desactivar Atenuador Inteligente (Auto-Dimming en 60s)">
+                🌙 Ahorro (60s)
+            </button>
+            <a class="btn-back" href="REPERTORIO_KORG_EK50.html?v=171" style="background:#1e293b; color:#93c5fd; border:1px solid #334155; padding:5px 12px; border-radius:8px; font-weight:800; font-size:0.80rem; text-decoration:none;">
                 ⬅ Repertorio
             </a>
             <button onclick="cerrarPartituraPantallaCompleta(this)" style="background:#334155; color:#f1f5f9; border:1px solid #475569; padding:5px 14px; border-radius:8px; font-weight:800; font-size:0.80rem; cursor:pointer; touch-action:manipulation;">
@@ -707,6 +713,18 @@
                  style="max-width:96vw; width:auto; border-radius:10px; box-shadow:0 8px 30px rgba(0,0,0,0.85); object-fit:contain; margin-bottom:30px;">
         </div>
 
+    </div>
+</div>
+
+<!-- OVERLAY ATENUADOR INTELIGENTE (SMART DIMMING PARA AHORRO DE BATERÍA EN IPAD) -->
+<div id="smart-dim-overlay" onclick="despertarPantallaManual(event)" style="position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:2000000; opacity:0; pointer-events:none; transition:opacity 1.2s cubic-bezier(0.2,0.8,0.3,1); display:flex; flex-direction:column; align-items:center; justify-content:center; backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px); touch-action:manipulation;">
+    <div style="background:rgba(15,23,42,0.95); border:2px solid #38bdf8; border-radius:20px; padding:22px 34px; text-align:center; box-shadow:0 0 45px rgba(56,189,248,0.45); max-width:90vw;">
+        <div style="font-size:2.6rem; margin-bottom:8px;">🌙</div>
+        <div style="font-size:1.2rem; font-weight:900; color:#ffffff; letter-spacing:0.5px;">Atenuador Inteligente Activo</div>
+        <div style="font-size:0.88rem; color:#93c5fd; margin-top:6px;">Ahorrando batería en el atril · Pantalla atenuada al 15%</div>
+        <div style="margin-top:16px; display:inline-block; background:#0284c7; color:#fff; font-weight:800; font-size:0.86rem; padding:9px 20px; border-radius:10px; box-shadow:0 0 16px rgba(56,189,248,0.5);">
+            👆 Toca cualquier parte para reactivar
+        </div>
     </div>
 </div>
 
@@ -818,13 +836,26 @@
             midiOutput = korg;
             if (dot) { dot.style.background = "#10b981"; dot.classList.add("connected"); }
             if (text) text.innerHTML = `🟢 Conectado: <b>${korg.name}</b>`;
-            return midiOutput;
         } else {
             midiOutput = null;
             if (dot) { dot.style.background = "#d29922"; dot.classList.remove("connected"); }
             if (text) text.innerHTML = '🟡 Korg no detectado por USB';
-            return null;
         }
+
+        // Vincular entradas MIDI para que cada nota tocada en el teclado despierte la pantalla
+        if (midiAccessInstance && midiAccessInstance.inputs) {
+            extraerPuertos(midiAccessInstance.inputs).forEach(inp => {
+                try {
+                    inp.onmidimessage = () => {
+                        if (typeof reiniciarTemporizadorDimming === 'function') {
+                            reiniciarTemporizadorDimming();
+                        }
+                    };
+                } catch(e){}
+            });
+        }
+
+        return midiOutput;
     }
 
     async function conectarMIDI() {
@@ -1343,6 +1374,98 @@
     });
 
     // ==============================================================================
+    // MOTOR DE ATENUADOR INTELIGENTE (SMART DIMMING) PARA AHORRO DE BATERÍA EN IPAD
+    // ==============================================================================
+    let atenuadorHabilitado = true;
+    let pantallaAtenuada = false;
+    let smartDimTimer = null;
+    const TIEMPO_INACTIVIDAD_MS = 60000; // 60 segundos de inactividad antes de atenuar
+
+    function reiniciarTemporizadorDimming() {
+        if (pantallaAtenuada) {
+            despertarPantalla();
+            return;
+        }
+        if (smartDimTimer) clearTimeout(smartDimTimer);
+        if (atenuadorHabilitado) {
+            smartDimTimer = setTimeout(atenuarPantalla, TIEMPO_INACTIVIDAD_MS);
+        }
+    }
+
+    function atenuarPantalla() {
+        if (!atenuadorHabilitado || pantallaAtenuada) return;
+        pantallaAtenuada = true;
+        const ov = document.getElementById('smart-dim-overlay');
+        if (ov) {
+            ov.style.transition = 'opacity 1.2s cubic-bezier(0.2,0.8,0.3,1)';
+            ov.style.opacity = '1';
+            ov.style.pointerEvents = 'auto';
+        }
+    }
+
+    function despertarPantalla() {
+        if (!pantallaAtenuada) return;
+        pantallaAtenuada = false;
+        const ov = document.getElementById('smart-dim-overlay');
+        if (ov) {
+            ov.style.transition = 'opacity 0.12s ease';
+            ov.style.opacity = '0';
+            ov.style.pointerEvents = 'none';
+        }
+        if (smartDimTimer) clearTimeout(smartDimTimer);
+        if (atenuadorHabilitado) {
+            smartDimTimer = setTimeout(atenuarPantalla, TIEMPO_INACTIVIDAD_MS);
+        }
+    }
+
+    function despertarPantallaManual(e) {
+        if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        despertarPantalla();
+    }
+
+    function toggleSmartDimming(btn = null) {
+        if (btn) dispararDestelloBoton(btn);
+        atenuadorHabilitado = !atenuadorHabilitado;
+        if (!atenuadorHabilitado) {
+            if (smartDimTimer) clearTimeout(smartDimTimer);
+            despertarPantalla();
+        } else {
+            reiniciarTemporizadorDimming();
+        }
+        actualizarIndicadoresSmartDimUI(atenuadorHabilitado);
+    }
+
+    function actualizarIndicadoresSmartDimUI(activo) {
+        const estadoTexto = activo ? '🌙 Ahorro (60s)' : '☀️ Ahorro (Off)';
+        const fondoColor = activo ? '#0284c7' : '#1e293b';
+        const bordeColor = activo ? '#38bdf8' : '#475569';
+        const textoColor = activo ? '#ffffff' : '#94a3b8';
+
+        document.querySelectorAll('.btn-smart-dim-toggle').forEach(b => {
+            b.innerText = estadoTexto;
+            b.style.background = fondoColor;
+            b.style.borderColor = bordeColor;
+            b.style.color = textoColor;
+        });
+        const log = document.getElementById('log-midi');
+        if (log) {
+            log.innerHTML = activo 
+                ? `🌙 <b>Atenuador Inteligente ACTIVO</b>: Si no tocas la pantalla o el piano en 60s, la pantalla se oscurece automáticamente al 15% para ahorrar batería.`
+                : `☀️ <b>Atenuador Inteligente DESACTIVADO</b>: Pantalla siempre encendida sin atenuación automática.`;
+        }
+    }
+
+    // Escuchar todas las interacciones de usuario en iPad (toque, scroll, teclas)
+    ['touchstart', 'touchend', 'touchmove', 'pointerdown', 'pointermove', 'mousedown', 'mousemove', 'keydown', 'scroll'].forEach(evt => {
+        window.addEventListener(evt, () => {
+            reiniciarTemporizadorDimming();
+        }, { passive: true });
+    });
+
+    // ==============================================================================
     // INICIALIZACIÓN DE LA APLICACIÓN
     // ==============================================================================
     async function iniciarApp() {
@@ -1350,6 +1473,8 @@
         actualizarSonidosActivosUI('armonica');
         sincronizarPresetActivo(1);
         activarNoSleepInfalible();
+        actualizarIndicadoresSmartDimUI(true);
+        reiniciarTemporizadorDimming();
         await conectarMIDI();
     }
 
