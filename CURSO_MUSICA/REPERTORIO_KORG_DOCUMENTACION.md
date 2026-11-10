@@ -639,5 +639,13 @@ Esta sección recopila los descubrimientos críticos de ingeniería realizados d
   - **Acceso Directo desde el Menú de Repertorio:**
     - Botón de acceso directo en la cabecera superior y banner de gran formato sobre la cuadrícula general de canciones en `REPERTORIO_KORG_EK50.html` e `index.html`.
 
+### 6.49. Regla de Migración por Carruseles y Títulos Interactivos en Repertorio (v177)
+* **Principio de Absorción y Desaparición de la Lista General:**
+  - A medida que se abran nuevos carruseles temáticos (Boleros Latinos, Grandes Clásicos Italianos, Baladas 4/4, Bandas Sonoras), las canciones asignadas **desaparecen de la lista general suelta** y quedan integradas exclusivamente dentro de su bloque de carrusel.
+* **Integración en 2 Columnas para iPad Vertical:**
+  - El menú de repertorio mantiene su estructura canónica de **2 columnas equilibradas** (óptimo para iPad en vertical y horizontal), eliminando cualquier necesidad de terceras columnas o barras flotantes adicionales.
+* **Títulos como Enlaces Directos al Carrusel:**
+  - El propio título del bloque de categoría (ej. `🎡 Carrusel 1 · Baladas 6/8`) es un enlace directo que abre el atril digital a pantalla completa con el carro de botones Korg compartido. Las filas individuales debajo permiten seguir abriendo cada canción de forma aislada.
+
 ---
 *Manual redactado y sellado para el proyecto CURSO-IA / CURSO_MUSICA. Todos los derechos reservados.*
