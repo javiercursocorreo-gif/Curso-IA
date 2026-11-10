@@ -169,11 +169,11 @@
         <!-- LÍNEA 3: TIMBRES / SONIDOS DEL CARRO ESCÉNICO KORG EK-50 -->
         <div style="display:flex; align-items:center; gap:8px; justify-content:center; flex-wrap:wrap; padding-top:2px; border-top:1px solid rgba(255,255,255,0.1); width:100%;">
             <span style="font-size:0.75rem; color:#fde047; font-weight:800; text-transform:uppercase; letter-spacing:0.5px;">🎹 Sonidos:</span>
-            <button class="hud-sound-btn" data-sound="armonica" onclick="activarInstrumento('armonica', this)" style="background:#0284c7; color:#fff; border:1px solid #38bdf8; padding:5px 12px; border-radius:8px; font-weight:800; font-size:0.82rem; cursor:pointer; touch-action:manipulation;">
-                🎵 STS Harmonica
+            <button class="hud-sound-btn" data-sound="029" onclick="activarInstrumento('029', this)" style="background:#0284c7; color:#fff; border:1px solid #38bdf8; padding:5px 12px; border-radius:8px; font-weight:800; font-size:0.82rem; cursor:pointer; touch-action:manipulation;">
+                🎵 029 Harmonica
             </button>
-            <button class="hud-sound-btn" data-sound="saxo" onclick="activarInstrumento('saxo', this)" style="background:#1e293b; color:#cbd5e1; border:1px solid #475569; padding:5px 12px; border-radius:8px; font-weight:800; font-size:0.82rem; cursor:pointer; touch-action:manipulation;">
-                🎷 Tenor Sax
+            <button class="hud-sound-btn" data-sound="101" onclick="activarInstrumento('101', this)" style="background:#1e293b; color:#cbd5e1; border:1px solid #475569; padding:5px 12px; border-radius:8px; font-weight:800; font-size:0.82rem; cursor:pointer; touch-action:manipulation;">
+                🎷 101 Tenor Sax
             </button>
             <button class="hud-sound-btn" data-sound="066" onclick="activarInstrumento('066', this)" style="background:#1e293b; color:#cbd5e1; border:1px solid #475569; padding:5px 12px; border-radius:8px; font-weight:800; font-size:0.82rem; cursor:pointer; touch-action:manipulation;">
                 🎻 066 Oct.Strings
@@ -456,11 +456,15 @@
 
     function actualizarSonidosActivosUI(tipo) {
         document.querySelectorAll('.hud-sound-btn').forEach(b => {
-            const matches = b.getAttribute('data-sound') === String(tipo);
+            const soundAttr = b.getAttribute('data-sound');
+            const matches = soundAttr === String(tipo) || 
+                            ((tipo === '029' || tipo === 'armonica') && (soundAttr === '029' || soundAttr === 'armonica')) ||
+                            ((tipo === '101' || tipo === 'saxo') && (soundAttr === '101' || soundAttr === 'saxo')) ||
+                            ((tipo === '066' || tipo === 'strings') && (soundAttr === '066' || soundAttr === 'strings'));
             if (matches) {
-                b.style.background = tipo === 'armonica' ? 'linear-gradient(180deg, #0284c7 0%, #0369a1 100%)' :
-                                     tipo === 'saxo' ? 'linear-gradient(180deg, #d97706 0%, #b45309 100%)' :
-                                     'linear-gradient(180deg, #9333ea 0%, #7e22ce 100%)';
+                b.style.background = (tipo === '029' || tipo === 'armonica') ? 'linear-gradient(180deg, #059669 0%, #047857 100%)' :
+                                     (tipo === '101' || tipo === 'saxo')     ? 'linear-gradient(180deg, #d97706 0%, #b45309 100%)' :
+                                     'linear-gradient(180deg, #0284c7 0%, #0369a1 100%)';
                 b.style.borderColor = '#ffffff';
                 b.style.color = '#ffffff';
                 b.style.boxShadow = '0 0 14px rgba(255,255,255,0.7)';
@@ -510,54 +514,68 @@
         actualizarSonidosActivosUI(tipo);
         if (!midiOutput && (!midiAccessInstance || obtenerSalidasDisponibles().length === 0)) await conectarMIDI();
         try {
-            if (tipo === 'armonica') {
-                // STS Harmonica: Sweet Harm. de fábrica (MSB 121, LSB 2, PC 22)
+            if (tipo === '029' || tipo === 'armonica') {
+                // 1. KEYBOARD SET 029 HARMONICA OFICIAL (Banco 33, LSB 2, PC 8)
+                [0, 15].forEach(ch => {
+                    enviarMidiGlobal([0xB0 | ch, 0x00, 33]);
+                    enviarMidiGlobal([0xB0 | ch, 0x20, 2]);
+                    enviarMidiGlobal([0xC0 | ch, 8]);
+                });
                 enviarMidiGlobal([0xB0 | 0, 0x00, 121]);
-                enviarMidiGlobal([0xB0 | 0, 0x20, 2]);
+                enviarMidiGlobal([0xB0 | 0, 0x20, 1]);
                 enviarMidiGlobal([0xC0 | 0, 22]);
-                enviarMidiGlobal([0xB0 | 0, 0x07, 126]);
+                enviarMidiGlobal([0xB0 | 0, 0x07, 127]);
                 enviarMidiGlobal([0xB0 | 0, 0x0B, 127]);
                 enviarMidiGlobal([0xB0 | 0, 0x5B, 38]);
-                enviarMidiGlobal([0xB0 | 0, 0x5D, 0]);
-                enviarMidiGlobal([0xB0 | 0, 0x01, 0]);
-                enviarMidiGlobal([0xB0 | 0, 0x48, 64]);
                 enviarMidiGlobal([0xB0 | 1, 0x07, 0]);
                 enviarMidiGlobal([0xB0 | 2, 0x07, 0]);
                 enviarMidiGlobal([0xB0 | 3, 0x00, 121]);
-                enviarMidiGlobal([0xB0 | 3, 0x20, 0]);
+                enviarMidiGlobal([0xB0 | 3, 0x20, 5]);
                 enviarMidiGlobal([0xC0 | 3, 48]);
-                enviarMidiGlobal([0xB0 | 3, 0x07, 100]);
-            } else if (tipo === 'saxo') {
-                // Tenor Sax clásico de fábrica (MSB 121, LSB 0, PC 66)
+                enviarMidiGlobal([0xB0 | 3, 0x07, 95]);
+            } else if (tipo === '101' || tipo === 'saxo') {
+                // 2. KEYBOARD SET 101 TENOR SAX OFICIAL (Banco 33, LSB 10, PC 0)
+                [0, 15].forEach(ch => {
+                    enviarMidiGlobal([0xB0 | ch, 0x00, 33]);
+                    enviarMidiGlobal([0xB0 | ch, 0x20, 10]);
+                    enviarMidiGlobal([0xC0 | ch, 0]);
+                });
                 enviarMidiGlobal([0xB0 | 0, 0x00, 121]);
-                enviarMidiGlobal([0xB0 | 0, 0x20, 0]);
+                enviarMidiGlobal([0xB0 | 0, 0x20, 1]);
                 enviarMidiGlobal([0xC0 | 0, 66]);
-                enviarMidiGlobal([0xB0 | 0, 0x07, 126]);
+                enviarMidiGlobal([0xB0 | 0, 0x07, 127]);
                 enviarMidiGlobal([0xB0 | 0, 0x0B, 127]);
-                enviarMidiGlobal([0xB0 | 0, 0x5B, 46]);
-                enviarMidiGlobal([0xB0 | 0, 0x5D, 0]);
+                enviarMidiGlobal([0xB0 | 0, 0x5B, 42]);
                 enviarMidiGlobal([0xB0 | 1, 0x07, 0]);
                 enviarMidiGlobal([0xB0 | 2, 0x07, 0]);
                 enviarMidiGlobal([0xB0 | 3, 0x00, 121]);
-                enviarMidiGlobal([0xB0 | 3, 0x20, 0]);
-                enviarMidiGlobal([0xC0 | 3, 48]);
-                enviarMidiGlobal([0xB0 | 3, 0x07, 100]);
-            } else if (tipo === '066') {
-                // Keyboard Set 066 Oct.Strings oficial (MSB 121, LSB 8, PC 48)
+                enviarMidiGlobal([0xB0 | 3, 0x20, 6]);
+                enviarMidiGlobal([0xC0 | 3, 89]);
+                enviarMidiGlobal([0xB0 | 3, 0x07, 85]);
+            } else if (tipo === '066' || tipo === 'strings') {
+                // 3. KEYBOARD SET 066 OCT.STRINGS OFICIAL (Banco 33, LSB 6, PC 5)
+                [0, 15].forEach(ch => {
+                    enviarMidiGlobal([0xB0 | ch, 0x00, 33]);
+                    enviarMidiGlobal([0xB0 | ch, 0x20, 6]);
+                    enviarMidiGlobal([0xC0 | ch, 5]);
+                });
                 enviarMidiGlobal([0xB0 | 0, 0x00, 121]);
-                enviarMidiGlobal([0xB0 | 0, 0x20, 8]);
+                enviarMidiGlobal([0xB0 | 0, 0x20, 3]);
                 enviarMidiGlobal([0xC0 | 0, 48]);
-                enviarMidiGlobal([0xB0 | 0, 0x07, 126]);
-                enviarMidiGlobal([0xB0 | 0, 0x5B, 50]);
+                enviarMidiGlobal([0xB0 | 0, 0x07, 125]);
+                enviarMidiGlobal([0xB0 | 0, 0x5B, 44]);
                 enviarMidiGlobal([0xB0 | 1, 0x00, 121]);
-                enviarMidiGlobal([0xB0 | 1, 0x20, 0]);
+                enviarMidiGlobal([0xB0 | 1, 0x20, 3]);
                 enviarMidiGlobal([0xC0 | 1, 48]);
-                enviarMidiGlobal([0xB0 | 1, 0x07, 95]);
-                enviarMidiGlobal([0xB0 | 2, 0x07, 0]);
+                enviarMidiGlobal([0xB0 | 1, 0x07, 110]);
+                enviarMidiGlobal([0xB0 | 2, 0x00, 121]);
+                enviarMidiGlobal([0xB0 | 2, 0x20, 9]);
+                enviarMidiGlobal([0xC0 | 2, 48]);
+                enviarMidiGlobal([0xB0 | 2, 0x07, 95]);
                 enviarMidiGlobal([0xB0 | 3, 0x00, 121]);
-                enviarMidiGlobal([0xB0 | 3, 0x20, 0]);
+                enviarMidiGlobal([0xB0 | 3, 0x20, 9]);
                 enviarMidiGlobal([0xC0 | 3, 52]);
-                enviarMidiGlobal([0xB0 | 3, 0x07, 105]);
+                enviarMidiGlobal([0xB0 | 3, 0x07, 85]);
             }
         } catch(e){}
     }

@@ -629,11 +629,11 @@
         <!-- LÍNEA 2: INSTRUMENTOS / STS AUTÉNTICOS KORG EK-50 -->
         <div style="display:flex; align-items:center; gap:8px; justify-content:center; flex-wrap:wrap; padding-top:2px; border-top:1px solid rgba(255,255,255,0.1); width:100%;">
             <span style="font-size:0.75rem; color:#fde047; font-weight:800; text-transform:uppercase; letter-spacing:0.5px;">🎹 Sonidos:</span>
-            <button class="hud-sound-btn" data-sound="armonica" onclick="activarInstrumento('armonica', this)" style="background:#1e293b; color:#cbd5e1; border:1px solid #475569; padding:6px 12px; border-radius:8px; font-weight:800; font-size:0.84rem; cursor:pointer; touch-action:manipulation;">
-                🎵 STS Harmonica
+            <button class="hud-sound-btn" data-sound="029" onclick="activarInstrumento('029', this)" style="background:#1e293b; color:#cbd5e1; border:1px solid #475569; padding:6px 12px; border-radius:8px; font-weight:800; font-size:0.84rem; cursor:pointer; touch-action:manipulation;">
+                🎵 029 Harmonica
             </button>
-            <button class="hud-sound-btn" data-sound="saxo" onclick="activarInstrumento('saxo', this)" style="background:#1e293b; color:#cbd5e1; border:1px solid #475569; padding:6px 12px; border-radius:8px; font-weight:800; font-size:0.84rem; cursor:pointer; touch-action:manipulation;">
-                🎷 Tenor Sax
+            <button class="hud-sound-btn" data-sound="101" onclick="activarInstrumento('101', this)" style="background:#1e293b; color:#cbd5e1; border:1px solid #475569; padding:6px 12px; border-radius:8px; font-weight:800; font-size:0.84rem; cursor:pointer; touch-action:manipulation;">
+                🎷 101 Tenor Sax
             </button>
             <button class="hud-sound-btn" data-sound="066" onclick="activarInstrumento('066', this)" style="background:#1e293b; color:#cbd5e1; border:1px solid #475569; padding:6px 12px; border-radius:8px; font-weight:800; font-size:0.84rem; cursor:pointer; touch-action:manipulation;">
                 🎻 066 Oct.Strings
@@ -901,13 +901,16 @@
     function actualizarSonidosActivosUI(tipo) {
         sonidoActualTipo = tipo;
         document.querySelectorAll('[data-sound]').forEach(b => {
-            const matches = b.getAttribute('data-sound') === String(tipo) || 
-                            (tipo === 'strings' && b.getAttribute('data-sound') === '066');
+            const soundAttr = b.getAttribute('data-sound');
+            const matches = soundAttr === String(tipo) || 
+                            ((tipo === '029' || tipo === 'armonica') && (soundAttr === '029' || soundAttr === 'armonica')) ||
+                            ((tipo === '101' || tipo === 'saxo') && (soundAttr === '101' || soundAttr === 'saxo')) ||
+                            ((tipo === '066' || tipo === 'strings') && (soundAttr === '066' || soundAttr === 'strings'));
             if (b.classList.contains('hud-sound-btn')) {
                 if (matches) {
-                    b.style.background = tipo === 'armonica' ? 'linear-gradient(180deg, #0284c7 0%, #0369a1 100%)' :
-                                         tipo === 'saxo' ? 'linear-gradient(180deg, #d97706 0%, #b45309 100%)' :
-                                         'linear-gradient(180deg, #9333ea 0%, #7e22ce 100%)';
+                    b.style.background = (tipo === '029' || tipo === 'armonica') ? 'linear-gradient(180deg, #059669 0%, #047857 100%)' :
+                                         (tipo === '101' || tipo === 'saxo')     ? 'linear-gradient(180deg, #d97706 0%, #b45309 100%)' :
+                                         'linear-gradient(180deg, #0284c7 0%, #0369a1 100%)';
                     b.style.borderColor = '#ffffff';
                     b.style.color = '#ffffff';
                     b.style.boxShadow = '0 0 14px rgba(255,255,255,0.7)';
@@ -933,134 +936,143 @@
     }
 
     // 1. ACTIVACIÓN DE ESTILO KORG EK-50 (Canal 16 · Carga Automática de su STS de Fábrica)
-    async function activarEstilo(idEstilo, btn = null) {
+    async function activarEstilo(codigo, btn = null) {
         if (btn) dispararDestelloBoton(btn);
-        actualizarEstilosActivosUI(idEstilo);
+        actualizarEstilosActivosUI(codigo);
         const log = document.getElementById('log-midi');
         if (!midiOutput && (!midiAccessInstance || obtenerSalidasDisponibles().length === 0)) await conectarMIDI();
         try {
-            if (idEstilo === 42) {
-                // Estilo 042 (Natural Beat): Bank MSB 32, LSB 2, PC 9
-                // En el Korg EK-50, el Estilo 042 carga de fábrica automáticamente su STS: Harmonica
+            if (codigo === 42) {
+                // 042 Natural Beat (MSB 32, LSB 2, PC 9)
                 enviarMidiGlobal([0xB0 | 15, 0x00, 32]);
                 enviarMidiGlobal([0xB0 | 15, 0x20, 2]);
                 enviarMidiGlobal([0xC0 | 15, 9]);
-                actualizarSonidosActivosUI('armonica');
-                sincronizarPresetActivo(1);
-                cambiarTempo(80);
-                if (log) log.innerHTML = `🥁 <b>Estilo 042 (Natural Beat)</b> activado en Korg EK-50 · STS automático: <b>Harmonica</b>.`;
-            } else if (idEstilo === 51) {
-                // Estilo 051 (Slow Rock 2): Bank MSB 32, LSB 3, PC 2
+                if (log) log.innerHTML = `🥁 <b>Estilo 042 (Natural Beat)</b> activado en Korg EK-50 · STS de fábrica: <b>Harmonica</b>.`;
+            } else if (codigo === 51) {
+                // 051 Slow Rock 2 (MSB 32, LSB 3, PC 2)
                 enviarMidiGlobal([0xB0 | 15, 0x00, 32]);
                 enviarMidiGlobal([0xB0 | 15, 0x20, 3]);
                 enviarMidiGlobal([0xC0 | 15, 2]);
-                actualizarSonidosActivosUI('saxo');
-                sincronizarPresetActivo(2);
-                cambiarTempo(70);
-                if (log) log.innerHTML = `🥁 <b>Estilo 051 (Slow Rock 2)</b> activado en Korg EK-50 · <b>Tenor Sax</b>.`;
-            } else if (idEstilo === 41) {
-                // Estilo 041 (Love Ballad): Bank MSB 32, LSB 2, PC 8
-                // En el Korg EK-50, el Estilo 041 carga de fábrica automáticamente su STS: Strings Ens.
+                if (log) log.innerHTML = `🥁 <b>Estilo 051 (Slow Rock 2)</b> activado en Korg EK-50 · Balada 6/8.`;
+            } else if (codigo === 41) {
+                // 041 Love Ballad (MSB 32, LSB 2, PC 8)
                 enviarMidiGlobal([0xB0 | 15, 0x00, 32]);
                 enviarMidiGlobal([0xB0 | 15, 0x20, 2]);
                 enviarMidiGlobal([0xC0 | 15, 8]);
-                actualizarSonidosActivosUI('strings');
-                sincronizarPresetActivo(3);
-                cambiarTempo(80);
-                if (log) log.innerHTML = `🥁 <b>Estilo 041 (Love Ballad)</b> activado en Korg EK-50 · STS automático: <b>Strings Ens.</b>`;
+                if (log) log.innerHTML = `🥁 <b>Estilo 041 (Love Ballad)</b> activado en Korg EK-50 · STS de fábrica: <b>Strings Ens.</b>`;
             }
         } catch(e) {
             if (log) log.innerHTML = `⚠️ Error al activar estilo: ${e.message}`;
         }
     }
 
-    // 2. ACTIVACIÓN INDEPENDIENTE DE SONIDO / STS (Canales 0-3 · Sin saturar MIDI ni tocar Canal 16)
+    // 2. ACTIVACIÓN OFICIAL DE KEYBOARD SETS DEL PANEL FRONTAL DEL KORG EK-50 (1-170)
     async function activarInstrumento(tipo, btn = null) {
         if (btn) dispararDestelloBoton(btn);
         actualizarSonidosActivosUI(tipo);
         const log = document.getElementById('log-midi');
         if (!midiOutput && (!midiAccessInstance || obtenerSalidasDisponibles().length === 0)) await conectarMIDI();
         try {
-            if (tipo === 'armonica') {
-                // 1. STS HARMONICA AUTÉNTICA DE FÁBRICA KORG EK-50
-                // En el Korg EK-50, el STS de NaturalBeat es Sweet Harm. (MSB 121, LSB 2, PC 22)
+            if (tipo === '029' || tipo === 'armonica') {
+                // 1. KEYBOARD SET 029 HARMONICA OFICIAL (Banco MSB = 33, LSB = 2, PC = 8)
+                [0, 15].forEach(ch => {
+                    enviarMidiGlobal([0xB0 | ch, 0x00, 33]);
+                    enviarMidiGlobal([0xB0 | ch, 0x20, 2]);
+                    enviarMidiGlobal([0xC0 | ch, 8]);
+                });
+                // Upper 1 (Canal 1): Sweet Harm. (MSB 121, LSB 1, PC 22)
                 enviarMidiGlobal([0xB0 | 0, 0x00, 121]);
-                enviarMidiGlobal([0xB0 | 0, 0x20, 2]);   // LSB 2 = Sweet Harm. (Voz original Korg, no GM plana)
+                enviarMidiGlobal([0xB0 | 0, 0x20, 1]);
                 enviarMidiGlobal([0xC0 | 0, 22]);
-                enviarMidiGlobal([0xB0 | 0, 0x07, 126]); // Volumen solista nítido
-                enviarMidiGlobal([0xB0 | 0, 0x0B, 127]); // Expresión 100%
-                enviarMidiGlobal([0xB0 | 0, 0x5B, 38]);  // Reverb suave y natural (38), ¡cero eco excesivo!
-                enviarMidiGlobal([0xB0 | 0, 0x5D, 0]);   // Cero Chorus
-                enviarMidiGlobal([0xB0 | 0, 0x01, 0]);   // Cero vibrato forzado
-                enviarMidiGlobal([0xB0 | 0, 0x48, 64]);  // Release natural
+                enviarMidiGlobal([0xB0 | 0, 0x07, 127]);
+                enviarMidiGlobal([0xB0 | 0, 0x0B, 127]);
+                enviarMidiGlobal([0xB0 | 0, 0x5B, 38]);
+                enviarMidiGlobal([0xB0 | 0, 0x5D, 0]);
+                enviarMidiGlobal([0xB0 | 0, 0x01, 0]);
+                enviarMidiGlobal([0xB0 | 0, 0x48, 64]);
 
-                // Upper 2 y Upper 3 silenciados para máxima pureza sonora sin batimentos
+                // Upper 2 y 3 silenciados
                 enviarMidiGlobal([0xB0 | 1, 0x07, 0]);
                 enviarMidiGlobal([0xB0 | 2, 0x07, 0]);
 
-                // Lower (Canal 4 / Mano Izquierda): i3 Strings suave (Voz de fábrica Korg)
+                // Lower (Canal 4): i3 Strings (MSB 121, LSB 5, PC 48)
                 enviarMidiGlobal([0xB0 | 3, 0x00, 121]);
-                enviarMidiGlobal([0xB0 | 3, 0x20, 0]);
+                enviarMidiGlobal([0xB0 | 3, 0x20, 5]);
                 enviarMidiGlobal([0xC0 | 3, 48]);
-                enviarMidiGlobal([0xB0 | 3, 0x07, 100]);
+                enviarMidiGlobal([0xB0 | 3, 0x07, 95]);
                 enviarMidiGlobal([0xB0 | 3, 0x5B, 40]);
 
                 aplicarOctavaSuperior(octavaActual);
                 if (transposicionActual !== 0) aplicarTransposicionMidi(transposicionActual);
-                if (log) log.innerHTML = `🎵 <b>STS Harmonica Oficial</b> activada (Sweet Harmonica de fábrica, pura y sin eco artificial).`;
-            } else if (tipo === 'saxo') {
-                // 2. TENOR SAX (Saxo Tenor Solista Clásico Korg · NO Noizy Tenor)
-                // Korg Voice Name List: Tenor Sax = MSB 121, LSB 0, PC 66
+                if (log) log.innerHTML = `🎵 <b>029 Harmonica Oficial</b> activada (Keyboard Set 029 Korg EK-50).`;
+            } else if (tipo === '101' || tipo === 'saxo') {
+                // 2. KEYBOARD SET 101 TENOR SAX OFICIAL (Banco MSB = 33, LSB = 10, PC = 0)
+                [0, 15].forEach(ch => {
+                    enviarMidiGlobal([0xB0 | ch, 0x00, 33]);
+                    enviarMidiGlobal([0xB0 | ch, 0x20, 10]);
+                    enviarMidiGlobal([0xC0 | ch, 0]);
+                });
+                // Upper 1 (Canal 1): Tenor Noise (MSB 121, LSB 1, PC 66)
                 enviarMidiGlobal([0xB0 | 0, 0x00, 121]);
-                enviarMidiGlobal([0xB0 | 0, 0x20, 0]);   // LSB 0 = Tenor Sax clásico (limpio, sin saturación ni ruido)
+                enviarMidiGlobal([0xB0 | 0, 0x20, 1]);
                 enviarMidiGlobal([0xC0 | 0, 66]);
-                enviarMidiGlobal([0xB0 | 0, 0x07, 126]);
+                enviarMidiGlobal([0xB0 | 0, 0x07, 127]);
                 enviarMidiGlobal([0xB0 | 0, 0x0B, 127]);
-                enviarMidiGlobal([0xB0 | 0, 0x5B, 46]);  // Reverb equilibrado de balada
-                enviarMidiGlobal([0xB0 | 0, 0x5D, 0]);   // Cero chorus
+                enviarMidiGlobal([0xB0 | 0, 0x5B, 42]);
+                enviarMidiGlobal([0xB0 | 0, 0x5D, 0]);
 
-                // Upper 2 (Canal 2): Silenciado
+                // Upper 2 y 3 silenciados
                 enviarMidiGlobal([0xB0 | 1, 0x07, 0]);
-                // Upper 3 (Canal 3): Silenciado
                 enviarMidiGlobal([0xB0 | 2, 0x07, 0]);
 
-                // Lower (Canal 4): Cuerdas suaves de acompañamiento
+                // Lower (Canal 4): Dark Pad (MSB 121, LSB 6, PC 89)
                 enviarMidiGlobal([0xB0 | 3, 0x00, 121]);
-                enviarMidiGlobal([0xB0 | 3, 0x20, 0]);
-                enviarMidiGlobal([0xC0 | 3, 48]);
-                enviarMidiGlobal([0xB0 | 3, 0x07, 100]);
+                enviarMidiGlobal([0xB0 | 3, 0x20, 6]);
+                enviarMidiGlobal([0xC0 | 3, 89]);
+                enviarMidiGlobal([0xB0 | 3, 0x07, 85]);
+                enviarMidiGlobal([0xB0 | 3, 0x5B, 40]);
 
                 aplicarOctavaSuperior(octavaActual);
                 if (transposicionActual !== 0) aplicarTransposicionMidi(transposicionActual);
-                if (log) log.innerHTML = `🎷 <b>Tenor Sax Oficial</b> activado (Saxo Tenor Solista Clásico, limpio y redondo).`;
+                if (log) log.innerHTML = `🎷 <b>101 Tenor Sax Oficial</b> activado (Keyboard Set 101 Korg EK-50).`;
             } else if (tipo === '066' || tipo === 'strings') {
-                // 3. KEYBOARD SET 066 OCT.STRINGS (Cuerdas en Octavas Oficiales Korg EK-50)
-                // Korg Voice Name List: Sound 268 Oct.Strings = MSB 121, LSB 8, PC 48
+                // 3. KEYBOARD SET 066 OCT.STRINGS OFICIAL (Banco MSB = 33, LSB = 6, PC = 5)
+                [0, 15].forEach(ch => {
+                    enviarMidiGlobal([0xB0 | ch, 0x00, 33]);
+                    enviarMidiGlobal([0xB0 | ch, 0x20, 6]);
+                    enviarMidiGlobal([0xC0 | ch, 5]);
+                });
+                // Upper 1 (Canal 1): St. Strings (MSB 121, LSB 3, PC 48)
                 enviarMidiGlobal([0xB0 | 0, 0x00, 121]);
-                enviarMidiGlobal([0xB0 | 0, 0x20, 8]);   // LSB 8 = Oct.Strings oficial de Korg
-                enviarMidiGlobal([0xC0 | 0, 48]);        // Strings en octavas reales
-                enviarMidiGlobal([0xB0 | 0, 0x07, 126]);
-                enviarMidiGlobal([0xB0 | 0, 0x5B, 50]);
+                enviarMidiGlobal([0xB0 | 0, 0x20, 3]);
+                enviarMidiGlobal([0xC0 | 0, 48]);
+                enviarMidiGlobal([0xB0 | 0, 0x07, 125]);
+                enviarMidiGlobal([0xB0 | 0, 0x5B, 44]);
 
-                // Upper 2 (Canal 2): St. Strings de soporte orquestal
+                // Upper 2 (Canal 2): St. Strings en octava (MSB 121, LSB 3, PC 48)
                 enviarMidiGlobal([0xB0 | 1, 0x00, 121]);
-                enviarMidiGlobal([0xB0 | 1, 0x20, 0]);
+                enviarMidiGlobal([0xB0 | 1, 0x20, 3]);
                 enviarMidiGlobal([0xC0 | 1, 48]);
-                enviarMidiGlobal([0xB0 | 1, 0x07, 95]);
-                enviarMidiGlobal([0xB0 | 1, 0x5B, 48]);
+                enviarMidiGlobal([0xB0 | 1, 0x07, 110]);
+                enviarMidiGlobal([0xB0 | 1, 0x5B, 44]);
 
-                // Upper 3 (Canal 3): Silenciado
-                enviarMidiGlobal([0xB0 | 2, 0x07, 0]);
+                // Upper 3 (Canal 3): StringQuart (MSB 121, LSB 9, PC 48)
+                enviarMidiGlobal([0xB0 | 2, 0x00, 121]);
+                enviarMidiGlobal([0xB0 | 2, 0x20, 9]);
+                enviarMidiGlobal([0xC0 | 2, 48]);
+                enviarMidiGlobal([0xB0 | 2, 0x07, 95]);
+                enviarMidiGlobal([0xB0 | 2, 0x5B, 44]);
 
-                // Lower (Canal 4 / Mano Izquierda): Oh-Ah Voices / Coro cálido de fábrica Korg
+                // Lower (Canal 4): Oh-AhVoices (MSB 121, LSB 9, PC 52)
                 enviarMidiGlobal([0xB0 | 3, 0x00, 121]);
-                enviarMidiGlobal([0xB0 | 3, 0x20, 0]);
-                enviarMidiGlobal([0xC0 | 3, 52]);        // Choir Aahs
-                enviarMidiGlobal([0xB0 | 3, 0x07, 105]);
+                enviarMidiGlobal([0xB0 | 3, 0x20, 9]);
+                enviarMidiGlobal([0xC0 | 3, 52]);
+                enviarMidiGlobal([0xB0 | 3, 0x07, 85]);
+                enviarMidiGlobal([0xB0 | 3, 0x5B, 44]);
 
                 aplicarOctavaSuperior(octavaActual);
                 if (transposicionActual !== 0) aplicarTransposicionMidi(transposicionActual);
-                if (log) log.innerHTML = `🎻 <b>066 Oct.Strings Oficial</b> activado en Korg EK-50 (Cuerdas en Octavas reales con Coro Lower).`;
+                if (log) log.innerHTML = `🎻 <b>066 Oct.Strings Oficial</b> activado en Korg EK-50 (Keyboard Set 066).`;
             }
         } catch(e) {
             if (log) log.innerHTML = `⚠️ Error al activar instrumento: ${e.message}`;
