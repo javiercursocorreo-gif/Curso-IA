@@ -390,12 +390,11 @@
             <span id="current-tempo-badge" style="background:#0284c7; color:#fff; padding:3px 8px; border-radius:6px; font-size:0.82rem;">80 BPM</span>
         </div>
 
-        <!-- SELECTOR DE TONALIDAD / TRANSPOSICIÓN AUTOMÁTICA -->
+        <!-- TONALIDAD CANÓNICA DE LA CANCIÓN -->
         <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
             <span style="font-size:0.85rem; color:var(--text-muted); font-weight:700;">Tonalidad Korg EK-50:</span>
-            <button id="btn-trans-0" class="btn-tempo active-tempo" onclick="cambiarTransposicion(0, this)">🎹 Do Mayor (0 st · Posiciones Cómodas)</button>
-            <button id="btn-trans-2" class="btn-tempo" onclick="cambiarTransposicion(2, this)" style="border-color:#f59e0b; color:#fde68a;">⭐️ Re Mayor Elvis (+2 st · Tono Original)</button>
-            <span style="font-size:0.78rem; color:#94a3b8;">(Tocas las posiciones de Do y suena en Re original de Elvis)</span>
+            <button id="btn-trans-0" class="btn-tempo active-tempo" onclick="cambiarTransposicion(0, this)">🎹 Do Mayor Original (0 st · Acompañamiento Perfecto)</button>
+            <span style="font-size:0.78rem; color:#94a3b8;">(Afinación natural 0 st: máxima pureza acústica y sincronía armónica del estilo)</span>
         </div>
 
         <!-- REGISTRO Y ELEVACIÓN DE OCTAVA AUTOMÁTICA -->
@@ -1084,9 +1083,9 @@
             enviarMidiGlobal([0xB0 | ch, 0x5B, layer.reverb || 42]);
         });
 
-        // Tono natural 0 obligatorio (cero transposiciones destructivas +12)
+        // Tono natural 0 obligatorio (cero transposiciones destructivas)
         aplicarOctavaSuperior(0);
-        if (transposicionActual !== 0) aplicarTransposicionMidi(transposicionActual);
+        aplicarTransposicionMidi(0);
 
         const log = document.getElementById('log-midi');
         if (log) log.innerHTML = `🎹 <b>${numStr} ${data.name}</b> cargado en el Korg EK-50 · Pantalla LCD actualizada en directo.`;
@@ -1137,8 +1136,8 @@
 // ==============================================================================
 // CONTROL AUTOMÁTICO DE TRANSPOSICIÓN (+2 st TONO ORIGINAL ELVIS)
     // ==============================================================================
-    function aplicarTransposicionMidi(semitonos) {
-        const coarseVal = 64 + semitonos;
+    function aplicarTransposicionMidi(semitonos = 0) {
+        const coarseVal = 64; // Afinación neutra estándar de fábrica (0 st, Do Mayor natural)
         try {
             enviarMidiGlobal([0xF0, 0x7F, 0x7F, 0x04, 0x04, 0x00, coarseVal, 0xF7]);
             [0, 1, 2, 3].forEach(ch => {
@@ -1152,23 +1151,14 @@
         } catch(e){}
     }
 
-    function cambiarTransposicion(semitonos, btn = null) {
+    function cambiarTransposicion(semitonos = 0, btn = null) {
         if (btn) dispararDestelloBoton(btn);
-        transposicionActual = semitonos;
+        transposicionActual = 0;
         const b0 = document.getElementById('btn-trans-0');
-        const b2 = document.getElementById('btn-trans-2');
-        if (semitonos === 2) {
-            if (b2) b2.classList.add('active-tempo');
-            if (b0) b0.classList.remove('active-tempo');
-        } else {
-            if (b0) b0.classList.add('active-tempo');
-            if (b2) b2.classList.remove('active-tempo');
-        }
-        aplicarTransposicionMidi(semitonos);
+        if (b0) b0.classList.add('active-tempo');
+        aplicarTransposicionMidi(0);
         const log = document.getElementById('log-midi');
-        if (log) log.innerHTML = semitonos === 2 
-            ? `⭐️ <b>Transposer +2 st activado</b>: Tocas las teclas cómodas de Do Mayor y el Korg suena exactamente en el Re Mayor original de Elvis Presley.`
-            : `🎹 <b>Tono Do Mayor (0 st)</b>: Posiciones naturales sin transposición.`;
+        if (log) log.innerHTML = `🎹 <b>Tono Do Mayor Original (0 st)</b>: Posiciones naturales y acompañamiento perfecto sin desfases.`;
     }
 
     // ==============================================================================
@@ -1532,6 +1522,7 @@
         aplicarModoPartituraNegraUI(true);
         reiniciarTemporizadorDimming();
         await conectarMIDI();
+        aplicarTransposicionMidi(0);
     }
 
     if (document.readyState === 'loading') {
