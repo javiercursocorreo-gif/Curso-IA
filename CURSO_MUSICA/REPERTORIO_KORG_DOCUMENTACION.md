@@ -647,5 +647,29 @@ Esta sección recopila los descubrimientos críticos de ingeniería realizados d
 * **Títulos como Enlaces Directos al Carrusel:**
   - El propio título del bloque de categoría (ej. `🎡 Carrusel 1 · Baladas 6/8`) es un enlace directo que abre el atril digital a pantalla completa con el carro de botones Korg compartido. Las filas individuales debajo permiten seguir abriendo cada canción de forma aislada.
 
+### 6.50. Estándar Canónico de Transiciones Armónicas e Inversiones (Estándar Cuaderno)
+* **Eliminación Total de Tablas Teóricas Complejas:**
+  - Se prohíben las tablas densas con explicaciones académicas ("1ª inversión", "2ª inversión", "Posición Origen", "Posición Destino", "Principio de Conducción Suave").
+* **Diseño Visual Directo (Notas en Teclas):**
+  - Cada transición se presenta en una sola fila compacta y de lectura instantánea desde el atril en iPad a 50 cm:
+    * Etiqueta del par de acordes: `[ C ] ➔ [ Em ]`
+    * Diagrama de teclas con letras anglosajonas espaciadas: `[ G · C · E ] ➔ [ G · B · E ]`
+    * Resaltado cromático funcional:
+      - **Notas fijas / pivote (que no se mueven):** Destacadas en **verde esmeralda** (`#34d399`) con brillo suave.
+      - **Nota(s) en movimiento:** En gris claro (`#cbd5e1`).
+      - **Nota(s) destino (donde cae el dedo):** Destacadas en **ámbar** (`#f59e0b`).
+    * Píldora explicativa mínima al final: `G y E fijos · Solo baja C a B (1 semitono)`.
+  - Diseñado para lectura rápida y ejecución inmediata mientras se toca el teclado, sin desviar la atención de la partitura.
+
+### 6.51. Evolución de la Regla de STS de Teclados de Alta Gama: Curaduría y Desduplicación a 8 Sonidos Únicos (v180)
+* **Punto de Partida de Referencia:**
+  - Los 4 STS de fábrica de los teclados de alta gama (gama Korg Pa / EK-50) se toman como referencia musical inicial de cada estilo de acompañamiento.
+* **Modificación y Personalización Obligatoria:**
+  - Al diseñar las fichas con HUD flotante de 2 líneas de estilos, se comparan ambas filas y **se modifican obligatoriamente los STS que resulten comunes o redundantes**, sustituyéndolos por timbres alternativos de alta calidad de la lista oficial del EK-50 (guitarras, órganos, metales, voces, cuerdas).
+* **Resultado Final en el Atril Digital:**
+  - Los 4 instrumentos asignados a cada línea deben ser **100% diferentes entre sí** (4 en Línea 1 + 4 en Línea 2 = **8 sonidos únicos y complementarios**).
+  - Queda terminantemente prohibido repetir un mismo Keyboard Set en ambas líneas.
+  - Esto garantiza que el intérprete disponga en el HUD de **8 timbres distintos y complementarios**, pudiendo combinarlos libremente con cualquiera de los 2 estilos sin botones redundantes ni desperdicio de espacio en pantalla.
+
 ---
 *Manual redactado y sellado para el proyecto CURSO-IA / CURSO_MUSICA. Todos los derechos reservados.*
