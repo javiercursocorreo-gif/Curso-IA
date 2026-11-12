@@ -82,8 +82,9 @@
 ## Estándar de la Etiqueta [NIV]: Micro-Aplicaciones de Diagnóstico y Vida Real
 - Micro-herramientas funcionales de autodiagnóstico, cálculo biomédico o simulación de la vida real orientadas a la toma de decisiones prácticas mediante IA y lógica interactiva.
 
-## Regla de Despliegue: Todo se Sube a GitHub Siempre (GitHub Pages & Classroom)
-- Todo cambio en mapas, simuladores, fichas y paneles CSV debe subirse y sincronizarse con GitHub para que los alumnos tengan acceso inmediato a través de GitHub Pages y los enlaces correspondientes en Google Classroom.
+## Regla de Despliegue: Subida Automática e Inmediata a GitHub (GitHub Pages & Classroom)
+- **Subida Automática Obligatoria en Cada Corrección:** Cada vez que se cree, modifique o corrija cualquier recurso de los cursos (fichas PDF, HTML, simuladores, mapas interactivos, temarios o paneles CSV), el asistente debe dejar los archivos compilados, commiteados y proporcionar OBLIGATORIAMENTE el bloque correlativo con `git push origin main` al final del turno para que los cambios se reflejen de inmediato en GitHub Pages y Google Classroom sin que el usuario tenga que recordarlo.
+- Jamás dejar una corrección de clase pendiente de sincronización con GitHub.
 
 # SEGUIMIENTO DE CLASES Y CALENDARIO (CURSO-ROBOTICA-IA-COMUN)
 - **Alternancia Oficial de Clases:**
@@ -95,11 +96,17 @@
 - **Reducción a 14 Slides de T1. TEORÍA (CURSO-ROBOTICA-V2):**
   - Reducir todas las presentaciones PPTX y PDFs de teoría de robótica al formato ágil de 14 diapositivas adaptado a seniors, creando backup previo `T1.TEORIA_ORIGINAL_XXslides`.
   - **Estado de avance:**
-    - ✅ **Bloque 1 (1.1 a 1.4):** Completado al 100% (reducido a 14/15 diapositivas con backups).
-    - ✅ **Bloque 2 (2.1 a 2.5):** Completado al 100% (reducido a 15 diapositivas con backups).
-    - ✅ **Bloque 3 (3.1 a 3.5):** Completado al 100% (reducido a 15 diapositivas con backups).
-    - ✅ **Bloque 4 (4.1 a 4.5):** Completado al 100% (reducido a 15 diapositivas con backups).
-    - ⏳ **Bloque 5 (5.1 y 5.2):** Siguiente lote pendiente de ejecución (5.3, 5.5 y 5.6 ya optimizadas).
+    - ✅ **Bloques 1 a 5 (1.1 a 5.6):** Completados al 100% (reducidos y sincronizados a 15 diapositivas con backups, PPTX y PDFs).
+    - ✅ **Bloque 6 (6.1 y 6.2):** Completados al 100% (15 diapositivas con PPTX y PDFs).
+    - ⏳ **Bloque 6 (6.3 a 6.7):** Pendiente crear PPTX y PDFs desde cero directamente en el estándar de 15 diapositivas (Star Trek, Interstellar, SpaceX, Transbordador e ISS).
+- **Carruseles de Partituras por Estilos y Sonidos Afines (CURSO_MUSICA):**
+  - ✅ **Carrusel 1 Baladas Lentas 6/8:** Completado en `CARRUSEL_01_BALADAS_6_8.html` (#25 Can't Help Falling in Love + #26 Unchained Melody).
+  - ⏳ **Regla de Migración y Nuevos Carruseles:** Conforme se crean nuevos carruseles (Boleros Latinos, Clásicos Italianos, Baladas 4/4, Cine), las canciones incorporadas **desaparecen de la lista general suelta** y quedan integradas en el bloque de su carrusel. En el repertorio (2 columnas optimizadas para iPad vertical), el **título del bloque es el enlace directo al carrusel**, manteniendo acceso individual debajo a cada partitura.
+- **Integración Diaria de la Pareja Fractal (Sesiones 01 a 15 de CURSO-IA):**
+  - Cada mañana al recibir el primer mensaje del día (tanto si el usuario continúa en el mismo chat del día anterior como si abre uno nuevo), el asistente debe incluir el recordatorio del lote fractal pendiente del día: **1º Fractal de la Naturaleza** + **2º Fractal Matemático Puro**, listo para ser ejecutado cuando el usuario lo indique.
+  - **Estado de avance (1 sesión por día):**
+    - ✅ **Sesión 03:** Completada (Brécol Romanesco `[FRAC-060]` + Triángulo de Sierpinski `[FRAC-022]` renumerado a 17 recursos).
+    - ⏳ **Próxima sesión a integrar:** **Sesión 04** (Mundo Fibonacci `[FRAC-040]` + Mandelbrot Valle Caballitos `[FRAC-002]`), seguida sucesivamente de Sesiones 05 a 15.
 
 # MÓDULO ESPECIALIZADO DE MÚSICA Y WEB MIDI (CURSO_MUSICA)
 - **Repertorio Korg EK-50 & Atril Digital Web MIDI:**
@@ -107,6 +114,42 @@
   - Canales MIDI canónicos: Upper 1 (Ch 1), Upper 2 (Ch 2), Lower (Ch 3).
   - Servidor local Wi-Fi persistente a 0 segundos: `cd CURSO_MUSICA && nohup python3 -m http.server 8888 > /tmp/korg_server_8888.log 2>&1 &`, con detección dinámica de IP local (`ipconfig getifaddr en0`) y alias mDNS `$(hostname -s).local` para acceso instantáneo desde iPad.
   - Validación visual exclusiva en iPad sin saturar la pantalla del Mac.
+  - **Sincronización Dual Automática (Wi-Fi Local & GitHub Pages Nube):**
+    * En cada creación o corrección de partituras, carruseles, sonidos o repertorio en `CURSO_MUSICA`, mantener obligatoriamente `index.html` 100% idéntico y sincronizado con `REPERTORIO_KORG_EK50.html`.
+    * Compilar, commitear y proveer de forma automática el bloque correlativo con `git push origin main` al final del turno para que la nube pública de GitHub Pages esté permanentemente actualizada tanto si el usuario toca en casa (Wi-Fi local `:8888`) como en la calle (GitHub Pages en iPad).
+- **Estándar Canónico Oficial de Keyboard Sets del Korg EK-50 (1-170):**
+  - **Identidad de Pantalla LCD y Sonido 100% Real:** Los 170 timbres de la placa frontal son **Keyboard Sets compuestos multicapa**, gobernados obligatoriamente por el **Banco Maestro MSB = 33**.
+  - **Transmisión de Control Dual:** El selector `[0xB0 | ch, 0x00, 33]`, `[0xB0 | ch, 0x20, LSB]`, `[0xC0 | ch, PC]` debe enviarse en **Canal 1 (Upper 1) y Canal 16 (Global)** para que el Korg EK-50 cambie en tiempo real el nombre y número en su propia pantalla LCD.
+  - **Configuración Espejo de las 4 Capas de Fábrica (Voice Name List):**
+    * `029 Harmonica`: Banco 33, LSB 2, PC 8. Upper 1: `Sweet Harm.` (`121, 1, 22`, Vol 127, Reverb 42) + Upper 2: `Sweet Harm.` (`121, 1, 22`, Vol 110, ¡doble capa activa obligatoria para cuerpo acústico!) + Lower: `i3 Strings` (`121, 5, 48`, Vol 95). **Octava 0 natural obligatoria** (prohibido transponer +12 st a las armónicas).
+    * `066 Oct.Strings`: Banco 33, LSB 6, PC 5. Upper 1: `St. Strings` (`121, 3, 48`, Vol 125) + Upper 2: `St. Strings` (`121, 3, 48`, Vol 110) + Upper 3: `StringQuart` (`121, 9, 48`, Vol 95) + Lower: `Oh-AhVoices` (`121, 9, 52`, Vol 85).
+    * `071 Oooh&Aahs`: Banco 33, LSB 7, PC 0. Upper 1: `Oooh Choir` (`121, 6, 52`, Vol 122) + Upper 2: `Choir Aahs` (`121, 0, 52`, Vol 95) + Lower: `Dark Pad` (`121, 6, 89`, Vol 75).
+    * `101 Tenor Sax`: Banco 33, LSB 10, PC 0. Upper 1: `Tenor Noise` (`121, 1, 66`, Vol 127) + Lower: `Dark Pad` (`121, 6, 89`, Vol 85).
+  - **Numeración Estricta de 3 Dígitos por Delante:** Todo botón, HUD y etiqueta debe incluir obligatoriamente el número oficial por delante (`029 Harmonica`, `066 Oct.Strings`, `071 Oooh&Aahs`, `101 Tenor Sax`).
+  - **Fidelidad Textual Absoluta al Requerimiento del Usuario:** Prohibido renombrar, alterar o sustituir los nombres y sonidos solicitados por el usuario.
+  - **Parámetros Acústicos Realistas:** Reverb CC91 entre 38 y 44, expresión al 127 y cero recortes artificiales de modulación o chorus de fábrica.
+  - **Arquitectura de Interfaz Canónica (Cero Botones de Sonido/Estilo en Pantalla Principal):**
+    - En la pantalla principal de la ficha didáctica NO se colocan botones de sonidos ni de estilos.
+    - El control de estilos, timbres, tempo y ritmos reside EXCLUSIVAMENTE en el panel flotante HUD de la partitura a pantalla completa (`#modal-score-scroll-container`), manteniendo la ficha principal limpia, despejada y enfocada en la guía armónica y el botón de apertura a pantalla completa.
+  - **Evolución de la Regla de STS de Teclados de Alta Gama (Curaduría y Desduplicación a 8 Sonidos Únicos):**
+    - **Punto de partida de referencia:** Los 4 STS de fábrica de los teclados de alta gama (gama Korg Pa / EK-50) se toman como referencia musical inicial de cada estilo.
+    - **Modificación y personalización obligatoria:** A continuación, se comparan ambas líneas y **se modifican los STS que sean comunes o redundantes**, sustituyéndolos por timbres alternativos de alta calidad de la lista oficial del EK-50 (guitarras, órganos, metales, voces, cuerdas).
+    - **Resultado final:** En las fichas HUD de 2 líneas de estilos, los 4 instrumentos asignados a cada línea deben ser **100% diferentes entre sí** (4 en Línea 1 + 4 en Línea 2 = **8 sonidos únicos y complementarios**). Queda prohibido repetir un mismo Keyboard Set en ambas líneas, garantizando que el intérprete disponga de 8 timbres distintos y complementarios, pudiendo combinarlos libremente con cualquiera de los 2 estilos sin botones redundantes ni desperdicio de espacio.
+  - **Evolución de la Regla de STS de Teclados de Alta Gama (Curaduría y Desduplicación a 8 Sonidos Únicos):**
+    - **Punto de partida de referencia:** Los 4 STS de fábrica de los teclados de alta gama (gama Korg Pa / EK-50) se toman como referencia musical inicial de cada estilo.
+    - **Modificación y personalización obligatoria:** A continuación, se comparan ambas líneas y **se modifican los STS que sean comunes o redundantes**, sustituyéndolos por timbres alternativos de alta calidad de la lista oficial del EK-50 (guitarras, órganos, metales, voces, cuerdas).
+    - **Resultado final:** En las fichas HUD de 2 líneas de estilos, los 4 instrumentos asignados a cada línea deben ser **100% diferentes entre sí** (4 en Línea 1 + 4 en Línea 2 = **8 sonidos únicos y complementarios**). Queda prohibido repetir un mismo Keyboard Set en ambas líneas, garantizando que el intérprete disponga de 8 timbres distintos y complementarios, pudiendo combinarlos libremente con cualquiera de los 2 estilos sin botones redundantes ni desperdicio de espacio.
+- **Estándar Canónico de Transiciones Armónicas e Inversiones (Estándar Cuaderno):**
+  - **Prohibición Total de Tablas Teóricas Complejas:** Prohibido incluir tablas densas con columnas teóricas o explicaciones académicas ("1ª inversión", "2ª inversión", "Posición Origen", "Posición Destino", "Principio de Conducción Suave").
+  - **Diseño Visual Directo (Notas en Teclas):** Cada transición se presenta en una sola fila compacta y de lectura instantánea desde el atril en iPad:
+    * Etiqueta del par de acordes: `[ C ] ➔ [ Em ]`
+    * Diagrama de teclas con letras anglosajonas espaciadas: `[ G · C · E ] ➔ [ G · B · E ]`
+    * Resaltado cromático funcional:
+      - **Notas fijas / pivote (que no se mueven):** Destacadas en **verde esmeralda** (`#34d399`) con brillo suave.
+      - **Nota(s) en movimiento:** En gris claro (`#cbd5e1`).
+      - **Nota(s) destino (donde cae el dedo):** Destacadas en **ámbar** (`#f59e0b`).
+    * Píldora explicativa mínima al final: `G y E fijos · Solo baja C a B (1 semitono)`.
+  - **Cero Distracción:** Diseñado para lectura rápida a 50 cm de distancia mientras se toca el teclado, sin desviar la atención de la partitura.
 
 # PROTOCOLO DE CIERRE DE CHAT Y ENTREGA DE HERENCIA UNIVERSAL
 - **Activación:** Cuando el usuario indique que quiere cerrar el chat (ej. *"quiero cerrar el chat"*, *"cierra el chat"*, *"dame la frase de cierre"*, *"vamos a pasar a otro chat"*, etc.):
