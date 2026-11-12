@@ -324,14 +324,7 @@ def create_niv_fichas():
         # 1. Copia principal con el nombre nuevo normalizado
         dst_sess_pdf = os.path.join(sess_folder, f"9. NIV-{idx:03d}_{clean_title}.pdf")
         shutil.copy2(file_path, dst_sess_pdf)
-        
-        # 2. Copia de compatibilidad total con el nombre legado (garantiza cero 404 en Classroom y cachés)
-        if idx in LEGACY_NIV_NAMES:
-            legacy_pdf = os.path.join(sess_folder, LEGACY_NIV_NAMES[idx])
-            shutil.copy2(file_path, legacy_pdf)
-            print(f"  ✓ Replicado en {sess_name}: {os.path.basename(dst_sess_pdf)} (+ copia de compatibilidad)")
-        else:
-            print(f"  ✓ Replicado en {sess_name}: {os.path.basename(dst_sess_pdf)}")
+        print(f"  ✓ Replicado en {sess_name}: {os.path.basename(dst_sess_pdf)}")
         
     print(f"\n¡Éxito total! Las 60 fichas PDF [NIV] han sido exportadas y distribuidas en las 60 sesiones.")
 

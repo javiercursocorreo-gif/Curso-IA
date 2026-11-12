@@ -16,9 +16,17 @@ Genera:
 import os
 import re
 import csv
+import sys
 import urllib.parse
 import unicodedata
 import shutil
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+try:
+    import build_niv_60_master
+    NIV_MASTER_ITEMS = build_niv_60_master.get_niv_items()
+except Exception as e:
+    NIV_MASTER_ITEMS = []
 
 BASE_DIR = "/Users/externo/Library/Mobile Documents/com~apple~CloudDocs/PERSONAL/CLASES DE TECNOLOGÍA/CURSO-IA"
 SESSIONS_DIR = os.path.join(BASE_DIR, "CLASES", "EXPORTACION_FICHAS_CLASSROOM_PDF", "100. [SESSIONS] TERNAS_LISTAS_PARA_CLASSROOM")
@@ -44,7 +52,7 @@ STEP_CONFIG = {
     "AVES":  {"color": "#facc15", "cat": "Naturaleza Fascinante",          "icon": "🦅", "col": 2, "order": 9},
 
     "TXT":   {"color": "#38bdf8", "cat": "Prompts y Asistencia de Texto",  "icon": "✍️", "col": 3, "order": 10},
-    "NIV":   {"color": "#4ade80", "cat": "Escalafones y Niveles",          "icon": "📊", "col": 3, "order": 11},
+    "NIV":   {"color": "#10b981", "cat": "Escalafones & Micro-Apps (+65)", "icon": "🛡️", "col": 3, "order": 11},
     "TRUC":  {"color": "#2dd4bf", "cat": "Trucos Cotidianos",              "icon": "💡", "col": 3, "order": 12},
     "PAT":   {"color": "#10b981", "cat": "Cultura Patrimonial & Derechos", "icon": "🏛️", "col": 3, "order": 13},
     "MOVIL": {"color": "#60a5fa", "cat": "Salvavidas del Móvil",           "icon": "📱", "col": 3, "order": 14},
@@ -81,6 +89,12 @@ COLUMNS_CONFIG = [
 def clean_title_from_filename(filename, session_num=1):
     name, _ = os.path.splitext(filename)
     f_up = filename.upper()
+    if 'NIV-' in f_up or 'NIV_' in f_up:
+        m_niv = re.search(r'NIV-(\d+)', f_up)
+        if m_niv:
+            n_idx = int(m_niv.group(1)) - 1
+            if 0 <= n_idx < len(NIV_MASTER_ITEMS):
+                return NIV_MASTER_ITEMS[n_idx]['title']
     if 'COD-001' in f_up or ('COD-' in f_up and session_num == 1):
         return 'Taller: Crea tu propio simulador de los pulmones'
     if 'COD-002' in f_up or ('COD-' in f_up and session_num == 2):
@@ -380,6 +394,34 @@ def generate_columns_html(session_num, session_folder, files):
                         <a href="PROBADOR_CODIGO_IA.html?sesion={session_num}" target="_blank" class="btn-launch-interactive" title="Abrir Taller Oficial de Pruebas">
                             🚀 Abrir Taller Interactivo de Pruebas ↗
                         </a>{sim_btn}
+                    </div>"""
+            elif it.get("code") == "NIV":
+                niv_item = NIV_MASTER_ITEMS[session_num - 1] if session_num <= len(NIV_MASTER_ITEMS) else {}
+                sim_file = niv_item.get("sim_file", "")
+                sim_title = niv_item.get("sim_title", "Micro-Aplicación Interactiva (+65)")
+                sim_btn = ""
+                if sim_file and os.path.exists(os.path.join(session_folder, sim_file)):
+                    sim_btn = f"""
+                        <a href="{urllib.parse.quote(sim_file)}" target="_blank" class="btn-launch-interactive" style="background:linear-gradient(135deg, #059669, #047857); border-color:#34d399;" title="Abrir Micro-Aplicación Interactiva Oficial: {sim_title}">
+                            🛡️ Abrir {sim_title} (HTML) ↗
+                        </a>"""
+                
+                cards_html += f"""
+                    <div class="file-card file-card-special" style="background: rgba(16, 185, 129, 0.06); border-color: rgba(16, 185, 129, 0.35);">
+                        <a href="{rel_href}" target="_blank" class="file-card-special-top" title="Abrir Ficha Didáctica y Prompt de Gemini (PDF)">
+                            <div class="file-left">
+                                <span class="file-num">{it["step_num"]}</span>
+                                <span class="file-tag tag-pdf" style="background:#059669; color:#fff;">APP +65</span>
+                                <div class="file-details">
+                                    <span class="file-title">{it["title"]}</span>
+                                    <span class="file-desc">Micro-App de Vida Real (+65) • Diagnóstico en el Hogar</span>
+                                </div>
+                            </div>
+                            <span class="file-arrow">↗</span>
+                        </a>{sim_btn}
+                        <a href="{rel_href}" target="_blank" class="btn-launch-interactive" style="margin-top:6px; background:linear-gradient(135deg, #334155, #1e293b); border-color:#64748b;" title="Abrir Ficha Guía y Prompt Semilla (PDF)">
+                            📄 Abrir Ficha Guía & Prompt de Gemini (PDF) ↗
+                        </a>
                     </div>"""
             else:
                 cards_html += f"""
