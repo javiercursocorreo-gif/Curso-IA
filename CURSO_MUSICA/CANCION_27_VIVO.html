@@ -422,15 +422,20 @@
         <span>🎹 ABRIR ATRIL / PROGRESIÓN A PANTALLA COMPLETA ↗</span>
     </button>
 
-    <!-- ESTADO CONEXIÓN MIDI -->
-    <div style="display:flex; align-items:center; justify-content:space-between; background:#0f172a; border:1px solid #1e293b; border-radius:10px; padding:10px 14px; margin-bottom:14px;">
+    <!-- ESTADO CONEXIÓN MIDI & DESBLOQUEO -->
+    <div style="display:flex; align-items:center; justify-content:space-between; background:#0f172a; border:1px solid #1e293b; border-radius:10px; padding:10px 14px; margin-bottom:14px; flex-wrap:wrap; gap:8px;">
         <div style="display:flex; align-items:center; gap:8px;">
             <span id="midi-dot" style="width:10px; height:10px; border-radius:50%; background:#eab308; display:inline-block;"></span>
             <span id="midi-label" style="font-size:0.85rem; font-weight:700; color:#cbd5e1;">🟡 Conecta el Korg EK-50 vía USB</span>
         </div>
-        <button onclick="conectarMIDI()" style="background:#1e293b; border:1px solid #38bdf8; color:#38bdf8; border-radius:6px; padding:5px 10px; font-size:0.75rem; font-weight:800; cursor:pointer;">
-            Reconectar
-        </button>
+        <div style="display:flex; align-items:center; gap:8px;">
+            <button onclick="conectarMIDI()" style="background:#1e293b; border:1px solid #38bdf8; color:#38bdf8; border-radius:6px; padding:6px 12px; font-size:0.78rem; font-weight:800; cursor:pointer;">
+                Reconectar
+            </button>
+            <button onclick="desbloquearKorgEK50(this)" style="background:rgba(239,68,68,0.2); border:1px solid #ef4444; color:#fca5a5; border-radius:6px; padding:6px 12px; font-size:0.78rem; font-weight:800; cursor:pointer;" title="Restaura el sonido, borra bloqueos y vuelve a 001 Grand Piano sin reiniciar">
+                ⚡ Desbloquear / Reset Korg
+            </button>
+        </div>
     </div>
 
     <!-- GUÍA DE ESTRUCTURA Y PROGRESIÓN -->
@@ -589,6 +594,9 @@
                 </button>
                 <button class="hud-style-btn" data-style="49" onclick="activarEstilo(49, this)" style="background:#1e293b; color:#cbd5e1; border:1px solid #475569; padding:5px 8px; min-height:30px; border-radius:6px; font-weight:800; font-size:0.77rem; cursor:pointer; touch-action:manipulation;">
                     049 Slow Pop
+                </button>
+                <button onclick="desbloquearKorgEK50(this)" title="Desbloquear / Reset Korg (All Notes Off + 001 Piano)" style="background:rgba(239,68,68,0.2); color:#fca5a5; border:1px solid #ef4444; padding:5px 8px; min-height:30px; border-radius:6px; font-weight:800; font-size:0.75rem; cursor:pointer; touch-action:manipulation;">
+                    ⚡ Reset
                 </button>
             </div>
 
@@ -1051,25 +1059,57 @@
         if (!midiOutput && (!midiAccessInstance || obtenerSalidasDisponibles().length === 0)) await conectarMIDI();
 
         try {
-            // 1. Selector Maestro de Keyboard Set en Korg EK-50 (Canales 1 y 16 para reflejo en pantalla LCD):
+            // Regla de Oro Canónica Korg EK-50:
+            // Transmisión exclusiva del Banco Maestro MSB = 33 en Canal 1 (Upper 1) y Canal 16 (Global).
+            // Esto carga el Keyboard Set oficial nativo con sus 4 capas de fábrica ya balanceadas,
+            // actualiza el display LCD con su número y nombre (001 Grand Piano, 048 Bell Voice, etc.)
+            // y NUNCA envía Bank 121 que saca al teclado del modo Keyboard Set y lo desvía a parches individuales (como el 442).
             [0, 15].forEach(ch => {
                 enviarMidiGlobal([0xB0 | ch, 0x00, 33]); // Banco Maestro 33
                 enviarMidiGlobal([0xB0 | ch, 0x20, data.bankLsb]);
                 enviarMidiGlobal([0xC0 | ch, data.pc]);
             });
 
-            // 2. Programación Multi-Parte Espejo de las 4 capas oficiales de fábrica:
-            data.layers.forEach(layer => {
-                const ch = layer.channel;
-                enviarMidiGlobal([0xB0 | ch, 0x00, layer.msb]);
-                enviarMidiGlobal([0xB0 | ch, 0x20, layer.lsb]);
-                enviarMidiGlobal([0xC0 | ch, layer.pc]);
-                enviarMidiGlobal([0xB0 | ch, 0x07, layer.volume]);
-                enviarMidiGlobal([0xB0 | ch, 0x0B, 127]);
-                enviarMidiGlobal([0xB0 | ch, 0x5B, layer.reverb || 42]);
+            // Ajuste acústico de volumen y expresión en los 4 canales de juego (Upper 1, Upper 2, Upper 3, Lower)
+            [0, 1, 2, 3].forEach(ch => {
+                enviarMidiGlobal([0xB0 | ch, 0x07, 115]); // Volumen equilibrado
+                enviarMidiGlobal([0xB0 | ch, 0x0B, 127]); // Expresión 127
+                enviarMidiGlobal([0xB0 | ch, 0x5B, 42]);  // Reverb 42
             });
         } catch (err) {
             console.error('Error al cargar Keyboard Set:', err);
+        }
+    }
+
+    // ==============================================================================
+    // FUNCIÓN DE PÁNICO Y DESBLOQUEO AUTOMÁTICO KORG EK-50
+    // ==============================================================================
+    async function desbloquearKorgEK50(btn = null) {
+        if (btn) dispararDestelloBoton(btn);
+        if (!midiOutput && (!midiAccessInstance || obtenerSalidasDisponibles().length === 0)) await conectarMIDI();
+
+        try {
+            // 1. Silenciar y reiniciar controladores en los 16 canales MIDI
+            for (let ch = 0; ch < 16; ch++) {
+                enviarMidiGlobal([0xB0 | ch, 120, 0]); // All Sound Off
+                enviarMidiGlobal([0xB0 | ch, 123, 0]); // All Notes Off
+                enviarMidiGlobal([0xB0 | ch, 121, 0]); // Reset All Controllers
+                enviarMidiGlobal([0xB0 | ch, 7, 115]);  // Restaurar Volumen a 115
+                enviarMidiGlobal([0xB0 | ch, 11, 127]); // Expresión máxima
+            }
+
+            // 2. Restaurar inmediatamente el Keyboard Set 001 Grand Piano en Canal 1 y Canal 16 (Banco 33)
+            [0, 15].forEach(ch => {
+                enviarMidiGlobal([0xB0 | ch, 0x00, 33]);
+                enviarMidiGlobal([0xB0 | ch, 0x20, 0]);
+                enviarMidiGlobal([0xC0 | ch, 0]);
+            });
+
+            actualizarSonidoUI('001');
+            const label = document.getElementById('midi-label');
+            if (label) label.innerText = '🟢 Korg Desbloqueado · 001 Grand Piano Activo';
+        } catch(e) {
+            console.error('Error al desbloquear Korg:', e);
         }
     }
 
