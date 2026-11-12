@@ -810,62 +810,75 @@
         btn.classList.add('btn-flash-active');
     }
 
-    async function enviarMidiGlobal(bytes) {
-        if (midiOutput) {
-            try { midiOutput.send(bytes); return true; } catch(e) {}
-        }
-        const outputs = obtenerSalidasDisponibles();
-        let enviado = false;
-        outputs.forEach(output => {
-            try { output.send(bytes); enviado = true; } catch(e) {}
+    function enviarMidiGlobal(bytes) {
+        obtenerSalidasDisponibles().forEach(port => {
+            try { port.send(bytes); } catch(e){}
         });
-        return enviado;
+    }
+
+    function bindPorts() {
+        if (!midiAccessInstance) return null;
+        const dot = document.getElementById("midi-dot");
+        const text = document.getElementById("midi-label");
+        const outputs = extraerPuertos(midiAccessInstance.outputs);
+        
+        const korg = outputs.find(o => o && o.name && (
+            o.name.toLowerCase().includes('ek-50') || 
+            o.name.toLowerCase().includes('korg') ||
+            o.name.toLowerCase().includes('usb')
+        ));
+
+        if (korg) {
+            midiOutput = korg;
+            if (dot) dot.style.background = "#10b981";
+            if (text) text.innerHTML = `🟢 Conectado: <b>${korg.name}</b>`;
+        } else if (outputs.length > 0) {
+            midiOutput = outputs[0];
+            if (dot) dot.style.background = "#10b981";
+            if (text) text.innerHTML = `🟢 Conectado: <b>${midiOutput.name}</b>`;
+        } else {
+            midiOutput = null;
+            if (dot) dot.style.background = "#d29922";
+            if (text) text.innerHTML = '🟡 Korg no detectado por USB';
+        }
+
+        // Vincular entradas MIDI para que cualquier nota tocada despierte el atenuador
+        if (midiAccessInstance && midiAccessInstance.inputs) {
+            extraerPuertos(midiAccessInstance.inputs).forEach(inp => {
+                try {
+                    inp.onmidimessage = () => {
+                        despertarAtenuador();
+                    };
+                } catch(e){}
+            });
+        }
+
+        return midiOutput;
     }
 
     async function conectarMIDI() {
         if (conectandoMIDI) return null;
         conectandoMIDI = true;
         const dot = document.getElementById('midi-dot');
-        const label = document.getElementById('midi-label');
+        const text = document.getElementById('midi-label');
 
         if (!navigator.requestMIDIAccess) {
             if (dot) dot.style.background = '#ef4444';
-            if (label) label.innerText = '🔴 Web MIDI no soportado en este navegador';
+            if (text) text.innerText = '🔴 Web MIDI no soportado en este navegador';
             conectandoMIDI = false;
             return null;
         }
 
         try {
-            midiAccessInstance = await navigator.requestMIDIAccess({ sysex: true });
-            const outputs = obtenerSalidasDisponibles();
-            const salidaKorg = outputs.find(o => (o.name && o.name.toLowerCase().includes('korg')) || (o.name && o.name.toLowerCase().includes('ek-50')));
-            midiOutput = salidaKorg || outputs[0] || null;
-
-            if (midiOutput) {
-                if (dot) dot.style.background = '#10b981';
-                if (label) label.innerText = '🟢 ' + (midiOutput.name || 'Korg EK-50 Conectado');
-            } else {
-                if (dot) dot.style.background = '#eab308';
-                if (label) label.innerText = '🟡 Conecta el Korg EK-50 vía USB';
-            }
-
-            midiAccessInstance.onstatechange = (e) => {
-                const outs = obtenerSalidasDisponibles();
-                const korg = outs.find(o => (o.name && o.name.toLowerCase().includes('korg')) || (o.name && o.name.toLowerCase().includes('ek-50')));
-                midiOutput = korg || outs[0] || null;
-                if (midiOutput) {
-                    if (dot) dot.style.background = '#10b981';
-                    if (label) label.innerText = '🟢 ' + (midiOutput.name || 'Korg EK-50 Conectado');
-                } else {
-                    if (dot) dot.style.background = '#eab308';
-                    if (label) label.innerText = '🟡 Conecta el Korg EK-50 vía USB';
-                }
-            };
+            // Permiso seguro compatible con Web MIDI Browser en iPadOS (fallback sin sysex)
+            const m = await navigator.requestMIDIAccess({ sysex: true }).catch(() => navigator.requestMIDIAccess({ sysex: false }));
+            midiAccessInstance = m;
             conectandoMIDI = false;
-            return midiOutput;
+            midiAccessInstance.onstatechange = () => bindPorts();
+            return bindPorts();
         } catch (err) {
             if (dot) dot.style.background = '#ef4444';
-            if (label) label.innerText = '🔴 Error de acceso Web MIDI';
+            if (text) text.innerText = '🔴 Error de acceso Web MIDI';
             conectandoMIDI = false;
             return null;
         }
@@ -1032,25 +1045,29 @@
     async function cargarKeyboardSet(tipo, btn = null) {
         if (btn) dispararDestelloBoton(btn);
         actualizarSonidoUI(tipo);
-        const setDef = KORG_KEYBOARD_SETS[tipo];
-        if (!setDef) return;
+        const data = KORG_KEYBOARD_SETS[tipo];
+        if (!data) return;
 
         if (!midiOutput && (!midiAccessInstance || obtenerSalidasDisponibles().length === 0)) await conectarMIDI();
 
         try {
-            // Control Dual: Notificar a Canal 1 y Canal 16 (Global) para refresco instantáneo en la pantalla LCD del Korg EK-50
-            for (let ch of [0, 15]) {
-                await enviarMidiGlobal([0xB0 | ch, 0x00, 33]); // Banco Maestro 33
-                await enviarMidiGlobal([0xB0 | ch, 0x20, setDef.bankLsb]);
-                await enviarMidiGlobal([0xC0 | ch, setDef.pc]);
-            }
+            // 1. Selector Maestro de Keyboard Set en Korg EK-50 (Canales 1 y 16 para reflejo en pantalla LCD):
+            [0, 15].forEach(ch => {
+                enviarMidiGlobal([0xB0 | ch, 0x00, 33]); // Banco Maestro 33
+                enviarMidiGlobal([0xB0 | ch, 0x20, data.bankLsb]);
+                enviarMidiGlobal([0xC0 | ch, data.pc]);
+            });
 
-            // Aplicar parámetros de expresión a las capas
-            for (let l of setDef.layers) {
-                await enviarMidiGlobal([0xB0 | l.channel, 0x07, l.volume]);
-                await enviarMidiGlobal([0xB0 | l.channel, 0x0B, 127]);
-                await enviarMidiGlobal([0xB0 | l.channel, 0x5B, l.reverb]);
-            }
+            // 2. Programación Multi-Parte Espejo de las 4 capas oficiales de fábrica:
+            data.layers.forEach(layer => {
+                const ch = layer.channel;
+                enviarMidiGlobal([0xB0 | ch, 0x00, layer.msb]);
+                enviarMidiGlobal([0xB0 | ch, 0x20, layer.lsb]);
+                enviarMidiGlobal([0xC0 | ch, layer.pc]);
+                enviarMidiGlobal([0xB0 | ch, 0x07, layer.volume]);
+                enviarMidiGlobal([0xB0 | ch, 0x0B, 127]);
+                enviarMidiGlobal([0xB0 | ch, 0x5B, layer.reverb || 42]);
+            });
         } catch (err) {
             console.error('Error al cargar Keyboard Set:', err);
         }
@@ -1141,10 +1158,20 @@
         } catch(e) {}
     }
 
-    // INICIALIZACIÓN
-    window.addEventListener('DOMContentLoaded', () => {
-        conectarMIDI();
-    });
+    // INICIALIZACIÓN CON RETARDO COREDMIDI (350 ms) Y REINTENTOS ESCALONADOS
+    async function iniciarApp() {
+        actualizarEstilosActivosUI(27);
+        actualizarSonidoUI('001');
+        await conectarMIDI();
+        setTimeout(conectarMIDI, 350);
+        setTimeout(conectarMIDI, 1200);
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', iniciarApp);
+    } else {
+        iniciarApp();
+    }
     </script>
 </body>
 </html>
