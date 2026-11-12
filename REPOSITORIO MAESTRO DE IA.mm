@@ -2646,43 +2646,43 @@
       <node ID="ID_877" TEXT="14.2. [MEM-002] El Lavadero Comunal o las Corralas de Vecinos: El Olor a Jabón Casero">
         <font NAME="Calibri" SIZE="11" BOLD="true" />
         </node>
-      <node ID="ID_878" TEXT="14.3. [MEM-003] La Escuela de Barrio o Rural: Pupitres de Madera Dobles y el Tintero">
+      <node ID="ID_878" TEXT="14.3. [MEM-003] La Puerta de Alcalá en Construcción: Cantería y Andamios de Sabatini (1774-1778, Madrid)">
         <font NAME="Calibri" SIZE="11" BOLD="true" />
         </node>
-      <node ID="ID_879" TEXT="14.4. [MEM-004] La Tienda de Ultramarinos o la Vaquería de Barrio: Balanza de Pesas y Granel">
+      <node ID="ID_879" TEXT="14.4. [MEM-004] El Palacio de Cibeles en Construcción: Acero y Cantería de Palacios y Otamendi (1907-1919, Madrid)">
         <font NAME="Calibri" SIZE="11" BOLD="true" />
         </node>
-      <node ID="ID_880" TEXT="14.5. [MEM-005] El Primer Televisor del Barrio o del Bar Social">
+      <node ID="ID_880" TEXT="14.5. [MEM-005] La Gran Vía de Madrid: La Gran Demolición y Apertura del Bulevar (1910-1920)">
         <font NAME="Calibri" SIZE="11" BOLD="true" />
         </node>
-      <node ID="ID_881" TEXT="14.6. [MEM-006] Juegos Tradicionales: La Rayuela, las Chapas de Refresco y la Comba">
+      <node ID="ID_881" TEXT="14.6. [MEM-006] La Catedral de Burgos: Grúas Medievales y Alzamiento de las Agujas Góticas (Siglo XIII y XV)">
         <font NAME="Calibri" SIZE="11" BOLD="true" />
         </node>
-      <node ID="ID_882" TEXT="14.7. [MEM-007] El Campo y los Parques Históricos: De las Eras a la Casa de Campo o el Retiro">
+      <node ID="ID_882" TEXT="14.7. [MEM-007] El Monasterio de El Escorial: Los Ingenios de Herrera y la Sierra de Guadarrama (1563-1584, Madrid)">
         <font NAME="Calibri" SIZE="11" BOLD="true" />
         </node>
-      <node ID="ID_883" TEXT="14.8. [MEM-008] El Seat 600 y los Tranvías: Los Primeros Viajes en Familia">
+      <node ID="ID_883" TEXT="14.8. [MEM-008] El Acueducto de Segovia: El Montaje Romano de Granito a Hueso (Siglo I-II d.C.)">
         <font NAME="Calibri" SIZE="11" BOLD="true" />
         </node>
-      <node ID="ID_884" TEXT="14.9. [MEM-009] La Radio de Válvulas y las Radionovelas de la Tarde">
+      <node ID="ID_884" TEXT="14.9. [MEM-009] El Palacio de Cristal del Retiro: Ensamblaje de Hierro Curvado y Vidrio (1887, Madrid)">
         <font NAME="Calibri" SIZE="11" BOLD="true" />
         </node>
-      <node ID="ID_885" TEXT="14.10. [MEM-010] La Panadería de Barrio y el Pan de Horno de Leña">
+      <node ID="ID_885" TEXT="14.10. [MEM-010] La Gran Marquesina de la Estación de Atocha: Récord de Hierro sin Columnas (1888-1892, Madrid)">
         <font NAME="Calibri" SIZE="11" BOLD="true" />
         </node>
-      <node ID="ID_886" TEXT="14.11. [MEM-011] El Afilador con su Chiflo por las Calles de la Ciudad o del Pueblo">
+      <node ID="ID_886" TEXT="14.11. [MEM-011] El Puente de Vizcaya: El Primer Puente Transbordador del Mundo (1890-1893, Bilbao)">
         <font NAME="Calibri" SIZE="11" BOLD="true" />
         </node>
-      <node ID="ID_887" TEXT="14.12. [MEM-012] El Lechero y las Vaquerías Urbanas de Puerta en Puerta">
+      <node ID="ID_887" TEXT="14.12. [MEM-012] El Teatro Real de Madrid: Tres Décadas de Construcción en la Plaza de Oriente (1818-1850)">
         <font NAME="Calibri" SIZE="11" BOLD="true" />
         </node>
-      <node ID="ID_888" TEXT="14.13. [MEM-013] Las Verbenas Castizas y Fiestas Patronales: El Baile y la Orquesta">
+      <node ID="ID_888" TEXT="14.13. [MEM-013] La Sagrada Familia: El Alzamiento de la Fachada del Nacimiento con Gaudí (1892-1925, Barcelona)">
         <font NAME="Calibri" SIZE="11" BOLD="true" />
         </node>
-      <node ID="ID_889" TEXT="14.14. [MEM-014] El Botijo de Barro Blanco y el Botijo de Balcón para Enfriar el Agua">
+      <node ID="ID_889" TEXT="14.14. [MEM-014] El Viaducto de Segovia: El Gran Viaducto de Hierro sobre el Barranco (1874, Madrid)">
         <font NAME="Calibri" SIZE="11" BOLD="true" />
         </node>
-      <node ID="ID_890" TEXT="14.15. [MEM-015] La Merienda de la Infancia: Pan con Chocolate o Pan con Aceite y Azúcar">
+      <node ID="ID_890" TEXT="14.15. [MEM-015] Los Rascacielos de Plaza de España: Edificio España y Torre de Madrid (1948-1957, Madrid)">
         <font NAME="Calibri" SIZE="11" BOLD="true" />
         </node>
       <node ID="ID_891" TEXT="14.16. [MEM-016] La Bicicleta Clásica de Hierro (BH o GAC) y los Paseos de Tarde">
