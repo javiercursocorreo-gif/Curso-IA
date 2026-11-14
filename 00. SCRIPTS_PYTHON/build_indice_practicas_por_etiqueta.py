@@ -54,6 +54,7 @@ TAG_COLORS = {
     "MOVIL": {"bg": "#1e293b", "text": "#38bdf8", "border": "#0ea5e9", "name": "El Salvavidas del Móvil (Cámara y Voz)"},
     "MEM":   {"bg": "#451a03", "text": "#fdba74", "border": "#d97706", "name": "Cápsula de la Memoria"},
     "MEC":   {"bg": "#3f3f46", "text": "#e4e4e7", "border": "#a1a1aa", "name": "Cómo Funcionan las Cosas (Vídeo 3D)"},
+    "GEM":   {"bg": "#1e3a8a", "text": "#93c5fd", "border": "#4285f4", "name": "Novedades de Gemini y Google IA"},
     "3D":    {"bg": "#881337", "text": "#fda4af", "border": "#f43f5e", "name": "Simuladores 3D y Dinámicas en Vivo"},
     "SIM":   {"bg": "#881337", "text": "#fda4af", "border": "#f43f5e", "name": "Simuladores Interactivos 3D"},
     "GUIA":  {"bg": "#18181b", "text": "#fafafa", "border": "#71717a", "name": "Glosario de Etiquetas y Guía"},

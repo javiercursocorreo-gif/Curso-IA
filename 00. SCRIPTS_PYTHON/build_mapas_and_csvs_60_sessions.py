@@ -35,6 +35,7 @@ GITHUB_BASE_URL = "https://javiercursocorreo-gif.github.io/Curso-IA/"
 
 # Configuración de pasos, colores y columnas
 STEP_CONFIG = {
+    "GEM":   {"color": "#4285f4", "cat": "Novedades de Gemini",             "icon": "✨", "col": 1, "order": -1},
     "COMICS":{"color": "#ec4899", "cat": "Proyecto Cómic & Novela Gráfica", "icon": "📖", "col": 1, "order": 0},
     "CUENT": {"color": "#ec4899", "cat": "Proyecto Cómic & Novela Gráfica", "icon": "📖", "col": 1, "order": 0},
     "EST":   {"color": "#818cf8", "cat": "Estilo de Imagen IA",             "icon": "🎨", "col": 1, "order": 1},
@@ -89,6 +90,8 @@ COLUMNS_CONFIG = [
 def clean_title_from_filename(filename, session_num=1):
     name, _ = os.path.splitext(filename)
     f_up = filename.upper()
+    if 'GEM-003' in f_up:
+        return '4 Grandes Novedades de Gemini y Google IA (Gmail, Buscador y Canvas)'
     if 'NIV-' in f_up or 'NIV_' in f_up:
         m_niv = re.search(r'NIV-(\d+)', f_up)
         if m_niv:
@@ -251,6 +254,8 @@ def generate_columns_html(session_num, session_folder, files):
                 return (2, 5, 1, filename.lower())
         if session_num == 3:
             f_up = filename.upper()
+            if 'GEM-' in f_up or 'GEM_' in f_up:
+                return (1, -1, 1, filename.lower())
             if 'FRAC-060' in f_up and filename.lower().endswith('.mp4'):
                 return (2, 4, 1, filename.lower())
             if 'FRAC-060' in f_up and filename.lower().endswith('.pdf'):
@@ -445,6 +450,27 @@ def generate_columns_html(session_num, session_folder, files):
                         </a>{sim_btn}
                         <a href="{rel_href}" target="_blank" class="btn-launch-interactive" style="margin-top:6px; background:linear-gradient(135deg, #334155, #1e293b); border-color:#64748b;" title="Abrir Ficha Guía y Prompt Semilla (PDF)">
                             📄 Abrir Ficha Guía & Prompt de Gemini (PDF) ↗
+                        </a>
+                    </div>"""
+            elif it.get("code") == "GEM":
+                cards_html += f"""
+                    <div class="file-card file-card-special" style="background: rgba(66, 133, 244, 0.08); border-color: rgba(66, 133, 244, 0.35);">
+                        <a href="{rel_href}" target="_blank" class="file-card-special-top" title="Abrir Ficha Didáctica de Novedades (PDF)">
+                            <div class="file-left">
+                                <span class="file-num">{it["step_num"]}</span>
+                                <span class="file-tag tag-pdf" style="background:#2563eb; color:#fff;">NOVEDADES</span>
+                                <div class="file-details">
+                                    <span class="file-title">{it["title"]}</span>
+                                    <span class="file-desc">Novedades de Gemini • 4 Funciones Clave Explicadas</span>
+                                </div>
+                            </div>
+                            <span class="file-arrow">↗</span>
+                        </a>
+                        <a href="SIMULADOR_NOVEDADES_GEMINI.html" target="_blank" class="btn-launch-interactive" style="background:linear-gradient(135deg, #1d4ed8, #2563eb); border-color:#60a5fa;" title="Abrir App Interactiva de 4 Pestañas">
+                            ✨ Abrir App Interactiva de 4 Pestañas (HTML) ↗
+                        </a>
+                        <a href="{rel_href}" target="_blank" class="btn-launch-interactive" style="margin-top:6px; background:linear-gradient(135deg, #334155, #1e293b); border-color:#64748b;" title="Abrir Ficha Didáctica y Prompts (PDF)">
+                            📄 Abrir Ficha Didáctica y Prompts (PDF) ↗
                         </a>
                     </div>"""
             else:

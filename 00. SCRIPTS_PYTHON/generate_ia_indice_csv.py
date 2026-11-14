@@ -45,6 +45,7 @@ TAG_DEFINITIONS = [
     ("MOVIL", "13. [MOVIL] El Salvavidas del Móvil (Cámara y Voz)","Paso 13: El Salvavidas del Móvil (Cámara y voz con la app de Gemini ante la pantalla)."),
     ("MEM",   "14. [MEM] Cápsula de la Memoria",                  "Paso 14: Cápsula de la Memoria (Fotos de pueblo o barrio con microrrelato para nietos)."),
     ("MEC",   "15. [MEC] Cómo Funcionan las Cosas (Vídeo 3D)",    "Paso 15: Cómo Funcionan las Cosas (Mecánica e Ingeniería en Vídeo 3D de 10 seg con Gemini)."),
+    ("GEM",   "16. [GEM] Novedades de Gemini y Google IA",        "Paso 0: Novedades de Gemini y Google IA (Actualizaciones, nuevas herramientas y funciones de última generación)."),
 ]
 
 def natural_sort_key(s):

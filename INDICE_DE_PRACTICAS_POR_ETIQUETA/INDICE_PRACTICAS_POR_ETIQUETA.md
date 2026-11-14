@@ -10,7 +10,7 @@
 | Etiqueta | Nombre del Área | N.º Prácticas |
 | :--- | :--- | :---: |
 | **`[GUÍA]`** | 00. [GUÍA] Glosario de Etiquetas y Metodología | **1** |
-| **`[TXT]`** | 01. [TXT] Prompts de Comunicación y Texto | **60** |
+| **`[TXT]`** | 01. [TXT] Prompts de Comunicación y Texto | **61** |
 | **`[EST]`** | 02. [EST] Estilos Visuales de Imagen | **61** |
 | **`[PRAC]`** | 03. [PRAC] Talleres Prácticos con Gemini | **55** |
 | **`[FRAC]`** | 04. [FRAC] Fractales en IA (Vídeos y Fichas) | **174** |
@@ -24,7 +24,7 @@
 | **`[MOVIL]`** | 13. [MOVIL] El Salvavidas del Móvil (Cámara y Voz) | **59** |
 | **`[MEM]`** | 14. [MEM] Cápsula de la Memoria | **59** |
 | **`[MEC]`** | 15. [MEC] Cómo Funcionan las Cosas (Vídeo 3D) | **60** |
-| **TOTAL** | **Todas las categorías** | **1164** |
+| **TOTAL** | **Todas las categorías** | **1165** |
 
 ---
 
@@ -36,12 +36,13 @@
 
 ---
 
-## 🏷️ 01. [TXT] Prompts de Comunicación y Texto (60 prácticas)
+## 🏷️ 01. [TXT] Prompts de Comunicación y Texto (61 prácticas)
 
 | Sesión | Título de la Práctica / Ficha | Tipo | Enlace Directo |
 | :---: | :--- | :---: | :---: |
 | `Sesión 01` | TXT - 001 La IA como Consejera de Compras del Hogar (PDF) | **PDF** | [Abrir Archivo](https://javiercursocorreo-gif.github.io/Curso-IA/CLASES/EXPORTACION_FICHAS_CLASSROOM_PDF/100.%20%5BSESSIONS%5D%20TERNAS_LISTAS_PARA_CLASSROOM/01_Sesion/1.%20TXT-001_La%20IA%20como%20Consejera%20de%20Compras%20del%20Hogar.pdf) |
 | `Sesión 02` | TXT - 002 La misma escena descrita en tres tonos o versiones (PDF) | **PDF** | [Abrir Archivo](https://javiercursocorreo-gif.github.io/Curso-IA/CLASES/EXPORTACION_FICHAS_CLASSROOM_PDF/100.%20%5BSESSIONS%5D%20TERNAS_LISTAS_PARA_CLASSROOM/02_Sesion/1.%20TXT-002_La%20misma%20escena%20descrita%20en%20tres%20tonos%20o%20versiones.pdf) |
+| `Sesión 03` | GEM - 003 Novedades Gemini Gmail y Buscador IA (PDF) | **PDF** | [Abrir Archivo](https://javiercursocorreo-gif.github.io/Curso-IA/CLASES/EXPORTACION_FICHAS_CLASSROOM_PDF/100.%20%5BSESSIONS%5D%20TERNAS_LISTAS_PARA_CLASSROOM/03_Sesion/1.%20GEM-003_Novedades_Gemini_Gmail_y_Buscador_IA.pdf) |
 | `Sesión 03` | TXT - 003 Pregúntale a la IA lo que siempre quisiste saber (Curiosidad sin (PDF) | **PDF** | [Abrir Archivo](https://javiercursocorreo-gif.github.io/Curso-IA/CLASES/EXPORTACION_FICHAS_CLASSROOM_PDF/100.%20%5BSESSIONS%5D%20TERNAS_LISTAS_PARA_CLASSROOM/03_Sesion/1.%20TXT-003_Preg%C3%BAntale%20a%20la%20IA%20lo%20que%20siempre%20quisiste%20saber%20%28Curiosidad%20sin%20.pdf) |
 | `Sesión 04` | TXT - 004 Una postal o mensaje emotivo para un nieto o familiar (PDF) | **PDF** | [Abrir Archivo](https://javiercursocorreo-gif.github.io/Curso-IA/CLASES/EXPORTACION_FICHAS_CLASSROOM_PDF/100.%20%5BSESSIONS%5D%20TERNAS_LISTAS_PARA_CLASSROOM/04_Sesion/1.%20TXT-004_Una%20postal%20o%20mensaje%20emotivo%20para%20un%20nieto%20o%20familiar.pdf) |
 | `Sesión 05` | TXT - 005 Asistente Mecánico Visual Testigos Luminosos del Coche (PDF) | **PDF** | [Abrir Archivo](https://javiercursocorreo-gif.github.io/Curso-IA/CLASES/EXPORTACION_FICHAS_CLASSROOM_PDF/100.%20%5BSESSIONS%5D%20TERNAS_LISTAS_PARA_CLASSROOM/05_Sesion/1.%20TXT-005_Asistente%20Mec%C3%A1nico%20Visual_%20Testigos%20Luminosos%20del%20Coche.pdf) |
