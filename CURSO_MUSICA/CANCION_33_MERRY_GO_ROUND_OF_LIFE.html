@@ -454,7 +454,7 @@
             <!-- LÍNEA 1: ESTILO 247 VIENNAWALTZ (128 BPM) + 4 INSTRUMENTOS ORQUESTALES -->
             <div style="display:flex; align-items:center; justify-content:space-between; gap:6px; margin-bottom:5px; flex-wrap:nowrap; overflow-x:auto; -webkit-overflow-scrolling:touch;">
                 <div style="display:flex; align-items:center; gap:5px; flex-shrink:0;">
-                    <button onclick="activarEstilo('247', this)" 
+                    <button class="hud-style-btn active-style" data-style="247" onclick="activarEstilo('247', this)" 
                             style="background:linear-gradient(180deg, #7c3aed 0%, #6d28d9 100%); color:#fff; border:1px solid #c084fc; padding:5px 9px; border-radius:7px; font-weight:800; font-size:0.75rem; cursor:pointer; white-space:nowrap; box-shadow:0 0 10px rgba(192,132,252,0.4);">
                         🥁 247 ViennaWaltz (128)
                     </button>
@@ -496,7 +496,7 @@
             <!-- LÍNEA 2: ESTILO 054 SLOW WALTZ (92 BPM) + 4 INSTRUMENTOS COMPLEMENTARIOS (8 ÚNICOS) -->
             <div style="display:flex; align-items:center; justify-content:space-between; gap:6px; flex-wrap:nowrap; overflow-x:auto; -webkit-overflow-scrolling:touch;">
                 <div style="display:flex; align-items:center; gap:5px; flex-shrink:0;">
-                    <button onclick="activarEstilo('054', this)" 
+                    <button class="hud-style-btn" data-style="054" onclick="activarEstilo('054', this)" 
                             style="background:linear-gradient(180deg, #4338ca 0%, #3730a3 100%); color:#fff; border:1px solid #818cf8; padding:5px 9px; border-radius:7px; font-weight:800; font-size:0.75rem; cursor:pointer; white-space:nowrap;">
                         🥁 054 Slow Waltz (92)
                     </button>
@@ -724,8 +724,9 @@
         el.classList.add('btn-flash-active');
     }
 
-    function abrirPartituraPantallaCompleta(btn = null) {
+    async function abrirPartituraPantallaCompleta(btn = null) {
         if (btn) dispararDestelloBoton(btn);
+        await conectarMIDI();
         const modal = document.getElementById('modal-partitura-fullscreen');
         if (modal) {
             modal.style.display = 'flex';
@@ -752,49 +753,92 @@
     // ==============================================================================
     // MOTOR WEB MIDI KORG EK-50 (TRANSMISIÓN DUAL CANÓNICA BANCO 33 / ESTILO BANCO 32)
     // ==============================================================================
+    let midiAccessInstance = null;
     let midiOutput = null;
+    let conectandoMIDI = false;
+
+    function extraerPuertos(mapOrList) {
+        if (!mapOrList) return [];
+        try {
+            if (typeof mapOrList.values === 'function') return Array.from(mapOrList.values());
+            if (Array.isArray(mapOrList)) return mapOrList;
+            if (typeof mapOrList.forEach === 'function') {
+                const arr = [];
+                mapOrList.forEach(v => arr.push(v));
+                return arr;
+            }
+            return Array.from(mapOrList);
+        } catch(e) {
+            return [];
+        }
+    }
+
+    function obtenerSalidasDisponibles() {
+        if (!midiAccessInstance) return [];
+        return extraerPuertos(midiAccessInstance.outputs);
+    }
+
+    function bindPorts() {
+        if (!midiAccessInstance) return null;
+        const text = document.getElementById("midi-label");
+        const outputs = obtenerSalidasDisponibles();
+        
+        const korg = outputs.find(o => o && o.name && (
+            o.name.toLowerCase().includes('ek-50') || 
+            o.name.toLowerCase().includes('korg') ||
+            o.name.toLowerCase().includes('usb')
+        ));
+
+        if (korg) {
+            midiOutput = korg;
+            if (text) text.innerHTML = `🟢 Conectado: <b>${korg.name}</b>`;
+        } else if (outputs.length > 0) {
+            midiOutput = outputs[0];
+            if (text) text.innerHTML = `🟢 Conectado: <b>${midiOutput.name}</b>`;
+        } else {
+            midiOutput = null;
+            if (text) text.innerHTML = '🟡 Korg no detectado por USB';
+        }
+        return midiOutput;
+    }
 
     async function conectarMIDI() {
+        if (conectandoMIDI) return midiOutput;
+        conectandoMIDI = true;
+        const text = document.getElementById('midi-label');
+
         if (!navigator.requestMIDIAccess) {
-            actualizarLabelMIDI('⚠️ Web MIDI no disponible en este navegador');
-            return;
+            if (text) text.innerText = '🔴 Web MIDI no disponible';
+            conectandoMIDI = false;
+            return null;
         }
 
         try {
-            let midiAccess = await navigator.requestMIDIAccess({ sysex: true }).catch(() => {
-                return navigator.requestMIDIAccess({ sysex: false });
-            });
-
-            const salidas = Array.from(midiAccess.outputs.values());
-            if (salidas.length === 0) {
-                actualizarLabelMIDI('⚠️ Korg EK-50 no detectado (Conecta el cable USB-MIDI)');
-                return;
-            }
-
-            midiOutput = salidas.find(s => s.name && s.name.toLowerCase().includes('korg')) || salidas[0];
-            actualizarLabelMIDI('🟢 ' + (midiOutput.name || 'Korg EK-50 Conectado'));
-
-            // Cargar Estilo 247 ViennaWaltz y 061 The Strings por defecto
-            activarEstilo('247');
-            cargarKeyboardSet('061');
-        } catch (e) {
-            console.error('Error al conectar Web MIDI:', e);
-            actualizarLabelMIDI('❌ Error al acceder a MIDI: ' + e.message);
+            const m = await navigator.requestMIDIAccess({ sysex: true }).catch(() => navigator.requestMIDIAccess({ sysex: false }));
+            midiAccessInstance = m;
+            conectandoMIDI = false;
+            midiAccessInstance.onstatechange = () => bindPorts();
+            return bindPorts();
+        } catch (err) {
+            if (text) text.innerText = '🔴 Error acceso MIDI';
+            conectandoMIDI = false;
+            return null;
         }
     }
 
-    function actualizarLabelMIDI(txt) {
-        const el = document.getElementById('midi-label');
-        if (el) el.innerText = txt;
-    }
-
-    function enviarMidiGlobal(bytes) {
-        if (!midiOutput) return;
-        try {
-            midiOutput.send(bytes);
-        } catch (e) {
-            console.error('Error enviando MIDI:', e);
+    async function enviarMidiGlobal(bytes) {
+        if (!midiOutput && (!midiAccessInstance || obtenerSalidasDisponibles().length === 0)) {
+            await conectarMIDI();
         }
+        if (midiOutput) {
+            try { midiOutput.send(bytes); return true; } catch(e) {}
+        }
+        const outputs = obtenerSalidasDisponibles();
+        let enviado = false;
+        outputs.forEach(port => {
+            try { port.send(bytes); enviado = true; } catch(e) {}
+        });
+        return enviado;
     }
 
     // Regla Canónica de Keyboard Sets: Banco Maestro MSB = 33 en Ch 1 y Ch 16
@@ -811,22 +855,32 @@
         '068': { lsb: 6,  pc: 7, name: '068 Str.&Winds' }
     };
 
-    function cargarKeyboardSet(codigo, btn = null) {
+    async function cargarKeyboardSet(codigo, btn = null) {
         if (btn) dispararDestelloBoton(btn);
+        actualizarSonidoUI(codigo);
         const set = KEYBOARD_SETS[codigo];
-        if (!set || !midiOutput) return;
+        if (!set) return;
+
+        if (!midiOutput && (!midiAccessInstance || obtenerSalidasDisponibles().length === 0)) {
+            await conectarMIDI();
+        }
 
         // Upper 1 (Canal 1 - índice 0)
-        enviarMidiGlobal([0xB0, 0x00, 33]);
-        enviarMidiGlobal([0xB0, 0x20, set.lsb]);
-        enviarMidiGlobal([0xC0, set.pc]);
+        await enviarMidiGlobal([0xB0, 0x00, 33]);
+        await enviarMidiGlobal([0xB0, 0x20, set.lsb]);
+        await enviarMidiGlobal([0xC0, set.pc]);
 
         // Global / Pantalla LCD (Canal 16 - índice 15)
-        enviarMidiGlobal([0xBF, 0x00, 33]);
-        enviarMidiGlobal([0xBF, 0x20, set.lsb]);
-        enviarMidiGlobal([0xCF, set.pc]);
+        await enviarMidiGlobal([0xBF, 0x00, 33]);
+        await enviarMidiGlobal([0xBF, 0x20, set.lsb]);
+        await enviarMidiGlobal([0xCF, set.pc]);
 
-        actualizarSonidoUI(codigo);
+        // Calibración acústica de directo
+        [0, 1, 2, 3].forEach(ch => {
+            enviarMidiGlobal([0xB0 | ch, 0x07, 120]);
+            enviarMidiGlobal([0xB0 | ch, 0x0B, 127]);
+            enviarMidiGlobal([0xB0 | ch, 0x5B, 42]);
+        });
     }
 
     function actualizarSonidoUI(codigo) {
@@ -854,24 +908,50 @@
         '054': { msb: 32, lsb: 3,  pc: 5, tempo: 92,  name: '054 Slow Waltz1' }
     };
 
-    function activarEstilo(idEstilo, btn = null) {
+    async function activarEstilo(idEstilo, btn = null) {
         if (btn) dispararDestelloBoton(btn);
+        actualizarEstilosActivosUI(idEstilo);
         const estilo = ESTILOS_KORG[idEstilo];
-        if (!estilo || !midiOutput) return;
+        if (!estilo) return;
+
+        if (!midiOutput && (!midiAccessInstance || obtenerSalidasDisponibles().length === 0)) {
+            await conectarMIDI();
+        }
 
         // Selección de estilo en Canal 16 (Global)
-        enviarMidiGlobal([0xBF, 0x00, estilo.msb]);
-        enviarMidiGlobal([0xBF, 0x20, estilo.lsb]);
-        enviarMidiGlobal([0xCF, estilo.pc]);
+        await enviarMidiGlobal([0xBF, 0x00, estilo.msb]);
+        await enviarMidiGlobal([0xBF, 0x20, estilo.lsb]);
+        await enviarMidiGlobal([0xCF, estilo.pc]);
 
         // Volumen de acompañamiento (CC7 = 110)
-        enviarMidiGlobal([0xBF, 0x07, 110]);
+        await enviarMidiGlobal([0xBF, 0x07, 110]);
+    }
+
+    function actualizarEstilosActivosUI(idEstilo) {
+        document.querySelectorAll('.hud-style-btn').forEach(b => {
+            const matches = b.getAttribute('data-style') === String(idEstilo);
+            if (matches) {
+                b.classList.add('active-style');
+                b.style.borderColor = '#c084fc';
+                b.style.boxShadow = '0 0 14px rgba(192, 132, 252, 0.7)';
+                b.style.background = 'linear-gradient(180deg, #7c3aed 0%, #6d28d9 100%)';
+                b.style.color = '#ffffff';
+            } else {
+                b.classList.remove('active-style');
+                b.style.borderColor = '#475569';
+                b.style.boxShadow = 'none';
+                b.style.background = '#1e293b';
+                b.style.color = '#cbd5e1';
+            }
+        });
     }
 
     // Reset y Desbloqueo Seguro Korg EK-50
-    function desbloquearKorgEK50(btn = null) {
+    async function desbloquearKorgEK50(btn = null) {
         if (btn) dispararDestelloBoton(btn);
-        if (!midiOutput) return;
+        if (!midiOutput && (!midiAccessInstance || obtenerSalidasDisponibles().length === 0)) {
+            await conectarMIDI();
+        }
 
         try {
             // Panic en los 16 canales
@@ -884,9 +964,10 @@
             }
 
             // Restaurar Estilo 247 ViennaWaltz y 061 The Strings
-            activarEstilo('247');
-            cargarKeyboardSet('061');
-            actualizarLabelMIDI('🟢 Korg Desbloqueado · 247 ViennaWaltz & 061 The Strings Activo');
+            await activarEstilo('247');
+            await cargarKeyboardSet('061');
+            const text = document.getElementById("midi-label");
+            if (text) text.innerHTML = '🟢 Korg Desbloqueado · 247 ViennaWaltz & 061 The Strings';
         } catch(e) {
             console.error('Error al desbloquear Korg:', e);
         }
