@@ -2,10 +2,14 @@
 # -*- coding: utf-8 -*-
 """
 build_pdf_cod_003.py
-Ficha Didáctica Oficial de 1 Página (Letter):
-Simulador Científico 3D Oficial: El Sistema Solar en Tiempo Real (NASA Eyes) [COD-003]
-Estructura científica estricta: Explicación, Controles 360°, Acreditación Oficial (NASA/JPL)
-y 3 Preguntas de Reflexión para dialogar con Gemini en el aula.
+Genera la Ficha Didáctica Oficial de 1 Página (Letter):
+4. COD-003_Taller_Crea_tu_Propio_Simulador_3D_con_Gemini.pdf
+para la Sesión 03 del Curso de IA.
+
+Contenido simplificado y desatendido:
+- Generación y ejecución directa de código en el chat de Gemini.
+- Cero visores externos ni talleres manuales.
+- Copia de respaldo (BKP) oficial garantizada con SIMULADOR_POMPEYA_3D.html.
 """
 
 import os
@@ -14,161 +18,291 @@ import shutil
 
 OUTPUT_DIR = "/Users/externo/Library/Mobile Documents/com~apple~CloudDocs/PERSONAL/CLASES DE TECNOLOGÍA/CURSO-IA/CLASES/EXPORTACION_FICHAS_CLASSROOM_PDF/100. [SESSIONS] TERNAS_LISTAS_PARA_CLASSROOM/03_Sesion"
 PDF_PATH = os.path.join(OUTPUT_DIR, "4. COD-003_Taller_Crea_tu_Propio_Simulador_3D_con_Gemini.pdf")
-ALT_PDF_PATH = os.path.join(OUTPUT_DIR, "4. COD-003_Simulador_Sistema_Solar_NASA_Eyes.pdf")
-LOCAL_BACKUP = "/Users/externo/Library/Mobile Documents/com~apple~CloudDocs/PERSONAL/CLASES DE TECNOLOGÍA/CURSO-IA/SIMULADORES_INTERACTIVOS/02_INDICES_Y_CATALOGOS/03_COD-003_Simulador_Sistema_Solar_3D.pdf"
+LOCAL_BACKUP = "/Users/externo/Library/Mobile Documents/com~apple~CloudDocs/PERSONAL/CLASES DE TECNOLOGÍA/CURSO-IA/SIMULADORES_INTERACTIVOS/02_INDICES_Y_CATALOGOS/03_COD-003_Taller_Simulador_Pompeya_HD.pdf"
 
-def build_cod_003_taller_3d_pdf(output_path=PDF_PATH):
-    dest_path = output_path
-    try:
-        os.makedirs(os.path.dirname(dest_path), exist_ok=True)
-    except Exception:
-        dest_path = LOCAL_BACKUP
-        os.makedirs(os.path.dirname(dest_path), exist_ok=True)
+def escape_pdf_text(text):
+    text = str(text)
+    text = text.replace('\\', '\\\\').replace('(', '\\(').replace(')', '\\)')
+    replacements = {
+        'á': '\xe1', 'é': '\xe9', 'í': '\xed', 'ó': '\xf3', 'ú': '\xfa',
+        'Á': '\xc1', 'É': '\xc9', 'Í': '\xcd', 'Ó': '\xd3', 'Ú': '\xda',
+        'ñ': '\xf1', 'Ñ': '\xd1', 'ü': '\xfc', 'Ü': '\xdc',
+        '«': '<<', '»': '>>', '•': '-', '—': '-', '–': '-',
+        'º': 'o', 'ª': 'a', '¿': '\xbf', '¡': '\xa1',
+        '➔': '->', '→': '->', '’': "'", '‘': "'", '“': '"', '”': '"'
+    }
+    for k, v in replacements.items():
+        text = text.replace(k, v)
+    return text
 
-    from reportlab.lib.pagesizes import letter
-    from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, HRFlowable
-    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-    from reportlab.lib import colors
+def wrap_text(text, max_chars):
+    paragraphs = str(text).split('\n')
+    lines = []
+    for p in paragraphs:
+        p = p.strip()
+        if not p:
+            continue
+        words = p.split(' ')
+        cur = []
+        cur_len = 0
+        for w in words:
+            if not w:
+                continue
+            if cur_len + len(w) + 1 <= max_chars:
+                cur.append(w)
+                cur_len += len(w) + 1
+            else:
+                if cur:
+                    lines.append(' '.join(cur))
+                cur = [w]
+                cur_len = len(w)
+        if cur:
+            lines.append(' '.join(cur))
+    return lines or ['']
 
-    doc = SimpleDocTemplate(
-        dest_path,
-        pagesize=letter,
-        rightMargin=36, leftMargin=36, topMargin=22, bottomMargin=20
-    )
-    styles = getSampleStyleSheet()
+class NativePDFWriter:
+    def __init__(self, page_width=612.0, page_height=792.0):
+        self.w = page_width
+        self.h = page_height
+        self.pages = []
+        self.current_stream = []
 
-    c_primary = colors.HexColor('#0284C7')
-    c_gold = colors.HexColor('#D97706')
-    c_dark = colors.HexColor('#0F172A')
-    c_slate = colors.HexColor('#334155')
+    def start_page(self):
+        self.current_stream = []
 
-    style_header = ParagraphStyle(
-        'HeaderStyle', parent=styles['Normal'],
-        fontName='Helvetica-Bold', fontSize=8.0, leading=9.5,
-        textColor=c_gold, alignment=1, spaceAfter=1
-    )
-    style_subhead = ParagraphStyle(
-        'SubheadStyle', parent=styles['Normal'],
-        fontName='Helvetica-Bold', fontSize=9.5, leading=11.5,
-        textColor=c_dark, alignment=1, spaceAfter=3
-    )
-    style_title = ParagraphStyle(
-        'TitleStyle', parent=styles['Heading1'],
-        fontName='Helvetica-Bold', fontSize=11.5, leading=14.0,
-        textColor=c_dark, spaceAfter=3
-    )
-    style_sec_h = ParagraphStyle(
-        'SecHStyle', parent=styles['Heading2'],
-        fontName='Helvetica-Bold', fontSize=8.8, leading=11.0,
-        textColor=c_primary, spaceBefore=2, spaceAfter=2
-    )
-    style_body = ParagraphStyle(
-        'BodyStyle', parent=styles['BodyText'],
-        fontName='Helvetica', fontSize=8.1, leading=10.6,
-        textColor=c_slate, spaceAfter=2
-    )
-    style_box_text = ParagraphStyle(
-        'BoxTextStyle', parent=styles['Normal'],
-        fontName='Helvetica', fontSize=7.7, leading=10.1,
-        textColor=c_dark
-    )
-    style_q_num = ParagraphStyle(
-        'QNumStyle', parent=styles['Normal'],
-        fontName='Helvetica-Bold', fontSize=7.8, leading=10.2,
-        textColor=c_primary
-    )
+    def end_page(self):
+        self.pages.append(''.join(self.current_stream))
+        self.current_stream = []
 
-    story = []
+    def set_fill_color(self, r, g, b):
+        self.current_stream.append(f'{r:.3f} {g:.3f} {b:.3f} rg\n')
+
+    def set_stroke_color(self, r, g, b):
+        self.current_stream.append(f'{r:.3f} {g:.3f} {b:.3f} RG\n')
+
+    def set_line_width(self, width):
+        self.current_stream.append(f'{width:.2f} w\n')
+
+    def rect(self, x, y, width, height, fill=True, stroke=True):
+        op = 'B' if (fill and stroke) else ('f' if fill else 'S')
+        self.current_stream.append(f'{x:.2f} {y:.2f} {width:.2f} {height:.2f} re {op}\n')
+
+    def line(self, x1, y1, x2, y2):
+        self.current_stream.append(f'{x1:.2f} {y1:.2f} m {x2:.2f} {y2:.2f} l S\n')
+
+    def draw_text(self, x, y, text, font='F1', size=10, r=0, g=0, b=0):
+        self.set_fill_color(r, g, b)
+        escaped = escape_pdf_text(text)
+        self.current_stream.append(f'BT /{font} {size} Tf {x:.2f} {y:.2f} Td ({escaped}) Tj ET\n')
+
+    def write_to_file(self, filename):
+        os.makedirs(os.path.dirname(filename), exist_ok=True)
+        page_obj_indices = []
+        content_obj_indices = []
+        cur_obj_idx = 6
+
+        for _ in self.pages:
+            page_obj_indices.append(cur_obj_idx)
+            cur_obj_idx += 1
+            content_obj_indices.append(cur_obj_idx)
+            cur_obj_idx += 1
+
+        kids_str = ' '.join([f'{idx} 0 R' for idx in page_obj_indices])
+        pages_dict = f'<< /Type /Pages /Kids [{kids_str}] /Count {len(self.pages)} >>'.encode('ascii')
+
+        all_objs = [
+            b'<< /Type /Catalog /Pages 2 0 R >>',
+            pages_dict,
+            b'<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>',
+            b'<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>',
+            b'<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Oblique /Encoding /WinAnsiEncoding >>',
+        ]
+
+        for i, page_stream in enumerate(self.pages):
+            content_idx = content_obj_indices[i]
+            p_dict = f'<< /Type /Page /Parent 2 0 R /MediaBox [0 0 {self.w} {self.h}] /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> /Contents {content_idx} 0 R >>'.encode('ascii')
+            all_objs.append(p_dict)
+            stream_bytes = page_stream.encode('latin-1', errors='replace')
+            c_dict = f'<< /Length {len(stream_bytes)} >>\nstream\n'.encode('ascii') + stream_bytes + b'\nendstream'
+            all_objs.append(c_dict)
+
+        offsets = []
+        curr_offset = 15
+        pdf_parts = [b'%PDF-1.4\n%\xe2\xe3\xcf\xd3\n']
+
+        for i, obj_data in enumerate(all_objs, start=1):
+            offsets.append(curr_offset)
+            header = f'{i} 0 obj\n'.encode('ascii')
+            footer = b'\nendobj\n'
+            chunk = header + obj_data + footer
+            pdf_parts.append(chunk)
+            curr_offset += len(chunk)
+
+        xref_offset = curr_offset
+        xref_parts = [f'xref\n0 {len(all_objs) + 1}\n0000000000 65535 f \n'.encode('ascii')]
+        for off in offsets:
+            xref_parts.append(f'{off:010d} 00000 n \n'.encode('ascii'))
+        xref_bytes = b''.join(xref_parts)
+
+        trailer = f'trailer\n<< /Size {len(all_objs) + 1} /Root 1 0 R >>\nstartxref\n{xref_offset}\n%%EOF\n'.encode('ascii')
+        pdf_parts.append(xref_bytes)
+        pdf_parts.append(trailer)
+
+        with open(filename, 'wb') as f:
+            f.write(b''.join(pdf_parts))
+
+def build_cod_003_pdf(output_path=PDF_PATH):
+    pdf = NativePDFWriter(page_width=612.0, page_height=792.0)
+    pdf.start_page()
 
     # Cabecera Oficial
-    story.append(Paragraph("CURSO DE INTELIGENCIA ARTIFICIAL Y TECNOLOGÍA PARA ADULTOS MAYORES (60+)", style_header))
-    story.append(Paragraph("BLOQUE IV: CIENCIA Y SIMULADORES 3D INTERACTIVOS • EXPLORACIÓN ESPACIAL [COD]", style_subhead))
-    story.append(HRFlowable(width="100%", thickness=1.2, color=c_primary, spaceAfter=4))
+    pdf.set_fill_color(0.97, 0.98, 1.0)
+    pdf.set_stroke_color(0.85, 0.5, 0.1)
+    pdf.set_line_width(1.0)
+    pdf.rect(30, 746, 552, 28, fill=True, stroke=True)
+    pdf.draw_text(42, 755, 'CURSO DE INTELIGENCIA ARTIFICIAL Y TECNOLOGIA PARA ADULTOS MAYORES (60+)', font='F2', size=8.5, r=0.7, g=0.35, b=0.05)
+    pdf.draw_text(410, 755, 'SESION 03 • GUIA DE AULA', font='F2', size=8.0, r=0.2, g=0.3, b=0.4)
 
-    # Título de la Ficha
-    story.append(Paragraph("<b>[COD-003] Simulador 3D Oficial: El Sistema Solar en Tiempo Real (NASA Eyes)</b>", style_title))
+    # Subtitulo y Titulo
+    pdf.draw_text(30, 730, 'BLOQUE IV: CIENCIA Y RECONSTRUCCION CON GEMINI • ARQUEOLOGIA DIGITAL [COD]', font='F2', size=8.8, r=0.75, g=0.38, b=0.05)
+    pdf.draw_text(30, 712, '[COD-003] Reconstruccion Arqueologica de Pompeya con Gemini (Ano 79 d.C.)', font='F2', size=13.0, r=0.06, g=0.09, b=0.16)
 
-    # Sección 1: Explicación Didáctica
-    story.append(Paragraph("🔭 <b>Fenómeno Científico y Observación en Tiempo Real:</b>", style_sec_h))
-    story.append(Paragraph(
-        "Este simulador oficial reproduce las <b>posiciones exactas en tiempo real</b> de los 8 planetas, planetas enanos como Plutón y Ceres, más de 120 lunas y sondas interestelares históricas como Voyager 1 y New Horizons. "
-        "A través del motor oficial <b>NASA Eyes on the Solar System</b>, el alumno contempla la mecánica celeste kepleriana sin simplificaciones: las velocidades orbitales diferenciales (Mercurio a 47 km/s frente a Neptuno a 5,4 km/s), la inclinación de los planos orbitales y la inmensidad del vacío cósmico a escala astronómica.",
-        style_body
-    ))
-    story.append(Spacer(1, 2))
+    # Linea divisoria
+    pdf.set_stroke_color(0.85, 0.5, 0.1)
+    pdf.set_line_width(1.5)
+    pdf.line(30, 703, 582, 703)
 
-    # Sección 2: Controles 360°
-    story.append(Paragraph("🎮 <b>Controles del Visor 3D & Guía de Interacción en el Aula:</b>", style_sec_h))
-    ctrl_data = [
-        [Paragraph("<b>🖱️ Giro y Órbita 360°:</b> Haz clic izquierdo y arrastra en cualquier dirección para rotar la perspectiva tridimensional del Sistema Solar desde cualquier ángulo cenital o eclíptico.", style_box_text)],
-        [Paragraph("<b>🔍 Zoom Continuo:</b> Usa la rueda del ratón para pasar de la vista panorámica del plano solar al detalle minucioso de la atmósfera de Júpiter o los anillos de Saturno.", style_box_text)],
-        [Paragraph("<b>🎯 Enfoque Instantáneo:</b> Haz doble clic sobre cualquier planeta, satélite o nave para fijar la cámara y descender automáticamente hasta su superficie.", style_box_text)],
-        [Paragraph("<b>⏱️ Línea de Tiempo:</b> Puedes acelerar los días o retroceder siglos con la barra temporal inferior de NASA Eyes para comprobar conjunciones pasadas o futuras.", style_box_text)],
+    # Seccion 1: Mision Didactica
+    pdf.draw_text(30, 689, 'MISION DIDACTICA: ARQUEOLOGIA VISUAL EN DIRECTO CON GEMINI (SIN INSTALACIONES)', font='F2', size=9.2, r=0.1, g=0.2, b=0.45)
+    intro_p1 = "En esta sesion pediras a Gemini que cree y ejecute directamente en el chat una reconstruccion interactiva de Pompeya en el ano 79 d.C., comparandola con el estado actual de sus ruinas excavadas tras la erupcion del Vesubio. Sin necesidad de copiar codigo a ningun visor externo: le pides a Gemini el visor y a continuacion le indicas que ejecute el codigo para contemplar los frescos y el peristilo romano en tu pantalla."
+    intro_lines = wrap_text(intro_p1, 120)
+    pdf.draw_text(30, 675, intro_lines[0], font='F1', size=7.8, r=0.18, g=0.24, b=0.3)
+    if len(intro_lines) > 1:
+        pdf.draw_text(30, 663, intro_lines[1], font='F1', size=7.8, r=0.18, g=0.24, b=0.3)
+    if len(intro_lines) > 2:
+        pdf.draw_text(30, 651, intro_lines[2], font='F1', size=7.8, r=0.18, g=0.24, b=0.3)
+
+    # Seccion 2: Los 3 Pasos del Alumno (Cero Complicaciones)
+    pdf.set_fill_color(0.98, 0.99, 1.0)
+    pdf.set_stroke_color(0.18, 0.55, 0.9)
+    pdf.set_line_width(1.0)
+    pdf.rect(30, 482, 552, 160, fill=True, stroke=True)
+
+    pdf.draw_text(42, 626, 'PASO A PASO EN EL AULA: CERO INSTALACIONES Y EJECUCION DIRECTA EN CHAT', font='F2', size=9.0, r=0.1, g=0.35, b=0.75)
+
+    paso1 = "Paso 1 • Abre Gemini y pega el Prompt Maestro: Entra en gemini.google.com con tu cuenta de Google. Copia exactamente el texto del recuadro inferior, pegalo en el chat de Gemini y pulsa el boton Enviar (o tecla Enter)."
+    p1_lines = wrap_text(paso1, 114)
+    pdf.draw_text(42, 608, p1_lines[0], font='F2', size=8.0, r=0.1, g=0.2, b=0.3)
+    pdf.draw_text(42, 596, p1_lines[1], font='F1', size=7.7, r=0.2, g=0.25, b=0.3)
+
+    paso2 = "Paso 2 • Pide a Gemini que ejecute el codigo en pantalla: En cuanto Gemini genere el bloque de programacion, escribele en el mismo chat: \"Ejecuta este codigo y muestramelo directamente en pantalla\". Gemini procesara el codigo y desplegara la reconstruccion interactiva en tu navegador."
+    p2_lines = wrap_text(paso2, 114)
+    pdf.draw_text(42, 574, p2_lines[0], font='F2', size=8.0, r=0.05, g=0.5, b=0.2)
+    pdf.draw_text(42, 562, p2_lines[1], font='F1', size=7.7, r=0.2, g=0.25, b=0.3)
+
+    paso3 = "Paso 3 • Boton de Respaldo Oficial (BKP) si no se visualiza: Si por alguna restriccion de tu navegador o del equipo del aula la imagen no carga, pulsa en el Cuadro de Mando del curso el boton «Ver Tesoro Arqueologico 3D (BKP)». Se abrira de inmediato la version oficial HD sin depender de la conexion."
+    p3_lines = wrap_text(paso3, 114)
+    pdf.draw_text(42, 540, p3_lines[0], font='F2', size=8.0, r=0.8, g=0.4, b=0.05)
+    pdf.draw_text(42, 528, p3_lines[1], font='F1', size=7.7, r=0.2, g=0.25, b=0.3)
+    if len(p3_lines) > 2:
+        pdf.draw_text(42, 516, p3_lines[2], font='F1', size=7.7, r=0.2, g=0.25, b=0.3)
+
+    pdf.draw_text(42, 496, 'Resultado esperado: Comparacion visual entre las ruinas desenterradas de la Domus y su esplendor romano original.', font='F3', size=7.5, r=0.35, g=0.4, b=0.45)
+
+    # Seccion 3: Prompt Maestro para Copiar y Pegar en Gemini
+    pdf.set_fill_color(0.97, 0.98, 0.99)
+    pdf.set_stroke_color(0.7, 0.4, 0.1)
+    pdf.set_line_width(1.0)
+    pdf.rect(30, 362, 552, 110, fill=True, stroke=True)
+
+    pdf.draw_text(42, 458, 'PROMPT MAESTRO PARA COPIAR Y PEGAR EN GEMINI:', font='F2', size=8.8, r=0.7, g=0.35, b=0.05)
+
+    prompt_lines = [
+        "\"Genera el codigo HTML y JavaScript interactivo para crear un visor arqueologico comparativo de las ruinas de Pompeya",
+        "y su reconstruccion fidedigna del ano 79 d.C. con fotografias oficiales de alta resolucion.",
+        "Requisitos:",
+        "1. Muestra una vista comparativa con deslizador central (antes / despues) entre las ruinas excavadas y la Domus romana restaurada.",
+        "2. Incluye explicaciones didacticas de los elementos arquitectonicos: el impluvium, el peristilo porticado y los frescos policromados.",
+        "3. Deja el codigo listo para ejecutar en pantalla con un solo clic.\""
     ]
-    t_ctrl = Table(ctrl_data, colWidths=[letter[0] - 72])
-    t_ctrl.setStyle(TableStyle([
-        ('BACKGROUND', (0,0), (-1,-1), colors.HexColor('#F8FAFC')),
-        ('BOX', (0,0), (-1,-1), 1, colors.HexColor('#94A3B8')),
-        ('TOPPADDING', (0,0), (-1,-1), 2.0),
-        ('BOTTOMPADDING', (0,0), (-1,-1), 2.0),
-        ('LEFTPADDING', (0,0), (-1,-1), 7),
-        ('RIGHTPADDING', (0,0), (-1,-1), 7),
-    ]))
-    story.append(t_ctrl)
-    story.append(Spacer(1, 2))
+    y_pr = 442
+    for pl in prompt_lines:
+        pdf.draw_text(48, y_pr, pl, font='F2' if pl.startswith('"Genera') or pl.startswith('Requisitos') else 'F1', size=7.6, r=0.1, g=0.2, b=0.35)
+        y_pr -= 13
 
-    # Sección 3: Procedencia Oficial
-    story.append(Paragraph("🏛️ <b>Procedencia Institucional y Calidad Científica de los Datos:</b>", style_sec_h))
-    prov_text = (
-        "• <b>Institución Acreditada:</b> Desarrollado por el <b>Jet Propulsion Laboratory (JPL) de la NASA</b> y el <b>California Institute of Technology (Caltech)</b>.<br/>"
-        "• <b>Precisión Telemétrica:</b> Las trayectorias se basan en el sistema matemático de efemérides planetarias <b>DE440</b> de JPL, utilizado por los directores de vuelo de la NASA para la navegación real de misiones interplanetarias. Cero dibujos inventados o mallas ficticias: datos 100% científicos y auditables."
-    )
-    t_prov = Table([[Paragraph(prov_text, style_box_text)]], colWidths=[letter[0] - 72])
-    t_prov.setStyle(TableStyle([
-        ('BACKGROUND', (0,0), (-1,-1), colors.HexColor('#ECFDF5')),
-        ('BOX', (0,0), (-1,-1), 1, colors.HexColor('#10B981')),
-        ('TOPPADDING', (0,0), (-1,-1), 3.0),
-        ('BOTTOMPADDING', (0,0), (-1,-1), 3.0),
-        ('LEFTPADDING', (0,0), (-1,-1), 7),
-        ('RIGHTPADDING', (0,0), (-1,-1), 7),
-    ]))
-    story.append(t_prov)
-    story.append(Spacer(1, 2))
+    # Seccion 4: Dialogo y Preguntas de Reflexion con Gemini en el Aula
+    pdf.set_fill_color(0.96, 0.99, 0.97)
+    pdf.set_stroke_color(0.1, 0.65, 0.4)
+    pdf.set_line_width(1.0)
+    pdf.rect(30, 240, 552, 112, fill=True, stroke=True)
 
-    # Sección 4: Preguntas para Gemini
-    story.append(Paragraph("💬 <b>Guía de Exploración en el Aula & Preguntas para Dialogar con Gemini:</b>", style_sec_h))
-    q_data = [
-        [Paragraph("<b>Pregunta 1 • Velocidades Orbitales:</b> <i>«Gemini, observando el simulador de NASA Eyes veo que Mercurio se mueve rapidísimo alrededor del Sol mientras que Saturno y Urano van muy lentos. ¿Por qué ocurre esto según la tercera ley de Kepler y la gravedad solar?»</i>", style_box_text)],
-        [Paragraph("<b>Pregunta 2 • El Vacío Espacial:</b> <i>«Gemini, cuando alejo el zoom en NASA Eyes los planetas casi desaparecen y solo se ve oscuridad. ¿Por qué es tan difícil viajar entre mundos y qué distancia real separa a la Tierra de Marte en su punto más cercano?»</i>", style_box_text)],
-        [Paragraph("<b>Pregunta 3 • Las Sondas Voyager:</b> <i>«Gemini, pulso en Voyager 1 en el simulador y veo que está lejísimos, fuera del plano de los planetas. ¿Hacia dónde se dirige ahora mismo y qué mensaje lleva grabado en su disco de oro?»</i>", style_box_text)],
-    ]
-    t_q = Table(q_data, colWidths=[letter[0] - 72])
-    t_q.setStyle(TableStyle([
-        ('BACKGROUND', (0,0), (-1,-1), colors.HexColor('#EFF6FF')),
-        ('BOX', (0,0), (-1,-1), 1, colors.HexColor('#3B82F6')),
-        ('TOPPADDING', (0,0), (-1,-1), 2.5),
-        ('BOTTOMPADDING', (0,0), (-1,-1), 2.5),
-        ('LEFTPADDING', (0,0), (-1,-1), 7),
-        ('RIGHTPADDING', (0,0), (-1,-1), 7),
-    ]))
-    story.append(t_q)
+    pdf.draw_text(42, 338, 'PREGUNTAS DE REFLEXION Y DIALOGO CON GEMINI EN EL AULA:', font='F2', size=8.8, r=0.05, g=0.5, b=0.3)
 
-    doc.build(story)
+    q1 = "Pregunta 1 • La Vida en la Domus: \"Gemini, observando la reconstruccion de la casa pompeyana, explicame como era un dia normal de una familia romana acomodada, el papel de los esclavos y que comian en el triclinio.\""
+    q1_lines = wrap_text(q1, 114)
+    pdf.draw_text(42, 320, q1_lines[0], font='F2', size=7.6, r=0.1, g=0.2, b=0.25)
+    pdf.draw_text(42, 308, q1_lines[1], font='F1', size=7.5, r=0.2, g=0.25, b=0.3)
 
-    # Duplicar con nombre alternativo y respaldo local
+    q2 = "Pregunta 2 • El Impluvium y el Agua: \"Gemini, ¿por que el techo del atrio tenia una apertura central (compluvium) y como canalizaban el agua de lluvia hacia la cisterna subterranea para el consumo del hogar?\""
+    q2_lines = wrap_text(q2, 114)
+    pdf.draw_text(42, 290, q2_lines[0], font='F2', size=7.6, r=0.1, g=0.2, b=0.25)
+    pdf.draw_text(42, 278, q2_lines[1], font='F1', size=7.5, r=0.2, g=0.25, b=0.3)
+
+    q3 = "Pregunta 3 • La Erupcion del Vesubio: \"Gemini, ¿por que la ceniza volcanica y el material piroclastico sellaron los frescos con colores tan vivos durante 1.700 anos en vez de destruirlos por completo?\""
+    q3_lines = wrap_text(q3, 114)
+    pdf.draw_text(42, 260, q3_lines[0], font='F2', size=7.6, r=0.1, g=0.2, b=0.25)
+    pdf.draw_text(42, 248, q3_lines[1], font='F1', size=7.5, r=0.2, g=0.25, b=0.3)
+
+    # Seccion 5: Procedencia Cientifica Oficial & Triple Salvaguarda
+    pdf.set_fill_color(0.98, 0.98, 0.99)
+    pdf.set_stroke_color(0.5, 0.5, 0.6)
+    pdf.set_line_width(0.8)
+    pdf.rect(30, 115, 552, 115, fill=True, stroke=True)
+
+    pdf.draw_text(42, 216, 'PROCEDENCIA CIENTIFICA OFICIAL Y METODOLOGIA DIDACTICA GARANTIZADA:', font='F2', size=8.5, r=0.2, g=0.25, b=0.35)
+    fuente1 = "- Fuentes Arqueologicas Acreditadas: Ortofotografias de alta definicion y levantamientos fotogrametricos oficiales del Parco Archeologico di Pompei (Ministero della Cultura de Italia) y proyectos de digitalizacion patrimonial de la UNESCO."
+    f1_lines = wrap_text(fuente1, 114)
+    pdf.draw_text(42, 200, f1_lines[0], font='F1', size=7.5, r=0.2, g=0.25, b=0.3)
+    if len(f1_lines) > 1:
+        pdf.draw_text(42, 189, f1_lines[1], font='F1', size=7.5, r=0.2, g=0.25, b=0.3)
+
+    fuente2 = "- Triple Salvaguarda Pedagogica: El alumno experimenta primero la creacion guiada con Gemini y, simultaneamente, dispone del boton oficial de respaldo (BKP) para que el 100% de la clase complete la experiencia con exito absoluto."
+    f2_lines = wrap_text(fuente2, 114)
+    pdf.draw_text(42, 172, f2_lines[0], font='F1', size=7.5, r=0.2, g=0.25, b=0.3)
+    if len(f2_lines) > 1:
+        pdf.draw_text(42, 161, f2_lines[1], font='F1', size=7.5, r=0.2, g=0.25, b=0.3)
+
+    fuente3 = "- Adaptacion Senior (+60): Sin instalaciones, sin comandos de terminal y sin descargas de software ajeno. Todo funciona a traves de la interfaz limpia del navegador en gemini.google.com y el Cuadro de Mando del aula."
+    f3_lines = wrap_text(fuente3, 114)
+    pdf.draw_text(42, 144, f3_lines[0], font='F1', size=7.5, r=0.2, g=0.25, b=0.3)
+    if len(f3_lines) > 1:
+        pdf.draw_text(42, 133, f3_lines[1], font='F1', size=7.5, r=0.2, g=0.25, b=0.3)
+
+    # Banner inferior BKP
+    pdf.set_fill_color(0.06, 0.09, 0.16)
+    pdf.set_stroke_color(0.9, 0.6, 0.1)
+    pdf.set_line_width(1.2)
+    pdf.rect(30, 45, 552, 60, fill=True, stroke=True)
+
+    pdf.draw_text(42, 88, 'COPIA DE RESPALDO OFICIAL (BKP): SIMULADOR_POMPEYA_3D.HTML', font='F2', size=9.0, r=0.98, g=0.75, b=0.2)
+    pdf.draw_text(42, 73, 'Si por alguna razon tecnica el codigo no se visualiza en tu pantalla de Gemini, pulsa en el Cuadro de Mando del curso:', font='F1', size=7.8, r=0.8, g=0.85, b=0.9)
+    pdf.draw_text(42, 58, '«🏛️ Ver Tesoro Arqueologico 3D (BKP)» para abrir al instante la reconstruccion arqueologica HD garantizada.', font='F2', size=8.0, r=0.98, g=0.75, b=0.2)
+
+    pdf.end_page()
+
+    pdf.write_to_file(output_path)
     try:
-        shutil.copy2(dest_path, ALT_PDF_PATH)
         os.makedirs(os.path.dirname(LOCAL_BACKUP), exist_ok=True)
-        shutil.copy2(dest_path, LOCAL_BACKUP)
+        shutil.copy2(output_path, LOCAL_BACKUP)
     except Exception:
         pass
 
-    print(f"✅ PDF COD-003 generado con éxito en: {dest_path}")
-    return dest_path
+    print(f"✅ PDF COD-003 generado con éxito en: {output_path}")
+    return output_path
 
 if __name__ == '__main__':
     try:
-        build_cod_003_taller_3d_pdf()
+        build_cod_003_pdf()
     except Exception as e:
         print(f"❌ Error al generar PDF COD-003: {e}")
         sys.exit(1)

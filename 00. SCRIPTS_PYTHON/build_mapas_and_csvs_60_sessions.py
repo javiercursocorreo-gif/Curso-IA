@@ -103,7 +103,7 @@ def clean_title_from_filename(filename, session_num=1):
     if 'COD-002' in f_up or ('COD-' in f_up and session_num == 2):
         return 'Taller: Crea tu propio simulador del corazón humano'
     if 'COD-003' in f_up or ('COD-' in f_up and session_num == 3):
-        return 'Taller: Crea tu propio simulador de las ruinas de Pompeya'
+        return 'Reconstrucción Arqueológica de Pompeya con Gemini'
     if 'COD-004' in f_up or ('COD-' in f_up and session_num == 4):
         return 'Taller: Crea tu propio simulador del ojo humano'
     if 'COD-005' in f_up or ('COD-' in f_up and session_num == 5):
@@ -473,8 +473,8 @@ def generate_columns_html(session_num, session_folder, files):
                         </a>"""
                 elif session_num == 3:
                     sim_btn = """
-                        <a href="SIMULADOR_POMPEYA_3D.html" target="_blank" class="btn-launch-interactive" style="margin-top:6px; background:linear-gradient(135deg, #d97706, #b45309); border-color:#fbbf24;" title="Abrir Simulador Arqueológico HD de Pompeya (Ruinas vs. Reconstrucción)">
-                            🏛️ Ver Tesoro Arqueológico 3D ↗
+                        <a href="SIMULADOR_POMPEYA_3D.html" target="_blank" class="btn-launch-interactive" style="background:linear-gradient(135deg, #d97706, #b45309); border-color:#fbbf24;" title="Abrir Tesoro Arqueológico HD de Pompeya (Copia de Respaldo BKP)">
+                            🏛️ Ver Tesoro Arqueológico 3D (BKP) ↗
                         </a>"""
                 elif session_num == 4:
                     sim_btn = """
@@ -491,7 +491,23 @@ def generate_columns_html(session_num, session_folder, files):
                         <a href="SIMULADOR_CEREBRO_3D.html" target="_blank" class="btn-launch-interactive" style="margin-top:6px; background:linear-gradient(135deg, #7c3aed, #6d28d9); border-color:#c084fc;" title="Abrir Simulador 3D del Cerebro Humano y Red Sináptica">
                             🧠 Ver Simulador Cerebro 3D ↗
                         </a>"""
-                cards_html += f"""
+                if session_num == 3:
+                    cards_html += f"""
+                    <div class="file-card file-card-special">
+                        <a href="{rel_href}" target="_blank" class="file-card-special-top" title="Abrir Ficha Guía de Tareas (PDF)">
+                            <div class="file-left">
+                                <span class="file-num">{it["step_num"]}</span>
+                                <span class="file-tag {it["tag_class"]}">{it["tag_text"]}</span>
+                                <div class="file-details">
+                                    <span class="file-title">{it["title"]}</span>
+                                    <span class="file-desc">{it["cat"]} • Ficha de Tareas</span>
+                                </div>
+                            </div>
+                            <span class="file-arrow">↗</span>
+                        </a>{sim_btn}
+                    </div>"""
+                else:
+                    cards_html += f"""
                     <div class="file-card file-card-special">
                         <a href="{rel_href}" target="_blank" class="file-card-special-top" title="Abrir Ficha Guía de Tareas (PDF)">
                             <div class="file-left">
@@ -1208,7 +1224,14 @@ def process_all_sessions():
         session_path = os.path.join(SESSIONS_DIR, session_folder_name)
             
         # Sincronizar probador interactivo personalizado para la sesión (solo botón de esta sesión)
-        if master_probador_content:
+        if session_num == 3:
+            prob_path = os.path.join(session_path, "PROBADOR_CODIGO_IA.html")
+            if os.path.exists(prob_path):
+                try:
+                    os.remove(prob_path)
+                except Exception:
+                    pass
+        elif master_probador_content:
             try:
                 custom_p = generate_custom_probador(session_num, master_probador_content)
                 with open(os.path.join(session_path, "PROBADOR_CODIGO_IA.html"), 'w', encoding='utf-8') as pf:
