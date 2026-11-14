@@ -174,32 +174,33 @@ def build_cod_004_pdf(output_path=PDF_PATH):
     pdf.draw_text(36, 750, 'SESION 04 • FICHA DIDACTICA DE CODIGO CON GEMINI [COD-004]', font='F2', size=8.5, r=0.4, g=0.8, b=1.0)
     pdf.draw_text(36, 730, 'Simulador 3D del Ojo Humano con Gemini (Anatomia y Optica)', font='F2', size=13.0, r=1, g=1, b=1)
 
-    # Seccion 1: Metodologia en 3 Pasos Directos en Gemini
+    # Seccion 1: Metodologia Directa en 2 Pasos
     pdf.set_fill_color(0.92, 0.97, 1.0)
     pdf.set_stroke_color(0.05, 0.55, 0.85)
     pdf.set_line_width(1.0)
-    pdf.rect(30, 575, 552, 130, fill=True, stroke=True)
+    pdf.rect(30, 580, 552, 125, fill=True, stroke=True)
 
-    pdf.draw_text(42, 688, 'METODOLOGIA EN 3 PASOS: GENERACION Y EJECUCION DIRECTA EN GEMINI', font='F2', size=9.5, r=0.03, g=0.3, b=0.6)
+    pdf.draw_text(42, 692, 'METODOLOGIA DIRECTA: GENERACION Y VISUALIZACION EN PANTALLA SIN CODIGO', font='F2', size=9.2, r=0.03, g=0.3, b=0.6)
 
-    p1_title = 'PASO 1 • Copiar el Prompt Maestro en Gemini (gemini.google.com):'
-    p1_desc = 'Accede a Gemini desde tu navegador habitual. Copia integro el recuadro azul inferior y pegalo en la barra de chat de Gemini sin modificar nada.'
-    pdf.draw_text(42, 672, p1_title, font='F2', size=8.0, r=0.05, g=0.4, b=0.7)
-    pdf.draw_text(42, 661, p1_desc, font='F1', size=7.8, r=0.15, g=0.2, b=0.25)
+    p1_title = 'PASO 1 • Copiar el Prompt en Gemini (gemini.google.com):'
+    p1_desc = 'Pega el texto del recuadro inferior en Gemini. El prompt esta calibrado para que Gemini abra y ejecute directamente el simulador ocular interactivo en pantalla (Canvas / Vista previa) en pleno funcionamiento, sin pedirte pasos de codigo.'
+    p1_lines = wrap_text(p1_desc, 114)
+    pdf.draw_text(42, 676, p1_title, font='F2', size=8.0, r=0.05, g=0.4, b=0.7)
+    pdf.draw_text(42, 665, p1_lines[0], font='F1', size=7.8, r=0.15, g=0.2, b=0.25)
+    if len(p1_lines) > 1:
+        pdf.draw_text(42, 655, p1_lines[1], font='F1', size=7.8, r=0.15, g=0.2, b=0.25)
 
-    p2_title = 'PASO 2 • Indicar a Gemini la visualizacion directa en tu pantalla:'
-    p2_desc = 'Cuando Gemini te responda con el bloque de codigo, no tienes que copiarlo ni abrir visores externos. Escribe de inmediato en el chat:'
-    p2_cmd = '«Ejecuta este codigo y muestramelo en pantalla» (o «Run code»). Gemini renderizara el ojo 3D directamente dentro de la conversacion.'
-    pdf.draw_text(42, 646, p2_title, font='F2', size=8.0, r=0.05, g=0.4, b=0.7)
-    pdf.draw_text(42, 635, p2_desc, font='F1', size=7.8, r=0.15, g=0.2, b=0.25)
-    pdf.draw_text(42, 624, p2_cmd, font='F2', size=7.8, r=0.02, g=0.45, b=0.3)
+    p2_title = 'PASO 2 • Experimentar y Dialogar con Gemini en el Aula:'
+    p2_desc = 'Interactua con la linterna medica para ver la reaccion de la pupila, explora el corte anatomico del cristalino y plantea a Gemini las 3 preguntas de reflexion optica de abajo.'
+    pdf.draw_text(42, 638, p2_title, font='F2', size=8.0, r=0.05, g=0.4, b=0.7)
+    pdf.draw_text(42, 627, p2_desc, font='F1', size=7.8, r=0.15, g=0.2, b=0.25)
 
-    p3_title = 'PASO 3 • Copia de Respaldo Garantizada (BKP Oficial en el Mapa):'
-    p3_desc = 'Si por saturacion del servidor o corte de conexion no visualizas el modelo 3D, pulsa en el Cuadro de Mando de la Sesion 04 el boton:'
-    p3_btn = '«👁️ Ver Simulador Ojo Humano 3D (BKP)» para abrir la maqueta oficial garantizada con Three.js de alta definicion.'
-    pdf.draw_text(42, 609, p3_title, font='F2', size=8.0, r=0.7, g=0.25, b=0.05)
-    pdf.draw_text(42, 598, p3_desc, font='F1', size=7.8, r=0.15, g=0.2, b=0.25)
-    pdf.draw_text(42, 587, p3_btn, font='F2', size=7.8, r=0.02, g=0.45, b=0.75)
+    p3_title = 'GARANTIA OFICIAL • Copia de Respaldo Garantizada (BKP Oficial en el Mapa):'
+    p3_desc = 'Si por saturacion o corte de red la IA no visualiza el modelo interactivo, pulsa en el Cuadro de Mando del curso:'
+    p3_btn = '«👁️ Ver Simulador Ojo Humano 3D (BKP)» para abrir al instante la maqueta anatomica oficial garantizada.'
+    pdf.draw_text(42, 610, p3_title, font='F2', size=8.0, r=0.7, g=0.25, b=0.05)
+    pdf.draw_text(42, 599, p3_desc, font='F1', size=7.8, r=0.15, g=0.2, b=0.25)
+    pdf.draw_text(42, 588, p3_btn, font='F2', size=7.8, r=0.02, g=0.45, b=0.75)
 
     # Seccion 2: Prompt Maestro para el Ojo Humano 3D
     pdf.set_fill_color(0.97, 0.99, 1.0)
@@ -217,16 +218,14 @@ def build_cod_004_pdf(output_path=PDF_PATH):
     pdf.rect(40, 370, 532, 155, fill=True, stroke=True)
 
     prompt_lines = [
-        "\"Actua como un experto en oftalmologia, anatomia humana y programacion 3D con Three.js.",
-        "Crea una aplicacion interactiva en un unico archivo HTML autocontenido que represente el Globo Ocular Humano en 3D:",
+        "\"Actua como un experto en oftalmologia, anatomia humana y programacion 3D interactiva.",
+        "Disena y ejecuta directamente en pantalla (en modo vista previa interactiva / Canvas) un simulador visual sobre el Globo Ocular Humano en 3D:",
+        "Muestra directamente el simulador en funcionamiento sin obligarme a revisar el codigo fuente. Requisitos:",
         "1. Modelo 3D con orbita 360 grados: Esclera blanca con vasos sanguineos, cornea transparente e iris realista con textura radial.",
-        "2. Simulador de Reflejo Pupilar (Luz): Control deslizante de iluminacion que dilate la pupila en penumbra (midriasis, 7-8 mm)",
-        "   y la contraiga ante un haz de linterna medica (miosis intensa, 2 mm), mostrando la medida milimetrica en pantalla.",
-        "3. Corte Anatomico Sagital: Boton interactivo para seccionar el ojo y explorar el interior: Cristalino (lente biconvexa de enfoque),",
-        "   humor vitreo transparente, retina posterior fotosensible y canal de salida del Nervio Optico hacia el cerebro.",
+        "2. Simulador de Reflejo Pupilar (Luz): Control de iluminacion que dilate la pupila en penumbra (midriasis) y la contraiga ante linterna (miosis).",
+        "3. Corte Anatomico Sagital: Boton interactivo para seccionar el ojo y explorar el interior: Cristalino (lente biconvexa de enfoque), humor vitreo y retina.",
         "4. Enfoque y Presbicia: Selector para simular la vista cansada y la acomodacion del cristalino al enfocar objetos de cerca y lejos.",
-        "5. Ergonomia Senior (+60): Botones grandes de facil lectura, fondo oscuro de alto contraste y textos medicos explicativos en espanol.",
-        "Genera el codigo HTML completo con Three.js y OrbitControls via CDN, listo para ejecutar directamente en el navegador.\""
+        "5. Ergonomia Senior (+60): Botones grandes, alto contraste, textos medicos explicativos en espanol y ejecucion directa en el chat.\""
     ]
     y_pr = 512
     for pl in prompt_lines:

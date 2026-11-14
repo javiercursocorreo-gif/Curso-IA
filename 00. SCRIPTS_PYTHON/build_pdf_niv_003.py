@@ -186,34 +186,34 @@ def build_niv_003_pdf(output_path=PDF_PATH):
     if len(intro_lines) > 2:
         pdf.draw_text(30, 651, intro_lines[2], font='F1', size=7.8, r=0.18, g=0.24, b=0.3)
 
-    # Seccion 2: Los 3 Pasos del Alumno (Checklist Guiado)
+    # Seccion 2: Metodologia Directa en 2 Pasos
     pdf.set_fill_color(0.98, 0.99, 1.0)
     pdf.set_stroke_color(0.18, 0.55, 0.9)
     pdf.set_line_width(1.0)
     pdf.rect(30, 482, 552, 160, fill=True, stroke=True)
 
-    pdf.draw_text(42, 626, 'PASO A PASO EN EL AULA: CREACION EN GEMINI Y PRACTICA INTERACTIVA', font='F2', size=9.0, r=0.1, g=0.35, b=0.75)
+    pdf.draw_text(42, 626, 'METODOLOGIA DIRECTA: GENERACION Y VISUALIZACION EN PANTALLA SIN CODIGO', font='F2', size=9.0, r=0.1, g=0.35, b=0.75)
 
-    paso1 = "Paso 1 • Copia el Prompt Maestro en Gemini: Entra en gemini.google.com con tu cuenta de Google. Copia el texto exacto del recuadro inferior, pegalo en el chat de Gemini y pulsa Enviar."
+    paso1 = "Paso 1 • Copia el Prompt Maestro en Gemini: Entra en gemini.google.com con tu cuenta de Google. Pega el texto del recuadro inferior. El prompt esta calibrado para que Gemini abra y ejecute directamente la aplicacion en pantalla (Canvas / Vista previa) sin obligarte a revisar codigo."
     p1_lines = wrap_text(paso1, 114)
     pdf.draw_text(42, 608, p1_lines[0], font='F2', size=8.0, r=0.1, g=0.2, b=0.3)
     pdf.draw_text(42, 596, p1_lines[1], font='F1', size=7.7, r=0.2, g=0.25, b=0.3)
 
-    paso2 = "Paso 2 • Dile a Gemini que ejecute la aplicacion en pantalla: Cuando Gemini genere el codigo, escribele en el mismo chat: \"Ejecuta este codigo y muestramelo directamente en pantalla\". Veras nacer la aplicacion con 3 columnas: las 4 noticias a la izquierda, la cesta de 8 alimentos en el centro y tu tique con explicacion en 3 pasos a la derecha."
+    paso2 = "Paso 2 • Experimenta y Dialoga con Gemini en el Aula: Activa las noticias de impacto (sequia, petroleo o barcos) para ver el efecto en la cesta de 8 alimentos, y plantea a Gemini las 3 preguntas de debate economico que tienes abajo para profundizar."
     p2_lines = wrap_text(paso2, 114)
     pdf.draw_text(42, 574, p2_lines[0], font='F2', size=8.0, r=0.05, g=0.5, b=0.2)
     pdf.draw_text(42, 562, p2_lines[1], font='F1', size=7.7, r=0.2, g=0.25, b=0.3)
     if len(p2_lines) > 2:
         pdf.draw_text(42, 550, p2_lines[2], font='F1', size=7.7, r=0.2, g=0.25, b=0.3)
 
-    paso3 = "Paso 3 • Boton de Respaldo Oficial (BKP): Si tu navegador no muestra el interactivo, ve al Cuadro de Mando del curso y pulsa el boton verde «Abrir Radar Geopolitica y Cesta de la Compra (HTML)». Se abrira de inmediato la aplicacion oficial depurada con voz y texto grande."
+    paso3 = "Garantia Oficial • Copia de Respaldo Garantizada (BKP en el Mapa): Si tu navegador no muestra el interactivo, ve al Cuadro de Mando del curso y pulsa «🛡️ Abrir Radar Geopolitica y Cesta de la Compra (HTML)». Se abrira al instante la aplicacion oficial depurada con voz y texto grande."
     p3_lines = wrap_text(paso3, 114)
     pdf.draw_text(42, 532, p3_lines[0], font='F2', size=8.0, r=0.8, g=0.4, b=0.05)
     pdf.draw_text(42, 520, p3_lines[1], font='F1', size=7.7, r=0.2, g=0.25, b=0.3)
     if len(p3_lines) > 2:
         pdf.draw_text(42, 508, p3_lines[2], font='F1', size=7.7, r=0.2, g=0.25, b=0.3)
 
-    pdf.draw_text(42, 492, 'Resultado: Un simulador visual con voz en espanol y letra adaptable para practicar el calculo del gasto mensual.', font='F3', size=7.5, r=0.35, g=0.4, b=0.45)
+    pdf.draw_text(42, 492, 'Resultado: Simulador visual directo con voz en espanol y letra grande para entender la economia domestica.', font='F3', size=7.5, r=0.35, g=0.4, b=0.45)
 
     # Seccion 3: Prompt Maestro para Copiar y Pegar en Gemini
     pdf.set_fill_color(0.97, 0.99, 0.98)
@@ -221,19 +221,16 @@ def build_niv_003_pdf(output_path=PDF_PATH):
     pdf.set_line_width(1.0)
     pdf.rect(30, 342, 552, 130, fill=True, stroke=True)
 
-    pdf.draw_text(42, 458, 'PROMPT MAESTRO PARA COPIAR Y PEGAR EN GEMINI:', font='F2', size=8.8, r=0.04, g=0.45, b=0.25)
+    pdf.draw_text(42, 458, 'PROMPT MAESTRO PARA COPIAR Y PEGAR EN GEMINI (VISUALIZACION DIRECTA):', font='F2', size=8.8, r=0.04, g=0.45, b=0.25)
 
     prompt_lines = [
-        "\"Actua como un pedagogo en economia cotidiana y programador web. Genera en un unico bloque de codigo HTML",
-        "(con Tailwind CSS y JavaScript integrado) una aplicacion interactiva a pantalla completa para mayores (60+),",
-        "titulada «Del Telediario a tu Cesta de la Compra».",
-        "Estructura en 3 columnas paralelas:",
-        "1. Columna 1 (Noticias): 4 tarjetas con interruptor activar/quitar (Petroleo/Gas, Sequia en Espana, Barcos, Buenas lluvias).",
-        "2. Columna 2 (Cesta Basica): 8 alimentos cotidianos (pan 0,85 €, leche 0,95 €, huevos 2,15 €, aceite 5,90 €, arroz 1,25 €,",
-        "   pollo 4,80 €, cafe 2,40 €, tomates 1,80 €) con suma base de 20,10 €. Al pulsar uno se selecciona.",
-        "3. Columna 3 (Tu Tique y Por Que Cambia): Total en caja, diferencia de precio, consejo de ahorro y explicacion del producto",
-        "   seleccionado en 3 pasos: «1. Que pasa lejos», «2. Como nos afecta aqui» y «3. Que vemos en la tienda».",
-        "4. Accesibilidad Senior: Boton para letra grande (18.5px), boton para reiniciar y lectura en voz alta (SpeechSynthesis es-ES).\""
+        "\"Actua como un economista divulgador y pedagogo para adultos mayores (+65).",
+        "Disena y ejecuta directamente en pantalla (en modo vista previa interactiva / Canvas) un simulador visual sobre la Geopolitica del Hogar:",
+        "Muestra directamente el simulador en funcionamiento sin obligarme a revisar el codigo fuente. Requisitos:",
+        "1. Columna 1 (Noticias): 4 interruptores con eventos mundiales: Sequia en el campo, Subida del petroleo, Problemas en barcos e Inflacion general.",
+        "2. Columna 2 (Cesta del Supermercado): 8 alimentos basicos: Aceite de oliva, Leche, Huevos, Pan, Pollo, Tomates, Arroz y Manzanas.",
+        "3. Columna 3 (Tique y Explicacion): Tique de caja con precio base, precio actual y explicacion clara de como la noticia afecta a ese producto.",
+        "4. Accesibilidad Senior: Selector de letra grande (18.5px), lectura por voz sintetizada en espanol (es-ES) y boton de reinicio.\""
     ]
     y_pr = 442
     for pl in prompt_lines:

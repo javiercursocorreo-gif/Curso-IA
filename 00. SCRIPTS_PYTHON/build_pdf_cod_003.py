@@ -173,8 +173,8 @@ def build_cod_003_pdf(output_path=PDF_PATH):
     pdf.line(30, 703, 582, 703)
 
     # Seccion 1: Mision Didactica
-    pdf.draw_text(30, 689, 'MISION DIDACTICA: ARQUEOLOGIA VISUAL EN DIRECTO CON GEMINI (SIN INSTALACIONES)', font='F2', size=9.2, r=0.1, g=0.2, b=0.45)
-    intro_p1 = "En esta sesion pediras a Gemini que cree y ejecute directamente en el chat una reconstruccion interactiva de Pompeya en el ano 79 d.C., comparandola con el estado actual de sus ruinas excavadas tras la erupcion del Vesubio. Sin necesidad de copiar codigo a ningun visor externo: le pides a Gemini el visor y a continuacion le indicas que ejecute el codigo para contemplar los frescos y el peristilo romano en tu pantalla."
+    pdf.draw_text(30, 689, 'MISION DIDACTICA: ARQUEOLOGIA VISUAL DIRECTA EN PANTALLA (CERO CODIGO)', font='F2', size=9.2, r=0.1, g=0.2, b=0.45)
+    intro_p1 = "En esta sesion pediras a Gemini que abra y muestre directamente en pantalla una reconstruccion arqueologica interactiva de Pompeya en el ano 79 d.C., comparandola con sus ruinas actuales desenterradas tras el Vesubio. Sin pantallas de codigo fuente ni instalaciones: Gemini despliega la experiencia visual interactiva directamente en tu pantalla de chat lista para explorar."
     intro_lines = wrap_text(intro_p1, 120)
     pdf.draw_text(30, 675, intro_lines[0], font='F1', size=7.8, r=0.18, g=0.24, b=0.3)
     if len(intro_lines) > 1:
@@ -182,32 +182,32 @@ def build_cod_003_pdf(output_path=PDF_PATH):
     if len(intro_lines) > 2:
         pdf.draw_text(30, 651, intro_lines[2], font='F1', size=7.8, r=0.18, g=0.24, b=0.3)
 
-    # Seccion 2: Los 3 Pasos del Alumno (Cero Complicaciones)
+    # Seccion 2: Metodologia Directa en 2 Pasos
     pdf.set_fill_color(0.98, 0.99, 1.0)
     pdf.set_stroke_color(0.18, 0.55, 0.9)
     pdf.set_line_width(1.0)
     pdf.rect(30, 482, 552, 160, fill=True, stroke=True)
 
-    pdf.draw_text(42, 626, 'PASO A PASO EN EL AULA: CERO INSTALACIONES Y EJECUCION DIRECTA EN CHAT', font='F2', size=9.0, r=0.1, g=0.35, b=0.75)
+    pdf.draw_text(42, 626, 'METODOLOGIA DIRECTA: GENERACION Y VISUALIZACION EN PANTALLA SIN CODIGO', font='F2', size=9.0, r=0.1, g=0.35, b=0.75)
 
-    paso1 = "Paso 1 • Abre Gemini y pega el Prompt Maestro: Entra en gemini.google.com con tu cuenta de Google. Copia exactamente el texto del recuadro inferior, pegalo en el chat de Gemini y pulsa el boton Enviar (o tecla Enter)."
+    paso1 = "Paso 1 • Copiar el Prompt en Gemini (gemini.google.com): Pega el texto del recuadro inferior en Gemini. El prompt esta calibrado para que Gemini abra y ejecute directamente el visor interactivo en pantalla (Canvas / Vista previa) en pleno funcionamiento, sin pedirte pasos de codigo."
     p1_lines = wrap_text(paso1, 114)
     pdf.draw_text(42, 608, p1_lines[0], font='F2', size=8.0, r=0.1, g=0.2, b=0.3)
     pdf.draw_text(42, 596, p1_lines[1], font='F1', size=7.7, r=0.2, g=0.25, b=0.3)
 
-    paso2 = "Paso 2 • Pide a Gemini que ejecute el codigo en pantalla: En cuanto Gemini genere el bloque de programacion, escribele en el mismo chat: \"Ejecuta este codigo y muestramelo directamente en pantalla\". Gemini procesara el codigo y desplegara la reconstruccion interactiva en tu navegador."
+    paso2 = "Paso 2 • Experimentar y Dialogar con Gemini en el Aula: Mueve el deslizador antes/despues entre las ruinas y la reconstruccion de la Domus romana. A continuacion, escribe en el chat de Gemini las preguntas de reflexion historica propuestas abajo para dialogar con la IA."
     p2_lines = wrap_text(paso2, 114)
     pdf.draw_text(42, 574, p2_lines[0], font='F2', size=8.0, r=0.05, g=0.5, b=0.2)
     pdf.draw_text(42, 562, p2_lines[1], font='F1', size=7.7, r=0.2, g=0.25, b=0.3)
 
-    paso3 = "Paso 3 • Boton de Respaldo Oficial (BKP) si no se visualiza: Si por alguna restriccion de tu navegador o del equipo del aula la imagen no carga, pulsa en el Cuadro de Mando del curso el boton «Ver Tesoro Arqueologico 3D (BKP)». Se abrira de inmediato la version oficial HD sin depender de la conexion."
+    paso3 = "Garantia Oficial • Copia de Respaldo Garantizada (BKP en el Mapa): Si por saturacion o corte de red la IA no visualiza el modelo interactivo, pulsa en el Cuadro de Mando del curso «🏛️ Ver Tesoro Arqueologico 3D (BKP)» para abrir al instante la version arqueologica oficial garantizada."
     p3_lines = wrap_text(paso3, 114)
     pdf.draw_text(42, 540, p3_lines[0], font='F2', size=8.0, r=0.8, g=0.4, b=0.05)
     pdf.draw_text(42, 528, p3_lines[1], font='F1', size=7.7, r=0.2, g=0.25, b=0.3)
     if len(p3_lines) > 2:
         pdf.draw_text(42, 516, p3_lines[2], font='F1', size=7.7, r=0.2, g=0.25, b=0.3)
 
-    pdf.draw_text(42, 496, 'Resultado esperado: Comparacion visual entre las ruinas desenterradas de la Domus y su esplendor romano original.', font='F3', size=7.5, r=0.35, g=0.4, b=0.45)
+    pdf.draw_text(42, 496, 'Resultado esperado: Comparacion visual interactiva directa en pantalla sin tocar una sola linea de programacion.', font='F3', size=7.5, r=0.35, g=0.4, b=0.45)
 
     # Seccion 3: Prompt Maestro para Copiar y Pegar en Gemini
     pdf.set_fill_color(0.97, 0.98, 0.99)
@@ -215,14 +215,15 @@ def build_cod_003_pdf(output_path=PDF_PATH):
     pdf.set_line_width(1.0)
     pdf.rect(30, 362, 552, 110, fill=True, stroke=True)
 
-    pdf.draw_text(42, 458, 'PROMPT MAESTRO PARA COPIAR Y PEGAR EN GEMINI:', font='F2', size=8.8, r=0.7, g=0.35, b=0.05)
+    pdf.draw_text(42, 458, 'PROMPT MAESTRO PARA COPIAR Y PEGAR EN GEMINI (VISUALIZACION DIRECTA):', font='F2', size=8.8, r=0.7, g=0.35, b=0.05)
 
     prompt_lines = [
-        "\"Genera el codigo HTML y JavaScript interactivo para crear un visor arqueologico comparativo de las ruinas de Pompeya",
-        "y su reconstruccion fidedigna del ano 79 d.C. con fotografias oficiales de alta resolucion.",
-        "Requisitos:",
+        "\"Actua como un arqueologo digital y experto en el Imperio Romano.",
+        "Disena y ejecuta directamente en pantalla (en modo vista previa interactiva / Canvas) un visor comparativo de Pompeya:",
+        "Muestra directamente el simulador en funcionamiento sin obligarme a revisar el codigo fuente. Requisitos:",
         "1. Muestra una vista comparativa con deslizador central (antes / despues) entre las ruinas excavadas y la Domus romana restaurada.",
         "2. Incluye explicaciones didacticas de los elementos arquitectonicos: el impluvium, el peristilo porticado y los frescos policromados.",
+        "3. Interfaz senior (+60): Diseno amplio, textos en espanol y presentacion directa en pantalla lista para explorar en el chat.\""
         "3. Deja el codigo listo para ejecutar en pantalla con un solo clic.\""
     ]
     y_pr = 442

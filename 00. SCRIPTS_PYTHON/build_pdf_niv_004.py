@@ -178,32 +178,33 @@ def build_niv_004_pdf(output_path=PDF_PATH):
     pdf.draw_text(36, 750, 'SESION 04 • MICRO-APLICACION DE VIDA REAL (+65) [NIV-004]', font='F2', size=8.5, r=0.4, g=0.9, b=0.6)
     pdf.draw_text(36, 730, 'Los 6 Niveles de Aporte de Valor y Sabiduria Senior (+65)', font='F2', size=13.0, r=1, g=1, b=1)
 
-    # Seccion 1: Metodologia en 3 Pasos
+    # Seccion 1: Metodologia Directa en 2 Pasos
     pdf.set_fill_color(0.94, 0.985, 0.95)
     pdf.set_stroke_color(0.1, 0.65, 0.4)
     pdf.set_line_width(1.0)
     pdf.rect(30, 580, 552, 126, fill=True, stroke=True)
 
-    pdf.draw_text(42, 692, 'METODOLOGIA EN 3 PASOS: GENERACION DIRECTA EN GEMINI CON TRIPLE SALVAGUARDA', font='F2', size=9.2, r=0.05, g=0.4, b=0.2)
+    pdf.draw_text(42, 692, 'METODOLOGIA DIRECTA: GENERACION Y VISUALIZACION EN PANTALLA SIN CODIGO', font='F2', size=9.2, r=0.05, g=0.4, b=0.2)
 
     p1_title = 'PASO 1 • Copiar el Prompt Maestro en Gemini (gemini.google.com):'
-    p1_desc = 'Abre Gemini en tu navegador. Copia integro el recuadro inferior y pegalo en la conversacion. Este prompt instruye a Gemini para crear una app completa.'
+    p1_desc = 'Abre Gemini en tu navegador y pega el recuadro inferior. El prompt esta calibrado para que Gemini abra y ejecute directamente la aplicacion interactiva en pantalla (Canvas / Vista previa) sin obligarte a revisar codigo.'
+    p1_lines = wrap_text(p1_desc, 114)
     pdf.draw_text(42, 676, p1_title, font='F2', size=8.0, r=0.05, g=0.5, b=0.3)
-    pdf.draw_text(42, 665, p1_desc, font='F1', size=7.8, r=0.15, g=0.2, b=0.25)
+    pdf.draw_text(42, 665, p1_lines[0], font='F1', size=7.8, r=0.15, g=0.2, b=0.25)
+    if len(p1_lines) > 1:
+        pdf.draw_text(42, 655, p1_lines[1], font='F1', size=7.8, r=0.15, g=0.2, b=0.25)
 
-    p2_title = 'PASO 2 • Indicar a Gemini la visualizacion directa en tu pantalla:'
-    p2_desc = 'Cuando Gemini responda con el codigo, dile inmediatamente en el siguiente mensaje:'
-    p2_cmd = '«Ejecuta este codigo y muestramelo en pantalla» (o «Run code»). Gemini abrira la balanza interactiva dentro del chat.'
-    pdf.draw_text(42, 650, p2_title, font='F2', size=8.0, r=0.05, g=0.5, b=0.3)
-    pdf.draw_text(42, 639, p2_desc, font='F1', size=7.8, r=0.15, g=0.2, b=0.25)
-    pdf.draw_text(42, 628, p2_cmd, font='F2', size=7.8, r=0.05, g=0.45, b=0.2)
+    p2_title = 'PASO 2 • Experimentar y Dialogar con Gemini en el Aula:'
+    p2_desc = 'Mueve los controles de anos y horas, marca tus tareas familiares cotidianas para ver tu escalafon activo y plantea a Gemini las 3 preguntas de sabiduria vital de abajo.'
+    pdf.draw_text(42, 638, p2_title, font='F2', size=8.0, r=0.05, g=0.5, b=0.3)
+    pdf.draw_text(42, 627, p2_desc, font='F1', size=7.8, r=0.15, g=0.2, b=0.25)
 
-    p3_title = 'PASO 3 • Copia de Respaldo Oficial Garantizada (BKP en el Mapa):'
+    p3_title = 'GARANTIA OFICIAL • Copia de Respaldo Oficial Garantizada (BKP en el Mapa):'
     p3_desc = 'Si deseas abrir la aplicacion terminada y depurada con voz y diseno senior, pulsa en el Cuadro de Mando del curso:'
     p3_btn = '«🛡️ Abrir Simulador Sabiduria y Valor Senior (+65) (HTML)» para interactuar de inmediato con tus datos reales.'
-    pdf.draw_text(42, 613, p3_title, font='F2', size=8.0, r=0.7, g=0.3, b=0.05)
-    pdf.draw_text(42, 602, p3_desc, font='F1', size=7.8, r=0.15, g=0.2, b=0.25)
-    pdf.draw_text(42, 591, p3_btn, font='F2', size=7.8, r=0.05, g=0.5, b=0.3)
+    pdf.draw_text(42, 610, p3_title, font='F2', size=8.0, r=0.7, g=0.3, b=0.05)
+    pdf.draw_text(42, 599, p3_desc, font='F1', size=7.8, r=0.15, g=0.2, b=0.25)
+    pdf.draw_text(42, 588, p3_btn, font='F2', size=7.8, r=0.05, g=0.5, b=0.3)
 
     # Seccion 2: Prompt Maestro para Gemini
     pdf.set_fill_color(0.96, 0.99, 0.97)
@@ -222,18 +223,15 @@ def build_niv_004_pdf(output_path=PDF_PATH):
 
     prompt_lines = [
         "\"Actua como un psicologo y orientador de talento senior y envejecimiento activo.",
-        "Quiero crear una aplicacion interactiva en HTML para adultos mayores que valore los 6 niveles de aporte humano a lo largo de la vida:",
+        "Disena y ejecuta directamente en pantalla (en modo vista previa interactiva / Canvas) una aplicacion sobre los 6 niveles de aporte humano:",
+        "Muestra directamente el simulador en funcionamiento sin obligarme a revisar el codigo fuente. Requisitos:",
         "1. Nivel 1: Tareas fisicas y vitalidad cotidiana (fuerza, recados y agilidad manual en el hogar).",
         "2. Nivel 2: Experiencia tecnica y oficio acumulado (recetas tradicionales, bricolaje y soluciones practicas).",
         "3. Nivel 3: Coordinacion operativa (logistica familiar, recogida de nietos, comidas y organizacion sin estres).",
         "4. Nivel 4: Templanza y perspectiva ante crisis (saber que las dificultades pasan y transmitir calma a los hijos).",
         "5. Nivel 5: Mentoria y escucha afectiva (refugio de confianza para desahogarse y recibir guia sin ser juzgados).",
         "6. Nivel 6: Legado etico y cohesion humana (el corazon del hogar: argamasa que une a las generaciones y preserva las raices).",
-        "Requisitos tecnicos de la aplicacion:",
-        "1. Panel de entrada: Sliders de anos de experiencia vital (20 a 65 anos) y dedicacion semanal (2 a 40 h/sem), mas checklist de 4 pilares.",
-        "2. Diagnostico dinamico: Determina el escalon activo, calcula las horas anuales de sabiduria y ofrece un mensaje positivo motivador.",
-        "3. Escalafon interactivo de 6 niveles con colores diferenciados y navegacion directa.",
-        "4. Ergonomia senior: Selector de letra grande (18.5px), lectura en voz alta con sintesis de voz en espanol (es-ES) y boton de reinicio.\""
+        "Controles de entrada con sliders (anos de experiencia y dedicacion semanal), diagnostico dinamico de horas anuales y reconocimiento.\""
     ]
     y_pr = 516
     for pl in prompt_lines:

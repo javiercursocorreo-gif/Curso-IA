@@ -99,9 +99,9 @@ def clean_title_from_filename(filename, session_num=1):
             if 0 <= n_idx < len(NIV_MASTER_ITEMS):
                 return NIV_MASTER_ITEMS[n_idx]['title']
     if 'COD-001' in f_up or ('COD-' in f_up and session_num == 1):
-        return 'Taller: Crea tu propio simulador de los pulmones'
+        return 'Simulador 3D del Aparato Respiratorio con Gemini (Pulmones)'
     if 'COD-002' in f_up or ('COD-' in f_up and session_num == 2):
-        return 'Taller: Crea tu propio simulador del corazón humano'
+        return 'Simulador 3D del Latido Cardíaco con Gemini (Corazón Humano)'
     if 'COD-003' in f_up or ('COD-' in f_up and session_num == 3):
         return 'Reconstrucción Arqueológica de Pompeya con Gemini'
     if 'COD-004' in f_up or ('COD-' in f_up and session_num == 4):
@@ -463,13 +463,13 @@ def generate_columns_html(session_num, session_folder, files):
                 sim_btn = ""
                 if session_num == 1:
                     sim_btn = """
-                        <a href="SIMULADOR_PULMONES_3D.html" target="_blank" class="btn-launch-interactive" style="margin-top:6px; background:linear-gradient(135deg, #0284c7, #0369a1); border-color:#38bdf8;" title="Abrir Simulador 3D del Árbol Bronquial y Pulmones">
-                            🫁 Ver Simulador Pulmones 3D ↗
+                        <a href="SIMULADOR_PULMONES_3D.html" target="_blank" class="btn-launch-interactive" style="background:linear-gradient(135deg, #0284c7, #0369a1); border-color:#38bdf8;" title="Abrir Simulador 3D del Árbol Bronquial y Pulmones (Copia de Respaldo BKP)">
+                            🫁 Ver Simulador Pulmones 3D (BKP) ↗
                         </a>"""
                 elif session_num == 2:
                     sim_btn = """
-                        <a href="SIMULADOR_CORAZON_3D.html" target="_blank" class="btn-launch-interactive" style="margin-top:6px; background:linear-gradient(135deg, #be123c, #9f1239); border-color:#fb7185;" title="Abrir Simulador 3D del Latido Cardíaco Humano">
-                            🫀 Ver Simulador Corazón 3D ↗
+                        <a href="SIMULADOR_CORAZON_3D.html" target="_blank" class="btn-launch-interactive" style="background:linear-gradient(135deg, #be123c, #9f1239); border-color:#fb7185;" title="Abrir Simulador 3D del Latido Cardíaco Humano (Copia de Respaldo BKP)">
+                            🫀 Ver Simulador Corazón 3D (BKP) ↗
                         </a>"""
                 elif session_num == 3:
                     sim_btn = """
@@ -491,7 +491,7 @@ def generate_columns_html(session_num, session_folder, files):
                         <a href="SIMULADOR_CEREBRO_3D.html" target="_blank" class="btn-launch-interactive" style="margin-top:6px; background:linear-gradient(135deg, #7c3aed, #6d28d9); border-color:#c084fc;" title="Abrir Simulador 3D del Cerebro Humano y Red Sináptica">
                             🧠 Ver Simulador Cerebro 3D ↗
                         </a>"""
-                if session_num in (3, 4):
+                if session_num in (1, 2, 3, 4):
                     cards_html += f"""
                     <div class="file-card file-card-special">
                         <a href="{rel_href}" target="_blank" class="file-card-special-top" title="Abrir Ficha Guía de Tareas (PDF)">
@@ -1224,7 +1224,7 @@ def process_all_sessions():
         session_path = os.path.join(SESSIONS_DIR, session_folder_name)
             
         # Sincronizar probador interactivo personalizado para la sesión (solo botón de esta sesión)
-        if session_num in (3, 4):
+        if session_num in (1, 2, 3, 4):
             prob_path = os.path.join(session_path, "PROBADOR_CODIGO_IA.html")
             if os.path.exists(prob_path):
                 try:
