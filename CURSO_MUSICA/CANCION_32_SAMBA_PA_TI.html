@@ -353,14 +353,14 @@
                 <div class="song-author">Carlos Santana · Álbum <i>Abraxas</i> (1970) · Obra Maestra del Latin Rock</div>
             </div>
             <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
-                <button class="btn-reload" onclick="dispararDestelloBoton(this); window.location.href=window.location.pathname+'?v=201&t='+Date.now()" title="Recargar y actualizar versión sin caché">
-                    🔄 Recargar Versión (v201)
+                <button class="btn-reload" onclick="dispararDestelloBoton(this); window.location.href=window.location.pathname+'?v=207&t='+Date.now()" title="Recargar y actualizar versión sin caché">
+                    🔄 Recargar Versión (v207)
                 </button>
                 <a href="https://musescore.com/user/5040121/scores/5209986" target="_blank" rel="noopener" 
                    style="background: #1e293b; color: #fb923c; border: 1px solid #ea580c; padding: 7px 12px; border-radius: 8px; font-size: 0.82rem; font-weight: 700; text-decoration: none; display: inline-flex; align-items: center; gap: 5px;">
                     🎼 Ver en MuseScore ↗
                 </a>
-                <a href="REPERTORIO_KORG_EK50.html?v=201" 
+                <a href="REPERTORIO_KORG_EK50.html?v=207" 
                    style="background: #1e293b; color: #cbd5e1; border: 1px solid #334155; padding: 7px 12px; border-radius: 8px; font-size: 0.82rem; font-weight: 700; text-decoration: none;">
                     ⬅ Repertorio
                 </a>
@@ -525,8 +525,11 @@
                 </button>
 
                 <!-- BOTONES DISCRETOS RECARGA Y RESET EN EL EXTREMO SUPERIOR DERECHO -->
-                <button onclick="dispararDestelloBoton(this); window.location.href=window.location.pathname+'?v=201&t='+Date.now()" title="Recargar versión sin caché" style="margin-left:auto; background:#1e293b; color:#38bdf8; border:1px solid #0284c7; padding:6px 10px; min-height:34px; border-radius:7px; font-weight:800; font-size:0.75rem; cursor:pointer; touch-action:manipulation; flex-shrink:0;">
-                    🔄 v201
+                <button onclick="dispararDestelloBoton(this); window.location.href=window.location.pathname+'?v=207&t='+Date.now()" title="Recargar versión sin caché" style="margin-left:auto; background:#1e293b; color:#38bdf8; border:1px solid #0284c7; padding:6px 10px; min-height:34px; border-radius:7px; font-weight:800; font-size:0.75rem; cursor:pointer; touch-action:manipulation; flex-shrink:0;">
+                    🔄 v207
+                </button>
+                <button onclick="detenerRitmoKorg(this)" title="Detener ritmo de acompañamiento (Stop)" style="background:#7f1d1d; color:#fecaca; border:1px solid #ef4444; padding:6px 10px; min-height:34px; border-radius:7px; font-weight:900; font-size:0.80rem; cursor:pointer; touch-action:manipulation; flex-shrink:0;">
+                    ⏹️ Stop
                 </button>
                 <button onclick="desbloquearKorgEK50(this)" title="Restablecer sonido y controladores MIDI (Pánico)" style="background:#1e293b; color:#f59e0b; border:1px solid #d97706; padding:6px 12px; min-height:34px; border-radius:7px; font-weight:900; font-size:0.80rem; cursor:pointer; touch-action:manipulation; flex-shrink:0;">
                     ⚡ Reset Korg
@@ -794,6 +797,19 @@
             midiOutput = null;
             if (text) text.innerHTML = '🟡 Korg no detectado por USB';
         }
+
+        const inputs = extraerPuertos(midiAccessInstance.inputs);
+        inputs.forEach(input => {
+            if (input) {
+                input.onmidimessage = (msg) => {
+                    const status = msg.data[0] & 0xF0;
+                    if (status === 0x90 || status === 0x80) {
+                        despertarAtenuador();
+                    }
+                };
+            }
+        });
+
         return midiOutput;
     }
 
@@ -858,22 +874,30 @@
             await conectarMIDI();
         }
 
-        // Upper 1 (Canal 1 - índice 0)
-        await enviarMidiGlobal([0xB0, 0x00, 33]);
-        await enviarMidiGlobal([0xB0, 0x20, set.lsb]);
-        await enviarMidiGlobal([0xC0, set.pc]);
+        try {
+            // Upper 1 (Canal 1 - índice 0)
+            await enviarMidiGlobal([0xB0, 0x00, 33]);
+            await enviarMidiGlobal([0xB0, 0x20, set.lsb]);
+            await enviarMidiGlobal([0xC0, set.pc]);
 
-        // Global / Pantalla LCD (Canal 16 - índice 15)
-        await enviarMidiGlobal([0xBF, 0x00, 33]);
-        await enviarMidiGlobal([0xBF, 0x20, set.lsb]);
-        await enviarMidiGlobal([0xCF, set.pc]);
+            await new Promise(r => setTimeout(r, 40));
 
-        // Volumen y reverb calibrados para directo
-        [0, 1, 2, 3].forEach(ch => {
-            enviarMidiGlobal([0xB0 | ch, 0x07, 120]);
-            enviarMidiGlobal([0xB0 | ch, 0x0B, 127]);
-            enviarMidiGlobal([0xB0 | ch, 0x5B, 42]);
-        });
+            // Global / Pantalla LCD (Canal 16 - índice 15)
+            await enviarMidiGlobal([0xBF, 0x00, 33]);
+            await enviarMidiGlobal([0xBF, 0x20, set.lsb]);
+            await enviarMidiGlobal([0xCF, set.pc]);
+
+            await new Promise(r => setTimeout(r, 40));
+
+            // Volumen y reverb calibrados para directo
+            [0, 1, 2, 3].forEach(ch => {
+                enviarMidiGlobal([0xB0 | ch, 0x07, 120]);
+                enviarMidiGlobal([0xB0 | ch, 0x0B, 127]);
+                enviarMidiGlobal([0xB0 | ch, 0x5B, 42]);
+            });
+        } catch(e) {
+            console.error('Error al cargar Keyboard Set:', e);
+        }
     }
 
     function actualizarSonidoUI(codigo) {
@@ -911,13 +935,23 @@
             await conectarMIDI();
         }
 
-        // Enviar selección de estilo en Canal 16 (Global)
-        await enviarMidiGlobal([0xBF, 0x00, est.msb]);
-        await enviarMidiGlobal([0xBF, 0x20, est.lsb]);
-        await enviarMidiGlobal([0xCF, est.pc]);
+        try {
+            // Detener ritmo previo de forma segura antes de cambiar de estilo
+            await enviarMidiGlobal([0xFC]);
+            await new Promise(r => setTimeout(r, 40));
 
-        // Volumen de acompañamiento (CC7 = 112)
-        await enviarMidiGlobal([0xBF, 0x07, 112]);
+            // Enviar selección de estilo en Canal 16 (Global)
+            await enviarMidiGlobal([0xBF, 0x00, est.msb]);
+            await enviarMidiGlobal([0xBF, 0x20, est.lsb]);
+            await enviarMidiGlobal([0xCF, est.pc]);
+
+            await new Promise(r => setTimeout(r, 50));
+
+            // Volumen de acompañamiento (CC7 = 112)
+            await enviarMidiGlobal([0xBF, 0x07, 112]);
+        } catch(e) {
+            console.error('Error al activar estilo:', e);
+        }
     }
 
     function actualizarEstilosActivosUI(codigo) {
@@ -938,7 +972,17 @@
         });
     }
 
-    // Reset y Desbloqueo Seguro Korg EK-50 (Protocolo Anti-Bloqueo 442)
+    async function detenerRitmoKorg(btn = null) {
+        if (btn) dispararDestelloBoton(btn);
+        if (!midiOutput && (!midiAccessInstance || obtenerSalidasDisponibles().length === 0)) {
+            await conectarMIDI();
+        }
+        await enviarMidiGlobal([0xFC]);
+        const text = document.getElementById("midi-label");
+        if (text) text.innerHTML = '⏹️ Ritmo detenido';
+    }
+
+    // Reset y Desbloqueo Seguro Korg EK-50 (Protocolo Anti-Bloqueo Infalible)
     async function desbloquearKorgEK50(btn = null) {
         if (btn) dispararDestelloBoton(btn);
         if (!midiOutput && (!midiAccessInstance || obtenerSalidasDisponibles().length === 0)) {
@@ -946,20 +990,38 @@
         }
 
         try {
-            // Panic en los 16 canales
-            for (let ch = 0; ch < 16; ch++) {
+            // 1. Detener inmediatamente cualquier ritmo o acompañamiento
+            await enviarMidiGlobal([0xFC]);
+
+            // 2. Silenciar y apagar notas en canales de teclado (Upper 1, Upper 2, Upper 3, Lower)
+            [0, 1, 2, 3].forEach(ch => {
                 enviarMidiGlobal([0xB0 | ch, 120, 0]); // All Sound Off
                 enviarMidiGlobal([0xB0 | ch, 123, 0]); // All Notes Off
-                enviarMidiGlobal([0xB0 | ch, 121, 0]); // Reset Controllers
-                enviarMidiGlobal([0xB0 | ch, 7, 120]);  // Vol 120
-                enviarMidiGlobal([0xB0 | ch, 11, 127]); // Expr 127
-            }
+            });
 
-            // Restaurar Estilo 172 y 056 Dist.Guitar
-            await activarEstilo('172');
-            await cargarKeyboardSet('056');
+            // Breve pausa para que el DSP procese el vaciado de buffers
+            await new Promise(r => setTimeout(r, 50));
+
+            // 3. Resetear controladores y restaurar volumen/expresión en canales de teclado
+            [0, 1, 2, 3].forEach(ch => {
+                enviarMidiGlobal([0xB0 | ch, 121, 0]); // Reset Controllers
+                enviarMidiGlobal([0xB0 | ch, 7, 125]);  // Vol 125
+                enviarMidiGlobal([0xB0 | ch, 11, 127]); // Expr 127
+                enviarMidiGlobal([0xB0 | ch, 0x5B, 40]); // Reverb send
+            });
+
+            await new Promise(r => setTimeout(r, 60));
+
+            // 4. Restaurar el Keyboard Set más limpio y seguro: 001 Grand Piano
+            [0, 15].forEach(ch => {
+                enviarMidiGlobal([0xB0 | ch, 0x00, 33]);
+                enviarMidiGlobal([0xB0 | ch, 0x20, 0]);
+                enviarMidiGlobal([0xC0 | ch, 0]);
+            });
+
+            actualizarSonidoUI('001');
             const text = document.getElementById("midi-label");
-            if (text) text.innerHTML = '🟢 Korg Desbloqueado · 172 Latin Rock & 056 Dist.Guitar Activo';
+            if (text) text.innerHTML = '🟢 Korg Desbloqueado · 001 Grand Piano Activo (Listo)';
         } catch(e) {
             console.error('Error al desbloquear Korg:', e);
         }
