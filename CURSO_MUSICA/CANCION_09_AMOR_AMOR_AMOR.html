@@ -1028,110 +1028,65 @@
     }
 
     // ==============================================================================
-    // MOTOR ANTI-APAGADO CONTINUO IPAD (W3C WAKELOCK + CANVAS ACTIVE PULSE STREAM 60 MIN)
+    // GESTIÓN EFICIENTE DE BATERÍA IPAD: WAKELOCK LIMPIO Y PROTEGIDO
     // ==============================================================================
     let wakeLockInstance = null;
-    let videoKeepAwake = null;
     let temporizadorInactividad = null;
-    let canvasPulseTimer = null;
+    const TIEMPO_INACTIVIDAD_MS = 3 * 60 * 1000; // 3 minutos de inactividad para proteger batería
 
-    async function activarModoAtrilSinApagado() {
-        // 1. W3C WakeLock API nativo (Safari iOS / iPadOS 16.4+ sobre HTTPS)
-        if ('wakeLock' in navigator) {
+    function activarModoAtrilSinApagado() {
+        if ('wakeLock' in navigator && !wakeLockInstance) {
             try {
-                if (!wakeLockInstance) {
-                    wakeLockInstance = await navigator.wakeLock.request('screen');
-                    wakeLockInstance.addEventListener('release', () => { wakeLockInstance = null; });
-                }
+                navigator.wakeLock.request('screen').then(lock => {
+                    wakeLockInstance = lock;
+                }).catch(e => {});
             } catch(e) {}
         }
+        reiniciarInactividad();
+    }
 
-        // 2. Fallback de Video Canvas Activo para WebKit en conexiones HTTP locales
-        try {
-            if (!videoKeepAwake) {
-                videoKeepAwake = document.createElement('video');
-                videoKeepAwake.setAttribute('playsinline', '');
-                videoKeepAwake.setAttribute('webkit-playsinline', '');
-                videoKeepAwake.setAttribute('muted', '');
-                videoKeepAwake.setAttribute('loop', '');
-                videoKeepAwake.muted = true;
-                videoKeepAwake.style.position = 'fixed';
-                videoKeepAwake.style.top = '-50px';
-                videoKeepAwake.style.left = '-50px';
-                videoKeepAwake.style.width = '1px';
-                videoKeepAwake.style.height = '1px';
-                videoKeepAwake.style.opacity = '0.001';
-                videoKeepAwake.style.pointerEvents = 'none';
-
-                const canvas = document.createElement('canvas');
-                canvas.width = 16;
-                canvas.height = 16;
-                const ctx = canvas.getContext('2d');
-                ctx.fillStyle = '#000000';
-                ctx.fillRect(0, 0, 16, 16);
-
-                // En WebKit, el stream sólo mantiene la pantalla despierta si se emiten fotogramas continuos
-                if (!canvasPulseTimer) {
-                    let pulse = 0;
-                    canvasPulseTimer = setInterval(() => {
-                        pulse = (pulse + 1) % 2;
-                        ctx.fillStyle = pulse ? '#000000' : '#010101';
-                        ctx.fillRect(0, 0, 16, 16);
-                    }, 1000);
-                }
-
-                if (canvas.captureStream) {
-                    videoKeepAwake.srcObject = canvas.captureStream(2);
-                }
-                document.body.appendChild(videoKeepAwake);
-            }
-            if (videoKeepAwake && videoKeepAwake.paused) {
-                videoKeepAwake.play().catch(() => {});
-            }
-        } catch(e) {}
+    function liberarModoAtril() {
+        if (wakeLockInstance) {
+            try {
+                wakeLockInstance.release();
+                wakeLockInstance = null;
+            } catch(e){}
+        }
+        if (temporizadorInactividad) {
+            clearTimeout(temporizadorInactividad);
+            temporizadorInactividad = null;
+        }
     }
 
     function reiniciarInactividad() {
-        activarModoAtrilSinApagado();
         if (temporizadorInactividad) clearTimeout(temporizadorInactividad);
-        // Mantiene la pantalla encendida durante 60 minutos ininterrumpidos de ensayo
         temporizadorInactividad = setTimeout(() => {
-            if (wakeLockInstance) {
-                try { wakeLockInstance.release(); wakeLockInstance = null; } catch(e){}
-            }
-            if (videoKeepAwake) {
-                try { videoKeepAwake.pause(); } catch(e){}
-            }
-        }, 60 * 60 * 1000);
+            liberarModoAtril();
+        }, TIEMPO_INACTIVIDAD_MS);
     }
 
-    // Listener universal para destello táctil inmediato y despertar activo de pantalla en iPad
+    // Listener universal para destello táctil inmediato en iPad
     document.addEventListener('pointerdown', (e) => {
         const btn = e.target.closest('button, .btn-korg-preset, .btn-tempo, .btn-reload, .btn-musescore, .btn-back');
         if (btn) {
             dispararDestelloBoton(btn);
         }
-        // Despertar/re-asegurar video anti-apagado con el toque físico del dedo
-        if (videoKeepAwake && videoKeepAwake.paused) {
-            videoKeepAwake.play().catch(() => {});
-        }
-        if ('wakeLock' in navigator && !wakeLockInstance) {
-            navigator.wakeLock.request('screen').then(l => wakeLockInstance = l).catch(()=>{});
-        }
     }, { passive: true });
 
-    ['touchstart', 'touchend', 'mousedown', 'click', 'keydown', 'scroll'].forEach(evt => {
+    ['touchstart', 'mousedown', 'keydown', 'scroll'].forEach(evt => {
         document.addEventListener(evt, () => reiniciarInactividad(), { passive: true });
     });
 
     document.addEventListener('visibilitychange', () => {
-        if (document.visibilityState === 'visible') {
-            reiniciarInactividad();
+        if (document.visibilityState !== 'visible') {
+            liberarModoAtril();
         }
     });
 
+    window.addEventListener('beforeunload', liberarModoAtril);
+    window.addEventListener('pagehide', liberarModoAtril);
+
     function iniciarApp() {
-        reiniciarInactividad();
         setTimeout(() => conectarMIDI(), 350);
     }
     if (document.readyState === 'loading') window.addEventListener('DOMContentLoaded', iniciarApp); else iniciarApp();
