@@ -531,7 +531,7 @@ def generate_columns_html(session_num, session_folder, files):
                 sim_btn = ""
                 if sim_file and os.path.exists(os.path.join(session_folder, sim_file)):
                     sim_btn = f"""
-                        <a href="{urllib.parse.quote(sim_file)}" target="_blank" class="btn-launch-interactive" style="background:linear-gradient(135deg, #059669, #047857); border-color:#34d399;" title="Abrir Micro-Aplicación Interactiva Oficial: {sim_title}">
+                        <a href="{urllib.parse.quote(sim_file)}" target="_blank" class="btn-launch-interactive" style="margin-top:6px; background:linear-gradient(135deg, #059669, #047857); border-color:#34d399;" title="Abrir Micro-Aplicación Interactiva Oficial: {sim_title}">
                             🛡️ Abrir {sim_title} (HTML) ↗
                         </a>"""
                 
@@ -547,10 +547,10 @@ def generate_columns_html(session_num, session_folder, files):
                                 </div>
                             </div>
                             <span class="file-arrow">↗</span>
-                        </a>{sim_btn}
-                        <a href="{rel_href}" target="_blank" class="btn-launch-interactive" style="margin-top:6px; background:linear-gradient(135deg, #334155, #1e293b); border-color:#64748b;" title="Abrir Ficha Guía y Prompt Semilla (PDF)">
-                            📄 Abrir Ficha Guía & Prompt de Gemini (PDF) ↗
                         </a>
+                        <a href="{rel_href}" target="_blank" class="btn-launch-interactive" style="background:linear-gradient(135deg, #1e293b, #0f172a); border-color:#64748b;" title="Abrir Ficha Guía y Prompt Maestro de Gemini (PDF)">
+                            📄 Abrir Ficha Guía & Prompt de Gemini (PDF) ↗
+                        </a>{sim_btn}
                     </div>"""
             elif it.get("code") == "GEM":
                 cards_html += f"""

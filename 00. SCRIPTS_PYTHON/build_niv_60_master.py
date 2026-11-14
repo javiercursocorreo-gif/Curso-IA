@@ -89,13 +89,13 @@ def get_niv_items():
 
     add_senior_microapp(
         '[NIV-003]',
-        'Los 5 Niveles del Poder Geopolítico y la Economía del Hogar',
+        'Del Telediario a tu Cesta de la Compra (Geopolítica del Hogar)',
         'Herramienta pedagógica interactiva que conecta los grandes movimientos de la geopolítica mundial (crisis energéticas, aranceles, conflictos y tipos de interés) con su impacto directo en el bolsillo diario del jubilado: la factura de la luz, el precio del gasóleo, la barra de pan y el coste del aceite.',
         'Actúa como un divulgador económico cercano para personas mayores.\nExplícame en 3 puntos cómo diseñar una aplicación interactiva que muestre cómo las noticias de conflictos y mercados mundiales influyen en los precios de la compra diaria en España.',
-        'Crea el código HTML completo con una escala de 5 niveles geopolíticos, simulador de cesta de la compra con deslizadores para luz, carburante y alimentos, y consejos prácticos de ahorro doméstico.',
-        '• 5 Niveles de Impacto: Local, Nacional, Europeo, Geopolítico Global, Cambio de Orden Mundial.\n• Deslizadores de costes del hogar: Factura de electricidad (30-200 €), Calefacción/Gas (20-180 €), Cesta de alimentos (150-600 €).\n• Simulador de escenarios: "Paz y estabilidad", "Subida de petróleo", "Tensión internacional".\n• Métricas: Inflación estimada en el hogar y recomendaciones prácticas de optimización de tarifas.',
+        'Crea el código HTML completo en 3 columnas: 4 noticias del telediario con interruptor, cesta básica de 8 alimentos cotidianos (20,10 € base), y tique de compra con cálculo de diferencia y explicación en 3 pasos (qué pasa lejos, cómo nos afecta aquí y qué vemos en la tienda), con voz y letra grande.',
+        '• 3 Columnas paralelas: 1. Noticias (petróleo, sequía, barcos, buenas lluvias), 2. Cesta básica (8 alimentos), 3. Tique y explicación en 3 pasos.\n• Accesibilidad senior: Botón letra grande (18.5px), botón reiniciar y lectura en voz alta (SpeechSynthesis es-ES).\n• Tique dinámico: Total en caja, diferencia de precio respecto a lo normal y consejos de ahorro según el escenario.',
         'SIMULADOR_RADAR_GEOPOLITICA_SENIORS.html',
-        'Radar Geopolítica y Cesta de la Compra (+65)'
+        'Del Telediario a tu Cesta de la Compra (+65)'
     )
 
     add_senior_microapp(
