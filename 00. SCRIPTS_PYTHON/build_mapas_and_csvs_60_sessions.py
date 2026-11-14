@@ -256,26 +256,18 @@ def generate_columns_html(session_num, session_folder, files):
             f_up = filename.upper()
             if 'GEM-' in f_up or 'GEM_' in f_up:
                 return (1, -1, 1, filename.lower())
-            if 'FRAC-060' in f_up and filename.lower().endswith('.mp4'):
-                return (2, 4, 1, filename.lower())
             if 'FRAC-060' in f_up and filename.lower().endswith('.pdf'):
-                return (2, 4, 2, filename.lower())
-            if 'FRAC-022' in f_up and filename.lower().endswith('.mp4'):
-                return (2, 4, 3, filename.lower())
+                return (2, 4, 1, filename.lower())
             if 'FRAC-022' in f_up and filename.lower().endswith('.pdf'):
-                return (2, 4, 4, filename.lower())
+                return (2, 4, 2, filename.lower())
             if 'COD-003' in f_up or 'TALLER' in f_up or 'COD-' in f_up:
                 return (2, 5, 1, filename.lower())
         if session_num == 4:
             f_up = filename.upper()
-            if 'FRAC-040' in f_up and filename.lower().endswith('.mp4'):
-                return (2, 4, 1, filename.lower())
             if 'FRAC-040' in f_up and filename.lower().endswith('.pdf'):
-                return (2, 4, 2, filename.lower())
-            if 'FRAC-002' in f_up and filename.lower().endswith('.mp4'):
-                return (2, 4, 3, filename.lower())
+                return (2, 4, 1, filename.lower())
             if 'FRAC-002' in f_up and filename.lower().endswith('.pdf'):
-                return (2, 4, 4, filename.lower())
+                return (2, 4, 2, filename.lower())
             if 'COD-004' in f_up or 'TALLER' in f_up or 'COD-' in f_up:
                 return (2, 5, 1, filename.lower())
         return file_sort_key(filename)
@@ -292,6 +284,10 @@ def generate_columns_html(session_num, session_folder, files):
         and not ('FRAC-058' in f and ' 2. ' in f)
         and not (session_num == 1 and 'FRAC-058' in f.upper() and f.lower().endswith('.pdf'))
         and not (session_num == 2 and 'FRAC-055' in f.upper() and f.lower().endswith('.mp4'))
+        and not (session_num == 3 and 'FRAC-060' in f.upper() and f.lower().endswith('.mp4'))
+        and not (session_num == 3 and 'FRAC-022' in f.upper() and f.lower().endswith('.mp4'))
+        and not (session_num == 4 and 'FRAC-040' in f.upper() and f.lower().endswith('.mp4'))
+        and not (session_num == 4 and 'FRAC-002' in f.upper() and f.lower().endswith('.mp4'))
     ]
     
     # Clasificar archivos por columna (1, 2 o 3)
@@ -373,6 +369,94 @@ def generate_columns_html(session_num, session_folder, files):
                         </a>
                         <a href="{mp4_href}" target="_blank" class="btn-launch-interactive" style="margin-top:6px; background:linear-gradient(135deg, #0284c7, #0369a1); border-color:#38bdf8;" title="Reproducir Vídeo La Galería de los Monstruos (MP4)">
                             🎬 Ver Vídeo: La Galería de los Monstruos (MP4) ↗
+                        </a>
+                    </div>"""
+            elif session_num == 3 and 'FRAC-060' in it["filename"].upper():
+                mp4_href = urllib.parse.quote("4. FRAC-060 EL FRACTAL COMESTIBLE (Brécol Romanesco) 🥦🌀.mp4")
+                cards_html += f"""
+                    <div class="file-card file-card-special">
+                        <a href="{rel_href}" target="_blank" class="file-card-special-top" title="Abrir Ficha Didáctica (PDF)">
+                            <div class="file-left">
+                                <span class="file-num">{it["step_num"]}</span>
+                                <span class="file-tag tag-pdf">PACK</span>
+                                <div class="file-details">
+                                    <span class="file-title">El Fractal Comestible (Brécol Romanesco) 🥦🌀</span>
+                                    <span class="file-desc">Fractal de la Naturaleza • Ficha Didáctica + Vídeo HD</span>
+                                </div>
+                            </div>
+                            <span class="file-arrow">↗</span>
+                        </a>
+                        <a href="{rel_href}" target="_blank" class="btn-launch-interactive" style="background:linear-gradient(135deg, #059669, #047857); border-color:#34d399;" title="Abrir Ficha Didáctica (PDF)">
+                            📄 Abrir Ficha Didáctica (PDF) ↗
+                        </a>
+                        <a href="{mp4_href}" target="_blank" class="btn-launch-interactive" style="margin-top:6px; background:linear-gradient(135deg, #0284c7, #0369a1); border-color:#38bdf8;" title="Ver Vídeo HD del Fractal Comestible (MP4)">
+                            🎬 Ver Vídeo: El Fractal Comestible 🥦🌀 (MP4) ↗
+                        </a>
+                    </div>"""
+            elif session_num == 3 and 'FRAC-022' in it["filename"].upper():
+                mp4_href = urllib.parse.quote("4. FRAC-022 EL TRIÁNGULO DE SIERPINSKI 📐.mp4")
+                cards_html += f"""
+                    <div class="file-card file-card-special">
+                        <a href="{rel_href}" target="_blank" class="file-card-special-top" title="Abrir Ficha Didáctica (PDF)">
+                            <div class="file-left">
+                                <span class="file-num">{it["step_num"]}</span>
+                                <span class="file-tag tag-pdf">PACK</span>
+                                <div class="file-details">
+                                    <span class="file-title">El Triángulo de Sierpinski (Autosimilitud y Geometría) 📐</span>
+                                    <span class="file-desc">Fractal Matemático Puro • Ficha Didáctica + Vídeo HD</span>
+                                </div>
+                            </div>
+                            <span class="file-arrow">↗</span>
+                        </a>
+                        <a href="{rel_href}" target="_blank" class="btn-launch-interactive" style="background:linear-gradient(135deg, #7c3aed, #6d28d9); border-color:#c084fc;" title="Abrir Ficha Didáctica (PDF)">
+                            📄 Abrir Ficha Didáctica (PDF) ↗
+                        </a>
+                        <a href="{mp4_href}" target="_blank" class="btn-launch-interactive" style="margin-top:6px; background:linear-gradient(135deg, #0284c7, #0369a1); border-color:#38bdf8;" title="Ver Vídeo HD del Triángulo de Sierpinski (MP4)">
+                            🎬 Ver Vídeo: El Triángulo de Sierpinski 📐 (MP4) ↗
+                        </a>
+                    </div>"""
+            elif session_num == 4 and 'FRAC-040' in it["filename"].upper():
+                mp4_href = urllib.parse.quote("4. FRAC-040 EL MUNDO FIBONACCI (Espiral Áurea en la Naturaleza) 🌻🌀.mp4")
+                cards_html += f"""
+                    <div class="file-card file-card-special">
+                        <a href="{rel_href}" target="_blank" class="file-card-special-top" title="Abrir Ficha Didáctica (PDF)">
+                            <div class="file-left">
+                                <span class="file-num">{it["step_num"]}</span>
+                                <span class="file-tag tag-pdf">PACK</span>
+                                <div class="file-details">
+                                    <span class="file-title">El Mundo Fibonacci (Espiral Áurea en la Naturaleza) 🌻🌀</span>
+                                    <span class="file-desc">Fractal de la Naturaleza • Ficha Didáctica + Vídeo HD</span>
+                                </div>
+                            </div>
+                            <span class="file-arrow">↗</span>
+                        </a>
+                        <a href="{rel_href}" target="_blank" class="btn-launch-interactive" style="background:linear-gradient(135deg, #d97706, #b45309); border-color:#fbbf24;" title="Abrir Ficha Didáctica (PDF)">
+                            📄 Abrir Ficha Didáctica (PDF) ↗
+                        </a>
+                        <a href="{mp4_href}" target="_blank" class="btn-launch-interactive" style="margin-top:6px; background:linear-gradient(135deg, #0284c7, #0369a1); border-color:#38bdf8;" title="Ver Vídeo HD de Mundo Fibonacci (MP4)">
+                            🎬 Ver Vídeo: Mundo Fibonacci 🌻🌀 (MP4) ↗
+                        </a>
+                    </div>"""
+            elif session_num == 4 and 'FRAC-002' in it["filename"].upper():
+                mp4_href = urllib.parse.quote("4. FRAC-002 EL VALLE DE LOS CABALLITOS DE MAR (Mandelbrot) 🌊🐴.mp4")
+                cards_html += f"""
+                    <div class="file-card file-card-special">
+                        <a href="{rel_href}" target="_blank" class="file-card-special-top" title="Abrir Ficha Didáctica (PDF)">
+                            <div class="file-left">
+                                <span class="file-num">{it["step_num"]}</span>
+                                <span class="file-tag tag-pdf">PACK</span>
+                                <div class="file-details">
+                                    <span class="file-title">Mandelbrot (El Valle de los Caballitos de Mar) 🌊🐴</span>
+                                    <span class="file-desc">Fractal Matemático Puro • Ficha Didáctica + Vídeo HD</span>
+                                </div>
+                            </div>
+                            <span class="file-arrow">↗</span>
+                        </a>
+                        <a href="{rel_href}" target="_blank" class="btn-launch-interactive" style="background:linear-gradient(135deg, #be123c, #9f1239); border-color:#fb7185;" title="Abrir Ficha Didáctica (PDF)">
+                            📄 Abrir Ficha Didáctica (PDF) ↗
+                        </a>
+                        <a href="{mp4_href}" target="_blank" class="btn-launch-interactive" style="margin-top:6px; background:linear-gradient(135deg, #0284c7, #0369a1); border-color:#38bdf8;" title="Ver Vídeo HD de Mandelbrot Caballitos (MP4)">
+                            🎬 Ver Vídeo: Mandelbrot Caballitos de Mar 🌊🐴 (MP4) ↗
                         </a>
                     </div>"""
             elif it.get("code") == "COD":
