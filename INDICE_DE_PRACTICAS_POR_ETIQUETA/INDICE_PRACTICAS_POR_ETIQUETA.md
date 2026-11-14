@@ -13,7 +13,7 @@
 | **`[TXT]`** | 01. [TXT] Prompts de Comunicación y Texto | **60** |
 | **`[EST]`** | 02. [EST] Estilos Visuales de Imagen | **61** |
 | **`[PRAC]`** | 03. [PRAC] Talleres Prácticos con Gemini | **55** |
-| **`[FRAC]`** | 04. [FRAC] Fractales en IA (Vídeos y Fichas) | **172** |
+| **`[FRAC]`** | 04. [FRAC] Fractales en IA (Vídeos y Fichas) | **174** |
 | **`[INT]`** | 05. [INT] El Mundo por Dentro y Reconstrucción | **62** |
 | **`[FUT]`** | 06. [FUT] Línea de Tiempo del Futuro (2030+) | **42** |
 | **`[NAT]`** | 07. [NAT] Naturaleza Fascinante y Biodiversidad | **64** |
@@ -24,7 +24,7 @@
 | **`[MOVIL]`** | 13. [MOVIL] El Salvavidas del Móvil (Cámara y Voz) | **59** |
 | **`[MEM]`** | 14. [MEM] Cápsula de la Memoria | **59** |
 | **`[MEC]`** | 15. [MEC] Cómo Funcionan las Cosas (Vídeo 3D) | **60** |
-| **TOTAL** | **Todas las categorías** | **1162** |
+| **TOTAL** | **Todas las categorías** | **1164** |
 
 ---
 
@@ -233,7 +233,7 @@
 
 ---
 
-## 🏷️ 04. [FRAC] Fractales en IA (Vídeos y Fichas) (172 prácticas)
+## 🏷️ 04. [FRAC] Fractales en IA (Vídeos y Fichas) (174 prácticas)
 
 | Sesión | Título de la Práctica / Ficha | Tipo | Enlace Directo |
 | :---: | :--- | :---: | :---: |
@@ -256,8 +256,10 @@
 | `Sesión 03` | FRAC - 060 EL FRACTAL COMESTIBLE (Brécol Romanesco) 🥦🌀 (MP4) | **MP4** | [Abrir Archivo](https://javiercursocorreo-gif.github.io/Curso-IA/CLASES/EXPORTACION_FICHAS_CLASSROOM_PDF/100.%20%5BSESSIONS%5D%20TERNAS_LISTAS_PARA_CLASSROOM/03_Sesion/4.%20FRAC-060%20EL%20FRACTAL%20COMESTIBLE%20%28Br%C3%A9col%20Romanesco%29%20%F0%9F%A5%A6%F0%9F%8C%80.mp4) |
 | `Sesión 03` | FRAC - 060 El Fractal Comestible (Brócoli Romanesco y Coliflor) (PDF) | **PDF** | [Abrir Archivo](https://javiercursocorreo-gif.github.io/Curso-IA/CLASES/EXPORTACION_FICHAS_CLASSROOM_PDF/100.%20%5BSESSIONS%5D%20TERNAS_LISTAS_PARA_CLASSROOM/03_Sesion/4.%20FRAC-060%20El%20Fractal%20Comestible%20%28Br%C3%B3coli%20Romanesco%20y%20Coliflor%29.pdf) |
 | `Sesión 04` | COD - 004 Taller Crea tu Propio Simulador 3D con Gemini (PDF) | **PDF** | [Abrir Archivo](https://javiercursocorreo-gif.github.io/Curso-IA/CLASES/EXPORTACION_FICHAS_CLASSROOM_PDF/100.%20%5BSESSIONS%5D%20TERNAS_LISTAS_PARA_CLASSROOM/04_Sesion/4.%20COD-004_Taller_Crea_tu_Propio_Simulador_3D_con_Gemini.pdf) |
-| `Sesión 04` | FRAC - 002 Mandelbrot ValleDeLosCaballitos (MP4) | **MP4** | [Abrir Archivo](https://javiercursocorreo-gif.github.io/Curso-IA/CLASES/EXPORTACION_FICHAS_CLASSROOM_PDF/100.%20%5BSESSIONS%5D%20TERNAS_LISTAS_PARA_CLASSROOM/04_Sesion/4.%20FRAC-002%20Mandelbrot_ValleDeLosCaballitos.mp4) |
-| `Sesión 04` | FRAC - 002 Mandelbrot ValleDeLosCaballitos (PDF) | **PDF** | [Abrir Archivo](https://javiercursocorreo-gif.github.io/Curso-IA/CLASES/EXPORTACION_FICHAS_CLASSROOM_PDF/100.%20%5BSESSIONS%5D%20TERNAS_LISTAS_PARA_CLASSROOM/04_Sesion/4.%20FRAC-002%20Mandelbrot_ValleDeLosCaballitos.pdf) |
+| `Sesión 04` | FRAC - 002 EL VALLE DE LOS CABALLITOS DE MAR (Mandelbrot) 🌊🐴 (MP4) | **MP4** | [Abrir Archivo](https://javiercursocorreo-gif.github.io/Curso-IA/CLASES/EXPORTACION_FICHAS_CLASSROOM_PDF/100.%20%5BSESSIONS%5D%20TERNAS_LISTAS_PARA_CLASSROOM/04_Sesion/4.%20FRAC-002%20EL%20VALLE%20DE%20LOS%20CABALLITOS%20DE%20MAR%20%28Mandelbrot%29%20%F0%9F%8C%8A%F0%9F%90%B4.mp4) |
+| `Sesión 04` | FRAC - 002 Mandelbrot (El Valle de los Caballitos de Mar) (PDF) | **PDF** | [Abrir Archivo](https://javiercursocorreo-gif.github.io/Curso-IA/CLASES/EXPORTACION_FICHAS_CLASSROOM_PDF/100.%20%5BSESSIONS%5D%20TERNAS_LISTAS_PARA_CLASSROOM/04_Sesion/4.%20FRAC-002%20Mandelbrot%20%28El%20Valle%20de%20los%20Caballitos%20de%20Mar%29.pdf) |
+| `Sesión 04` | FRAC - 040 EL MUNDO FIBONACCI (Espiral Áurea en la Naturaleza) 🌻🌀 (MP4) | **MP4** | [Abrir Archivo](https://javiercursocorreo-gif.github.io/Curso-IA/CLASES/EXPORTACION_FICHAS_CLASSROOM_PDF/100.%20%5BSESSIONS%5D%20TERNAS_LISTAS_PARA_CLASSROOM/04_Sesion/4.%20FRAC-040%20EL%20MUNDO%20FIBONACCI%20%28Espiral%20%C3%81urea%20en%20la%20Naturaleza%29%20%F0%9F%8C%BB%F0%9F%8C%80.mp4) |
+| `Sesión 04` | FRAC - 040 El Mundo Fibonacci (Espiral Áurea y Naturaleza) (PDF) | **PDF** | [Abrir Archivo](https://javiercursocorreo-gif.github.io/Curso-IA/CLASES/EXPORTACION_FICHAS_CLASSROOM_PDF/100.%20%5BSESSIONS%5D%20TERNAS_LISTAS_PARA_CLASSROOM/04_Sesion/4.%20FRAC-040%20El%20Mundo%20Fibonacci%20%28Espiral%20%C3%81urea%20y%20Naturaleza%29.pdf) |
 | `Sesión 05` | COD - 005 Taller Crea tu Propio Simulador 3D con Gemini (PDF) | **PDF** | [Abrir Archivo](https://javiercursocorreo-gif.github.io/Curso-IA/CLASES/EXPORTACION_FICHAS_CLASSROOM_PDF/100.%20%5BSESSIONS%5D%20TERNAS_LISTAS_PARA_CLASSROOM/05_Sesion/4.%20COD-005_Taller_Crea_tu_Propio_Simulador_3D_con_Gemini.pdf) |
 | `Sesión 05` | FRAC - 063 LA MÚSICA QUE GUSTA AL CEREBRO (Ruido Rosa) 🎵🏔️ (MP4) | **MP4** | [Abrir Archivo](https://javiercursocorreo-gif.github.io/Curso-IA/CLASES/EXPORTACION_FICHAS_CLASSROOM_PDF/100.%20%5BSESSIONS%5D%20TERNAS_LISTAS_PARA_CLASSROOM/05_Sesion/4.%20FRAC-063%20LA%20M%C3%9ASICA%20QUE%20GUSTA%20AL%20CEREBRO%20%28Ruido%20Rosa%29%20%F0%9F%8E%B5%F0%9F%8F%94%EF%B8%8F.mp4) |
 | `Sesión 05` | FRAC - 063 LA MÚSICA QUE GUSTA AL CEREBRO (Ruido Rosa) 🎵🏔️ (PDF) | **PDF** | [Abrir Archivo](https://javiercursocorreo-gif.github.io/Curso-IA/CLASES/EXPORTACION_FICHAS_CLASSROOM_PDF/100.%20%5BSESSIONS%5D%20TERNAS_LISTAS_PARA_CLASSROOM/05_Sesion/4.%20FRAC-063%20LA%20M%C3%9ASICA%20QUE%20GUSTA%20AL%20CEREBRO%20%28Ruido%20Rosa%29%20%F0%9F%8E%B5%F0%9F%8F%94%EF%B8%8F.pdf) |

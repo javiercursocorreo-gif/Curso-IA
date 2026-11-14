@@ -249,6 +249,30 @@ def generate_columns_html(session_num, session_folder, files):
                 return (2, 4, 6, filename.lower())
             if 'COD-002' in f_up or 'TALLER' in f_up or 'COD-' in f_up:
                 return (2, 5, 1, filename.lower())
+        if session_num == 3:
+            f_up = filename.upper()
+            if 'FRAC-060' in f_up and filename.lower().endswith('.mp4'):
+                return (2, 4, 1, filename.lower())
+            if 'FRAC-060' in f_up and filename.lower().endswith('.pdf'):
+                return (2, 4, 2, filename.lower())
+            if 'FRAC-022' in f_up and filename.lower().endswith('.mp4'):
+                return (2, 4, 3, filename.lower())
+            if 'FRAC-022' in f_up and filename.lower().endswith('.pdf'):
+                return (2, 4, 4, filename.lower())
+            if 'COD-003' in f_up or 'TALLER' in f_up or 'COD-' in f_up:
+                return (2, 5, 1, filename.lower())
+        if session_num == 4:
+            f_up = filename.upper()
+            if 'FRAC-040' in f_up and filename.lower().endswith('.mp4'):
+                return (2, 4, 1, filename.lower())
+            if 'FRAC-040' in f_up and filename.lower().endswith('.pdf'):
+                return (2, 4, 2, filename.lower())
+            if 'FRAC-002' in f_up and filename.lower().endswith('.mp4'):
+                return (2, 4, 3, filename.lower())
+            if 'FRAC-002' in f_up and filename.lower().endswith('.pdf'):
+                return (2, 4, 4, filename.lower())
+            if 'COD-004' in f_up or 'TALLER' in f_up or 'COD-' in f_up:
+                return (2, 5, 1, filename.lower())
         return file_sort_key(filename)
 
     # Filtrar archivos reales de contenido (ignorando duplicados de sincronización de iCloud ' 2.pdf', modelos .glb y assets auxiliares)
