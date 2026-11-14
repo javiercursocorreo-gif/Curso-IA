@@ -386,11 +386,11 @@ def generate_columns_html(session_num, session_folder, files):
                             </div>
                             <span class="file-arrow">↗</span>
                         </a>
-                        <a href="{rel_href}" target="_blank" class="btn-launch-interactive" style="background:linear-gradient(135deg, #059669, #047857); border-color:#34d399;" title="Abrir Ficha Didáctica (PDF)">
-                            📄 Abrir Ficha Didáctica (PDF) ↗
-                        </a>
-                        <a href="{mp4_href}" target="_blank" class="btn-launch-interactive" style="margin-top:6px; background:linear-gradient(135deg, #0284c7, #0369a1); border-color:#38bdf8;" title="Ver Vídeo HD del Fractal Comestible (MP4)">
+                        <a href="{mp4_href}" target="_blank" class="btn-launch-interactive" style="background:linear-gradient(135deg, #0284c7, #0369a1); border-color:#38bdf8;" title="Ver Vídeo HD del Fractal Comestible (MP4)">
                             🎬 Ver Vídeo: El Fractal Comestible 🥦🌀 (MP4) ↗
+                        </a>
+                        <a href="{rel_href}" target="_blank" class="btn-launch-interactive" style="margin-top:6px; background:linear-gradient(135deg, #059669, #047857); border-color:#34d399;" title="Abrir Ficha Didáctica (PDF)">
+                            📄 Abrir Ficha Didáctica (PDF) ↗
                         </a>
                     </div>"""
             elif session_num == 3 and 'FRAC-022' in it["filename"].upper():
@@ -408,11 +408,11 @@ def generate_columns_html(session_num, session_folder, files):
                             </div>
                             <span class="file-arrow">↗</span>
                         </a>
-                        <a href="{rel_href}" target="_blank" class="btn-launch-interactive" style="background:linear-gradient(135deg, #7c3aed, #6d28d9); border-color:#c084fc;" title="Abrir Ficha Didáctica (PDF)">
-                            📄 Abrir Ficha Didáctica (PDF) ↗
-                        </a>
-                        <a href="{mp4_href}" target="_blank" class="btn-launch-interactive" style="margin-top:6px; background:linear-gradient(135deg, #0284c7, #0369a1); border-color:#38bdf8;" title="Ver Vídeo HD del Triángulo de Sierpinski (MP4)">
+                        <a href="{mp4_href}" target="_blank" class="btn-launch-interactive" style="background:linear-gradient(135deg, #0284c7, #0369a1); border-color:#38bdf8;" title="Ver Vídeo HD del Triángulo de Sierpinski (MP4)">
                             🎬 Ver Vídeo: El Triángulo de Sierpinski 📐 (MP4) ↗
+                        </a>
+                        <a href="{rel_href}" target="_blank" class="btn-launch-interactive" style="margin-top:6px; background:linear-gradient(135deg, #7c3aed, #6d28d9); border-color:#c084fc;" title="Abrir Ficha Didáctica (PDF)">
+                            📄 Abrir Ficha Didáctica (PDF) ↗
                         </a>
                     </div>"""
             elif session_num == 4 and 'FRAC-040' in it["filename"].upper():
@@ -430,11 +430,11 @@ def generate_columns_html(session_num, session_folder, files):
                             </div>
                             <span class="file-arrow">↗</span>
                         </a>
-                        <a href="{rel_href}" target="_blank" class="btn-launch-interactive" style="background:linear-gradient(135deg, #d97706, #b45309); border-color:#fbbf24;" title="Abrir Ficha Didáctica (PDF)">
-                            📄 Abrir Ficha Didáctica (PDF) ↗
-                        </a>
-                        <a href="{mp4_href}" target="_blank" class="btn-launch-interactive" style="margin-top:6px; background:linear-gradient(135deg, #0284c7, #0369a1); border-color:#38bdf8;" title="Ver Vídeo HD de Mundo Fibonacci (MP4)">
+                        <a href="{mp4_href}" target="_blank" class="btn-launch-interactive" style="background:linear-gradient(135deg, #0284c7, #0369a1); border-color:#38bdf8;" title="Ver Vídeo HD de Mundo Fibonacci (MP4)">
                             🎬 Ver Vídeo: Mundo Fibonacci 🌻🌀 (MP4) ↗
+                        </a>
+                        <a href="{rel_href}" target="_blank" class="btn-launch-interactive" style="margin-top:6px; background:linear-gradient(135deg, #d97706, #b45309); border-color:#fbbf24;" title="Abrir Ficha Didáctica (PDF)">
+                            📄 Abrir Ficha Didáctica (PDF) ↗
                         </a>
                     </div>"""
             elif session_num == 4 and 'FRAC-002' in it["filename"].upper():
@@ -452,11 +452,11 @@ def generate_columns_html(session_num, session_folder, files):
                             </div>
                             <span class="file-arrow">↗</span>
                         </a>
-                        <a href="{rel_href}" target="_blank" class="btn-launch-interactive" style="background:linear-gradient(135deg, #be123c, #9f1239); border-color:#fb7185;" title="Abrir Ficha Didáctica (PDF)">
-                            📄 Abrir Ficha Didáctica (PDF) ↗
-                        </a>
-                        <a href="{mp4_href}" target="_blank" class="btn-launch-interactive" style="margin-top:6px; background:linear-gradient(135deg, #0284c7, #0369a1); border-color:#38bdf8;" title="Ver Vídeo HD de Mandelbrot Caballitos (MP4)">
+                        <a href="{mp4_href}" target="_blank" class="btn-launch-interactive" style="background:linear-gradient(135deg, #0284c7, #0369a1); border-color:#38bdf8;" title="Ver Vídeo HD de Mandelbrot Caballitos (MP4)">
                             🎬 Ver Vídeo: Mandelbrot Caballitos de Mar 🌊🐴 (MP4) ↗
+                        </a>
+                        <a href="{rel_href}" target="_blank" class="btn-launch-interactive" style="margin-top:6px; background:linear-gradient(135deg, #be123c, #9f1239); border-color:#fb7185;" title="Abrir Ficha Didáctica (PDF)">
+                            📄 Abrir Ficha Didáctica (PDF) ↗
                         </a>
                     </div>"""
             elif it.get("code") == "COD":
