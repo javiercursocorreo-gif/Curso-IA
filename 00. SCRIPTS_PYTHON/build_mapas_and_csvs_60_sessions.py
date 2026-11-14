@@ -105,7 +105,7 @@ def clean_title_from_filename(filename, session_num=1):
     if 'COD-003' in f_up or ('COD-' in f_up and session_num == 3):
         return 'Reconstrucción Arqueológica de Pompeya con Gemini'
     if 'COD-004' in f_up or ('COD-' in f_up and session_num == 4):
-        return 'Taller: Crea tu propio simulador del ojo humano'
+        return 'Simulador 3D del Ojo Humano con Gemini (Anatomía Óptica)'
     if 'COD-005' in f_up or ('COD-' in f_up and session_num == 5):
         return 'Taller: Crea tu propio simulador 3D del Sistema Solar'
     if 'COD-006' in f_up or ('COD-' in f_up and session_num == 6):
@@ -478,8 +478,8 @@ def generate_columns_html(session_num, session_folder, files):
                         </a>"""
                 elif session_num == 4:
                     sim_btn = """
-                        <a href="SIMULADOR_OJO_HUMANO_3D.html" target="_blank" class="btn-launch-interactive" style="margin-top:6px; background:linear-gradient(135deg, #0284c7, #0369a1); border-color:#38bdf8;" title="Abrir Simulador 3D del Ojo Humano y Cristalino">
-                            👁️ Ver Simulador Ojo Humano 3D ↗
+                        <a href="SIMULADOR_OJO_HUMANO_3D.html" target="_blank" class="btn-launch-interactive" style="background:linear-gradient(135deg, #0284c7, #0369a1); border-color:#38bdf8;" title="Abrir Simulador 3D del Ojo Humano y Cristalino (Copia de Respaldo BKP)">
+                            👁️ Ver Simulador Ojo Humano 3D (BKP) ↗
                         </a>"""
                 elif session_num == 5:
                     sim_btn = """
@@ -491,7 +491,7 @@ def generate_columns_html(session_num, session_folder, files):
                         <a href="SIMULADOR_CEREBRO_3D.html" target="_blank" class="btn-launch-interactive" style="margin-top:6px; background:linear-gradient(135deg, #7c3aed, #6d28d9); border-color:#c084fc;" title="Abrir Simulador 3D del Cerebro Humano y Red Sináptica">
                             🧠 Ver Simulador Cerebro 3D ↗
                         </a>"""
-                if session_num == 3:
+                if session_num in (3, 4):
                     cards_html += f"""
                     <div class="file-card file-card-special">
                         <a href="{rel_href}" target="_blank" class="file-card-special-top" title="Abrir Ficha Guía de Tareas (PDF)">
@@ -1224,7 +1224,7 @@ def process_all_sessions():
         session_path = os.path.join(SESSIONS_DIR, session_folder_name)
             
         # Sincronizar probador interactivo personalizado para la sesión (solo botón de esta sesión)
-        if session_num == 3:
+        if session_num in (3, 4):
             prob_path = os.path.join(session_path, "PROBADOR_CODIGO_IA.html")
             if os.path.exists(prob_path):
                 try:

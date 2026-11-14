@@ -1,0 +1,320 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+build_pdf_niv_004.py
+Genera la Ficha Didáctica Oficial de 1 Página (Letter):
+9. NIV-004_Los_6_Niveles_de_Aporte_de_Valor_y_Sabid.pdf
+para la Sesión 04 del Curso de IA.
+
+Contenido:
+- Título: Los 6 Niveles de Aporte de Valor y Sabiduría Senior (+65)
+- Metodología: Generación y ejecución directa en Gemini + BKP Oficial.
+- Prompt Maestro exacto para generar la app de sabiduría senior.
+"""
+
+import os
+import sys
+import shutil
+
+OUTPUT_DIR = "/Users/externo/Library/Mobile Documents/com~apple~CloudDocs/PERSONAL/CLASES DE TECNOLOGÍA/CURSO-IA/CLASES/EXPORTACION_FICHAS_CLASSROOM_PDF/100. [SESSIONS] TERNAS_LISTAS_PARA_CLASSROOM/04_Sesion"
+PDF_PATH = os.path.join(OUTPUT_DIR, "9. NIV-004_Los_6_Niveles_de_Aporte_de_Valor_y_Sabid.pdf")
+
+ALT_PATHS = [
+    "/Users/externo/Library/Mobile Documents/com~apple~CloudDocs/PERSONAL/CLASES DE TECNOLOGÍA/CURSO-IA/CLASES/EXPORTACION_FICHAS_CLASSROOM_PDF/09. [NIV] BLOQUE_9_ESCALAFONES_Y_NIVELES_CULTURA101/Lote_01_al_20/NIV-004_Los 6 Niveles de Aporte de Valor en una Empresa.pdf",
+    "/Users/externo/Library/Mobile Documents/com~apple~CloudDocs/PERSONAL/CLASES DE TECNOLOGÍA/CURSO-IA/CLASES/EXPORTACION_FICHAS_CLASSROOM_PDF/[NIV] BLOQUE_10_ESCALAFONES_Y_NIVELES_CULTURA101/Lote_01_al_20/NIV-004_Los_6_Niveles_de_Aporte_de_Valor_y_Sabid.pdf"
+]
+
+def escape_pdf_text(text):
+    text = str(text)
+    text = text.replace('\\', '\\\\').replace('(', '\\(').replace(')', '\\)')
+    replacements = {
+        'á': '\xe1', 'é': '\xe9', 'í': '\xed', 'ó': '\xf3', 'ú': '\xfa',
+        'Á': '\xc1', 'É': '\xc9', 'Í': '\xcd', 'Ó': '\xd3', 'Ú': '\xda',
+        'ñ': '\xf1', 'Ñ': '\xd1', 'ü': '\xfc', 'Ü': '\xdc',
+        '«': '<<', '»': '>>', '•': '-', '—': '-', '–': '-',
+        'º': 'o', 'ª': 'a', '¿': '\xbf', '¡': '\xa1',
+        '➔': '->', '→': '->', '’': "'", '‘': "'", '“': '"', '”': '"'
+    }
+    for k, v in replacements.items():
+        text = text.replace(k, v)
+    return text
+
+def wrap_text(text, max_chars):
+    paragraphs = str(text).split('\n')
+    lines = []
+    for p in paragraphs:
+        p = p.strip()
+        if not p:
+            continue
+        words = p.split(' ')
+        cur = []
+        cur_len = 0
+        for w in words:
+            if not w:
+                continue
+            if cur_len + len(w) + 1 <= max_chars:
+                cur.append(w)
+                cur_len += len(w) + 1
+            else:
+                if cur:
+                    lines.append(' '.join(cur))
+                cur = [w]
+                cur_len = len(w)
+        if cur:
+            lines.append(' '.join(cur))
+    return lines or ['']
+
+class NativePDFWriter:
+    def __init__(self, page_width=612.0, page_height=792.0):
+        self.w = page_width
+        self.h = page_height
+        self.pages = []
+        self.current_stream = []
+
+    def start_page(self):
+        self.current_stream = []
+
+    def end_page(self):
+        self.pages.append(''.join(self.current_stream))
+        self.current_stream = []
+
+    def set_fill_color(self, r, g, b):
+        self.current_stream.append(f'{r:.3f} {g:.3f} {b:.3f} rg\n')
+
+    def set_stroke_color(self, r, g, b):
+        self.current_stream.append(f'{r:.3f} {g:.3f} {b:.3f} RG\n')
+
+    def set_line_width(self, width):
+        self.current_stream.append(f'{width:.2f} w\n')
+
+    def rect(self, x, y, width, height, fill=True, stroke=True):
+        op = 'B' if (fill and stroke) else ('f' if fill else 'S')
+        self.current_stream.append(f'{x:.2f} {y:.2f} {width:.2f} {height:.2f} re {op}\n')
+
+    def line(self, x1, y1, x2, y2):
+        self.current_stream.append(f'{x1:.2f} {y1:.2f} m {x2:.2f} {y2:.2f} l S\n')
+
+    def draw_text(self, x, y, text, font='F1', size=10, r=0, g=0, b=0):
+        self.set_fill_color(r, g, b)
+        escaped = escape_pdf_text(text)
+        self.current_stream.append(f'BT /{font} {size} Tf {x:.2f} {y:.2f} Td ({escaped}) Tj ET\n')
+
+    def write_to_file(self, filename):
+        os.makedirs(os.path.dirname(filename), exist_ok=True)
+        page_obj_indices = []
+        content_obj_indices = []
+        cur_obj_idx = 6
+
+        for _ in self.pages:
+            page_obj_indices.append(cur_obj_idx)
+            cur_obj_idx += 1
+            content_obj_indices.append(cur_obj_idx)
+            cur_obj_idx += 1
+
+        kids_str = ' '.join([f'{idx} 0 R' for idx in page_obj_indices])
+        pages_dict = f'<< /Type /Pages /Kids [{kids_str}] /Count {len(self.pages)} >>'.encode('ascii')
+
+        all_objs = [
+            b'<< /Type /Catalog /Pages 2 0 R >>',
+            pages_dict,
+            b'<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>',
+            b'<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>',
+            b'<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Oblique /Encoding /WinAnsiEncoding >>',
+        ]
+
+        for i, page_stream in enumerate(self.pages):
+            content_idx = content_obj_indices[i]
+            p_obj = (
+                f'<< /Type /Page /Parent 2 0 R /MediaBox [0 0 {self.w} {self.h}] '
+                f'/Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> '
+                f'/Contents {content_idx} 0 R >>'
+            ).encode('ascii')
+            all_objs.append(p_obj)
+
+            s_bytes = page_stream.encode('latin1', errors='replace')
+            c_obj = f'<< /Length {len(s_bytes)} >>\nstream\n'.encode('ascii') + s_bytes + b'\nendstream'
+            all_objs.append(c_obj)
+
+        with open(filename, 'wb') as f:
+            f.write(b'%PDF-1.4\n')
+            offsets = []
+            cur_offset = f.tell()
+
+            for i, obj in enumerate(all_objs):
+                offsets.append(cur_offset)
+                obj_num = i + 1
+                f.write(f'{obj_num} 0 obj\n'.encode('ascii'))
+                f.write(obj)
+                f.write(b'\nendobj\n')
+                cur_offset = f.tell()
+
+            xref_offset = cur_offset
+            f.write(b'xref\n')
+            f.write(f'0 {len(all_objs) + 1}\n'.encode('ascii'))
+            f.write(b'0000000000 65535 f \n')
+            for off in offsets:
+                f.write(f'{off:010d} 00000 n \n'.encode('ascii'))
+
+            f.write(b'trailer\n')
+            f.write(f'<< /Size {len(all_objs) + 1} /Root 1 0 R >>\n'.encode('ascii'))
+            f.write(b'startxref\n')
+            f.write(f'{xref_offset}\n'.encode('ascii'))
+            f.write(b'%%EOF\n')
+
+def build_niv_004_pdf(output_path=PDF_PATH):
+    pdf = NativePDFWriter(612.0, 792.0)
+    pdf.start_page()
+
+    # Marco exterior esmeralda y ámbar
+    pdf.set_fill_color(0.99, 0.995, 0.99)
+    pdf.set_stroke_color(0.05, 0.55, 0.35)
+    pdf.set_line_width(1.5)
+    pdf.rect(20, 20, 572, 752, fill=True, stroke=True)
+
+    # Cabecera principal
+    pdf.set_fill_color(0.04, 0.22, 0.14)
+    pdf.rect(24, 716, 564, 52, fill=True, stroke=False)
+
+    pdf.draw_text(36, 750, 'SESION 04 • MICRO-APLICACION DE VIDA REAL (+65) [NIV-004]', font='F2', size=8.5, r=0.4, g=0.9, b=0.6)
+    pdf.draw_text(36, 730, 'Los 6 Niveles de Aporte de Valor y Sabiduria Senior (+65)', font='F2', size=13.0, r=1, g=1, b=1)
+
+    # Seccion 1: Metodologia en 3 Pasos
+    pdf.set_fill_color(0.94, 0.985, 0.95)
+    pdf.set_stroke_color(0.1, 0.65, 0.4)
+    pdf.set_line_width(1.0)
+    pdf.rect(30, 580, 552, 126, fill=True, stroke=True)
+
+    pdf.draw_text(42, 692, 'METODOLOGIA EN 3 PASOS: GENERACION DIRECTA EN GEMINI CON TRIPLE SALVAGUARDA', font='F2', size=9.2, r=0.05, g=0.4, b=0.2)
+
+    p1_title = 'PASO 1 • Copiar el Prompt Maestro en Gemini (gemini.google.com):'
+    p1_desc = 'Abre Gemini en tu navegador. Copia integro el recuadro inferior y pegalo en la conversacion. Este prompt instruye a Gemini para crear una app completa.'
+    pdf.draw_text(42, 676, p1_title, font='F2', size=8.0, r=0.05, g=0.5, b=0.3)
+    pdf.draw_text(42, 665, p1_desc, font='F1', size=7.8, r=0.15, g=0.2, b=0.25)
+
+    p2_title = 'PASO 2 • Indicar a Gemini la visualizacion directa en tu pantalla:'
+    p2_desc = 'Cuando Gemini responda con el codigo, dile inmediatamente en el siguiente mensaje:'
+    p2_cmd = '«Ejecuta este codigo y muestramelo en pantalla» (o «Run code»). Gemini abrira la balanza interactiva dentro del chat.'
+    pdf.draw_text(42, 650, p2_title, font='F2', size=8.0, r=0.05, g=0.5, b=0.3)
+    pdf.draw_text(42, 639, p2_desc, font='F1', size=7.8, r=0.15, g=0.2, b=0.25)
+    pdf.draw_text(42, 628, p2_cmd, font='F2', size=7.8, r=0.05, g=0.45, b=0.2)
+
+    p3_title = 'PASO 3 • Copia de Respaldo Oficial Garantizada (BKP en el Mapa):'
+    p3_desc = 'Si deseas abrir la aplicacion terminada y depurada con voz y diseno senior, pulsa en el Cuadro de Mando del curso:'
+    p3_btn = '«🛡️ Abrir Simulador Sabiduria y Valor Senior (+65) (HTML)» para interactuar de inmediato con tus datos reales.'
+    pdf.draw_text(42, 613, p3_title, font='F2', size=8.0, r=0.7, g=0.3, b=0.05)
+    pdf.draw_text(42, 602, p3_desc, font='F1', size=7.8, r=0.15, g=0.2, b=0.25)
+    pdf.draw_text(42, 591, p3_btn, font='F2', size=7.8, r=0.05, g=0.5, b=0.3)
+
+    # Seccion 2: Prompt Maestro para Gemini
+    pdf.set_fill_color(0.96, 0.99, 0.97)
+    pdf.set_stroke_color(0.15, 0.6, 0.35)
+    pdf.set_line_width(1.0)
+    pdf.rect(30, 360, 552, 210, fill=True, stroke=True)
+
+    pdf.draw_text(42, 555, 'PROMPT MAESTRO PARA CREAR LA BALANZA DE SABIDURIA Y VALOR SENIOR (+65):', font='F2', size=9.0, r=0.05, g=0.4, b=0.25)
+    pdf.draw_text(42, 542, '(Selecciona y copia todo el bloque de texto para pegarlo en gemini.google.com)', font='F3', size=7.4, r=0.4, g=0.45, b=0.5)
+
+    # Recuadro interior del prompt
+    pdf.set_fill_color(0.91, 0.97, 0.93)
+    pdf.set_stroke_color(0.18, 0.65, 0.4)
+    pdf.set_line_width(0.8)
+    pdf.rect(40, 370, 532, 160, fill=True, stroke=True)
+
+    prompt_lines = [
+        "\"Actua como un psicologo y orientador de talento senior y envejecimiento activo.",
+        "Quiero crear una aplicacion interactiva en HTML para adultos mayores que valore los 6 niveles de aporte humano a lo largo de la vida:",
+        "1. Nivel 1: Tareas fisicas y vitalidad cotidiana (fuerza, recados y agilidad manual en el hogar).",
+        "2. Nivel 2: Experiencia tecnica y oficio acumulado (recetas tradicionales, bricolaje y soluciones practicas).",
+        "3. Nivel 3: Coordinacion operativa (logistica familiar, recogida de nietos, comidas y organizacion sin estres).",
+        "4. Nivel 4: Templanza y perspectiva ante crisis (saber que las dificultades pasan y transmitir calma a los hijos).",
+        "5. Nivel 5: Mentoria y escucha afectiva (refugio de confianza para desahogarse y recibir guia sin ser juzgados).",
+        "6. Nivel 6: Legado etico y cohesion humana (el corazon del hogar: argamasa que une a las generaciones y preserva las raices).",
+        "Requisitos tecnicos de la aplicacion:",
+        "1. Panel de entrada: Sliders de anos de experiencia vital (20 a 65 anos) y dedicacion semanal (2 a 40 h/sem), mas checklist de 4 pilares.",
+        "2. Diagnostico dinamico: Determina el escalon activo, calcula las horas anuales de sabiduria y ofrece un mensaje positivo motivador.",
+        "3. Escalafon interactivo de 6 niveles con colores diferenciados y navegacion directa.",
+        "4. Ergonomia senior: Selector de letra grande (18.5px), lectura en voz alta con sintesis de voz en espanol (es-ES) y boton de reinicio.\""
+    ]
+    y_pr = 516
+    for pl in prompt_lines:
+        is_bold = pl.startswith('"Actua') or pl.startswith('Requisitos') or pl.startswith('1.') or pl.startswith('2.') or pl.startswith('3.') or pl.startswith('4.') or pl.startswith('5.') or pl.startswith('6.')
+        pdf.draw_text(48, y_pr, pl, font='F2' if is_bold else 'F1', size=7.2, r=0.05, g=0.25, b=0.15)
+        y_pr -= 10.8
+
+    # Seccion 3: Dialogo y Preguntas de Reflexion con Gemini en el Aula
+    pdf.set_fill_color(0.99, 0.98, 0.96)
+    pdf.set_stroke_color(0.8, 0.5, 0.1)
+    pdf.set_line_width(1.0)
+    pdf.rect(30, 225, 552, 122, fill=True, stroke=True)
+
+    pdf.draw_text(42, 332, 'PREGUNTAS DE DIALOGO CON GEMINI EN EL AULA (DEBATE DE SABIDURIA VITAL):', font='F2', size=8.8, r=0.7, g=0.35, b=0.05)
+
+    q1 = "Pregunta 1 • Inteligencia Cristalizada vs. Fluida: \"Gemini, en psicologia se distingue entre inteligencia fluida (velocidad de calculo de los jovenes) e inteligencia cristalizada (experiencia y criterio de los mayores). ¿Por que en momentos de crisis el criterio senior es insustituible por la tecnologia?\""
+    q1_lines = wrap_text(q1, 114)
+    pdf.draw_text(42, 316, q1_lines[0], font='F2', size=7.5, r=0.1, g=0.2, b=0.25)
+    pdf.draw_text(42, 305, q1_lines[1], font='F1', size=7.4, r=0.2, g=0.25, b=0.3)
+
+    q2 = "Pregunta 2 • El Valor Silencioso del Abuelo: \"Gemini, si un abuelo o abuela dedica 15 horas semanales al cuidado de sus nietos y al apoyo emocional de sus hijos, ¿cual es el valor economico y de cohesion social que aporta anualmente a la sociedad espanola?\""
+    q2_lines = wrap_text(q2, 114)
+    pdf.draw_text(42, 288, q2_lines[0], font='F2', size=7.5, r=0.1, g=0.2, b=0.25)
+    pdf.draw_text(42, 277, q2_lines[1], font='F1', size=7.4, r=0.2, g=0.25, b=0.3)
+
+    q3 = "Pregunta 3 • La Transmision del Legado Familiar: \"Gemini, ¿cuales son las 3 mejores formas en que una persona jubilada puede registrar sus recuerdos y aprendizajes de vida (biografia grabada con voz, recetas familiares, anecdotas) para que no se pierdan en futuras generaciones?\""
+    q3_lines = wrap_text(q3, 114)
+    pdf.draw_text(42, 260, q3_lines[0], font='F2', size=7.5, r=0.1, g=0.2, b=0.25)
+    pdf.draw_text(42, 249, q3_lines[1], font='F1', size=7.4, r=0.2, g=0.25, b=0.3)
+
+    # Seccion 4: Triple Salvaguarda & Garantia Pedagogica
+    pdf.set_fill_color(0.98, 0.98, 0.99)
+    pdf.set_stroke_color(0.5, 0.5, 0.6)
+    pdf.set_line_width(0.8)
+    pdf.rect(30, 108, 552, 105, fill=True, stroke=True)
+
+    pdf.draw_text(42, 198, 'LA TRIPLE SALVAGUARDA PEDAGOGICA Y ACCESIBILIDAD SENIOR (+65):', font='F2', size=8.5, r=0.2, g=0.25, b=0.35)
+    fuente1 = "- Enfoque en Envejecimiento Activo: Basado en estudios sobre longevidad satisfactoria de la OMS y modelos de psicologia positiva de Erik Erikson sobre generatividad y transmision del legado intergeneracional."
+    f1_lines = wrap_text(fuente1, 114)
+    pdf.draw_text(42, 184, f1_lines[0], font='F1', size=7.5, r=0.2, g=0.25, b=0.3)
+    if len(f1_lines) > 1:
+        pdf.draw_text(42, 173, f1_lines[1], font='F1', size=7.5, r=0.2, g=0.25, b=0.3)
+
+    fuente2 = "- Diseno Ergonomico sin Barreras: Letra ampliable a 18.5px con un solo clic, botones de alto contraste, lectura por voz sintetizada en espanol nativo (es-ES) y compatibilidad total con pantallas de aula, iPad y portatiles."
+    f2_lines = wrap_text(fuente2, 114)
+    pdf.draw_text(42, 158, f2_lines[0], font='F1', size=7.5, r=0.2, g=0.25, b=0.3)
+    if len(f2_lines) > 1:
+        pdf.draw_text(42, 147, f2_lines[1], font='F1', size=7.5, r=0.2, g=0.25, b=0.3)
+
+    fuente3 = "- Garantia de Respaldo Tecnico: El alumno experimenta el prompt en Gemini sabiendo que dispone del simulador oficial garantizado en el Cuadro de Mando del curso para asegurar el 100% de exito pedagogico en la clase."
+    f3_lines = wrap_text(fuente3, 114)
+    pdf.draw_text(42, 132, f3_lines[0], font='F1', size=7.5, r=0.2, g=0.25, b=0.3)
+    if len(f3_lines) > 1:
+        pdf.draw_text(42, 121, f3_lines[1], font='F1', size=7.5, r=0.2, g=0.25, b=0.3)
+
+    # Banner inferior BKP
+    pdf.set_fill_color(0.04, 0.18, 0.1)
+    pdf.set_stroke_color(0.2, 0.8, 0.5)
+    pdf.set_line_width(1.2)
+    pdf.rect(30, 42, 552, 54, fill=True, stroke=True)
+
+    pdf.draw_text(42, 80, 'APLICACION OFICIAL GARANTIZADA (BKP): SIMULADOR_APORTE_VALOR_EMPRESA_SENIORS.HTML', font='F2', size=8.8, r=0.2, g=0.85, b=0.5)
+    pdf.draw_text(42, 65, 'Si deseas abrir la aplicacion terminada y depurada, en el Cuadro de Mando de la Sesion 04 haz clic en:', font='F1', size=7.6, r=0.8, g=0.85, b=0.9)
+    pdf.draw_text(42, 52, '«🛡️ Abrir Simulador Sabiduria y Valor Senior (+65) (HTML)» para interactuar al instante con datos reales.', font='F2', size=7.8, r=0.2, g=0.85, b=0.5)
+
+    pdf.end_page()
+
+    pdf.write_to_file(output_path)
+    for alt in ALT_PATHS:
+        try:
+            os.makedirs(os.path.dirname(alt), exist_ok=True)
+            shutil.copy2(output_path, alt)
+        except Exception:
+            pass
+
+    print(f"✅ PDF NIV-004 generado con éxito en: {output_path}")
+    return output_path
+
+if __name__ == '__main__':
+    try:
+        build_niv_004_pdf()
+    except Exception as e:
+        print(f"❌ Error al generar PDF NIV-004: {e}")
+        sys.exit(1)
