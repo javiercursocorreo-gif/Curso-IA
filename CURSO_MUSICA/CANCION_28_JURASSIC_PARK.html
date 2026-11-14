@@ -221,7 +221,11 @@
                    style="background: #1e293b; color: #38bdf8; border: 1px solid #0284c7; padding: 7px 12px; border-radius: 8px; font-size: 0.82rem; font-weight: 700; text-decoration: none; display: inline-flex; align-items: center; gap: 5px;">
                     🎼 Ver en MuseScore ↗
                 </a>
-                <a href="REPERTORIO_KORG_EK50.html?v=196" 
+                <button onclick="dispararDestelloBoton(this); window.location.href=window.location.pathname+'?v=207&t='+Date.now()" 
+                   style="background: #0284c7; color: #ffffff; border: 1px solid #38bdf8; padding: 7px 12px; border-radius: 8px; font-size: 0.82rem; font-weight: 700; cursor: pointer; touch-action: manipulation;" title="Recargar y actualizar versión sin caché">
+                    🔄 Recargar Versión (v207)
+                </button>
+                <a href="REPERTORIO_KORG_EK50.html?v=207" 
                    style="background: #1e293b; color: #cbd5e1; border: 1px solid #334155; padding: 7px 12px; border-radius: 8px; font-size: 0.82rem; font-weight: 700; text-decoration: none;">
                     ⬅ Repertorio
                 </a>
@@ -434,9 +438,12 @@
                 <button class="btn-dark-score-toggle" onclick="toggleModoPartituraNegra(this)" style="background:#0284c7; color:#ffffff; border:1px solid #38bdf8; padding:5px 10px; border-radius:8px; font-weight:800; font-size:0.80rem; cursor:pointer; touch-action:manipulation;" title="Alternar entre pantalla negra OLED y fondo blanco">
                     🌓 Pantalla Negra (ON)
                 </button>
-                <a class="btn-back" href="REPERTORIO_KORG_EK50.html?v=196" style="background:#1e293b; color:#93c5fd; border:1px solid #334155; padding:5px 12px; border-radius:8px; font-weight:800; font-size:0.80rem; text-decoration:none;">
+                <a class="btn-back" href="REPERTORIO_KORG_EK50.html?v=207" style="background:#1e293b; color:#93c5fd; border:1px solid #334155; padding:5px 12px; border-radius:8px; font-weight:800; font-size:0.80rem; text-decoration:none;">
                     ⬅ Repertorio
                 </a>
+                <button onclick="dispararDestelloBoton(this); window.location.href=window.location.pathname+'?v=207&t='+Date.now()" style="background:#0284c7; color:#ffffff; border:1px solid #38bdf8; padding:5px 12px; border-radius:8px; font-weight:800; font-size:0.80rem; cursor:pointer; touch-action:manipulation;" title="Recargar Versión (v207)">
+                    🔄 v207
+                </button>
                 <button onclick="cerrarPartituraPantallaCompleta(this)" style="background:#334155; color:#f1f5f9; border:1px solid #475569; padding:5px 14px; border-radius:8px; font-weight:800; font-size:0.80rem; cursor:pointer; touch-action:manipulation;">
                     ✕ Cerrar
                 </button>
@@ -520,65 +527,122 @@
     }
 
     // ==============================================================================
-    // MOTOR WEB MIDI KORG EK-50 (TRANSMISIÓN DUAL CANONÍCA BANCO 33)
+    // MOTOR WEB MIDI KORG EK-50 (TRANSMISIÓN DUAL CANÓNICA BANCO 33)
     // ==============================================================================
+    let midiAccessInstance = null;
     let midiOutput = null;
+    let conectandoMIDI = false;
+
+    function extraerPuertos(mapOrList) {
+        if (!mapOrList) return [];
+        try {
+            if (typeof mapOrList.values === 'function') return Array.from(mapOrList.values());
+            if (Array.isArray(mapOrList)) return mapOrList;
+            if (typeof mapOrList.forEach === 'function') {
+                const arr = [];
+                mapOrList.forEach(v => arr.push(v));
+                return arr;
+            }
+            return Array.from(mapOrList);
+        } catch(e) {
+            return [];
+        }
+    }
+
+    function obtenerSalidasDisponibles() {
+        if (!midiAccessInstance) return [];
+        return extraerPuertos(midiAccessInstance.outputs);
+    }
+
+    function bindPorts() {
+        if (!midiAccessInstance) return null;
+        const text = document.getElementById("midi-label");
+        const outputs = obtenerSalidasDisponibles();
+        
+        const korg = outputs.find(o => o && o.name && (
+            o.name.toLowerCase().includes('ek-50') || 
+            o.name.toLowerCase().includes('korg') ||
+            o.name.toLowerCase().includes('usb')
+        ));
+
+        if (korg) {
+            midiOutput = korg;
+            if (text) text.innerHTML = `🟢 Conectado: <b>${korg.name}</b>`;
+        } else if (outputs.length > 0) {
+            midiOutput = outputs[0];
+            if (text) text.innerHTML = `🟢 Conectado: <b>${midiOutput.name}</b>`;
+        } else {
+            midiOutput = null;
+            if (text) text.innerHTML = '🟡 Korg no detectado por USB (Conecta cable)';
+        }
+
+        const inputs = extraerPuertos(midiAccessInstance.inputs);
+        inputs.forEach(input => {
+            if (input) {
+                input.onmidimessage = (msg) => {
+                    const status = msg.data[0] & 0xF0;
+                    if (status === 0x90 || status === 0x80) {
+                        despertarAtenuador();
+                    }
+                };
+            }
+        });
+
+        return midiOutput;
+    }
 
     async function conectarMIDI() {
+        if (conectandoMIDI) return midiOutput;
+        conectandoMIDI = true;
+        const text = document.getElementById('midi-label');
+
         if (!navigator.requestMIDIAccess) {
-            actualizarLabelMIDI('⚠️ Web MIDI no disponible en este navegador');
-            return;
+            if (text) text.innerText = '🔴 Web MIDI no disponible en este navegador';
+            conectandoMIDI = false;
+            return null;
         }
 
         try {
-            let midiAccess = await navigator.requestMIDIAccess({ sysex: true }).catch(() => {
-                return navigator.requestMIDIAccess({ sysex: false });
-            });
-
-            const salidas = Array.from(midiAccess.outputs.values());
-            if (salidas.length === 0) {
-                actualizarLabelMIDI('⚠️ Korg EK-50 no detectado (Conecta el cable USB-MIDI)');
-                return;
-            }
-
-            // Buscar dispositivo Korg o tomar la primera salida disponible
-            midiOutput = salidas.find(s => s.name && s.name.toLowerCase().includes('korg')) || salidas[0];
-            actualizarLabelMIDI('🟢 ' + (midiOutput.name || 'Korg EK-50 Conectado'));
-
-            // Cargar por defecto 061 The Strings
-            cargar061TheStrings();
-        } catch (e) {
-            console.error('Error al conectar Web MIDI:', e);
-            actualizarLabelMIDI('❌ Error al acceder a MIDI: ' + e.message);
+            const m = await navigator.requestMIDIAccess({ sysex: true }).catch(() => navigator.requestMIDIAccess({ sysex: false }));
+            midiAccessInstance = m;
+            conectandoMIDI = false;
+            midiAccessInstance.onstatechange = () => bindPorts();
+            return bindPorts();
+        } catch (err) {
+            if (text) text.innerText = '🔴 Error acceso MIDI: ' + err.message;
+            conectandoMIDI = false;
+            return null;
         }
     }
 
-    function actualizarLabelMIDI(txt) {
-        const el = document.getElementById('midi-label');
-        if (el) el.innerText = txt;
-    }
-
-    function enviarMidiGlobal(bytes) {
-        if (!midiOutput) return;
-        try {
-            midiOutput.send(bytes);
-        } catch (e) {
-            console.error('Error enviando MIDI:', e);
+    async function enviarMidiGlobal(bytes) {
+        if (!midiOutput && (!midiAccessInstance || obtenerSalidasDisponibles().length === 0)) {
+            await conectarMIDI();
         }
+        if (midiOutput) {
+            try { midiOutput.send(bytes); return true; } catch(e) {}
+        }
+        const outputs = obtenerSalidasDisponibles();
+        let enviado = false;
+        outputs.forEach(port => {
+            try { port.send(bytes); enviado = true; } catch(e) {}
+        });
+        return enviado;
     }
 
-    // Regla de Oro Korg EK-50: Keyboard Sets gobernados estrictamente por Banco Maestro 33 en Ch 1 y Ch 16
-    function enviarSelectorKeyboardSet(bankLSB, programChange) {
-        if (!midiOutput) return;
+    async function enviarSelectorKeyboardSet(bankLSB, programChange) {
+        if (!midiOutput && (!midiAccessInstance || obtenerSalidasDisponibles().length === 0)) {
+            await conectarMIDI();
+        }
         // Upper 1 (Canal 1 - índice 0)
-        enviarMidiGlobal([0xB0, 0x00, 33]);
-        enviarMidiGlobal([0xB0, 0x20, bankLSB]);
-        enviarMidiGlobal([0xC0, programChange]);
+        await enviarMidiGlobal([0xB0, 0x00, 33]);
+        await enviarMidiGlobal([0xB0, 0x20, bankLSB]);
+        await enviarMidiGlobal([0xC0, programChange]);
 
         // Global / Pantalla LCD (Canal 16 - índice 15)
-        enviarMidiGlobal([0xBF, 0x00, 33]);
-        enviarMidiGlobal([0xBF, 0x20, bankLSB]);
-        enviarMidiGlobal([0xCF, programChange]);
+        await enviarMidiGlobal([0xBF, 0x00, 33]);
+        await enviarMidiGlobal([0xBF, 0x20, bankLSB]);
+        await enviarMidiGlobal([0xCF, programChange]);
     }
 
     function actualizarSonidoUI(codigo) {
@@ -616,22 +680,32 @@
         '071': { lsb: 7,  pc: 0, name: '071 Oooh&Aahs' }
     };
 
-    function cargarKeyboardSet(codigo, btn = null) {
+    async function cargarKeyboardSet(codigo, btn = null) {
         if (btn) dispararDestelloBoton(btn);
+        actualizarSonidoUI(codigo);
         const set = KEYBOARD_SETS[codigo];
-        if (!set || !midiOutput) return;
+        if (!set) return;
+
+        if (!midiOutput && (!midiAccessInstance || obtenerSalidasDisponibles().length === 0)) {
+            await conectarMIDI();
+        }
 
         // Upper 1 (Canal 1 - índice 0)
-        enviarMidiGlobal([0xB0, 0x00, 33]);
-        enviarMidiGlobal([0xB0, 0x20, set.lsb]);
-        enviarMidiGlobal([0xC0, set.pc]);
+        await enviarMidiGlobal([0xB0, 0x00, 33]);
+        await enviarMidiGlobal([0xB0, 0x20, set.lsb]);
+        await enviarMidiGlobal([0xC0, set.pc]);
 
         // Global / Pantalla LCD (Canal 16 - índice 15)
-        enviarMidiGlobal([0xBF, 0x00, 33]);
-        enviarMidiGlobal([0xBF, 0x20, set.lsb]);
-        enviarMidiGlobal([0xCF, set.pc]);
+        await enviarMidiGlobal([0xBF, 0x00, 33]);
+        await enviarMidiGlobal([0xBF, 0x20, set.lsb]);
+        await enviarMidiGlobal([0xCF, set.pc]);
 
-        actualizarSonidoUI(codigo);
+        // Calibración acústica de directo
+        [0, 1, 2, 3].forEach(ch => {
+            enviarMidiGlobal([0xB0 | ch, 0x07, 122]);
+            enviarMidiGlobal([0xB0 | ch, 0x0B, 127]);
+            enviarMidiGlobal([0xB0 | ch, 0x5B, 40]);
+        });
     }
 
     // Funciones de compatibilidad
@@ -643,23 +717,29 @@
     // ==============================================================================
     // CONTROL DE SILENCIO Y RESET KORG EK-50
     // ==============================================================================
-    function detenerRitmoKorg(btn = null) {
+    async function detenerRitmoKorg(btn = null) {
         if (btn) dispararDestelloBoton(btn);
-        if (!midiOutput) return;
+        if (!midiOutput && (!midiAccessInstance || obtenerSalidasDisponibles().length === 0)) {
+            await conectarMIDI();
+        }
 
         // Comando Realtime Stop MIDI
-        enviarMidiGlobal([0xFC]);
+        await enviarMidiGlobal([0xFC]);
 
         // Panic silenciador en todos los canales de acompañamiento y teclado
         for (let ch = 0; ch < 16; ch++) {
             enviarMidiGlobal([0xB0 | ch, 120, 0]); // All Sound Off
             enviarMidiGlobal([0xB0 | ch, 123, 0]); // All Notes Off
         }
+        const el = document.getElementById('midi-label');
+        if (el) el.innerHTML = '⏹️ Ritmo Silenciado · Modo Solemne';
     }
 
-    function desbloquearKorgEK50(btn = null) {
+    async function desbloquearKorgEK50(btn = null) {
         if (btn) dispararDestelloBoton(btn);
-        if (!midiOutput) return;
+        if (!midiOutput && (!midiAccessInstance || obtenerSalidasDisponibles().length === 0)) {
+            await conectarMIDI();
+        }
 
         try {
             // 1. Apagar notas y silenciar todos los canales
@@ -672,10 +752,11 @@
             }
 
             // 2. Restaurar Keyboard Set 061 The Strings en Canal 1 y Canal 16
-            enviarSelectorKeyboardSet(6, 0);
+            await enviarSelectorKeyboardSet(6, 0);
             actualizarSonidoUI('061');
 
-            actualizarLabelMIDI('🟢 Korg Desbloqueado · 061 The Strings Activo');
+            const el = document.getElementById('midi-label');
+            if (el) el.innerHTML = '🟢 Korg Desbloqueado · 061 The Strings Activo';
         } catch(e) {
             console.error('Error al desbloquear Korg:', e);
         }
