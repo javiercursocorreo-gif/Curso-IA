@@ -378,6 +378,57 @@
                 grid-template-columns: 1fr;
             }
         }
+
+        body.senior-font {
+            font-size: 18.5px !important;
+        }
+        body.senior-font .status-title {
+            font-size: 1.95rem !important;
+        }
+        body.senior-font .status-desc {
+            font-size: 1.05rem !important;
+        }
+        body.senior-font .step-info-title {
+            font-size: 1.15rem !important;
+        }
+        body.senior-font .step-info-desc {
+            font-size: 0.96rem !important;
+        }
+        body.senior-font select {
+            font-size: 1.05rem !important;
+        }
+        body.senior-font .check-item-text {
+            font-size: 0.98rem !important;
+        }
+        .btn-senior-ctrl {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #f8fafc;
+            font-weight: 700;
+            font-size: 0.88rem;
+            padding: 8px 14px;
+            border-radius: 10px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+        }
+        .btn-senior-ctrl:hover {
+            background: rgba(255, 255, 255, 0.16);
+            border-color: rgba(255, 255, 255, 0.35);
+        }
+        .btn-senior-ctrl.active-speech {
+            background: #10b981;
+            color: #060913;
+            border-color: #34d399;
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.6);
+            animation: pulse-speech 1.5s infinite;
+        }
+        @keyframes pulse-speech {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.75; }
+        }
     </style>
 </head>
 <body>
@@ -385,13 +436,19 @@
     <header>
         <div class="brand-box">
             <span class="brand-badge">[NIV-005] EVOLUCIÓN DEL DINERO</span>
-            <h1>Los 5 Niveles del Dinero: Del Trueque a Bizum y la IA</h1>
+            <h1>Los 5 Niveles del Dinero: Del Trueque a Bizum (+65)</h1>
         </div>
-        <div style="display:flex; align-items:center; gap:16px;">
-            <button class="btn-action" onclick="openPromptModal()">
-                🌱 Ver Prompt Semilla
+        <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+            <button class="btn-senior-ctrl" id="btnFontToggle" onclick="toggleSeniorFont()">
+                🔍 <span id="lblFont">Letra: Normal</span>
             </button>
-            <div style="font-size:0.85rem; color:var(--text-sub); font-family:var(--font-mono);">Educación Digital Segura Senior</div>
+            <button class="btn-senior-ctrl" id="btnSpeak" onclick="toggleSpeech()">
+                🔊 <span id="lblSpeak">Escuchar Explicación</span>
+            </button>
+            <button class="btn-senior-ctrl" id="btnReset" onclick="resetSimulador()" style="border-color:#f59e0b; color:#fbbf24;">
+                ↺ Reiniciar
+            </button>
+            <div style="font-size:0.82rem; color:var(--text-sub); font-family:var(--font-mono); margin-left:6px;">Educación Digital Senior</div>
         </div>
     </header>
 
@@ -669,6 +726,72 @@ Requisitos:<br>
                         el.style.borderColor = "var(--border)";
                     }
                 }
+            }
+        }
+
+        let isLargeFont = false;
+        function toggleSeniorFont() {
+            isLargeFont = !isLargeFont;
+            document.body.classList.toggle('senior-font', isLargeFont);
+            document.getElementById('lblFont').innerText = isLargeFont ? 'Letra: Grande (18.5px)' : 'Letra: Normal';
+        }
+
+        function resetSimulador() {
+            stopSpeech();
+            document.getElementById('selPayment').value = 'bizum';
+            const checks = document.querySelectorAll('.check-item input[type="checkbox"]');
+            checks.forEach(c => c.checked = false);
+            updateSimulation();
+        }
+
+        function toggleSpeech() {
+            if (!('speechSynthesis' in window)) {
+                alert('La síntesis de voz no está soportada en este navegador.');
+                return;
+            }
+            if (window.speechSynthesis.speaking) {
+                stopSpeech();
+                return;
+            }
+            const pKey = document.getElementById('selPayment').value;
+            const data = PAYMENTS[pKey];
+            const textToSpeak = `${data.title}. ${data.desc}. Seguridad: ${data.security}. Tiempo de pago: ${data.speed}. Riesgo de pérdida: ${data.lossRisk}. ${data.advice}`;
+            
+            const utterance = new SpeechSynthesisUtterance(textToSpeak);
+            utterance.lang = 'es-ES';
+            utterance.rate = 0.92;
+            utterance.pitch = 1.0;
+            
+            const voices = window.speechSynthesis.getVoices();
+            const esVoice = voices.find(v => v.lang === 'es-ES') || voices.find(v => v.lang.startsWith('es'));
+            if (esVoice) utterance.voice = esVoice;
+
+            const btn = document.getElementById('btnSpeak');
+            const lbl = document.getElementById('lblSpeak');
+            btn.classList.add('active-speech');
+            lbl.innerText = 'Detener Voz';
+
+            utterance.onend = () => {
+                btn.classList.remove('active-speech');
+                lbl.innerText = 'Escuchar Explicación';
+            };
+            utterance.onerror = () => {
+                btn.classList.remove('active-speech');
+                lbl.innerText = 'Escuchar Explicación';
+            };
+
+            window.speechSynthesis.speak(utterance);
+        }
+
+        function stopSpeech() {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+            }
+            const btn = document.getElementById('btnSpeak');
+            const lbl = document.getElementById('lblSpeak');
+            if (btn && lbl) {
+                btn.classList.remove('active-speech');
+                lbl.innerText = 'Escuchar Explicación';
             }
         }
 

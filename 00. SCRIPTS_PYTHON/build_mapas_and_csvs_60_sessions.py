@@ -107,7 +107,7 @@ def clean_title_from_filename(filename, session_num=1):
     if 'COD-004' in f_up or ('COD-' in f_up and session_num == 4):
         return 'Simulador 3D del Ojo Humano con Gemini (Anatomía Óptica)'
     if 'COD-005' in f_up or ('COD-' in f_up and session_num == 5):
-        return 'Taller: Crea tu propio simulador 3D del Sistema Solar'
+        return 'Simulador 3D del Sistema Solar con Gemini (Órbitas Planetarias)'
     if 'COD-006' in f_up or ('COD-' in f_up and session_num == 6):
         return 'Taller: Crea tu propio simulador del cerebro humano'
     if 'COD-007' in f_up or ('COD-' in f_up and session_num == 7):
@@ -270,6 +270,14 @@ def generate_columns_html(session_num, session_folder, files):
                 return (2, 4, 2, filename.lower())
             if 'COD-004' in f_up or 'TALLER' in f_up or 'COD-' in f_up:
                 return (2, 5, 1, filename.lower())
+        if session_num == 5:
+            f_up = filename.upper()
+            if 'FRAC-063' in f_up and filename.lower().endswith('.pdf'):
+                return (2, 4, 1, filename.lower())
+            if 'FRAC-019' in f_up and filename.lower().endswith('.pdf'):
+                return (2, 4, 2, filename.lower())
+            if 'COD-005' in f_up or 'TALLER' in f_up or 'COD-' in f_up:
+                return (2, 5, 1, filename.lower())
         return file_sort_key(filename)
 
     # Filtrar archivos reales de contenido (ignorando duplicados de sincronización de iCloud ' 2.pdf', modelos .glb y assets auxiliares)
@@ -288,6 +296,8 @@ def generate_columns_html(session_num, session_folder, files):
         and not (session_num == 3 and 'FRAC-022' in f.upper() and f.lower().endswith('.mp4'))
         and not (session_num == 4 and 'FRAC-040' in f.upper() and f.lower().endswith('.mp4'))
         and not (session_num == 4 and 'FRAC-002' in f.upper() and f.lower().endswith('.mp4'))
+        and not (session_num == 5 and 'FRAC-063' in f.upper() and f.lower().endswith('.mp4'))
+        and not (session_num == 5 and 'FRAC-019' in f.upper() and f.lower().endswith('.mp4'))
     ]
     
     # Clasificar archivos por columna (1, 2 o 3)
@@ -459,6 +469,50 @@ def generate_columns_html(session_num, session_folder, files):
                             📄 Abrir Ficha Didáctica (PDF) ↗
                         </a>
                     </div>"""
+            elif session_num == 5 and 'FRAC-063' in it["filename"].upper():
+                mp4_href = urllib.parse.quote("4. FRAC-063 LA MÚSICA QUE GUSTA AL CEREBRO (Ruido Rosa) 🧠🎶.mp4")
+                cards_html += f"""
+                    <div class="file-card file-card-special">
+                        <a href="{rel_href}" target="_blank" class="file-card-special-top" title="Abrir Ficha Didáctica (PDF)">
+                            <div class="file-left">
+                                <span class="file-num">{it["step_num"]}</span>
+                                <span class="file-tag tag-pdf">PACK</span>
+                                <div class="file-details">
+                                    <span class="file-title">Ruido Rosa (La Música que Gusta al Cerebro) 🧠🎶</span>
+                                    <span class="file-desc">Fractal de la Naturaleza • Ficha Didáctica + Vídeo HD</span>
+                                </div>
+                            </div>
+                            <span class="file-arrow">↗</span>
+                        </a>
+                        <a href="{mp4_href}" target="_blank" class="btn-launch-interactive" style="background:linear-gradient(135deg, #0284c7, #0369a1); border-color:#38bdf8;" title="Ver Vídeo HD de Ruido Rosa y Ritmos Biológicos (MP4)">
+                            🎬 Ver Vídeo: Ruido Rosa y Ritmos Biológicos 🧠🎶 (MP4) ↗
+                        </a>
+                        <a href="{rel_href}" target="_blank" class="btn-launch-interactive" style="margin-top:6px; background:linear-gradient(135deg, #d97706, #b45309); border-color:#fbbf24;" title="Abrir Ficha Didáctica (PDF)">
+                            📄 Abrir Ficha Didáctica (PDF) ↗
+                        </a>
+                    </div>"""
+            elif session_num == 5 and 'FRAC-019' in it["filename"].upper():
+                mp4_href = urllib.parse.quote("4. FRAC-019 EL COPO DE NIEVE DE KOCH ❄️📐.mp4")
+                cards_html += f"""
+                    <div class="file-card file-card-special">
+                        <a href="{rel_href}" target="_blank" class="file-card-special-top" title="Abrir Ficha Didáctica (PDF)">
+                            <div class="file-left">
+                                <span class="file-num">{it["step_num"]}</span>
+                                <span class="file-tag tag-pdf">PACK</span>
+                                <div class="file-details">
+                                    <span class="file-title">El Copo de Nieve de Koch (Geometría Fractal) ❄️📐</span>
+                                    <span class="file-desc">Fractal Matemático Puro • Ficha Didáctica + Vídeo HD</span>
+                                </div>
+                            </div>
+                            <span class="file-arrow">↗</span>
+                        </a>
+                        <a href="{mp4_href}" target="_blank" class="btn-launch-interactive" style="background:linear-gradient(135deg, #0284c7, #0369a1); border-color:#38bdf8;" title="Ver Vídeo HD de Copo de Nieve de Koch (MP4)">
+                            🎬 Ver Vídeo: Copo de Nieve de Koch ❄️📐 (MP4) ↗
+                        </a>
+                        <a href="{rel_href}" target="_blank" class="btn-launch-interactive" style="margin-top:6px; background:linear-gradient(135deg, #be123c, #9f1239); border-color:#fb7185;" title="Abrir Ficha Didáctica (PDF)">
+                            📄 Abrir Ficha Didáctica (PDF) ↗
+                        </a>
+                    </div>"""
             elif it.get("code") == "COD":
                 sim_btn = ""
                 if session_num == 1:
@@ -483,15 +537,15 @@ def generate_columns_html(session_num, session_folder, files):
                         </a>"""
                 elif session_num == 5:
                     sim_btn = """
-                        <a href="SIMULADOR_SISTEMA_SOLAR_3D.html" target="_blank" class="btn-launch-interactive" style="margin-top:6px; background:linear-gradient(135deg, #d97706, #b45309); border-color:#fbbf24;" title="Abrir Simulador 3D del Sistema Solar (Fotogrametría Satelital NASA)">
-                            🪐 Ver Simulador Sistema Solar 3D ↗
+                        <a href="SIMULADOR_SISTEMA_SOLAR_3D.html" target="_blank" class="btn-launch-interactive" style="background:linear-gradient(135deg, #d97706, #b45309); border-color:#fbbf24;" title="Abrir Simulador 3D del Sistema Solar (Copia de Respaldo BKP)">
+                            🪐 Ver Simulador Sistema Solar 3D (BKP) ↗
                         </a>"""
                 elif session_num == 6:
                     sim_btn = """
                         <a href="SIMULADOR_CEREBRO_3D.html" target="_blank" class="btn-launch-interactive" style="margin-top:6px; background:linear-gradient(135deg, #7c3aed, #6d28d9); border-color:#c084fc;" title="Abrir Simulador 3D del Cerebro Humano y Red Sináptica">
                             🧠 Ver Simulador Cerebro 3D ↗
                         </a>"""
-                if session_num in (1, 2, 3, 4):
+                if session_num in (1, 2, 3, 4, 5):
                     cards_html += f"""
                     <div class="file-card file-card-special">
                         <a href="{rel_href}" target="_blank" class="file-card-special-top" title="Abrir Ficha Guía de Tareas (PDF)">
@@ -1224,7 +1278,7 @@ def process_all_sessions():
         session_path = os.path.join(SESSIONS_DIR, session_folder_name)
             
         # Sincronizar probador interactivo personalizado para la sesión (solo botón de esta sesión)
-        if session_num in (1, 2, 3, 4):
+        if session_num in (1, 2, 3, 4, 5):
             prob_path = os.path.join(session_path, "PROBADOR_CODIGO_IA.html")
             if os.path.exists(prob_path):
                 try:
