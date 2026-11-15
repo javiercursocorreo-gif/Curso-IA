@@ -214,6 +214,10 @@ def clean_title_from_filename(filename, session_num=1):
     f_up = filename.upper()
     if 'GEM-003' in f_up or 'INFO-003' in f_up:
         return '4 Grandes Novedades de Gemini y Google IA (Gmail, Buscador y Canvas)'
+    if 'INFO-004' in f_up:
+        return 'La IA es la Máquina Más Grande de la Historia (Infografía 7 Pisos)'
+    if 'INFO-005' in f_up:
+        return 'El Plan Maestro de Integración Vertical de IA (Infografía)'
     if 'NIV-' in f_up or 'NIV_' in f_up:
         m_niv = re.search(r'NIV-(\d+)', f_up)
         if m_niv:
@@ -399,6 +403,7 @@ def generate_columns_html(session_num, session_folder, files):
         and not (session_num == 1 and 'FRAC-058' in f.upper() and f.lower().endswith('.pdf'))
         and not (session_num == 2 and 'FRAC-055' in f.upper() and f.lower().endswith('.mp4'))
         and not (session_num in SESSION_FRAC_MAP and 'FRAC-' in f.upper() and f.lower().endswith('.mp4'))
+        and not (('INFO-' in f.upper() or 'GEM-' in f.upper()) and f.lower().endswith(('.jpg', '.jpeg', '.png')))
     ]
     
     # Clasificar archivos por columna (1, 2 o 3)
@@ -592,6 +597,29 @@ def generate_columns_html(session_num, session_folder, files):
                         </a>{sim_btn}
                     </div>"""
             elif it.get("code") in ("GEM", "INFO"):
+                info_jpg = None
+                info_sim = None
+                for candidate in files:
+                    c_up = candidate.upper()
+                    if ('INFO-' in c_up or 'GEM-' in c_up) and candidate.lower().endswith(('.jpg', '.jpeg', '.png')):
+                        info_jpg = candidate
+                    if ('SIMULADOR' in c_up or 'APP' in c_up) and ('INFO' in c_up or 'GEMINI' in c_up or 'NOVEDADES' in c_up) and candidate.lower().endswith('.html'):
+                        info_sim = candidate
+
+                btn1_html = ""
+                if info_sim:
+                    btn1_html = f"""
+                        <a href="{urllib.parse.quote(info_sim)}" target="_blank" class="btn-launch-interactive" style="background:linear-gradient(135deg, #1d4ed8, #2563eb); border-color:#60a5fa;" title="Abrir App Interactiva">
+                            ✨ Abrir App Interactiva (HTML) ↗
+                        </a>"""
+                elif info_jpg:
+                    btn1_html = f"""
+                        <a href="{urllib.parse.quote(info_jpg)}" target="_blank" class="btn-launch-interactive" style="background:linear-gradient(135deg, #0284c7, #0369a1); border-color:#38bdf8;" title="Ver Infografía Completa en Alta Resolución (HD)">
+                            🖼️ Ver Infografía en Alta Resolución (HD) ↗
+                        </a>"""
+
+                btn2_margin = 'style="margin-top:6px; background:linear-gradient(135deg, #334155, #1e293b); border-color:#64748b;"' if btn1_html else 'style="background:linear-gradient(135deg, #1e293b, #0f172a); border-color:#64748b;"'
+
                 cards_html += f"""
                     <div class="file-card file-card-special" style="background: rgba(66, 133, 244, 0.08); border-color: rgba(66, 133, 244, 0.35);">
                         <a href="{rel_href}" target="_blank" class="file-card-special-top" title="Abrir Ficha Didáctica / Infografía (PDF)">
@@ -604,11 +632,8 @@ def generate_columns_html(session_num, session_folder, files):
                                 </div>
                             </div>
                             <span class="file-arrow">↗</span>
-                        </a>
-                        <a href="SIMULADOR_NOVEDADES_GEMINI.html" target="_blank" class="btn-launch-interactive" style="background:linear-gradient(135deg, #1d4ed8, #2563eb); border-color:#60a5fa;" title="Abrir App Interactiva de 4 Pestañas">
-                            ✨ Abrir App Interactiva de 4 Pestañas (HTML) ↗
-                        </a>
-                        <a href="{rel_href}" target="_blank" class="btn-launch-interactive" style="margin-top:6px; background:linear-gradient(135deg, #334155, #1e293b); border-color:#64748b;" title="Abrir Ficha Didáctica y Prompts (PDF)">
+                        </a>{btn1_html}
+                        <a href="{rel_href}" target="_blank" class="btn-launch-interactive" {btn2_margin} title="Abrir Ficha Didáctica y Prompts (PDF)">
                             📄 Abrir Ficha Didáctica e Infografía (PDF) ↗
                         </a>
                     </div>"""
