@@ -215,9 +215,9 @@ def clean_title_from_filename(filename, session_num=1):
     if 'GEM-003' in f_up or 'INFO-003' in f_up:
         return '4 Grandes Novedades de Gemini y Google IA (Gmail, Buscador y Canvas)'
     if 'INFO-004' in f_up:
-        return 'Taller Rápido: Google Flow (Estudio de Cine y Vídeo con IA - 50 Créditos Diarios)'
-    if 'INFO-005' in f_up:
         return 'La IA es la Máquina Más Grande de la Historia (Infografía 7 Pisos)'
+    if 'INFO-005' in f_up:
+        return 'Taller Rápido: Google Flow (Estudio de Cine y Vídeo con IA - 50 Créditos Diarios)'
     if 'INFO-006' in f_up:
         return 'El Plan Maestro de Integración Vertical de IA (Infografía)'
     if 'NIV-' in f_up or 'NIV_' in f_up:
@@ -616,7 +616,7 @@ def generate_columns_html(session_num, session_folder, files):
                         info_sim = candidate
 
                 btn1_html = ""
-                if 'INFO-004' in it.get("filename", "").upper():
+                if 'INFO-005' in it.get("filename", "").upper():
                     btn1_html = """
                         <a href="https://labs.google/flow" target="_blank" class="btn-launch-interactive" style="background:linear-gradient(135deg, #1d4ed8, #2563eb); border-color:#60a5fa;" title="Abrir Google Flow (Estudio de Cine y Vídeo con IA)">
                             🎬 Abrir Google Flow (labs.google/flow) ↗
