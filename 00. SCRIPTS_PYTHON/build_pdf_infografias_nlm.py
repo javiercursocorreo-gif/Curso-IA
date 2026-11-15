@@ -247,7 +247,29 @@ stream
 def generate_all_infografias():
     root_s4 = "/Users/externo/Library/Mobile Documents/com~apple~CloudDocs/PERSONAL/CLASES DE TECNOLOGÍA/CURSO-IA/CLASES/EXPORTACION_FICHAS_CLASSROOM_PDF/100. [SESSIONS] TERNAS_LISTAS_PARA_CLASSROOM/04_Sesion"
     root_s5 = "/Users/externo/Library/Mobile Documents/com~apple~CloudDocs/PERSONAL/CLASES DE TECNOLOGÍA/CURSO-IA/CLASES/EXPORTACION_FICHAS_CLASSROOM_PDF/100. [SESSIONS] TERNAS_LISTAS_PARA_CLASSROOM/05_Sesion"
+    root_s6 = "/Users/externo/Library/Mobile Documents/com~apple~CloudDocs/PERSONAL/CLASES DE TECNOLOGÍA/CURSO-IA/CLASES/EXPORTACION_FICHAS_CLASSROOM_PDF/100. [SESSIONS] TERNAS_LISTAS_PARA_CLASSROOM/06_Sesion"
     master_dir = "/Users/externo/Library/Mobile Documents/com~apple~CloudDocs/PERSONAL/CLASES DE TECNOLOGÍA/CURSO-IA/CLASES/EXPORTACION_FICHAS_CLASSROOM_PDF/15. [INFO] BLOQUE_15_INFOGRAFIAS_Y_NOVEDADES_IA/Lote_01_al_20"
+
+    # Purgar residuos obsoletos de INFO-005 Plan Maestro
+    old_info5_jpg = os.path.join(master_dir, "INFO-005_El_Plan_Maestro_de_Integracion_Vertical_de_IA.jpg")
+    old_info5_pdf = os.path.join(master_dir, "INFO-005_El_Plan_Maestro_de_Integracion_Vertical_de_IA.pdf")
+    if os.path.exists(old_info5_jpg):
+        os.remove(old_info5_jpg)
+    if os.path.exists(old_info5_pdf):
+        os.remove(old_info5_pdf)
+
+    # Renombrar en Bloque 15 si existía INFO-006 La Ruptura de Internet -> INFO-007 para no colisionar
+    ruptura_old = os.path.join(master_dir, "INFO-006_La_Ruptura_de_Internet_Agentes_de_IA_vs_Modelo_Publicitario.jpg")
+    ruptura_new = os.path.join(master_dir, "INFO-007_La_Ruptura_de_Internet_Agentes_de_IA_vs_Modelo_Publicitario.jpg")
+    if os.path.exists(ruptura_old) and not os.path.exists(ruptura_new):
+        os.rename(ruptura_old, ruptura_new)
+        print("📦 Renombrado INFO-006 Ruptura de Internet a INFO-007")
+
+    # Copiar Ficha Google Flow a Bloque 15 si está en Sesión 05
+    flow_s5 = os.path.join(root_s5, "1. INFO-005_Taller_Google_Flow_Video_con_IA.pdf")
+    flow_master = os.path.join(master_dir, "INFO-005_Taller_Google_Flow_Video_con_IA.pdf")
+    if os.path.exists(flow_s5):
+        shutil.copy2(flow_s5, flow_master)
 
     # INFOGRAFÍA 4 (Sesión 04)
     jpg4 = os.path.join(master_dir, "INFO-004_La_IA_es_la_Maquina_Mas_Grande_de_la_Historia.jpg")
@@ -255,49 +277,56 @@ def generate_all_infografias():
     dest_pdf4 = os.path.join(root_s4, "1. INFO-004_La_IA_es_la_Maquina_Mas_Grande_de_la_Historia.pdf")
     master_pdf4 = os.path.join(master_dir, "INFO-004_La_IA_es_la_Maquina_Mas_Grande_de_la_Historia.pdf")
 
-    shutil.copy2(jpg4, dest_jpg4)
+    if os.path.exists(jpg4):
+        shutil.copy2(jpg4, dest_jpg4)
+        create_infografia_pdf(
+            dest_pdf4,
+            jpg4,
+            "SESION 04 • INFOGRAFIA Y NOVEDADES IA [INFO-004]",
+            "La IA es la Maquina Mas Grande de la Historia",
+            "La Inteligencia Artificial no flota en una nube abstracta; es una gigantesca cadena industrial de 7 niveles fisicos interconectados en todo el planeta con inversiones previstas de mas de un billon de dolares anuales.",
+            [
+                ("Los 7 Pisos de la Gran Maquina:", "Piso 1 Modelo -> Piso 2 Chip -> Piso 3 Fabrica (TSMC) -> Piso 4 Litografia (ASML) -> Piso 5 Memoria (HBM) -> Piso 6 Centro de Datos -> Piso 7 Mundo Fisico (cobre, agua y turbinas)."),
+                ("Los 4 Frenos Fisicos de la Expansion:", "1. Energia Electrica (consumira tanto como Japon en 2030) | 2. Escasez de Memoria HBM | 3. Mineria del Cobre (abrir una mina toma de 17 a 29 anos) | 4. Falta de electricistas y mano de obra cualificada.")
+            ],
+            [
+                ("El Impacto Economico:", "Gemini, ¿por que se compara la infraestructura de IA (2,5% PIB) con el ferrocarril del siglo XIX (6% PIB) en lugar de una simple burbuja punto com?"),
+                ("El Agua y la Electricidad en el Hogar:", "Gemini, ¿como pueden convivir los centros de datos masivos con las necesidades de suministro de agua y luz de las ciudades?"),
+                ("Soberania Tecnologica:", "Gemini, ¿por que depender de una sola fabrica en Taiwan (TSMC) y una sola maquina en Holanda (ASML) convierte a la IA en un asunto geopolitico critico?")
+            ]
+        )
+        shutil.copy2(dest_pdf4, master_pdf4)
+
+    # INFOGRAFÍA 6 (Sesión 06) - El Plan Maestro de Integración Vertical de IA
+    # Usar la nueva imagen limpia de NotebookLM
+    user_img = "/Users/externo/.gemini/antigravity/brain/17d6cb63-82ca-4daa-9a67-ead6d748d2d0/.user_uploaded/media_1794779289258_a5b88413.jpg"
+    dest_jpg6 = os.path.join(root_s6, "1. INFO-006_El_Plan_Maestro_de_Integracion_Vertical_de_IA.jpg")
+    dest_pdf6 = os.path.join(root_s6, "1. INFO-006_El_Plan_Maestro_de_Integracion_Vertical_de_IA.pdf")
+    master_jpg6 = os.path.join(master_dir, "INFO-006_El_Plan_Maestro_de_Integracion_Vertical_de_IA.jpg")
+    master_pdf6 = os.path.join(master_dir, "INFO-006_El_Plan_Maestro_de_Integracion_Vertical_de_IA.pdf")
+
+    if os.path.exists(user_img):
+        shutil.copy2(user_img, dest_jpg6)
+        shutil.copy2(user_img, master_jpg6)
+        print("✅ Imagen actualizada copiada a Sesión 06 y Bloque 15")
+
     create_infografia_pdf(
-        dest_pdf4,
-        jpg4,
-        "SESION 04 • INFOGRAFIA Y NOVEDADES IA [INFO-004]",
-        "La IA es la Maquina Mas Grande de la Historia",
-        "La Inteligencia Artificial no flota en una nube abstracta; es una gigantesca cadena industrial de 7 niveles fisicos interconectados en todo el planeta con inversiones previstas de mas de un billon de dolares anuales.",
+        dest_pdf6,
+        dest_jpg6,
+        "SESION 06 • INFOGRAFIA Y NOVEDADES IA [INFO-006]",
+        "El Plan Maestro de Integracion Vertical en IA",
+        "Estrategia de integracion vertical inspirada en el modelo de la Standard Oil (1870): unificar en una sola arquitectura industrial desde el transporte espacial orbital y centros de datos hasta la fabricacion de silicio, modelos de IA y aplicaciones directas.",
         [
-            ("Los 7 Pisos de la Gran Maquina:", "Piso 1 Modelo -> Piso 2 Chip -> Piso 3 Fabrica (TSMC) -> Piso 4 Litografia (ASML) -> Piso 5 Memoria (HBM) -> Piso 6 Centro de Datos -> Piso 7 Mundo Fisico (cobre, agua y turbinas)."),
-            ("Los 4 Frenos Fisicos de la Expansion:", "1. Energia Electrica (consumira tanto como Japon en 2030) | 2. Escasez de Memoria HBM | 3. Mineria del Cobre (abrir una mina toma de 17 a 29 anos) | 4. Falta de electricistas y mano de obra cualificada.")
+            ("Los 5 Niveles de la Piramide de Integracion:", "Nivel 1: Transporte Espacial (Starship, 200 $/kg) | Nivel 2: Conectividad Orbital (>80% masa orbital global, 10,6M usuarios) | Nivel 3: Centros de Datos (Cluster Colossus 10 GW en 2027) | Nivel 4: Fabricacion de Silicio (Proyecto Terafab de 300.000 a 500.000 M$) | Nivel 5: Software y Modelos (Herramientas para reducir coste de inferencia)."),
+            ("Riesgos y Presiones del Ecosistema:", "1. Convergencia Fisica: Robots humanoides y automocion conectados al cerebro digital | 2. Alta Intensidad de Capital: CapEx trimestral de hasta 40.000 millones $ | 3. Presion Regulatoria: Riesgo de medidas antimonopolio por concentracion industrial.")
         ],
         [
-            ("El Impacto Economico:", "Gemini, ¿por que se compara la infraestructura de IA (2,5% PIB) con el ferrocarril del siglo XIX (6% PIB) en lugar de una simple burbuja punto com?"),
-            ("El Agua y la Electricidad en el Hogar:", "Gemini, ¿como pueden convivir los centros de datos masivos con las necesidades de suministro de agua y luz de las ciudades?"),
-            ("Soberania Tecnologica:", "Gemini, ¿por que depender de una sola fabrica en Taiwan (TSMC) y una sola maquina en Holanda (ASML) convierte a la IA en un asunto geopolitico critico?")
+            ("El Modelo Rockefeller (1870) vs Era Digital:", "Gemini, ¿en que se parece controlar la energia, los cohetes, los satelites y los chips al monopolio del 90% del refinado que consiguio Rockefeller con la Standard Oil?"),
+            ("Centros de Datos y Enfriamiento Orbital:", "Gemini, ¿por que enviar servidores al espacio y conectarlos via laser en orbita podria resolver los problemas de consumo de agua y energia en tierra?"),
+            ("Convergencia entre IA y Robotica Fisica:", "Gemini, ¿que ventaja competitiva tiene una empresa si su mismo modelo de IA gobierna un coche autonomo, un robot de fabrica y un satelite?")
         ]
     )
-    shutil.copy2(dest_pdf4, master_pdf4)
-
-    # INFOGRAFÍA 5 (Sesión 05)
-    jpg5 = os.path.join(master_dir, "INFO-005_El_Plan_Maestro_de_Integracion_Vertical_de_IA.jpg")
-    dest_jpg5 = os.path.join(root_s5, "1. INFO-005_El_Plan_Maestro_de_Integracion_Vertical_de_IA.jpg")
-    dest_pdf5 = os.path.join(root_s5, "1. INFO-005_El_Plan_Maestro_de_Integracion_Vertical_de_IA.pdf")
-    master_pdf5 = os.path.join(master_dir, "INFO-005_El_Plan_Maestro_de_Integracion_Vertical_de_IA.pdf")
-
-    shutil.copy2(jpg5, dest_jpg5)
-    create_infografia_pdf(
-        dest_pdf5,
-        jpg5,
-        "SESION 05 • INFOGRAFIA Y NOVEDADES IA [INFO-005]",
-        "El Plan Maestro de Integracion Vertical de IA",
-        "Estrategia de monopolio e integracion vertical inspirada en Rockefeller (1870): unificar la produccion de chips, la energia, los centros de datos orbitales, los modelos fundacionales y la distribucion de agentes al usuario final.",
-        [
-            ("Fundamentos de la Estrategia Vertical:", "Reduccion del 85% en costes de transporte con SpaceX, salida a bolsa de $75.000M e infraestructura orbital Starmind con centros de datos en el espacio exterior."),
-            ("La Cadena Tecnologica Integrada:", "1. Silicio y Computo: Superordenador Colossus y fabrica Terafap (10 GW en 2027) | 2. Modelos y Algoritmos: Modelos Grok de bajo coste | 3. Aplicacion y Distribucion: Adquisicion de Cursor y agentes Grokbot.")
-        ],
-        [
-            ("El Modelo Rockefeller en la Era Digital:", "Gemini, ¿en que se parece la estrategia de controlar desde la energia hasta el software con el monopolio petrolifero de la Standard Oil en 1870?"),
-            ("Centros de Datos en Orbita:", "Gemini, ¿cuales son las ventajas de refrigeracion y energia solar continua al colocar servidores de IA en el espacio con satelites Starlink?"),
-            ("De Asistentes a Agentes Ejecutores:", "Gemini, ¿por que la adquisicion de herramientas como Cursor y agentes autonomos es la pieza clave para monetizar la IA ante el gran publico?")
-        ]
-    )
-    shutil.copy2(dest_pdf5, master_pdf5)
+    shutil.copy2(dest_pdf6, master_pdf6)
 
 if __name__ == '__main__':
     generate_all_infografias()
