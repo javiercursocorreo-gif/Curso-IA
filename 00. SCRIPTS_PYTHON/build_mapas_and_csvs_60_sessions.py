@@ -542,10 +542,15 @@ def generate_columns_html(session_num, session_folder, files):
                         <a href="SIMULADOR_CEREBRO_3D.html" target="_blank" class="btn-launch-interactive" style="margin-top:6px; background:linear-gradient(135deg, #7c3aed, #6d28d9); border-color:#c084fc;" title="Abrir Simulador 3D del Cerebro Humano y Red Sináptica (Copia de Respaldo BKP)">
                             🧠 Ver Simulador Cerebro 3D (BKP) ↗
                         </a>"""
+                elif session_num == 7:
+                    sim_btn = """
+                        <a href="SIMULADOR_LUNA_3D.html" target="_blank" class="btn-launch-interactive" style="margin-top:6px; background:linear-gradient(135deg, #0284c7, #0369a1); border-color:#38bdf8;" title="Abrir Atlas Lunar 3D y Programa Artemisa (Copia de Respaldo BKP)">
+                            🌕 Ver Simulador Luna Artemisa 3D (BKP) ↗
+                        </a>"""
                 
-                # Botón interactivo secundario (simulador específico o probador para sesiones 7+)
+                # Botón interactivo secundario (simulador específico o probador para sesiones 8+)
                 interactive_btn = sim_btn
-                if not interactive_btn and session_num > 6:
+                if not interactive_btn and session_num > 7:
                     interactive_btn = f"""
                         <a href="PROBADOR_CODIGO_IA.html?sesion={session_num}" target="_blank" class="btn-launch-interactive" style="margin-top:6px; background:linear-gradient(135deg, #0284c7, #0369a1); border-color:#38bdf8;" title="Abrir Taller Oficial de Pruebas">
                             🚀 Abrir Taller Interactivo de Pruebas ↗
@@ -1288,7 +1293,7 @@ def process_all_sessions():
         session_path = os.path.join(SESSIONS_DIR, session_folder_name)
             
         # Sincronizar probador interactivo personalizado para la sesión (solo botón de esta sesión)
-        if session_num in (1, 2, 3, 4, 5):
+        if session_num in (1, 2, 3, 4, 5, 6, 7):
             prob_path = os.path.join(session_path, "PROBADOR_CODIGO_IA.html")
             if os.path.exists(prob_path):
                 try:

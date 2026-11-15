@@ -469,6 +469,16 @@
                     <div class="kpi-lbl">Próxima Destreza</div>
                 </div>
             </div>
+
+            <!-- BOTONES DE ERGONOMÍA SENIOR (+65): VOZ Y RESET -->
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:4px;">
+                <button type="button" class="btn-action" onclick="speakDiagnosis()" style="background:linear-gradient(135deg, #0284c7, #0369a1); border:1px solid #38bdf8; font-size:0.88rem; padding:10px 14px; text-align:center; justify-content:center; display:flex; align-items:center; gap:6px;">
+                    🔊 Escuchar Voz
+                </button>
+                <button type="button" class="btn-action" onclick="resetSimulation()" style="background:rgba(255,255,255,0.06); border:1px solid var(--border); color:#cbd5e1; font-size:0.88rem; padding:10px 14px; text-align:center; justify-content:center; display:flex; align-items:center; gap:6px;">
+                    🔄 Reset Inicial
+                </button>
+            </div>
         </aside>
 
         <main class="dashboard-panel">
@@ -704,6 +714,36 @@ Requisitos:<br>
         function closePromptModal(e) {
             if (e && e.target !== e.currentTarget && e.target.tagName !== 'BUTTON') return;
             document.getElementById('promptModal').style.display = 'none';
+        }
+
+        function resetSimulation() {
+            document.getElementById('chkLavadora').checked = true;
+            document.getElementById('chkMicroondas').checked = true;
+            document.getElementById('chkSmartTv').checked = true;
+            document.getElementById('chkAlexa').checked = false;
+            document.getElementById('chkGemini').checked = false;
+            document.getElementById('rngConfidence').value = 4;
+            updateSimulation();
+            if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+        }
+
+        function speakDiagnosis() {
+            if (!('speechSynthesis' in window)) {
+                alert("Tu navegador no soporta síntesis de voz.");
+                return;
+            }
+            window.speechSynthesis.cancel();
+            const title = document.getElementById('heroTitle').innerText;
+            const desc = document.getElementById('heroDesc').innerText;
+            const hours = document.getElementById('valSavedHours').innerText;
+            const rank = document.getElementById('valLevelRank').innerText;
+            const textToSpeak = `Diagnóstico de automatización en tu hogar: ${title}. Tu nivel actual es ${rank}. Ahorras un tiempo estimado de ${hours} a la semana. ${desc}`;
+            
+            const utter = new SpeechSynthesisUtterance(textToSpeak);
+            utter.lang = 'es-ES';
+            utter.rate = 0.95;
+            utter.pitch = 1.0;
+            window.speechSynthesis.speak(utter);
         }
 
         window.onload = updateSimulation;
