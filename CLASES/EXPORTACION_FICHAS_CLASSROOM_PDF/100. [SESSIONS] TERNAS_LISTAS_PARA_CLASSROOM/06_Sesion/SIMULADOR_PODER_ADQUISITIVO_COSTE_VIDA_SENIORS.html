@@ -451,6 +451,16 @@
                     <div class="kpi-lbl">Nivel de Desahogo</div>
                 </div>
             </div>
+
+            <!-- BOTONES DE ERGONOMÍA SENIOR (+65): VOZ Y RESET -->
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:4px;">
+                <button type="button" class="btn-action" onclick="speakDiagnosis()" style="background:linear-gradient(135deg, #0284c7, #0369a1); border:1px solid #38bdf8; font-size:0.88rem; padding:10px 14px; text-align:center; justify-content:center; display:flex; align-items:center; gap:6px;">
+                    🔊 Escuchar Voz
+                </button>
+                <button type="button" class="btn-action" onclick="resetSimulation()" style="background:rgba(255,255,255,0.06); border:1px solid var(--border); color:#cbd5e1; font-size:0.88rem; padding:10px 14px; text-align:center; justify-content:center; display:flex; align-items:center; gap:6px;">
+                    🔄 Reset Inicial
+                </button>
+            </div>
         </aside>
 
         <main class="dashboard-panel">
@@ -704,6 +714,35 @@ Requisitos:<br>
         function closePromptModal(e) {
             if (e && e.target !== e.currentTarget && e.target.tagName !== 'BUTTON') return;
             document.getElementById('promptModal').style.display = 'none';
+        }
+
+        function resetSimulation() {
+            document.getElementById('rngPension').value = 1750;
+            document.getElementById('rngFood').value = 380;
+            document.getElementById('rngUtilities').value = 220;
+            document.getElementById('rngHealth').value = 90;
+            document.getElementById('rngLeisure').value = 160;
+            updateSimulation();
+            if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+        }
+
+        function speakDiagnosis() {
+            if (!('speechSynthesis' in window)) {
+                alert("Tu navegador no soporta síntesis de voz.");
+                return;
+            }
+            window.speechSynthesis.cancel();
+            const title = document.getElementById('heroTitle').innerText;
+            const desc = document.getElementById('heroDesc').innerText;
+            const net = document.getElementById('valNetBalance').innerText;
+            const total = document.getElementById('valTotalCost').innerText;
+            const textToSpeak = `Diagnóstico de tu poder adquisitivo: ${title}. Tu gasto total mensual es de ${total}. Tu saldo neto resultante es de ${net}. ${desc}`;
+            
+            const utter = new SpeechSynthesisUtterance(textToSpeak);
+            utter.lang = 'es-ES';
+            utter.rate = 0.95;
+            utter.pitch = 1.0;
+            window.speechSynthesis.speak(utter);
         }
 
         window.onload = updateSimulation;

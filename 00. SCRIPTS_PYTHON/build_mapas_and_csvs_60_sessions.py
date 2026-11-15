@@ -509,66 +509,59 @@ def generate_columns_html(session_num, session_folder, files):
                 sim_btn = ""
                 if session_num == 1:
                     sim_btn = """
-                        <a href="SIMULADOR_PULMONES_3D.html" target="_blank" class="btn-launch-interactive" style="background:linear-gradient(135deg, #0284c7, #0369a1); border-color:#38bdf8;" title="Abrir Simulador 3D del Árbol Bronquial y Pulmones (Copia de Respaldo BKP)">
+                        <a href="SIMULADOR_PULMONES_3D.html" target="_blank" class="btn-launch-interactive" style="margin-top:6px; background:linear-gradient(135deg, #0284c7, #0369a1); border-color:#38bdf8;" title="Abrir Simulador 3D del Árbol Bronquial y Pulmones (Copia de Respaldo BKP)">
                             🫁 Ver Simulador Pulmones 3D (BKP) ↗
                         </a>"""
                 elif session_num == 2:
                     sim_btn = """
-                        <a href="SIMULADOR_CORAZON_3D.html" target="_blank" class="btn-launch-interactive" style="background:linear-gradient(135deg, #be123c, #9f1239); border-color:#fb7185;" title="Abrir Simulador 3D del Latido Cardíaco Humano (Copia de Respaldo BKP)">
+                        <a href="SIMULADOR_CORAZON_3D.html" target="_blank" class="btn-launch-interactive" style="margin-top:6px; background:linear-gradient(135deg, #be123c, #9f1239); border-color:#fb7185;" title="Abrir Simulador 3D del Latido Cardíaco Humano (Copia de Respaldo BKP)">
                             🫀 Ver Simulador Corazón 3D (BKP) ↗
                         </a>"""
                 elif session_num == 3:
                     sim_btn = """
-                        <a href="SIMULADOR_POMPEYA_3D.html" target="_blank" class="btn-launch-interactive" style="background:linear-gradient(135deg, #d97706, #b45309); border-color:#fbbf24;" title="Abrir Tesoro Arqueológico HD de Pompeya (Copia de Respaldo BKP)">
+                        <a href="SIMULADOR_POMPEYA_3D.html" target="_blank" class="btn-launch-interactive" style="margin-top:6px; background:linear-gradient(135deg, #d97706, #b45309); border-color:#fbbf24;" title="Abrir Tesoro Arqueológico HD de Pompeya (Copia de Respaldo BKP)">
                             🏛️ Ver Tesoro Arqueológico 3D (BKP) ↗
                         </a>"""
                 elif session_num == 4:
                     sim_btn = """
-                        <a href="SIMULADOR_OJO_HUMANO_3D.html" target="_blank" class="btn-launch-interactive" style="background:linear-gradient(135deg, #0284c7, #0369a1); border-color:#38bdf8;" title="Abrir Simulador 3D del Ojo Humano y Cristalino (Copia de Respaldo BKP)">
+                        <a href="SIMULADOR_OJO_HUMANO_3D.html" target="_blank" class="btn-launch-interactive" style="margin-top:6px; background:linear-gradient(135deg, #0284c7, #0369a1); border-color:#38bdf8;" title="Abrir Simulador 3D del Ojo Humano y Cristalino (Copia de Respaldo BKP)">
                             👁️ Ver Simulador Ojo Humano 3D (BKP) ↗
                         </a>"""
                 elif session_num == 5:
                     sim_btn = """
-                        <a href="SIMULADOR_SISTEMA_SOLAR_3D.html" target="_blank" class="btn-launch-interactive" style="background:linear-gradient(135deg, #d97706, #b45309); border-color:#fbbf24;" title="Abrir Simulador 3D del Sistema Solar (Copia de Respaldo BKP)">
+                        <a href="SIMULADOR_SISTEMA_SOLAR_3D.html" target="_blank" class="btn-launch-interactive" style="margin-top:6px; background:linear-gradient(135deg, #d97706, #b45309); border-color:#fbbf24;" title="Abrir Simulador 3D del Sistema Solar (Copia de Respaldo BKP)">
                             🪐 Ver Simulador Sistema Solar 3D (BKP) ↗
                         </a>"""
                 elif session_num == 6:
                     sim_btn = """
-                        <a href="SIMULADOR_CEREBRO_3D.html" target="_blank" class="btn-launch-interactive" style="margin-top:6px; background:linear-gradient(135deg, #7c3aed, #6d28d9); border-color:#c084fc;" title="Abrir Simulador 3D del Cerebro Humano y Red Sináptica">
-                            🧠 Ver Simulador Cerebro 3D ↗
+                        <a href="SIMULADOR_CEREBRO_3D.html" target="_blank" class="btn-launch-interactive" style="margin-top:6px; background:linear-gradient(135deg, #7c3aed, #6d28d9); border-color:#c084fc;" title="Abrir Simulador 3D del Cerebro Humano y Red Sináptica (Copia de Respaldo BKP)">
+                            🧠 Ver Simulador Cerebro 3D (BKP) ↗
                         </a>"""
-                if session_num in (1, 2, 3, 4, 5):
-                    cards_html += f"""
+                
+                # Botón interactivo secundario (simulador específico o probador para sesiones 7+)
+                interactive_btn = sim_btn
+                if not interactive_btn and session_num > 6:
+                    interactive_btn = f"""
+                        <a href="PROBADOR_CODIGO_IA.html?sesion={session_num}" target="_blank" class="btn-launch-interactive" style="margin-top:6px; background:linear-gradient(135deg, #0284c7, #0369a1); border-color:#38bdf8;" title="Abrir Taller Oficial de Pruebas">
+                            🚀 Abrir Taller Interactivo de Pruebas ↗
+                        </a>"""
+
+                cards_html += f"""
                     <div class="file-card file-card-special">
-                        <a href="{rel_href}" target="_blank" class="file-card-special-top" title="Abrir Ficha Guía de Tareas (PDF)">
+                        <a href="{rel_href}" target="_blank" class="file-card-special-top" title="Abrir Ficha Guía y Prompt de Gemini (PDF)">
                             <div class="file-left">
                                 <span class="file-num">{it["step_num"]}</span>
                                 <span class="file-tag {it["tag_class"]}">{it["tag_text"]}</span>
                                 <div class="file-details">
                                     <span class="file-title">{it["title"]}</span>
-                                    <span class="file-desc">{it["cat"]} • Ficha de Tareas</span>
-                                </div>
-                            </div>
-                            <span class="file-arrow">↗</span>
-                        </a>{sim_btn}
-                    </div>"""
-                else:
-                    cards_html += f"""
-                    <div class="file-card file-card-special">
-                        <a href="{rel_href}" target="_blank" class="file-card-special-top" title="Abrir Ficha Guía de Tareas (PDF)">
-                            <div class="file-left">
-                                <span class="file-num">{it["step_num"]}</span>
-                                <span class="file-tag {it["tag_class"]}">{it["tag_text"]}</span>
-                                <div class="file-details">
-                                    <span class="file-title">{it["title"]}</span>
-                                    <span class="file-desc">{it["cat"]} • Ficha de Tareas</span>
+                                    <span class="file-desc">{it["cat"]} • Ficha de Tareas & Prompt</span>
                                 </div>
                             </div>
                             <span class="file-arrow">↗</span>
                         </a>
-                        <a href="PROBADOR_CODIGO_IA.html?sesion={session_num}" target="_blank" class="btn-launch-interactive" title="Abrir Taller Oficial de Pruebas">
-                            🚀 Abrir Taller Interactivo de Pruebas ↗
-                        </a>{sim_btn}
+                        <a href="{rel_href}" target="_blank" class="btn-launch-interactive" style="background:linear-gradient(135deg, #1e293b, #0f172a); border-color:#64748b;" title="Abrir Ficha Guía y Prompt Maestro de Gemini (PDF)">
+                            📄 Abrir Ficha Guía & Prompt de Gemini (PDF) ↗
+                        </a>{interactive_btn}
                     </div>"""
             elif it.get("code") == "NIV":
                 niv_item = NIV_MASTER_ITEMS[session_num - 1] if session_num <= len(NIV_MASTER_ITEMS) else {}
