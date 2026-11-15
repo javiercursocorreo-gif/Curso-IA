@@ -73,6 +73,15 @@ CSV_ROWS = [
         "url": GITHUB_BASE + "CLASES/2.%20INTRODUCCION_NLM/1.%20PRESENTACI%C3%93N%20A%20LOS%20ALUMNOS/Gui%CC%81a_Visual_de_Gemini_Notebook.pdf",
         "type": "pdf"
     },
+    {
+        "num": 3,
+        "file_suffix": "3_GEMINI_NOTEBOOK",
+        "tema": "Monográfico 3. Gemini Notebook: Tu Cuaderno Inteligente",
+        "titulo": "Ficha y Guía Completa del Alumno: Prácticas y Super-Trucos (PDF)",
+        "desc": "Manual paso a paso de prácticas: aislamiento con casillas, citas [1], casos de prueba botón a botón de Studio y super-truco anti-bloqueo para infografías.",
+        "url": GITHUB_BASE + "CLASES/2.%20INTRODUCCION_NLM/GUIA_COMPLETA_ALUMNO_NOTEBOOKLM_Y_PRACTICAS.pdf",
+        "type": "pdf"
+    },
     # MONOGRÁFICO 4 (ANTES 3)
     {
         "num": 4,

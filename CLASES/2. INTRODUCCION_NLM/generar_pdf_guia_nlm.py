@@ -507,6 +507,20 @@ def generar_pdf_completo():
         "3. El Legado 50 Años Después. Utiliza recuadros limpios, viñetas claras y tipografía nítida."
     )
 
+    flow.add_card_box(
+        "SUPER-TRUCO ANTI-BLOQUEO: QUÉ HACER SI DICE «NO SE PUDO GENERAR LA INFOGRAFÍA»",
+        [
+            "Causa del bloqueo: Los filtros de seguridad de Google rechazan generar infografías si en las fuentes o transcripciones aparecen nombres propios de personas vivas o figuras públicas.",
+            "Paso 1 (Texto Limpio en 3 líneas + Desglose): En el chat actual pídele a NotebookLM: 'Resume en solo 3 líneas el concepto general y haz un desglose estructurado y detallado para una infografía, pero ELIMINANDO OBLIGATORIAMENTE todos los nombres propios de personas vivas, sustituyéndolos por roles neutros (ej. ingenieros, directivos o investigadores)'.",
+            "Paso 2 (Copiar Respuesta): Copia el texto limpio y desglosado generado por NotebookLM.",
+            "Paso 3 (Nuevo Cuaderno Limpio): Crea un cuaderno nuevo en blanco (sin enlaces de YouTube ni fuentes viejas), pulsa '+ Añadir fuentes > Texto copiado', pega el texto limpio y pulsa el botón 'Infografía' en Studio. La infografía se generará de inmediato con total nitidez y sin errores."
+        ],
+        badge_text="TRUCO PRO",
+        border_color=(0.85, 0.55, 0.15),
+        bg_color=(1.00, 0.97, 0.92),
+        title_color=(0.80, 0.40, 0.05)
+    )
+
     # BOTÓN 3: RESUMEN DE VÍDEO
     flow.add_card_box(
         "BOTÓN 3: RESUMEN DE VÍDEO (FUSIÓN MULTIMEDIA EN 1 CLIC Y PASO A PASO)",
