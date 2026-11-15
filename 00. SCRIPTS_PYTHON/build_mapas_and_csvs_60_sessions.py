@@ -612,7 +612,7 @@ def generate_columns_html(session_num, session_folder, files):
                     c_up = candidate.upper()
                     if ('INFO-' in c_up or 'GEM-' in c_up) and candidate.lower().endswith(('.jpg', '.jpeg', '.png')):
                         info_jpg = candidate
-                    if ('SIMULADOR' in c_up or 'APP' in c_up) and ('INFO' in c_up or 'GEMINI' in c_up or 'NOVEDADES' in c_up) and candidate.lower().endswith('.html'):
+                    if ('SIMULADOR' in c_up or 'APP' in c_up or 'VISOR' in c_up) and ('INFO' in c_up or 'GEMINI' in c_up or 'NOVEDADES' in c_up or 'INFOGRAFIA' in c_up) and candidate.lower().endswith('.html'):
                         info_sim = candidate
 
                 btn1_html = ""
@@ -622,9 +622,10 @@ def generate_columns_html(session_num, session_folder, files):
                             🎬 Abrir Google Flow (labs.google/flow) ↗
                         </a>"""
                 elif info_sim:
+                    btn_text = "🖼️ Ver Infografía a Pantalla Completa (HD) ↗" if "VISOR" in info_sim.upper() else "✨ Abrir App Interactiva (HTML) ↗"
                     btn1_html = f"""
-                        <a href="{urllib.parse.quote(info_sim)}" target="_blank" class="btn-launch-interactive" style="background:linear-gradient(135deg, #1d4ed8, #2563eb); border-color:#60a5fa;" title="Abrir App Interactiva">
-                            ✨ Abrir App Interactiva (HTML) ↗
+                        <a href="{urllib.parse.quote(info_sim)}" target="_blank" class="btn-launch-interactive" style="background:linear-gradient(135deg, #0284c7, #0369a1); border-color:#38bdf8;" title="Ver Infografía a Pantalla Completa (Visor HD con Zoom)">
+                            {btn_text}
                         </a>"""
                 elif info_jpg:
                     btn1_html = f"""
