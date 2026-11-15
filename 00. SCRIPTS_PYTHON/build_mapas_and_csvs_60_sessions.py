@@ -215,8 +215,10 @@ def clean_title_from_filename(filename, session_num=1):
     if 'GEM-003' in f_up or 'INFO-003' in f_up:
         return '4 Grandes Novedades de Gemini y Google IA (Gmail, Buscador y Canvas)'
     if 'INFO-004' in f_up:
-        return 'La IA es la Máquina Más Grande de la Historia (Infografía 7 Pisos)'
+        return 'Taller Rápido: Google Flow (Estudio de Cine y Vídeo con IA - 50 Créditos Diarios)'
     if 'INFO-005' in f_up:
+        return 'La IA es la Máquina Más Grande de la Historia (Infografía 7 Pisos)'
+    if 'INFO-006' in f_up:
         return 'El Plan Maestro de Integración Vertical de IA (Infografía)'
     if 'NIV-' in f_up or 'NIV_' in f_up:
         m_niv = re.search(r'NIV-(\d+)', f_up)
@@ -314,7 +316,9 @@ def clean_title_from_filename(filename, session_num=1):
 
 def parse_step_code(filename):
     f_up = filename.upper()
-    if 'COD-' in f_up or 'COD' in f_up or 'TALLER' in f_up:
+    if 'INFO-' in f_up or 'INFO_' in f_up or 'GEM-' in f_up or 'GEM_' in f_up:
+        return 'INFO'
+    if 'COD-' in f_up or 'COD_' in f_up or ('TALLER' in f_up and 'SIMULADOR' in f_up):
         return 'COD'
     if 'SIMULADOR' in f_up or 'CORAZON' in f_up:
         return '3D'
@@ -612,7 +616,12 @@ def generate_columns_html(session_num, session_folder, files):
                         info_sim = candidate
 
                 btn1_html = ""
-                if info_sim:
+                if 'INFO-004' in it.get("filename", "").upper():
+                    btn1_html = """
+                        <a href="https://labs.google/flow" target="_blank" class="btn-launch-interactive" style="background:linear-gradient(135deg, #1d4ed8, #2563eb); border-color:#60a5fa;" title="Abrir Google Flow (Estudio de Cine y Vídeo con IA)">
+                            🎬 Abrir Google Flow (labs.google/flow) ↗
+                        </a>"""
+                elif info_sim:
                     btn1_html = f"""
                         <a href="{urllib.parse.quote(info_sim)}" target="_blank" class="btn-launch-interactive" style="background:linear-gradient(135deg, #1d4ed8, #2563eb); border-color:#60a5fa;" title="Abrir App Interactiva">
                             ✨ Abrir App Interactiva (HTML) ↗
