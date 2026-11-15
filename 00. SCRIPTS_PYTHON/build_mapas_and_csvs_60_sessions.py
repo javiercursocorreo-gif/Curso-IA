@@ -33,6 +33,127 @@ SESSIONS_DIR = os.path.join(BASE_DIR, "CLASES", "EXPORTACION_FICHAS_CLASSROOM_PD
 CSV_DIR = os.path.join(BASE_DIR, "PANELES_CSV")
 GITHUB_BASE_URL = "https://javiercursocorreo-gif.github.io/Curso-IA/"
 
+# Catálogo oficial de fractales [FRAC] para las sesiones 03 a 15
+SESSION_FRAC_MAP = {
+    3: {
+        "code": "FRAC-012",
+        "title": "Fractal de Newton Z⁶ (Polinomio de 6º Grado) ⚛️📐",
+        "desc": "Fractal por Tiempo de Escape • Newton Z⁶ + Z³ - 1 + Vídeo HD",
+        "mp4": "4. FRAC-012 FRACTAL DE NEWTON Z⁶ ⚛️📐.mp4",
+        "btn_label": "🎬 Ver Vídeo: Newton Z⁶ ⚛️📐 (MP4) ↗",
+        "bg": "linear-gradient(135deg, #0284c7, #0369a1)",
+        "border": "#38bdf8"
+    },
+    4: {
+        "code": "FRAC-007",
+        "title": "Conjunto de Julia (Dendrita) 🌲⚡",
+        "desc": "Fractal por Tiempo de Escape • Ramificación Eléctrica Infinita + Vídeo HD",
+        "mp4": "4. FRAC-007 CONJUNTO DE JULIA DENDRITA 🌲⚡.mp4",
+        "btn_label": "🎬 Ver Vídeo: Julia Dendrita 🌲⚡ (MP4) ↗",
+        "bg": "linear-gradient(135deg, #059669, #047857)",
+        "border": "#34d399"
+    },
+    5: {
+        "code": "FRAC-044",
+        "title": "Atractor de Lorenz (El Efecto Mariposa) 🦋🌪️",
+        "desc": "Atractores Extraños • Caos Determinista en 3D + Vídeo HD",
+        "mp4": "4. FRAC-044 ATRACTOR DE LORENZ (El Efecto Mariposa) 🦋🌪️.mp4",
+        "btn_label": "🎬 Ver Vídeo: Atractor de Lorenz 🦋🌪️ (MP4) ↗",
+        "bg": "linear-gradient(135deg, #d97706, #b45309)",
+        "border": "#fbbf24"
+    },
+    6: {
+        "code": "FRAC-049",
+        "title": "Mandelbulbo (Mandelbulb Potencia 8) 🪐💎",
+        "desc": "Hiperfractal 3D • Escultura Matemática Tridimensional + Vídeo HD",
+        "mp4": "4. FRAC-049 MANDELBULBO POTENCIA 8 🪐💎.mp4",
+        "btn_label": "🎬 Ver Vídeo: Mandelbulb Potencia 8 🪐💎 (MP4) ↗",
+        "bg": "linear-gradient(135deg, #0284c7, #0369a1)",
+        "border": "#38bdf8"
+    },
+    7: {
+        "code": "FRAC-043",
+        "title": "Atractor de Halvorsen (Simulación de Trayectoria) 🌀💫",
+        "desc": "Sistemas Dinámicos • Atractor Extraño Cíclico en 3D + Vídeo HD",
+        "mp4": "4. FRAC-043 ATRACTOR DE HALVORSEN 🌀💫.mp4",
+        "btn_label": "🎬 Ver Vídeo: Atractor de Halvorsen 🌀💫 (MP4) ↗",
+        "bg": "linear-gradient(135deg, #7c3aed, #6d28d9)",
+        "border": "#c084fc"
+    },
+    8: {
+        "code": "FRAC-008",
+        "title": "Conjunto de Julia Cúbico (Z³) 🔺✨",
+        "desc": "Fractal por Tiempo de Escape • Simetría Triangular Compleja + Vídeo HD",
+        "mp4": "4. FRAC-008 CONJUNTO DE JULIA CÚBICO (Z3) 🔺✨.mp4",
+        "btn_label": "🎬 Ver Vídeo: Julia Cúbico Z³ 🔺✨ (MP4) ↗",
+        "bg": "linear-gradient(135deg, #be123c, #9f1239)",
+        "border": "#fb7185"
+    },
+    9: {
+        "code": "FRAC-009",
+        "title": "Conjunto de Julia Exponencial (Exp Z³) 🌌⚡",
+        "desc": "Función Trascendente • Geometría Infinita Exponencial + Vídeo HD",
+        "mp4": "4. FRAC-009 CONJUNTO DE JULIA EXPONENCIAL 🌌⚡.mp4",
+        "btn_label": "🎬 Ver Vídeo: Julia Exponencial 🌌⚡ (MP4) ↗",
+        "bg": "linear-gradient(135deg, #0284c7, #0369a1)",
+        "border": "#38bdf8"
+    },
+    10: {
+        "code": "FRAC-036",
+        "title": "Dosel Fractal (Planta Digital / Sistema-L) 🌿🌳",
+        "desc": "Sistemas de Lindenmayer • Estructura Ramificada Botánica + Vídeo HD",
+        "mp4": "4. FRAC-036 DOSEL FRACTAL (Planta Digital) 🌿🌳.mp4",
+        "btn_label": "🎬 Ver Vídeo: Dosel Fractal 🌿🌳 (MP4) ↗",
+        "bg": "linear-gradient(135deg, #059669, #047857)",
+        "border": "#34d399"
+    },
+    11: {
+        "code": "FRAC-050",
+        "title": "Conjunto de Julia Cuaterniónico 🔮🪐",
+        "desc": "Hipercomplejos 4D • Raymarching e Intersección Tridimensional + Vídeo HD",
+        "mp4": "4. FRAC-050 CONJUNTO DE JULIA CUATERNIÓNICO 🔮🪐.mp4",
+        "btn_label": "🎬 Ver Vídeo: Julia Cuaterniónico 🔮🪐 (MP4) ↗",
+        "bg": "linear-gradient(135deg, #7c3aed, #6d28d9)",
+        "border": "#c084fc"
+    },
+    12: {
+        "code": "FRAC-041",
+        "title": "Atractor de Aizawa (Simulación de Trayectoria) 🌪️✨",
+        "desc": "Atractores Extraños • Esfera Toroidal y Órbita Caótica en 3D + Vídeo HD",
+        "mp4": "4. FRAC-041 ATRACTOR DE AIZAWA 🌪️✨.mp4",
+        "btn_label": "🎬 Ver Vídeo: Atractor de Aizawa 🌪️✨ (MP4) ↗",
+        "bg": "linear-gradient(135deg, #d97706, #b45309)",
+        "border": "#fbbf24"
+    },
+    13: {
+        "code": "FRAC-019",
+        "title": "El Copo de Nieve de Koch (Helge von Koch) ❄️📐",
+        "desc": "Sistemas Iterativos (IFS) • Perímetro Infinito y Área Finita + Vídeo HD",
+        "mp4": "4. FRAC-019 EL COPO DE NIEVE DE KOCH ❄️📐.mp4",
+        "btn_label": "🎬 Ver Vídeo: Copo de Koch ❄️📐 (MP4) ↗",
+        "bg": "linear-gradient(135deg, #0284c7, #0369a1)",
+        "border": "#38bdf8"
+    },
+    14: {
+        "code": "FRAC-026",
+        "title": "La Curva del Dragón de Heighway 🐉📐",
+        "desc": "Curva de Llenado del Espacio • Autosimilitud y Papiroflexia Fractal + Vídeo HD",
+        "mp4": "4. FRAC-026 LA CURVA DEL DRAGÓN DE HEIGHWAY 🐉📐.mp4",
+        "btn_label": "🎬 Ver Vídeo: Curva del Dragón 🐉📐 (MP4) ↗",
+        "bg": "linear-gradient(135deg, #059669, #047857)",
+        "border": "#34d399"
+    },
+    15: {
+        "code": "FRAC-066",
+        "title": "Figuras de Lichtenberg (El Rayo Congelado) ⚡🌳",
+        "desc": "Descarga Eléctrica de Alta Tensión • Árbol Dieléctrico + Vídeo HD",
+        "mp4": "4. FRAC-066 FIGURAS DE LICHTENBERG (El Rayo Congelado) ⚡🌳.mp4",
+        "btn_label": "🎬 Ver Vídeo: Figuras de Lichtenberg ⚡🌳 (MP4) ↗",
+        "bg": "linear-gradient(135deg, #7c3aed, #6d28d9)",
+        "border": "#c084fc"
+    }
+}
+
 # Configuración de pasos, colores y columnas
 STEP_CONFIG = {
     "GEM":   {"color": "#4285f4", "cat": "Novedades de Gemini",             "icon": "✨", "col": 1, "order": -1},
@@ -158,6 +279,8 @@ def clean_title_from_filename(filename, session_num=1):
         return 'Simulador 3D del Sistema Solar (NASA)'
     if 'SIMULADOR_LUNA' in f_up:
         return 'Simulador 3D y Atlas Lunar de la Luna (NASA LRO)'
+    if session_num in SESSION_FRAC_MAP and SESSION_FRAC_MAP[session_num]['code'] in f_up:
+        return SESSION_FRAC_MAP[session_num]['title']
     if 'FRAC-000_B' in filename:
         return 'Reto Visual • Infografía de un Fractal en la Naturaleza'
     if 'FRAC-000_A' in filename:
@@ -252,31 +375,13 @@ def generate_columns_html(session_num, session_folder, files):
                 return (2, 4, 6, filename.lower())
             if 'COD-002' in f_up or 'TALLER' in f_up or 'COD-' in f_up:
                 return (2, 5, 1, filename.lower())
-        if session_num == 3:
+        if session_num in SESSION_FRAC_MAP:
             f_up = filename.upper()
             if 'GEM-' in f_up or 'GEM_' in f_up:
                 return (1, -1, 1, filename.lower())
-            if 'FRAC-060' in f_up and filename.lower().endswith('.pdf'):
+            if 'FRAC-' in f_up and filename.lower().endswith('.pdf'):
                 return (2, 4, 1, filename.lower())
-            if 'FRAC-022' in f_up and filename.lower().endswith('.pdf'):
-                return (2, 4, 2, filename.lower())
-            if 'COD-003' in f_up or 'TALLER' in f_up or 'COD-' in f_up:
-                return (2, 5, 1, filename.lower())
-        if session_num == 4:
-            f_up = filename.upper()
-            if 'FRAC-040' in f_up and filename.lower().endswith('.pdf'):
-                return (2, 4, 1, filename.lower())
-            if 'FRAC-002' in f_up and filename.lower().endswith('.pdf'):
-                return (2, 4, 2, filename.lower())
-            if 'COD-004' in f_up or 'TALLER' in f_up or 'COD-' in f_up:
-                return (2, 5, 1, filename.lower())
-        if session_num == 5:
-            f_up = filename.upper()
-            if 'FRAC-063' in f_up and filename.lower().endswith('.pdf'):
-                return (2, 4, 1, filename.lower())
-            if 'FRAC-019' in f_up and filename.lower().endswith('.pdf'):
-                return (2, 4, 2, filename.lower())
-            if 'COD-005' in f_up or 'TALLER' in f_up or 'COD-' in f_up:
+            if 'COD-' in f_up or 'TALLER' in f_up or 'COD_' in f_up:
                 return (2, 5, 1, filename.lower())
         return file_sort_key(filename)
 
@@ -292,12 +397,7 @@ def generate_columns_html(session_num, session_folder, files):
         and not ('FRAC-058' in f and ' 2. ' in f)
         and not (session_num == 1 and 'FRAC-058' in f.upper() and f.lower().endswith('.pdf'))
         and not (session_num == 2 and 'FRAC-055' in f.upper() and f.lower().endswith('.mp4'))
-        and not (session_num == 3 and 'FRAC-060' in f.upper() and f.lower().endswith('.mp4'))
-        and not (session_num == 3 and 'FRAC-022' in f.upper() and f.lower().endswith('.mp4'))
-        and not (session_num == 4 and 'FRAC-040' in f.upper() and f.lower().endswith('.mp4'))
-        and not (session_num == 4 and 'FRAC-002' in f.upper() and f.lower().endswith('.mp4'))
-        and not (session_num == 5 and 'FRAC-063' in f.upper() and f.lower().endswith('.mp4'))
-        and not (session_num == 5 and 'FRAC-019' in f.upper() and f.lower().endswith('.mp4'))
+        and not (session_num in SESSION_FRAC_MAP and 'FRAC-' in f.upper() and f.lower().endswith('.mp4'))
     ]
     
     # Clasificar archivos por columna (1, 2 o 3)
@@ -381,8 +481,9 @@ def generate_columns_html(session_num, session_folder, files):
                             🎬 Ver Vídeo: La Galería de los Monstruos (MP4) ↗
                         </a>
                     </div>"""
-            elif session_num == 3 and 'FRAC-060' in it["filename"].upper():
-                mp4_href = urllib.parse.quote("4. FRAC-060 EL FRACTAL COMESTIBLE (Brécol Romanesco) 🥦🌀.mp4")
+            elif session_num in SESSION_FRAC_MAP and SESSION_FRAC_MAP[session_num]["code"] in it["filename"].upper():
+                frac_info = SESSION_FRAC_MAP[session_num]
+                mp4_href = urllib.parse.quote(frac_info["mp4"])
                 cards_html += f"""
                     <div class="file-card file-card-special">
                         <a href="{rel_href}" target="_blank" class="file-card-special-top" title="Abrir Ficha Didáctica (PDF)">
@@ -390,126 +491,16 @@ def generate_columns_html(session_num, session_folder, files):
                                 <span class="file-num">{it["step_num"]}</span>
                                 <span class="file-tag tag-pdf">PACK</span>
                                 <div class="file-details">
-                                    <span class="file-title">El Fractal Comestible (Brécol Romanesco) 🥦🌀</span>
-                                    <span class="file-desc">Fractal de la Naturaleza • Ficha Didáctica + Vídeo HD</span>
+                                    <span class="file-title">{frac_info["title"]}</span>
+                                    <span class="file-desc">{frac_info["desc"]}</span>
                                 </div>
                             </div>
                             <span class="file-arrow">↗</span>
                         </a>
-                        <a href="{mp4_href}" target="_blank" class="btn-launch-interactive" style="background:linear-gradient(135deg, #0284c7, #0369a1); border-color:#38bdf8;" title="Ver Vídeo HD del Fractal Comestible (MP4)">
-                            🎬 Ver Vídeo: El Fractal Comestible 🥦🌀 (MP4) ↗
-                        </a>
-                        <a href="{rel_href}" target="_blank" class="btn-launch-interactive" style="margin-top:6px; background:linear-gradient(135deg, #059669, #047857); border-color:#34d399;" title="Abrir Ficha Didáctica (PDF)">
-                            📄 Abrir Ficha Didáctica (PDF) ↗
-                        </a>
-                    </div>"""
-            elif session_num == 3 and 'FRAC-022' in it["filename"].upper():
-                mp4_href = urllib.parse.quote("4. FRAC-022 EL TRIÁNGULO DE SIERPINSKI 📐.mp4")
-                cards_html += f"""
-                    <div class="file-card file-card-special">
-                        <a href="{rel_href}" target="_blank" class="file-card-special-top" title="Abrir Ficha Didáctica (PDF)">
-                            <div class="file-left">
-                                <span class="file-num">{it["step_num"]}</span>
-                                <span class="file-tag tag-pdf">PACK</span>
-                                <div class="file-details">
-                                    <span class="file-title">El Triángulo de Sierpinski (Autosimilitud y Geometría) 📐</span>
-                                    <span class="file-desc">Fractal Matemático Puro • Ficha Didáctica + Vídeo HD</span>
-                                </div>
-                            </div>
-                            <span class="file-arrow">↗</span>
-                        </a>
-                        <a href="{mp4_href}" target="_blank" class="btn-launch-interactive" style="background:linear-gradient(135deg, #0284c7, #0369a1); border-color:#38bdf8;" title="Ver Vídeo HD del Triángulo de Sierpinski (MP4)">
-                            🎬 Ver Vídeo: El Triángulo de Sierpinski 📐 (MP4) ↗
+                        <a href="{mp4_href}" target="_blank" class="btn-launch-interactive" style="background:{frac_info['bg']}; border-color:{frac_info['border']};" title="Ver Vídeo HD (MP4)">
+                            {frac_info['btn_label']}
                         </a>
                         <a href="{rel_href}" target="_blank" class="btn-launch-interactive" style="margin-top:6px; background:linear-gradient(135deg, #7c3aed, #6d28d9); border-color:#c084fc;" title="Abrir Ficha Didáctica (PDF)">
-                            📄 Abrir Ficha Didáctica (PDF) ↗
-                        </a>
-                    </div>"""
-            elif session_num == 4 and 'FRAC-040' in it["filename"].upper():
-                mp4_href = urllib.parse.quote("4. FRAC-040 EL MUNDO FIBONACCI (Espiral Áurea en la Naturaleza) 🌻🌀.mp4")
-                cards_html += f"""
-                    <div class="file-card file-card-special">
-                        <a href="{rel_href}" target="_blank" class="file-card-special-top" title="Abrir Ficha Didáctica (PDF)">
-                            <div class="file-left">
-                                <span class="file-num">{it["step_num"]}</span>
-                                <span class="file-tag tag-pdf">PACK</span>
-                                <div class="file-details">
-                                    <span class="file-title">El Mundo Fibonacci (Espiral Áurea en la Naturaleza) 🌻🌀</span>
-                                    <span class="file-desc">Fractal de la Naturaleza • Ficha Didáctica + Vídeo HD</span>
-                                </div>
-                            </div>
-                            <span class="file-arrow">↗</span>
-                        </a>
-                        <a href="{mp4_href}" target="_blank" class="btn-launch-interactive" style="background:linear-gradient(135deg, #0284c7, #0369a1); border-color:#38bdf8;" title="Ver Vídeo HD de Mundo Fibonacci (MP4)">
-                            🎬 Ver Vídeo: Mundo Fibonacci 🌻🌀 (MP4) ↗
-                        </a>
-                        <a href="{rel_href}" target="_blank" class="btn-launch-interactive" style="margin-top:6px; background:linear-gradient(135deg, #d97706, #b45309); border-color:#fbbf24;" title="Abrir Ficha Didáctica (PDF)">
-                            📄 Abrir Ficha Didáctica (PDF) ↗
-                        </a>
-                    </div>"""
-            elif session_num == 4 and 'FRAC-002' in it["filename"].upper():
-                mp4_href = urllib.parse.quote("4. FRAC-002 EL VALLE DE LOS CABALLITOS DE MAR (Mandelbrot) 🌊🐴.mp4")
-                cards_html += f"""
-                    <div class="file-card file-card-special">
-                        <a href="{rel_href}" target="_blank" class="file-card-special-top" title="Abrir Ficha Didáctica (PDF)">
-                            <div class="file-left">
-                                <span class="file-num">{it["step_num"]}</span>
-                                <span class="file-tag tag-pdf">PACK</span>
-                                <div class="file-details">
-                                    <span class="file-title">Mandelbrot (El Valle de los Caballitos de Mar) 🌊🐴</span>
-                                    <span class="file-desc">Fractal Matemático Puro • Ficha Didáctica + Vídeo HD</span>
-                                </div>
-                            </div>
-                            <span class="file-arrow">↗</span>
-                        </a>
-                        <a href="{mp4_href}" target="_blank" class="btn-launch-interactive" style="background:linear-gradient(135deg, #0284c7, #0369a1); border-color:#38bdf8;" title="Ver Vídeo HD de Mandelbrot Caballitos (MP4)">
-                            🎬 Ver Vídeo: Mandelbrot Caballitos de Mar 🌊🐴 (MP4) ↗
-                        </a>
-                        <a href="{rel_href}" target="_blank" class="btn-launch-interactive" style="margin-top:6px; background:linear-gradient(135deg, #be123c, #9f1239); border-color:#fb7185;" title="Abrir Ficha Didáctica (PDF)">
-                            📄 Abrir Ficha Didáctica (PDF) ↗
-                        </a>
-                    </div>"""
-            elif session_num == 5 and 'FRAC-063' in it["filename"].upper():
-                mp4_href = urllib.parse.quote("4. FRAC-063 LA MÚSICA QUE GUSTA AL CEREBRO (Ruido Rosa) 🧠🎶.mp4")
-                cards_html += f"""
-                    <div class="file-card file-card-special">
-                        <a href="{rel_href}" target="_blank" class="file-card-special-top" title="Abrir Ficha Didáctica (PDF)">
-                            <div class="file-left">
-                                <span class="file-num">{it["step_num"]}</span>
-                                <span class="file-tag tag-pdf">PACK</span>
-                                <div class="file-details">
-                                    <span class="file-title">Ruido Rosa (La Música que Gusta al Cerebro) 🧠🎶</span>
-                                    <span class="file-desc">Fractal de la Naturaleza • Ficha Didáctica + Vídeo HD</span>
-                                </div>
-                            </div>
-                            <span class="file-arrow">↗</span>
-                        </a>
-                        <a href="{mp4_href}" target="_blank" class="btn-launch-interactive" style="background:linear-gradient(135deg, #0284c7, #0369a1); border-color:#38bdf8;" title="Ver Vídeo HD de Ruido Rosa y Ritmos Biológicos (MP4)">
-                            🎬 Ver Vídeo: Ruido Rosa y Ritmos Biológicos 🧠🎶 (MP4) ↗
-                        </a>
-                        <a href="{rel_href}" target="_blank" class="btn-launch-interactive" style="margin-top:6px; background:linear-gradient(135deg, #d97706, #b45309); border-color:#fbbf24;" title="Abrir Ficha Didáctica (PDF)">
-                            📄 Abrir Ficha Didáctica (PDF) ↗
-                        </a>
-                    </div>"""
-            elif session_num == 5 and 'FRAC-019' in it["filename"].upper():
-                mp4_href = urllib.parse.quote("4. FRAC-019 EL COPO DE NIEVE DE KOCH ❄️📐.mp4")
-                cards_html += f"""
-                    <div class="file-card file-card-special">
-                        <a href="{rel_href}" target="_blank" class="file-card-special-top" title="Abrir Ficha Didáctica (PDF)">
-                            <div class="file-left">
-                                <span class="file-num">{it["step_num"]}</span>
-                                <span class="file-tag tag-pdf">PACK</span>
-                                <div class="file-details">
-                                    <span class="file-title">El Copo de Nieve de Koch (Geometría Fractal) ❄️📐</span>
-                                    <span class="file-desc">Fractal Matemático Puro • Ficha Didáctica + Vídeo HD</span>
-                                </div>
-                            </div>
-                            <span class="file-arrow">↗</span>
-                        </a>
-                        <a href="{mp4_href}" target="_blank" class="btn-launch-interactive" style="background:linear-gradient(135deg, #0284c7, #0369a1); border-color:#38bdf8;" title="Ver Vídeo HD de Copo de Nieve de Koch (MP4)">
-                            🎬 Ver Vídeo: Copo de Nieve de Koch ❄️📐 (MP4) ↗
-                        </a>
-                        <a href="{rel_href}" target="_blank" class="btn-launch-interactive" style="margin-top:6px; background:linear-gradient(135deg, #be123c, #9f1239); border-color:#fb7185;" title="Abrir Ficha Didáctica (PDF)">
                             📄 Abrir Ficha Didáctica (PDF) ↗
                         </a>
                     </div>"""
