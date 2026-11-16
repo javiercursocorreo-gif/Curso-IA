@@ -234,6 +234,13 @@ HTML_TEMPLATE = """<!DOCTYPE html>
             updateTransform();
         }}
 
+        function fitToWidth() {{
+            scale = 1.6;
+            translateX = 0;
+            translateY = 0;
+            updateTransform();
+        }}
+
         // BOTONES HUD
         document.getElementById('btn-zoom-in').addEventListener('click', (e) => {{
             e.stopPropagation();

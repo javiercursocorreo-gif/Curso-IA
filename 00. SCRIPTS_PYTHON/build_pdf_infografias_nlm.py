@@ -73,108 +73,105 @@ def create_infografia_pdf(output_pdf_path, jpg_image_path, title_header, title_m
         jpg_bytes = f.read()
     
     img_w, img_h = get_jpeg_size(jpg_image_path)
-    page_w = 612.0
-    page_h = 792.0
+    page_w = 1024.0
+    page_h = 571.0
 
-    # Dimensiones de la imagen dentro de la página
-    target_img_w = 564.0
-    target_img_h = (img_h / img_w) * target_img_w # ~314.5 pt
-    img_x = (page_w - target_img_w) / 2.0 # 24 pt
-    img_y = 385.0 # Posicion vertical
+    # -------------------------------------------------------------
+    # PÁGINA 1: INFOGRAFÍA A PANTALLA COMPLETA 100% HORIZONTAL (16:9)
+    # A sangre total (0 márgenes), máxima resolución y nitidez
+    # -------------------------------------------------------------
+    stream_p1_cmds = f"q\n{page_w:.2f} 0 0 {page_h:.2f} 0.00 0.00 cm\n/Im1 Do\nQ\n"
+    content_stream_p1 = stream_p1_cmds.encode('ascii')
 
-    stream_cmds = []
+    # -------------------------------------------------------------
+    # PÁGINA 2: GUÍA DIDÁCTICA Y PREGUNTAS EN FORMATO WIDESCREEN
+    # -------------------------------------------------------------
+    stream_p2_cmds = []
     
-    # 1. Marco exterior
-    stream_cmds.append("0.985 0.992 1.000 rg\n")
-    stream_cmds.append("0.150 0.450 0.850 RG\n")
-    stream_cmds.append("1.50 w\n")
-    stream_cmds.append(f"20.00 20.00 {page_w - 40:.2f} {page_h - 40:.2f} re B\n")
+    # 1. Fondo suave y marco
+    stream_p2_cmds.append("0.985 0.992 1.000 rg\n")
+    stream_p2_cmds.append("0.150 0.450 0.850 RG\n")
+    stream_p2_cmds.append("1.50 w\n")
+    stream_p2_cmds.append(f"16.00 16.00 {page_w - 32:.2f} {page_h - 32:.2f} re B\n")
 
-    # 2. Cabecera
-    stream_cmds.append("0.050 0.180 0.420 rg\n")
-    stream_cmds.append(f"24.00 716.00 {page_w - 48:.2f} 52.00 re f\n")
+    # 2. Cabecera Widescreen
+    stream_p2_cmds.append("0.050 0.180 0.420 rg\n")
+    stream_p2_cmds.append(f"20.00 505.00 {page_w - 40:.2f} 46.00 re f\n")
     
-    # Texto cabecera
     esc_hdr = escape_pdf_text(title_header)
     esc_main = escape_pdf_text(title_main)
-    stream_cmds.append(f"BT /F2 8.5 Tf 0.400 0.800 1.000 rg 36.00 750.00 Td ({esc_hdr}) Tj ET\n")
-    stream_cmds.append(f"BT /F2 12.0 Tf 1.000 1.000 1.000 rg 36.00 730.00 Td ({esc_main}) Tj ET\n")
+    stream_p2_cmds.append(f"BT /F2 9.0 Tf 0.400 0.800 1.000 rg 36.00 534.00 Td ({esc_hdr}) Tj ET\n")
+    stream_p2_cmds.append(f"BT /F2 13.5 Tf 1.000 1.000 1.000 rg 36.00 514.00 Td ({esc_main}) Tj ET\n")
 
-    # 3. Marco y Renderizado de la Imagen JPG
-    stream_cmds.append("0.020 0.050 0.120 rg\n")
-    stream_cmds.append("0.200 0.500 0.850 RG\n")
-    stream_cmds.append("1.00 w\n")
-    stream_cmds.append(f"{img_x - 3:.2f} {img_y - 3:.2f} {target_img_w + 6:.2f} {target_img_h + 6:.2f} re B\n")
+    # 3. Dos Columnas Didácticas
+    col_w = 478.0
+    col_h = 445.0
+    col_y = 50.0
+
+    # COLUMNA 1 (IZQUIERDA): RESUMEN Y PILARES
+    c1_x = 24.0
+    stream_p2_cmds.append("0.950 0.980 1.000 rg\n")
+    stream_p2_cmds.append("0.180 0.550 0.850 RG\n")
+    stream_p2_cmds.append("1.00 w\n")
+    stream_p2_cmds.append(f"{c1_x:.2f} {col_y:.2f} {col_w:.2f} {col_h:.2f} re B\n")
+
+    stream_p2_cmds.append(f"BT /F2 9.5 Tf 0.050 0.250 0.550 rg {c1_x + 14:.2f} {col_y + col_h - 20:.2f} Td (RESUMEN DIDACTICO Y ARQUITECTURA VISUAL) Tj ET\n")
     
-    # Dibujar la imagen con operador Do
-    stream_cmds.append("q\n")
-    stream_cmds.append(f"{target_img_w:.2f} 0 0 {target_img_h:.2f} {img_x:.2f} {img_y:.2f} cm\n")
-    stream_cmds.append("/Im1 Do\n")
-    stream_cmds.append("Q\n")
-
-    # 4. Cuadro explicativo inferior: Los 4 pilares de la infografia
-    box_y = 190.0
-    box_h = 185.0
-    stream_cmds.append("0.950 0.980 1.000 rg\n")
-    stream_cmds.append("0.180 0.550 0.850 RG\n")
-    stream_cmds.append("1.00 w\n")
-    stream_cmds.append(f"28.00 {box_y:.2f} {page_w - 56:.2f} {box_h:.2f} re B\n")
-
-    stream_cmds.append(f"BT /F2 9.2 Tf 0.050 0.250 0.550 rg 40.00 {box_y + box_h - 18:.2f} Td (RESUMEN DIDACTICO VISUAL DE LA INFOGRAFIA) Tj ET\n")
-    
-    desc_lines = wrap_text(desc_text, 114)
-    y_cur = box_y + box_h - 30
+    y_c1 = col_y + col_h - 36
+    desc_lines = wrap_text(desc_text, 70)
     for dl in desc_lines:
-        stream_cmds.append(f"BT /F1 7.8 Tf 0.150 0.200 0.250 rg 40.00 {y_cur:.2f} Td ({escape_pdf_text(dl)}) Tj ET\n")
-        y_cur -= 10.5
+        stream_p2_cmds.append(f"BT /F1 8.2 Tf 0.150 0.200 0.250 rg {c1_x + 14:.2f} {y_c1:.2f} Td ({escape_pdf_text(dl)}) Tj ET\n")
+        y_c1 -= 11.5
 
-    y_cur -= 4
+    y_c1 -= 6
     for pt_title, pt_desc in key_points:
-        stream_cmds.append(f"BT /F2 8.0 Tf 0.080 0.350 0.700 rg 40.00 {y_cur:.2f} Td ({escape_pdf_text(pt_title)}) Tj ET\n")
-        y_cur -= 10.0
-        pt_lines = wrap_text(pt_desc, 114)
+        stream_p2_cmds.append(f"BT /F2 8.5 Tf 0.080 0.350 0.700 rg {c1_x + 14:.2f} {y_c1:.2f} Td ({escape_pdf_text(pt_title)}) Tj ET\n")
+        y_c1 -= 11.0
+        pt_lines = wrap_text(pt_desc, 70)
         for ptl in pt_lines:
-            stream_cmds.append(f"BT /F1 7.4 Tf 0.200 0.250 0.300 rg 40.00 {y_cur:.2f} Td ({escape_pdf_text(ptl)}) Tj ET\n")
-            y_cur -= 9.5
-        y_cur -= 3.0
+            stream_p2_cmds.append(f"BT /F1 7.8 Tf 0.200 0.250 0.300 rg {c1_x + 14:.2f} {y_c1:.2f} Td ({escape_pdf_text(ptl)}) Tj ET\n")
+            y_c1 -= 10.5
+        y_c1 -= 5.0
 
-    # 5. Preguntas de Reflexion para Gemini en el Aula
-    q_box_y = 42.0
-    q_box_h = 138.0
-    stream_cmds.append("0.990 0.980 0.950 rg\n")
-    stream_cmds.append("0.800 0.500 0.100 RG\n")
-    stream_cmds.append("1.00 w\n")
-    stream_cmds.append(f"28.00 {q_box_y:.2f} {page_w - 56:.2f} {q_box_h:.2f} re B\n")
+    # COLUMNA 2 (DERECHA): PREGUNTAS DE DIÁLOGO CON GEMINI
+    c2_x = 522.0
+    stream_p2_cmds.append("0.995 0.985 0.950 rg\n")
+    stream_p2_cmds.append("0.850 0.520 0.100 RG\n")
+    stream_p2_cmds.append("1.00 w\n")
+    stream_p2_cmds.append(f"{c2_x:.2f} {col_y:.2f} {col_w:.2f} {col_h:.2f} re B\n")
 
-    stream_cmds.append(f"BT /F2 8.8 Tf 0.700 0.350 0.050 rg 40.00 {q_box_y + q_box_h - 16:.2f} Td (PREGUNTAS DE DIALOGO CON GEMINI EN EL AULA:) Tj ET\n")
+    stream_p2_cmds.append(f"BT /F2 9.5 Tf 0.750 0.380 0.050 rg {c2_x + 14:.2f} {col_y + col_h - 20:.2f} Td (PREGUNTAS DE DIALOGO CON GEMINI EN EL AULA:) Tj ET\n")
     
-    y_q = q_box_y + q_box_h - 30
+    y_c2 = col_y + col_h - 36
     for q_idx, (q_t, q_d) in enumerate(questions, 1):
-        stream_cmds.append(f"BT /F2 7.6 Tf 0.100 0.200 0.300 rg 40.00 {y_q:.2f} Td ({escape_pdf_text(f'Pregunta {q_idx} • {q_t}')}) Tj ET\n")
-        y_q -= 9.5
-        q_lines = wrap_text(q_d, 114)
+        stream_p2_cmds.append(f"BT /F2 8.5 Tf 0.100 0.200 0.300 rg {c2_x + 14:.2f} {y_c2:.2f} Td ({escape_pdf_text(f'Pregunta {q_idx} - {q_t}')}) Tj ET\n")
+        y_c2 -= 11.0
+        q_lines = wrap_text(q_d, 70)
         for ql in q_lines:
-            stream_cmds.append(f"BT /F1 7.2 Tf 0.250 0.300 0.350 rg 40.00 {y_q:.2f} Td ({escape_pdf_text(ql)}) Tj ET\n")
-            y_q -= 9.0
-        y_q -= 3.5
+            stream_p2_cmds.append(f"BT /F1 7.8 Tf 0.250 0.300 0.350 rg {c2_x + 14:.2f} {y_c2:.2f} Td ({escape_pdf_text(ql)}) Tj ET\n")
+            y_c2 -= 10.5
+        y_c2 -= 6.0
 
-    # Pie de pagina
-    stream_cmds.append("0.800 0.850 0.900 RG\n")
-    stream_cmds.append(f"28.00 32.00 {page_w - 56:.2f} 32.00 m {page_w - 28:.2f} 32.00 l S\n")
-    stream_cmds.append(f"BT /F2 7.0 Tf 0.300 0.400 0.500 rg 36.00 24.00 Td ({escape_pdf_text('CURSO DE INTELIGENCIA ARTIFICIAL PARA MAYORES (60+) • INFOGRAFIA OFICIAL [INFO]')}) Tj ET\n")
-    
-    content_stream = "".join(stream_cmds).encode('latin1', errors='replace')
+    # 4. Pie de página Widescreen
+    stream_p2_cmds.append("0.800 0.850 0.900 RG\n")
+    stream_p2_cmds.append(f"24.00 34.00 {page_w - 48:.2f} 34.00 m {page_w - 24:.2f} 34.00 l S\n")
+    stream_p2_cmds.append(f"BT /F2 7.5 Tf 0.300 0.400 0.500 rg 36.00 24.00 Td ({escape_pdf_text('CURSO DE INTELIGENCIA ARTIFICIAL PARA MAYORES (60+) - GUIA DIDACTICA OFICIAL [INFO]')}) Tj ET\n")
 
-    # Estructura de Objetos PDF
+    content_stream_p2 = "".join(stream_p2_cmds).encode('latin1', errors='replace')
+
+    # -------------------------------------------------------------
+    # ESTRUCTURA DE OBJETOS PDF (2 PÁGINAS WIDESCREEN 16:9)
     # Obj 1: Catalog
-    # Obj 2: Pages
-    # Obj 3: Font F1 (Helvetica)
-    # Obj 4: Font F2 (Helvetica-Bold)
-    # Obj 5: Font F3 (Helvetica-Oblique)
+    # Obj 2: Pages (Kids [7 0 R, 9 0 R], Count 2)
+    # Obj 3: Font F1
+    # Obj 4: Font F2
+    # Obj 5: Font F3
     # Obj 6: Image XObject (/Im1)
-    # Obj 7: Page
-    # Obj 8: Contents stream
-    
+    # Obj 7: Page 1 (Infografía Full-Screen)
+    # Obj 8: Contents Page 1
+    # Obj 9: Page 2 (Guía Widescreen)
+    # Obj 10: Contents Page 2
+    # -------------------------------------------------------------
     image_xobject = f"""<<
 /Type /XObject
 /Subtype /Image
@@ -188,32 +185,49 @@ def create_infografia_pdf(output_pdf_path, jpg_image_path, title_header, title_m
 stream
 """.encode('ascii') + jpg_bytes + b"\nendstream"
 
-    page_obj = f"""<<
+    page1_obj = f"""<<
 /Type /Page
 /Parent 2 0 R
 /MediaBox [0 0 {page_w} {page_h}]
 /Resources <<
-  /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >>
   /XObject << /Im1 6 0 R >>
 >>
 /Contents 8 0 R
 >>""".encode('ascii')
 
-    contents_obj = f"""<<
-/Length {len(content_stream)}
+    contents_p1_obj = f"""<<
+/Length {len(content_stream_p1)}
 >>
 stream
-""".encode('ascii') + content_stream + b"\nendstream"
+""".encode('ascii') + content_stream_p1 + b"\nendstream"
+
+    page2_obj = f"""<<
+/Type /Page
+/Parent 2 0 R
+/MediaBox [0 0 {page_w} {page_h}]
+/Resources <<
+  /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >>
+>>
+/Contents 10 0 R
+>>""".encode('ascii')
+
+    contents_p2_obj = f"""<<
+/Length {len(content_stream_p2)}
+>>
+stream
+""".encode('ascii') + content_stream_p2 + b"\nendstream"
 
     all_objs = [
         b'<< /Type /Catalog /Pages 2 0 R >>',
-        b'<< /Type /Pages /Kids [7 0 R] /Count 1 >>',
+        b'<< /Type /Pages /Kids [7 0 R 9 0 R] /Count 2 >>',
         b'<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>',
         b'<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>',
         b'<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Oblique /Encoding /WinAnsiEncoding >>',
         image_xobject,
-        page_obj,
-        contents_obj
+        page1_obj,
+        contents_p1_obj,
+        page2_obj,
+        contents_p2_obj
     ]
 
     with open(output_pdf_path, 'wb') as f:
@@ -242,7 +256,7 @@ stream
         f.write(f'{xref_offset}\n'.encode('ascii'))
         f.write(b'%%EOF\n')
     
-    print(f"✅ PDF de infografía generado exitosamente: {output_pdf_path}")
+    print(f"✅ PDF Widescreen 16:9 generado exitosamente (2 páginas): {output_pdf_path}")
 
 def generate_all_infografias():
     root_s4 = "/Users/externo/Library/Mobile Documents/com~apple~CloudDocs/PERSONAL/CLASES DE TECNOLOGÍA/CURSO-IA/CLASES/EXPORTACION_FICHAS_CLASSROOM_PDF/100. [SESSIONS] TERNAS_LISTAS_PARA_CLASSROOM/04_Sesion"
