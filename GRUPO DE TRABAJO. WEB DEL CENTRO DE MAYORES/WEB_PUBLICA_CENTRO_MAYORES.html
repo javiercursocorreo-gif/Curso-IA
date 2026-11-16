@@ -851,6 +851,71 @@
   </footer>
 
   <script>
+    
+    // =========================================================================
+    // CARGA DINÁMICA DE NOTICIAS PUBLICADAS DESDE EL BACKEND (LOCALSTORAGE)
+    // =========================================================================
+    function loadDynamicNewsFromStorage() {
+      try {
+        const stored = localStorage.getItem('centro_mayores_noticias_v1');
+        if (!stored) return;
+        const list = JSON.parse(stored);
+        if (!Array.isArray(list)) return;
+
+        list.forEach(item => {
+          // Registrar en la base de datos interna para openDetail
+          newsDatabase[item.id] = {
+            image: item.image || '',
+            badge: '📢 Publicado por Alumnos • ' + item.date,
+            badgeColor: '#0d7a57',
+            badgeBg: '#e6f7f0',
+            title: item.title,
+            meta: '📅 Fecha: ' + item.date + ' | 💶 ' + item.price,
+            body: '<p>' + item.body + '</p>'
+          };
+
+          // Renderizar tarjeta en la sección correspondiente
+          const container = document.getElementById('dynamic-' + item.area + '-container');
+          if (container && !document.getElementById('card-' + item.id)) {
+            const card = document.createElement('div');
+            card.id = 'card-' + item.id;
+            card.className = 'subitem-card';
+            card.style.borderLeft = '6px solid #10b981';
+            card.style.background = '#f0fdf4';
+            card.onclick = function() { openDetail(item.id); };
+
+            const imgTag = item.image ? `<img src="${item.image}" alt="foto" class="subitem-img">` : '';
+            card.innerHTML = `
+              ${imgTag}
+              <div class="subitem-info">
+                <span class="subitem-badge" style="background:#dcfce7; color:#15803d;">📢 Novedad Reciente • ${item.date}</span>
+                <h3>${item.title}</h3>
+                <p class="subitem-desc">${item.meta || item.price}. Haz clic para ver todos los detalles.</p>
+              </div>
+              <div class="subitem-arrow">➔</div>
+            `;
+            container.appendChild(card);
+          }
+        });
+      } catch (e) {
+        console.error('Error cargando noticias dinámicas:', e);
+      }
+    }
+
+    // Escuchar cambios de almacenamiento en tiempo real entre pestañas
+    window.addEventListener('storage', function(e) {
+      if (e.key === 'centro_mayores_noticias_v1') {
+        loadDynamicNewsFromStorage();
+      }
+    });
+
+    // Cargar al iniciar
+    document.addEventListener('DOMContentLoaded', function() {
+      loadDynamicNewsFromStorage();
+    });
+    // Por si DOMContentLoaded ya pasó
+    loadDynamicNewsFromStorage();
+
     // ESTADO DE NAVEGACIÓN SIMPLE (PILA DE HISTORIAL)
     let navHistory = ['view-home'];
     let currentFontSize = 20;

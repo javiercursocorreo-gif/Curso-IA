@@ -1521,9 +1521,39 @@ Recuerde traer calzado cómodo y su carné de socio. Para cualquier consulta o n
     }
 
     function publishItem() {
-      const title = document.getElementById('inpTitle').value;
-      alert('🚀 ¡Aviso publicado con éxito!\n\n«' + title + '» ha quedado guardado y actualizado para la web pública.');
-      document.getElementById('previewStatus').textContent = 'Publicado';
+      const title = document.getElementById('inpTitle').value.trim();
+      if (!title) {
+        alert('⚠️ Por favor, introduce un título para la noticia antes de publicar.');
+        return;
+      }
+      const area = currentArea || 'excursiones';
+      const date = document.getElementById('inpDate').value.trim() || 'Próximamente';
+      const price = document.getElementById('inpPrice').value.trim() || 'Gratuito';
+      const body = document.getElementById('inpBody').value.trim();
+      const img = document.getElementById('previewImg').src;
+
+      const newItem = {
+        id: 'user_' + Date.now(),
+        area: area,
+        title: title,
+        date: date,
+        price: price,
+        body: body.replace(/\n/g, '<br>'),
+        image: img,
+        createdAt: new Date().toISOString()
+      };
+
+      try {
+        let stored = localStorage.getItem('centro_mayores_noticias_v1');
+        let list = stored ? JSON.parse(stored) : [];
+        list.unshift(newItem); // Se añade al principio
+        localStorage.setItem('centro_mayores_noticias_v1', JSON.stringify(list));
+      } catch (e) {
+        console.error('Error guardando en localStorage:', e);
+      }
+
+      alert('🚀 ¡Aviso publicado con éxito!\n\n«' + title + '» ha quedado guardado en la Base de Datos.\nAl abrir o actualizar la Web Pública, aparecerá en primera posición.');
+      document.getElementById('previewStatus').textContent = 'Publicado en Vivo';
       document.getElementById('previewStatus').style.background = '#dcfce7';
       document.getElementById('previewStatus').style.color = '#15803d';
     }

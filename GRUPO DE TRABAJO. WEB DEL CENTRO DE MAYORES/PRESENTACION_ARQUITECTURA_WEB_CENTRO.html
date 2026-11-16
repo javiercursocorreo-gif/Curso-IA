@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>¿Cómo Funciona una Web por Dentro? • Arquitectura Explicada para Mayores</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #070d1e;
+      --bg-card: rgba(15, 26, 53, 0.92);
+      --border-card: rgba(255, 255, 255, 0.12);
+      --front-blue: #38bdf8;
+      --back-amber: #fb923c;
+      --db-green: #34d399;
+      --tv-purple: #c084fc;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: var(--bg-dark);
+      background-image: 
+        radial-gradient(circle at 50% 0%, rgba(56, 189, 248, 0.15) 0%, transparent 60%),
+        radial-gradient(circle at 100% 100%, rgba(251, 146, 60, 0.1) 0%, transparent 50%);
+      color: var(--text-main);
+      min-height: 100vh;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1100px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    /* HEADER */
+    .header-box {
+      text-align: center;
+      padding: 28px 20px;
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.15), rgba(13, 22, 45, 0.95));
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+    }
+    .header-box h1 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 2.2rem;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      margin-bottom: 8px;
+    }
+    .header-box p {
+      font-size: 1.15rem;
+      color: var(--text-muted);
+      max-width: 800px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    /* METÁFORA CENTRAL: LA TIENDA Y LA TRASTIENDA */
+    .metafora-box {
+      background: rgba(13, 22, 45, 0.85);
+      border: 1px solid var(--border-card);
+      border-radius: 16px;
+      padding: 22px 26px;
+      text-align: center;
+    }
+    .metafora-box b { color: #fbbf24; font-size: 1.15rem; }
+    .metafora-desc {
+      font-size: 1.05rem;
+      color: #cbd5e1;
+      margin-top: 6px;
+      line-height: 1.6;
+    }
+
+    /* ESQUEMA DE 3 BLOQUES ANIMADOS */
+    .arch-grid {
+      display: grid;
+      grid-template-columns: 1fr 0.8fr 1fr;
+      gap: 20px;
+      align-items: stretch;
+      position: relative;
+    }
+    @media (max-width: 900px) {
+      .arch-grid { grid-template-columns: 1fr; }
+    }
+
+    .arch-card {
+      background: var(--bg-card);
+      border-radius: 18px;
+      padding: 24px;
+      border: 2px solid transparent;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+      position: relative;
+      transition: transform 0.3s ease, border-color 0.3s ease;
+    }
+    .arch-card:hover {
+      transform: translateY(-4px);
+    }
+
+    /* CARD 1: BACKEND */
+    .card-backend {
+      border-color: rgba(251, 146, 60, 0.6);
+      background: linear-gradient(180deg, rgba(251, 146, 60, 0.12) 0%, rgba(13, 22, 45, 0.95) 100%);
+    }
+    /* CARD 2: BASE DE DATOS */
+    .card-db {
+      border-color: rgba(52, 211, 153, 0.6);
+      background: linear-gradient(180deg, rgba(52, 211, 153, 0.12) 0%, rgba(13, 22, 45, 0.95) 100%);
+      text-align: center;
+    }
+    /* CARD 3: FRONTEND */
+    .card-frontend {
+      border-color: rgba(56, 189, 248, 0.6);
+      background: linear-gradient(180deg, rgba(56, 189, 248, 0.12) 0%, rgba(13, 22, 45, 0.95) 100%);
+    }
+
+    .badge-role {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-weight: 700;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      width: fit-content;
+    }
+    .badge-b { background: rgba(251, 146, 60, 0.25); color: var(--back-amber); }
+    .badge-d { background: rgba(52, 211, 153, 0.25); color: var(--db-green); margin: 0 auto; }
+    .badge-f { background: rgba(56, 189, 248, 0.25); color: var(--front-blue); }
+
+    .arch-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.4rem;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .arch-subtitle {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #cbd5e1;
+    }
+    .arch-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 6px;
+    }
+    .arch-list li {
+      font-size: 0.92rem;
+      line-height: 1.5;
+      color: #e2e8f0;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+    .arch-list li span { font-size: 1.1rem; }
+
+    /* SIMULADOR INTERACTIVO DE FLUJO EN VIVO */
+    .flow-controller-box {
+      background: linear-gradient(135deg, rgba(13, 22, 45, 0.98), rgba(20, 35, 70, 0.95));
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 18px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6);
+    }
+    .flow-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 14px;
+    }
+    .flow-btn {
+      background: linear-gradient(135deg, #0284c7, #38bdf8);
+      color: #000;
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 800;
+      padding: 12px 26px;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      box-shadow: 0 4px 18px rgba(56, 189, 248, 0.4);
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .flow-btn:hover {
+      transform: scale(1.03);
+      box-shadow: 0 6px 22px rgba(56, 189, 248, 0.6);
+    }
+
+    /* PISTA DE ANIMACIÓN VISUAL */
+    .animation-track {
+      background: #040814;
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      border-radius: 14px;
+      padding: 24px 20px;
+      min-height: 140px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      overflow: hidden;
+    }
+
+    .node-anim {
+      width: 140px;
+      text-align: center;
+      padding: 12px 8px;
+      border-radius: 12px;
+      background: rgba(15, 26, 53, 0.9);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      z-index: 2;
+    }
+    .node-anim .icon { font-size: 2rem; margin-bottom: 4px; }
+    .node-anim .lbl { font-size: 0.85rem; font-weight: 700; color: #fff; }
+
+    .node-back { border-color: var(--back-amber); }
+    .node-db   { border-color: var(--db-green); }
+    .node-front{ border-color: var(--front-blue); }
+
+    /* PAQUETE VIAJERO ANIMADO */
+    .packet-bubble {
+      position: absolute;
+      width: 32px;
+      height: 32px;
+      background: #fbbf24;
+      border-radius: 50%;
+      box-shadow: 0 0 20px #fbbf24, 0 0 40px #fbbf24;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      left: 120px;
+      opacity: 0;
+      z-index: 10;
+      transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* TEXTO EXPLICATIVO EN TIEMPO REAL */
+    .status-terminal {
+      background: #020610;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      padding: 14px 18px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.95rem;
+      color: #38bdf8;
+      min-height: 52px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    /* SECCIÓN DE LOS 3 GRUPOS */
+    .groups-box {
+      background: rgba(13, 22, 45, 0.9);
+      border: 1px solid rgba(192, 132, 252, 0.4);
+      border-radius: 18px;
+      padding: 24px;
+    }
+    .groups-box h3 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.4rem;
+      color: var(--tv-purple);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .groups-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+    @media (max-width: 800px) {
+      .groups-grid { grid-template-columns: 1fr; }
+    }
+    .group-item {
+      background: rgba(6, 11, 24, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .group-badge {
+      font-weight: 800;
+      font-size: 0.9rem;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .group-desc {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+
+    <!-- CABECERA -->
+    <header class="header-box">
+      <h1><span>🏛️</span> ¿Cómo Funciona una Web por Dentro? <span>⚡</span></h1>
+      <p>
+        Explicación visual de la arquitectura para el <b>Proyecto de la Web del Centro de Mayores</b>. 
+        Comprende cómo se comunican las dos caras de la misma moneda.
+      </p>
+    </header>
+
+    <!-- METÁFORA DIDÁCTICA -->
+    <section class="metafora-box">
+      <b>💡 La Metáfora de la Panadería o Tienda de Barrio:</b>
+      <div class="metafora-desc">
+        Una web es como una panadería: tiene un <b>Escaparate (Frontend)</b> donde los clientes ven los pasteles con letras grandes; 
+        una <b>Trastienda (Backend)</b> donde los panaderos preparan las bandejas; y un <b>Almacén Central (Base de Datos)</b> 
+        que guarda todo para que nunca falte producto.
+      </div>
+    </section>
+
+    <!-- 3 BLOQUES ARQUITECTURALES -->
+    <section class="arch-grid">
+
+      <!-- BLOQUE 1: BACKEND -->
+      <div class="arch-card card-backend">
+        <span class="badge-role badge-b">1. La Trastienda / Gestión</span>
+        <h2 class="arch-title"><span>✍️</span> El Backend</h2>
+        <div class="arch-subtitle">El Gestor de Contenidos (CMS de Alumnos)</div>
+        <ul class="arch-list">
+          <li><span>👨‍💻</span> <b>¿Quién lo usa?</b> Vosotros (los alumnos y voluntarios) y la Coordinadora.</li>
+          <li><span>📝</span> <b>¿Para qué sirve?</b> Para escribir una nueva excursión, cambiar el menú del día o poner un aviso.</li>
+          <li><span>🪄</span> <b>Asistente Gemini:</b> El botón mágico que pule las faltas y redacta con tono alegre y cercano.</li>
+          <li><span>🔒</span> <b>Protegido:</b> Es privado. Los socios normales de la calle no pueden entrar aquí.</li>
+        </ul>
+      </div>
+
+      <!-- BLOQUE 2: BASE DE DATOS -->
+      <div class="arch-card card-db">
+        <span class="badge-role badge-d">2. El Puente Central</span>
+        <h2 class="arch-title" style="justify-content:center;"><span>🗄️</span> La Base de Datos</h2>
+        <div class="arch-subtitle">(LocalStorage / Memoria)</div>
+        <ul class="arch-list" style="text-align:left;">
+          <li><span>📦</span> <b>El Cajón Digital:</b> Guarda en la memoria los precios, las plazas, las fechas y los textos.</li>
+          <li><span>⚡</span> <b>Cero Servidores de Pago:</b> Funciona directamente en el navegador a coste 0 €.</li>
+          <li><span>🔄</span> <b>Sincronización Instantánea:</b> En cuanto el Backend guarda un dato, la Base de Datos se lo entrega a la Web en 1 segundo.</li>
+        </ul>
+      </div>
+
+      <!-- BLOQUE 3: FRONTEND -->
+      <div class="arch-card card-frontend">
+        <span class="badge-role badge-f">3. El Escaparate Público</span>
+        <h2 class="arch-title"><span>🌐</span> El Frontend</h2>
+        <div class="arch-subtitle">La Web Pública para los Socios</div>
+        <ul class="arch-list">
+          <li><span>👵</span> <b>¿Quién lo usa?</b> Todos los socios del centro, sus familias y vecinos desde el móvil o la tablet.</li>
+          <li><span>🧱</span> <b>Cero menús raros:</b> 5 baldosas gigantes a pantalla completa (Excursiones, Cafetería, Talleres...).</li>
+          <li><span>🔊</span> <b>Lectura en Voz Alta:</b> Para quien tenga vista cansada o le cueste leer en el teléfono.</li>
+          <li><span>📺</span> <b>Modo Televisión:</b> Alimenta la Smart TV de la entrada en bucle sin usar ningún pendrive.</li>
+        </ul>
+      </div>
+
+    </section>
+
+    <!-- CONTROLADOR DEL SIMULADOR ANIMADO -->
+    <section class="flow-controller-box">
+      <div class="flow-header">
+        <div>
+          <h3 style="font-family:'Outfit',sans-serif; font-size:1.3rem; color:#fff; display:flex; align-items:center; gap:8px;">
+            <span>🎬</span> Demostración en Vivo: Mira cómo viaja una noticia
+          </h3>
+          <p style="color:var(--text-muted); font-size:0.92rem; margin-top:2px;">
+            Pulsa el botón para ver cómo un aviso redactado en el Backend llega en tiempo real a la Web Pública.
+          </p>
+        </div>
+        <button id="btnPlayFlow" class="flow-btn" onclick="startFlowAnimation()">
+          <span>▶</span> Simular Publicación de Excursión
+        </button>
+      </div>
+
+      <!-- PISTA DE ANIMACIÓN -->
+      <div class="animation-track">
+        
+        <!-- NODO BACKEND -->
+        <div id="nodeBack" class="node-anim node-back">
+          <div class="icon">✍️</div>
+          <div class="lbl">1. BACKEND</div>
+          <div style="font-size:0.75rem; color:#cbd5e1;">Alumno redacta</div>
+        </div>
+
+        <!-- NODO BASE DE DATOS -->
+        <div id="nodeDb" class="node-anim node-db">
+          <div class="icon">🗄️</div>
+          <div class="lbl">2. BASE DE DATOS</div>
+          <div style="font-size:0.75rem; color:#cbd5e1;">Memoria Local</div>
+        </div>
+
+        <!-- NODO FRONTEND -->
+        <div id="nodeFront" class="node-anim node-front">
+          <div class="icon">🌐</div>
+          <div class="lbl">3. FRONTEND</div>
+          <div style="font-size:0.75rem; color:#cbd5e1;">Socio en su Móvil</div>
+        </div>
+
+        <!-- NODO TELEVISIÓN -->
+        <div id="nodeTv" class="node-anim" style="border-color:var(--tv-purple);">
+          <div class="icon">📺</div>
+          <div class="lbl">4. SMART TV</div>
+          <div style="font-size:0.75rem; color:#cbd5e1;">Vestíbulo Centro</div>
+        </div>
+
+        <!-- BURBUJA DE DATOS -->
+        <div id="packetBubble" class="packet-bubble">✉️</div>
+
+      </div>
+
+      <!-- TERMINAL DE ESTADO -->
+      <div id="statusTerminal" class="status-terminal">
+        <span>💬</span>
+        <span id="statusText">Listo. Pulsa el botón superior para ver el recorrido de una noticia.</span>
+      </div>
+
+    </section>
+
+    <!-- REPARTO POR 3 GRUPOS -->
+    <section class="groups-box">
+      <h3><span>👥</span> Organización del Trabajo en Clase: 3 Grupos de Redacción</h3>
+      <div class="groups-grid">
+        <div class="group-item" style="border-color: rgba(56, 189, 248, 0.4);">
+          <div class="group-badge" style="color:var(--front-blue);">🔹 GRUPO 1: Viajes y Gastronomía</div>
+          <div class="group-desc">
+            Diseñan las preguntas y gestionan los módulos de <b>[🚌 Excursiones]</b> y <b>[☕ Cafetería / Menús del Día]</b>.
+          </div>
+        </div>
+        <div class="group-item" style="border-color: rgba(251, 146, 60, 0.4);">
+          <div class="group-badge" style="color:var(--back-amber);">🔸 GRUPO 2: Actividades y Normas</div>
+          <div class="group-desc">
+            Diseñan las preguntas y gestionan los módulos de <b>[🎨 Clases y Talleres]</b> y <b>[📜 Normas y Secretaría]</b>.
+          </div>
+        </div>
+        <div class="group-item" style="border-color: rgba(192, 132, 252, 0.4);">
+          <div class="group-badge" style="color:var(--tv-purple);">💜 GRUPO 3: Consejos, Salud y TV</div>
+          <div class="group-desc">
+            Diseñan las preguntas y gestionan los módulos de <b>[💡 Guías con IA]</b> y <b>[📺 Pantalla TV de la Entrada]</b>.
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <script>
+    function startFlowAnimation() {
+      var btn = document.getElementById('btnPlayFlow');
+      var bubble = document.getElementById('packetBubble');
+      var status = document.getElementById('statusText');
+      var track = document.querySelector('.animation-track');
+
+      var nBack = document.getElementById('nodeBack');
+      var nDb = document.getElementById('nodeDb');
+      var nFront = document.getElementById('nodeFront');
+      var nTv = document.getElementById('nodeTv');
+
+      btn.disabled = true;
+      btn.style.opacity = '0.5';
+
+      // Posiciones
+      var trackRect = track.getBoundingClientRect();
+      var bRect = nBack.getBoundingClientRect();
+      var dRect = nDb.getBoundingClientRect();
+      var fRect = nFront.getBoundingClientRect();
+      var tRect = nTv.getBoundingClientRect();
+
+      var startX = bRect.left - trackRect.left + bRect.width / 2 - 16;
+      var dbX    = dRect.left - trackRect.left + dRect.width / 2 - 16;
+      var frontX = fRect.left - trackRect.left + fRect.width / 2 - 16;
+      var tvX    = tRect.left - trackRect.left + tRect.width / 2 - 16;
+
+      // Paso 1: Alumno escribe en Backend
+      bubble.style.transition = 'none';
+      bubble.style.left = startX + 'px';
+      bubble.style.opacity = '1';
+      bubble.innerText = '✍️';
+      status.innerHTML = '<span style="color:#fb923c;">Paso 1:</span> El alumno del <b>Grupo 1</b> escribe en el Backend: <i>"Excursión a Chinchón el 25 de mayo, 20€"</i>...';
+
+      // Paso 2: Viaja a la Base de Datos
+      setTimeout(function() {
+        bubble.style.transition = 'all 0.9s cubic-bezier(0.4, 0, 0.2, 1)';
+        bubble.style.left = dbX + 'px';
+        status.innerHTML = '<span style="color:#34d399;">Paso 2:</span> El alumno pulsa <b>"Guardar y Publicar"</b>. La noticia se almacena en la <b>Base de Datos Central</b>.';
+      }, 1000);
+
+      // Paso 3: Viaja a la Web Pública
+      setTimeout(function() {
+        bubble.style.left = frontX + 'px';
+        bubble.innerText = '🌐';
+        status.innerHTML = '<span style="color:#38bdf8;">Paso 3:</span> <b>¡Ya está en la Web Pública!</b> Los socios abren su móvil y ven la tarjeta con el botón de lectura de voz.';
+      }, 2300);
+
+      // Paso 4: Viaja a la TV
+      setTimeout(function() {
+        bubble.style.left = tvX + 'px';
+        bubble.innerText = '📺';
+        status.innerHTML = '<span style="color:#c084fc;">Paso 4:</span> Al mismo tiempo, la <b>Smart TV de la entrada</b> proyecta la diapositiva en bucle sin usar ningún pendrive.';
+      }, 3600);
+
+      // Finalización
+      setTimeout(function() {
+        bubble.style.opacity = '0';
+        status.innerHTML = '✨ <b>¡Publicación Completada!</b> Ambas caras de la web sincronizadas en tiempo real.';
+        btn.disabled = false;
+        btn.style.opacity = '1';
+        btn.innerHTML = '<span>⟲</span> Repetir Animación';
+      }, 5000);
+    }
+  </script>
+
+</body>
+</html>
