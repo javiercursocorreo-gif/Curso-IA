@@ -452,6 +452,19 @@ def generar_pdf_completo():
         title_color=(0.12, 0.25, 0.55)
     )
 
+    flow.add_card_box(
+        "PASO 1.5: CREAR UNA PÁGINA WEB COMPLETA (MAGIA DIRECTA SIN CÓDIGO)",
+        [
+            "Instrucción ultra-simple: Con las fuentes marcadas [v], escribe en el chat simplemente: 'Haz una web sobre este tema' (o 'Haz una web').",
+            "Qué hace la IA: Gemini Notebook analiza tus fuentes y maqueta por sí mismo una web completa, moderna y visual con tus datos, sin necesidad de prompts complejos ni saber programar.",
+            "Guardar en Studio (Pin): Pasa el ratón sobre la web generada y pulsa la Chincheta (Pin) para dejarla anclada permanentemente en tu panel derecho."
+        ],
+        badge_text="NOVEDAD WEB",
+        border_color=(0.20, 0.60, 0.85),
+        bg_color=(0.96, 0.98, 1.0),
+        title_color=(0.10, 0.40, 0.70)
+    )
+
     # -------------------------------------------------------------
     # SECCIÓN 5: CASOS DE PRUEBA EXHAUSTIVOS EN EL PANEL STUDIO
     # -------------------------------------------------------------
@@ -592,6 +605,7 @@ def generar_pdf_completo():
         ("Paso 4", "Sé marcar y desmarcar las casillas [v] para aislar una sola fuente y analizarla sin mezclar."),
         ("Paso 5", "Sé hacer preguntas en el chat y pulsar las citas [1] para verificar el texto subrayado en amarillo."),
         ("Paso 6", "Sé guardar respuestas clave en el corcho permanente de Studio con el icono de la Chincheta (Pin)."),
+        ("Paso 6B", "Sé escribir en el chat 'Haz una web' y ver cómo genera una página web completa sin programar."),
         ("Paso 7", "Sé generar Presentaciones paso a paso con esquema previo y usar 'Revisar' en vivo."),
         ("Paso 8", "Sé crear Infografías probando al menos 2 estilos distintos (Científico y Anime)."),
         ("Paso 9", "Sé crear un Resumen de vídeo paso a paso fundiendo fuentes en una pieza audiovisual."),
