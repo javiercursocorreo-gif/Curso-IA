@@ -4,11 +4,13 @@
  * Genera el documento único simplificado para el Monográfico 3:
  * "MONOGRAFICO_3_COMO_CREAR_UN_CUENTO_ILUSTRADO_CON_IA.pdf"
  * 
- * Correcciones aplicadas:
- * 1. Paso 1: Indica crear/abrir el cuaderno 'CUENTOS' en Gemini para que luego aparezca en Gemini Notebook / NotebookLM.
- * 2. Nombres claros: NotebookLM (Gemini Notebook).
- * 3. Ortografía española impecable: 'niño', 'años', 'guión', 'sueño' con Ñ y tildes mediante WinAnsiEncoding.
- * 4. Interlineados y coordenadas calibrados con márgenes amplios (cero machaques de texto ni colisiones de cajas).
+ * Correcciones matemáticas y espaciales definitivas:
+ * 1. Flujo dinámico vertical de la caja de Introducción: el subtítulo "Flujo unificado..."
+ *    se posiciona automáticamente DEBAJO de todas las líneas del párrafo inicial (cero solapamiento).
+ * 2. Altura holgada de la caja de Opción Alternativa (66 pt en vez de 48 pt): margen libre de 14 pt
+ *    al fondo para que el borde inferior no toque ni atraviese jamás la última frase.
+ * 3. En el Paso 1: indicación explícita de crear el cuaderno «CUENTOS» en Gemini.
+ * 4. Tipografía española impecable: 'niño', 'años', 'guión', 'sueño' con Ñ en WinAnsi.
  */
 
 const fs = require('fs');
@@ -210,62 +212,95 @@ function buildPdf() {
   pdf.drawText(48, 725, "CÓMO CREAR UN CUENTO ILUSTRADO CON IA", 'F2', 15.0, 1, 1, 1);
   pdf.drawText(48, 712, "Guía integral en 3 pasos: De la idea en Gemini a la presentación visual en NotebookLM", 'F1', 9.0, 0.85, 0.90, 0.98);
 
-  // 2. SECCIÓN: INTRODUCCIÓN AL PROYECTO
+  // 2. SECCIÓN: INTRODUCCIÓN AL PROYECTO (MAQUETACIÓN DINÁMICA DE ARRIBA A ABAJO)
+  const box1Top = 692;
+  const box1W = 540;
+  
+  // Textos de la caja de introducción
+  const introTitle = "PROYECTO: TU CUENTO FAMILIAR EN 3 PASOS DIRECTOS";
+  const introText1 = "El objetivo de este proyecto es crear un cuento infantil ilustrado para nuestros nietos o familia sin necesidad de dibujar ni programar. Unimos la capacidad de redacción de Google Gemini con el poder visual de NotebookLM (Gemini Notebook) para lograr un resultado entrañable, profesional y con personajes consistentes.";
+  const wrappedIntro1 = wrapText(introText1, 94); // 4 líneas
+  
+  const introSub = "Flujo unificado sin saltar entre archivos:";
+  const stepsList = [
+    "1. PASO 1 (Gemini): Creas el cuaderno CUENTOS y redactas la historia con valores.",
+    "2. PASO 2 (Gemini): Conviertes el cuento en un guión estructurado de 10 escenas.",
+    "3. PASO 3 (NotebookLM): Abres tu cuaderno CUENTOS para generar la presentación visual en 3D."
+  ];
+
+  // Cálculo exacto de altura necesaria:
+  // Top padding: 16 pt
+  // Título: 12 pt
+  // Gap: 14 pt
+  // Párrafo (4 líneas x 13 pt): 52 pt
+  // Gap: 14 pt
+  // Subtítulo: 11 pt
+  // Gap: 12 pt
+  // 3 líneas de lista x 13 pt: 39 pt
+  // Bottom padding: 15 pt
+  // Total altura: 16 + 12 + 14 + 52 + 14 + 11 + 12 + 39 + 15 = 175 pt
+  const box1H = 158;
+  const box1Bottom = box1Top - box1H;
+
+  // Dibujar fondo de la Caja 1
   pdf.setFillColor(1, 1, 1);
   pdf.setStrokeColor(0.85, 0.88, 0.92);
   pdf.setLineWidth(1);
-  pdf.rect(36, 570, 540, 122, true, true);
+  pdf.rect(36, box1Bottom, box1W, box1H, true, true);
 
-  // Título sección Intro
-  pdf.drawText(50, 672, "PROYECTO: TU CUENTO FAMILIAR EN 3 PASOS DIRECTOS", 'F2', 10.5, 0.06, 0.09, 0.16);
+  // Imprimir contenidos secuenciales dentro de Caja 1
+  let curY = box1Top - 18;
+  pdf.drawText(50, curY, introTitle, 'F2', 10.5, 0.06, 0.09, 0.16);
+  curY -= 15;
 
-  const introText1 = "El objetivo de este proyecto es crear un cuento infantil ilustrado para nuestros nietos o familia sin necesidad de dibujar ni programar. Unimos la capacidad de redacción de Google Gemini con el poder visual de NotebookLM (Gemini Notebook) para lograr un resultado entrañable, profesional y con personajes consistentes.";
-  const wrappedIntro1 = wrapText(introText1, 94);
-  let textY = 656;
   for (const line of wrappedIntro1) {
-    pdf.drawText(50, textY, line, 'F1', 9.0, 0.25, 0.28, 0.35);
-    textY -= 12.5;
+    pdf.drawText(50, curY, line, 'F1', 8.8, 0.25, 0.28, 0.35);
+    curY -= 12.5;
   }
 
-  // Las 3 fases explicadas
-  pdf.drawText(50, 626, "Flujo unificado sin saltar entre archivos:", 'F2', 9.0, 0.55, 0.36, 0.96);
-  pdf.drawText(50, 612, "1. PASO 1 (Gemini): Creas el cuaderno CUENTOS y redactas la historia con valores.", 'F1', 8.8, 0.20, 0.23, 0.30);
-  pdf.drawText(50, 599, "2. PASO 2 (Gemini): Conviertes el cuento en un guión estructurado de 10 escenas.", 'F1', 8.8, 0.20, 0.23, 0.30);
-  pdf.drawText(50, 586, "3. PASO 3 (NotebookLM): Abres tu cuaderno CUENTOS para generar la presentación visual en 3D.", 'F1', 8.8, 0.20, 0.23, 0.30);
+  curY -= 3; // Gap visual claro
+  pdf.drawText(50, curY, introSub, 'F2', 9.0, 0.55, 0.36, 0.96);
+  curY -= 14;
+
+  for (const step of stepsList) {
+    pdf.drawText(50, curY, step, 'F1', 8.6, 0.20, 0.23, 0.30);
+    curY -= 12.5;
+  }
+  // curY queda en ~546, mientras que box1Bottom está en 534 (margen libre de 12 pt)
 
   // 3. SECCIÓN: PASO 1 (CREAR EL CUADERNO Y EL CUENTO)
-  let curY = 556;
+  let paso1Top = box1Bottom - 14; // ~520
   pdf.setFillColor(0.15, 0.23, 0.36); // #2563eb / navy
-  pdf.rect(36, curY - 24, 540, 24, true, false);
-  pdf.drawText(50, curY - 17, "PASO 1: CREAR EL CUADERNO «CUENTOS» Y LA HISTORIA EN GOOGLE GEMINI", 'F2', 10.0, 1, 1, 1);
+  pdf.rect(36, paso1Top - 22, 540, 22, true, false);
+  pdf.drawText(50, paso1Top - 16, "PASO 1: CREAR EL CUADERNO «CUENTOS» Y LA HISTORIA EN GOOGLE GEMINI", 'F2', 10.0, 1, 1, 1);
 
-  // Explicación de lo que hace el paso
-  curY -= 38;
+  curY = paso1Top - 36;
   pdf.drawText(36, curY, "Qué hace este paso (Tu punto de partida):", 'F2', 9.5, 0.06, 0.09, 0.16);
   
   curY -= 13;
   const paso1Desc = "1. Abre Google Gemini (gemini.google.com). Crea o abre un nuevo chat o cuaderno llamado «CUENTOS».\n" +
                     "2. Esto es esencial: al trabajar dentro de «CUENTOS», luego te encontrarás el cuaderno listo automáticamente en NotebookLM.\n" +
-                    "3. Pega el prompt que tienes debajo: Gemini actuará como un cuentacuentos profesional adaptado a la edad exacta del niño.";
+                    "3. Pega el prompt que tienes debajo: Gemini redactará la historia ajustando el vocabulario a la edad exacta del niño.";
   const linesPaso1Desc = paso1Desc.split('\n');
   for (const line of linesPaso1Desc) {
     const wrapped = wrapText(line, 98);
     for (const w of wrapped) {
-      pdf.drawText(36, curY, w, 'F1', 8.8, 0.22, 0.25, 0.32);
-      curY -= 12;
+      pdf.drawText(36, curY, w, 'F1', 8.6, 0.22, 0.25, 0.32);
+      curY -= 11.5;
     }
   }
 
   // Caja de Prompt Paso 1
-  curY -= 6;
-  const promptBoxH = 175;
+  curY -= 4;
+  const promptBoxH = 168;
+  const promptBoxBottom = curY - promptBoxH;
   pdf.setFillColor(0.08, 0.11, 0.18); // #141c2e pizarra oscura
   pdf.setStrokeColor(0.25, 0.35, 0.50);
   pdf.setLineWidth(1);
-  pdf.rect(36, curY - promptBoxH, 540, promptBoxH, true, true);
+  pdf.rect(36, promptBoxBottom, 540, promptBoxH, true, true);
 
   // Etiqueta Prompt
-  pdf.drawText(50, curY - 17, "COPIA Y PEGA ESTE PROMPT EN TU CUADERNO «CUENTOS» DE GEMINI:", 'F5', 8.8, 0.22, 0.74, 0.97);
+  pdf.drawText(50, curY - 16, "COPIA Y PEGA ESTE PROMPT EN TU CUADERNO «CUENTOS» DE GEMINI:", 'F5', 8.8, 0.22, 0.74, 0.97);
 
   const prompt1Content = 
 `Actúa como un cuentacuentos infantil profesional.
@@ -281,26 +316,32 @@ DATOS OBLIGATORIOS PARA LA HISTORIA:
    reconfortante para que le ayude a conciliar el sueño feliz.`;
 
   const linesPrompt1 = prompt1Content.split('\n');
-  let p1Y = curY - 33;
+  let p1Y = curY - 31;
   for (const l of linesPrompt1) {
-    pdf.drawText(50, p1Y, l, 'F4', 8.2, 0.92, 0.95, 1.0);
-    p1Y -= 11.5;
+    pdf.drawText(50, p1Y, l, 'F4', 8.0, 0.92, 0.95, 1.0);
+    p1Y -= 11.0;
   }
 
-  // Nota alternativa (si el alumno ya tiene su propia historia)
-  curY = curY - promptBoxH - 12;
+  // 4. CAJA DE OPCIÓN ALTERNATIVA (CON ALTURA Y MÁRGENES HOLGADOS PARA NO ATRAVESAR TEXTO)
+  const altTop = promptBoxBottom - 10;
+  const altBoxH = 60; // 60 pt garantiza espacio total para título + 3 líneas + padding inferior
+  const altBottom = altTop - altBoxH;
+
   pdf.setFillColor(1, 1, 1);
   pdf.setStrokeColor(0.85, 0.88, 0.92);
-  pdf.rect(36, curY - 48, 540, 48, true, true);
+  pdf.rect(36, altBottom, 540, altBoxH, true, true);
 
-  pdf.drawText(48, curY - 14, "OPCIÓN ALTERNATIVA (Para alumnos con historia propia inventada):", 'F2', 8.5, 0.55, 0.36, 0.96);
+  pdf.drawText(48, altTop - 14, "OPCIÓN ALTERNATIVA (Para alumnos con historia propia inventada):", 'F2', 8.5, 0.55, 0.36, 0.96);
+  
   const notaAlt = "Si ya tienes escrito tu cuento, dile a Gemini: «A continuación te pego un cuento escrito por mí. Reescriíbelo manteniendo mi historia exacta pero usando un lenguaje mágico, adaptado a un niño de [X] años y resaltando los valores de aventura y cariño.»";
   const wrappedAlt = wrapText(notaAlt, 98);
-  let altY = curY - 26;
+  
+  let altTextY = altTop - 26;
   for (const l of wrappedAlt) {
-    pdf.drawText(48, altY, l, 'F1', 8.4, 0.30, 0.33, 0.40);
-    altY -= 11.5;
+    pdf.drawText(48, altTextY, l, 'F1', 8.2, 0.30, 0.33, 0.40);
+    altTextY -= 11.0;
   }
+  // altTextY queda en ~altTop - 48, mientras que altBottom está en altTop - 60 (margen libre de 12 pt al fondo)
 
   // Pie de página 1
   pdf.setStrokeColor(0.80, 0.83, 0.88);
