@@ -210,7 +210,7 @@ function buildPdf() {
   // 2. SECCIÓN: INTRODUCCIÓN AL PROYECTO
   const box1Top = 692;
   const box1W = 540;
-  const box1H = 162;
+  const box1H = 120;
   const box1Bottom = box1Top - box1H;
 
   pdf.setFillColor(1, 1, 1);
@@ -218,64 +218,54 @@ function buildPdf() {
   pdf.setLineWidth(1);
   pdf.rect(36, box1Bottom, box1W, box1H, true, true);
 
-  let curY = box1Top - 16;
-  pdf.drawText(50, curY, "PROYECTO: TU CÓMIC FAMILIAR EN 4 PASOS DIRECTOS", 'F2', 10.5, 0.06, 0.09, 0.16);
-  curY -= 14;
+  let curY = box1Top - 15;
+  pdf.drawText(50, curY, "PROYECTO: TU CÓMIC FAMILIAR EN 4 PASOS DIRECTOS", 'F2', 10.0, 0.06, 0.09, 0.16);
+  curY -= 13;
 
-  const introText1 = "El objetivo de este proyecto es crear un auténtico cómic infantil ilustrado para nuestros nietos o familia sin necesidad de dibujar ni programar. Unimos Google Gemini para diseñar el guion en viñetas y diálogos, con el poder visual y sonoro de NotebookLM para generar el cómic en láminas y la narración en audio.";
-  const wrappedIntro1 = wrapText(introText1, 94);
+  const introText1 = "Creamos un auténtico cómic infantil ilustrado para nuestros nietos o familia sin necesidad de dibujar. Unimos Google Gemini para el guion en viñetas y diálogos, con NotebookLM para generar las láminas de cómic y el audio narrado con voces interpretadas.";
+  const wrappedIntro1 = wrapText(introText1, 95);
   for (const line of wrappedIntro1) {
-    pdf.drawText(50, curY, line, 'F1', 8.8, 0.25, 0.28, 0.35);
-    curY -= 12.0;
+    pdf.drawText(50, curY, line, 'F1', 8.5, 0.25, 0.28, 0.35);
+    curY -= 11.0;
   }
 
   curY -= 2;
-  pdf.drawText(50, curY, "Flujo unificado sin saltar entre archivos (4 pasos directos):", 'F2', 9.0, 0.55, 0.36, 0.96);
-  curY -= 13;
-
   const stepsList = [
-    "1. PASO 1 (Gemini): Creas el cuaderno CUENTOS y redactas el argumento con valores.",
-    "2. PASO 2 (Gemini): Conviertes la historia en guion de cómic con 3 viñetas por página y diálogos.",
-    "3. PASO 3 (NotebookLM): Generas la presentación del cómic con cuadrículas de viñetas y bocadillos.",
-    "4. PASO 4 (NotebookLM): Generas el audio narrado empezando directamente con «Érase una vez...»."
+    "• Paso 1 (Gemini): Diseñas el argumento y personajes adaptados a la edad del niño.",
+    "• Paso 2 (Gemini): Conviertes la historia en guion de cómic de 6 páginas con 3 viñetas y diálogos.",
+    "• Paso 3 (NotebookLM): Creas la presentación de cómic en cuadrículas con bocadillos estilo 3D.",
+    "• Paso 4 (NotebookLM): Generas el audio en modo radioteatro arrancando con «Érase una vez...»."
   ];
   for (const step of stepsList) {
-    pdf.drawText(50, curY, step, 'F1', 8.6, 0.20, 0.23, 0.30);
-    curY -= 11.5;
+    pdf.drawText(50, curY, step, 'F1', 8.2, 0.20, 0.23, 0.30);
+    curY -= 10.5;
   }
 
   // 3. SECCIÓN: PASO 1 (CREAR EL CUADERNO Y EL ARGUMENTO)
-  let paso1Top = box1Bottom - 14;
+  let paso1Top = box1Bottom - 10;
   pdf.setFillColor(0.15, 0.23, 0.36);
-  pdf.rect(36, paso1Top - 22, 540, 22, true, false);
-  pdf.drawText(50, paso1Top - 16, "PASO 1: CREAR EL CUADERNO «CUENTOS» Y EL ARGUMENTO EN GOOGLE GEMINI", 'F2', 10.0, 1, 1, 1);
+  pdf.rect(36, paso1Top - 20, 540, 20, true, false);
+  pdf.drawText(50, paso1Top - 15, "PASO 1: CREAR EL CUADERNO «CUENTOS» Y EL ARGUMENTO EN GOOGLE GEMINI", 'F2', 9.5, 1, 1, 1);
 
-  curY = paso1Top - 36;
-  pdf.drawText(36, curY, "Qué hace este paso (Tu punto de partida):", 'F2', 9.5, 0.06, 0.09, 0.16);
-  
-  curY -= 13;
-  const paso1Desc = "1. Abre Google Gemini (gemini.google.com). Crea o abre un nuevo chat o cuaderno llamado «CUENTOS».\n" +
-                    "2. Esto es esencial: al trabajar dentro de «CUENTOS», luego te encontrarás el cuaderno listo automáticamente en NotebookLM.\n" +
-                    "3. Pega el prompt que tienes debajo: Gemini redactará el argumento y personajes adaptados a la edad del niño.";
+  curY = paso1Top - 32;
+  const paso1Desc = "1. Abre gemini.google.com y crea un nuevo chat llamado «CUENTOS» (así estará listo en NotebookLM).\n" +
+                    "2. Pega este prompt: Gemini redactará el argumento con valores y personajes según la edad del niño.";
   const linesPaso1Desc = paso1Desc.split('\n');
   for (const line of linesPaso1Desc) {
-    const wrapped = wrapText(line, 98);
-    for (const w of wrapped) {
-      pdf.drawText(36, curY, w, 'F1', 8.6, 0.22, 0.25, 0.32);
-      curY -= 11.5;
-    }
+    pdf.drawText(36, curY, line, 'F1', 8.4, 0.22, 0.25, 0.32);
+    curY -= 11.0;
   }
 
   // Caja de Prompt Paso 1
-  curY -= 4;
-  const promptBoxH = 168;
+  curY -= 3;
+  const promptBoxH = 136;
   const promptBoxBottom = curY - promptBoxH;
   pdf.setFillColor(0.08, 0.11, 0.18);
   pdf.setStrokeColor(0.25, 0.35, 0.50);
   pdf.setLineWidth(1);
   pdf.rect(36, promptBoxBottom, 540, promptBoxH, true, true);
 
-  pdf.drawText(50, curY - 16, "COPIA Y PEGA ESTE PROMPT EN TU CUADERNO «CUENTOS» DE GEMINI:", 'F5', 8.8, 0.22, 0.74, 0.97);
+  pdf.drawText(50, curY - 14, "COPIA Y PEGA ESTE PROMPT EN TU CUADERNO «CUENTOS» DE GEMINI:", 'F5', 8.5, 0.22, 0.74, 0.97);
 
   const prompt1Content = 
 `Actúa como un guionista de cómics infantiles profesional.
@@ -283,38 +273,80 @@ Escribe el argumento y personajes para un cómic de aventuras familiares sobre:
 "El Viaje en Globo del Abuelo y la Gata Luna" (o el tema que elijas).
 
 DATOS OBLIGATORIOS PARA LA HISTORIA:
-1. EDAD DEL NIÑO: Este cómic es para un niño de [indica aquí la edad, ej: 6] años.
+1. EDAD DEL NIÑO: Este cómic es para un niño de [indica edad, ej: 6] años.
    Ajusta estrictamente el vocabulario, la ternura y la madurez a su nivel.
-2. VALORES: Debe transmitir valores de curiosidad, aventura compartida,
-   confianza mutua y amor a la naturaleza.
-3. TONO: Muy visual, ágil y divertido, con diálogos expresivos entre personajes
-   y un final reconfortante y feliz para disfrutar en familia.`;
+2. VALORES: Debe transmitir curiosidad, aventura, confianza mutua y cariño.
+3. TONO: Muy visual, ágil, con diálogos expresivos y final reconfortante y feliz.`;
 
   const linesPrompt1 = prompt1Content.split('\n');
-  let p1Y = curY - 31;
+  let p1Y = curY - 27;
   for (const l of linesPrompt1) {
-    pdf.drawText(50, p1Y, l, 'F4', 8.0, 0.92, 0.95, 1.0);
-    p1Y -= 11.0;
+    pdf.drawText(50, p1Y, l, 'F4', 7.8, 0.92, 0.95, 1.0);
+    p1Y -= 9.5;
   }
 
-  // 4. CAJA DE OPCIÓN ALTERNATIVA
-  const altTop = promptBoxBottom - 10;
-  const altBoxH = 60;
+  // 4. NUEVA SECCIÓN DIDÁCTICA: NOVEDADES EN NOTEBOOKLM (CREAR NOTA, WEB Y FAST RESEARCH)
+  const nlmTop = promptBoxBottom - 10;
+  pdf.setFillColor(0.02, 0.44, 0.55);
+  pdf.rect(36, nlmTop - 20, 540, 20, true, false);
+  pdf.drawText(50, nlmTop - 15, "NOTEBOOKLM: CÓMO AÑADIR TUS FUENTES («CREAR NOTA», «WEB» Y «FAST RESEARCH»)", 'F2', 9.5, 1, 1, 1);
+
+  const nlmBoxH = 118;
+  const nlmBoxBottom = nlmTop - 20 - nlmBoxH;
+  pdf.setFillColor(1, 1, 1);
+  pdf.setStrokeColor(0.75, 0.85, 0.92);
+  pdf.setLineWidth(1);
+  pdf.rect(36, nlmBoxBottom, 540, nlmBoxH, true, true);
+
+  let nlmY = nlmTop - 34;
+
+  // 1. Crear nota
+  pdf.drawText(48, nlmY, "1. BOTÓN «+ CREAR NOTA» (Add Note):", 'F2', 8.8, 0.05, 0.40, 0.50);
+  nlmY -= 11.0;
+  const tNota = "Permite escribir o pegar texto directamente en NotebookLM sin subir ningún archivo desde el ordenador. Sirve para pegar el guion generado por Gemini, tus propias ideas o notas de trabajo. Es una fuente viva e interna editable.";
+  for (const l of wrapText(tNota, 98)) {
+    pdf.drawText(48, nlmY, l, 'F1', 8.0, 0.25, 0.28, 0.35);
+    nlmY -= 10.0;
+  }
+
+  // 2. Desplegable Web
+  nlmY -= 2;
+  pdf.drawText(48, nlmY, "2. DESPLEGABLE «WEB» (Enlaces URL y Vídeos de YouTube):", 'F2', 8.8, 0.05, 0.40, 0.50);
+  nlmY -= 11.0;
+  const tWeb = "Permite pegar cualquier enlace de una página web, blog o vídeo de YouTube. NotebookLM descarga el texto o transcribe el audio del vídeo automáticamente y lo convierte en fuente de consulta en segundos.";
+  for (const l of wrapText(tWeb, 98)) {
+    pdf.drawText(48, nlmY, l, 'F1', 8.0, 0.25, 0.28, 0.35);
+    nlmY -= 10.0;
+  }
+
+  // 3. Desplegable Fast Research
+  nlmY -= 2;
+  pdf.drawText(48, nlmY, "3. DESPLEGABLE «FAST RESEARCH» (Investigación Rápida con IA):", 'F2', 8.8, 0.05, 0.40, 0.50);
+  nlmY -= 11.0;
+  const tFast = "Escribes un tema o pregunta clave (ej. «curiosidades sobre globos aerostáticos») y la IA rastrea la web, selecciona fuentes fiables y las añade al cuaderno automáticamente sin que tengas que buscar tú en Google.";
+  for (const l of wrapText(tFast, 98)) {
+    pdf.drawText(48, nlmY, l, 'F1', 8.0, 0.25, 0.28, 0.35);
+    nlmY -= 10.0;
+  }
+
+  // 5. CAJA DE OPCIÓN ALTERNATIVA (HISTORIA PROPIA)
+  const altTop = nlmBoxBottom - 8;
+  const altBoxH = 46;
   const altBottom = altTop - altBoxH;
 
-  pdf.setFillColor(1, 1, 1);
-  pdf.setStrokeColor(0.85, 0.88, 0.92);
+  pdf.setFillColor(0.97, 0.98, 1.0);
+  pdf.setStrokeColor(0.85, 0.88, 0.95);
   pdf.rect(36, altBottom, 540, altBoxH, true, true);
 
-  pdf.drawText(48, altTop - 14, "OPCIÓN ALTERNATIVA (Para alumnos con historia propia inventada):", 'F2', 8.5, 0.55, 0.36, 0.96);
+  pdf.drawText(48, altTop - 13, "OPCIÓN ALTERNATIVA (Si ya tienes una historia propia escrita):", 'F2', 8.2, 0.45, 0.25, 0.85);
   
-  const notaAlt = "Si ya tienes escrita tu historia o cuento, dile a Gemini: «A continuación te pego una historia escrita por mí. Reescíbela manteniendo mi argumento exacto pero adaptando el lenguaje a un cómic para un niño de [X] años, resaltando los diálogos entre personajes y los valores de aventura y cariño.»";
-  const wrappedAlt = wrapText(notaAlt, 98);
+  const notaAlt = "Usa el botón «+ Crear nota» en NotebookLM y pega tu historia directa, o dile a Gemini: «Te pego mi historia: adáptala a cómic para un niño de [X] años manteniendo el argumento y resaltando diálogos entre personajes.»";
+  const wrappedAlt = wrapText(notaAlt, 99);
   
-  let altTextY = altTop - 26;
+  let altTextY = altTop - 24;
   for (const l of wrappedAlt) {
-    pdf.drawText(48, altTextY, l, 'F1', 8.2, 0.30, 0.33, 0.40);
-    altTextY -= 11.0;
+    pdf.drawText(48, altTextY, l, 'F1', 7.8, 0.30, 0.33, 0.40);
+    altTextY -= 9.5;
   }
 
   // Pie de página 1
@@ -436,10 +468,10 @@ Genera ahora el cómic completo de 6 páginas con viñetas y bocadillos.`;
   curY = curY - prompt3BoxH - 12;
   pdf.setFillColor(0.85, 0.45, 0.08);
   pdf.rect(36, curY - 20, 540, 20, true, false);
-  pdf.drawText(50, curY - 15, "PASO 4: GENERAR EL AUDIO NARRADO DEL CÓMIC (En NotebookLM)", 'F2', 9.8, 1, 1, 1);
+  pdf.drawText(50, curY - 15, "PASO 4: GENERAR EL AUDIO EN MODO RADIOTEATRO (En NotebookLM)", 'F2', 9.8, 1, 1, 1);
 
   curY -= 32;
-  const paso4Desc = "Junto a «Generar Audio», pulsa Personalizar (icono de lápiz ✏️) y pega este prompt obligatorio para evitar introducciones de radio o resúmenes y arrancar directamente con el cuento:";
+  const paso4Desc = "Junto a «Generar Audio», pulsa Personalizar (icono de lápiz ✏️) y pega este prompt: anula el modo podcast/presentación y fuerza a las dos voces a actuar como personajes del cuento:";
   const linesPaso4 = wrapText(paso4Desc, 96);
   for (const l of linesPaso4) {
     pdf.drawText(36, curY, l, 'F1', 8.8, 0.22, 0.25, 0.32);
@@ -448,7 +480,7 @@ Genera ahora el cómic completo de 6 páginas con viñetas y bocadillos.`;
 
   // Caja Prompt Paso 4 (Audio Prompt)
   curY -= 4;
-  const prompt4BoxH = 96;
+  const prompt4BoxH = 112;
   pdf.setFillColor(0.08, 0.11, 0.18);
   pdf.setStrokeColor(0.85, 0.50, 0.15);
   pdf.setLineWidth(1);
@@ -457,19 +489,25 @@ Genera ahora el cómic completo de 6 páginas con viñetas y bocadillos.`;
   pdf.drawText(50, curY - 14, "PROMPT PARA EL BOTÓN PERSONALIZAR (LÁPIZ ✏️) DE AUDIO EN NOTEBOOKLM:", 'F5', 8.5, 0.98, 0.70, 0.25);
 
   const prompt4Content =
-`PROHIBICIÓN TOTAL DE INTRODUCCIONES: No digáis hola, ni presentéis
-el documento, ni digáis "este es el resumen de la historia", ni habléis de la IA.
+`MODO RADIOTEATRO / AUDIOLIBRO INFANTIL EN VIVO (CERO FORMATO PODCAST).
 
-VUESTRA PRIMERA FRASE OBLIGATORIA DEBE SER EXACTAMENTE: "Érase una vez...".
+PROHIBICIONES ESTRICTAS:
+1. Queda terminantemente prohibido hablar como presentadores de podcast o locutores.
+2. No saludéis, no deis la bienvenida ni expliquéis de qué trata este documento.
+3. Cero resúmenes, cero análisis corporativo y cero opiniones de adultos.
 
-Actuad como cuentacuentos que leen directamente el cómic para un niño de 6 años,
-interpretando con ternura y distintas voces los personajes del abuelo y de la gata.`;
+ASIGNACIÓN DE ROLES DRAMÁTICOS:
+- Locutora femenina: Eres la NARRADORA (voz dulce) y haces la voz traviesa de la Gata Luna.
+- Locutor masculino: Eres el ABUELO (voz cariñosa, sabia y entusiasta).
+
+ARRANQUE DIRECTO: La locutora DEBE arrancar diciendo inmediatamente: "Érase una vez...".
+Actuad e interpretad la historia directamente viñeta a viñeta con ternura.`;
 
   const linesPrompt4 = prompt4Content.split('\n');
   let p4Y = curY - 26;
   for (const l of linesPrompt4) {
-    pdf.drawText(50, p4Y, l, 'F4', 7.8, 0.92, 0.95, 1.0);
-    p4Y -= 9.5;
+    pdf.drawText(50, p4Y, l, 'F4', 7.5, 0.92, 0.95, 1.0);
+    p4Y -= 9.0;
   }
 
   // Pie de página 2
