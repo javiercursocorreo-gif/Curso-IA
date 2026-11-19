@@ -451,8 +451,8 @@ Genera ahora el cómic completo de 6 páginas con viñetas y bocadillos.`;
 
   pdf.drawText(48, curY - 13, "CONSEJOS DE ORO PARA DISFRUTAR TU CÓMIC:", 'F2', 8.5, 0.06, 0.09, 0.16);
   pdf.drawText(48, curY - 25, "• En la Tablet o iPad: Abre la presentación en pantalla completa para leer el cómic viñeta a viñeta con tus nietos.", 'F1', 8.0, 0.30, 0.33, 0.40);
-  pdf.drawText(48, curY - 37, "• Audio dramatizado (¡Doblaje de voces!): En NotebookLM, pulsa en Personalizar (lápiz ✏️) antes de generar audio", 'F2', 8.0, 0.55, 0.36, 0.96);
-  pdf.drawText(58, curY - 48, "y escribe: «No analicéis el documento. Actuad como actores de doblaje interpretando los diálogos de las viñetas».", 'F1', 7.9, 0.20, 0.23, 0.30);
+  pdf.drawText(48, curY - 37, "• Audio narrado sin introducciones: En Personalizar (lápiz ✏️) antes de generar audio, escribe:", 'F2', 8.0, 0.55, 0.36, 0.96);
+  pdf.drawText(58, curY - 48, "«Prohibido hacer introducciones o decir 'este es el resumen'. Empezad directamente diciendo: Érase una vez...»", 'F1', 7.8, 0.20, 0.23, 0.30);
 
   // Pie de página 2
   pdf.setStrokeColor(0.80, 0.83, 0.88);
