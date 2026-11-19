@@ -205,12 +205,12 @@ function buildPdf() {
 
   // Título Principal
   pdf.drawText(48, 725, "CÓMO CREAR UN CÓMIC ILUSTRADO CON IA", 'F2', 15.0, 1, 1, 1);
-  pdf.drawText(48, 712, "Guía integral en 4 pasos: Del argumento al cómic y audio narrado en Google Gemini", 'F1', 9.0, 0.85, 0.90, 0.98);
+  pdf.drawText(48, 712, "Guía integral en 3 pasos: Del argumento al cómic en láminas en Google Gemini", 'F1', 9.0, 0.85, 0.90, 0.98);
 
   // 2. SECCIÓN: INTRODUCCIÓN AL PROYECTO
   const box1Top = 692;
   const box1W = 540;
-  const box1H = 120;
+  const box1H = 114;
   const box1Bottom = box1Top - box1H;
 
   pdf.setFillColor(1, 1, 1);
@@ -219,10 +219,10 @@ function buildPdf() {
   pdf.rect(36, box1Bottom, box1W, box1H, true, true);
 
   let curY = box1Top - 15;
-  pdf.drawText(50, curY, "PROYECTO: TU CÓMIC FAMILIAR EN 4 PASOS DIRECTOS", 'F2', 10.0, 0.06, 0.09, 0.16);
+  pdf.drawText(50, curY, "PROYECTO: TU CÓMIC FAMILIAR EN 3 PASOS DIRECTOS", 'F2', 10.0, 0.06, 0.09, 0.16);
   curY -= 13;
 
-  const introText1 = "Creamos un auténtico cómic infantil ilustrado para nuestros nietos o familia sin necesidad de dibujar. Diseñamos el guion en viñetas y diálogos, y generamos las láminas de cómic y el audio narrado con voces interpretadas en Google Gemini.";
+  const introText1 = "Creamos un auténtico cómic infantil ilustrado para nuestros nietos o familia sin necesidad de dibujar ni programar. Diseñamos el guion en viñetas y diálogos en Gemini, y generamos la presentación final del cómic en láminas con estilo Pixar 3D.";
   const wrappedIntro1 = wrapText(introText1, 95);
   for (const line of wrappedIntro1) {
     pdf.drawText(50, curY, line, 'F1', 8.5, 0.25, 0.28, 0.35);
@@ -233,11 +233,10 @@ function buildPdf() {
   const stepsList = [
     "• Paso 1 (Google Gemini): Diseñas el argumento y personajes adaptados a la edad del niño.",
     "• Paso 2 (Google Gemini): Conviertes la historia en guion de cómic de 6 páginas con 3 viñetas y diálogos.",
-    "• Paso 3 (Google Gemini): Creas la presentación de cómic en cuadrículas con bocadillos estilo 3D.",
-    "• Paso 4 (Google Gemini): Generas el audio en modo radioteatro arrancando con «Érase una vez...»."
+    "• Paso 3 (Google Gemini): Creas la presentación de cómic en cuadrículas con bocadillos estilo 3D."
   ];
   for (const step of stepsList) {
-    pdf.drawText(50, curY, step, 'F1', 8.2, 0.20, 0.23, 0.30);
+    pdf.drawText(50, curY, step, 'F1', 8.3, 0.20, 0.23, 0.30);
     curY -= 10.5;
   }
 
@@ -370,7 +369,7 @@ DATOS OBLIGATORIOS PARA LA HISTORIA:
   // Cabecera compacta página 2
   pdf.setFillColor(0.06, 0.09, 0.16);
   pdf.rect(36, 736, 540, 26, true, false);
-  pdf.drawText(48, 746, "MONOGRÁFICO 3: CÓMIC ILUSTRADO CON IA  •  PASOS 2, 3 Y 4", 'F2', 9.5, 1, 1, 1);
+  pdf.drawText(48, 746, "MONOGRÁFICO 3: CÓMIC ILUSTRADO CON IA  •  PASOS 2 Y 3", 'F2', 9.5, 1, 1, 1);
   pdf.drawText(470, 746, "GUÍA DIDÁCTICA", 'F5', 8.5, 0.22, 0.74, 0.97);
 
   // 1. SECCIÓN: PASO 2 (GUIÓN DE CÓMIC CON VIÑETAS Y DIÁLOGOS)
@@ -389,7 +388,7 @@ DATOS OBLIGATORIOS PARA LA HISTORIA:
 
   // Caja Prompt Paso 2
   curY -= 4;
-  const prompt2BoxH = 152;
+  const prompt2BoxH = 156;
   pdf.setFillColor(0.08, 0.11, 0.18);
   pdf.setStrokeColor(0.40, 0.30, 0.60);
   pdf.setLineWidth(1);
@@ -435,7 +434,7 @@ Genera ahora el guion completo de cómic en viñetas con diálogos.`;
 
   // Caja Prompt Paso 3 (Formato Cómic Multi-Viñeta)
   curY -= 4;
-  const prompt3BoxH = 142;
+  const prompt3BoxH = 150;
   pdf.setFillColor(0.08, 0.11, 0.18);
   pdf.setStrokeColor(0.15, 0.50, 0.40);
   pdf.setLineWidth(1);
@@ -464,50 +463,36 @@ Genera ahora el cómic completo de 6 páginas con viñetas y bocadillos.`;
     p3Y -= 9.5;
   }
 
-  // 3. SECCIÓN: PASO 4 (AUDIO NARRADO DIRECTO SIN INTRODUCCIONES)
+  // 3. SECCIÓN: CÓMO DESCARGAR, IMPRIMIR Y COMPARTIR TU CÓMIC TERMINADO
   curY = curY - prompt3BoxH - 12;
-  pdf.setFillColor(0.85, 0.45, 0.08);
+  pdf.setFillColor(0.08, 0.28, 0.48);
   pdf.rect(36, curY - 20, 540, 20, true, false);
-  pdf.drawText(50, curY - 15, "PASO 4: GENERAR EL AUDIO EN MODO RADIOTEATRO (En Google Gemini)", 'F2', 9.8, 1, 1, 1);
+  pdf.drawText(50, curY - 15, "RESULTADO FINAL: CÓMO DESCARGAR, IMPRIMIR Y COMPARTIR TU CÓMIC", 'F2', 9.8, 1, 1, 1);
 
-  curY -= 32;
-  const paso4Desc = "Junto a «Generar Audio», pulsa Personalizar (icono de lápiz ✏️) y pega este prompt: anula el modo podcast/presentación y fuerza a las dos voces a actuar como personajes del cuento:";
-  const linesPaso4 = wrapText(paso4Desc, 96);
-  for (const l of linesPaso4) {
-    pdf.drawText(36, curY, l, 'F1', 8.8, 0.22, 0.25, 0.32);
-    curY -= 11.5;
+  const finalBoxH = 86;
+  const finalBoxBottom = curY - 20 - finalBoxH;
+  pdf.setFillColor(1, 1, 1);
+  pdf.setStrokeColor(0.80, 0.86, 0.94);
+  pdf.setLineWidth(1);
+  pdf.rect(36, finalBoxBottom, 540, finalBoxH, true, true);
+
+  let finalY = curY - 34;
+
+  pdf.drawText(48, finalY, "1. DESCARGA EN PDF OFICIAL:", 'F2', 8.8, 0.08, 0.28, 0.48);
+  finalY -= 11.0;
+  const tD1 = "En la esquina superior de la presentación en Google Gemini, pulsa en los tres puntos (⋮) o en «Descargar» y selecciona formato «PDF». Obtendrás el cómic listo en tu ordenador o tablet.";
+  for (const l of wrapText(tD1, 98)) {
+    pdf.drawText(48, finalY, l, 'F1', 8.0, 0.25, 0.28, 0.35);
+    finalY -= 10.0;
   }
 
-  // Caja Prompt Paso 4 (Audio Prompt)
-  curY -= 4;
-  const prompt4BoxH = 112;
-  pdf.setFillColor(0.08, 0.11, 0.18);
-  pdf.setStrokeColor(0.85, 0.50, 0.15);
-  pdf.setLineWidth(1);
-  pdf.rect(36, curY - prompt4BoxH, 540, prompt4BoxH, true, true);
-
-  pdf.drawText(50, curY - 14, "PROMPT PARA EL BOTÓN PERSONALIZAR (LÁPIZ ✏️) DE AUDIO EN GOOGLE GEMINI:", 'F5', 8.5, 0.98, 0.70, 0.25);
-
-  const prompt4Content =
-`MODO RADIOTEATRO / AUDIOLIBRO INFANTIL EN VIVO (CERO FORMATO PODCAST).
-
-PROHIBICIONES ESTRICTAS:
-1. Queda terminantemente prohibido hablar como presentadores de podcast o locutores.
-2. No saludéis, no deis la bienvenida ni expliquéis de qué trata este documento.
-3. Cero resúmenes, cero análisis corporativo y cero opiniones de adultos.
-
-ASIGNACIÓN DE ROLES DRAMÁTICOS:
-- Locutora femenina: Eres la NARRADORA (voz dulce) y haces la voz traviesa de la Gata Luna.
-- Locutor masculino: Eres el ABUELO (voz cariñosa, sabia y entusiasta).
-
-ARRANQUE DIRECTO: La locutora DEBE arrancar diciendo inmediatamente: "Érase una vez...".
-Actuad e interpretad la historia directamente viñeta a viñeta con ternura.`;
-
-  const linesPrompt4 = prompt4Content.split('\n');
-  let p4Y = curY - 26;
-  for (const l of linesPrompt4) {
-    pdf.drawText(50, p4Y, l, 'F4', 7.5, 0.92, 0.95, 1.0);
-    p4Y -= 9.0;
+  finalY -= 2;
+  pdf.drawText(48, finalY, "2. DISFRUTAR EN FAMILIA (MÓVIL, IPAD O IMPRESO):", 'F2', 8.8, 0.08, 0.28, 0.48);
+  finalY -= 11.0;
+  const tD2 = "Puedes enviarlo por WhatsApp a tus hijos y nietos, leerlo en la tablet pasando las páginas como un libro digital, o imprimirlo en papel para que los pequeños lo hojeen y coloreen.";
+  for (const l of wrapText(tD2, 98)) {
+    pdf.drawText(48, finalY, l, 'F1', 8.0, 0.25, 0.28, 0.35);
+    finalY -= 10.0;
   }
 
   // Pie de página 2
