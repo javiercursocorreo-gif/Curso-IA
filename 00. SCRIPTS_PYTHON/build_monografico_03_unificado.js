@@ -205,12 +205,12 @@ function buildPdf() {
 
   // Título Principal
   pdf.drawText(48, 725, "CÓMO CREAR UN CÓMIC ILUSTRADO CON IA", 'F2', 15.0, 1, 1, 1);
-  pdf.drawText(48, 712, "Guía integral en 3 pasos: Del argumento en Gemini al cómic en viñetas con NotebookLM", 'F1', 9.0, 0.85, 0.90, 0.98);
+  pdf.drawText(48, 712, "Guía integral en 4 pasos: Del argumento en Gemini al cómic y audio narrado en NotebookLM", 'F1', 9.0, 0.85, 0.90, 0.98);
 
   // 2. SECCIÓN: INTRODUCCIÓN AL PROYECTO
   const box1Top = 692;
   const box1W = 540;
-  const box1H = 158;
+  const box1H = 162;
   const box1Bottom = box1Top - box1H;
 
   pdf.setFillColor(1, 1, 1);
@@ -218,29 +218,30 @@ function buildPdf() {
   pdf.setLineWidth(1);
   pdf.rect(36, box1Bottom, box1W, box1H, true, true);
 
-  let curY = box1Top - 18;
-  pdf.drawText(50, curY, "PROYECTO: TU CÓMIC FAMILIAR EN 3 PASOS DIRECTOS", 'F2', 10.5, 0.06, 0.09, 0.16);
-  curY -= 15;
+  let curY = box1Top - 16;
+  pdf.drawText(50, curY, "PROYECTO: TU CÓMIC FAMILIAR EN 4 PASOS DIRECTOS", 'F2', 10.5, 0.06, 0.09, 0.16);
+  curY -= 14;
 
-  const introText1 = "El objetivo de este proyecto es crear un auténtico cómic infantil ilustrado para nuestros nietos o familia sin necesidad de dibujar ni programar. Unimos la capacidad de Google Gemini para diseñar el guion en viñetas y diálogos, con el poder visual de NotebookLM para generar un cómic real con varias viñetas por página y bocadillos de diálogo.";
+  const introText1 = "El objetivo de este proyecto es crear un auténtico cómic infantil ilustrado para nuestros nietos o familia sin necesidad de dibujar ni programar. Unimos Google Gemini para diseñar el guion en viñetas y diálogos, con el poder visual y sonoro de NotebookLM para generar el cómic en láminas y la narración en audio.";
   const wrappedIntro1 = wrapText(introText1, 94);
   for (const line of wrappedIntro1) {
     pdf.drawText(50, curY, line, 'F1', 8.8, 0.25, 0.28, 0.35);
-    curY -= 12.5;
+    curY -= 12.0;
   }
 
-  curY -= 3;
-  pdf.drawText(50, curY, "Flujo unificado sin saltar entre archivos:", 'F2', 9.0, 0.55, 0.36, 0.96);
-  curY -= 14;
+  curY -= 2;
+  pdf.drawText(50, curY, "Flujo unificado sin saltar entre archivos (4 pasos directos):", 'F2', 9.0, 0.55, 0.36, 0.96);
+  curY -= 13;
 
   const stepsList = [
     "1. PASO 1 (Gemini): Creas el cuaderno CUENTOS y redactas el argumento con valores.",
     "2. PASO 2 (Gemini): Conviertes la historia en guion de cómic con 3 viñetas por página y diálogos.",
-    "3. PASO 3 (NotebookLM): Generas la presentación del cómic con cuadrículas de viñetas y bocadillos."
+    "3. PASO 3 (NotebookLM): Generas la presentación del cómic con cuadrículas de viñetas y bocadillos.",
+    "4. PASO 4 (NotebookLM): Generas el audio narrado empezando directamente con «Érase una vez...»."
   ];
   for (const step of stepsList) {
     pdf.drawText(50, curY, step, 'F1', 8.6, 0.20, 0.23, 0.30);
-    curY -= 12.5;
+    curY -= 11.5;
   }
 
   // 3. SECCIÓN: PASO 1 (CREAR EL CUADERNO Y EL ARGUMENTO)
@@ -337,35 +338,32 @@ DATOS OBLIGATORIOS PARA LA HISTORIA:
   // Cabecera compacta página 2
   pdf.setFillColor(0.06, 0.09, 0.16);
   pdf.rect(36, 736, 540, 26, true, false);
-  pdf.drawText(48, 746, "MONOGRÁFICO 3: CÓMIC ILUSTRADO CON IA  •  PASOS 2 Y 3", 'F2', 9.5, 1, 1, 1);
+  pdf.drawText(48, 746, "MONOGRÁFICO 3: CÓMIC ILUSTRADO CON IA  •  PASOS 2, 3 Y 4", 'F2', 9.5, 1, 1, 1);
   pdf.drawText(470, 746, "GUÍA DIDÁCTICA", 'F5', 8.5, 0.22, 0.74, 0.97);
 
   // 1. SECCIÓN: PASO 2 (GUIÓN DE CÓMIC CON VIÑETAS Y DIÁLOGOS)
-  curY = 722;
+  curY = 726;
   pdf.setFillColor(0.45, 0.22, 0.78);
-  pdf.rect(36, curY - 22, 540, 22, true, false);
-  pdf.drawText(50, curY - 16, "PASO 2: CONVERTIR EL CUENTO EN GUION DE CÓMIC CON VIÑETAS (En Gemini)", 'F2', 10.0, 1, 1, 1);
+  pdf.rect(36, curY - 20, 540, 20, true, false);
+  pdf.drawText(50, curY - 15, "PASO 2: CONVERTIR EL CUENTO EN GUION DE CÓMIC CON VIÑETAS (En Gemini)", 'F2', 9.8, 1, 1, 1);
 
-  curY -= 36;
-  pdf.drawText(36, curY, "Qué hace este paso (Estructura de cómic real con viñetas y bocadillos de diálogo):", 'F2', 9.5, 0.06, 0.09, 0.16);
-
-  curY -= 13;
-  const paso2Desc = "¡IMPORTANTE: No abras un chat nuevo! En la misma conversación de Gemini dentro de «CUENTOS», pega este segundo prompt. Gemini transformará el cuento en un guion de cómic real dividido en páginas, con 3 viñetas secuenciales por página y bocadillos de diálogo directo entre los personajes.";
-  const wrappedPaso2 = wrapText(paso2Desc, 98);
+  curY -= 32;
+  const paso2Desc = "En la misma conversación de Gemini dentro de «CUENTOS», pega este segundo prompt para transformar la historia en un guion de 6 páginas con 3 viñetas secuenciales y diálogos directos:";
+  const wrappedPaso2 = wrapText(paso2Desc, 96);
   for (const line of wrappedPaso2) {
     pdf.drawText(36, curY, line, 'F1', 8.8, 0.22, 0.25, 0.32);
-    curY -= 12;
+    curY -= 11.5;
   }
 
   // Caja Prompt Paso 2
-  curY -= 5;
-  const prompt2BoxH = 176;
+  curY -= 4;
+  const prompt2BoxH = 152;
   pdf.setFillColor(0.08, 0.11, 0.18);
   pdf.setStrokeColor(0.40, 0.30, 0.60);
   pdf.setLineWidth(1);
   pdf.rect(36, curY - prompt2BoxH, 540, prompt2BoxH, true, true);
 
-  pdf.drawText(50, curY - 16, "PEGA ESTE SEGUNDO PROMPT EN LA MISMA CONVERSACIÓN DE GEMINI:", 'F5', 8.8, 0.75, 0.55, 0.98);
+  pdf.drawText(50, curY - 14, "PEGA ESTE SEGUNDO PROMPT EN LA MISMA CONVERSACIÓN DE GEMINI:", 'F5', 8.5, 0.75, 0.55, 0.98);
 
   const prompt2Content =
 `Toma la historia anterior y crea el GUION DE UN CÓMIC REAL de 6 PÁGINAS.
@@ -383,43 +381,35 @@ REGLA: Personajes idénticos (Abuelo suéter verde, Gata Luna blanca) y cero teo
 Genera ahora el guion completo de cómic en viñetas con diálogos.`;
 
   const linesPrompt2 = prompt2Content.split('\n');
-  let p2Y = curY - 30;
+  let p2Y = curY - 26;
   for (const l of linesPrompt2) {
-    pdf.drawText(50, p2Y, l, 'F4', 8.0, 0.92, 0.95, 1.0);
-    p2Y -= 10.2;
+    pdf.drawText(50, p2Y, l, 'F4', 7.8, 0.92, 0.95, 1.0);
+    p2Y -= 9.5;
   }
 
   // 2. SECCIÓN: PASO 3 (PRESENTACIÓN DE CÓMIC MULTI-VIÑETA EN NOTEBOOKLM)
-  curY = curY - prompt2BoxH - 14;
+  curY = curY - prompt2BoxH - 12;
   pdf.setFillColor(0.05, 0.55, 0.40);
-  pdf.rect(36, curY - 22, 540, 22, true, false);
-  pdf.drawText(50, curY - 16, "PASO 3: GENERAR LA PRESENTACIÓN DE CÓMIC MULTI-VIÑETA (En NotebookLM)", 'F2', 9.8, 1, 1, 1);
+  pdf.rect(36, curY - 20, 540, 20, true, false);
+  pdf.drawText(50, curY - 15, "PASO 3: GENERAR LA PRESENTACIÓN DE CÓMIC MULTI-VIÑETA (En NotebookLM)", 'F2', 9.8, 1, 1, 1);
 
-  curY -= 36;
-  pdf.drawText(36, curY, "Qué hace este paso (Tu cómic con varias viñetas por diapositiva y bocadillos):", 'F2', 9.5, 0.06, 0.09, 0.16);
-
-  curY -= 13;
-  const paso3Desc = "1. Abre NotebookLM (Gemini Notebook en notebooklm.google.com) con tu misma cuenta de Google.\n" +
-                    "2. Abre tu cuaderno «CUENTOS» (donde ya verás tu guion de cómic como fuente conectada).\n" +
-                    "3. Pulsa «Presentación» y PEGA ESTE PROMPT DE CÓMIC: forzará a NotebookLM a crear diapositivas con cuadrículas de varias viñetas y bocadillos de diálogo directo, prohibiéndole resúmenes corporativos.";
-  const linesPaso3 = paso3Desc.split('\n');
+  curY -= 32;
+  const paso3Desc = "En NotebookLM abre tu cuaderno «CUENTOS», pulsa «Presentación» y pega este prompt: obligará a crear las 6 páginas de cómic en cuadrículas de 3 viñetas con bocadillos (sin resúmenes):";
+  const linesPaso3 = wrapText(paso3Desc, 96);
   for (const l of linesPaso3) {
-    const wrapped = wrapText(l, 98);
-    for (const w of wrapped) {
-      pdf.drawText(36, curY, w, 'F1', 8.8, 0.22, 0.25, 0.32);
-      curY -= 12;
-    }
+    pdf.drawText(36, curY, l, 'F1', 8.8, 0.22, 0.25, 0.32);
+    curY -= 11.5;
   }
 
   // Caja Prompt Paso 3 (Formato Cómic Multi-Viñeta)
-  curY -= 5;
-  const prompt3BoxH = 168;
+  curY -= 4;
+  const prompt3BoxH = 142;
   pdf.setFillColor(0.08, 0.11, 0.18);
   pdf.setStrokeColor(0.15, 0.50, 0.40);
   pdf.setLineWidth(1);
   pdf.rect(36, curY - prompt3BoxH, 540, prompt3BoxH, true, true);
 
-  pdf.drawText(50, curY - 16, "PROMPT FINAL PARA LA PRESENTACIÓN EN NOTEBOOKLM (COPIAR Y PEGAR):", 'F5', 8.8, 0.30, 0.85, 0.65);
+  pdf.drawText(50, curY - 14, "PROMPT FINAL PARA LA PRESENTACIÓN EN NOTEBOOKLM (COPIAR Y PEGAR):", 'F5', 8.5, 0.30, 0.85, 0.65);
 
   const prompt3Content =
 `Crea una presentación que sea un CÓMIC ILUSTRADO de 6 diapositivas (1 por página).
@@ -436,23 +426,51 @@ REGLAS OBLIGATORIAS DE CÓMIC REAL:
 Genera ahora el cómic completo de 6 páginas con viñetas y bocadillos.`;
 
   const linesPrompt3 = prompt3Content.split('\n');
-  let p3Y = curY - 30;
+  let p3Y = curY - 26;
   for (const l of linesPrompt3) {
-    pdf.drawText(50, p3Y, l, 'F4', 8.0, 0.92, 0.95, 1.0);
-    p3Y -= 10.2;
+    pdf.drawText(50, p3Y, l, 'F4', 7.8, 0.92, 0.95, 1.0);
+    p3Y -= 9.5;
   }
 
-  // 3. CAJA DE CONSEJOS PRÁCTICOS (INCLUYE EL TRUCO PARA AUDIO DRAMATIZADO)
+  // 3. SECCIÓN: PASO 4 (AUDIO NARRADO DIRECTO SIN INTRODUCCIONES)
   curY = curY - prompt3BoxH - 12;
-  const tipsBoxH = 56;
-  pdf.setFillColor(1, 1, 1);
-  pdf.setStrokeColor(0.85, 0.88, 0.92);
-  pdf.rect(36, curY - tipsBoxH, 540, tipsBoxH, true, true);
+  pdf.setFillColor(0.85, 0.45, 0.08);
+  pdf.rect(36, curY - 20, 540, 20, true, false);
+  pdf.drawText(50, curY - 15, "PASO 4: GENERAR EL AUDIO NARRADO DEL CÓMIC (En NotebookLM)", 'F2', 9.8, 1, 1, 1);
 
-  pdf.drawText(48, curY - 13, "CONSEJOS DE ORO PARA DISFRUTAR TU CÓMIC:", 'F2', 8.5, 0.06, 0.09, 0.16);
-  pdf.drawText(48, curY - 25, "• En la Tablet o iPad: Abre la presentación en pantalla completa para leer el cómic viñeta a viñeta con tus nietos.", 'F1', 8.0, 0.30, 0.33, 0.40);
-  pdf.drawText(48, curY - 37, "• Audio narrado sin introducciones: En Personalizar (lápiz ✏️) antes de generar audio, escribe:", 'F2', 8.0, 0.55, 0.36, 0.96);
-  pdf.drawText(58, curY - 48, "«Prohibido hacer introducciones o decir 'este es el resumen'. Empezad directamente diciendo: Érase una vez...»", 'F1', 7.8, 0.20, 0.23, 0.30);
+  curY -= 32;
+  const paso4Desc = "Junto a «Generar Audio», pulsa Personalizar (icono de lápiz ✏️) y pega este prompt obligatorio para evitar introducciones de radio o resúmenes y arrancar directamente con el cuento:";
+  const linesPaso4 = wrapText(paso4Desc, 96);
+  for (const l of linesPaso4) {
+    pdf.drawText(36, curY, l, 'F1', 8.8, 0.22, 0.25, 0.32);
+    curY -= 11.5;
+  }
+
+  // Caja Prompt Paso 4 (Audio Prompt)
+  curY -= 4;
+  const prompt4BoxH = 96;
+  pdf.setFillColor(0.08, 0.11, 0.18);
+  pdf.setStrokeColor(0.85, 0.50, 0.15);
+  pdf.setLineWidth(1);
+  pdf.rect(36, curY - prompt4BoxH, 540, prompt4BoxH, true, true);
+
+  pdf.drawText(50, curY - 14, "PROMPT PARA EL BOTÓN PERSONALIZAR (LÁPIZ ✏️) DE AUDIO EN NOTEBOOKLM:", 'F5', 8.5, 0.98, 0.70, 0.25);
+
+  const prompt4Content =
+`PROHIBICIÓN TOTAL DE INTRODUCCIONES: No digáis hola, ni presentéis
+el documento, ni digáis "este es el resumen de la historia", ni habléis de la IA.
+
+VUESTRA PRIMERA FRASE OBLIGATORIA DEBE SER EXACTAMENTE: "Érase una vez...".
+
+Actuad como cuentacuentos que leen directamente el cómic para un niño de 6 años,
+interpretando con ternura y distintas voces los personajes del abuelo y de la gata.`;
+
+  const linesPrompt4 = prompt4Content.split('\n');
+  let p4Y = curY - 26;
+  for (const l of linesPrompt4) {
+    pdf.drawText(50, p4Y, l, 'F4', 7.8, 0.92, 0.95, 1.0);
+    p4Y -= 9.5;
+  }
 
   // Pie de página 2
   pdf.setStrokeColor(0.80, 0.83, 0.88);
