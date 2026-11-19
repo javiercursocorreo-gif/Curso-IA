@@ -4,10 +4,8 @@
  * Genera el documento único simplificado para el Monográfico 3:
  * "MONOGRAFICO_3_COMO_CREAR_UN_CUENTO_ILUSTRADO_CON_IA.pdf"
  * 
- * Calibración de Prompts contra la "desviación corporativa" de NotebookLM:
- * Prohíbe explícitamente generar biblias de concepto, gráficos de valores, matrices de
- * personajes, paletas de color o gráficos de tarta cinematográficos.
- * Fuerza a que cada diapositiva sea el cuento real en 10 páginas de lectura directa.
+ * Incorpora el truco maestro de "Personalizar Audio (Customize)" para que el podcast
+ * de NotebookLM narre el cuento con voces y ternura infantil en vez de analizarlo.
  */
 
 const fs = require('fs');
@@ -444,15 +442,17 @@ Crea ahora las 10 diapositivas del cuento ilustrado.`;
     p3Y -= 11.2;
   }
 
-  // 3. CAJA DE CONSEJOS PRÁCTICOS
+  // 3. CAJA DE CONSEJOS PRÁCTICOS (INCLUYE EL TRUCO PARA AUDIO NARRADO INFANTIL)
   curY = curY - prompt3BoxH - 12;
+  const tipsBoxH = 50;
   pdf.setFillColor(1, 1, 1);
   pdf.setStrokeColor(0.85, 0.88, 0.92);
-  pdf.rect(36, curY - 46, 540, 46, true, true);
+  pdf.rect(36, curY - tipsBoxH, 540, tipsBoxH, true, true);
 
-  pdf.drawText(48, curY - 14, "CONSEJOS DE ORO PARA DISFRUTAR EL CUENTO:", 'F2', 8.5, 0.06, 0.09, 0.16);
-  pdf.drawText(48, curY - 26, "• En la Tablet o iPad: Abre la presentación en pantalla completa para enseñársela a los nietos en el sofá.", 'F1', 8.2, 0.30, 0.33, 0.40);
-  pdf.drawText(48, curY - 38, "• Audio mágico: Si generas el podcast de audio en NotebookLM, ponlo de fondo mientras pasan las páginas.", 'F1', 8.2, 0.30, 0.33, 0.40);
+  pdf.drawText(48, curY - 13, "CONSEJOS DE ORO PARA DISFRUTAR EL CUENTO:", 'F2', 8.5, 0.06, 0.09, 0.16);
+  pdf.drawText(48, curY - 25, "• En la Tablet o iPad: Abre la presentación en pantalla completa para enseñársela a los nietos en el sofá.", 'F1', 8.0, 0.30, 0.33, 0.40);
+  pdf.drawText(48, curY - 36, "• Audio narrado (¡Para que no hagan análisis!): Antes de generar audio, pulsa en Personalizar (lápiz ✏️)", 'F2', 8.0, 0.55, 0.36, 0.96);
+  pdf.drawText(58, curY - 46, "y escribe: «No analicéis el texto. Narrad directamente el cuento para un niño de 6 años con ternura y voces».", 'F1', 7.9, 0.20, 0.23, 0.30);
 
   // Pie de página 2
   pdf.setStrokeColor(0.80, 0.83, 0.88);
