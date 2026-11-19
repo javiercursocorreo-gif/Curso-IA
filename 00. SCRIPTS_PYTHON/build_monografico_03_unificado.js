@@ -359,13 +359,13 @@ DATOS OBLIGATORIOS PARA LA HISTORIA:
 
   // Caja Prompt Paso 2
   curY -= 5;
-  const prompt2BoxH = 158;
+  const prompt2BoxH = 176;
   pdf.setFillColor(0.08, 0.11, 0.18);
   pdf.setStrokeColor(0.40, 0.30, 0.60);
   pdf.setLineWidth(1);
   pdf.rect(36, curY - prompt2BoxH, 540, prompt2BoxH, true, true);
 
-  pdf.drawText(50, curY - 17, "PEGA ESTE SEGUNDO PROMPT EN LA MISMA CONVERSACIÓN DE GEMINI:", 'F5', 8.8, 0.75, 0.55, 0.98);
+  pdf.drawText(50, curY - 16, "PEGA ESTE SEGUNDO PROMPT EN LA MISMA CONVERSACIÓN DE GEMINI:", 'F5', 8.8, 0.75, 0.55, 0.98);
 
   const prompt2Content =
 `Toma el cuento generado en el mensaje anterior y crea la adaptación narrativa
@@ -384,14 +384,14 @@ Para cada una de las 10 páginas (de [PÁGINA 1] a [PÁGINA 10]), escribe:
 Genera ahora las 10 páginas narrativas completas.`;
 
   const linesPrompt2 = prompt2Content.split('\n');
-  let p2Y = curY - 32;
+  let p2Y = curY - 30;
   for (const l of linesPrompt2) {
     pdf.drawText(50, p2Y, l, 'F4', 8.0, 0.92, 0.95, 1.0);
-    p2Y -= 11.2;
+    p2Y -= 10.2;
   }
 
   // 2. SECCIÓN: PASO 3 (PRESENTACIÓN VISUAL REAL EN NOTEBOOKLM - CERO TEORÍA)
-  curY = curY - prompt2BoxH - 16;
+  curY = curY - prompt2BoxH - 14;
   pdf.setFillColor(0.05, 0.55, 0.40);
   pdf.rect(36, curY - 22, 540, 22, true, false);
   pdf.drawText(50, curY - 16, "PASO 3: GENERAR LA PRESENTACIÓN VISUAL EN NOTEBOOKLM (GEMINI NOTEBOOK)", 'F2', 9.8, 1, 1, 1);
@@ -414,13 +414,13 @@ Genera ahora las 10 páginas narrativas completas.`;
 
   // Caja Prompt Paso 3 (Blindado contra gráficos corporativos)
   curY -= 5;
-  const prompt3BoxH = 142;
+  const prompt3BoxH = 158;
   pdf.setFillColor(0.08, 0.11, 0.18);
   pdf.setStrokeColor(0.15, 0.50, 0.40);
   pdf.setLineWidth(1);
   pdf.rect(36, curY - prompt3BoxH, 540, prompt3BoxH, true, true);
 
-  pdf.drawText(50, curY - 17, "PROMPT FINAL PARA LA PRESENTACIÓN EN NOTEBOOKLM (COPIAR Y PEGAR):", 'F5', 8.8, 0.30, 0.85, 0.65);
+  pdf.drawText(50, curY - 16, "PROMPT FINAL PARA LA PRESENTACIÓN EN NOTEBOOKLM (COPIAR Y PEGAR):", 'F5', 8.8, 0.30, 0.85, 0.65);
 
   const prompt3Content =
 `Genera una presentación que sea el LIBRO DE CUENTOS ILUSTRADO para niños,
@@ -436,23 +436,23 @@ CADA DIAPOSITIVA DEBE SER UNA PÁGINA DEL CUENTO (de la 1 a la 10):
 Crea ahora las 10 diapositivas del cuento ilustrado.`;
 
   const linesPrompt3 = prompt3Content.split('\n');
-  let p3Y = curY - 32;
+  let p3Y = curY - 30;
   for (const l of linesPrompt3) {
     pdf.drawText(50, p3Y, l, 'F4', 8.0, 0.92, 0.95, 1.0);
-    p3Y -= 11.2;
+    p3Y -= 10.8;
   }
 
   // 3. CAJA DE CONSEJOS PRÁCTICOS (INCLUYE EL TRUCO PARA AUDIO NARRADO INFANTIL)
   curY = curY - prompt3BoxH - 12;
-  const tipsBoxH = 50;
+  const tipsBoxH = 56;
   pdf.setFillColor(1, 1, 1);
   pdf.setStrokeColor(0.85, 0.88, 0.92);
   pdf.rect(36, curY - tipsBoxH, 540, tipsBoxH, true, true);
 
   pdf.drawText(48, curY - 13, "CONSEJOS DE ORO PARA DISFRUTAR EL CUENTO:", 'F2', 8.5, 0.06, 0.09, 0.16);
   pdf.drawText(48, curY - 25, "• En la Tablet o iPad: Abre la presentación en pantalla completa para enseñársela a los nietos en el sofá.", 'F1', 8.0, 0.30, 0.33, 0.40);
-  pdf.drawText(48, curY - 36, "• Audio narrado (¡Para que no hagan análisis!): Antes de generar audio, pulsa en Personalizar (lápiz ✏️)", 'F2', 8.0, 0.55, 0.36, 0.96);
-  pdf.drawText(58, curY - 46, "y escribe: «No analicéis el texto. Narrad directamente el cuento para un niño de 6 años con ternura y voces».", 'F1', 7.9, 0.20, 0.23, 0.30);
+  pdf.drawText(48, curY - 37, "• Audio narrado (¡Para que no hagan análisis!): Antes de generar audio, pulsa en Personalizar (lápiz ✏️)", 'F2', 8.0, 0.55, 0.36, 0.96);
+  pdf.drawText(58, curY - 48, "y escribe: «No analicéis el texto. Narrad directamente el cuento para un niño de 6 años con ternura y voces».", 'F1', 7.9, 0.20, 0.23, 0.30);
 
   // Pie de página 2
   pdf.setStrokeColor(0.80, 0.83, 0.88);
