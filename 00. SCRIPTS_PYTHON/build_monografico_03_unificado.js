@@ -4,13 +4,10 @@
  * Genera el documento único simplificado para el Monográfico 3:
  * "MONOGRAFICO_3_COMO_CREAR_UN_CUENTO_ILUSTRADO_CON_IA.pdf"
  * 
- * Correcciones matemáticas y espaciales definitivas:
- * 1. Flujo dinámico vertical de la caja de Introducción: el subtítulo "Flujo unificado..."
- *    se posiciona automáticamente DEBAJO de todas las líneas del párrafo inicial (cero solapamiento).
- * 2. Altura holgada de la caja de Opción Alternativa (66 pt en vez de 48 pt): margen libre de 14 pt
- *    al fondo para que el borde inferior no toque ni atraviese jamás la última frase.
- * 3. En el Paso 1: indicación explícita de crear el cuaderno «CUENTOS» en Gemini.
- * 4. Tipografía española impecable: 'niño', 'años', 'guión', 'sueño' con Ñ en WinAnsi.
+ * Calibración de Prompts contra la "desviación corporativa" de NotebookLM:
+ * Prohíbe explícitamente generar biblias de concepto, gráficos de valores, matrices de
+ * personajes, paletas de color o gráficos de tarta cinematográficos.
+ * Fuerza a que cada diapositiva sea el cuento real en 10 páginas de lectura directa.
  */
 
 const fs = require('fs');
@@ -116,7 +113,7 @@ class NativePDFWriter {
     fs.mkdirSync(path.dirname(filename), { recursive: true });
     const pageObjIndices = [];
     const contentObjIndices = [];
-    let curObjIdx = 8; // 1: Catalog, 2: Pages, 3-7: Fonts
+    let curObjIdx = 8;
 
     for (let i = 0; i < this.pages.length; i++) {
       pageObjIndices.push(curObjIdx++);
@@ -198,11 +195,11 @@ function buildPdf() {
   pdf.rect(0, 0, 612, 792, true, false);
 
   // 1. Cabecera institucional
-  pdf.setFillColor(0.06, 0.09, 0.16); // Navy #0f172a
+  pdf.setFillColor(0.06, 0.09, 0.16);
   pdf.rect(36, 706, 540, 56, true, false);
 
   // Borde inferior cabecera magenta/cyan
-  pdf.setFillColor(0.55, 0.36, 0.96); // Purple #8b5cf6
+  pdf.setFillColor(0.55, 0.36, 0.96);
   pdf.rect(36, 704, 540, 2, true, false);
 
   // Badge píldora
@@ -212,65 +209,45 @@ function buildPdf() {
   pdf.drawText(48, 725, "CÓMO CREAR UN CUENTO ILUSTRADO CON IA", 'F2', 15.0, 1, 1, 1);
   pdf.drawText(48, 712, "Guía integral en 3 pasos: De la idea en Gemini a la presentación visual en NotebookLM", 'F1', 9.0, 0.85, 0.90, 0.98);
 
-  // 2. SECCIÓN: INTRODUCCIÓN AL PROYECTO (MAQUETACIÓN DINÁMICA DE ARRIBA A ABAJO)
+  // 2. SECCIÓN: INTRODUCCIÓN AL PROYECTO
   const box1Top = 692;
   const box1W = 540;
-  
-  // Textos de la caja de introducción
-  const introTitle = "PROYECTO: TU CUENTO FAMILIAR EN 3 PASOS DIRECTOS";
-  const introText1 = "El objetivo de este proyecto es crear un cuento infantil ilustrado para nuestros nietos o familia sin necesidad de dibujar ni programar. Unimos la capacidad de redacción de Google Gemini con el poder visual de NotebookLM (Gemini Notebook) para lograr un resultado entrañable, profesional y con personajes consistentes.";
-  const wrappedIntro1 = wrapText(introText1, 94); // 4 líneas
-  
-  const introSub = "Flujo unificado sin saltar entre archivos:";
-  const stepsList = [
-    "1. PASO 1 (Gemini): Creas el cuaderno CUENTOS y redactas la historia con valores.",
-    "2. PASO 2 (Gemini): Conviertes el cuento en un guión estructurado de 10 escenas.",
-    "3. PASO 3 (NotebookLM): Abres tu cuaderno CUENTOS para generar la presentación visual en 3D."
-  ];
-
-  // Cálculo exacto de altura necesaria:
-  // Top padding: 16 pt
-  // Título: 12 pt
-  // Gap: 14 pt
-  // Párrafo (4 líneas x 13 pt): 52 pt
-  // Gap: 14 pt
-  // Subtítulo: 11 pt
-  // Gap: 12 pt
-  // 3 líneas de lista x 13 pt: 39 pt
-  // Bottom padding: 15 pt
-  // Total altura: 16 + 12 + 14 + 52 + 14 + 11 + 12 + 39 + 15 = 175 pt
   const box1H = 158;
   const box1Bottom = box1Top - box1H;
 
-  // Dibujar fondo de la Caja 1
   pdf.setFillColor(1, 1, 1);
   pdf.setStrokeColor(0.85, 0.88, 0.92);
   pdf.setLineWidth(1);
   pdf.rect(36, box1Bottom, box1W, box1H, true, true);
 
-  // Imprimir contenidos secuenciales dentro de Caja 1
   let curY = box1Top - 18;
-  pdf.drawText(50, curY, introTitle, 'F2', 10.5, 0.06, 0.09, 0.16);
+  pdf.drawText(50, curY, "PROYECTO: TU CUENTO FAMILIAR EN 3 PASOS DIRECTOS", 'F2', 10.5, 0.06, 0.09, 0.16);
   curY -= 15;
 
+  const introText1 = "El objetivo de este proyecto es crear un cuento infantil ilustrado para nuestros nietos o familia sin necesidad de dibujar ni programar. Unimos la capacidad de redacción de Google Gemini con el poder visual de NotebookLM (Gemini Notebook) para lograr un resultado entrañable, profesional y con personajes consistentes.";
+  const wrappedIntro1 = wrapText(introText1, 94);
   for (const line of wrappedIntro1) {
     pdf.drawText(50, curY, line, 'F1', 8.8, 0.25, 0.28, 0.35);
     curY -= 12.5;
   }
 
-  curY -= 3; // Gap visual claro
-  pdf.drawText(50, curY, introSub, 'F2', 9.0, 0.55, 0.36, 0.96);
+  curY -= 3;
+  pdf.drawText(50, curY, "Flujo unificado sin saltar entre archivos:", 'F2', 9.0, 0.55, 0.36, 0.96);
   curY -= 14;
 
+  const stepsList = [
+    "1. PASO 1 (Gemini): Creas el cuaderno CUENTOS y redactas la historia con valores.",
+    "2. PASO 2 (Gemini): Conviertes el cuento en 10 páginas narrativas secuenciales.",
+    "3. PASO 3 (NotebookLM): Generas la presentación del cuento (sin análisis ni gráficos corporativos)."
+  ];
   for (const step of stepsList) {
     pdf.drawText(50, curY, step, 'F1', 8.6, 0.20, 0.23, 0.30);
     curY -= 12.5;
   }
-  // curY queda en ~546, mientras que box1Bottom está en 534 (margen libre de 12 pt)
 
   // 3. SECCIÓN: PASO 1 (CREAR EL CUADERNO Y EL CUENTO)
-  let paso1Top = box1Bottom - 14; // ~520
-  pdf.setFillColor(0.15, 0.23, 0.36); // #2563eb / navy
+  let paso1Top = box1Bottom - 14;
+  pdf.setFillColor(0.15, 0.23, 0.36);
   pdf.rect(36, paso1Top - 22, 540, 22, true, false);
   pdf.drawText(50, paso1Top - 16, "PASO 1: CREAR EL CUADERNO «CUENTOS» Y LA HISTORIA EN GOOGLE GEMINI", 'F2', 10.0, 1, 1, 1);
 
@@ -294,12 +271,11 @@ function buildPdf() {
   curY -= 4;
   const promptBoxH = 168;
   const promptBoxBottom = curY - promptBoxH;
-  pdf.setFillColor(0.08, 0.11, 0.18); // #141c2e pizarra oscura
+  pdf.setFillColor(0.08, 0.11, 0.18);
   pdf.setStrokeColor(0.25, 0.35, 0.50);
   pdf.setLineWidth(1);
   pdf.rect(36, promptBoxBottom, 540, promptBoxH, true, true);
 
-  // Etiqueta Prompt
   pdf.drawText(50, curY - 16, "COPIA Y PEGA ESTE PROMPT EN TU CUADERNO «CUENTOS» DE GEMINI:", 'F5', 8.8, 0.22, 0.74, 0.97);
 
   const prompt1Content = 
@@ -322,9 +298,9 @@ DATOS OBLIGATORIOS PARA LA HISTORIA:
     p1Y -= 11.0;
   }
 
-  // 4. CAJA DE OPCIÓN ALTERNATIVA (CON ALTURA Y MÁRGENES HOLGADOS PARA NO ATRAVESAR TEXTO)
+  // 4. CAJA DE OPCIÓN ALTERNATIVA
   const altTop = promptBoxBottom - 10;
-  const altBoxH = 60; // 60 pt garantiza espacio total para título + 3 líneas + padding inferior
+  const altBoxH = 60;
   const altBottom = altTop - altBoxH;
 
   pdf.setFillColor(1, 1, 1);
@@ -341,7 +317,6 @@ DATOS OBLIGATORIOS PARA LA HISTORIA:
     pdf.drawText(48, altTextY, l, 'F1', 8.2, 0.30, 0.33, 0.40);
     altTextY -= 11.0;
   }
-  // altTextY queda en ~altTop - 48, mientras que altBottom está en altTop - 60 (margen libre de 12 pt al fondo)
 
   // Pie de página 1
   pdf.setStrokeColor(0.80, 0.83, 0.88);
@@ -353,7 +328,7 @@ DATOS OBLIGATORIOS PARA LA HISTORIA:
   pdf.endPage();
 
   // =========================================================================
-  // PÁGINA 2: PASO 2 (GUIÓN 10 PÁGINAS) + PASO 3 (NOTEBOOKLM) + CONSEJOS
+  // PÁGINA 2: PASO 2 (GUIÓN PURO) + PASO 3 (PRESENTACIÓN INFANTIL REAL)
   // =========================================================================
   pdf.startPage();
 
@@ -367,17 +342,17 @@ DATOS OBLIGATORIOS PARA LA HISTORIA:
   pdf.drawText(48, 746, "MONOGRÁFICO 3: CUENTO ILUSTRADO CON IA  •  PASOS 2 Y 3", 'F2', 9.5, 1, 1, 1);
   pdf.drawText(470, 746, "GUÍA DIDÁCTICA", 'F5', 8.5, 0.22, 0.74, 0.97);
 
-  // 1. SECCIÓN: PASO 2 (CONVERTIR EL CUENTO EN GUIÓN DE 10 ESCENAS)
+  // 1. SECCIÓN: PASO 2 (GUIÓN NARRATIVO DIRECTO PARA NIÑOS)
   curY = 722;
-  pdf.setFillColor(0.45, 0.22, 0.78); // Purple #7c3aed
+  pdf.setFillColor(0.45, 0.22, 0.78);
   pdf.rect(36, curY - 22, 540, 22, true, false);
-  pdf.drawText(50, curY - 16, "PASO 2: CONVERTIR EL CUENTO EN GUIÓN DE 10 ESCENAS (En Gemini)", 'F2', 10.0, 1, 1, 1);
+  pdf.drawText(50, curY - 16, "PASO 2: CONVERTIR EL CUENTO EN 10 PÁGINAS NARRATIVAS (En Gemini)", 'F2', 10.0, 1, 1, 1);
 
   curY -= 36;
-  pdf.drawText(36, curY, "Qué hace este paso (Transformación audiovisual):", 'F2', 9.5, 0.06, 0.09, 0.16);
+  pdf.drawText(36, curY, "Qué hace este paso (Estructura de lectura sin tecnicismos):", 'F2', 9.5, 0.06, 0.09, 0.16);
 
   curY -= 13;
-  const paso2Desc = "¡IMPORTANTE: No abras un chat nuevo! En la misma conversación de Gemini dentro de «CUENTOS», pega este segundo prompt. Gemini actuará como director audiovisual y dividirá la historia en un guión estructurado de 10 escenas, definiendo el plano, la vestimenta fija de los personajes y los diálogos.";
+  const paso2Desc = "¡IMPORTANTE: No abras un chat nuevo! En la misma conversación de Gemini dentro de «CUENTOS», pega este segundo prompt. Gemini dividirá la historia en 10 páginas limpias de lectura para niños, redactando el texto narrativo y la escena visual sin tecnicismos corporativos que confundan a NotebookLM.";
   const wrappedPaso2 = wrapText(paso2Desc, 98);
   for (const line of wrappedPaso2) {
     pdf.drawText(36, curY, line, 'F1', 8.8, 0.22, 0.25, 0.32);
@@ -395,21 +370,20 @@ DATOS OBLIGATORIOS PARA LA HISTORIA:
   pdf.drawText(50, curY - 17, "PEGA ESTE SEGUNDO PROMPT EN LA MISMA CONVERSACIÓN DE GEMINI:", 'F5', 8.8, 0.75, 0.55, 0.98);
 
   const prompt2Content =
-`Toma el cuento generado en el mensaje anterior y crea el guión de un cómic
-secuencial siguiendo estrictamente estas instrucciones:
+`Toma el cuento generado en el mensaje anterior y crea la adaptación narrativa
+del libro infantil en EXACTAMENTE 10 PÁGINAS de lectura para niños:
 
-1. EXTENSIÓN: Debe tener EXACTAMENTE 10 PÁGINAS (de [PÁGINA 1] a [PÁGINA 10]).
-2. ESTRUCTURA DE CADA PÁGINA:
-   - [PÁGINA X: TÍTULO DE LA ESCENA]
-   - Resumen narrativo de 1 línea.
-   - Escena clave y tipo de plano (General, Plano Medio o Primer Plano).
-   - Descripción visual: qué ocurre y qué se ve.
-     IMPORTANTE: Mantén idéntica la vestimenta, colores y rasgos físicos
-     de los personajes en todas las páginas para garantizar consistencia total.
-   - Iluminación y atmósfera ambiental.
-   - Diálogo obligatorio y Pensamiento del personaje.
+REGLA FUNDAMENTAL: Esto es un libro de cuentos infantil para leer en familia,
+NO un proyecto de producción cinematográfica. NO uses tablas ni jerga técnica.
 
-Transforma ahora el cuento en el guión de 10 páginas completo.`;
+Para cada una de las 10 páginas (de [PÁGINA 1] a [PÁGINA 10]), escribe:
+1. [PÁGINA X: TÍTULO DE LA ESCENA]
+2. TEXTO DEL CUENTO (2 o 3 líneas emotivas que lee el abuelo en voz alta).
+3. ILUSTRACIÓN VISUAL (Describe qué se ve en la lámina: personajes, acción,
+   paisaje y luz cálida. Mantén al Abuelo con suéter verde y bufanda a rayas,
+   y a la Gata Luna blanca con collar azul en todas las láminas).
+
+Genera ahora las 10 páginas narrativas completas.`;
 
   const linesPrompt2 = prompt2Content.split('\n');
   let p2Y = curY - 32;
@@ -418,19 +392,19 @@ Transforma ahora el cuento en el guión de 10 páginas completo.`;
     p2Y -= 11.2;
   }
 
-  // 2. SECCIÓN: PASO 3 (LLEVAR A NOTEBOOKLM / GEMINI NOTEBOOK)
+  // 2. SECCIÓN: PASO 3 (PRESENTACIÓN VISUAL REAL EN NOTEBOOKLM - CERO TEORÍA)
   curY = curY - prompt2BoxH - 16;
-  pdf.setFillColor(0.05, 0.55, 0.40); // Emerald #059669
+  pdf.setFillColor(0.05, 0.55, 0.40);
   pdf.rect(36, curY - 22, 540, 22, true, false);
-  pdf.drawText(50, curY - 16, "PASO 3: LLEVAR EL GUIÓN A NOTEBOOKLM (GEMINI NOTEBOOK) Y CREAR EL ARTE", 'F2', 9.8, 1, 1, 1);
+  pdf.drawText(50, curY - 16, "PASO 3: GENERAR LA PRESENTACIÓN VISUAL EN NOTEBOOKLM (GEMINI NOTEBOOK)", 'F2', 9.8, 1, 1, 1);
 
   curY -= 36;
-  pdf.drawText(36, curY, "Qué hace este paso (Tu cuaderno «CUENTOS» te estará esperando):", 'F2', 9.5, 0.06, 0.09, 0.16);
+  pdf.drawText(36, curY, "Qué hace este paso (Tu cuento en 10 diapositivas ilustradas):", 'F2', 9.5, 0.06, 0.09, 0.16);
 
   curY -= 13;
   const paso3Desc = "1. Abre NotebookLM (Gemini Notebook en notebooklm.google.com) con tu misma cuenta de Google.\n" +
-                    "2. ¡Tu cuaderno ya estará esperándote! Abre el cuaderno «CUENTOS» (o crea uno nuevo y pega el guión de 10 páginas como fuente).\n" +
-                    "3. Pulsa el botón «Presentación» (o «Resumen de Audio» para escucharlo narrado como podcast) y aplica los parámetros visuales que tienes debajo.";
+                    "2. Abre tu cuaderno «CUENTOS» (o crea uno nuevo y añade el texto de las 10 páginas como fuente).\n" +
+                    "3. Pulsa el botón «Presentación» y PEGA ESTE PROMPT DE BLINDAJE: obligará a NotebookLM a crear las 10 láminas del cuento, prohibiéndole generar gráficos de concepto o diagramas empresariales.";
   const linesPaso3 = paso3Desc.split('\n');
   for (const l of linesPaso3) {
     const wrapped = wrapText(l, 98);
@@ -440,7 +414,7 @@ Transforma ahora el cuento en el guión de 10 páginas completo.`;
     }
   }
 
-  // Caja Prompt Paso 3
+  // Caja Prompt Paso 3 (Blindado contra gráficos corporativos)
   curY -= 5;
   const prompt3BoxH = 142;
   pdf.setFillColor(0.08, 0.11, 0.18);
@@ -448,19 +422,20 @@ Transforma ahora el cuento en el guión de 10 páginas completo.`;
   pdf.setLineWidth(1);
   pdf.rect(36, curY - prompt3BoxH, 540, prompt3BoxH, true, true);
 
-  pdf.drawText(50, curY - 17, "PARÁMETROS VISUALES Y PROMPT FINAL EN NOTEBOOKLM:", 'F5', 8.8, 0.30, 0.85, 0.65);
+  pdf.drawText(50, curY - 17, "PROMPT FINAL PARA LA PRESENTACIÓN EN NOTEBOOKLM (COPIAR Y PEGAR):", 'F5', 8.8, 0.30, 0.85, 0.65);
 
   const prompt3Content =
-`Aplica estrictamente los siguientes parámetros para generar la presentación
-visual de este cómic basándote en el guión adjunto en las fuentes:
+`Genera una presentación que sea el LIBRO DE CUENTOS ILUSTRADO para niños,
+con una diapositiva por cada una de las 10 páginas de la historia.
 
-- ESTILO VISUAL: Animación 3D entrañable tipo Pixar (personajes en 3D con
-  iluminación cinematográfica cálida, texturas suaves y máxima expresividad).
-- CONSISTENCIA TOTAL: Mantén la apariencia, colores de ropa, edad y rasgos
-  de todos los personajes exactamente iguales en todas las láminas.
-- MAQUETACIÓN AL 100%: Cada página generada debe llenar todo el lienzo visual
-  sin dejar huecos en blanco.
-Genera ahora la presentación ilustrada del cómic.`;
+PROHIBICIÓN ESTRICTA: NO generes diapositivas de análisis, ni biblias de concepto,
+ni compás de valores, ni paletas de color, ni gráficos de tarta cinematográficos.
+CADA DIAPOSITIVA DEBE SER UNA PÁGINA DEL CUENTO (de la 1 a la 10):
+- Una gran ilustración central en 3D entrañable tipo Pixar a pantalla completa.
+- El texto del cuento escrito debajo con letra grande y clara para leer a un niño.
+- Mantén la misma ropa y aspecto del Abuelo y de la Gata Luna en todas las láminas.
+
+Crea ahora las 10 diapositivas del cuento ilustrado.`;
 
   const linesPrompt3 = prompt3Content.split('\n');
   let p3Y = curY - 32;
@@ -469,7 +444,7 @@ Genera ahora la presentación ilustrada del cómic.`;
     p3Y -= 11.2;
   }
 
-  // 3. CAJA DE CONSEJOS PRÁCTICOS PARA EL ALUMNO SENIOR
+  // 3. CAJA DE CONSEJOS PRÁCTICOS
   curY = curY - prompt3BoxH - 12;
   pdf.setFillColor(1, 1, 1);
   pdf.setStrokeColor(0.85, 0.88, 0.92);
@@ -488,7 +463,6 @@ Genera ahora la presentación ilustrada del cómic.`;
 
   pdf.endPage();
 
-  // Guardar en ambas ubicaciones
   pdf.writeToFile(OUTPUT_PDF_1);
   pdf.writeToFile(OUTPUT_PDF_2);
 }
