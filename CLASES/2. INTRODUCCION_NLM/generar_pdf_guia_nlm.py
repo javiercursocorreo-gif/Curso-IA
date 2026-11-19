@@ -564,19 +564,37 @@ def generar_pdf_completo():
         title_color=(0.75, 0.42, 0.10)
     )
 
-    # BOTÓN 5: ESTUDIO ACTIVO PARA HIJOS Y NIETOS (TARJETAS FLASHCARDS Y MAPAS)
+    # BOTÓN 5: ESTUDIO ACTIVO PARA HIJOS Y NIETOS (MAPA MENTAL, CUESTIONARIO Y FICHAS)
     flow.add_card_box(
-        "BOTÓN 5: ESTUDIO ACTIVO PARA HIJOS Y NIETOS (TARJETAS FLASHCARDS Y MAPAS)",
+        "BOTÓN 5: ESTUDIO ACTIVO (MAPA MENTAL, CUESTIONARIO Y FICHAS DIDÁCTICAS)",
         [
-            "Para qué sirve: Ayudar a hijos y nietos a estudiar temarios de colegio, instituto o universidad de forma interactiva.",
-            "Tarjetas de Repaso (Flashcards): Pulsa 'Guía de estudio' o pídele en el chat: 'Genera 5 tarjetas de memoria con pregunta por delante y respuesta oculta'. El alumno puede preguntar a sus nietos para que adivinen y giren la tarjeta.",
-            "Mapas Mentales de Estudio: Pídele a la IA que organice temas densos de historia o biología en un esquema visual ramificado: Causas -> Desarrollo -> Consecuencias.",
-            "Grabadora Móvil en Vivo: En la app de móvil puedes grabar hasta 1 hora continua (incluso con la pantalla apagada) para registrar una clase, una consulta médica o dictar recuerdos familiares que se archivan solos como fuentes."
+            "Para qué sirve: Herramientas pedagógicas interactivas para repasar, memorizar y ayudar a estudiar a hijos y nietos.",
+            "1. Mapa Mental y Descarga en PNG: Pulsa 'Mapa mental' en Studio. Al pinchar en el mapa se abre a pantalla completa. A la izquierda en la barra superior verás una flechita hacia abajo (Descargar): al pulsarla, se descarga inmediatamente a tu ordenador como imagen PNG en alta resolución.",
+            "2. Cuestionario (Quiz Interactivo): Genera preguntas tipo test de las fuentes. Importante: El cuestionario NO se puede descargar a archivo; se responde interactivamente en la pantalla del cuaderno.",
+            "3. Fichas Didácticas / Flashcards (Volteo y Marcador): Te muestra la pregunta, pero NO se escribe la respuesta en ningún sitio. Piensas la solución, pinchas sobre la tarjeta para voltearla y ver la respuesta. Abajo verás un contador que arranca en 0 con dos botones: pulsa el Check verde (v) si habías acertado o el Aspa roja (x) si habías fallado para llevar tu puntuación. Tampoco se pueden descargar a archivo."
         ],
-        badge_text="FAMILIA",
+        badge_text="ESTUDIO ACTIVO",
         border_color=(0.35, 0.20, 0.60),
         bg_color=(0.97, 0.95, 0.99),
         title_color=(0.35, 0.20, 0.60)
+    )
+
+    # GUÍA DE CONTROLES DEL VISOR EN STUDIO
+    flow.add_card_box(
+        "GUÍA DE NAVEGACIÓN: ICONOS Y VENTANAS DEL VISOR DE STUDIO",
+        [
+            "Al abrir cualquier resultado generado en Studio (informe, mapa, notas o fichas), dispones de estos controles clave en la esquina superior derecha:",
+            "1. Dos Flechitas Enfrentadas (>< que se miran entre sí): Arriba del todo a la derecha. Sirven para cerrar la ventana del visor y volver a la lista de notas de Studio.",
+            "2. Los 4 Iconos de la Barra Superior:",
+            "   - Compartir: Invitar a otras personas o enviar un enlace de acceso al cuaderno.",
+            "   - Flechita Inclinada con Recuadro: Abre el documento en una pestaña independiente del navegador.",
+            "   - Expandir a Pantalla Completa: Oculta paneles laterales para leer o estudiar sin distracciones.",
+            "   - Tres Puntitos de Menú: Opciones adicionales como renombrar la nota o eliminar el resultado."
+        ],
+        badge_text="CONTROLES",
+        border_color=(0.10, 0.45, 0.65),
+        bg_color=(0.94, 0.97, 1.00),
+        title_color=(0.10, 0.40, 0.60)
     )
 
     # BOTÓN 6: INFORME (NUEVA FUNCIÓN OFICIAL)
