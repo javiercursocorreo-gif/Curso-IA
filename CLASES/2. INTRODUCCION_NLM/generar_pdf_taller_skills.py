@@ -2,9 +2,9 @@
 # -*- coding: utf-8 -*-
 """
 generar_pdf_taller_skills.py
-Genera 'TALLER_CREACION_GEMINI_SKILLS_CON_NOTEBOOKLM.pdf' con diseño claro,
-tipografía legible para personas mayores, cajas de ejemplos prácticos y guía paso a paso.
-100% Python nativo estándar.
+Genera 'TALLER_CREACION_GEMINI_SKILLS_CON_NOTEBOOKLM.pdf' con dimensionamiento dinámico
+de cajas, holgura de márgenes, cero solapamientos y cálculo exacto de altura para cada bloque.
+100% Python nativo estándar (sin dependencias externas).
 """
 
 import os
@@ -145,100 +145,129 @@ def compilar_pdf():
     # =========================================================================
     pdf.start_page()
 
-    # Cabecera Banner
+    # Cabecera Banner Superior (y_top = 805)
     pdf.set_fill_color(0.06, 0.09, 0.16)
     pdf.set_stroke_color(0.22, 0.74, 0.97)
     pdf.set_line_width(1.5)
-    pdf.rect(36, 740, 523, 72, fill=True, stroke=True)
+    pdf.rect(36, 738, 523, 68, fill=True, stroke=True)
 
-    pdf.draw_text(48, 792, "MONOGRAFICO 2 - CURSO DE INTELIGENCIA ARTIFICIAL", font="F2", size=9, r=0.22, g=0.74, b=0.97)
-    pdf.draw_text(48, 772, "Taller: Como Crear tus Propias Gemini Skills con NotebookLM", font="F2", size=14, r=1.0, g=1.0, b=1.0)
-    pdf.draw_text(48, 752, "El fin de los prompts largos: convierte tu cuaderno en una fabrica de asistentes tematicos", font="F1", size=8.5, r=0.8, g=0.85, b=0.9)
+    pdf.draw_text(48, 788, "MONOGRAFICO 2 - CURSO DE INTELIGENCIA ARTIFICIAL", font="F2", size=9, r=0.22, g=0.74, b=0.97)
+    pdf.draw_text(48, 768, "Taller: Como Crear tus Propias Gemini Skills con NotebookLM", font="F2", size=13.5, r=1.0, g=1.0, b=1.0)
+    pdf.draw_text(48, 749, "El fin de los prompts largos: convierte tu cuaderno en una fabrica de asistentes tematicos", font="F1", size=8.5, r=0.8, g=0.85, b=0.9)
 
-    y = 718
+    cur_y = 724
 
-    # Bloque 1: Que es una Gemini Skill
-    pdf.set_fill_color(0.08, 0.12, 0.20)
-    pdf.set_stroke_color(0.18, 0.25, 0.35)
-    pdf.set_line_width(1.0)
-    pdf.rect(36, y - 85, 523, 85, fill=True, stroke=True)
-
-    pdf.draw_text(48, y - 18, "1. QUE ES UNA «GEMINI SKILL» Y POR QUE CAMBIA LAS REGLAS DEL JUEGO", font="F2", size=10.5, r=0.22, g=0.74, b=0.97)
+    # -------------------------------------------------------------------------
+    # Bloque 1: Que es una Gemini Skill (Cálculo exacto de altura con padding)
+    # -------------------------------------------------------------------------
     intro_p = ("En Google Gemini, las «Skills» son asistentes especializados preconfigurados. "
                "En lugar de tener que teclear o pegar un prompt de 15 lineas cada vez que abres una conversacion, "
                "la Skill guarda internamente sus conocimientos, su personalidad y sus reglas de comportamiento. "
                "Basta con activarla con una sola palabra o comando para que Gemini sepa exactamente como responderte.")
-    for l in wrap_text(intro_p, 88):
-        y -= 14
-        pdf.draw_text(48, y - 18, l, font="F1", size=8.5, r=0.9, g=0.9, b=0.95)
+    intro_lines = wrap_text(intro_p, 90)
+    
+    # Altura: padding sup (16) + titulo (16) + lineas * 13 + padding inf (16)
+    b1_h = 16 + 16 + len(intro_lines) * 13 + 16
+    pdf.set_fill_color(0.08, 0.12, 0.20)
+    pdf.set_stroke_color(0.18, 0.25, 0.35)
+    pdf.set_line_width(1.0)
+    pdf.rect(36, cur_y - b1_h, 523, b1_h, fill=True, stroke=True)
 
-    y -= 105
+    pdf.draw_text(48, cur_y - 20, "1. QUE ES UNA «GEMINI SKILL» Y POR QUE CAMBIA LAS REGLAS DEL JUEGO", font="F2", size=10, r=0.22, g=0.74, b=0.97)
+    text_y = cur_y - 20 - 16
+    for l in intro_lines:
+        pdf.draw_text(48, text_y, l, font="F1", size=8.4, r=0.9, g=0.9, b=0.95)
+        text_y -= 13
 
-    # Bloque 2: Comparativa Antes vs Ahora
+    cur_y = cur_y - b1_h - 14
+
+    # -------------------------------------------------------------------------
+    # Bloque 2: Comparativa Antes vs Ahora (Dos columnas simétricas)
+    # -------------------------------------------------------------------------
+    antes_lines = [
+        "- Escribir instrucciones largas cada dia.",
+        "- Si olvidas un detalle, Gemini te da tecnicismos.",
+        "- Frustracion y pereza al volver a empezar de cero."
+    ]
+    ahora_lines = [
+        "- Configuras la habilidad una sola vez.",
+        "- Se invoca con un nombre corto (ej. /banco).",
+        "- Tono paciente, claro y adaptado a mayores."
+    ]
+    b2_h = 16 + 16 + max(len(antes_lines), len(ahora_lines)) * 14 + 14
+
+    # Columna Izquierda (Antes)
     pdf.set_fill_color(0.12, 0.08, 0.08)
     pdf.set_stroke_color(0.6, 0.2, 0.2)
-    pdf.rect(36, y - 75, 255, 75, fill=True, stroke=True)
-    pdf.draw_text(44, y - 16, "ANTES (Metodo Tradicional Frustrante):", font="F2", size=8.5, r=0.95, g=0.6, b=0.6)
-    antes_txt = ("- Escribir instrucciones largas cada dia.\n"
-                 "- Si olvidas un detalle, Gemini te da tecnicismos.\n"
-                 "- Ansiedad y pereza al volver a empezar de cero.")
-    y_antes = y - 16
-    for l in wrap_text(antes_txt, 46):
-        y_antes -= 12
-        pdf.draw_text(44, y_antes, l, font="F1", size=7.8, r=0.85, g=0.8, b=0.8)
+    pdf.rect(36, cur_y - b2_h, 255, b2_h, fill=True, stroke=True)
+    pdf.draw_text(46, cur_y - 18, "ANTES (Metodo Tradicional Frustrante):", font="F2", size=8.5, r=0.95, g=0.6, b=0.6)
+    ty_a = cur_y - 18 - 16
+    for l in antes_lines:
+        pdf.draw_text(46, ty_a, l, font="F1", size=8.0, r=0.88, g=0.82, b=0.82)
+        ty_a -= 14
 
+    # Columna Derecha (Ahora)
     pdf.set_fill_color(0.06, 0.14, 0.10)
     pdf.set_stroke_color(0.2, 0.6, 0.35)
-    pdf.rect(304, y - 75, 255, 75, fill=True, stroke=True)
-    pdf.draw_text(312, y - 16, "AHORA (Con Gemini Skills + NotebookLM):", font="F2", size=8.5, r=0.5, g=0.9, b=0.65)
-    ahora_txt = ("- Configuras la habilidad una sola vez.\n"
-                 "- Se invoca con un nombre corto (ej. /banco).\n"
-                 "- Tono paciente, claro y adaptado a mayores.")
-    y_ahora = y - 16
-    for l in wrap_text(ahora_txt, 46):
-        y_ahora -= 12
-        pdf.draw_text(312, y_ahora, l, font="F1", size=7.8, r=0.8, g=0.95, b=0.85)
+    pdf.rect(304, cur_y - b2_h, 255, b2_h, fill=True, stroke=True)
+    pdf.draw_text(314, cur_y - 18, "AHORA (Con Gemini Skills + NotebookLM):", font="F2", size=8.5, r=0.5, g=0.9, b=0.65)
+    ty_h = cur_y - 18 - 16
+    for l in ahora_lines:
+        pdf.draw_text(314, ty_h, l, font="F1", size=8.0, r=0.82, g=0.95, b=0.86)
+        ty_h -= 14
 
-    y -= 95
+    cur_y = cur_y - b2_h - 14
 
+    # -------------------------------------------------------------------------
     # Bloque 3: El Secreto del Cuaderno
-    pdf.set_fill_color(0.05, 0.12, 0.18)
-    pdf.set_stroke_color(0.22, 0.74, 0.97)
-    pdf.rect(36, y - 70, 523, 70, fill=True, stroke=True)
-    pdf.draw_text(48, y - 16, "2. EL SECRETO: GEMINI NOTEBOOK COMO CREADOR AUTOMATICO DE SKILLS", font="F2", size=10, r=0.22, g=0.74, b=0.97)
+    # -------------------------------------------------------------------------
     sec_txt = ("Disenar instrucciones perfectas a mano es dificil. Por eso usamos Gemini Notebook como fabrica: "
                "cargas en el cuaderno las especificaciones de Google, le pides en espanol corriente lo que necesitas "
                "(ejemplo: «Quiero un asistente que me explique analisis medicos sin asustarme») y el cuaderno "
                "redacta el prompt tecnico oficial listo para guardar en tu cuenta de Gemini.")
-    y_sec = y - 16
-    for l in wrap_text(sec_txt, 90):
-        y_sec -= 13
-        pdf.draw_text(48, y_sec, l, font="F1", size=8.3, r=0.85, g=0.92, b=0.98)
+    sec_lines = wrap_text(sec_txt, 90)
+    b3_h = 16 + 16 + len(sec_lines) * 13 + 16
 
-    y -= 90
+    pdf.set_fill_color(0.05, 0.12, 0.18)
+    pdf.set_stroke_color(0.22, 0.74, 0.97)
+    pdf.rect(36, cur_y - b3_h, 523, b3_h, fill=True, stroke=True)
 
-    # Bloque 4: Ejemplo 1
-    pdf.set_fill_color(0.08, 0.10, 0.16)
-    pdf.set_stroke_color(0.75, 0.52, 0.98)
-    pdf.rect(36, y - 125, 523, 125, fill=True, stroke=True)
-    pdf.draw_text(48, y - 18, "EJEMPLO 1: «/banco-claro» - El Cazador de Comisiones Bancarias", font="F2", size=10, r=0.75, g=0.52, b=0.98)
-    pdf.draw_text(48, y - 32, "Utilidad: Sube una foto de un recibo o carta del banco y te senala comisiones sorpresa en cristiano.", font="F3", size=8, r=0.7, g=0.75, b=0.85)
+    pdf.draw_text(48, cur_y - 18, "2. EL SECRETO: GEMINI NOTEBOOK COMO CREADOR AUTOMATICO DE SKILLS", font="F2", size=10, r=0.22, g=0.74, b=0.97)
+    ty_s = cur_y - 18 - 16
+    for l in sec_lines:
+        pdf.draw_text(48, ty_s, l, font="F1", size=8.3, r=0.85, g=0.92, b=0.98)
+        ty_s -= 13
 
+    cur_y = cur_y - b3_h - 14
+
+    # -------------------------------------------------------------------------
+    # Bloque 4: Ejemplo 1 (/banco-claro) - Altura holgada con fondo envolvente
+    # -------------------------------------------------------------------------
     prompt_1 = ("Prompt guardado en la Skill:\n"
                 "«Eres Banco Claro, asesor financiero paciente para personas mayores de 65 anos.\n"
-                "Reglas: 1. Habla sin tecnicismos bancarios y con total transparencia.\n"
-                "2. Al recibir un recibo o carta, busca de inmediato: comisiones de mantenimiento, subidas no avisadas\n"
-                "y fechas limite de cancelacion.\n"
-                "3. Concluye siempre con un cuadro titulado QUE DEBO HACER con 3 pasos practicos y la frase exacta\n"
-                "que el usuario debe decir en ventanilla para defender sus ahorros.»")
-    y_p1 = y - 36
-    for l in wrap_text(prompt_1, 88):
-        y_p1 -= 11.5
-        pdf.draw_text(48, y_p1, l, font="F1", size=7.8, r=0.92, g=0.92, b=0.95)
+                "Reglas obligatorias:\n"
+                "1. Habla sin tecnicismos bancarios y con total transparencia.\n"
+                "2. Al recibir un recibo o carta, busca: comisiones de mantenimiento, subidas y fechas limite.\n"
+                "3. Concluye siempre con un cuadro titulado QUE DEBO HACER con 3 pasos practicos y la frase\n"
+                "exacta que el usuario debe decir en ventanilla para defender sus ahorros.»")
+    p1_lines = wrap_text(prompt_1, 88)
+    b4_h = 16 + 16 + 14 + len(p1_lines) * 12 + 18
+
+    pdf.set_fill_color(0.08, 0.10, 0.16)
+    pdf.set_stroke_color(0.75, 0.52, 0.98)
+    pdf.rect(36, cur_y - b4_h, 523, b4_h, fill=True, stroke=True)
+
+    pdf.draw_text(48, cur_y - 18, "EJEMPLO 1: «/banco-claro» - El Cazador de Comisiones Bancarias", font="F2", size=10, r=0.75, g=0.52, b=0.98)
+    pdf.draw_text(48, cur_y - 32, "Utilidad: Sube una foto de un recibo o carta y te senala comisiones sorpresa en cristiano.", font="F3", size=8.0, r=0.7, g=0.75, b=0.85)
+
+    ty_p1 = cur_y - 32 - 14
+    for l in p1_lines:
+        pdf.draw_text(48, ty_p1, l, font="F1", size=7.8, r=0.92, g=0.92, b=0.95)
+        ty_p1 -= 12
 
     # Pie Página 1
-    pdf.draw_text(48, 30, "Monografico 2 • Curso de IA para Seniors • Ficha Didactica Gemini Skills", font="F1", size=8, r=0.5, g=0.55, b=0.65)
-    pdf.draw_text(520, 30, "Pagina 1 / 2", font="F2", size=8, r=0.5, g=0.55, b=0.65)
+    pdf.draw_text(48, 28, "Monografico 2 • Curso de IA para Seniors • Ficha Didactica Gemini Skills", font="F1", size=8, r=0.5, g=0.55, b=0.65)
+    pdf.draw_text(510, 28, "Pagina 1 / 2", font="F2", size=8, r=0.5, g=0.55, b=0.65)
     pdf.end_page()
 
     # =========================================================================
@@ -246,63 +275,77 @@ def compilar_pdf():
     # =========================================================================
     pdf.start_page()
 
-    # Cabecera Página 2
+    # Cabecera Página 2 (y_top = 805)
     pdf.set_fill_color(0.06, 0.09, 0.16)
     pdf.set_stroke_color(0.22, 0.74, 0.97)
-    pdf.rect(36, 760, 523, 48, fill=True, stroke=True)
+    pdf.set_line_width(1.5)
+    pdf.rect(36, 755, 523, 50, fill=True, stroke=True)
+
     pdf.draw_text(48, 788, "EJEMPLOS PRACTICOS PARA EL DIA A DIA Y PROTOCOLO EN 3 PASOS", font="F2", size=11, r=0.22, g=0.74, b=0.97)
-    pdf.draw_text(48, 772, "Configuraciones listas para copiar en gemini.google.com > Administrador de Gems / Skills", font="F1", size=8.2, r=0.8, g=0.85, b=0.9)
+    pdf.draw_text(48, 770, "Configuraciones listas para copiar en gemini.google.com > Administrador de Gems / Skills", font="F1", size=8.2, r=0.8, g=0.85, b=0.9)
 
-    y2 = 740
+    cur_y2 = 740
 
-    # Ejemplo 2: Medico Amigo
-    pdf.set_fill_color(0.08, 0.10, 0.16)
-    pdf.set_stroke_color(0.2, 0.8, 0.6)
-    pdf.rect(36, y2 - 130, 523, 130, fill=True, stroke=True)
-    pdf.draw_text(48, y2 - 18, "EJEMPLO 2: «/medico-amigo» - El Explicador de Analiticas y Prospectos", font="F2", size=10, r=0.2, g=0.8, b=0.6)
-    pdf.draw_text(48, y2 - 32, "Utilidad: Traduce analiticas de sangre y prospectos a lenguaje cotidiano sin alarmar.", font="F3", size=8, r=0.7, g=0.75, b=0.85)
-
+    # -------------------------------------------------------------------------
+    # Ejemplo 2: Medico Amigo (Dimensionamiento dinámico)
+    # -------------------------------------------------------------------------
     prompt_2 = ("Prompt guardado en la Skill:\n"
                 "«Eres Medico Amigo, divulgador de salud empatico y pedagogico para personas mayores.\n"
-                "Reglas: 1. Jamas des diagnosticos definitivos ni alarmes; traduce los terminos medicos dificiles.\n"
-                "2. Si te presentan una analitica, explica que mide cada parametro alterado usando analogias cotidianas\n"
-                "(ejemplo: 'el colesterol es como el trafico en las tuberias') y aclara si es habitual por la edad.\n"
+                "Reglas obligatorias:\n"
+                "1. Jamas des diagnosticos definitivos ni alarmes; traduce los terminos medicos dificiles.\n"
+                "2. Si te presentan una analitica, explica que mide cada parametro alterado usando analogias\n"
+                "cotidianas (ejemplo: 'el colesterol es como el trafico en las tuberias').\n"
                 "3. Concluye siempre con una tarjeta llamada PREGUNTAS PARA MI DOCTOR con 3 preguntas concretas\n"
                 "y claras para llevar apuntadas a la proxima consulta medica.»")
-    y_p2 = y2 - 36
-    for l in wrap_text(prompt_2, 88):
-        y_p2 -= 11.5
-        pdf.draw_text(48, y_p2, l, font="F1", size=7.8, r=0.92, g=0.92, b=0.95)
+    p2_lines = wrap_text(prompt_2, 88)
+    b_ej2_h = 16 + 16 + 14 + len(p2_lines) * 12 + 18
 
-    y2 -= 145
-
-    # Ejemplo 3: Mi Biografo
     pdf.set_fill_color(0.08, 0.10, 0.16)
-    pdf.set_stroke_color(0.98, 0.75, 0.2)
-    pdf.rect(36, y2 - 130, 523, 130, fill=True, stroke=True)
-    pdf.draw_text(48, y2 - 18, "EJEMPLO 3: «/mi-biografo» - El Cronista de Memorias y Relatos Familiares", font="F2", size=10, r=0.98, g=0.75, b=0.2)
-    pdf.draw_text(48, y2 - 32, "Utilidad: Dictas un recuerdo desordenado por voz y te lo escribe como capitulo novelado.", font="F3", size=8, r=0.7, g=0.75, b=0.85)
+    pdf.set_stroke_color(0.2, 0.8, 0.6)
+    pdf.set_line_width(1.0)
+    pdf.rect(36, cur_y2 - b_ej2_h, 523, b_ej2_h, fill=True, stroke=True)
 
+    pdf.draw_text(48, cur_y2 - 18, "EJEMPLO 2: «/medico-amigo» - El Explicador de Analiticas y Prospectos", font="F2", size=10, r=0.2, g=0.8, b=0.6)
+    pdf.draw_text(48, cur_y2 - 32, "Utilidad: Traduce analiticas de sangre y prospectos a lenguaje cotidiano sin alarmar.", font="F3", size=8.0, r=0.7, g=0.75, b=0.85)
+
+    ty_p2 = cur_y2 - 32 - 14
+    for l in p2_lines:
+        pdf.draw_text(48, ty_p2, l, font="F1", size=7.8, r=0.92, g=0.92, b=0.95)
+        ty_p2 -= 12
+
+    cur_y2 = cur_y2 - b_ej2_h - 14
+
+    # -------------------------------------------------------------------------
+    # Ejemplo 3: Mi Biógrafo (Dimensionamiento dinámico)
+    # -------------------------------------------------------------------------
     prompt_3 = ("Prompt guardado en la Skill:\n"
                 "«Eres Mi Biografo, un escritor literario y cronista de la memoria oral familiar.\n"
-                "Reglas: 1. Recibe cualquier relato o recuerdo dictado por voz por muy informal que sea.\n"
+                "Reglas obligatorias:\n"
+                "1. Recibe cualquier relato o recuerdo dictado por voz por muy desordenado o informal que sea.\n"
                 "2. Transforma la anecdota en un capitulo de 3 parrafos con estilo literario calido y emotivo,\n"
                 "ambientando la epoca (los olores de la cocina, las calles, la radio de la epoca).\n"
                 "3. Conserva siempre los nombres propios, apodos y expresiones locales que use el narrador.\n"
                 "4. Finaliza con una pregunta inspiradora para seguir recordando otros detalles complementarios.»")
-    y_p3 = y2 - 36
-    for l in wrap_text(prompt_3, 88):
-        y_p3 -= 11.5
-        pdf.draw_text(48, y_p3, l, font="F1", size=7.8, r=0.92, g=0.92, b=0.95)
+    p3_lines = wrap_text(prompt_3, 88)
+    b_ej3_h = 16 + 16 + 14 + len(p3_lines) * 12 + 18
 
-    y2 -= 150
+    pdf.set_fill_color(0.08, 0.10, 0.16)
+    pdf.set_stroke_color(0.98, 0.75, 0.2)
+    pdf.rect(36, cur_y2 - b_ej3_h, 523, b_ej3_h, fill=True, stroke=True)
 
-    # Guía en 3 Pasos
-    pdf.set_fill_color(0.06, 0.10, 0.18)
-    pdf.set_stroke_color(0.22, 0.74, 0.97)
-    pdf.rect(36, y2 - 150, 523, 150, fill=True, stroke=True)
-    pdf.draw_text(48, y2 - 18, "COMO GUARDAR TU SKILL EN GEMINI EN 3 CLICS SENCILLOS", font="F2", size=10.5, r=0.22, g=0.74, b=0.97)
+    pdf.draw_text(48, cur_y2 - 18, "EJEMPLO 3: «/mi-biografo» - El Cronista de Memorias y Relatos Familiares", font="F2", size=10, r=0.98, g=0.75, b=0.2)
+    pdf.draw_text(48, cur_y2 - 32, "Utilidad: Dictas un recuerdo desordenado por voz y te lo escribe como capitulo novelado.", font="F3", size=8.0, r=0.7, g=0.75, b=0.85)
 
+    ty_p3 = cur_y2 - 32 - 14
+    for l in p3_lines:
+        pdf.draw_text(48, ty_p3, l, font="F1", size=7.8, r=0.92, g=0.92, b=0.95)
+        ty_p3 -= 12
+
+    cur_y2 = cur_y2 - b_ej3_h - 14
+
+    # -------------------------------------------------------------------------
+    # Guía en 3 Pasos (Dimensionamiento dinámico amplio y holgado)
+    # -------------------------------------------------------------------------
     pasos = [
         ("PASO 1: Pide la Skill a Gemini Notebook",
          "Abre tu cuaderno de NotebookLM y dile en espanol: «Escribeme una Skill de Gemini para...». El cuaderno redactara el texto tecnico."),
@@ -312,21 +355,32 @@ def compilar_pdf():
          "Asignale un nombre corto (ej. Banco Claro) y pega las instrucciones copiadas. Pulsa «Guardar». ¡Tu asistente estara listo para siempre!")
     ]
 
-    y_paso = y2 - 20
+    # Medir altura requerida de los 3 pasos
+    total_step_lines = sum([len(wrap_text(d, 86)) for _, d in pasos])
+    b_pasos_h = 16 + 18 + len(pasos) * 16 + total_step_lines * 12 + 20
+
+    pdf.set_fill_color(0.06, 0.10, 0.18)
+    pdf.set_stroke_color(0.22, 0.74, 0.97)
+    pdf.rect(36, cur_y2 - b_pasos_h, 523, b_pasos_h, fill=True, stroke=True)
+
+    pdf.draw_text(48, cur_y2 - 20, "COMO GUARDAR TU SKILL EN GEMINI EN 3 CLICS SENCILLOS", font="F2", size=10.5, r=0.22, g=0.74, b=0.97)
+
+    ty_step = cur_y2 - 20 - 18
     for titulo, desc in pasos:
-        y_paso -= 16
-        pdf.draw_text(48, y_paso, titulo, font="F2", size=8.8, r=1.0, g=0.85, b=0.4)
+        pdf.draw_text(48, ty_step, titulo, font="F2", size=8.8, r=1.0, g=0.85, b=0.4)
+        ty_step -= 13
         for dl in wrap_text(desc, 86):
-            y_paso -= 11.5
-            pdf.draw_text(48, y_paso, dl, font="F1", size=8, r=0.85, g=0.9, b=0.95)
+            pdf.draw_text(48, ty_step, dl, font="F1", size=8.0, r=0.85, g=0.9, b=0.95)
+            ty_step -= 12
+        ty_step -= 5
 
     # Pie Página 2
-    pdf.draw_text(48, 30, "Monografico 2 • Curso de IA para Seniors • Enlace video oficial: youtu.be/n2-YWzDpGZY", font="F1", size=8, r=0.5, g=0.55, b=0.65)
-    pdf.draw_text(520, 30, "Pagina 2 / 2", font="F2", size=8, r=0.5, g=0.55, b=0.65)
+    pdf.draw_text(48, 28, "Monografico 2 • Curso de IA para Seniors • Enlace video oficial: youtu.be/n2-YWzDpGZY", font="F1", size=8, r=0.5, g=0.55, b=0.65)
+    pdf.draw_text(510, 28, "Pagina 2 / 2", font="F2", size=8, r=0.5, g=0.55, b=0.65)
     pdf.end_page()
 
     pdf.write_to_file(PDF_OUTPUT)
-    print(f"PDF generado con exito: {PDF_OUTPUT}")
+    print(f"PDF generado con exito y holgura verificada: {PDF_OUTPUT}")
 
 if __name__ == "__main__":
     compilar_pdf()
