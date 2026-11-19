@@ -570,8 +570,9 @@ def generar_pdf_completo():
         [
             "Para qué sirve: Herramientas pedagógicas interactivas para repasar, memorizar y ayudar a estudiar a hijos y nietos.",
             "1. Mapa Mental y Descarga en PNG: Pulsa 'Mapa mental' en Studio. Al pinchar en el mapa se abre a pantalla completa. A la izquierda en la barra superior verás una flechita hacia abajo (Descargar): al pulsarla, se descarga inmediatamente a tu ordenador como imagen PNG en alta resolución.",
-            "2. Cuestionario (Quiz Interactivo): Genera preguntas tipo test de las fuentes. Importante: El cuestionario NO se puede descargar a archivo; se responde interactivamente en la pantalla del cuaderno.",
-            "3. Fichas Didácticas / Flashcards (Volteo y Marcador): Te muestra la pregunta, pero NO se escribe la respuesta en ningún sitio. Piensas la solución, pinchas sobre la tarjeta para voltearla y ver la respuesta. Abajo verás un contador que arranca en 0 con dos botones: pulsa el Check verde (v) si habías acertado o el Aspa roja (x) si habías fallado para llevar tu puntuación. Tampoco se pueden descargar a archivo."
+            "2. Alternativa Descargable en Texto / PDF (Chat Central): El propio Gemini te ofrece esta opción en el chat: «Si prefieres tener el esquema estructurado en un archivo descargable (como un documento PDF o texto listo para guardar), dime y te lo preparo». Pídeselo en el chat y te redactará el esquema completo por niveles listo para exportar.",
+            "3. Cuestionario (Quiz Interactivo): Genera preguntas tipo test de las fuentes. Importante: El cuestionario NO se puede descargar a archivo; se responde interactivamente en la pantalla del cuaderno.",
+            "4. Fichas Didácticas / Flashcards (Volteo y Marcador): Te muestra la pregunta, pero NO se escribe la respuesta en ningún sitio. Piensas la solución, pinchas sobre la tarjeta para voltearla y ver la respuesta. Abajo verás un contador que arranca en 0 con dos botones: pulsa el Check verde (v) si habías acertado o el Aspa roja (x) si habías fallado para llevar tu puntuación. Tampoco se pueden descargar a archivo."
         ],
         badge_text="ESTUDIO ACTIVO",
         border_color=(0.35, 0.20, 0.60),
