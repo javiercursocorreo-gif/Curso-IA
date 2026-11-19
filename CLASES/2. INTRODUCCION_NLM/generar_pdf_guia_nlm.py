@@ -315,11 +315,14 @@ def generar_pdf_completo():
     flow.add_paragraph("La pantalla de Gemini Notebook está dividida en 3 columnas limpias y organizadas de izquierda a derecha:")
 
     flow.add_card_box(
-        "ZONA 1 (IZQUIERDA): EL ARCHIVADOR (PANEL DE FUENTES)",
+        "ZONA 1 (IZQUIERDA): EL ARCHIVADOR (PANEL DE FUENTES Y MÉTODOS DE CARGA)",
         [
-            "Botón '+ Añadir fuentes': Carga documentos PDF, Word (.docx), textos planos (.txt), enlaces de YouTube y audios MP3. Además, ahora cuenta con un botón directo para cargar tus propias grabaciones hechas por ti.",
-            "Casillas de Verificación [v]: Cada fuente tiene un recuadro a su izquierda para activarla o desactivarla.",
-            "Regla de Aislamiento: Gemini Notebook SOLO lee las fuentes con la casilla marcada. Si dejas una sola marcada, la IA 'olvida' temporalmente las demás. Permite analizar un papel sin mezclar datos."
+            "Arrastre Directo a la Zona 1: Puedes arrastrar cualquier archivo (PDF, Word, TXT, audios) directamente desde una carpeta de tu ordenador y soltarlo sobre la propia columna de la Zona 1 para cargarlo al instante sin pulsar ningún menú.",
+            "1. Botón '+ Añadir fuentes' (Ventana emergente con 6 tipos): Abre una ventana modal donde también puedes arrastrar archivos al recuadro interior o elegir entre 6 botones de fuentes: Google Drive (Docs, Sheets, Slides), Subir archivos (PDF, Word, TXT), Texto copiado (pegar desde el portapapeles), Enlace web (URL), Vídeo de YouTube (transcripción automática de voz a texto) y Audio grabado (MP3, WAV o grabación directa).",
+            "2. Botón '+ Crear nota' (Add Note): Libreta o post-it digital integrado en tu cuaderno. Permite redactar ideas, apuntes propios o pegar fragmentos de texto sin crear un archivo previo en el PC. Es una fuente viva, editable y permanente.",
+            "3. Botón y Desplegable 'Web': Acceso rápido en un clic con dos opciones: 'Enlace web' (para leer artículos, noticias o blogs) y 'Vídeo de YouTube' (para transcribir y analizar vídeos de YouTube).",
+            "4. Botón y Desplegable 'Fast Research' (Investigación Rápida con IA): Buscador inteligente integrado. Escribes un tema y la IA rastrea la web por ti, con opciones para Búsqueda Web Abierta (general) o Fuentes Académicas y Especializadas, permitiéndote previsualizar y marcar con casillas qué páginas incorporar a tu archivador.",
+            "Casillas [v] y Regla de Aislamiento: Gemini Notebook SOLO lee las fuentes con la casilla marcada. Si dejas una sola marcada, la IA 'olvida' temporalmente las demás para un análisis limpio."
         ],
         badge_text="COLUMNA 1",
         border_color=(0.15, 0.35, 0.65),
