@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <title>Taller • Cómo Crear tus Propias Gemini Skills con Gemini Notebook</title>
+    <style>
+        :root {
+            --bg-base: #070b14;
+            --bg-card: rgba(15, 23, 42, 0.94);
+            --border-glow: rgba(56, 189, 248, 0.4);
+            --text-main: #f8fafc;
+            --text-sub: #94a3b8;
+            --text-muted: #64748b;
+            --primary: #38bdf8;
+            --purple: #c084fc;
+            --emerald: #34d399;
+            --amber: #fbbf24;
+            --rose: #fb7185;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: radial-gradient(circle at 50% 20%, #131d3b 0%, #080c18 65%, #030509 100%);
+            color: var(--text-main);
+            min-height: 100vh;
+            padding: 24px 16px 50px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 920px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        /* CABECERA */
+        .header-box {
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.95), rgba(15, 23, 42, 0.95));
+            border: 2px solid var(--border-glow);
+            border-radius: 18px;
+            padding: 26px 28px;
+            box-shadow: 0 0 35px rgba(56, 189, 248, 0.2);
+            text-align: center;
+        }
+        .header-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 5px 14px;
+            border-radius: 9999px;
+            background: rgba(56, 189, 248, 0.15);
+            border: 1px solid rgba(56, 189, 248, 0.4);
+            color: var(--primary);
+            font-size: 0.82rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 12px;
+        }
+        h1 {
+            font-size: 1.95rem;
+            font-weight: 900;
+            line-height: 1.3;
+            background: linear-gradient(135deg, #ffffff 40%, #94a3b8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            color: var(--text-sub);
+            font-size: 1.05rem;
+            max-width: 780px;
+            margin: 0 auto 18px;
+        }
+
+        .nav-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 14px;
+        }
+        .btn-action {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 18px;
+            border-radius: 10px;
+            font-weight: 800;
+            font-size: 0.9rem;
+            text-decoration: none;
+            transition: all 0.2s;
+            cursor: pointer;
+            border: none;
+        }
+        .btn-back {
+            background: #1e293b;
+            color: #cbd5e1;
+            border: 1px solid #334155;
+        }
+        .btn-back:hover { background: #334155; color: #fff; }
+        .btn-video {
+            background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+            color: #fff;
+            border: 1px solid #f87171;
+            box-shadow: 0 4px 15px rgba(220, 38, 38, 0.35);
+        }
+        .btn-video:hover { filter: brightness(1.15); transform: translateY(-2px); }
+
+        /* SECCIONES DIDÁCTICAS */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 24px 26px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+        }
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 14px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding-bottom: 12px;
+        }
+        .card-icon {
+            font-size: 1.6rem;
+        }
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: #fff;
+        }
+
+        .highlight-box {
+            background: rgba(56, 189, 248, 0.08);
+            border: 1px solid rgba(56, 189, 248, 0.25);
+            border-radius: 12px;
+            padding: 16px 18px;
+            margin: 14px 0;
+            font-size: 0.95rem;
+            color: #bae6fd;
+            line-height: 1.6;
+        }
+
+        /* COMPARATIVA ANTES VS AHORA */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+            margin-top: 14px;
+        }
+        .box-compare {
+            border-radius: 12px;
+            padding: 16px 18px;
+            font-size: 0.92rem;
+        }
+        .box-antes {
+            background: rgba(239, 68, 68, 0.08);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+        .box-ahora {
+            background: rgba(52, 211, 153, 0.08);
+            border: 1px solid rgba(52, 211, 153, 0.3);
+        }
+
+        /* EJEMPLOS PRÁCTICOS */
+        .example-card {
+            background: #0d1522;
+            border: 1px solid #1e293b;
+            border-radius: 14px;
+            padding: 20px;
+            margin-top: 16px;
+        }
+        .example-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .example-badge {
+            background: rgba(192, 132, 252, 0.18);
+            color: #c084fc;
+            border: 1px solid rgba(192, 132, 252, 0.35);
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-family: ui-monospace, monospace;
+            font-weight: 800;
+            font-size: 0.88rem;
+        }
+        .example-title {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: #fff;
+        }
+
+        .prompt-container {
+            background: #060911;
+            border: 1px solid #243042;
+            border-radius: 10px;
+            padding: 14px 16px;
+            margin-top: 10px;
+            position: relative;
+        }
+        .prompt-text {
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+            font-size: 0.88rem;
+            color: #e2e8f0;
+            line-height: 1.55;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+        .btn-copy {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #1e293b;
+            color: #38bdf8;
+            border: 1px solid #38bdf8;
+            padding: 5px 12px;
+            border-radius: 6px;
+            font-size: 0.78rem;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-copy:hover {
+            background: #0284c7;
+            color: #fff;
+        }
+
+        /* PASOS EN 3 CLICS */
+        .step-list {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            margin-top: 12px;
+        }
+        .step-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            border-radius: 12px;
+            padding: 14px 18px;
+        }
+        .step-num {
+            background: var(--primary);
+            color: #020408;
+            font-weight: 900;
+            font-size: 1rem;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .step-text h4 {
+            color: #fff;
+            font-size: 1rem;
+            font-weight: 800;
+            margin-bottom: 2px;
+        }
+        .step-text p {
+            color: var(--text-sub);
+            font-size: 0.88rem;
+            line-height: 1.45;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <!-- CABECERA PRINCIPAL -->
+    <header class="header-box">
+        <div class="header-pill">🚀 Novedad Ecosistema Google Gemini & NotebookLM</div>
+        <h1>Cómo Crear tus Propias «Gemini Skills» usando Gemini Notebook</h1>
+        <p class="subtitle">
+            El fin de teclear instrucciones largas. Aprende a convertir tu cuaderno de Gemini Notebook en tu fábrica personal de asistentes especializados para la vida diaria.
+        </p>
+        <div class="nav-buttons">
+            <a href="MAPA_CLASE_2_NLM.html" class="btn-action btn-back">
+                ◀ Volver al Mapa del Monográfico 2
+            </a>
+            <a href="https://youtu.be/n2-YWzDpGZY" target="_blank" rel="noopener" class="btn-action btn-video">
+                ▶ Ver Vídeo Tutorial de Referencia ↗
+            </a>
+        </div>
+    </header>
+
+    <!-- SECCIÓN 1: ¿QUÉ ES UNA GEMINI SKILL? -->
+    <section class="card">
+        <div class="card-header">
+            <span class="card-icon">⚡</span>
+            <h2 class="card-title">1. ¿Qué es una «Skill» de Gemini y qué problema nos resuelve?</h2>
+        </div>
+        <p style="font-size: 0.98rem; color: #cbd5e1;">
+            En Google Gemini, las <strong>Skills</strong> (la evolución oficial de los antiguos <em>Gems</em>) son <strong>asistentes temáticos preinstalados</strong>. Guardan dentro toda su personalidad, sus reglas de conversación y sus conocimientos específicos para que no tengas que recordárselos cada día.
+        </p>
+
+        <div class="grid-2">
+            <div class="box-compare box-antes">
+                <strong style="color: #fca5a5; display:block; margin-bottom:6px;">❌ Como lo hacíamos antes:</strong>
+                Cada vez que entrabas en Gemini, tenías que escribir un texto larguísimo: <em>«Actúa como un analista bancario paciente, explícame sin tecnicismos, busca comisiones ocultas y dame tres consejos...»</em>. Si se te olvidaba ponerlo, Gemini te contestaba con un rollo incomprensible.
+            </div>
+            <div class="box-compare box-ahora">
+                <strong style="color: #6ee7b7; display:block; margin-bottom:6px;">✅ Como lo hacemos ahora con Skills:</strong>
+                Guardas la habilidad una sola vez con un nombre corto (como <code>/banco</code> o <code>/medico</code>). Cuando entras en Gemini, solo escribes esa palabra mágica y el asistente ya sabe exactamente cómo hablarte, qué revisar y cómo resumirte la información.
+            </div>
+        </div>
+    </section>
+
+    <!-- SECCIÓN 2: EL SECRETO DE GEMINI NOTEBOOK -->
+    <section class="card">
+        <div class="card-header">
+            <span class="card-icon">🧠</span>
+            <h2 class="card-title">2. El Secreto: Gemini Notebook como «Meta-Creador»</h2>
+        </div>
+        <p style="font-size: 0.96rem; color: #cbd5e1;">
+            Escribir una buena Skill a mano es complicado porque requiere instrucciones técnicas exactas. Pero aquí está la gran ventaja: <strong>Gemini Notebook (NotebookLM) puede escribir la Skill por ti</strong>.
+        </p>
+
+        <div class="highlight-box">
+            💡 <strong>La Fórmula Mágica:</strong><br>
+            Tú solo le explicas en español natural lo que quieres conseguir: <em>«Quiero un asistente que me ayude con los prospectos de medicinas para saber si dan somnolencia y a qué hora tomarlas»</em>.<br>
+            Gemini Notebook toma tu petición, consulta sus fuentes oficiales y <strong>redacta la especificación técnica completa</strong> lista para copiar y pegar.
+        </div>
+    </section>
+
+    <!-- SECCIÓN 3: 3 EJEMPLOS REALES PARA MAYORES DE 65 AÑOS -->
+    <section class="card">
+        <div class="card-header">
+            <span class="card-icon">🎯</span>
+            <h2 class="card-title">3. Tres Ejemplos Listos para la Vida Diaria (+65)</h2>
+        </div>
+        <p style="font-size: 0.95rem; color: #cbd5e1;">
+            A continuación tienes 3 habilidades diseñadas especialmente para nuestro curso. Puedes copiarlas directamente en tu Gemini o pedírselas a Gemini Notebook:
+        </p>
+
+        <!-- EJEMPLO 1 -->
+        <div class="example-card">
+            <div class="example-header">
+                <span class="example-title">Ejemplo A: El Cazador de Letra Pequeña Bancaria</span>
+                <span class="example-badge">/banco-claro</span>
+            </div>
+            <p style="font-size: 0.88rem; color: #94a3b8;">
+                <strong>Utilidad:</strong> Le haces una foto con el móvil a una carta del banco, un recibo o una póliza de seguros, y te dice en lenguaje llano qué te están cobrando y si hay comisiones sorpresa.
+            </p>
+            <div class="prompt-container">
+                <button class="btn-copy" onclick="copiarPrompt(this, 'prompt-1')">Copiar Prompt</button>
+                <div class="prompt-text" id="prompt-1">Eres «Banco Claro», un asesor financiero defensor de personas mayores de 65 años.
+REGLAS OBLIGATORIAS:
+1. Habla siempre en español con un tono paciente, claro, respetuoso y sin tecnicismos bancarios complejos.
+2. Si el usuario te envía un recibo, carta o documento bancario, busca inmediatamente:
+   - Comisiones de mantenimiento o gestión.
+   - Costes ocultos o subidas de tarifas no avisadas.
+   - Fechas límite para reclamar o cancelar.
+3. Termina siempre con un cuadro resumen titulado «¿QUÉ DEBO HACER?» con 3 pasos sencillos y una frase modelo que el usuario puede decir en la ventanilla del banco para defenderse.</div>
+            </div>
+        </div>
+
+        <!-- EJEMPLO 2 -->
+        <div class="example-card">
+            <div class="example-header">
+                <span class="example-title">Ejemplo B: El Explicador Médico Tranquilizador</span>
+                <span class="example-badge">/medico-amigo</span>
+            </div>
+            <p style="font-size: 0.88rem; color: #94a3b8;">
+                <strong>Utilidad:</strong> Te ayuda a entender los valores de una analítica de sangre o el prospecto de un fármaco nuevo sin alarmarte, preparándote las preguntas exactas que debes hacerle a tu médico.
+            </p>
+            <div class="prompt-container">
+                <button class="btn-copy" onclick="copiarPrompt(this, 'prompt-2')">Copiar Prompt</button>
+                <div class="prompt-text" id="prompt-2">Eres «Médico Amigo», un divulgador de salud empático y pedagógico para personas mayores.
+REGLAS OBLIGATORIAS:
+1. Jamás des diagnósticos médicos definitivos ni alarmes al usuario; tu misión es traducir términos médicos difíciles al lenguaje de la calle.
+2. Si te presentan una analítica o informe médico:
+   - Explica qué mide cada parámetro alterado con analogías cotidianas (ejemplo: «el colesterol es como el tráfico en las tuberías»).
+   - Aclara si un valor ligeramente alto o bajo es habitual por la edad.
+3. Concluye siempre con una tarjeta llamada «PREGUNTAS PARA MI DOCTOR» con 3 preguntas concretas y respetuosas para llevar apuntadas a la consulta médica.</div>
+            </div>
+        </div>
+
+        <!-- EJEMPLO 3 -->
+        <div class="example-card">
+            <div class="example-header">
+                <span class="example-title">Ejemplo C: El Cronista de Memorias Familiares</span>
+                <span class="example-badge">/mi-biografo</span>
+            </div>
+            <p style="font-size: 0.88rem; color: #94a3b8;">
+                <strong>Utilidad:</strong> Le dictas un recuerdo suelto de tu infancia, de tus padres o de tu juventud por el micrófono, y te redacta un relato emotivo y literario para compartir con tus hijos y nietos.
+            </p>
+            <div class="prompt-container">
+                <button class="btn-copy" onclick="copiarPrompt(this, 'prompt-3')">Copiar Prompt</button>
+                <div class="prompt-text" id="prompt-3">Eres «Mi Biógrafo», un escritor literario y cronista de la memoria oral familiar.
+REGLAS OBLIGATORIAS:
+1. Recibe cualquier relato, anécdota o recuerdo dictado por el usuario (por muy breve, desordenado o informal que sea).
+2. Transforma el recuerdo en un capítulo breve de 3 párrafos con estilo literario cálido y emotivo, ambientando la época (olores, sonidos, vida en los años 50-70).
+3. Conserva siempre los nombres propios, apodos y expresiones locales que use el narrador.
+4. Finaliza con una pregunta inspiradora que invite al usuario a recordar otro detalle complementario para seguir completando su libro de memorias.</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECCIÓN 4: CÓMO GUARDAR TU SKILL EN 3 CLICS -->
+    <section class="card">
+        <div class="card-header">
+            <span class="card-icon">🚀</span>
+            <h2 class="card-title">4. Guía Rápida: Cómo Guardar tu Skill en 3 Clics</h2>
+        </div>
+
+        <div class="step-list">
+            <div class="step-item">
+                <div class="step-num">1</div>
+                <div class="step-text">
+                    <h4>Copia las instrucciones de tu Skill</h4>
+                    <p>Usa el botón azul «Copiar Prompt» de cualquiera de los ejemplos de arriba, o pídele a Gemini Notebook que te fabrique una para tu necesidad personal.</p>
+                </div>
+            </div>
+
+            <div class="step-item">
+                <div class="step-num">2</div>
+                <div class="step-text">
+                    <h4>Abre Gemini y ve a «Gems / Skills»</h4>
+                    <p>Entra en <code>gemini.google.com</code> desde tu ordenador o iPad. En el menú de la izquierda, pulsa en <strong>«Administrador de Gems / Skills»</strong> y haz clic en <strong>«+ Nuevo Gem»</strong>.</p>
+                </div>
+            </div>
+
+            <div class="step-item">
+                <div class="step-num">3</div>
+                <div class="step-text">
+                    <h4>Pega las instrucciones y guarda</h4>
+                    <p>Ponle un nombre fácil (ej. <em>Banco Claro</em>) y pega el texto copiado en la casilla de instrucciones. Pulsa <strong>Guardar</strong>. ¡A partir de ese momento, tu nuevo asistente vivirá en tu barra lateral listo para ayudarte siempre que lo necesites!</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+</div>
+
+<script>
+    function copiarPrompt(btn, idElem) {
+        const elem = document.getElementById(idElem);
+        if (!elem) return;
+        const texto = elem.innerText;
+
+        navigator.clipboard.writeText(texto).then(() => {
+            const originalText = btn.innerText;
+            btn.innerText = "¡Copiado! ✓";
+            btn.style.background = "#10b981";
+            btn.style.color = "#ffffff";
+            btn.style.borderColor = "#34d399";
+            setTimeout(() => {
+                btn.innerText = originalText;
+                btn.style.background = "#1e293b";
+                btn.style.color = "#38bdf8";
+                btn.style.borderColor = "#38bdf8";
+            }, 2500);
+        }).catch(err => {
+            console.error("Error al copiar:", err);
+        });
+    }
+</script>
+
+</body>
+</html>
