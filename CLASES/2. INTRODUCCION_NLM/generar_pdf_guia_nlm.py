@@ -616,9 +616,66 @@ def generar_pdf_completo():
     )
 
     # -------------------------------------------------------------
-    # SECCIÓN 6: CHECKLIST DE AUTOEVALUACIÓN DEL ALUMNO
+    # SECCIÓN 6: EJERCICIO MAESTRO FINAL - CUADERNOS ANTERIORES Y LA GRAN INFOGRAFÍA
     # -------------------------------------------------------------
-    flow.add_section_header("6. CHECKLIST DE AUTOEVALUACIÓN Y COMPETENCIAS DEL ALUMNO", (0.12, 0.25, 0.55))
+    flow.add_section_header("6. DESCUBRIMIENTO MÁGICO: TUS CUADERNOS ANTERIORES Y LA GRAN INFOGRAFÍA", (0.45, 0.20, 0.65))
+
+    flow.add_card_box(
+        "LA CONEXIÓN SORPRESA: GEMINI Y NOTEBOOKLM COMPARTEN LA MISMA MENTE",
+        [
+            "Al entrar en NotebookLM con vuestra cuenta de Gmail, ¡todos los cuadernos de ejercicios de las clases anteriores de IA ya están ahí guardados!",
+            "Esto demuestra que Gemini y NotebookLM están totalmente sincronizados bajo la misma cuenta de Google."
+        ],
+        badge_text="SINCRONIZACIÓN",
+        border_color=(0.55, 0.25, 0.75),
+        bg_color=(0.97, 0.94, 0.99),
+        title_color=(0.45, 0.15, 0.65)
+    )
+
+    flow.add_card_box(
+        "PASO 6.1: SELECCIÓN DEL CUADERNO SESIÓN 2 (CORAZÓN 3D vs RADAR ANTI-ESTAFAS)",
+        [
+            "1. En la pantalla inicial de NotebookLM, busca y abre el cuaderno de la Sesión 2.",
+            "2. Contiene dos fuentes de temas totalmente distintos trabajados en clase:",
+            "   - Fuente A (Salud Biológica): El Corazón Humano, cavidades y flujo sanguíneo.",
+            "   - Fuente B (Seguridad Digital): El Radar Anti-Estafas y prevención de fraudes (+65).",
+            "3. Asegúrate de tener ambas fuentes marcadas con su casilla de verificación [v]."
+        ],
+        badge_text="SELECCIÓN",
+        border_color=(0.45, 0.20, 0.65),
+        bg_color=(0.97, 0.95, 0.99),
+        title_color=(0.45, 0.20, 0.65)
+    )
+
+    flow.add_prompt_box(
+        "PROMPT MAESTRO EN STUDIO > INFOGRAFÍA (ESTILO CIENTÍFICO O PIZARRÓN):",
+        (
+            "Genera una infografía comparativa con dos columnas bien diferenciadas:\n"
+            "- COLUMNA IZQUIERDA (EL CORAZÓN HUMANO): Cuida el motor biológico. Señala cómo prevenir "
+            "bloqueos en las arterias, hacer ejercicio suave y acudir al médico ante cualquier dolor extraño.\n"
+            "- COLUMNA DERECHA (EL RADAR ANTI-ESTAFAS): Cuida tus ahorros digitales. Señala cómo prevenir "
+            "trampas en WhatsApp, no dar claves bancarias y desconfiar de llamadas urgentes.\n"
+            "- FRANJA INFERIOR (LECCIÓN COMÚN): Destaca las 3 Reglas de Oro que comparten la salud y la seguridad: "
+            "1ª Prevención antes que curación. 2ª No ignorar señales de aviso. 3ª Consultar a profesionales."
+        )
+    )
+
+    flow.add_card_box(
+        "PASO 6.3: EL RESULTADO ASOMBROSO (SÍNTESIS VITAL)",
+        [
+            "Gemini Notebook lee dos temas dispares y construye un puente de sentido común y aprendizaje vital.",
+            "Has transformado dos ejercicios de clase en un cartel visual de alto impacto listo para imprimir o enviar."
+        ],
+        badge_text="EVALUACIÓN",
+        border_color=(0.15, 0.50, 0.35),
+        bg_color=(0.94, 0.98, 0.95),
+        title_color=(0.12, 0.45, 0.30)
+    )
+
+    # -------------------------------------------------------------
+    # SECCIÓN 7: CHECKLIST DE AUTOEVALUACIÓN DEL ALUMNO
+    # -------------------------------------------------------------
+    flow.add_section_header("7. CHECKLIST DE AUTOEVALUACIÓN Y COMPETENCIAS DEL ALUMNO", (0.12, 0.25, 0.55))
 
     checklist_items = [
         ("Paso 1", "Sé entrar en Chrome con mi cuenta Gmail y pulsar 'Nuevo cuaderno'."),
@@ -632,7 +689,7 @@ def generar_pdf_completo():
         ("Paso 8", "Sé crear Infografías probando al menos 2 estilos distintos (Científico y Anime)."),
         ("Paso 9", "Sé crear un Resumen de vídeo paso a paso fundiendo fuentes en una pieza audiovisual."),
         ("Paso 10", "Sé escuchar la tertulia de radio Audio Overview y generar un Informe estructurado en Studio."),
-        ("Paso 11", "Sé usar Gemini Notebook para crear tarjetas de repaso (flashcards) y mapas de estudio para hijos y nietos.")
+        ("Paso 11", "Sé abrir mis cuadernos anteriores de clase y cruzar fuentes para crear infografías comparativas.")
     ]
 
     flow.check_space(len(checklist_items) * 16 + 20)
