@@ -1,0 +1,1002 @@
+# -*- coding: utf-8 -*-
+"""
+build_cancion_04_modern.py
+Moderniza CANCION_04_CUANDO_CALIENTA_EL_SOL.html al estándar OLED de CANCION_16:
+- Header Box moderno con badges OLED de alta legibilidad
+- Botón verde esmeralda de apertura a pantalla completa
+- Guía de estructura y carácter (174 Beguine 1, 112 BPM, Do Mayor)
+- Guía de transiciones armónicas con posiciones suaves (mano izquierda relajada)
+- Atril Digital OLED de compases (Intro, Estrofa 1, Puente, Estribillo, Estrofa 2, Cierre)
+- Modal a pantalla completa con HUD de 8 Keyboard Sets (037 Full Organ, 095 St.Strings...)
+- Cifra Club OLED con letra y acordes en gran formato
+- Triple Escudo Anti-Apagado + Smart Dimming 60s + Destello táctil iPad
+- Motor Web MIDI blindado (Canal 16 global / Canal 1 Upper, Banco 33 maestro, All Notes Off)
+"""
+
+import os
+
+HTML_CONTENT = """<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+    <!-- Optimización iOS / iPadOS como Web App Nativa a pantalla completa -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Calienta Sol">
+    <meta name="theme-color" content="#0b0f17">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='bg' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%23d97706'/%3E%3Cstop offset='100%25' stop-color='%230b0f17'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='100' height='100' rx='22' fill='url(%23bg)' stroke='%23fbbf24' stroke-width='3'/%3E%3Ctext x='50' y='74' font-family='-apple-system, BlinkMacSystemFont, sans-serif' font-weight='900' font-size='68' text-anchor='middle' fill='%23fbbf24'%3ES%3C/text%3E%3C/svg%3E">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='bg' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%23d97706'/%3E%3Cstop offset='100%25' stop-color='%230b0f17'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='100' height='100' rx='22' fill='url(%23bg)' stroke='%23fbbf24' stroke-width='3'/%3E%3Ctext x='50' y='74' font-family='-apple-system, BlinkMacSystemFont, sans-serif' font-weight='900' font-size='68' text-anchor='middle' fill='%23fbbf24'%3ES%3C/text%3E%3C/svg%3E">
+    <title>Cuando Calienta el Sol · Korg EK-50 (v215)</title>
+    <style>
+        :root {
+            --bg-color: #0b0f17;
+            --card-bg: #111827;
+            --border-color: #1f2937;
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --accent-blue: #38bdf8;
+            --accent-green: #22c55e;
+            --accent-amber: #fbbf24;
+            --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: var(--font-family);
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            padding: max(12px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right)) max(20px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .header-box {
+            width: 100%;
+            max-width: 900px;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 14px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+        }
+
+        .song-title {
+            font-size: 1.55rem;
+            font-weight: 900;
+            color: #ffffff;
+            margin-top: 2px;
+            letter-spacing: -0.5px;
+        }
+
+        .song-author {
+            color: #94a3b8;
+            font-size: 0.85rem;
+            margin-top: 2px;
+            font-weight: 500;
+        }
+
+        .badge-tonalidad {
+            background: rgba(56, 189, 248, 0.15);
+            border: 1px solid rgba(56, 189, 248, 0.4);
+            color: #38bdf8;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.82rem;
+            font-weight: 800;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .section-box {
+            width: 100%;
+            max-width: 900px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 14px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+        }
+
+        .section-title {
+            font-size: 0.98rem;
+            font-weight: 900;
+            color: #38bdf8;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #1e293b;
+            padding-bottom: 8px;
+            margin-bottom: 12px;
+        }
+
+        .harmonic-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 10px;
+            background: #0b111e;
+            border: 1px solid #1e293b;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            font-size: 0.88rem;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .chord-pair {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 800;
+            color: #38bdf8;
+            min-width: 140px;
+        }
+
+        .keys-diagram {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .note-fixed {
+            color: #34d399;
+            font-weight: 900;
+            text-shadow: 0 0 8px rgba(52, 211, 153, 0.4);
+        }
+
+        .note-moving {
+            color: #94a3b8;
+        }
+
+        .note-target {
+            color: #f59e0b;
+            font-weight: 800;
+            text-shadow: 0 0 8px rgba(245, 158, 11, 0.35);
+        }
+
+        .rule-pill {
+            font-size: 0.76rem;
+            color: #94a3b8;
+            background: #1e293b;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-family: var(--font-family);
+        }
+
+        /* DISEÑO DE ATRIL DIGITAL SIN PARTITURA (ACORDES OLED EN GRAN FORMATO) */
+        .atril-section {
+            width: 100%;
+            max-width: 900px;
+            background: #0d1522;
+            border: 1px solid #1e293b;
+            border-radius: 12px;
+            padding: 16px 18px;
+            margin-bottom: 18px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+        }
+
+        .atril-sec-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            border-bottom: 1px solid #1e293b;
+            padding-bottom: 6px;
+        }
+
+        .atril-sec-title {
+            color: #38bdf8;
+            font-size: 0.95rem;
+            font-weight: 900;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .atril-sec-desc {
+            color: #94a3b8;
+            font-size: 0.80rem;
+            font-style: italic;
+        }
+
+        .measures-line {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        @media (max-width: 600px) {
+            .measures-line {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .measure-box {
+            background: #111a2c;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 12px 10px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 4px;
+            min-height: 70px;
+        }
+
+        .measure-box.highlight {
+            border-color: #38bdf8;
+            background: #0f2342;
+        }
+
+        .chord-name {
+            font-size: 1.55rem;
+            font-weight: 900;
+            color: #ffffff;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            letter-spacing: -0.5px;
+        }
+
+        .chord-degree {
+            font-size: 0.72rem;
+            color: #94a3b8;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .lyrics-hint {
+            font-size: 0.76rem;
+            color: #cbd5e1;
+            margin-top: 4px;
+            line-height: 1.3;
+            text-align: center;
+        }
+
+        /* Destello táctil iPad */
+        .btn-flash-active {
+            animation: flashFeedback 0.35s ease-out forwards;
+        }
+        @keyframes flashFeedback {
+            0% { transform: scale(1); filter: brightness(1); }
+            50% { transform: scale(0.96); filter: brightness(1.7); }
+            100% { transform: scale(1); filter: brightness(1); }
+        }
+
+        .dimmed-overlay {
+            opacity: 0.15 !important;
+            transition: opacity 1.2s cubic-bezier(0.2, 0.8, 0.3, 1);
+        }
+    
+        /* ESTILO OFICIAL CIFRA CLUB (FONDO OLED #000000 · MODO ATRIL) */
+        #modal-atril-fullscreen, #modal-partitura-fullscreen {
+            background: #000000 !important;
+        }
+        .lyrics-box {
+            background: #000000;
+            border: 1px solid #1e293b;
+            border-radius: 12px;
+            padding: 24px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, monospace;
+            font-size: 1.15rem;
+            line-height: 1.9;
+            white-space: pre-wrap;
+            color: #f1f5f9;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.85);
+            margin-bottom: 24px;
+        }
+        .chord {
+            color: #fbbf24;
+            font-weight: 900;
+            font-size: 1.15rem;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- CABECERA PRINCIPAL (NUEVO FORMATO OLED) -->
+    <div class="header-box">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 8px;">
+            <div>
+                <span style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: #fbbf24; font-weight: 800;">
+                    ☀️ Bolero & Beguine Latino · Clásicos Inmortales
+                </span>
+                <h1 class="song-title">Cuando Calienta el Sol</h1>
+                <div class="song-author">Música y Letra: Carlos & Mario Rigual (1961) · Popularizada por Luis Miguel</div>
+            </div>
+            <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                <button onclick="dispararDestelloBoton(this); window.location.href=window.location.pathname+'?v=215&t='+Date.now()" 
+                   style="background: #0284c7; color: #ffffff; border: 1px solid #38bdf8; padding: 7px 12px; border-radius: 8px; font-size: 0.82rem; font-weight: 700; cursor: pointer; touch-action: manipulation;" title="Recargar y actualizar versión sin caché">
+                    🔄 Recargar Versión (v215)
+                </button>
+                <a href="REPERTORIO_KORG_EK50.html?v=215" 
+                   style="background: #1e293b; color: #cbd5e1; border: 1px solid #334155; padding: 7px 12px; border-radius: 8px; font-size: 0.82rem; font-weight: 700; text-decoration: none;">
+                    ⬅ Repertorio
+                </a>
+            </div>
+        </div>
+
+        <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px;">
+            <div class="badge-tonalidad">
+                <span>🎼 Tonalidad: Do Mayor (C)</span>
+                <span style="color: #93c5fd;">· Teclas Blancas (Sin alteraciones)</span>
+            </div>
+            <div class="badge-tonalidad" style="background: rgba(16, 185, 129, 0.15); border-color: rgba(16, 185, 129, 0.4); color: #a7f3d0;">
+                🥁 Estilo: 174 Beguine 1 · 4/4 · 112 BPM
+            </div>
+            <div class="badge-tonalidad" style="background: rgba(168, 85, 247, 0.15); border-color: rgba(168, 85, 247, 0.4); color: #e9d5ff;">
+                🎹 Modo: Atril sin partitura (Tocar de oído)
+            </div>
+            <div class="badge-tonalidad" style="background: rgba(245, 158, 11, 0.15); border-color: rgba(245, 158, 11, 0.4); color: #fde68a;">
+                🎹 STS: 037 Full Organ / 095 St.Strings / 061 The Strings / 001 Piano
+            </div>
+        </div>
+    </div>
+
+    <!-- BOTÓN DE APERTURA A PANTALLA COMPLETA TOTAL -->
+    <div style="margin-bottom: 14px; width: 100%; max-width: 900px;">
+        <button onclick="abrirPartituraPantallaCompleta(this)" 
+                style="width: 100%; background: linear-gradient(135deg, #059669 0%, #10b981 100%); color: #ffffff; border: 2px solid #34d399; padding: 16px; border-radius: 12px; font-size: 1.15rem; font-weight: 900; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 4px 20px rgba(16, 185, 129, 0.35); touch-action: manipulation;">
+            <span style="font-size: 1.4rem;">🎼</span>
+            <span>Abrir Atril de Acordes a Pantalla Completa (Estilo 174 Beguine)</span>
+            <span style="font-size: 1.2rem;">➔</span>
+        </button>
+    </div>
+
+    <!-- GUÍA DE ESTRUCTURA Y CARÁCTER -->
+    <div class="section-box">
+        <div class="section-title">
+            <span>📜 Estructura de "Cuando Calienta el Sol"</span>
+            <span style="font-size: 0.8rem; color: #94a3b8; font-weight: normal;">Estilo 174 Beguine 1 (112 BPM)</span>
+        </div>
+        <div style="font-size: 0.88rem; color: #cbd5e1; line-height: 1.6;">
+            <p style="margin: 0 0 8px;">
+                <b>• Estilo Korg EK-50:</b> <b>174 Beguine 1</b> (Banco 161-176). Ritmo caribeño cadencioso en 4/4 a 112 BPM, ideal para boleros rítmicos.
+            </p>
+            <p style="margin: 0 0 8px;">
+                <b>• Timbres STS Clave:</b> <b>037 Full Organ</b> (Banco Maestro MSB 33) como sonido solista principal cálido, respaldado por <b>095 St.Strings</b> y <b>061 The Strings</b> en los crescendos.
+            </p>
+            <p style="margin: 0;">
+                <b>• Progresión Central:</b> Verso y Puente en <code>C ➔ Am ➔ Em ➔ F ➔ G ➔ C</code>. Estribillo rítmico: <code>C ➔ Am ➔ Dm ➔ G</code>.
+            </p>
+        </div>
+    </div>
+
+    <!-- GUÍA DE TRANSICIONES ARMÓNICAS (POSICIONES SUAVES EN DO MAYOR) -->
+    <div class="section-box">
+        <div class="section-title">
+            <span>🎹 Guía de Transiciones Armónicas · Posiciones Suaves</span>
+            <span style="font-size: 0.8rem; color: #94a3b8; font-weight: normal;">Do Mayor (C)</span>
+        </div>
+
+        <!-- C -> Am -->
+        <div class="harmonic-row">
+            <div class="chord-pair">
+                <span>[ C ]</span> ➔ <span>[ Am ]</span>
+            </div>
+            <div class="keys-diagram">
+                <span>[ <span class="note-fixed">C</span> · <span class="note-fixed">E</span> · <span class="note-moving">G</span> ]</span>
+                ➔
+                <span>[ <span class="note-fixed">C</span> · <span class="note-fixed">E</span> · <span class="note-target">A</span> ]</span>
+            </div>
+            <div class="rule-pill">
+                C y E pivotes · Sol sube a La (mano fija y relajada)
+            </div>
+        </div>
+
+        <!-- Am -> Em -->
+        <div class="harmonic-row">
+            <div class="chord-pair">
+                <span>[ Am ]</span> ➔ <span>[ Em ]</span>
+            </div>
+            <div class="keys-diagram">
+                <span>[ <span class="note-moving">C</span> · <span class="note-fixed">E</span> · <span class="note-moving">A</span> ]</span>
+                ➔
+                <span>[ <span class="note-target">B</span> · <span class="note-fixed">E</span> · <span class="note-target">G</span> ]</span>
+            </div>
+            <div class="rule-pill">
+                E pivote · Do baja a Si y La baja a Sol
+            </div>
+        </div>
+
+        <!-- Em -> F -->
+        <div class="harmonic-row">
+            <div class="chord-pair">
+                <span>[ Em ]</span> ➔ <span>[ F ]</span>
+            </div>
+            <div class="keys-diagram">
+                <span>[ <span class="note-moving">B</span> · <span class="note-moving">E</span> · <span class="note-moving">G</span> ]</span>
+                ➔
+                <span>[ <span class="note-target">C</span> · <span class="note-target">F</span> · <span class="note-target">A</span> ]</span>
+            </div>
+            <div class="rule-pill">
+                Movimiento conjunto suave a Fa (2ª inversión C-F-A)
+            </div>
+        </div>
+
+        <!-- F -> G -->
+        <div class="harmonic-row">
+            <div class="chord-pair">
+                <span>[ F ]</span> ➔ <span>[ G ]</span>
+            </div>
+            <div class="keys-diagram">
+                <span>[ <span class="note-moving">C</span> · <span class="note-moving">F</span> · <span class="note-moving">A</span> ]</span>
+                ➔
+                <span>[ <span class="note-target">B</span> · <span class="note-target">D</span> · <span class="note-target">G</span> ]</span>
+            </div>
+            <div class="rule-pill">
+                Ascenso hacia dominante V (Sol mayor)
+            </div>
+        </div>
+
+        <!-- G -> C -->
+        <div class="harmonic-row">
+            <div class="chord-pair">
+                <span>[ G ]</span> ➔ <span>[ C ]</span>
+            </div>
+            <div class="keys-diagram">
+                <span>[ <span class="note-moving">B</span> · <span class="note-moving">D</span> · <span class="note-fixed">G</span> ]</span>
+                ➔
+                <span>[ <span class="note-target">C</span> · <span class="note-target">E</span> · <span class="note-fixed">G</span> ]</span>
+            </div>
+            <div class="rule-pill">
+                Sol pivote · Si sube a Do y Re sube a Mi (Resolución)
+            </div>
+        </div>
+
+        <!-- Am -> Dm (Estribillo) -->
+        <div class="harmonic-row">
+            <div class="chord-pair">
+                <span>[ Am ]</span> ➔ <span>[ Dm ]</span>
+            </div>
+            <div class="keys-diagram">
+                <span>[ <span class="note-moving">C</span> · <span class="note-moving">E</span> · <span class="note-fixed">A</span> ]</span>
+                ➔
+                <span>[ <span class="note-target">D</span> · <span class="note-target">F</span> · <span class="note-fixed">A</span> ]</span>
+            </div>
+            <div class="rule-pill">
+                La pivote · Do sube a Re y Mi sube a Fa
+            </div>
+        </div>
+    </div>
+
+    <!-- CONTROL WEB MIDI (1-TAP DIRECTO) -->
+    <div class="section-box">
+        <div class="section-title">
+            <span>🎹 Control Escénico Korg EK-50 (1-Tap Web MIDI)</span>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px;">
+            <button onclick="cargarBoton1OrganoBeguine(this)" 
+                    style="background: linear-gradient(135deg, #b45309 0%, #d97706 100%); color: #ffffff; border: 2px solid #fbbf24; padding: 14px 18px; border-radius: 12px; font-size: 1.05rem; font-weight: 900; cursor: pointer; text-align: left; touch-action: manipulation; box-shadow: 0 4px 14px rgba(217,119,6,0.35);">
+                <div style="font-size: 1.1rem;">🎵 1. Beguine & 037 Full Organ</div>
+                <span style="font-size: 0.8rem; opacity: 0.92; display: block; margin-top: 3px; font-weight: 500;">
+                    LCD: 037 Full Organ (MSB 33) · Estilo 174 Beguine 1 (112 BPM)
+                </span>
+            </button>
+            <button onclick="cargarBoton2OrganoStrings(this)" 
+                    style="background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color: #ffffff; border: 2px solid #38bdf8; padding: 14px 18px; border-radius: 12px; font-size: 1.05rem; font-weight: 900; cursor: pointer; text-align: left; touch-action: manipulation; box-shadow: 0 4px 14px rgba(2,132,199,0.35);">
+                <div style="font-size: 1.1rem;">🎻 2. 037 Full Organ & Cuerdas</div>
+                <span style="font-size: 0.8rem; opacity: 0.92; display: block; margin-top: 3px; font-weight: 500;">
+                    Upper 1: 037 Organ + Upper 2: 095 St.Strings · Estilo 174
+                </span>
+            </button>
+        </div>
+
+        <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px;">
+            <button onclick="iniciarAcompanamientoKorg(this)" style="background:#065f46; color:#a7f3d0; border:1px solid #10b981; padding:8px 14px; border-radius:8px; font-weight:800; font-size:0.85rem; cursor:pointer;">
+                ▶️ Arrancar Ritmo Korg (0xFA)
+            </button>
+            <button onclick="detenerAcompanamientoKorg(this)" style="background:#7f1d1d; color:#fecaca; border:1px solid #ef4444; padding:8px 14px; border-radius:8px; font-weight:800; font-size:0.85rem; cursor:pointer;">
+                ⏹️ Detener Ritmo Korg (0xFC)
+            </button>
+            <button onclick="desbloquearKorgEK50(this)" style="background:#dc2626; color:#fff; border:1px solid #f87171; padding:8px 14px; border-radius:8px; font-weight:800; font-size:0.85rem; cursor:pointer;">
+                ⚡ Reset Korg
+            </button>
+        </div>
+        <div id="log-1" style="margin-top: 10px; background: #070b14; border: 1px solid #1e293b; border-radius: 8px; padding: 8px 12px; font-size: 0.82rem; color: #94a3b8; font-family: monospace;">
+            USB MIDI listo · Conecta el Korg EK-50 para transmisión en directo.
+        </div>
+    </div>
+
+    <!-- MODAL PANTALLA COMPLETA: ATRIL OLED CON HUD DE 8 SONIDOS -->
+    <div id="modal-partitura-fullscreen" style="display:none; position:fixed; inset:0; z-index:999999; background:#000000; flex-direction:column; overflow:hidden;">
+        
+        <!-- HUD SUPERIOR FIJO (2 FILAS DE 4 SONIDOS + CONTROLES) -->
+        <div style="position:fixed; top:0; left:0; width:100%; z-index:1000000; background:rgba(11,15,23,0.95); border-bottom:2px solid #334155; padding:8px 12px; display:flex; flex-direction:column; gap:6px; backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); box-sizing:border-box;">
+            
+            <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <span style="font-size:1.1rem;">☀️</span>
+                    <span style="font-weight:900; font-size:0.95rem; color:#f8fafc; letter-spacing:0.5px;">CUANDO CALIENTA EL SOL · BEGUINE 174 (112 BPM)</span>
+                </div>
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <button onclick="cerrarPartituraPantallaCompleta(this)" style="background:#e11d48; color:#fff; border:none; padding:6px 14px; border-radius:8px; font-weight:900; font-size:0.82rem; cursor:pointer;">
+                        ✕ Cerrar
+                    </button>
+                </div>
+            </div>
+
+            <!-- FILA 1 DE SONIDOS HUD: 037, 095, 061, 001 -->
+            <div style="display:flex; align-items:center; gap:7px; justify-content:center; width:100%;">
+                <button class="hud-sound-btn active-sound" data-sound="037" onclick="cargarKeyboardSet('037', this)" style="background:linear-gradient(180deg, #0d9488 0%, #0f766e 100%); color:#ffffff; border:1px solid #2dd4bf; padding:7px 10px; min-height:36px; border-radius:7px; font-weight:800; font-size:0.80rem; cursor:pointer; touch-action:manipulation; min-width:105px; box-shadow:0 0 14px rgba(45,212,191,0.7);">
+                    🎹 037 Full Organ
+                </button>
+                <button class="hud-sound-btn" data-sound="095" onclick="cargarKeyboardSet('095', this)" style="background:#1e293b; color:#cbd5e1; border:1px solid #475569; padding:7px 10px; min-height:36px; border-radius:7px; font-weight:800; font-size:0.80rem; cursor:pointer; touch-action:manipulation; min-width:105px;">
+                    🎻 095 St.Strings
+                </button>
+                <button class="hud-sound-btn" data-sound="061" onclick="cargarKeyboardSet('061', this)" style="background:#1e293b; color:#cbd5e1; border:1px solid #475569; padding:7px 10px; min-height:36px; border-radius:7px; font-weight:800; font-size:0.80rem; cursor:pointer; touch-action:manipulation; min-width:105px;">
+                    🎻 061 The Strings
+                </button>
+                <button class="hud-sound-btn" data-sound="001" onclick="cargarKeyboardSet('001', this)" style="background:#1e293b; color:#cbd5e1; border:1px solid #475569; padding:7px 10px; min-height:36px; border-radius:7px; font-weight:800; font-size:0.80rem; cursor:pointer; touch-action:manipulation; min-width:105px;">
+                    🎹 001 Grand Piano
+                </button>
+            </div>
+
+            <!-- FILA 2 DE SONIDOS HUD: RESET KORG + 025, 052, 038, 071 -->
+            <div style="display:flex; align-items:center; gap:7px; justify-content:center; width:100%;">
+                <button onclick="desbloquearKorgEK50(this)" style="background:rgba(239,68,68,0.2); color:#fca5a5; border:1px solid #ef4444; padding:7px 10px; min-height:36px; border-radius:7px; font-weight:800; font-size:0.80rem; cursor:pointer; touch-action:manipulation; min-width:125px; text-align:center;">
+                    ⚡ Reset Korg
+                </button>
+                <button class="hud-sound-btn" data-sound="025" onclick="cargarKeyboardSet('025', this)" style="background:#1e293b; color:#cbd5e1; border:1px solid #475569; padding:7px 10px; min-height:36px; border-radius:7px; font-weight:800; font-size:0.80rem; cursor:pointer; touch-action:manipulation; min-width:105px;">
+                    🎺 025 Trumpet
+                </button>
+                <button class="hud-sound-btn" data-sound="052" onclick="cargarKeyboardSet('052', this)" style="background:#1e293b; color:#cbd5e1; border:1px solid #475569; padding:7px 10px; min-height:36px; border-radius:7px; font-weight:800; font-size:0.80rem; cursor:pointer; touch-action:manipulation; min-width:105px;">
+                    🎸 052 SteelGuitar
+                </button>
+                <button class="hud-sound-btn" data-sound="038" onclick="cargarKeyboardSet('038', this)" style="background:#1e293b; color:#cbd5e1; border:1px solid #475569; padding:7px 10px; min-height:36px; border-radius:7px; font-weight:800; font-size:0.80rem; cursor:pointer; touch-action:manipulation; min-width:105px;">
+                    🎹 038 Jazz Organ
+                </button>
+                <button class="hud-sound-btn" data-sound="071" onclick="cargarKeyboardSet('071', this)" style="background:#1e293b; color:#cbd5e1; border:1px solid #475569; padding:7px 10px; min-height:36px; border-radius:7px; font-weight:800; font-size:0.80rem; cursor:pointer; touch-action:manipulation; min-width:105px;">
+                    👥 071 Oooh&Aahs
+                </button>
+            </div>
+        </div>
+
+        <!-- CONTENEDOR PRINCIPAL DEL ATRIL DE ACORDES (SCROLL CONTINUO SOBRE NEGRO PURO OLED) -->
+        <div id="modal-score-scroll-container" onclick="despertarAtenuador()" onscroll="reiniciarTimerAtenuador()" style="width:100vw; height:100vh; overflow-y:auto; -webkit-overflow-scrolling:touch; padding-top:max(115px, calc(env(safe-area-inset-top) + 105px)); padding-bottom:70px; padding-left:16px; padding-right:16px; box-sizing:border-box; background:#000000; display:flex; flex-direction:column; align-items:center; gap:16px;">
+            
+            <!-- CIFRA CLUB OFICIAL (CUANDO CALIENTA EL SOL) -->
+            <div style="max-width:820px; width:100%; margin:0 auto;" class="lyrics-box">
+<span class="chord">[MODO ATRIL EN DIRECTO - CUANDO CALIENTA EL SOL]</span>
+RITMO: 174 Beguine 1 · TEMPO: 112 BPM · TONALIDAD: DO MAYOR (C)
+
+<span class="chord">[INTRODUCCIÓN - RITMO 174 BEGUINE 1]</span>
+|| <span class="chord">C</span>  |  <span class="chord">Am</span>  |  <span class="chord">Em</span>  |  <span class="chord">F</span>  |  <span class="chord">G</span>  ||
+
+<span class="chord">[PARTE 1]</span>
+<span class="chord">C</span>          <span class="chord">Am</span>
+Cuando calienta el sol aquí en la
+<span class="chord">Em</span>
+playa,
+<span class="chord">F</span>         <span class="chord">G</span>         <span class="chord">C</span>
+siento tu cuerpo vibrar cerca de mí.
+<span class="chord">F</span>         <span class="chord">G</span>         <span class="chord">C</span>          <span class="chord">Am</span>
+Es tu palpitar, es tu cara, es tu pelo,
+<span class="chord">Em</span>        <span class="chord">F</span>                     <span class="chord">G</span>
+son tus besos, me estremezco, ¡oh, oh, oh!
+
+<span class="chord">[ESTRIBILLO]</span>
+<span class="chord">C</span>      <span class="chord">Am</span>    <span class="chord">Dm</span>
+Cuando calienta el sol,
+<span class="chord">G</span>      <span class="chord">C</span>     <span class="chord">Am</span>    <span class="chord">Dm</span>    <span class="chord">G</span>
+cuando calienta el sol...
+
+<span class="chord">[PARTE 2]</span>
+<span class="chord">C</span>          <span class="chord">Am</span>
+Cuando calienta el sol aquí en la
+<span class="chord">Em</span>
+playa,
+<span class="chord">F</span>         <span class="chord">G</span>         <span class="chord">C</span>
+siento tu cuerpo vibrar cerca de mí.
+<span class="chord">F</span>         <span class="chord">G</span>         <span class="chord">C</span>          <span class="chord">Am</span>
+Es tu palpitar, tu recuerdo, mi locura,
+<span class="chord">Em</span>        <span class="chord">F</span>                     <span class="chord">G</span>
+mi delirio, me estremezco, ¡oh, oh, oh!
+
+<span class="chord">[FINAL Y CIERRE]</span>
+<span class="chord">C</span>      <span class="chord">Am</span>    <span class="chord">Dm</span>
+Cuando calienta el sol,
+<span class="chord">G</span>      <span class="chord">C</span>     <span class="chord">Am</span>    <span class="chord">Dm</span>
+cuando calienta el sol,
+<span class="chord">G</span>                   <span class="chord">C</span>
+¡cuando calienta el sol!
+            </div>
+
+            <!-- BANNER INICIAL -->
+            <div style="background:rgba(251, 191, 36, 0.15); border:1px solid #fbbf24; color:#fde68a; font-weight:800; font-size:0.85rem; padding:6px 18px; border-radius:20px; text-align:center;">
+                ☀️ CUANDO CALIENTA EL SOL · GUÍA DE COMPASES EN DO MAYOR (4/4 · 112 BPM)
+            </div>
+
+            <!-- SECCIÓN 1: INTRODUCCIÓN -->
+            <div class="atril-section">
+                <div class="atril-sec-header">
+                    <span class="atril-sec-title">🌴 INTRODUCCIÓN (BEGUINE PLAYERO)</span>
+                    <span class="atril-sec-desc">Arrancar ritmo 174 en 112 BPM · Tocar acordes redondas</span>
+                </div>
+                <div class="measures-line">
+                    <div class="measure-box highlight"><span class="chord-name">C</span><span class="chord-degree">I (Tónica)</span><span class="lyrics-hint">Compás 1</span></div>
+                    <div class="measure-box"><span class="chord-name">Am</span><span class="chord-degree">vi (Relativo)</span><span class="lyrics-hint">Compás 2</span></div>
+                    <div class="measure-box"><span class="chord-name">Em</span><span class="chord-degree">iii</span><span class="lyrics-hint">Compás 3</span></div>
+                    <div class="measure-box"><span class="chord-name">F - G</span><span class="chord-degree">IV - V</span><span class="lyrics-hint">Compás 4</span></div>
+                </div>
+            </div>
+
+            <!-- SECCIÓN 2: ESTROFA PARTE 1 -->
+            <div class="atril-section">
+                <div class="atril-sec-header">
+                    <span class="atril-sec-title">🌊 ESTROFA · PARTE 1</span>
+                    <span class="atril-sec-desc">"Cuando calienta el sol aquí en la playa..."</span>
+                </div>
+                <div class="measures-line">
+                    <div class="measure-box highlight"><span class="chord-name">C</span><span class="chord-degree">I</span><span class="lyrics-hint">"Cuando calienta el sol..."</span></div>
+                    <div class="measure-box"><span class="chord-name">Am</span><span class="chord-degree">vi</span><span class="lyrics-hint">"...aquí en la playa"</span></div>
+                    <div class="measure-box"><span class="chord-name">Em</span><span class="chord-degree">iii</span><span class="lyrics-hint">"..."</span></div>
+                    <div class="measure-box"><span class="chord-name">F - G</span><span class="chord-degree">IV - V</span><span class="lyrics-hint">"siento tu cuerpo..."</span></div>
+                </div>
+                <div class="measures-line">
+                    <div class="measure-box highlight"><span class="chord-name">C</span><span class="chord-degree">I</span><span class="lyrics-hint">"...vibrar cerca de mí"</span></div>
+                    <div class="measure-box"><span class="chord-name">F</span><span class="chord-degree">IV</span><span class="lyrics-hint">"Es tu palpitar..."</span></div>
+                    <div class="measure-box"><span class="chord-name">G</span><span class="chord-degree">V</span><span class="lyrics-hint">"...es tu cara"</span></div>
+                    <div class="measure-box"><span class="chord-name">C - Am</span><span class="chord-degree">I - vi</span><span class="lyrics-hint">"...es tu pelo"</span></div>
+                </div>
+                <div class="measures-line">
+                    <div class="measure-box"><span class="chord-name">Em</span><span class="chord-degree">iii</span><span class="lyrics-hint">"son tus besos..."</span></div>
+                    <div class="measure-box"><span class="chord-name">F</span><span class="chord-degree">IV</span><span class="lyrics-hint">"...me estremezco"</span></div>
+                    <div class="measure-box highlight" style="grid-column: span 2;"><span class="chord-name">G</span><span class="chord-degree">V (Tensión Dominante)</span><span class="lyrics-hint">"¡Oh, oh, oh!"</span></div>
+                </div>
+            </div>
+
+            <!-- SECCIÓN 3: ESTRIBILLO -->
+            <div class="atril-section" style="border-color:#fbbf24;">
+                <div class="atril-sec-header">
+                    <span class="atril-sec-title" style="color:#fbbf24;">✨ ESTRIBILLO · CADENCIA BEGUINE</span>
+                    <span class="atril-sec-desc">"Cuando calienta el sol..."</span>
+                </div>
+                <div class="measures-line">
+                    <div class="measure-box highlight"><span class="chord-name">C</span><span class="chord-degree">I</span><span class="lyrics-hint">"Cuando calienta el sol..."</span></div>
+                    <div class="measure-box"><span class="chord-name">Am</span><span class="chord-degree">vi</span></div>
+                    <div class="measure-box"><span class="chord-name">Dm</span><span class="chord-degree">ii</span></div>
+                    <div class="measure-box"><span class="chord-name">G</span><span class="chord-degree">V</span></div>
+                </div>
+                <div class="measures-line">
+                    <div class="measure-box highlight"><span class="chord-name">C</span><span class="chord-degree">I</span><span class="lyrics-hint">"...cuando calienta el sol"</span></div>
+                    <div class="measure-box"><span class="chord-name">Am</span><span class="chord-degree">vi</span></div>
+                    <div class="measure-box"><span class="chord-name">Dm</span><span class="chord-degree">ii</span></div>
+                    <div class="measure-box"><span class="chord-name">G</span><span class="chord-degree">V</span></div>
+                </div>
+            </div>
+
+            <!-- SECCIÓN 4: PARTE 2 Y FINAL -->
+            <div class="atril-section">
+                <div class="atril-sec-header">
+                    <span class="atril-sec-title">🏖️ PARTE 2 Y CIERRE TRIUNFAL</span>
+                    <span class="atril-sec-desc">"Es tu palpitar, tu recuerdo, mi locura..."</span>
+                </div>
+                <div class="measures-line">
+                    <div class="measure-box highlight"><span class="chord-name">C</span><span class="chord-degree">I</span></div>
+                    <div class="measure-box"><span class="chord-name">Am</span><span class="chord-degree">vi</span></div>
+                    <div class="measure-box"><span class="chord-name">Em</span><span class="chord-degree">iii</span></div>
+                    <div class="measure-box"><span class="chord-name">F - G</span><span class="chord-degree">IV - V</span></div>
+                </div>
+                <div class="measures-line">
+                    <div class="measure-box highlight"><span class="chord-name">C</span><span class="chord-degree">I</span><span class="lyrics-hint">"Cuando calienta el sol..."</span></div>
+                    <div class="measure-box"><span class="chord-name">Am</span><span class="chord-degree">vi</span></div>
+                    <div class="measure-box"><span class="chord-name">Dm</span><span class="chord-degree">ii</span></div>
+                    <div class="measure-box highlight" style="border-color:#34d399;"><span class="chord-name">C</span><span class="chord-degree">I (Acorde Final Do)</span><span class="lyrics-hint">"¡Cuando calienta el sol!"</span></div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- OVERLAY ATENUADOR INTELIGENTE (SMART DIMMING 60s) -->
+    <div id="smart-dim-overlay" onclick="despertarPantallaManual(event)" style="position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:2000000; opacity:0; pointer-events:none; transition:opacity 1.2s cubic-bezier(0.2,0.8,0.3,1); display:flex; flex-direction:column; align-items:center; justify-content:center; backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px); touch-action:manipulation;">
+        <div style="background:rgba(15,23,42,0.95); border:2px solid #fbbf24; border-radius:20px; padding:22px 34px; text-align:center; box-shadow:0 0 45px rgba(251,191,36,0.45); max-width:90vw;">
+            <div style="font-size:2.6rem; margin-bottom:8px;">🌙</div>
+            <div style="font-size:1.2rem; font-weight:900; color:#ffffff; letter-spacing:0.5px;">Atenuador Inteligente Activo</div>
+            <div style="font-size:0.88rem; color:#fde68a; margin-top:6px;">Ahorrando batería en el atril · Pantalla atenuada al 15%</div>
+            <div style="margin-top:16px; display:inline-block; background:#d97706; color:#fff; font-weight:800; font-size:0.86rem; padding:9px 20px; border-radius:10px; box-shadow:0 0 16px rgba(251,191,36,0.5);">
+                👆 Toca cualquier parte para reactivar
+            </div>
+        </div>
+    </div>
+
+<script>
+    // ==============================================================================
+    // UTILIDADES VISUALES Y MODAL FULLSCREEN
+    // ==============================================================================
+    function dispararDestelloBoton(el) {
+        if (!el) return;
+        el.classList.remove('btn-flash-active');
+        void el.offsetWidth;
+        el.classList.add('btn-flash-active');
+    }
+
+    async function abrirPartituraPantallaCompleta(btn = null) {
+        if (btn) dispararDestelloBoton(btn);
+        const modal = document.getElementById('modal-partitura-fullscreen');
+        if (modal) {
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+            iniciarTripleEscudoAntiApagado();
+            reiniciarTimerAtenuador();
+            if (modal.requestFullscreen) modal.requestFullscreen().catch(() => {});
+            else if (modal.webkitRequestFullscreen) modal.webkitRequestFullscreen();
+        }
+        conectarMIDI().catch(() => {});
+    }
+
+    function cerrarPartituraPantallaCompleta(btn = null) {
+        if (btn) dispararDestelloBoton(btn);
+        const modal = document.getElementById('modal-partitura-fullscreen');
+        if (modal) {
+            modal.style.display = 'none';
+            document.body.style.overflow = '';
+            detenerTimerAtenuador();
+            if (document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(() => {});
+            else if (document.webkitFullscreenElement && document.webkitExitFullscreen) document.webkitExitFullscreen();
+        }
+    }
+
+    // ==============================================================================
+    // MOTOR WEB MIDI KORG EK-50 (TRANSMISIÓN DUAL CANÓNICA BANCO 33 / ESTILO BANCO 32)
+    // ==============================================================================
+    let midiAccessInstance = null;
+    let midiOutput = null;
+    let conectandoMIDI = false;
+
+    function extraerPuertos(mapOrList) {
+        if (!mapOrList) return [];
+        try {
+            if (typeof mapOrList.values === 'function') return Array.from(mapOrList.values());
+            if (Array.isArray(mapOrList)) return mapOrList;
+            if (typeof mapOrList.forEach === 'function') {
+                const arr = [];
+                mapOrList.forEach(v => arr.push(v));
+                return arr;
+            }
+            return Array.from(mapOrList);
+        } catch(e) {
+            return [];
+        }
+    }
+
+    function obtenerSalidasDisponibles() {
+        if (!midiAccessInstance) return [];
+        return extraerPuertos(midiAccessInstance.outputs);
+    }
+
+    async function conectarMIDI() {
+        if (conectandoMIDI) return null;
+        conectandoMIDI = true;
+        if (!navigator.requestMIDIAccess) {
+            conectandoMIDI = false;
+            return null;
+        }
+        try {
+            midiAccessInstance = await navigator.requestMIDIAccess({ sysex: false });
+            conectandoMIDI = false;
+            const salidas = obtenerSalidasDisponibles();
+            if (salidas.length > 0) {
+                midiOutput = salidas.find(o => o.name && (o.name.toLowerCase().includes('ek-50') || o.name.toLowerCase().includes('korg'))) || salidas[0];
+            }
+            return midiOutput;
+        } catch(e) {
+            conectandoMIDI = false;
+            return null;
+        }
+    }
+
+    async function enviarMidiGlobal(bytes) {
+        let salidas = obtenerSalidasDisponibles();
+        if (salidas.length === 0 && midiOutput) salidas = [midiOutput];
+        if (salidas.length === 0) return;
+        salidas.forEach(port => {
+            try {
+                if (port && typeof port.send === 'function') {
+                    port.send(bytes);
+                }
+            } catch(e) {}
+        });
+    }
+
+    // Regla Canónica de Keyboard Sets: Banco Maestro MSB = 33
+    const KEYBOARD_SETS = {
+        '037': { lsb: 3,  pc: 6,  name: '037 Full Organ' },
+        '095': { lsb: 7,  pc: 14, name: '095 St.Strings' },
+        '061': { lsb: 5,  pc: 0,  name: '061 The Strings' },
+        '001': { lsb: 0,  pc: 0,  name: '001 Grand Piano' },
+        '025': { lsb: 2,  pc: 0,  name: '025 Trumpet' },
+        '052': { lsb: 5,  pc: 1,  name: '052 SteelGuitar' },
+        '038': { lsb: 3,  pc: 7,  name: '038 Jazz Organ' },
+        '071': { lsb: 6,  pc: 6,  name: '071 Oooh&Aahs' }
+    };
+
+    async function cargarKeyboardSet(codigo, btn = null) {
+        if (btn) dispararDestelloBoton(btn);
+        actualizarSonidoUI(codigo);
+        const set = KEYBOARD_SETS[codigo];
+        if (!set) return;
+
+        if (!midiOutput && (!midiAccessInstance || obtenerSalidasDisponibles().length === 0)) {
+            await conectarMIDI();
+        }
+
+        // Upper 1 (Canal 1 - índice 0)
+        await enviarMidiGlobal([0xB0, 0x00, 33]);
+        await enviarMidiGlobal([0xB0, 0x20, set.lsb]);
+        await enviarMidiGlobal([0xC0, set.pc]);
+
+        // Global / Pantalla LCD (Canal 16 - índice 15)
+        await enviarMidiGlobal([0xBF, 0x00, 33]);
+        await enviarMidiGlobal([0xBF, 0x20, set.lsb]);
+        await enviarMidiGlobal([0xCF, set.pc]);
+
+        // Calibración acústica de directo
+        [0, 1, 2, 3].forEach(ch => {
+            enviarMidiGlobal([0xB0 | ch, 0x07, 120]);
+            enviarMidiGlobal([0xB0 | ch, 0x0B, 127]);
+            enviarMidiGlobal([0xB0 | ch, 0x5B, 42]);
+        });
+    }
+
+    function actualizarSonidoUI(codigo) {
+        const btns = document.querySelectorAll('.hud-sound-btn');
+        btns.forEach(b => {
+            if (b.getAttribute('data-sound') === codigo) {
+                b.classList.add('active-sound');
+                b.style.background = 'linear-gradient(180deg, #d97706 0%, #b45309 100%)';
+                b.style.color = '#ffffff';
+                b.style.border = '1px solid #fbbf24';
+                b.style.boxShadow = '0 0 14px rgba(251,191,36,0.7)';
+            } else {
+                b.classList.remove('active-sound');
+                b.style.background = '#1e293b';
+                b.style.color = '#cbd5e1';
+                b.style.border = '1px solid #475569';
+                b.style.boxShadow = 'none';
+            }
+        });
+    }
+
+    // Control Web MIDI de Botones Maestros
+    async function cargarBoton1OrganoBeguine(btn = null) {
+        if (btn) dispararDestelloBoton(btn);
+        await conectarMIDI();
+        // Estilo 174 Beguine 1: MSB 32, LSB 10, PC 13 en Canal 16
+        await enviarMidiGlobal([0xBF, 0x00, 32]);
+        await enviarMidiGlobal([0xBF, 0x20, 10]);
+        await enviarMidiGlobal([0xCF, 13]);
+        // Keyboard Set 037 Full Organ (MSB 33, LSB 3, PC 6)
+        await cargarKeyboardSet('037');
+    }
+
+    async function cargarBoton2OrganoStrings(btn = null) {
+        if (btn) dispararDestelloBoton(btn);
+        await conectarMIDI();
+        // Estilo 174
+        await enviarMidiGlobal([0xBF, 0x00, 32]);
+        await enviarMidiGlobal([0xBF, 0x20, 10]);
+        await enviarMidiGlobal([0xCF, 13]);
+        // Upper 1: 037 Organ
+        await enviarMidiGlobal([0xB0, 0x00, 33]);
+        await enviarMidiGlobal([0xB0, 0x20, 3]);
+        await enviarMidiGlobal([0xC0, 6]);
+        // Upper 2: 095 St.Strings
+        await enviarMidiGlobal([0xB1, 0x00, 33]);
+        await enviarMidiGlobal([0xB1, 0x20, 7]);
+        await enviarMidiGlobal([0xC1, 14]);
+        // Volúmenes
+        await enviarMidiGlobal([0xB0, 0x07, 120]);
+        await enviarMidiGlobal([0xB1, 0x07, 95]);
+        actualizarSonidoUI('095');
+    }
+
+    async function iniciarAcompanamientoKorg(btn = null) {
+        if (btn) dispararDestelloBoton(btn);
+        await conectarMIDI();
+        await enviarMidiGlobal([0xFA]); // MIDI Start
+    }
+
+    async function detenerAcompanamientoKorg(btn = null) {
+        if (btn) dispararDestelloBoton(btn);
+        await conectarMIDI();
+        await enviarMidiGlobal([0xFC]); // MIDI Stop
+    }
+
+    async function desbloquearKorgEK50(btn = null) {
+        if (btn) dispararDestelloBoton(btn);
+        await conectarMIDI();
+        // All Notes Off en los 16 canales
+        for (let ch = 0; ch < 16; ch++) {
+            enviarMidiGlobal([0xB0 | ch, 0x7B, 0]);
+            enviarMidiGlobal([0xB0 | ch, 0x79, 0]);
+        }
+        await cargarKeyboardSet('037');
+    }
+
+    // ==============================================================================
+    // TRIPLE ESCUDO ANTI-APAGADO Y ATENUADOR INTELIGENTE
+    // ==============================================================================
+    let wakeLockInstance = null;
+    let timerAtenuador = null;
+
+    async function iniciarTripleEscudoAntiApagado() {
+        try {
+            if ('wakeLock' in navigator) {
+                wakeLockInstance = await navigator.wakeLock.request('screen');
+            }
+        } catch(e) {}
+    }
+
+    function reiniciarTimerAtenuador() {
+        const overlay = document.getElementById('smart-dim-overlay');
+        if (overlay) {
+            overlay.style.opacity = '0';
+            overlay.style.pointerEvents = 'none';
+        }
+        clearTimeout(timerAtenuador);
+        timerAtenuador = setTimeout(() => {
+            if (overlay && document.getElementById('modal-partitura-fullscreen').style.display === 'flex') {
+                overlay.style.opacity = '1';
+                overlay.style.pointerEvents = 'auto';
+            }
+        }, 60000); // 60 segundos
+    }
+
+    function detenerTimerAtenuador() {
+        clearTimeout(timerAtenuador);
+        const overlay = document.getElementById('smart-dim-overlay');
+        if (overlay) {
+            overlay.style.opacity = '0';
+            overlay.style.pointerEvents = 'none';
+        }
+        if (wakeLockInstance) {
+            wakeLockInstance.release().catch(() => {});
+            wakeLockInstance = null;
+        }
+    }
+
+    function despertarAtenuador() {
+        reiniciarTimerAtenuador();
+    }
+
+    function despertarPantallaManual(e) {
+        e.stopPropagation();
+        reiniciarTimerAtenuador();
+    }
+
+    document.addEventListener('pointerdown', (e) => {
+        const btn = e.target.closest('button, .btn-tool, .harmonic-row');
+        if (btn) dispararDestelloBoton(btn);
+    }, { passive: true });
+</script>
+</body>
+</html>
+"""
+
+def main():
+    target_path = "/Users/externo/Library/Mobile Documents/com~apple~CloudDocs/PERSONAL/CLASES DE TECNOLOGÍA/CURSO-IA/CURSO_MUSICA/CANCION_04_CUANDO_CALIENTA_EL_SOL.html"
+    with open(target_path, "w", encoding="utf-8") as f:
+        f.write(HTML_CONTENT)
+    print(f"✅ Archivo actualizado: {target_path}")
+
+if __name__ == "__main__":
+    main()
