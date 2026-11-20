@@ -2,9 +2,15 @@
 # -*- coding: utf-8 -*-
 """
 generar_pdf_retos_vida_real.py
-Compila las 6 fichas didácticas oficiales de Retos de Vida Real y Comparativa
-para Gemini Notebook (NotebookLM), cada una con 2 páginas A4 holgadas, sin solapamientos
-y con cálculo dinámico de cajas de texto. 100% Python nativo estándar.
+Compila las 6 fichas didácticas oficiales de Retos de Vida Real y Skills
+en Gemini Notebook con:
+- Fondos blancos en recuadros (100% amigables para imprimir en papel).
+- Terminología canónica: 'Gemini Notebook' (eliminado 'NotebookLM').
+- Página 2 limpia SIN repetición de cabecera de título.
+- Ficha 0 con explicación de Skills y tablas comparativas.
+- Retos 1 a 5 con texto de Fuente Ficticia / Modelo de ejemplo para practicar en clase.
+- Explicación de guardado de prompts como Notas fijas en Studio.
+100% Python nativo estándar.
 """
 
 import os
@@ -137,30 +143,41 @@ class RobustPDFWriter:
 
 
 class RetoPDFBuilder:
-    def __init__(self, filename, title_badge, title_main, subtitle_main, primary_color=(0.22, 0.74, 0.97)):
+    def __init__(self, filename, title_badge, title_main, subtitle_main, border_color=(0.15, 0.35, 0.65)):
         self.filename = filename
         self.pdf = RobustPDFWriter()
         self.title_badge = title_badge
         self.title_main = title_main
         self.subtitle_main = subtitle_main
-        self.primary_color = primary_color
+        self.border_color = border_color
         self.margin_x = 36
         self.content_w = 523
         self.cur_y = 800
 
-    def draw_banner(self, p_num):
-        self.pdf.set_fill_color(0.06, 0.09, 0.16)
-        self.pdf.set_stroke_color(self.primary_color[0], self.primary_color[1], self.primary_color[2])
+    def draw_banner_p1(self):
+        # Fondo blanco para no gastar tinta al imprimir
+        self.pdf.set_fill_color(1.0, 1.0, 1.0)
+        self.pdf.set_stroke_color(self.border_color[0], self.border_color[1], self.border_color[2])
         self.pdf.set_line_width(1.4)
         self.pdf.rect(self.margin_x, 742, self.content_w, 66, fill=True, stroke=True)
 
-        self.pdf.draw_text(self.margin_x + 12, 790, self.title_badge.upper(), font="F2", size=8.5, r=self.primary_color[0], g=self.primary_color[1], b=self.primary_color[2])
-        self.pdf.draw_text(self.margin_x + 12, 770, self.title_main, font="F2", size=13.0, r=1.0, g=1.0, b=1.0)
-        self.pdf.draw_text(self.margin_x + 12, 752, self.subtitle_main, font="F1", size=8.4, r=0.82, g=0.86, b=0.92)
+        self.pdf.draw_text(self.margin_x + 12, 790, self.title_badge.upper(), font="F2", size=8.5, r=self.border_color[0], g=self.border_color[1], b=self.border_color[2])
+        self.pdf.draw_text(self.margin_x + 12, 770, self.title_main, font="F2", size=13.0, r=0.10, g=0.15, b=0.25)
+        self.pdf.draw_text(self.margin_x + 12, 752, self.subtitle_main, font="F1", size=8.4, r=0.30, g=0.35, b=0.45)
         self.cur_y = 726
 
+    def draw_header_p2(self, p2_label):
+        # Cabecera sutil en página 2 sin repetir el banner grande
+        self.pdf.set_fill_color(0.96, 0.97, 0.99)
+        self.pdf.set_stroke_color(self.border_color[0], self.border_color[1], self.border_color[2])
+        self.pdf.set_line_width(0.8)
+        self.pdf.rect(self.margin_x, 792, self.content_w, 20, fill=True, stroke=True)
+        self.pdf.draw_text(self.margin_x + 10, 798, p2_label.upper(), font="F2", size=8.5, r=self.border_color[0], g=self.border_color[1], b=self.border_color[2])
+        self.pdf.draw_text(self.margin_x + self.content_w - 180, 798, "GEMINI NOTEBOOK • CURSO IA (+65)", font="F1", size=7.5, r=0.4, g=0.45, b=0.55)
+        self.cur_y = 776
+
     def draw_footer(self, p_num):
-        self.pdf.set_stroke_color(0.85, 0.88, 0.92)
+        self.pdf.set_stroke_color(0.80, 0.82, 0.85)
         self.pdf.set_line_width(0.5)
         self.pdf.line(self.margin_x, 34, self.margin_x + self.content_w, 34)
         self.pdf.draw_text(self.margin_x, 22, f"Curso de IA - Monografico 2: Gemini Notebook - {self.title_main}", font="F1", size=7.5, r=0.4, g=0.45, b=0.5)
@@ -168,23 +185,24 @@ class RetoPDFBuilder:
 
     def add_section_title(self, title, color_rgb=(0.15, 0.35, 0.65)):
         self.pdf.set_fill_color(color_rgb[0], color_rgb[1], color_rgb[2])
-        self.pdf.rect(self.margin_x, self.cur_y - 3, self.content_w, 18, fill=True, stroke=False)
-        self.pdf.draw_text(self.margin_x + 8, self.cur_y + 2, title.upper(), font="F2", size=8.5, r=1.0, g=1.0, b=1.0)
-        self.cur_y -= 26
+        self.pdf.rect(self.margin_x, self.cur_y - 2, self.content_w, 17, fill=True, stroke=False)
+        self.pdf.draw_text(self.margin_x + 8, self.cur_y + 3, title.upper(), font="F2", size=8.2, r=1.0, g=1.0, b=1.0)
+        self.cur_y -= 25
 
-    def add_card(self, title, lines_list, badge=None, border_color=(0.85, 0.88, 0.92), bg_color=(0.98, 0.98, 0.99), title_color=(0.12, 0.25, 0.55)):
+    def add_card_white(self, title, lines_list, badge=None, border_color=(0.75, 0.78, 0.85), title_color=(0.15, 0.35, 0.65)):
         line_spacing = 13.0
         rendered_lines = []
         for it in lines_list:
-            it_wrapped = wrap_text(it, max_chars=80)
+            it_wrapped = wrap_text(it, max_chars=76)
             rendered_lines.append(it_wrapped)
 
         total_lines = sum(len(l) for l in rendered_lines)
-        h_box = 22 + (total_lines * line_spacing) + 8
+        h_box = 22 + (total_lines * line_spacing) + 12
 
-        self.pdf.set_fill_color(bg_color[0], bg_color[1], bg_color[2])
+        # Fondo blanco para imprimir
+        self.pdf.set_fill_color(1.0, 1.0, 1.0)
         self.pdf.set_stroke_color(border_color[0], border_color[1], border_color[2])
-        self.pdf.set_line_width(0.7)
+        self.pdf.set_line_width(0.8)
         self.pdf.rect(self.margin_x, self.cur_y - h_box + 14, self.content_w, h_box, fill=True, stroke=True)
 
         self.pdf.draw_text(self.margin_x + 10, self.cur_y - 1, title, font="F2", size=8.8, r=title_color[0], g=title_color[1], b=title_color[2])
@@ -198,136 +216,172 @@ class RetoPDFBuilder:
         ty = self.cur_y - 16
         for group in rendered_lines:
             for idx_l, line in enumerate(group):
-                prefix = "- " if idx_l == 0 else "  "
+                prefix = "- " if (idx_l == 0 and not line.startswith(" ")) else "  "
                 fnt = "F2" if (idx_l == 0 and ":" in line) else "F1"
-                self.pdf.draw_text(self.margin_x + 14, ty, prefix + line, font=fnt, size=8.0, r=0.20, g=0.22, b=0.26)
+                self.pdf.draw_text(self.margin_x + 14, ty, prefix + line, font=fnt, size=7.8, r=0.15, g=0.18, b=0.22)
                 ty -= line_spacing
 
         self.cur_y -= (h_box + 8)
 
-    def add_prompt_card(self, label, prompt_str, target_note="Pegar en el chat central o panel Studio"):
-        prompt_lines = wrap_text(prompt_str, max_chars=78)
-        line_spacing = 12.0
-        n_lines = len(prompt_lines)
-        b_h = 16 + 16 + (n_lines * line_spacing) + 18
+    def add_table_white(self, title, headers, rows, col_widths, border_color=(0.75, 0.78, 0.85)):
+        line_spacing = 13.0
+        # Medir altura de cada fila
+        row_heights = []
+        wrapped_rows = []
+        for row in rows:
+            max_lines_in_row = 1
+            cur_wrapped_row = []
+            for idx, text in enumerate(row):
+                # max chars aprox según ancho de col
+                c_chars = int(col_widths[idx] / 5.2)
+                lines = wrap_text(text, max_chars=c_chars)
+                cur_wrapped_row.append(lines)
+                if len(lines) > max_lines_in_row:
+                    max_lines_in_row = len(lines)
+            row_heights.append(max_lines_in_row * line_spacing + 8)
+            wrapped_rows.append(cur_wrapped_row)
 
-        self.pdf.set_fill_color(0.04, 0.07, 0.12)
-        self.pdf.set_stroke_color(self.primary_color[0], self.primary_color[1], self.primary_color[2])
+        total_table_h = 24 + 18 + sum(row_heights) + 6
+
+        # Fondo blanco exterior
+        self.pdf.set_fill_color(1.0, 1.0, 1.0)
+        self.pdf.set_stroke_color(border_color[0], border_color[1], border_color[2])
         self.pdf.set_line_width(0.8)
+        self.pdf.rect(self.margin_x, self.cur_y - total_table_h + 14, self.content_w, total_table_h, fill=True, stroke=True)
+
+        self.pdf.draw_text(self.margin_x + 10, self.cur_y - 1, title, font="F2", size=8.8, r=0.15, g=0.35, b=0.65)
+
+        # Cabecera de tabla
+        ty = self.cur_y - 18
+        self.pdf.set_fill_color(0.92, 0.94, 0.98)
+        self.pdf.rect(self.margin_x + 4, ty - 12, self.content_w - 8, 16, fill=True, stroke=False)
+        cx = self.margin_x + 8
+        for idx, h in enumerate(headers):
+            self.pdf.draw_text(cx, ty - 1, h, font="F2", size=7.8, r=0.10, g=0.25, b=0.50)
+            cx += col_widths[idx]
+
+        ty -= 18
+        for r_idx, w_row in enumerate(wrapped_rows):
+            r_h = row_heights[r_idx]
+            # Línea horizontal separadora
+            self.pdf.set_stroke_color(0.88, 0.90, 0.94)
+            self.pdf.line(self.margin_x + 6, ty + 4, self.margin_x + self.content_w - 6, ty + 4)
+            
+            # Dibujar celdas
+            for c_idx, lines in enumerate(w_row):
+                cx = self.margin_x + 8 + sum(col_widths[:c_idx])
+                sub_y = ty - 8
+                for l in lines:
+                    fnt = "F2" if c_idx == 0 else "F1"
+                    self.pdf.draw_text(cx, sub_y, l, font=fnt, size=7.6, r=0.15, g=0.18, b=0.22)
+                    sub_y -= line_spacing
+
+            ty -= r_h
+
+        self.cur_y -= (total_table_h + 8)
+
+    def add_prompt_card_white(self, label, prompt_str, target_note="Guárdalo como 'Nota fija' en Studio o úsalo en el chat"):
+        prompt_lines = wrap_text(prompt_str, max_chars=74)
+        line_spacing = 12.5
+        n_lines = len(prompt_lines)
+        b_h = 16 + 16 + (n_lines * line_spacing) + 20
+
+        # Fondo blanco con borde de color
+        self.pdf.set_fill_color(1.0, 1.0, 1.0)
+        self.pdf.set_stroke_color(self.border_color[0], self.border_color[1], self.border_color[2])
+        self.pdf.set_line_width(0.9)
         self.pdf.rect(self.margin_x, self.cur_y - b_h + 14, self.content_w, b_h, fill=True, stroke=True)
 
-        # Header bar dentro
-        self.pdf.set_fill_color(0.09, 0.14, 0.22)
-        self.pdf.rect(self.margin_x + 1, self.cur_y - 2, self.content_w - 2, 15, fill=True, stroke=False)
-        self.pdf.draw_text(self.margin_x + 8, self.cur_y + 2, label.upper(), font="F2", size=7.6, r=self.primary_color[0], g=self.primary_color[1], b=self.primary_color[2])
-        self.pdf.draw_text(self.margin_x + self.content_w - 210, self.cur_y + 2, target_note, font="F3", size=7.0, r=0.7, g=0.75, b=0.82)
+        # Header bar interior claro
+        self.pdf.set_fill_color(0.95, 0.96, 0.99)
+        self.pdf.rect(self.margin_x + 1, self.cur_y - 2, self.content_w - 2, 16, fill=True, stroke=False)
+        self.pdf.draw_text(self.margin_x + 8, self.cur_y + 2, label.upper(), font="F2", size=7.8, r=self.border_color[0], g=self.border_color[1], b=self.border_color[2])
+        self.pdf.draw_text(self.margin_x + self.content_w - 230, self.cur_y + 2, target_note, font="F3", size=7.0, r=0.35, g=0.40, b=0.50)
 
-        ty = self.cur_y - 16
+        ty = self.cur_y - 17
         for l in prompt_lines:
-            self.pdf.draw_text(self.margin_x + 12, ty, l, font="F3", size=7.6, r=0.74, g=0.90, b=1.0)
+            self.pdf.draw_text(self.margin_x + 12, ty, l, font="F3", size=7.8, r=0.10, g=0.15, b=0.25)
             ty -= line_spacing
 
         self.cur_y -= (b_h + 8)
 
 
 # =========================================================================
-# COMPILADORES ESPECÍFICOS DE LAS 6 FICHAS
+# COMPILACIÓN DE LAS 6 FICHAS REVISADAS
 # =========================================================================
 
 def compilar_reto_00():
     b = RetoPDFBuilder(
         os.path.join(OUTPUT_DIR, "FICHA_RETO_00_COMPARATIVA_GEMINI_VS_NOTEBOOKLM.pdf"),
-        "Monografico 2 - Ficha de Sintesis y Comparativa",
-        "Comparativa Clave: Gemini Abierto vs Gemini Notebook",
-        "El Creador Creativo del Mundo frente al Notario Privado con Cero Alucinacion",
-        primary_color=(0.75, 0.42, 0.10)
+        "Monografico 2 - Ficha 0: Fundamentos y Skills",
+        "Que son las Skills y Comparativa con Gemini",
+        "Tus cuadernos de Gemini Notebook como asistentes especializados con cero alucinacion",
+        border_color=(0.75, 0.42, 0.10)
     )
 
-    # PAGINA 1
+    # ---------------- PAGINA 1 ----------------
     b.pdf.start_page()
-    b.draw_banner(1)
+    b.draw_banner_p1()
 
-    b.add_section_title("1. EL GRAN DILEMA: ¿CUANDO ABRIR GEMINI Y CUANDO GEMINI NOTEBOOK?", (0.75, 0.42, 0.10))
-    b.add_card(
-        "LA METAFORA FUNDAMENTAL: EL INVENTOR FRENTE AL NOTARIO",
-        [
-            "Gemini Normal (El Creador Abierto): Es como un gran inventor y bibliotecario universal que ha leido todo Internet.",
-            "  Sabe escribir poesias, idear viajes, traducir idiomas y redactar cartas creativas con chispa y soltura.",
-            "  Su gran debilidad: Alucinacion. Si no sabe un dato exacto, puede inventarlo con total elocuencia.",
-            "Gemini Notebook (El Notario Privado): Es un archivero con candado riguroso que solo sabe lo que tu le pones encima de la mesa.",
-            "  No opina sobre el mundo exterior ni inventa nada: responde exclusivamente con tus papeles.",
-            "  Su gran fortaleza: Cero alucinacion y cita obligatoria [1] con subrayado amarillo verificable al instante."
-        ],
-        badge="METAFORA",
-        border_color=(0.90, 0.80, 0.65),
-        bg_color=(0.99, 0.98, 0.95),
-        title_color=(0.75, 0.42, 0.10)
-    )
+    b.add_section_title("1. ¿QUE ES UNA SKILL EN GEMINI NOTEBOOK?", (0.75, 0.42, 0.10))
+    # Tabla 1: Qué es una Skill con los cuadernos
+    headers_t1 = ["Asistente (Cuaderno)", "Papeles que guarda", "Regla de trato fija", "Ventaja inmediata"]
+    rows_t1 = [
+        ["Mi Medico Amigo", "Analiticas, recetas, prospectos", "Explica sin alarmar, prepara preguntas", "Responde citas medicas en 1 linea"],
+        ["Auditor de Facturas", "Factura luz, poliza del hogar", "Detecta cobros extra y exclusiones", "Audita 40 pags de contrato al instante"],
+        ["Mi Biografo 70/80", "Audios de voz, recuerdos familiares", "Redacta cronica emotiva para nietos", "Crea libros y podcasts de radio"]
+    ]
+    b.add_table_white("TABLA 1: CADA CUADERNO DE GEMINI NOTEBOOK ES UNA SKILL A TU MEDIDA", headers_t1, rows_t1, [115, 125, 140, 135])
 
-    b.add_section_title("2. TABLA COMPARATIVA: RADIOGRAFIA FRENTE A FRENTE", (0.15, 0.35, 0.65))
-    b.add_card(
-        "DIFERENCIAS ESENCIALES PARA TU DIA A DIA",
-        [
-            "1. Origen de la Informacion: Gemini consulta todo Internet publico; NotebookLM solo tus archivos subidos.",
-            "2. Fiabilidad de Datos: En Gemini debes dudar de datos exactos; en NotebookLM cada palabra viene de tu papel.",
-            "3. Privacidad y Seguridad: Tus documentos en NotebookLM no se usan para entrenar la IA de Google.",
-            "4. Aislamiento de Fuentes: En NotebookLM puedes marcar o desmarcar [v] para interrogar un unico documento.",
-            "5. Salidas Multimedia: NotebookLM genera audios de debate con dos periodistas, infografias y webs de un clic."
-        ],
-        badge="TABLA",
-        border_color=(0.70, 0.82, 0.95),
-        bg_color=(0.95, 0.97, 1.00),
-        title_color=(0.15, 0.35, 0.65)
-    )
+    b.add_section_title("2. TABLA COMPARATIVA: GEMINI NORMAL VS GEMINI NOTEBOOK", (0.15, 0.35, 0.65))
+    headers_t2 = ["Caracteristica", "Gemini Normal (Abierto)", "Gemini Notebook (Cuaderno Privado)"]
+    rows_t2 = [
+        ["Origen de datos", "Todo Internet y su entrenamiento masivo", "Solo los papeles que tu subes a la mesa"],
+        ["Riesgo de error", "Puede alucinar o inventar con elocuencia", "Cero alucinacion: cita [1] con subrayado amarillo"],
+        ["Privacidad", "Conversacion abierta en la nube", "Entorno privado: tus documentos no entrenan la IA"],
+        ["Formatos de salida", "Texto, imagenes generadas y codigo", "Tertulia de radio (podcast), informes e infografias"]
+    ]
+    b.add_table_white("TABLA 2: RADIOGRAFIA FRENTE A FRENTE PARA EL ALUMNO SENIOR", headers_t2, rows_t2, [110, 195, 210])
 
     b.draw_footer(1)
     b.pdf.end_page()
 
-    # PAGINA 2
+    # ---------------- PAGINA 2 (SIN CABECERA REPETIDA) ----------------
     b.pdf.start_page()
-    b.draw_banner(2)
+    b.draw_header_p2("Ficha 0 · Guia de Decision y Mandamientos de las Skills")
 
-    b.add_section_title("3. CUANDO USAR CADA HERRAMIENTA (GUIA DE DECISION RAPIDA)", (0.10, 0.48, 0.35))
-    b.add_card(
-        "EJEMPLOS PRACTICOS PARA NO EQUIVOCARSE EN CLASE",
+    b.add_section_title("3. ¿CUANDO USAR CADA HERRAMIENTA EN TU DIA A DIA?", (0.10, 0.48, 0.35))
+    b.add_card_white(
+        "GUIA DE DECISION RAPIDA PARA MAYORES DE 65 ANOS",
         [
             "USA GEMINI NORMAL CUANDO:",
-            "  - Quieres una idea para felicitar un cumpleanos o un itinerario para un viaje el proximo mes.",
-            "  - Buscas aprender que es la fotosintesis o pedirle que te explique como funciona la computacion cuantica.",
-            "  - Quieres redactar una poesia, un menu de cocina con lo que tienes en la nevera o practicar ingles.",
+            "  - Quieres redactar una poesia, felicitar un aniversario o pedir ideas de regalos familiares.",
+            "  - Buscas un menu de cocina con lo que tienes en el frigorifico o pedir un itinerario de viaje.",
+            "  - Quieres traducir una carta o aprender conceptos generales de ciencia y cultura.",
             "USA GEMINI NOTEBOOK CUANDO:",
-            "  - Tienes informes medicos, analiticas o prospectos y quieres saber que significan sin confusiones.",
-            "  - Quieres auditar la factura de la luz, el contrato del seguro o una clausula bancaria.",
-            "  - Tienes apuntes de clase, documentos historicos o un libro en PDF y quieres estudiarlo a fondo.",
-            "  - Quieres convertir varios textos familiares en una tertulia de radio (podcast) o en una infografia."
+            "  - Tienes analiticas de sangre, informes medicos o prospectos y necesitas saber que dicen sin rodeos.",
+            "  - Tienes la factura de la luz, el contrato del seguro o una carta del banco.",
+            "  - Quieres dictar tus recuerdos de los anos 70 y 80 y transformarlos en un capitulo o un podcast de radio.",
+            "  - Necesitas que cada afirmacion tenga su cita exacta [1] verificable con tus propios ojos."
         ],
         badge="DECISION",
-        border_color=(0.70, 0.88, 0.78),
-        bg_color=(0.94, 0.98, 0.95),
+        border_color=(0.3, 0.7, 0.45),
         title_color=(0.10, 0.48, 0.35)
     )
 
-    b.add_section_title("4. EL FLUJO DE TRABAJO PERFECTO DEL ALUMNO SENIOR", (0.45, 0.20, 0.65))
-    b.add_prompt_card(
-        "PROMPT MAESTRO PARA GEMINI NORMAL ANTES DE ENTRAR A NOTEBOOKLM",
-        (
-            "«Actua como un documentalista riguroso. Voy a investigar sobre las energias renovables para mayores. "
-            "Redacta un documento claro de 3 paginas con hechos comprobados, datos de coste medio y comparativas, "
-            "listo para que yo lo descargue en texto y lo analice en mi cuaderno privado de Gemini Notebook.»"
-        ),
-        target_note="Gemini Normal -> Genera el documento -> Subelo a NotebookLM"
-    )
-
-    b.add_card(
-        "LOS TRES MANDAMIENTOS FINALES",
+    b.add_section_title("4. LOS TRES MANDAMIENTOS DE LAS SKILLS EN GEMINI NOTEBOOK", (0.45, 0.20, 0.65))
+    b.add_card_white(
+        "REGLAS DE ORO DE LA METODOLOGIA OFICIAL",
         [
-            "1. La Creatividad nace en Gemini; la Rigurosidad y el Notariado se ejercen en NotebookLM.",
-            "2. Nunca tomes una decision legal o medica con Gemini abierto sin verificar con tus fuentes en el Cuaderno.",
-            "3. Ambos comparten tu cuenta de Google: los cuadernos que creas se complementan mutuamente."
+            "1. Cada Cuaderno es tu Asistente Permanente: Una vez que subes tus documentos, nunca mas tienes que",
+            "   volver a cargarlos. El cuaderno los recuerda siempre y te responde preguntas en una sola linea.",
+            "2. Las Analiticas y Facturas van a Gemini Notebook, NUNCA a Gemini Abierto: En temas de salud y dinero",
+            "   no podemos permitirnos alucinaciones. Gemini Notebook es tu notario privado con cero error.",
+            "3. Las Reglas de Trato se guardan en Studio como Nota Fija: No necesitas un Word externo. Anades una",
+            "   Nota en Studio con tus preferencias y tu asistente sabra siempre como hablarte y como resumirte."
         ],
         badge="REGLAS",
-        border_color=(0.85, 0.75, 0.95),
-        bg_color=(0.98, 0.95, 1.00),
+        border_color=(0.6, 0.4, 0.8),
         title_color=(0.45, 0.20, 0.65)
     )
 
@@ -343,86 +397,92 @@ def compilar_reto_01():
         "Reto 1 de Vida Real - Gemini Notebook (+65)",
         "Historial de Salud Inteligente y Citas Medicas",
         "Organiza analiticas, prospectos y consultas con el especialista con maximo rigor",
-        primary_color=(0.20, 0.70, 0.45)
+        border_color=(0.15, 0.55, 0.35)
     )
 
-    # PAGINA 1
+    # ---------------- PAGINA 1 ----------------
     b.pdf.start_page()
-    b.draw_banner(1)
+    b.draw_banner_p1()
 
-    b.add_section_title("1. EL PROBLEMA COTIDIANO Y EL OBJETIVO DEL RETO", (0.10, 0.48, 0.35))
-    b.add_card(
-        "DE LA CARPETA CAOTICA AL EXPEDIENTE MEDICO EN SEGUNDOS",
+    b.add_section_title("1. EL PROBLEMA Y EL OBJETIVO DEL ASISTENTE CUADERNO", (0.15, 0.55, 0.35))
+    b.add_card_white(
+        "DE LA CARPETA CAOTICA AL ASISTENTE DE SALUD PERMANENTE",
         [
-            "El problema: Acumulamos analiticas, informes de especialistas y prospectos en cajones o carpetas de plastico.",
-            "  Cuando llegamos a la consulta medica, apenas tenemos 10 minutos y olvidamos los antecedentes clave.",
-            "La solucion con NotebookLM: Crear el cuaderno privado 'Mi Historial de Salud Familiar'.",
-            "  Subir fotos de analiticas (PDF o JPG), informes de altas o recetas escaneadas y prospectos oficiales.",
-            "Garantia de Oro: NotebookLM no inventara patologias: solo explicara lo que tus analisis reales dictaminan."
+            "El problema: Acumulamos analisis, informes y prospectos en carpetas de plastico.",
+            "  Cuando llegamos a la consulta medica, apenas tenemos 10 minutos y olvidamos dudas clave.",
+            "La solucion: Crear el cuaderno 'Salud y Analiticas'. Alimenta este cuaderno con tus informes reales.",
+            "El cuaderno funcionara como tu asistente de salud personal: responde en 1 linea y cita tus analisis [1]."
         ],
         badge="SALUD",
-        border_color=(0.70, 0.88, 0.78),
-        bg_color=(0.94, 0.98, 0.95),
-        title_color=(0.10, 0.48, 0.35)
+        border_color=(0.3, 0.7, 0.45),
+        title_color=(0.15, 0.55, 0.35)
     )
 
-    b.add_section_title("2. PREPARACION DE FUENTES: PASO A PASO EN CLASE", (0.15, 0.35, 0.65))
-    b.add_card(
-        "COMO CARGAR TUS PAPELES DE SALUD CON SEGURIDAD",
+    b.add_section_title("2. PREPARACION Y FUENTE FICTICIA DE EJEMPLO PARA CLASE", (0.15, 0.35, 0.65))
+    b.add_card_white(
+        "COMO PREPARAR EL CUADERNO EN 2 MINUTOS",
         [
-            "1. Abre Gemini Notebook y pulsa '+ Nuevo cuaderno'. Titulalo 'Salud - Mi Expediente y Consultas'.",
-            "2. En el panel izquierdo '+ Anadir fuentes', sube tu analitica reciente y un informe medico en PDF.",
-            "3. Enlace web adicional: Puedes anadir el enlace oficial del prospecto de tu medicacion desde CIMA (AEMPS).",
-            "4. Comprueba que las casillas de verificacion [v] estan marcadas para que el cuaderno cruce la informacion."
+            "1. Abre Gemini Notebook y pulsa '+ Nuevo cuaderno'. Titulalo 'Salud y Analiticas'.",
+            "2. Pulsa '+ Anadir fuentes': puedes subir tus analisis reales o pegar el texto de ejemplo de abajo.",
+            "3. Guarda las reglas de trato en el panel Studio como una 'Nota fija' (chincheta)."
         ],
         badge="PASOS",
-        border_color=(0.70, 0.82, 0.95),
-        bg_color=(0.95, 0.97, 1.00),
+        border_color=(0.4, 0.6, 0.8),
         title_color=(0.15, 0.35, 0.65)
+    )
+
+    b.add_card_white(
+        "TEXTO MODELO DE EJEMPLO (COPIA Y PEGA SI NO LLEVAS ANALITICA EN CLASE)",
+        [
+            "«INFORME DE ANALITICA CLINICA - Paciente: 66 anos. Fecha: 10/11/2026.",
+            "  Glucosa: 104 mg/dL (Normal: 70-100) *. Leve elevacion en ayunas.",
+            "  Colesterol Total: 218 mg/dL (Normal: < 200) *. Colesterol LDL: 135 mg/dL *.",
+            "  Trigliceridos: 140 mg/dL (Normal: < 150). Creatinina: 0.9 mg/dL (Normal: 0.6-1.1).",
+            "  Tratamiento actual: Atorvastatina 10 mg (1 comprimido en la cena). Adiro 100 mg (almuerzo).",
+            "  Observacion: Dolores articulares leves por la manana en rodilla derecha.»"
+        ],
+        badge="EJEMPLO",
+        border_color=(0.2, 0.6, 0.4),
+        title_color=(0.15, 0.50, 0.30)
     )
 
     b.draw_footer(1)
     b.pdf.end_page()
 
-    # PAGINA 2
+    # ---------------- PAGINA 2 (SIN CABECERA REPETIDA) ----------------
     b.pdf.start_page()
-    b.draw_banner(2)
+    b.draw_header_p2("Reto 1 · Consultas en 1 Linea y Producto Final en Studio")
 
-    b.add_section_title("3. PROMPTS MAESTROS PARA PREPARAR LA CONSULTA MEDICA", (0.10, 0.45, 0.65))
-    b.add_prompt_card(
-        "PROMPT 1: RESUMEN CRONOLOGICO PARA LLEVAR IMPRESO AL ESPECIALISTA",
-        (
-            "«Lee todos los informes medicos subidos y genera un resumen ejecutivo cronologico en 5 puntos:\n"
-            "1. Antecedentes relevantes diagnosticados.\n"
-            "2. Medicacion activa que tomo y dosis.\n"
-            "3. Valores de la ultima analitica que se desvian del rango normal.\n"
-            "4. Sintomas o dudas pendientes comunicadas en consultas anteriores.\n"
-            "5. Tres preguntas concretas para formularle hoy al doctor en los 10 minutos de consulta.»"
-        ),
-        target_note="Chat central de NotebookLM"
+    b.add_section_title("3. CONSULTAS EN 1 LINEA EN EL CHAT DE TU CUADERNO", (0.15, 0.55, 0.35))
+    b.add_prompt_card_white(
+        "CONSULTA 1: TRADUCTOR DE VALORES CON ASTERISCO",
+        "«¿Que significan los valores que tienen asterisco (*) en mi analitica y que consejos me das?»",
+        target_note="Escribelo en el chat central del cuaderno"
     )
 
-    b.add_prompt_card(
-        "PROMPT 2: TRADUCTOR DE ANALITICAS A LENGUAJE CLARO Y TRANQUILIZADOR",
+    b.add_prompt_card_white(
+        "CONSULTA 2: RESUMEN EN 4 PUNTOS PARA LLEVAR A LA CONSULTA MEDICA",
         (
-            "«Explicame en lenguaje sencillo, para una persona de 65 anos sin conocimientos medicos, "
-            "que significan los valores que tienen asterisco en mi ultima analitica. "
-            "Indica en que pagina del analisis aparece cada dato con su cita [1] y aclara si son leves desviaciones.»"
+            "«Genera un resumen en 4 puntos para llevar impreso a mi doctor:\n"
+            "1. Medicacion que tomo y dosis.\n"
+            "2. Valores desviados del analisis.\n"
+            "3. Molestias comunicadas.\n"
+            "4. Tres preguntas claras para hacerle al doctor en los 10 minutos de consulta.»"
         ),
-        target_note="Chat central de NotebookLM"
+        target_note="Guardalo con la Chincheta en Studio como nota fija"
     )
 
-    b.add_section_title("4. PRODUCTO FINAL EN PANEL STUDIO", (0.75, 0.42, 0.10))
-    b.add_card(
-        "INFOGRAFIA Y ADVERTENCIA VITAL",
+    b.add_section_title("4. PRODUCTO FINAL EN PANEL STUDIO Y SALVAGUARDA", (0.75, 0.42, 0.10))
+    b.add_card_white(
+        "INFOGRAFIA VISUAL Y RECUERDA",
         [
-            "En el panel derecho Studio, pulsa 'Infografia' (estilo Cientifico) con el prompt: 'Dibuja mi rutina diaria de medicacion con horarios'.",
-            "Salvaguarda medica obligatoria: NotebookLM no sustituye a tu medico de cabecera ni receta farmacos.",
-            "  Su funcion es darte claridad mental y empoderarte para que aproveches al maximo tus visitas al ambulatorio."
+            "En el panel derecho Studio, pulsa 'Infografia' (Estilo Cientifico):",
+            "  Prompt: 'Dibuja un horario visual con mis pastillas de manana y cena'.",
+            "Salvaguarda medica obligatoria: Gemini Notebook no receta farmacos ni sustituye a tu medico.",
+            "Su objetivo es darte tranquilidad y prepararte para que aproveches cada minuto en la consulta."
         ],
         badge="RECUERDA",
-        border_color=(0.90, 0.80, 0.65),
-        bg_color=(0.99, 0.98, 0.95),
+        border_color=(0.8, 0.6, 0.3),
         title_color=(0.75, 0.42, 0.10)
     )
 
@@ -438,83 +498,84 @@ def compilar_reto_02():
         "Reto 2 de Vida Real - Gemini Notebook (+65)",
         "El Cazador de Bulos y Desinformacion de WhatsApp",
         "Desmonta alarmas falsas, remedios milagrosos y timos virales con rigor cientifico",
-        primary_color=(0.85, 0.25, 0.20)
+        border_color=(0.80, 0.20, 0.20)
     )
 
-    # PAGINA 1
+    # ---------------- PAGINA 1 ----------------
     b.pdf.start_page()
-    b.draw_banner(1)
+    b.draw_banner_p1()
 
-    b.add_section_title("1. EL PROBLEMA: LA PLAGA DE LAS CADENAS FALSAS EN EL TELEFONO", (0.80, 0.20, 0.20))
-    b.add_card(
+    b.add_section_title("1. EL PROBLEMA: CADENAS VIRALES EN LOS GRUPOS FAMILIARES", (0.80, 0.20, 0.20))
+    b.add_card_white(
         "EL MIEDO Y LA URGENCIA COMO ARMA DE ENGANO",
         [
-            "El problema: Cada semana recibimos en WhatsApp mensajes alarmistas de familiares bienintencionados:",
-            "  '¡No comas limones hervidos!', '¡Nuevo virus que borra el banco!', '¡Cierra tu cuenta antes de medianoche!'.",
-            "La vulnerabilidad: Los bulos juegan con las emociones, la salud y el dinero, imitando comunicados oficiales.",
-            "El metodo del detective con NotebookLM: Poner frente a frente el texto dudoso contra la fuente oficial acreditada."
+            "El problema: Cada semana recibimos mensajes alarmistas de familiares bienintencionados.",
+            "  '¡Nuevo virus en WhatsApp!', '¡Cura la artrosis con bicarbonato hervido!', '¡Te van a cobrar!'.",
+            "La solucion: Crear el cuaderno 'Cazador de Bulos'. Ponemos frente a frente el mensaje viral",
+            "contra comunicados oficiales de la Policia Nacional o Sanidad para comprobar hechos con citas [1]."
         ],
         badge="ALERTA",
-        border_color=(0.95, 0.75, 0.75),
-        bg_color=(0.99, 0.95, 0.95),
+        border_color=(0.9, 0.4, 0.4),
         title_color=(0.80, 0.20, 0.20)
     )
 
-    b.add_section_title("2. PREPARACION DE FUENTES EN EL CUADERNO", (0.15, 0.35, 0.65))
-    b.add_card(
-        "COMO CARGAR EL CASO PARA AUDITARLO",
+    b.add_section_title("2. PREPARACION Y FUENTE FICTICIA DE EJEMPLO PARA CLASE", (0.15, 0.35, 0.65))
+    b.add_card_white(
+        "COMO MONTAR EL CASO EN GEMINI NOTEBOOK",
         [
-            "1. Crea un cuaderno titulado 'Cazador de Bulos WhatsApp'.",
-            "2. Fuente A (El Sospechoso): Pega como archivo de texto o copia el mensaje viral recibido en el chat.",
-            "3. Fuente B (La Verdad Oficial): Sube un comunicado del Ministerio de Sanidad, Policía Nacional o desmentido verificado.",
-            "4. Marca ambas fuentes [v] para que NotebookLM las compare linea por linea."
+            "1. Crea el cuaderno 'Cazador de Bulos WhatsApp'.",
+            "2. Fuente A (El Sospechoso): Pega el mensaje viral recibido (puedes usar el ejemplo de abajo).",
+            "3. Fuente B (La Verdad): Sube un comunicado de verificacion o desmentido oficial."
         ],
-        badge="METODO",
-        border_color=(0.70, 0.82, 0.95),
-        bg_color=(0.95, 0.97, 1.00),
+        badge="PASOS",
+        border_color=(0.4, 0.6, 0.8),
         title_color=(0.15, 0.35, 0.65)
+    )
+
+    b.add_card_white(
+        "TEXTO MODELO DE MENSAJE VIRAL (COPIA Y PEGA COMO FUENTE A)",
+        [
+            "«¡¡URGENTE!! AVISO DE LA POLICIA: A partir de esta noche no respondas a llamadas que empiecen por +34 919.",
+            "  Hay una banda internacional que solo con descolgar te clona la cuenta del banco y la tarjeta sanitaria.",
+            "  Ya hay 4.000 jubilados afectados en Madrid. ¡¡REVIALO A TODOS TUS CONTACTOS Y GRUPOS YA!!»"
+        ],
+        badge="MENSAJE",
+        border_color=(0.9, 0.4, 0.4),
+        title_color=(0.80, 0.20, 0.20)
     )
 
     b.draw_footer(1)
     b.pdf.end_page()
 
-    # PAGINA 2
+    # ---------------- PAGINA 2 (SIN CABECERA REPETIDA) ----------------
     b.pdf.start_page()
-    b.draw_banner(2)
+    b.draw_header_p2("Reto 2 · Auditoria en 1 Linea y Respuesta Diplomatica")
 
-    b.add_section_title("3. PROMPTS MAESTROS DEL DETECTIVE DIGITAL", (0.80, 0.20, 0.20))
-    b.add_prompt_card(
-        "PROMPT 1: AUDITORIA DE VERACIDAD Y DETECCION DE TRAMPAS",
-        (
-            "«Compara el mensaje viral de la Fuente A con la documentacion oficial de la Fuente B y responde:\n"
-            "1. ¿Que afirmaciones del mensaje son completamente falsas o carecen de respaldo cientifico?\n"
-            "2. ¿Que tecnicas de manipulacion utiliza (urgencia artificial, mayusculas excesivas, pedir reenviar)?\n"
-            "3. Dictamen final: ¿Es Bulo Puro, Noticia Manipulada o Verdad?»"
-        ),
-        target_note="Chat central de NotebookLM"
+    b.add_section_title("3. CONSULTAS EN 1 LINEA EN EL CHAT DE TU CUADERNO", (0.80, 0.20, 0.20))
+    b.add_prompt_card_white(
+        "CONSULTA 1: AUDITORIA DE VERACIDAD",
+        "«Analiza este mensaje viral y dime si tiene senales de bulo (mayusculas, urgencia falsa, sin fuentes).»",
+        target_note="Escribelo en el chat central de tu cuaderno"
     )
 
-    b.add_prompt_card(
-        "PROMPT 2: MENSAJE CARINOSO Y DIPLOMATICO PARA EL GRUPO FAMILIAR",
+    b.add_prompt_card_white(
+        "CONSULTA 2: RESPUESTA DIPLOMATICA PARA EL GRUPO FAMILIAR",
         (
-            "«Redacta un mensaje breve, educado y muy afectuoso para reenviar al grupo familiar de WhatsApp. "
-            "Debe explicar por que la cadena recibida no es cierta, citar la fuente oficial con serenidad "
-            "y agradecer a quien lo envio su buena intencion para que nadie se sienta ofendido.»"
+            "«Redacta un mensaje breve y carinono para reenviar al grupo familiar de WhatsApp explicando por que "
+            "la cadena no es cierta, agradeciendo la buena intencion de quien lo envio para no ofender.»"
         ),
-        target_note="Chat central de NotebookLM"
+        target_note="Guardalo como Nota fija en Studio para tenerlo a mano"
     )
 
-    b.add_section_title("4. TRABAJO EN STUDIO: CREAR ALERTA VISUAL", (0.10, 0.48, 0.35))
-    b.add_card(
-        "INFOGRAFIA Y PODCAST EXPLICATIVO",
+    b.add_section_title("4. PRODUCTO FINAL EN PANEL STUDIO: ALERTA VISUAL", (0.10, 0.48, 0.35))
+    b.add_card_white(
+        "INFOGRAFIA Y REGLE DE ORO",
         [
-            "En Studio, pulsa 'Infografia' con el prompt: 'Crea un cartel de advertencia con las 3 senales para detectar un bulo de salud'.",
-            "Audio Overview: Puedes generar la tertulia de radio donde dos presentadores explican de forma amena el desmentido.",
-            "Regla de Oro: Ante la duda en WhatsApp, ¡nunca reenvies hasta verificar en tu propio cuaderno!"
+            "En Studio, pulsa 'Infografia' (Estilo Pizarron): '3 senales para detectar un bulo antes de reenviar'.",
+            "Regla de Oro: Ante la duda en WhatsApp, ¡frena! Nunca reenvies sin contrastar en tu propio cuaderno."
         ],
         badge="EXITO",
-        border_color=(0.70, 0.88, 0.78),
-        bg_color=(0.94, 0.98, 0.95),
+        border_color=(0.3, 0.7, 0.45),
         title_color=(0.10, 0.48, 0.35)
     )
 
@@ -530,81 +591,83 @@ def compilar_reto_03():
         "Reto 3 de Vida Real - Gemini Notebook (+65)",
         "La Maquina del Tiempo Familiar (Anos 70 y 80)",
         "Digitaliza anecdotas de juventud, la Transicion, cassettes y recuerdos en un legado vivo",
-        primary_color=(0.55, 0.25, 0.75)
+        border_color=(0.55, 0.25, 0.75)
     )
 
-    # PAGINA 1
+    # ---------------- PAGINA 1 ----------------
     b.pdf.start_page()
-    b.draw_banner(1)
+    b.draw_banner_p1()
 
-    b.add_section_title("1. EL VALOR DE TU MEMORIA: UNA EPOCA UNICA DE ESPANA", (0.50, 0.20, 0.70))
-    b.add_card(
-        "NUESTRA GENERACION NO VIVIO LA POSGUERRA: VIVIO EL GRAN CAMBIO",
+    b.add_section_title("1. EL VALOR DE TU MEMORIA: UNA EPOCA UNICA DE ESPANA", (0.55, 0.25, 0.75))
+    b.add_card_white(
+        "NUESTRA JUVENTUD VIVIO EL GRAN CAMBIO",
         [
-            "Los alumnos nacidos hacia 1960 fueron la juventud de los anos 70 y 80: los anos del Seat 127, los casetes,",
-            "  la tele en color, la Transicion democratica, los primeros viajes por carretera y los guateques con amigos.",
-            "El problema: Esas vivencias se quedan en charlas de sobremesa y los hijos y nietos no conocen los detalles.",
-            "El reto: Convertir tus notas de voz o textos dictados en un libro de memorias estructurado y una tertulia de radio."
+            "Nacidos hacia 1960: no vivimos la posguerra, fuimos la juventud de los anos 70 y 80.",
+            "  La epoca del Seat 127, los cassettes rebobinados con boli Bic, guateques y la Transicion democratica.",
+            "El problema: Estas vivencias se pierden en sobremesas y los nietos no conocen como era la vida.",
+            "La solucion: Crear el cuaderno 'Memorias de Juventud'. Convierte tus relatos en capitulos y en radio."
         ],
         badge="MEMORIA",
-        border_color=(0.85, 0.75, 0.95),
-        bg_color=(0.98, 0.95, 1.00),
-        title_color=(0.50, 0.20, 0.70)
+        border_color=(0.7, 0.4, 0.8),
+        title_color=(0.55, 0.25, 0.75)
     )
 
-    b.add_section_title("2. QUE FUENTES SUBIR A TU CUADERNO FAMILIAR", (0.15, 0.35, 0.65))
-    b.add_card(
-        "MATERIA PRIMA EN TRES SENCILLOS PASOS",
+    b.add_section_title("2. PREPARACION Y FUENTE FICTICIA DE EJEMPLO PARA CLASE", (0.15, 0.35, 0.65))
+    b.add_card_white(
+        "COMO PREPARAR TU CUADERNO BIOGRAFICO",
         [
-            "1. Dicta por voz en tu movil o PC 3 anecdotas reales (tu primer sueldo, las vacaciones de verano, como conociste a tu pareja).",
-            "2. Sube ese archivo de texto como Fuente 1 a NotebookLM.",
-            "3. Sube como Fuente 2 una lista de tus canciones favoritas de los 70 y 80 (Duo Dinamico, Camilo Sesto, Mecano).",
-            "4. Opcional: Sube un recorte o cronologia de noticias de la epoca de 1975 a 1982."
+            "1. Crea el cuaderno 'Memorias de Juventud (70 y 80)'.",
+            "2. Dicta por voz en tu movil o PC una anecdota real, o copia el texto de ejemplo de abajo como Fuente 1.",
+            "3. Anade canciones de la epoca como Fuente 2 (Duo Dinamico, Camilo Sesto, Triana, Mecano)."
         ],
-        badge="FUENTES",
-        border_color=(0.70, 0.82, 0.95),
-        bg_color=(0.95, 0.97, 1.00),
+        badge="PASOS",
+        border_color=(0.4, 0.6, 0.8),
         title_color=(0.15, 0.35, 0.65)
+    )
+
+    b.add_card_white(
+        "TEXTO MODELO DE RECUERDO FAMILIAR (COPIA Y PEGA COMO FUENTE 1)",
+        [
+            "«El verano de 1978 nos fuimos cuatro amigos a Torrevieja en un Seat 127 blanco.",
+            "  Llevabamos la baca cargada hasta arriba y una cinta de casete de Triana que sonaba sin parar.",
+            "  No habia aire acondicionado: bajabamos las ventanillas y el aire caliente olia a pinos y asfalto.",
+            "  Tardamos 8 horas por carreteras secundarias. Nos banamos en la playa al anochecer con una ilusion enorme.»"
+        ],
+        badge="RELATO",
+        border_color=(0.7, 0.4, 0.8),
+        title_color=(0.55, 0.25, 0.75)
     )
 
     b.draw_footer(1)
     b.pdf.end_page()
 
-    # PAGINA 2
+    # ---------------- PAGINA 2 (SIN CABECERA REPETIDA) ----------------
     b.pdf.start_page()
-    b.draw_banner(2)
+    b.draw_header_p2("Reto 3 · Cronica Novelada y el Gran Regalo en Audio Overview")
 
-    b.add_section_title("3. PROMPTS MAESTROS PARA REVIVIR LA HISTORIA", (0.50, 0.20, 0.70))
-    b.add_prompt_card(
-        "PROMPT 1: CRONICA NOVELADA DE NUESTRA JUVENTUD (PARA NIETOS)",
-        (
-            "«Con las anecdotas de mis fuentes, redacta un capitulo literario y emotivo titulado 'Nuestra Juventud en los 70 y 80'. "
-            "Describe como era el dia a dia, el sonido de los cassettes, la ilusion del primer coche y las costumbres familiares. "
-            "Manten mi propia voz y anade un toque de carino pensando en que lo lean mis nietos dentro de 20 anos.»"
-        ),
-        target_note="Chat central de NotebookLM"
+    b.add_section_title("3. CONSULTAS EN 1 LINEA EN EL CHAT DE TU CUADERNO", (0.55, 0.25, 0.75))
+    b.add_prompt_card_white(
+        "CONSULTA 1: CRONICA NOVELADA DE NUESTRA JUVENTUD (PARA NIETOS)",
+        "«Con mis recuerdos subidos, escribe un capitulo literario y emotivo titulado 'Nuestra Juventud en el 78'.»",
+        target_note="Guardalo con la Chincheta en Studio como nota permanente"
     )
 
-    b.add_prompt_card(
-        "PROMPT 2: EL CUESTIONARIO BIOGRAFICO PARA SEGUIR ESCRIBIENDO",
-        (
-            "«Leeme con atencion y hazme 5 preguntas sugerentes sobre momentos que he mencionado de pasada "
-            "(como mi primer trabajo o como era la vida sin moviles) para que yo pueda dictar nuevos audios y completar mi libro.»"
-        ),
-        target_note="Chat central de NotebookLM"
+    b.add_prompt_card_white(
+        "CONSULTA 2: CUESTIONARIO BIOGRAFICO PARA SEGUIR ESCRIBIENDO",
+        "«Hazme 4 preguntas sugerentes sobre momentos que mencione de pasada para que yo pueda dictar nuevos audios.»",
+        target_note="Escribelo en el chat central"
     )
 
-    b.add_section_title("4. EL GRAN BROCHE DE ORO EN STUDIO: LA RADIO FAMILIAR", (0.10, 0.48, 0.35))
-    b.add_card(
-        "ESCUCHAR TU VIDA EN AUDIO OVERVIEW",
+    b.add_section_title("4. EL GRAN REGALO FAMILIAR EN STUDIO: LA RADIO FAMILIAR", (0.10, 0.48, 0.35))
+    b.add_card_white(
+        "AUDIO OVERVIEW: ESCUCHAR TUS RECUERDOS EN UN PROGRAMA DE RADIO",
         [
-            "Pulsa en Studio el boton 'Audio Overview (Resumen de Audio)':",
-            "  Dos presentadores de radio mantendran una conversacion apasionante sobre tu vida y tus recuerdos de los 70 y 80.",
-            "Descarga el MP3 resultante y compartelo en el grupo de WhatsApp de tus hijos. ¡Sera el regalo familiar del ano!"
+            "En el panel derecho Studio, pulsa 'Audio Overview (Resumen de Audio)':",
+            "  Dos periodistas conversaran con fascinacion y carino sobre como era la juventud en los 70 y 80.",
+            "Descarga el archivo MP3 y compártelo por WhatsApp con tus hijos y nietos. ¡Sera un regalo inolvidable!"
         ],
         badge="LEGADO",
-        border_color=(0.70, 0.88, 0.78),
-        bg_color=(0.94, 0.98, 0.95),
+        border_color=(0.3, 0.7, 0.45),
         title_color=(0.10, 0.48, 0.35)
     )
 
@@ -620,83 +683,85 @@ def compilar_reto_04():
         "Reto 4 de Vida Real - Gemini Notebook (+65)",
         "El Auditor de Contratos, Facturas y Letra Pequena",
         "Desentrana la factura de la luz, el seguro del hogar y clausulas bancarias confusas",
-        primary_color=(0.10, 0.55, 0.85)
+        border_color=(0.10, 0.50, 0.80)
     )
 
-    # PAGINA 1
+    # ---------------- PAGINA 1 ----------------
     b.pdf.start_page()
-    b.draw_banner(1)
+    b.draw_banner_p1()
 
-    b.add_section_title("1. EL RETO: DEFENDERSE DE LA COMPLEJIDAD Y EL LABERINTO LEGAL", (0.10, 0.45, 0.75))
-    b.add_card(
+    b.add_section_title("1. EL RETO: DEFENDERSE DE LA COMPLEJIDAD Y COBROS EXTRA", (0.10, 0.50, 0.80))
+    b.add_card_white(
         "ADIOS A LA LETRA PEQUENA INCOMPRENSIBLE",
         [
-            "El problema: Facturas electricas llenas de peajes, terminos de potencia y servicios de mantenimiento sorpresa.",
-            "  Polizas de seguro de 45 paginas donde nunca sabemos si una gotera o rotura de electrodomestico esta cubierta.",
-            "La solucion: Subir el PDF real del contrato a NotebookLM y convertirlo en un asesor financiero privado.",
-            "Ventaja crucial: NotebookLM te dira la pagina y linea exacta donde se explica cada cobro o exclusion."
+            "El problema: Facturas de la luz con terminos fijos, peajes y seguros de mantenimiento sorpresa.",
+            "  Polizas de hogar de 40 paginas donde no sabemos que gotera o rotura de electrodomestico esta cubierta.",
+            "La solucion: Crear el cuaderno 'Auditor Facturas y Seguros'. Subes el PDF real y te responde en segundos.",
+            "Garantia de oro: Te cita la pagina y articulo exacto del contrato [1] sin inventar nada."
         ],
         badge="AUDITORIA",
-        border_color=(0.70, 0.85, 0.95),
-        bg_color=(0.95, 0.97, 1.00),
-        title_color=(0.10, 0.45, 0.75)
+        border_color=(0.3, 0.6, 0.85),
+        title_color=(0.10, 0.50, 0.80)
     )
 
-    b.add_section_title("2. PREPARACION DEL DOCUMENTO EN NOTEBOOKLM", (0.15, 0.35, 0.65))
-    b.add_card(
-        "COMO SUBIR TU FACTURA O CONTRATO EN 3 MINUTOS",
+    b.add_section_title("2. PREPARACION Y FUENTE FICTICIA DE EJEMPLO PARA CLASE", (0.15, 0.35, 0.65))
+    b.add_card_white(
+        "COMO CARGAR TU FACTURA EN EL CUADERNO",
         [
-            "1. Descarga de la web de tu compania (Iberdrola, Endesa, aseguradora) la factura o poliza en formato PDF.",
-            "2. Entra en NotebookLM, crea el cuaderno 'Auditor Facturas y Seguros' y sube el archivo con '+ Anadir fuentes'.",
-            "3. En la zona central observaras de inmediato el resumen automatico con el nombre de la empresa y fecha."
+            "1. Abre Gemini Notebook y crea el cuaderno 'Auditor Facturas y Seguros'.",
+            "2. Pulsa '+ Anadir fuentes' y sube tu recibo de la luz en PDF o copia el texto modelo de abajo.",
+            "3. En 3 segundos tendras el resumen ejecutivo central listo."
         ],
-        badge="SUBIDA",
-        border_color=(0.70, 0.82, 0.95),
-        bg_color=(0.95, 0.97, 1.00),
+        badge="PASOS",
+        border_color=(0.4, 0.6, 0.8),
         title_color=(0.15, 0.35, 0.65)
+    )
+
+    b.add_card_white(
+        "TEXTO MODELO DE FACTURA ELECTRICA (COPIA Y PEGA SI NO LLEVAS RECIBO)",
+        [
+            "«FACTURA DE ENERGIA ELECTRICA - Periodo: 01/10/2026 al 31/10/2026 (31 dias).",
+            "  Potencia contratada: Punta 4.6 kW / Valle 4.6 kW. Importe potencia fija: 18.20 euros.",
+            "  Energia consumida: 210 kWh a 0.178 eur/kWh. Importe energia: 37.38 euros.",
+            "  Servicios adicionales: Servicio Proteccion Pagos 4.90 euros. Mantenimiento Urgencias 24h: 7.50 euros *.",
+            "  Impuesto electricidad: 1.82 euros. Alquiler de contador: 0.84 euros. IVA 21%: 14.83 euros.",
+            "  TOTAL FACTURA A PAGAR: 85.47 euros.»"
+        ],
+        badge="FACTURA",
+        border_color=(0.3, 0.6, 0.85),
+        title_color=(0.10, 0.50, 0.80)
     )
 
     b.draw_footer(1)
     b.pdf.end_page()
 
-    # PAGINA 2
+    # ---------------- PAGINA 2 (SIN CABECERA REPETIDA) ----------------
     b.pdf.start_page()
-    b.draw_banner(2)
+    b.draw_header_p2("Reto 4 · Radiografia de Gastos y Reclamacion en Studio")
 
-    b.add_section_title("3. PROMPTS MAESTROS PARA DESCIFRAR CADA CENTIMO", (0.10, 0.45, 0.75))
-    b.add_prompt_card(
-        "PROMPT 1: RADIOGRAFIA DE LA FACTURA DE LA LUZ Y DETECCION DE COBROS EXTRA",
-        (
-            "«Desglosa esta factura de la luz en 4 conceptos faciles de entender:\n"
-            "1. ¿Cuanto pago por potencia contratada (termino fijo)?\n"
-            "2. ¿Cuanto pago por la energia realmente consumida (kWh)?\n"
-            "3. ¿Hay algun concepto de seguro, mantenimiento, urgencias o servicios extra que encarezca el recibo?\n"
-            "4. ¿Que precio exacto por kWh estoy pagando y como se compara con una tarifa razonable?»"
-        ),
-        target_note="Chat central de NotebookLM"
+    b.add_section_title("3. CONSULTAS EN 1 LINEA EN EL CHAT DE TU CUADERNO", (0.10, 0.50, 0.80))
+    b.add_prompt_card_white(
+        "CONSULTA 1: RADIOGRAFIA DE LA FACTURA Y COBROS SORPRESA",
+        "«¿Que conceptos de mantenimiento o servicios extra me estan cobrando y cuanto suman en total?»",
+        target_note="Escribelo en el chat central de tu cuaderno"
     )
 
-    b.add_prompt_card(
-        "PROMPT 2: AUDITORIA DEL SEGURO DEL HOGAR (SIMULACRO DE SINIESTRO)",
-        (
-            "«Imagina que se me ha roto el frigorifico por una subida de tension y se ha estropeado la comida. "
-            "Revisa mi poliza y dime con exactitud si esta cubierto, cual es el limite maximo de indemnizacion "
-            "y en que articulo y pagina del contrato se especifica la condicion.»"
-        ),
-        target_note="Chat central de NotebookLM"
+    b.add_prompt_card_white(
+        "CONSULTA 2: SIMULACRO DE POLIZA DE SEGURO DEL HOGAR",
+        "«Si se me rompe la lavadora o hay gotera con el vecino, ¿mi seguro lo cubre? Citame la clausula exacta.»",
+        target_note="Guardalo como Nota fija en Studio con la Chincheta"
     )
 
     b.add_section_title("4. PRODUCTO FINAL EN PANEL STUDIO: INFORME DE AHORRO", (0.10, 0.48, 0.35))
-    b.add_card(
-        "INFORME FORMAL Y CARTA DE RECLAMACION",
+    b.add_card_white(
+        "INFORME FORMAL Y CARTA DE BAJA DE SERVICIOS",
         [
-            "Boton 'Informe' en Studio: Genera un documento ejecutivo para reclamar a la compania o comparar con la competencia.",
-            "Prompt adicional de redaccion: 'Escribe una carta formal solicitando la baja de los servicios extra que no contrate'.",
+            "Boton 'Informe' en Studio: Genera un documento estructurado de ahorro listo para imprimir.",
+            "Prompt de reclamacion: 'Escribe una carta formal solicitando la baja del mantenimiento que no solicite'.",
             "Poder en tus manos: Nunca mas pagaras por conceptos que no entiendes."
         ],
         badge="AHORRO",
-        border_color=(0.70, 0.88, 0.78),
-        bg_color=(0.94, 0.98, 0.95),
+        border_color=(0.3, 0.7, 0.45),
         title_color=(0.10, 0.48, 0.35)
     )
 
@@ -712,73 +777,82 @@ def compilar_reto_05():
         "Reto 5 de Vida Real - Gemini Notebook (+65)",
         "La Tertulia de Radio Personalizada (Modo Debate)",
         "Pon a dos periodistas a debatir a fondo sobre cualquier tema con Audio Overview",
-        primary_color=(0.95, 0.60, 0.10)
+        border_color=(0.85, 0.50, 0.10)
     )
 
-    # PAGINA 1
+    # ---------------- PAGINA 1 ----------------
     b.pdf.start_page()
-    b.draw_banner(1)
+    b.draw_banner_p1()
 
-    b.add_section_title("1. EL PODER DE LA VOZ: DE LA LECTURA PESADA AL PROGRAMA DE RADIO", (0.85, 0.50, 0.10))
-    b.add_card(
-        "COMO FUNCIONA EL MILAGRO AUDIO OVERVIEW DE NOTEBOOKLM",
+    b.add_section_title("1. EL PODER DE LA VOZ: DE LA LECTURA AL PROGRAMA DE RADIO", (0.85, 0.50, 0.10))
+    b.add_card_white(
+        "COMO FUNCIONA EL MILAGRO AUDIO OVERVIEW DE GEMINI NOTEBOOK",
         [
-            "El reto: Leer documentos largos, leyes complejas o libros tecnicos en pantalla cansa la vista de los seniors.",
-            "La magia: NotebookLM es capaz de transformar cualquier texto en una tertulia viva entre dos periodistas de radio.",
-            "No es un robot leyendo con voz fria: bromean, se interrumpen con elegancia, usan metaforas y debaten posturas.",
-            "Lo mejor: Tu puedes indicarles como enfocar el debate antes de que empiecen a grabar el programa."
+            "El problema: Leer textos largos en pantalla cansa la vista de los alumnos mayores.",
+            "La magia: Audio Overview convierte cualquier documento en una tertulia viva de radio profesional.",
+            "Dos periodistas debaten, usan humor y metaforas, exponiendo pros y contras con agilidad.",
+            "La clave: Tu puedes darles instrucciones para enfocar el debate antes de que graben el programa."
         ],
         badge="RADIO",
-        border_color=(0.95, 0.85, 0.65),
-        bg_color=(0.99, 0.97, 0.94),
+        border_color=(0.9, 0.6, 0.3),
         title_color=(0.85, 0.50, 0.10)
     )
 
-    b.add_section_title("2. PREPARACION DE FUENTES EN EL CUADERNO", (0.15, 0.35, 0.65))
-    b.add_card(
-        "ELIGE UN TEMA DE DEBATE APASIONANTE",
+    b.add_section_title("2. PREPARACION Y FUENTE FICTICIA DE EJEMPLO PARA CLASE", (0.15, 0.35, 0.65))
+    b.add_card_white(
+        "COMO PREPARAR EL CUADERNO DE DEBATE",
         [
-            "1. Sube un articulo de opinion o reportaje sobre pensiones, inteligencia artificial, coches electricos o salud.",
-            "2. Opcional: Anade dos fuentes con visiones opuestas (ejemplo: pros y contras de la energia nuclear o digitalizacion bancaria).",
-            "3. Ve directamente a la columna derecha Studio y localiza el bloque superior 'Audio Overview'."
+            "1. Crea el cuaderno 'Tertulia de Debate'.",
+            "2. Sube un articulo de actualidad o copia el texto de ejemplo de abajo como Fuente 1.",
+            "3. En la columna derecha Studio, haz clic en el boton 'Personalizar' de Audio Overview."
         ],
-        badge="CONFIG",
-        border_color=(0.70, 0.82, 0.95),
-        bg_color=(0.95, 0.97, 1.00),
+        badge="PASOS",
+        border_color=(0.4, 0.6, 0.8),
         title_color=(0.15, 0.35, 0.65)
+    )
+
+    b.add_card_white(
+        "TEXTO MODELO DE NOTICIA PARA DEBATE (COPIA Y PEGA COMO FUENTE 1)",
+        [
+            "«INFORME DEBATE: Digitalizacion bancaria y mayores en 2026.",
+            "  Por un lado, la banca digital permite pagar recibos y revisar movimientos desde el sofa sin colas.",
+            "  Por otro lado, el cierre de sucursales y la retirada de cajeros genera soledad y exclusion en seniors.",
+            "  Se debate si debe ser obligatorio por ley mantener atencion humana presencial sin cita previa.»"
+        ],
+        badge="NOTICIA",
+        border_color=(0.9, 0.6, 0.3),
+        title_color=(0.85, 0.50, 0.10)
     )
 
     b.draw_footer(1)
     b.pdf.end_page()
 
-    # PAGINA 2
+    # ---------------- PAGINA 2 (SIN CABECERA REPETIDA) ----------------
     b.pdf.start_page()
-    b.draw_banner(2)
+    b.draw_header_p2("Reto 5 · Personalizacion de la Radio y Descarga a tu Movil")
 
-    b.add_section_title("3. LA CLAVE DEL EXITO: PERSONALIZAR EL DEBATE ANTES DE GRABAR", (0.85, 0.50, 0.10))
-    b.add_prompt_card(
-        "INSTRUCCION MAESTRA EN EL BOTON 'PERSONALIZAR' DE AUDIO OVERVIEW",
+    b.add_section_title("3. INSTRUCCION DE PERSONALIZACION EN STUDIO > AUDIO OVERVIEW", (0.85, 0.50, 0.10))
+    b.add_prompt_card_white(
+        "PEGA ESTA INSTRUCCION EN 'PERSONALIZAR' ANTES DE GENERAR EL AUDIO",
         (
             "«Haz que los dos presentadores mantengan una tertulia de radio dinamica en formato debate:\n"
-            "• El primer presentador defiende las ventajas y el progreso que aporta la tecnologia a los mayores.\n"
-            "• La segunda presentadora plantea con sensatez las dudas, brechas digitales y riesgos de exclusion.\n"
-            "• Ambos deben usar un tono ameno, con buen humor, sin tecnicismos y cerrando con una conclusion util.»"
+            "• El primer presentador defiende las ventajas de la tecnologia para la comodidad de los mayores.\n"
+            "• La segunda presentadora plantea las dificultades de la brecha digital y la necesidad de atencion humana.\n"
+            "• Ambos deben usar un tono ameno, con humor, sin tecnicismos y cerrando con una conclusion util.»"
         ),
-        target_note="Studio > Audio Overview > Personalizar"
+        target_note="Pulsalo en Studio > Audio Overview > Personalizar"
     )
 
-    b.add_section_title("4. COMO APROVECHAR AL MAXIMO LA ESCUCHA", (0.10, 0.48, 0.35))
-    b.add_card(
-        "PASEAR Y APRENDER: TU PODCAST PRIVADO EN EL MOVIL",
+    b.add_section_title("4. COMO DISFRUTARLO: TU PODCAST PARA EL PASEO DIARIO", (0.10, 0.48, 0.35))
+    b.add_card_white(
+        "DESCARGA EL ARCHIVO MP3 EN 3 PASOS",
         [
-            "1. Pulsa 'Generar': en unos 3 a 5 minutos tendras tu programa de radio de 8 a 12 minutos listo.",
-            "2. Pulsa los tres puntitos en el reproductor de audio y selecciona 'Descargar' para guardar el MP3.",
-            "3. Metetelo en el movil para escucharlo con auriculares mientras das tu paseo diario o vas en coche.",
-            "4. Comprobacion de citas: Si algo que dijeron te llama la atencion, buscalo en el chat de NotebookLM para ver la fuente."
+            "1. Pulsa 'Generar' y espera de 3 a 5 minutos mientras se graba la tertulia de radio.",
+            "2. En el reproductor, pulsa los 3 puntitos y dale a 'Descargar' para guardar el archivo MP3.",
+            "3. Pasatelo al telefono movil para escucharlo con auriculares mientras das tu paseo matutino."
         ],
         badge="MOVIL",
-        border_color=(0.70, 0.88, 0.78),
-        bg_color=(0.94, 0.98, 0.95),
+        border_color=(0.3, 0.7, 0.45),
         title_color=(0.10, 0.48, 0.35)
     )
 
@@ -789,14 +863,14 @@ def compilar_reto_05():
 
 
 def main():
-    print("Iniciando compilacion de las 6 Fichas Didacticas de Retos de Vida Real...")
+    print("Iniciando compilacion de las 6 Fichas Didacticas con fondos blancos y Gemini Notebook...")
     compilar_reto_00()
     compilar_reto_01()
     compilar_reto_02()
     compilar_reto_03()
     compilar_reto_04()
     compilar_reto_05()
-    print("✅ Todas las 6 Fichas Didacticas compiladas exitosamente en PDF.")
+    print("✅ Todas las 6 Fichas Didacticas compiladas exitosamente en PDF para impresion.")
 
 if __name__ == "__main__":
     main()
