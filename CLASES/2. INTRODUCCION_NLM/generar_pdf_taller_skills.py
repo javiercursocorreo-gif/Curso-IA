@@ -3,7 +3,8 @@
 """
 generar_pdf_taller_skills.py
 Genera 'TALLER_CREACION_GEMINI_SKILLS_CON_NOTEBOOKLM.pdf' con dimensionamiento dinámico
-de cajas, holgura de márgenes, cero solapamientos y cálculo exacto de altura para cada bloque.
+holgado, cero líneas cortadas y enfoque 100% NotebookLM (los cuadernos como asistentes
+temáticos que sustituyen por completo a los Gems de Gemini).
 100% Python nativo estándar (sin dependencias externas).
 """
 
@@ -139,248 +140,233 @@ class RobustPDFWriter:
 
 def compilar_pdf():
     pdf = RobustPDFWriter()
+    margin_x = 36
+    content_w = 523
 
     # =========================================================================
-    # PÁGINA 1: CONCEPTO, COMPARATIVA Y EL PRIMER EJEMPLO PRÁCTICO
+    # PÁGINA 1: CONCEPTO, COMPARATIVA Y EJEMPLO 1 (MÉDICO Y ANALÍTICAS)
     # =========================================================================
     pdf.start_page()
 
-    # Cabecera Banner Superior (y_top = 805)
+    # Cabecera Banner Superior
     pdf.set_fill_color(0.06, 0.09, 0.16)
-    pdf.set_stroke_color(0.22, 0.74, 0.97)
-    pdf.set_line_width(1.5)
-    pdf.rect(36, 738, 523, 68, fill=True, stroke=True)
+    pdf.set_stroke_color(0.75, 0.45, 0.95)
+    pdf.set_line_width(1.4)
+    pdf.rect(margin_x, 742, content_w, 66, fill=True, stroke=True)
 
-    pdf.draw_text(48, 788, "MONOGRAFICO 2 - CURSO DE INTELIGENCIA ARTIFICIAL", font="F2", size=9, r=0.22, g=0.74, b=0.97)
-    pdf.draw_text(48, 768, "Taller: Como Crear tus Propias Gemini Skills con NotebookLM", font="F2", size=13.5, r=1.0, g=1.0, b=1.0)
-    pdf.draw_text(48, 749, "El fin de los prompts largos: convierte tu cuaderno en una fabrica de asistentes tematicos", font="F1", size=8.5, r=0.8, g=0.85, b=0.9)
+    pdf.draw_text(margin_x + 12, 790, "MONOGRAFICO 2 - CURSO DE INTELIGENCIA ARTIFICIAL (+65)", font="F2", size=8.5, r=0.75, g=0.45, b=0.95)
+    pdf.draw_text(margin_x + 12, 770, "Tus Cuadernos como Asistentes Especializados (Skills)", font="F2", size=13.0, r=1.0, g=1.0, b=1.0)
+    pdf.draw_text(margin_x + 12, 752, "El cuaderno es tu asistente tematico: olvidate de Gemini y de escribir prompts largos", font="F1", size=8.3, r=0.85, g=0.88, b=0.94)
 
     cur_y = 724
 
     # -------------------------------------------------------------------------
-    # Bloque 1: Que es una Gemini Skill (Cálculo exacto de altura con padding)
+    # Bloque 1: El Gran Cambio Pedagógico (Por qué no usamos Gemini)
     # -------------------------------------------------------------------------
-    intro_p = ("En Google Gemini, las «Skills» son asistentes especializados preconfigurados. "
-               "En lugar de tener que teclear o pegar un prompt de 15 lineas cada vez que abres una conversacion, "
-               "la Skill guarda internamente sus conocimientos, su personalidad y sus reglas de comportamiento. "
-               "Basta con activarla con una sola palabra o comando para que Gemini sepa exactamente como responderte.")
-    intro_lines = wrap_text(intro_p, 90)
-    
-    # Altura: padding sup (16) + titulo (16) + lineas * 13 + padding inf (16)
-    b1_h = 16 + 16 + len(intro_lines) * 13 + 16
-    pdf.set_fill_color(0.08, 0.12, 0.20)
-    pdf.set_stroke_color(0.18, 0.25, 0.35)
-    pdf.set_line_width(1.0)
-    pdf.rect(36, cur_y - b1_h, 523, b1_h, fill=True, stroke=True)
+    intro_lines = [
+        "En lugar de entrar a Gemini para configurar asistentes externos (Gems) que alucinan y olvidan,",
+        "en NotebookLM cada Cuaderno que creas ES ya tu asistente especializado tematico (tu propia Skill).",
+        "Cuando te dan una analitica medica, una factura o el seguro, se meten directamente en su cuaderno de NLM.",
+        "El cuaderno queda guardado para siempre: no tienes que volver a explicarle quien eres ni pegar tus papeles.",
+        "Cada vez que entres, le haces preguntas de 1 sola linea y te respondera con rigor y citas [1] exactas."
+    ]
+    b1_h = 22 + (len(intro_lines) * 13.5) + 20
+    pdf.set_fill_color(0.07, 0.10, 0.18)
+    pdf.set_stroke_color(0.75, 0.45, 0.95)
+    pdf.set_line_width(0.8)
+    pdf.rect(margin_x, cur_y - b1_h + 14, content_w, b1_h, fill=True, stroke=True)
 
-    pdf.draw_text(48, cur_y - 20, "1. QUE ES UNA «GEMINI SKILL» Y POR QUE CAMBIA LAS REGLAS DEL JUEGO", font="F2", size=10, r=0.22, g=0.74, b=0.97)
-    text_y = cur_y - 20 - 16
+    pdf.draw_text(margin_x + 10, cur_y - 2, "1. LA REGLA DE ORO: EL CUADERNO DE NLM SUSTITUYE A LOS GEMS DE GEMINI", font="F2", size=8.8, r=0.75, g=0.45, b=0.95)
+    ty_1 = cur_y - 18
     for l in intro_lines:
-        pdf.draw_text(48, text_y, l, font="F1", size=8.4, r=0.9, g=0.9, b=0.95)
-        text_y -= 13
+        pdf.draw_text(margin_x + 14, ty_1, "- " + l, font="F1", size=7.8, r=0.85, g=0.88, b=0.95)
+        ty_1 -= 13.5
 
-    cur_y = cur_y - b1_h - 14
+    cur_y -= (b1_h + 10)
 
     # -------------------------------------------------------------------------
     # Bloque 2: Comparativa Antes vs Ahora (Dos columnas simétricas)
     # -------------------------------------------------------------------------
     antes_lines = [
-        "- Escribir instrucciones largas cada dia.",
-        "- Si olvidas un detalle, Gemini te da tecnicismos.",
-        "- Frustracion y pereza al volver a empezar de cero."
+        "- Entrar a Gemini y pegar prompts largos.",
+        "- Subir los mismos documentos una y otra vez.",
+        "- Riesgo de alucinaciones e invenciones.",
+        "- Olvido de tus antecedentes en nuevas charlas."
     ]
     ahora_lines = [
-        "- Configuras la habilidad una sola vez.",
-        "- Se invoca con un nombre corto (ej. /banco).",
-        "- Tono paciente, claro y adaptado a mayores."
+        "- Creas el Cuaderno tematico una sola vez.",
+        "- Metes tus analiticas o facturas en NLM.",
+        "- Cero alucinacion: citas amarillas [1].",
+        "- Preguntas en 1 linea y te responde al instante."
     ]
-    b2_h = 16 + 16 + max(len(antes_lines), len(ahora_lines)) * 14 + 14
+    b2_h = 24 + (4 * 13.5) + 16
 
     # Columna Izquierda (Antes)
-    pdf.set_fill_color(0.12, 0.08, 0.08)
-    pdf.set_stroke_color(0.6, 0.2, 0.2)
-    pdf.rect(36, cur_y - b2_h, 255, b2_h, fill=True, stroke=True)
-    pdf.draw_text(46, cur_y - 18, "ANTES (Metodo Tradicional Frustrante):", font="F2", size=8.5, r=0.95, g=0.6, b=0.6)
-    ty_a = cur_y - 18 - 16
+    pdf.set_fill_color(0.14, 0.06, 0.08)
+    pdf.set_stroke_color(0.7, 0.25, 0.3)
+    pdf.rect(margin_x, cur_y - b2_h + 14, 255, b2_h, fill=True, stroke=True)
+    pdf.draw_text(margin_x + 10, cur_y - 2, "ANTES (Con Gemini Abierto / Prompts):", font="F2", size=8.2, r=0.95, g=0.5, b=0.5)
+    ty_a = cur_y - 18
     for l in antes_lines:
-        pdf.draw_text(46, ty_a, l, font="F1", size=8.0, r=0.88, g=0.82, b=0.82)
-        ty_a -= 14
+        pdf.draw_text(margin_x + 12, ty_a, l, font="F1", size=7.6, r=0.95, g=0.85, b=0.85)
+        ty_a -= 13.5
 
     # Columna Derecha (Ahora)
     pdf.set_fill_color(0.06, 0.14, 0.10)
     pdf.set_stroke_color(0.2, 0.6, 0.35)
-    pdf.rect(304, cur_y - b2_h, 255, b2_h, fill=True, stroke=True)
-    pdf.draw_text(314, cur_y - 18, "AHORA (Con Gemini Skills + NotebookLM):", font="F2", size=8.5, r=0.5, g=0.9, b=0.65)
-    ty_h = cur_y - 18 - 16
+    pdf.rect(margin_x + 268, cur_y - b2_h + 14, 255, b2_h, fill=True, stroke=True)
+    pdf.draw_text(margin_x + 278, cur_y - 2, "AHORA (Con tu Cuaderno Especializado en NLM):", font="F2", size=8.2, r=0.4, g=0.9, b=0.6)
+    ty_h = cur_y - 18
     for l in ahora_lines:
-        pdf.draw_text(314, ty_h, l, font="F1", size=8.0, r=0.82, g=0.95, b=0.86)
-        ty_h -= 14
+        pdf.draw_text(margin_x + 280, ty_h, l, font="F1", size=7.6, r=0.85, g=0.96, b=0.88)
+        ty_h -= 13.5
 
-    cur_y = cur_y - b2_h - 14
-
-    # -------------------------------------------------------------------------
-    # Bloque 3: El Secreto del Cuaderno
-    # -------------------------------------------------------------------------
-    sec_txt = ("Disenar instrucciones perfectas a mano es dificil. Por eso usamos Gemini Notebook como fabrica: "
-               "cargas en el cuaderno las especificaciones de Google, le pides en espanol corriente lo que necesitas "
-               "(ejemplo: «Quiero un asistente que me explique analisis medicos sin asustarme») y el cuaderno "
-               "redacta el prompt tecnico oficial listo para guardar en tu cuenta de Gemini.")
-    sec_lines = wrap_text(sec_txt, 90)
-    b3_h = 16 + 16 + len(sec_lines) * 13 + 16
-
-    pdf.set_fill_color(0.05, 0.12, 0.18)
-    pdf.set_stroke_color(0.22, 0.74, 0.97)
-    pdf.rect(36, cur_y - b3_h, 523, b3_h, fill=True, stroke=True)
-
-    pdf.draw_text(48, cur_y - 18, "2. EL SECRETO: GEMINI NOTEBOOK COMO CREADOR AUTOMATICO DE SKILLS", font="F2", size=10, r=0.22, g=0.74, b=0.97)
-    ty_s = cur_y - 18 - 16
-    for l in sec_lines:
-        pdf.draw_text(48, ty_s, l, font="F1", size=8.3, r=0.85, g=0.92, b=0.98)
-        ty_s -= 13
-
-    cur_y = cur_y - b3_h - 14
+    cur_y -= (b2_h + 10)
 
     # -------------------------------------------------------------------------
-    # Bloque 4: Ejemplo 1 (/banco-claro) - Altura holgada con fondo envolvente
+    # Bloque 3: Ejemplo 1 - Cuaderno Asistente «Mi Médico Amigo y Analíticas»
     # -------------------------------------------------------------------------
-    prompt_1 = ("Prompt guardado en la Skill:\n"
-                "«Eres Banco Claro, asesor financiero paciente para personas mayores de 65 anos.\n"
-                "Reglas obligatorias:\n"
-                "1. Habla sin tecnicismos bancarios y con total transparencia.\n"
-                "2. Al recibir un recibo o carta, busca: comisiones de mantenimiento, subidas y fechas limite.\n"
-                "3. Concluye siempre con un cuadro titulado QUE DEBO HACER con 3 pasos practicos y la frase\n"
-                "exacta que el usuario debe decir en ventanilla para defender sus ahorros.»")
-    p1_lines = wrap_text(prompt_1, 88)
-    b4_h = 16 + 16 + 14 + len(p1_lines) * 12 + 18
+    ej1_lines = [
+        "Papeles que metes en este cuaderno: Tu ultima analitica de sangre (PDF o foto) y prospectos de medicinas.",
+        "Regla de trato fijada en el cuaderno: «Traduce analiticas a lenguaje claro, sin alarmar y preparando preguntas».",
+        "Como le preguntas a partir de ahora (en 1 sola linea en el chat central):",
+        "  -> «¿Que significa el valor de colesterol que tiene asterisco en mi ultima analitica?»",
+        "  -> «Hazme un resumen de 4 puntos para llevar impreso a mi consulta medica manana».",
+        "Resultado: Te contesta solo con tus datos medicos reales, sin inventar y citando la pagina exacta [1]."
+    ]
+    b3_h = 24 + (len(ej1_lines) * 13.5) + 24
+    pdf.set_fill_color(0.05, 0.11, 0.15)
+    pdf.set_stroke_color(0.2, 0.75, 0.5)
+    pdf.set_line_width(0.8)
+    pdf.rect(margin_x, cur_y - b3_h + 14, content_w, b3_h, fill=True, stroke=True)
 
-    pdf.set_fill_color(0.08, 0.10, 0.16)
-    pdf.set_stroke_color(0.75, 0.52, 0.98)
-    pdf.rect(36, cur_y - b4_h, 523, b4_h, fill=True, stroke=True)
-
-    pdf.draw_text(48, cur_y - 18, "EJEMPLO 1: «/banco-claro» - El Cazador de Comisiones Bancarias", font="F2", size=10, r=0.75, g=0.52, b=0.98)
-    pdf.draw_text(48, cur_y - 32, "Utilidad: Sube una foto de un recibo o carta y te senala comisiones sorpresa en cristiano.", font="F3", size=8.0, r=0.7, g=0.75, b=0.85)
-
-    ty_p1 = cur_y - 32 - 14
-    for l in p1_lines:
-        pdf.draw_text(48, ty_p1, l, font="F1", size=7.8, r=0.92, g=0.92, b=0.95)
-        ty_p1 -= 12
+    pdf.draw_text(margin_x + 10, cur_y - 2, "EJEMPLO 1: CUADERNO ASISTENTE «MI MEDICO AMIGO Y ANALITICAS»", font="F2", size=8.8, r=0.2, g=0.8, b=0.55)
+    ty_3 = cur_y - 18
+    for l in ej1_lines:
+        prefix = "- " if not l.startswith("  ->") else ""
+        fnt = "F2" if l.startswith("  ->") else "F1"
+        col = (0.3, 0.9, 0.7) if l.startswith("  ->") else (0.85, 0.92, 0.95)
+        pdf.draw_text(margin_x + 14, ty_3, prefix + l, font=fnt, size=7.8, r=col[0], g=col[1], b=col[2])
+        ty_3 -= 13.5
 
     # Pie Página 1
-    pdf.draw_text(48, 28, "Monografico 2 • Curso de IA para Seniors • Ficha Didactica Gemini Skills", font="F1", size=8, r=0.5, g=0.55, b=0.65)
-    pdf.draw_text(510, 28, "Pagina 1 / 2", font="F2", size=8, r=0.5, g=0.55, b=0.65)
+    pdf.set_stroke_color(0.85, 0.88, 0.92)
+    pdf.set_line_width(0.5)
+    pdf.line(margin_x, 34, margin_x + content_w, 34)
+    pdf.draw_text(margin_x, 22, "Curso de IA - Monografico 2: Cuadernos como Asistentes Tematicos (NLM)", font="F1", size=7.5, r=0.4, g=0.45, b=0.5)
+    pdf.draw_text(margin_x + content_w - 70, 22, "Pagina 1 de 2", font="F2", size=8.0, r=0.2, g=0.25, b=0.35)
     pdf.end_page()
 
     # =========================================================================
-    # PÁGINA 2: EJEMPLOS 2 Y 3 + GUÍA DE ACTIVACIÓN EN 3 PASOS
+    # PÁGINA 2: EJEMPLOS 2 Y 3 + PROTOCOLO DE CREACIÓN EN 3 PASOS EN NLM
     # =========================================================================
     pdf.start_page()
 
-    # Cabecera Página 2 (y_top = 805)
+    # Cabecera Banner Superior Página 2
     pdf.set_fill_color(0.06, 0.09, 0.16)
-    pdf.set_stroke_color(0.22, 0.74, 0.97)
-    pdf.set_line_width(1.5)
-    pdf.rect(36, 755, 523, 50, fill=True, stroke=True)
+    pdf.set_stroke_color(0.75, 0.45, 0.95)
+    pdf.set_line_width(1.4)
+    pdf.rect(margin_x, 742, content_w, 66, fill=True, stroke=True)
 
-    pdf.draw_text(48, 788, "EJEMPLOS PRACTICOS PARA EL DIA A DIA Y PROTOCOLO EN 3 PASOS", font="F2", size=11, r=0.22, g=0.74, b=0.97)
-    pdf.draw_text(48, 770, "Configuraciones listas para copiar en gemini.google.com > Administrador de Gems / Skills", font="F1", size=8.2, r=0.8, g=0.85, b=0.9)
+    pdf.draw_text(margin_x + 12, 790, "BIBLIOTECA DE ASISTENTES TEMATICOS Y PROTOCOLO 100% NOTEBOOKLM", font="F2", size=8.5, r=0.75, g=0.45, b=0.95)
+    pdf.draw_text(margin_x + 12, 770, "Casos de la Vida Real y Como Crear tu Asistente en 3 Clics", font="F2", size=13.0, r=1.0, g=1.0, b=1.0)
+    pdf.draw_text(margin_x + 12, 752, "Todo ocurre dentro de NotebookLM: no necesitas entrar a Gemini ni configurar nada fuera", font="F1", size=8.3, r=0.85, g=0.88, b=0.94)
 
-    cur_y2 = 740
-
-    # -------------------------------------------------------------------------
-    # Ejemplo 2: Medico Amigo (Dimensionamiento dinámico)
-    # -------------------------------------------------------------------------
-    prompt_2 = ("Prompt guardado en la Skill:\n"
-                "«Eres Medico Amigo, divulgador de salud empatico y pedagogico para personas mayores.\n"
-                "Reglas obligatorias:\n"
-                "1. Jamas des diagnosticos definitivos ni alarmes; traduce los terminos medicos dificiles.\n"
-                "2. Si te presentan una analitica, explica que mide cada parametro alterado usando analogias\n"
-                "cotidianas (ejemplo: 'el colesterol es como el trafico en las tuberias').\n"
-                "3. Concluye siempre con una tarjeta llamada PREGUNTAS PARA MI DOCTOR con 3 preguntas concretas\n"
-                "y claras para llevar apuntadas a la proxima consulta medica.»")
-    p2_lines = wrap_text(prompt_2, 88)
-    b_ej2_h = 16 + 16 + 14 + len(p2_lines) * 12 + 18
-
-    pdf.set_fill_color(0.08, 0.10, 0.16)
-    pdf.set_stroke_color(0.2, 0.8, 0.6)
-    pdf.set_line_width(1.0)
-    pdf.rect(36, cur_y2 - b_ej2_h, 523, b_ej2_h, fill=True, stroke=True)
-
-    pdf.draw_text(48, cur_y2 - 18, "EJEMPLO 2: «/medico-amigo» - El Explicador de Analiticas y Prospectos", font="F2", size=10, r=0.2, g=0.8, b=0.6)
-    pdf.draw_text(48, cur_y2 - 32, "Utilidad: Traduce analiticas de sangre y prospectos a lenguaje cotidiano sin alarmar.", font="F3", size=8.0, r=0.7, g=0.75, b=0.85)
-
-    ty_p2 = cur_y2 - 32 - 14
-    for l in p2_lines:
-        pdf.draw_text(48, ty_p2, l, font="F1", size=7.8, r=0.92, g=0.92, b=0.95)
-        ty_p2 -= 12
-
-    cur_y2 = cur_y2 - b_ej2_h - 14
+    cur_y2 = 724
 
     # -------------------------------------------------------------------------
-    # Ejemplo 3: Mi Biógrafo (Dimensionamiento dinámico)
+    # Ejemplo 2: Cuaderno Asistente «Auditor de Facturas y Seguros»
     # -------------------------------------------------------------------------
-    prompt_3 = ("Prompt guardado en la Skill:\n"
-                "«Eres Mi Biografo, un escritor literario y cronista de la memoria oral familiar.\n"
-                "Reglas obligatorias:\n"
-                "1. Recibe cualquier relato o recuerdo dictado por voz por muy desordenado o informal que sea.\n"
-                "2. Transforma la anecdota en un capitulo de 3 parrafos con estilo literario calido y emotivo,\n"
-                "ambientando la epoca (los olores de la cocina, las calles, la radio de la epoca).\n"
-                "3. Conserva siempre los nombres propios, apodos y expresiones locales que use el narrador.\n"
-                "4. Finaliza con una pregunta inspiradora para seguir recordando otros detalles complementarios.»")
-    p3_lines = wrap_text(prompt_3, 88)
-    b_ej3_h = 16 + 16 + 14 + len(p3_lines) * 12 + 18
+    ej2_lines = [
+        "Papeles que metes en este cuaderno: Tu factura de la luz en PDF y la poliza del seguro del hogar o coche.",
+        "Como le preguntas en 1 sola linea:",
+        "  -> «¿Hay algun concepto de mantenimiento extra cobrado en esta factura de la luz?»",
+        "  -> «Si se me rompe el frigorifico por una tormenta, ¿mi seguro lo cubre? Citame la clausula exacta.»",
+        "Resultado: Lee las 40 paginas de la poliza en segundos y te da la respuesta con el numero de pagina."
+    ]
+    b_ej2_h = 24 + (len(ej2_lines) * 13.5) + 22
+    pdf.set_fill_color(0.06, 0.10, 0.16)
+    pdf.set_stroke_color(0.2, 0.6, 0.9)
+    pdf.set_line_width(0.8)
+    pdf.rect(margin_x, cur_y2 - b_ej2_h + 14, content_w, b_ej2_h, fill=True, stroke=True)
 
-    pdf.set_fill_color(0.08, 0.10, 0.16)
-    pdf.set_stroke_color(0.98, 0.75, 0.2)
-    pdf.rect(36, cur_y2 - b_ej3_h, 523, b_ej3_h, fill=True, stroke=True)
+    pdf.draw_text(margin_x + 10, cur_y2 - 2, "EJEMPLO 2: CUADERNO ASISTENTE «AUDITOR DE FACTURAS Y SEGUROS»", font="F2", size=8.8, r=0.3, g=0.7, b=1.0)
+    ty_e2 = cur_y2 - 18
+    for l in ej2_lines:
+        prefix = "- " if not l.startswith("  ->") else ""
+        fnt = "F2" if l.startswith("  ->") else "F1"
+        col = (0.4, 0.8, 1.0) if l.startswith("  ->") else (0.85, 0.90, 0.96)
+        pdf.draw_text(margin_x + 14, ty_e2, prefix + l, font=fnt, size=7.8, r=col[0], g=col[1], b=col[2])
+        ty_e2 -= 13.5
 
-    pdf.draw_text(48, cur_y2 - 18, "EJEMPLO 3: «/mi-biografo» - El Cronista de Memorias y Relatos Familiares", font="F2", size=10, r=0.98, g=0.75, b=0.2)
-    pdf.draw_text(48, cur_y2 - 32, "Utilidad: Dictas un recuerdo desordenado por voz y te lo escribe como capitulo novelado.", font="F3", size=8.0, r=0.7, g=0.75, b=0.85)
-
-    ty_p3 = cur_y2 - 32 - 14
-    for l in p3_lines:
-        pdf.draw_text(48, ty_p3, l, font="F1", size=7.8, r=0.92, g=0.92, b=0.95)
-        ty_p3 -= 12
-
-    cur_y2 = cur_y2 - b_ej3_h - 14
+    cur_y2 -= (b_ej2_h + 10)
 
     # -------------------------------------------------------------------------
-    # Guía en 3 Pasos (Dimensionamiento dinámico amplio y holgado)
+    # Ejemplo 3: Cuaderno Asistente «Mi Biógrafo Familiar (Años 70 y 80)»
     # -------------------------------------------------------------------------
-    pasos = [
-        ("PASO 1: Pide la Skill a Gemini Notebook",
-         "Abre tu cuaderno de NotebookLM y dile en espanol: «Escribeme una Skill de Gemini para...». El cuaderno redactara el texto tecnico."),
-        ("PASO 2: Entra en Gemini y crea el nuevo Gem",
-         "Abre gemini.google.com en tu navegador o iPad. En el menu izquierdo haz clic en «Gems / Skills» y selecciona «+ Nuevo Gem»."),
-        ("PASO 3: Pega las instrucciones y guarda",
-         "Asignale un nombre corto (ej. Banco Claro) y pega las instrucciones copiadas. Pulsa «Guardar». ¡Tu asistente estara listo para siempre!")
+    ej3_lines = [
+        "Papeles que metes en este cuaderno: Audios dictados por voz con anecdotas de juventud y musica de la epoca.",
+        "Como le preguntas en 1 sola linea:",
+        "  -> «Escribe un capitulo novelado y calido sobre el viaje a la playa en el Seat 127 para mis nietos».",
+        "  -> «En Studio genera el Audio Overview con dos periodistas comentando mis recuerdos de juventud».",
+        "Resultado: Convierte recuerdos sueltos en un libro familiar y en un podcast de radio para regalar a la familia."
+    ]
+    b_ej3_h = 24 + (len(ej3_lines) * 13.5) + 22
+    pdf.set_fill_color(0.12, 0.08, 0.16)
+    pdf.set_stroke_color(0.8, 0.5, 0.9)
+    pdf.set_line_width(0.8)
+    pdf.rect(margin_x, cur_y2 - b_ej3_h + 14, content_w, b_ej3_h, fill=True, stroke=True)
+
+    pdf.draw_text(margin_x + 10, cur_y2 - 2, "EJEMPLO 3: CUADERNO ASISTENTE «MI BIOGRAFO FAMILIAR (ANOS 70 Y 80)»", font="F2", size=8.8, r=0.85, g=0.55, b=0.95)
+    ty_e3 = cur_y2 - 18
+    for l in ej3_lines:
+        prefix = "- " if not l.startswith("  ->") else ""
+        fnt = "F2" if l.startswith("  ->") else "F1"
+        col = (0.9, 0.7, 1.0) if l.startswith("  ->") else (0.92, 0.88, 0.96)
+        pdf.draw_text(margin_x + 14, ty_e3, prefix + l, font=fnt, size=7.8, r=col[0], g=col[1], b=col[2])
+        ty_e3 -= 13.5
+
+    cur_y2 -= (b_ej3_h + 10)
+
+    # -------------------------------------------------------------------------
+    # Protocolo Oficial en 3 Pasos (100% dentro de NotebookLM)
+    # -------------------------------------------------------------------------
+    pasos_lines = [
+        ("PASO 1: Crea el Cuaderno Tematico en NotebookLM",
+         "Entra en notebooklm.google.com y pulsa «+ Nuevo cuaderno». Ponle el nombre de tu asistente (ej. «Salud y Analiticas» o «Auditor Facturas»)."),
+        ("PASO 2: Mete los Papeles Reales (+ Anadir fuentes)",
+         "Sube las analiticas en PDF, las fotos de informes o la factura de la luz. En 3 segundos NLM habra creado la memoria de tu asistente."),
+        ("PASO 3: Fija tus Reglas de Trato en Studio",
+         "En la columna derecha Studio anade una Nota fija: «Respóndeme siempre en 4 puntos claros, letra grande y sin tecnicismos». ¡Listo para siempre!")
     ]
 
-    # Medir altura requerida de los 3 pasos
-    total_step_lines = sum([len(wrap_text(d, 86)) for _, d in pasos])
-    b_pasos_h = 16 + 18 + len(pasos) * 16 + total_step_lines * 12 + 20
+    total_p_lines = sum(len(wrap_text(d, 72)) for _, d in pasos_lines)
+    b_pasos_h = 24 + (len(pasos_lines) * 16) + (total_p_lines * 13.5) + 26
+    pdf.set_fill_color(0.06, 0.12, 0.10)
+    pdf.set_stroke_color(0.3, 0.8, 0.5)
+    pdf.set_line_width(1.0)
+    pdf.rect(margin_x, cur_y2 - b_pasos_h + 14, content_w, b_pasos_h, fill=True, stroke=True)
 
-    pdf.set_fill_color(0.06, 0.10, 0.18)
-    pdf.set_stroke_color(0.22, 0.74, 0.97)
-    pdf.rect(36, cur_y2 - b_pasos_h, 523, b_pasos_h, fill=True, stroke=True)
-
-    pdf.draw_text(48, cur_y2 - 20, "COMO GUARDAR TU SKILL EN GEMINI EN 3 CLICS SENCILLOS", font="F2", size=10.5, r=0.22, g=0.74, b=0.97)
-
-    ty_step = cur_y2 - 20 - 18
-    for titulo, desc in pasos:
-        pdf.draw_text(48, ty_step, titulo, font="F2", size=8.8, r=1.0, g=0.85, b=0.4)
-        ty_step -= 13
-        for dl in wrap_text(desc, 86):
-            pdf.draw_text(48, ty_step, dl, font="F1", size=8.0, r=0.85, g=0.9, b=0.95)
-            ty_step -= 12
-        ty_step -= 5
+    pdf.draw_text(margin_x + 10, cur_y2 - 2, "PROTOCOLO OFICIAL: COMO CREAR TU ASISTENTE EN NOTEBOOKLM EN 3 CLICS", font="F2", size=8.8, r=0.3, g=0.85, b=0.55)
+    ty_p = cur_y2 - 18
+    for tit, desc in pasos_lines:
+        pdf.draw_text(margin_x + 14, ty_p, tit, font="F2", size=8.2, r=1.0, g=0.85, b=0.35)
+        ty_p -= 14
+        for dl in wrap_text(desc, 72):
+            pdf.draw_text(margin_x + 22, ty_p, dl, font="F1", size=7.8, r=0.88, g=0.96, b=0.90)
+            ty_p -= 13.0
+        ty_p -= 4
 
     # Pie Página 2
-    pdf.draw_text(48, 28, "Monografico 2 • Curso de IA para Seniors • Enlace video oficial: youtu.be/n2-YWzDpGZY", font="F1", size=8, r=0.5, g=0.55, b=0.65)
-    pdf.draw_text(510, 28, "Pagina 2 / 2", font="F2", size=8, r=0.5, g=0.55, b=0.65)
+    pdf.set_stroke_color(0.85, 0.88, 0.92)
+    pdf.set_line_width(0.5)
+    pdf.line(margin_x, 34, margin_x + content_w, 34)
+    pdf.draw_text(margin_x, 22, "Curso de IA - Monografico 2: Cuadernos como Asistentes Tematicos (NLM)", font="F1", size=7.5, r=0.4, g=0.45, b=0.5)
+    pdf.draw_text(margin_x + content_w - 70, 22, "Pagina 2 de 2", font="F2", size=8.0, r=0.2, g=0.25, b=0.35)
     pdf.end_page()
 
     pdf.write_to_file(PDF_OUTPUT)
-    print(f"PDF generado con exito y holgura verificada: {PDF_OUTPUT}")
+    print(f"✅ PDF generado con éxito, holgura verificada y cero líneas cortadas: {PDF_OUTPUT}")
 
 if __name__ == "__main__":
     compilar_pdf()
