@@ -3,8 +3,8 @@
 """
 generar_pdf_taller_skills.py
 Genera 'TALLER_CREACION_GEMINI_SKILLS_CON_NOTEBOOKLM.pdf' con dimensionamiento dinámico
-holgado, cero líneas cortadas y enfoque 100% NotebookLM (los cuadernos como asistentes
-temáticos que sustituyen por completo a los Gems de Gemini).
+holgado, cero líneas cortadas y enfoque 100% didáctico positivo: cómo crear tus propias
+Skills (asistentes temáticos) directamente con los Cuadernos de NotebookLM.
 100% Python nativo estándar (sin dependencias externas).
 """
 
@@ -144,7 +144,7 @@ def compilar_pdf():
     content_w = 523
 
     # =========================================================================
-    # PÁGINA 1: CONCEPTO, COMPARATIVA Y EJEMPLO 1 (MÉDICO Y ANALÍTICAS)
+    # PÁGINA 1: QUÉ ES UNA SKILL CON EL CUADERNO Y EJEMPLO 1 (MÉDICO Y ANALÍTICAS)
     # =========================================================================
     pdf.start_page()
 
@@ -156,19 +156,19 @@ def compilar_pdf():
 
     pdf.draw_text(margin_x + 12, 790, "MONOGRAFICO 2 - CURSO DE INTELIGENCIA ARTIFICIAL (+65)", font="F2", size=8.5, r=0.75, g=0.45, b=0.95)
     pdf.draw_text(margin_x + 12, 770, "Tus Cuadernos como Asistentes Especializados (Skills)", font="F2", size=13.0, r=1.0, g=1.0, b=1.0)
-    pdf.draw_text(margin_x + 12, 752, "El cuaderno es tu asistente tematico: olvidate de Gemini y de escribir prompts largos", font="F1", size=8.3, r=0.85, g=0.88, b=0.94)
+    pdf.draw_text(margin_x + 12, 752, "Crea asistentes a tu medida con NotebookLM: cada cuaderno sabe su tema y recuerda tus papeles", font="F1", size=8.3, r=0.85, g=0.88, b=0.94)
 
     cur_y = 724
 
     # -------------------------------------------------------------------------
-    # Bloque 1: El Gran Cambio Pedagógico (Por qué no usamos Gemini)
+    # Bloque 1: Qué es una Skill con el Cuaderno
     # -------------------------------------------------------------------------
     intro_lines = [
-        "En lugar de entrar a Gemini para configurar asistentes externos (Gems) que alucinan y olvidan,",
-        "en NotebookLM cada Cuaderno que creas ES ya tu asistente especializado tematico (tu propia Skill).",
-        "Cuando te dan una analitica medica, una factura o el seguro, se meten directamente en su cuaderno de NLM.",
-        "El cuaderno queda guardado para siempre: no tienes que volver a explicarle quien eres ni pegar tus papeles.",
-        "Cada vez que entres, le haces preguntas de 1 sola linea y te respondera con rigor y citas [1] exactas."
+        "Una «Skill» es simplemente un asistente inteligente especializado en un solo tema de tu vida diaria.",
+        "Con NotebookLM puedes crear tantas Skills como necesites, convirtiendo cada Cuaderno en un experto tematico.",
+        "Al alimentar tu cuaderno con tus papeles (analiticas, contratos, recetas o audios) y dejarle una regla de trato,",
+        "el asistente queda configurado para siempre: no tienes que volver a escribirle instrucciones largas.",
+        "Cuando entras al cuaderno, le preguntas en 1 sola linea y te responde con rigor, sin inventar y con citas [1]."
     ]
     b1_h = 22 + (len(intro_lines) * 13.5) + 20
     pdf.set_fill_color(0.07, 0.10, 0.18)
@@ -176,7 +176,7 @@ def compilar_pdf():
     pdf.set_line_width(0.8)
     pdf.rect(margin_x, cur_y - b1_h + 14, content_w, b1_h, fill=True, stroke=True)
 
-    pdf.draw_text(margin_x + 10, cur_y - 2, "1. LA REGLA DE ORO: EL CUADERNO DE NLM SUSTITUYE A LOS GEMS DE GEMINI", font="F2", size=8.8, r=0.75, g=0.45, b=0.95)
+    pdf.draw_text(margin_x + 10, cur_y - 2, "1. ¿QUE ES UNA SKILL EN NOTEBOOKLM Y POR QUE NOS FACILITA LA VIDA?", font="F2", size=8.8, r=0.75, g=0.45, b=0.95)
     ty_1 = cur_y - 18
     for l in intro_lines:
         pdf.draw_text(margin_x + 14, ty_1, "- " + l, font="F1", size=7.8, r=0.85, g=0.88, b=0.95)
@@ -185,41 +185,41 @@ def compilar_pdf():
     cur_y -= (b1_h + 10)
 
     # -------------------------------------------------------------------------
-    # Bloque 2: Comparativa Antes vs Ahora (Dos columnas simétricas)
+    # Bloque 2: Las Dos Grandes Ventajas del Asistente Cuaderno
     # -------------------------------------------------------------------------
-    antes_lines = [
-        "- Entrar a Gemini y pegar prompts largos.",
-        "- Subir los mismos documentos una y otra vez.",
-        "- Riesgo de alucinaciones e invenciones.",
-        "- Olvido de tus antecedentes en nuevas charlas."
+    col1_lines = [
+        "- Memoria Permanente: tus analisis y contratos",
+        "  se quedan guardados dentro de su carpeta.",
+        "- No tienes que volver a subir el archivo cada vez",
+        "  que quieras hacer una consulta o repasar."
     ]
-    ahora_lines = [
-        "- Creas el Cuaderno tematico una sola vez.",
-        "- Metes tus analiticas o facturas en NLM.",
-        "- Cero alucinacion: citas amarillas [1].",
-        "- Preguntas en 1 linea y te responde al instante."
+    col2_lines = [
+        "- Respuesta en 1 Sola Linea: preguntas directo",
+        "  sin tener que teclear parrafos de instrucciones.",
+        "- Certeza Total: resalta el texto original en",
+        "  amarillo al pulsar la cita [1] con tus ojos."
     ]
     b2_h = 24 + (4 * 13.5) + 16
 
-    # Columna Izquierda (Antes)
-    pdf.set_fill_color(0.14, 0.06, 0.08)
-    pdf.set_stroke_color(0.7, 0.25, 0.3)
+    # Columna Izquierda
+    pdf.set_fill_color(0.06, 0.11, 0.18)
+    pdf.set_stroke_color(0.2, 0.5, 0.8)
     pdf.rect(margin_x, cur_y - b2_h + 14, 255, b2_h, fill=True, stroke=True)
-    pdf.draw_text(margin_x + 10, cur_y - 2, "ANTES (Con Gemini Abierto / Prompts):", font="F2", size=8.2, r=0.95, g=0.5, b=0.5)
-    ty_a = cur_y - 18
-    for l in antes_lines:
-        pdf.draw_text(margin_x + 12, ty_a, l, font="F1", size=7.6, r=0.95, g=0.85, b=0.85)
-        ty_a -= 13.5
+    pdf.draw_text(margin_x + 10, cur_y - 2, "DOCUMENTOS SIEMPRE DISPONIBLES:", font="F2", size=8.2, r=0.4, g=0.8, b=1.0)
+    ty_c1 = cur_y - 18
+    for l in col1_lines:
+        pdf.draw_text(margin_x + 12, ty_c1, l, font="F1", size=7.6, r=0.85, g=0.92, b=0.98)
+        ty_c1 -= 13.5
 
-    # Columna Derecha (Ahora)
+    # Columna Derecha
     pdf.set_fill_color(0.06, 0.14, 0.10)
     pdf.set_stroke_color(0.2, 0.6, 0.35)
     pdf.rect(margin_x + 268, cur_y - b2_h + 14, 255, b2_h, fill=True, stroke=True)
-    pdf.draw_text(margin_x + 278, cur_y - 2, "AHORA (Con tu Cuaderno Especializado en NLM):", font="F2", size=8.2, r=0.4, g=0.9, b=0.6)
-    ty_h = cur_y - 18
-    for l in ahora_lines:
-        pdf.draw_text(margin_x + 280, ty_h, l, font="F1", size=7.6, r=0.85, g=0.96, b=0.88)
-        ty_h -= 13.5
+    pdf.draw_text(margin_x + 278, cur_y - 2, "MAXIMA COMODIDAD Y CERTEZA:", font="F2", size=8.2, r=0.4, g=0.9, b=0.6)
+    ty_c2 = cur_y - 18
+    for l in col2_lines:
+        pdf.draw_text(margin_x + 280, ty_c2, l, font="F1", size=7.6, r=0.85, g=0.96, b=0.88)
+        ty_c2 -= 13.5
 
     cur_y -= (b2_h + 10)
 
@@ -268,9 +268,9 @@ def compilar_pdf():
     pdf.set_line_width(1.4)
     pdf.rect(margin_x, 742, content_w, 66, fill=True, stroke=True)
 
-    pdf.draw_text(margin_x + 12, 790, "BIBLIOTECA DE ASISTENTES TEMATICOS Y PROTOCOLO 100% NOTEBOOKLM", font="F2", size=8.5, r=0.75, g=0.45, b=0.95)
+    pdf.draw_text(margin_x + 12, 790, "BIBLIOTECA DE ASISTENTES TEMATICOS Y PROTOCOLO EN NOTEBOOKLM", font="F2", size=8.5, r=0.75, g=0.45, b=0.95)
     pdf.draw_text(margin_x + 12, 770, "Casos de la Vida Real y Como Crear tu Asistente en 3 Clics", font="F2", size=13.0, r=1.0, g=1.0, b=1.0)
-    pdf.draw_text(margin_x + 12, 752, "Todo ocurre dentro de NotebookLM: no necesitas entrar a Gemini ni configurar nada fuera", font="F1", size=8.3, r=0.85, g=0.88, b=0.94)
+    pdf.draw_text(margin_x + 12, 752, "Todo ocurre dentro de NotebookLM: crea asistentes comodos y practicos para tu dia a dia", font="F1", size=8.3, r=0.85, g=0.88, b=0.94)
 
     cur_y2 = 724
 
