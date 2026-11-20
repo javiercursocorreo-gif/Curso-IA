@@ -330,14 +330,17 @@ def build_worksheet_with_flow(
     pdf.draw_text(42, 420, '3. AMPLIACION: ¡DALE VIDA EN VIDEO CON GOOGLE FLOW! (Gasta 10 de tus 50 puntos diarios)', font='F2', size=8.8, r=0.75, g=0.3, b=0.02)
     
     steps_txt = [
-        "1. Guarda la imagen: Haz clic sobre la imagen generada en Gemini y pulsa el icono de 'Descargar'.",
-        "2. Entra en Google Flow: Abre https://labs.google/flow con tu cuenta de Google y pulsa en 'Subir Imagen' (Upload).",
+        "1. Descarga la imagen: Haz clic en la imagen generada en Gemini y pulsa en 'Descargar' (la flecha).",
+        "2. Entra en Google Flow y arrastra: Abre https://labs.google/flow. En lugar de pulsar en 'Subir imagen', como ya la tienes en la flechita de descargas del navegador, arrastrala directamente a la pantalla de Flow.",
         "3. Pega el prompt de abajo: En el recuadro de texto de Flow, pega el siguiente prompt de camara y pulsa 'Generar Video'."
     ]
-    y_st = 405
+    y_st = 406
     for st in steps_txt:
-        pdf.draw_text(42, y_st, st, font='F2' if '1.' in st or '2.' in st or '3.' in st else 'F1', size=7.2, r=0.25, g=0.2, b=0.15)
-        y_st -= 11
+        lines_st = wrap_text(st, 114)
+        for idx, l in enumerate(lines_st):
+            is_bold = (idx == 0 and ('1.' in l or '2.' in l or '3.' in l))
+            pdf.draw_text(42, y_st, l, font='F2' if is_bold else 'F1', size=7.2, r=0.25, g=0.2, b=0.15)
+            y_st -= 10
 
     # Recuadro interior Prompt Flow
     pdf.set_fill_color(1.0, 1.0, 1.0)
