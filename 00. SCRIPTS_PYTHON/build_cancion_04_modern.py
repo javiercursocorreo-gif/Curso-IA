@@ -2,12 +2,15 @@
 """
 build_cancion_04_modern.py
 Moderniza CANCION_04_CUANDO_CALIENTA_EL_SOL.html al estándar OLED de CANCION_16:
+- Botones flotantes (HUD): Incluye 2 ritmos Korg (174 Beguine 1 y 175 Beguine 2).
+- Poda estricta de sonidos: eliminados 025 (Trumpet), 052 (SteelGuitar) y 001 (Grand Piano).
+- Conservados sonidos clave: 037 Full Organ, 095 St.Strings, 061 The Strings, 038 Jazz Organ, 071 Oooh&Aahs.
 - Header Box moderno con badges OLED de alta legibilidad
 - Botón verde esmeralda de apertura a pantalla completa
-- Guía de estructura y carácter (174 Beguine 1, 112 BPM, Do Mayor)
+- Guía de estructura y carácter (174 Beguine 1 y 175 Beguine 2, Do Mayor)
 - Guía de transiciones armónicas con posiciones suaves (mano izquierda relajada)
 - Atril Digital OLED de compases (Intro, Estrofa 1, Puente, Estribillo, Estrofa 2, Cierre)
-- Modal a pantalla completa con HUD de 8 Keyboard Sets (037 Full Organ, 095 St.Strings...)
+- Modal a pantalla completa con HUD equilibrado en 2 líneas de 4 botones
 - Cifra Club OLED con letra y acordes en gran formato
 - Triple Escudo Anti-Apagado + Smart Dimming 60s + Destello táctil iPad
 - Motor Web MIDI blindado (Canal 16 global / Canal 1 Upper, Banco 33 maestro, All Notes Off)
@@ -30,7 +33,7 @@ HTML_CONTENT = """<!DOCTYPE html>
     <meta http-equiv="Expires" content="0">
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='bg' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%23d97706'/%3E%3Cstop offset='100%25' stop-color='%230b0f17'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='100' height='100' rx='22' fill='url(%23bg)' stroke='%23fbbf24' stroke-width='3'/%3E%3Ctext x='50' y='74' font-family='-apple-system, BlinkMacSystemFont, sans-serif' font-weight='900' font-size='68' text-anchor='middle' fill='%23fbbf24'%3ES%3C/text%3E%3C/svg%3E">
     <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='bg' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%23d97706'/%3E%3Cstop offset='100%25' stop-color='%230b0f17'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='100' height='100' rx='22' fill='url(%23bg)' stroke='%23fbbf24' stroke-width='3'/%3E%3Ctext x='50' y='74' font-family='-apple-system, BlinkMacSystemFont, sans-serif' font-weight='900' font-size='68' text-anchor='middle' fill='%23fbbf24'%3ES%3C/text%3E%3C/svg%3E">
-    <title>Cuando Calienta el Sol · Korg EK-50 (v215)</title>
+    <title>Cuando Calienta el Sol · Korg EK-50 (v216)</title>
     <style>
         :root {
             --bg-color: #0b0f17;
@@ -322,11 +325,11 @@ HTML_CONTENT = """<!DOCTYPE html>
                 <div class="song-author">Música y Letra: Carlos & Mario Rigual (1961) · Popularizada por Luis Miguel</div>
             </div>
             <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
-                <button onclick="dispararDestelloBoton(this); window.location.href=window.location.pathname+'?v=215&t='+Date.now()" 
+                <button onclick="dispararDestelloBoton(this); window.location.href=window.location.pathname+'?v=216&t='+Date.now()" 
                    style="background: #0284c7; color: #ffffff; border: 1px solid #38bdf8; padding: 7px 12px; border-radius: 8px; font-size: 0.82rem; font-weight: 700; cursor: pointer; touch-action: manipulation;" title="Recargar y actualizar versión sin caché">
-                    🔄 Recargar Versión (v215)
+                    🔄 Recargar Versión (v216)
                 </button>
-                <a href="REPERTORIO_KORG_EK50.html?v=215" 
+                <a href="REPERTORIO_KORG_EK50.html?v=216" 
                    style="background: #1e293b; color: #cbd5e1; border: 1px solid #334155; padding: 7px 12px; border-radius: 8px; font-size: 0.82rem; font-weight: 700; text-decoration: none;">
                     ⬅ Repertorio
                 </a>
@@ -339,13 +342,13 @@ HTML_CONTENT = """<!DOCTYPE html>
                 <span style="color: #93c5fd;">· Teclas Blancas (Sin alteraciones)</span>
             </div>
             <div class="badge-tonalidad" style="background: rgba(16, 185, 129, 0.15); border-color: rgba(16, 185, 129, 0.4); color: #a7f3d0;">
-                🥁 Estilo: 174 Beguine 1 · 4/4 · 112 BPM
+                🥁 Ritmos: 174 Beguine 1 (112 BPM) / 175 Beguine 2 (100 BPM)
             </div>
             <div class="badge-tonalidad" style="background: rgba(168, 85, 247, 0.15); border-color: rgba(168, 85, 247, 0.4); color: #e9d5ff;">
                 🎹 Modo: Atril sin partitura (Tocar de oído)
             </div>
             <div class="badge-tonalidad" style="background: rgba(245, 158, 11, 0.15); border-color: rgba(245, 158, 11, 0.4); color: #fde68a;">
-                🎹 STS: 037 Full Organ / 095 St.Strings / 061 The Strings / 001 Piano
+                🎹 STS: 037 Full Organ / 095 St.Strings / 061 The Strings / 038 Jazz Organ / 071 Oooh&Aahs
             </div>
         </div>
     </div>
@@ -355,7 +358,7 @@ HTML_CONTENT = """<!DOCTYPE html>
         <button onclick="abrirPartituraPantallaCompleta(this)" 
                 style="width: 100%; background: linear-gradient(135deg, #059669 0%, #10b981 100%); color: #ffffff; border: 2px solid #34d399; padding: 16px; border-radius: 12px; font-size: 1.15rem; font-weight: 900; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 4px 20px rgba(16, 185, 129, 0.35); touch-action: manipulation;">
             <span style="font-size: 1.4rem;">🎼</span>
-            <span>Abrir Atril de Acordes a Pantalla Completa (Estilo 174 Beguine)</span>
+            <span>Abrir Atril de Acordes a Pantalla Completa (Estilos 174 & 175)</span>
             <span style="font-size: 1.2rem;">➔</span>
         </button>
     </div>
@@ -364,14 +367,14 @@ HTML_CONTENT = """<!DOCTYPE html>
     <div class="section-box">
         <div class="section-title">
             <span>📜 Estructura de "Cuando Calienta el Sol"</span>
-            <span style="font-size: 0.8rem; color: #94a3b8; font-weight: normal;">Estilo 174 Beguine 1 (112 BPM)</span>
+            <span style="font-size: 0.8rem; color: #94a3b8; font-weight: normal;">Estilos 174 & 175 Beguine</span>
         </div>
         <div style="font-size: 0.88rem; color: #cbd5e1; line-height: 1.6;">
             <p style="margin: 0 0 8px;">
-                <b>• Estilo Korg EK-50:</b> <b>174 Beguine 1</b> (Banco 161-176). Ritmo caribeño cadencioso en 4/4 a 112 BPM, ideal para boleros rítmicos.
+                <b>• Ritmos Korg EK-50:</b> <b>174 Beguine 1</b> (112 BPM, cadencia playera tradicional) y <b>175 Beguine 2</b> (100 BPM, bolero más pausado y romántico).
             </p>
             <p style="margin: 0 0 8px;">
-                <b>• Timbres STS Clave:</b> <b>037 Full Organ</b> (Banco Maestro MSB 33) como sonido solista principal cálido, respaldado por <b>095 St.Strings</b> y <b>061 The Strings</b> en los crescendos.
+                <b>• Timbres STS Seleccionados:</b> <b>037 Full Organ</b> (Banco Maestro MSB 33) como sonido solista principal, <b>095 St.Strings</b> y <b>061 The Strings</b> para relleno orquestal, <b>038 Jazz Organ</b> y <b>071 Oooh&Aahs</b>.
             </p>
             <p style="margin: 0;">
                 <b>• Progresión Central:</b> Verso y Puente en <code>C ➔ Am ➔ Em ➔ F ➔ G ➔ C</code>. Estribillo rítmico: <code>C ➔ Am ➔ Dm ➔ G</code>.
@@ -515,16 +518,16 @@ HTML_CONTENT = """<!DOCTYPE html>
         </div>
     </div>
 
-    <!-- MODAL PANTALLA COMPLETA: ATRIL OLED CON HUD DE 8 SONIDOS -->
+    <!-- MODAL PANTALLA COMPLETA: ATRIL OLED CON BOTONES FLOTANTES (2 RITMOS + 5 SONIDOS SELECCIONADOS) -->
     <div id="modal-partitura-fullscreen" style="display:none; position:fixed; inset:0; z-index:999999; background:#000000; flex-direction:column; overflow:hidden;">
         
-        <!-- HUD SUPERIOR FIJO (2 FILAS DE 4 SONIDOS + CONTROLES) -->
-        <div style="position:fixed; top:0; left:0; width:100%; z-index:1000000; background:rgba(11,15,23,0.95); border-bottom:2px solid #334155; padding:8px 12px; display:flex; flex-direction:column; gap:6px; backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); box-sizing:border-box;">
+        <!-- HUD SUPERIOR FIJO (2 LÍNEAS EQUILIBRADAS DE 4 BOTONES TÁCTILES) -->
+        <div style="position:fixed; top:0; left:0; width:100%; z-index:1000000; background:rgba(11,15,23,0.96); border-bottom:2px solid #334155; padding:8px 12px; display:flex; flex-direction:column; gap:6px; backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); box-sizing:border-box;">
             
             <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
                 <div style="display:flex; align-items:center; gap:8px;">
                     <span style="font-size:1.1rem;">☀️</span>
-                    <span style="font-weight:900; font-size:0.95rem; color:#f8fafc; letter-spacing:0.5px;">CUANDO CALIENTA EL SOL · BEGUINE 174 (112 BPM)</span>
+                    <span style="font-weight:900; font-size:0.95rem; color:#f8fafc; letter-spacing:0.5px;">CUANDO CALIENTA EL SOL · RITMOS & SONIDOS KORG EK-50</span>
                 </div>
                 <div style="display:flex; align-items:center; gap:8px;">
                     <button onclick="cerrarPartituraPantallaCompleta(this)" style="background:#e11d48; color:#fff; border:none; padding:6px 14px; border-radius:8px; font-weight:900; font-size:0.82rem; cursor:pointer;">
@@ -533,9 +536,12 @@ HTML_CONTENT = """<!DOCTYPE html>
                 </div>
             </div>
 
-            <!-- FILA 1 DE SONIDOS HUD: 037, 095, 061, 001 -->
+            <!-- LÍNEA 1 DE BOTONES FLOTANTES: RITMO 174 + SONIDOS (037, 095, 061) -->
             <div style="display:flex; align-items:center; gap:7px; justify-content:center; width:100%;">
-                <button class="hud-sound-btn active-sound" data-sound="037" onclick="cargarKeyboardSet('037', this)" style="background:linear-gradient(180deg, #0d9488 0%, #0f766e 100%); color:#ffffff; border:1px solid #2dd4bf; padding:7px 10px; min-height:36px; border-radius:7px; font-weight:800; font-size:0.80rem; cursor:pointer; touch-action:manipulation; min-width:105px; box-shadow:0 0 14px rgba(45,212,191,0.7);">
+                <button class="hud-style-btn active-style" data-style="174" onclick="activarEstilo('174', this)" style="background:linear-gradient(180deg, #0284c7 0%, #0369a1 100%); color:#ffffff; border:1px solid #38bdf8; padding:7px 10px; min-height:36px; border-radius:7px; font-weight:800; font-size:0.80rem; cursor:pointer; touch-action:manipulation; min-width:125px; text-align:center; box-shadow:0 0 14px rgba(56,189,248,0.7);">
+                    🥁 174 Beguine 1
+                </button>
+                <button class="hud-sound-btn active-sound" data-sound="037" onclick="cargarKeyboardSet('037', this)" style="background:linear-gradient(180deg, #d97706 0%, #b45309 100%); color:#ffffff; border:1px solid #fbbf24; padding:7px 10px; min-height:36px; border-radius:7px; font-weight:800; font-size:0.80rem; cursor:pointer; touch-action:manipulation; min-width:105px; box-shadow:0 0 14px rgba(251,191,36,0.7);">
                     🎹 037 Full Organ
                 </button>
                 <button class="hud-sound-btn" data-sound="095" onclick="cargarKeyboardSet('095', this)" style="background:#1e293b; color:#cbd5e1; border:1px solid #475569; padding:7px 10px; min-height:36px; border-radius:7px; font-weight:800; font-size:0.80rem; cursor:pointer; touch-action:manipulation; min-width:105px;">
@@ -544,27 +550,21 @@ HTML_CONTENT = """<!DOCTYPE html>
                 <button class="hud-sound-btn" data-sound="061" onclick="cargarKeyboardSet('061', this)" style="background:#1e293b; color:#cbd5e1; border:1px solid #475569; padding:7px 10px; min-height:36px; border-radius:7px; font-weight:800; font-size:0.80rem; cursor:pointer; touch-action:manipulation; min-width:105px;">
                     🎻 061 The Strings
                 </button>
-                <button class="hud-sound-btn" data-sound="001" onclick="cargarKeyboardSet('001', this)" style="background:#1e293b; color:#cbd5e1; border:1px solid #475569; padding:7px 10px; min-height:36px; border-radius:7px; font-weight:800; font-size:0.80rem; cursor:pointer; touch-action:manipulation; min-width:105px;">
-                    🎹 001 Grand Piano
-                </button>
             </div>
 
-            <!-- FILA 2 DE SONIDOS HUD: RESET KORG + 025, 052, 038, 071 -->
+            <!-- LÍNEA 2 DE BOTONES FLOTANTES: RITMO 175 + SONIDOS (038, 071) + RESET KORG -->
             <div style="display:flex; align-items:center; gap:7px; justify-content:center; width:100%;">
-                <button onclick="desbloquearKorgEK50(this)" style="background:rgba(239,68,68,0.2); color:#fca5a5; border:1px solid #ef4444; padding:7px 10px; min-height:36px; border-radius:7px; font-weight:800; font-size:0.80rem; cursor:pointer; touch-action:manipulation; min-width:125px; text-align:center;">
-                    ⚡ Reset Korg
-                </button>
-                <button class="hud-sound-btn" data-sound="025" onclick="cargarKeyboardSet('025', this)" style="background:#1e293b; color:#cbd5e1; border:1px solid #475569; padding:7px 10px; min-height:36px; border-radius:7px; font-weight:800; font-size:0.80rem; cursor:pointer; touch-action:manipulation; min-width:105px;">
-                    🎺 025 Trumpet
-                </button>
-                <button class="hud-sound-btn" data-sound="052" onclick="cargarKeyboardSet('052', this)" style="background:#1e293b; color:#cbd5e1; border:1px solid #475569; padding:7px 10px; min-height:36px; border-radius:7px; font-weight:800; font-size:0.80rem; cursor:pointer; touch-action:manipulation; min-width:105px;">
-                    🎸 052 SteelGuitar
+                <button class="hud-style-btn" data-style="175" onclick="activarEstilo('175', this)" style="background:#1e293b; color:#cbd5e1; border:1px solid #475569; padding:7px 10px; min-height:36px; border-radius:7px; font-weight:800; font-size:0.80rem; cursor:pointer; touch-action:manipulation; min-width:125px; text-align:center;">
+                    🥁 175 Beguine 2
                 </button>
                 <button class="hud-sound-btn" data-sound="038" onclick="cargarKeyboardSet('038', this)" style="background:#1e293b; color:#cbd5e1; border:1px solid #475569; padding:7px 10px; min-height:36px; border-radius:7px; font-weight:800; font-size:0.80rem; cursor:pointer; touch-action:manipulation; min-width:105px;">
                     🎹 038 Jazz Organ
                 </button>
                 <button class="hud-sound-btn" data-sound="071" onclick="cargarKeyboardSet('071', this)" style="background:#1e293b; color:#cbd5e1; border:1px solid #475569; padding:7px 10px; min-height:36px; border-radius:7px; font-weight:800; font-size:0.80rem; cursor:pointer; touch-action:manipulation; min-width:105px;">
                     👥 071 Oooh&Aahs
+                </button>
+                <button onclick="desbloquearKorgEK50(this)" style="background:rgba(239,68,68,0.2); color:#fca5a5; border:1px solid #ef4444; padding:7px 10px; min-height:36px; border-radius:7px; font-weight:800; font-size:0.80rem; cursor:pointer; touch-action:manipulation; min-width:115px; text-align:center;">
+                    ⚡ Reset Korg
                 </button>
             </div>
         </div>
@@ -575,9 +575,9 @@ HTML_CONTENT = """<!DOCTYPE html>
             <!-- CIFRA CLUB OFICIAL (CUANDO CALIENTA EL SOL) -->
             <div style="max-width:820px; width:100%; margin:0 auto;" class="lyrics-box">
 <span class="chord">[MODO ATRIL EN DIRECTO - CUANDO CALIENTA EL SOL]</span>
-RITMO: 174 Beguine 1 · TEMPO: 112 BPM · TONALIDAD: DO MAYOR (C)
+RITMO: 174 Beguine 1 (112 BPM) / 175 Beguine 2 (100 BPM) · TONALIDAD: DO MAYOR (C)
 
-<span class="chord">[INTRODUCCIÓN - RITMO 174 BEGUINE 1]</span>
+<span class="chord">[INTRODUCCIÓN - RITMO 174 / 175 BEGUINE]</span>
 || <span class="chord">C</span>  |  <span class="chord">Am</span>  |  <span class="chord">Em</span>  |  <span class="chord">F</span>  |  <span class="chord">G</span>  ||
 
 <span class="chord">[PARTE 1]</span>
@@ -628,7 +628,7 @@ cuando calienta el sol,
             <div class="atril-section">
                 <div class="atril-sec-header">
                     <span class="atril-sec-title">🌴 INTRODUCCIÓN (BEGUINE PLAYERO)</span>
-                    <span class="atril-sec-desc">Arrancar ritmo 174 en 112 BPM · Tocar acordes redondas</span>
+                    <span class="atril-sec-desc">Arrancar ritmo 174 en 112 BPM o 175 en 100 BPM · Tocar acordes redondas</span>
                 </div>
                 <div class="measures-line">
                     <div class="measure-box highlight"><span class="chord-name">C</span><span class="chord-degree">I (Tónica)</span><span class="lyrics-hint">Compás 1</span></div>
@@ -817,14 +817,58 @@ cuando calienta el sol,
         });
     }
 
-    // Regla Canónica de Keyboard Sets: Banco Maestro MSB = 33
+    // Regla de Estilos Korg EK-50: Banco MSB = 32
+    const ESTILOS_KORG = {
+        '174': { msb: 32, lsb: 10, pc: 13, tempo: 112, name: '174 Beguine 1' },
+        '175': { msb: 32, lsb: 10, pc: 14, tempo: 100, name: '175 Beguine 2' }
+    };
+
+    let estiloActualId = '174';
+
+    async function activarEstilo(idEstilo, btn = null) {
+        if (btn) dispararDestelloBoton(btn);
+        actualizarEstilosActivosUI(idEstilo);
+        const estilo = ESTILOS_KORG[String(idEstilo)];
+        if (!estilo) return;
+
+        if (!midiOutput && (!midiAccessInstance || obtenerSalidasDisponibles().length === 0)) {
+            await conectarMIDI();
+        }
+
+        // Selección de estilo en Canal 16 (Global)
+        await enviarMidiGlobal([0xBF, 0x00, estilo.msb]);
+        await enviarMidiGlobal([0xBF, 0x20, estilo.lsb]);
+        await enviarMidiGlobal([0xCF, estilo.pc]);
+
+        // Volumen de acompañamiento (CC7 = 110)
+        await enviarMidiGlobal([0xBF, 0x07, 110]);
+    }
+
+    function actualizarEstilosActivosUI(idEstilo) {
+        estiloActualId = String(idEstilo);
+        document.querySelectorAll('.hud-style-btn').forEach(b => {
+            const matches = b.getAttribute('data-style') === String(idEstilo);
+            if (matches) {
+                b.classList.add('active-style');
+                b.style.background = 'linear-gradient(180deg, #0284c7 0%, #0369a1 100%)';
+                b.style.borderColor = '#38bdf8';
+                b.style.color = '#ffffff';
+                b.style.boxShadow = '0 0 14px rgba(56,189,248,0.7)';
+            } else {
+                b.classList.remove('active-style');
+                b.style.background = '#1e293b';
+                b.style.borderColor = '#475569';
+                b.style.color = '#cbd5e1';
+                b.style.boxShadow = 'none';
+            }
+        });
+    }
+
+    // Regla Canónica de Keyboard Sets: Banco Maestro MSB = 33 (Poda estricta de 025, 052 y 001)
     const KEYBOARD_SETS = {
         '037': { lsb: 3,  pc: 6,  name: '037 Full Organ' },
         '095': { lsb: 7,  pc: 14, name: '095 St.Strings' },
         '061': { lsb: 5,  pc: 0,  name: '061 The Strings' },
-        '001': { lsb: 0,  pc: 0,  name: '001 Grand Piano' },
-        '025': { lsb: 2,  pc: 0,  name: '025 Trumpet' },
-        '052': { lsb: 5,  pc: 1,  name: '052 SteelGuitar' },
         '038': { lsb: 3,  pc: 7,  name: '038 Jazz Organ' },
         '071': { lsb: 6,  pc: 6,  name: '071 Oooh&Aahs' }
     };
@@ -880,21 +924,14 @@ cuando calienta el sol,
     async function cargarBoton1OrganoBeguine(btn = null) {
         if (btn) dispararDestelloBoton(btn);
         await conectarMIDI();
-        // Estilo 174 Beguine 1: MSB 32, LSB 10, PC 13 en Canal 16
-        await enviarMidiGlobal([0xBF, 0x00, 32]);
-        await enviarMidiGlobal([0xBF, 0x20, 10]);
-        await enviarMidiGlobal([0xCF, 13]);
-        // Keyboard Set 037 Full Organ (MSB 33, LSB 3, PC 6)
+        await activarEstilo('174');
         await cargarKeyboardSet('037');
     }
 
     async function cargarBoton2OrganoStrings(btn = null) {
         if (btn) dispararDestelloBoton(btn);
         await conectarMIDI();
-        // Estilo 174
-        await enviarMidiGlobal([0xBF, 0x00, 32]);
-        await enviarMidiGlobal([0xBF, 0x20, 10]);
-        await enviarMidiGlobal([0xCF, 13]);
+        await activarEstilo('174');
         // Upper 1: 037 Organ
         await enviarMidiGlobal([0xB0, 0x00, 33]);
         await enviarMidiGlobal([0xB0, 0x20, 3]);
@@ -929,6 +966,7 @@ cuando calienta el sol,
             enviarMidiGlobal([0xB0 | ch, 0x7B, 0]);
             enviarMidiGlobal([0xB0 | ch, 0x79, 0]);
         }
+        await activarEstilo('174');
         await cargarKeyboardSet('037');
     }
 
