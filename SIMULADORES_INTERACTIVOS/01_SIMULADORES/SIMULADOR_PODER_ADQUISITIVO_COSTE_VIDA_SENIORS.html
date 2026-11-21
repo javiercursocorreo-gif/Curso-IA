@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calculadora de Poder Adquisitivo y Cesta de la Compra (+65) • Sesión 06 [NIV-006]</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@600;800&display=swap" rel="stylesheet">
+  <style>
+    /* =========================================================================
+       REGLAS BASE Y ERGONOMÍA SENIOR (3 COLUMNAS SIN SUPERPOSICIONES)
+       ========================================================================= */
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
+    :root {
+      --base-font-size: 16px;
+    }
+
+    html {
+      font-size: var(--base-font-size);
+    }
+
+    html.large-text {
+      --base-font-size: 18.5px;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow-x: hidden;
+      background: #F4F1EA;
+      color: #1C1917;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      line-height: 1.45;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+    }
+
+    .app-shell {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      width: 100%;
+      overflow: hidden;
+    }
+
+    .top-bar {
+      flex-shrink: 0;
+      background: #FFFFFF;
+      border-bottom: 2px solid #D6D3D1;
+      padding: 10px 16px;
+      width: 100%;
+    }
+
+    .three-cols {
+      flex: 1;
+      min-height: 0;
+      width: 100%;
+      display: flex;
+      flex-direction: row;
+      gap: 12px;
+      padding: 12px;
+      overflow: hidden;
+    }
+
+    .col {
+      min-width: 0;
+      height: 100%;
+      overflow-y: auto;
+      background: #FFFFFF;
+      border: 1px solid #E7E5E4;
+      border-radius: 14px;
+      padding: 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .step-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 9999px;
+    }
+
+    .card-step {
+      border: 2px solid #E7E5E4;
+      border-radius: 12px;
+      padding: 14px;
+      background: #FAFAF9;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+
+    .card-step:hover {
+      border-color: #CBD5E1;
+      background: #FFFFFF;
+    }
+
+    .card-step.active {
+      border-color: #D97706;
+      background: #FFFBEB;
+      box-shadow: 0 4px 14px rgba(217, 119, 6, 0.15);
+    }
+
+    input[type="range"] {
+      width: 100%;
+      height: 8px;
+      border-radius: 4px;
+      background: #E2E8F0;
+      outline: none;
+      -webkit-appearance: none;
+      cursor: pointer;
+      accent-color: #D97706;
+    }
+
+    .check-custom {
+      accent-color: #059669;
+      width: 1.25rem;
+      height: 1.25rem;
+      cursor: pointer;
+    }
+
+    .is-speaking {
+      animation: pulse-ring 1.4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+
+    @keyframes pulse-ring {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    @media (max-width: 1024px) {
+      .app-shell {
+        height: auto;
+        min-height: 100vh;
+        overflow-y: auto;
+      }
+      .three-cols {
+        flex-direction: column;
+        height: auto;
+        overflow: visible;
+      }
+      .col {
+        height: auto;
+        overflow: visible;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-shell">
+
+    <!-- BARRA SUPERIOR PERSISTENTE (TOP BAR) -->
+    <header class="top-bar flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <span class="bg-amber-100 text-amber-900 border border-amber-300 font-extrabold text-xs px-2.5 py-1 rounded-md tracking-wider font-mono">
+          [NIV-006] SESIÓN 06
+        </span>
+        <div>
+          <h1 class="text-base sm:text-lg font-extrabold text-stone-900 leading-tight">
+            Calculadora de Poder Adquisitivo y Cesta de la Compra (+65)
+          </h1>
+          <p class="text-xs text-stone-500 font-medium hidden sm:block">
+            Autodiagnóstico del Coste de la Vida, Inflación Real y Protección de la Pensión
+          </p>
+        </div>
+      </div>
+
+      <div class="flex items-center flex-wrap gap-2">
+        <button id="btn-speak-main" onclick="speakDiagnosis()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold bg-emerald-700 hover:bg-emerald-800 text-white transition-colors shadow-sm">
+          <span>🔊</span>
+          <span id="speak-main-label">Escuchar Diagnóstico</span>
+        </button>
+
+        <button onclick="toggleFontSize()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold bg-stone-100 hover:bg-stone-200 text-stone-800 border border-stone-300 transition-colors">
+          <span>🔍</span>
+          <span id="font-size-label">Letra: Normal</span>
+        </button>
+
+        <button onclick="resetSimulation()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold bg-stone-100 hover:bg-stone-200 text-stone-800 border border-stone-300 transition-colors">
+          <span>🔄</span>
+          <span>Reiniciar</span>
+        </button>
+
+        <button onclick="openGeminiModal()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold bg-amber-600 hover:bg-amber-700 text-white transition-colors shadow-sm">
+          <span>📋</span>
+          <span>Prompt Gemini</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- CUERPO PRINCIPAL: 3 COLUMNAS SIN SOLAPAMIENTO -->
+    <main class="three-cols">
+
+      <!-- COLUMNA 1: PARÁMETROS VITALES -->
+      <section class="col w-full lg:w-1/3">
+        <div class="border-b border-stone-200 pb-2">
+          <span class="step-badge bg-blue-100 text-blue-800 border border-blue-300">
+            Paso 1 • Presupuesto e Ingresos del Hogar
+          </span>
+          <h2 class="text-base font-bold text-stone-900 mt-1">
+            Datos y Parámetros Vitales
+          </h2>
+          <p class="text-xs text-stone-600">
+            Ajusta tus ingresos mensuales y el peso que tienen la cesta fresca y la energía en tu vida.
+          </p>
+        </div>
+
+        
+        <!-- Slider rngPension -->
+        <div class="bg-stone-50 border border-stone-200 rounded-xl p-3.5 flex flex-col gap-2">
+          <div class="flex justify-between items-center text-xs sm:text-sm font-semibold text-stone-800">
+            <span>Ingresos mensuales netos del hogar:</span>
+            <span id="lbl_rngPension" class="font-mono text-sm font-extrabold text-amber-700 bg-amber-100 px-2 py-0.5 rounded border border-amber-300">
+              1650 €/mes
+            </span>
+          </div>
+          <input type="range" id="rngPension" min="800" max="3500" value="1650" oninput="updateSimulation()">
+          <div class="flex justify-between text-[11px] text-stone-400 font-mono">
+            <span>800 €</span>
+            <span>1.650 €</span>
+            <span>3.500+ €</span>
+          </div>
+        </div>
+        
+        <!-- Slider rngCesta -->
+        <div class="bg-stone-50 border border-stone-200 rounded-xl p-3.5 flex flex-col gap-2">
+          <div class="flex justify-between items-center text-xs sm:text-sm font-semibold text-stone-800">
+            <span>Gasto mensual en alimentación y frescos:</span>
+            <span id="lbl_rngCesta" class="font-mono text-sm font-extrabold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded border border-emerald-300">
+              420 €/mes
+            </span>
+          </div>
+          <input type="range" id="rngCesta" min="200" max="1000" value="420" oninput="updateSimulation()">
+          <div class="flex justify-between text-[11px] text-stone-400 font-mono">
+            <span>200 €</span>
+            <span>420 €</span>
+            <span>1.000 €</span>
+          </div>
+        </div>
+        
+
+        <!-- Checklist Pilares -->
+        <div class="flex flex-col gap-2">
+          <span class="text-xs font-bold text-stone-700 uppercase tracking-wide">
+            Pilares y Prácticas Clave:
+          </span>
+
+          
+          <label class="flex items-start gap-3 p-2.5 rounded-lg border border-stone-200 hover:bg-stone-50 cursor-pointer">
+            <input type="checkbox" id="chkConsumoEstacional" checked class="check-custom mt-0.5" onchange="updateSimulation()">
+            <div class="text-xs sm:text-sm leading-tight text-stone-800">
+              <strong class="text-stone-900 block">Consumo fresco de temporada:</strong>
+              Compro fruta, verdura y pescado según temporada y comparo el precio real por kilo.
+            </div>
+          </label>
+        
+          <label class="flex items-start gap-3 p-2.5 rounded-lg border border-stone-200 hover:bg-stone-50 cursor-pointer">
+            <input type="checkbox" id="chkSuministrosOptimizados" checked class="check-custom mt-0.5" onchange="updateSimulation()">
+            <div class="text-xs sm:text-sm leading-tight text-stone-800">
+              <strong class="text-stone-900 block">Facturas de luz y gas revisadas:</strong>
+              Tengo tarifas reguladas o justas sin servicios de mantenimiento superfluos ni seguros trampa.
+            </div>
+          </label>
+        
+          <label class="flex items-start gap-3 p-2.5 rounded-lg border border-stone-200 hover:bg-stone-50 cursor-pointer">
+            <input type="checkbox" id="chkCeroDeudas" checked class="check-custom mt-0.5" onchange="updateSimulation()">
+            <div class="text-xs sm:text-sm leading-tight text-stone-800">
+              <strong class="text-stone-900 block">Ausencia total de deudas con interés:</strong>
+              No compro nada a crédito al consumo ni pago comisiones por aplazamientos en tarjetas.
+            </div>
+          </label>
+        
+          <label class="flex items-start gap-3 p-2.5 rounded-lg border border-stone-200 hover:bg-stone-50 cursor-pointer">
+            <input type="checkbox" id="chkAhorroPrevisor" checked class="check-custom mt-0.5" onchange="updateSimulation()">
+            <div class="text-xs sm:text-sm leading-tight text-stone-800">
+              <strong class="text-stone-900 block">Reserva de choque para imprevistos:</strong>
+              Mantengo una pequeña cantidad mensual intocable para reparaciones de caldera o dentista.
+            </div>
+          </label>
+        
+        </div>
+      </section>
+
+      <!-- COLUMNA 2: DIAGNÓSTICO Y RECONOCIMIENTO -->
+      <section class="col w-full lg:w-1/3">
+        <div class="border-b border-stone-200 pb-2">
+          <span class="step-badge bg-amber-100 text-amber-800 border border-amber-300">
+            Paso 2 • Tu Diagnóstico
+          </span>
+          <h2 class="text-base font-bold text-stone-900 mt-1">
+            Evaluación y Estado Activo
+          </h2>
+          <p class="text-xs text-stone-600">
+            El valor real de tu experiencia analizado con rigor y cercanía.
+          </p>
+        </div>
+
+        <!-- Tarjeta Hero Diagnóstico -->
+        <div id="statusHero" class="border-2 rounded-2xl p-4 sm:p-5 flex flex-col gap-3 transition-all" style="border-color:#D97706; background:#FFFBEB;">
+          <div class="flex items-center justify-between">
+            <span id="heroBadge" class="font-mono text-xs font-extrabold uppercase px-2.5 py-1 rounded bg-white border font-bold" style="color:#D97706; border-color:#FDE68A;">
+              NIVEL ALCANZADO
+            </span>
+            <div id="heroCircle" class="w-10 h-10 rounded-full flex items-center justify-center font-extrabold font-mono text-lg bg-white shadow-sm border-2" style="border-color:#D97706; color:#D97706;">
+              <span id="heroNum">5</span>
+            </div>
+          </div>
+
+          <div>
+            <h3 id="heroTitle" class="text-base sm:text-lg font-extrabold text-stone-900 leading-snug">
+              Cargando nivel...
+            </h3>
+            <p id="heroDesc" class="text-xs sm:text-sm text-stone-700 mt-1.5 leading-relaxed">
+              Cargando descripción...
+            </p>
+          </div>
+
+          <!-- Métricas de Impacto -->
+          <div class="grid grid-cols-2 gap-2 pt-2 border-t border-amber-200">
+            <div class="bg-white/80 p-2.5 rounded-lg border border-amber-200 text-center">
+              <span class="block text-[11px] text-stone-500 font-bold uppercase">Cojín de Seguridad:</span>
+              <span id="valKpi1" class="font-mono text-base font-extrabold text-amber-900">18.5%</span>
+            </div>
+            <div class="bg-white/80 p-2.5 rounded-lg border border-amber-200 text-center">
+              <span class="block text-[11px] text-stone-500 font-bold uppercase">Capacidad Real:</span>
+              <span id="valKpi2" class="font-mono text-base font-extrabold text-emerald-800">ESTABLE</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Diploma de Reflexión Positiva -->
+        <div class="bg-emerald-50 border border-emerald-300 rounded-xl p-3.5 flex flex-col gap-2">
+          <div class="flex items-center gap-2 text-emerald-900 font-bold text-xs sm:text-sm">
+            <span>🌱</span>
+            <span>Por qué tu valor es insustituible por la IA:</span>
+          </div>
+          <p id="txtReflexion" class="text-xs sm:text-sm text-emerald-950 leading-relaxed font-medium">
+            Los algoritmos calculan el IPC con fórmulas frías y promedios abstractos. Solo quien hace la compra en el mercado cada semana conoce la verdad del coste de la vida y el arte de estirar el dinero con dignidad.
+          </p>
+        </div>
+
+        <!-- Botón Reproducir Voz -->
+        <button onclick="speakDiagnosis()" class="w-full py-3 px-4 rounded-xl bg-stone-900 hover:bg-stone-800 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-sm transition-all mt-auto">
+          <span>🔊</span>
+          <span id="speak-btn-bottom-label">Escuchar Explicación Completa</span>
+        </button>
+      </section>
+
+      <!-- COLUMNA 3: LOS NIVELES DEL ESCALAFÓN -->
+      <section class="col w-full lg:w-1/3">
+        <div class="border-b border-stone-200 pb-2">
+          <span class="step-badge bg-emerald-100 text-emerald-800 border border-emerald-300">
+            Paso 3 • La Pirámide
+          </span>
+          <h2 class="text-base font-bold text-stone-900 mt-1">
+            Los 5 Niveles del Escalafón
+          </h2>
+          <p class="text-xs text-stone-600">
+            Pulsa en cualquier tarjeta para explorar sus pautas y reflexiones.
+          </p>
+        </div>
+
+        <div class="flex flex-col gap-3">
+          
+        <!-- Tarjeta Nivel 1 -->
+        <div id="cardLvl1" onclick="selectManualLevel(1)" class="card-step flex flex-col gap-2">
+          <div class="flex items-center justify-between">
+            <span class="step-badge" style="background:#FEE2E2; color:#DC2626; border:1px solid #DC262640;">
+              NIVEL 1
+            </span>
+            <div class="w-6 h-6 rounded-full flex items-center justify-center font-mono font-extrabold text-xs" style="background:#FEE2E2; color:#DC2626;">
+              1
+            </div>
+          </div>
+          <h3 class="text-sm font-extrabold text-stone-900 leading-snug">
+            Nivel 1: Presupuesto en Zona de Ajuste Severo
+          </h3>
+          <p class="text-xs text-stone-600 leading-relaxed">
+            Los costes básicos superan el 75% de los ingresos. Se requiere podar gastos automáticos.
+          </p>
+        </div>
+        
+        <!-- Tarjeta Nivel 2 -->
+        <div id="cardLvl2" onclick="selectManualLevel(2)" class="card-step flex flex-col gap-2">
+          <div class="flex items-center justify-between">
+            <span class="step-badge" style="background:#FFEDD5; color:#EA580C; border:1px solid #EA580C40;">
+              NIVEL 2
+            </span>
+            <div class="w-6 h-6 rounded-full flex items-center justify-center font-mono font-extrabold text-xs" style="background:#FFEDD5; color:#EA580C;">
+              2
+            </div>
+          </div>
+          <h3 class="text-sm font-extrabold text-stone-900 leading-snug">
+            Nivel 2: Equilibrio Ajustado Sensible a Subidas
+          </h3>
+          <p class="text-xs text-stone-600 leading-relaxed">
+            Llegas a fin de mes pero cualquier avería o gasto extraordinario desestabiliza las cuentas.
+          </p>
+        </div>
+        
+        <!-- Tarjeta Nivel 3 -->
+        <div id="cardLvl3" onclick="selectManualLevel(3)" class="card-step flex flex-col gap-2">
+          <div class="flex items-center justify-between">
+            <span class="step-badge" style="background:#DBEAFE; color:#2563EB; border:1px solid #2563EB40;">
+              NIVEL 3
+            </span>
+            <div class="w-6 h-6 rounded-full flex items-center justify-center font-mono font-extrabold text-xs" style="background:#DBEAFE; color:#2563EB;">
+              3
+            </div>
+          </div>
+          <h3 class="text-sm font-extrabold text-stone-900 leading-snug">
+            Nivel 3: Poder Adquisitivo Estable y Controlado
+          </h3>
+          <p class="text-xs text-stone-600 leading-relaxed">
+            Controlas los gastos, compras con cabeza y la alimentación no ahoga la economía familiar.
+          </p>
+        </div>
+        
+        <!-- Tarjeta Nivel 4 -->
+        <div id="cardLvl4" onclick="selectManualLevel(4)" class="card-step flex flex-col gap-2">
+          <div class="flex items-center justify-between">
+            <span class="step-badge" style="background:#D1FAE5; color:#059669; border:1px solid #05966940;">
+              NIVEL 4
+            </span>
+            <div class="w-6 h-6 rounded-full flex items-center justify-center font-mono font-extrabold text-xs" style="background:#D1FAE5; color:#059669;">
+              4
+            </div>
+          </div>
+          <h3 class="text-sm font-extrabold text-stone-900 leading-snug">
+            Nivel 4: Holgura Doméstica y Capacidad de Ahorro
+          </h3>
+          <p class="text-xs text-stone-600 leading-relaxed">
+            Dispones de margen para apoyar a hijos o nietos, hacer alguna escapada y vivir sin estrés financiero.
+          </p>
+        </div>
+        
+        <!-- Tarjeta Nivel 5 -->
+        <div id="cardLvl5" onclick="selectManualLevel(5)" class="card-step flex flex-col gap-2">
+          <div class="flex items-center justify-between">
+            <span class="step-badge" style="background:#EDE9FE; color:#7C3AED; border:1px solid #7C3AED40;">
+              NIVEL 5
+            </span>
+            <div class="w-6 h-6 rounded-full flex items-center justify-center font-mono font-extrabold text-xs" style="background:#EDE9FE; color:#7C3AED;">
+              5
+            </div>
+          </div>
+          <h3 class="text-sm font-extrabold text-stone-900 leading-snug">
+            Nivel 5: Soberanía Financiera y Patrimonio Protegido
+          </h3>
+          <p class="text-xs text-stone-600 leading-relaxed">
+            Tranquilidad total. Gastos mínimos fijos, vivienda pagada y colchón de seguridad intocable.
+          </p>
+        </div>
+        
+        </div>
+      </section>
+
+    </main>
+
+  </div>
+
+  <!-- MODAL PARA COPIAR PROMPT DE GEMINI -->
+  <div id="modalGemini" class="fixed inset-0 bg-stone-900/60 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
+    <div class="bg-white rounded-2xl max-w-xl w-full p-6 shadow-2xl border border-stone-200 flex flex-col gap-4">
+      <div class="flex justify-between items-center border-b border-stone-200 pb-3">
+        <div class="flex items-center gap-2">
+          <span class="text-xl">📋</span>
+          <h3 class="font-extrabold text-stone-900 text-base sm:text-lg">Prompt Oficial para Gemini</h3>
+        </div>
+        <button onclick="closeGeminiModal()" class="text-stone-400 hover:text-stone-700 font-extrabold text-xl p-1">&times;</button>
+      </div>
+
+      <p class="text-xs text-stone-600">
+        Copia este texto y pégalo directamente en <strong>Gemini</strong> (<a href="https://gemini.google.com" target="_blank" class="text-amber-700 underline font-bold">gemini.google.com</a>) para profundizar en tu diagnóstico con la IA:
+      </p>
+
+      <textarea id="txtPromptArea" readonly class="w-full h-40 p-3 bg-stone-50 border border-stone-300 rounded-xl text-xs sm:text-sm font-mono text-stone-800 leading-relaxed resize-none focus:outline-none">Actúa como un experto en economía doméstica para jubilados (+65). Analiza mi pensión y el reparto de mis gastos en alimentación y suministros. Explícame cómo evitar que la inflación real merme mi poder adquisitivo, qué trucos de compra inteligente funcionan de verdad y cómo negociar o ajustar las facturas de gas, luz y teléfono.</textarea>
+
+      <div class="flex justify-end gap-3 pt-2">
+        <button onclick="closeGeminiModal()" class="px-4 py-2 rounded-lg text-xs sm:text-sm font-bold bg-stone-100 hover:bg-stone-200 text-stone-700">
+          Cerrar
+        </button>
+        <button onclick="copyToClipboard()" id="btnCopyPrompt" class="px-5 py-2 rounded-lg text-xs sm:text-sm font-extrabold bg-amber-600 hover:bg-amber-700 text-white shadow-sm flex items-center gap-2">
+          <span>📋 Copiar Prompt</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT REACTIVO Y SÍNTESIS DE VOZ -->
+  <script>
+    const LEVEL_DATA = {
+      "1": {
+            "num": 1,
+            "title": "Nivel 1: Presupuesto en Zona de Ajuste Severo",
+            "desc": "Los costes básicos superan el 75% de los ingresos. Se requiere podar gastos automáticos.",
+            "color": "#DC2626",
+            "badgeBg": "#FEE2E2",
+            "kpi1": "< 5%",
+            "kpi2": "CRÍTICO",
+            "reflexion": "Revisar facturas ocultas y seguros bancarios innecesarios puede liberar hasta 100 € al mes de inmediato."
+      },
+      "2": {
+            "num": 2,
+            "title": "Nivel 2: Equilibrio Ajustado Sensible a Subidas",
+            "desc": "Llegas a fin de mes pero cualquier avería o gasto extraordinario desestabiliza las cuentas.",
+            "color": "#EA580C",
+            "badgeBg": "#FFEDD5",
+            "kpi1": "8.0%",
+            "kpi2": "AJUSTADO",
+            "reflexion": "La clave está en crear un fondo de emergencia fijo, aunque sea de 30 € al mes, para ganar tranquilidad."
+      },
+      "3": {
+            "num": 3,
+            "title": "Nivel 3: Poder Adquisitivo Estable y Controlado",
+            "desc": "Controlas los gastos, compras con cabeza y la alimentación no ahoga la economía familiar.",
+            "color": "#2563EB",
+            "badgeBg": "#DBEAFE",
+            "kpi1": "15.0%",
+            "kpi2": "CORRECTO",
+            "reflexion": "Tu sabiduría en la cocina tradicional y la compra selectiva es el mejor seguro contra la inflación."
+      },
+      "4": {
+            "num": 4,
+            "title": "Nivel 4: Holgura Doméstica y Capacidad de Ahorro",
+            "desc": "Dispones de margen para apoyar a hijos o nietos, hacer alguna escapada y vivir sin estrés financiero.",
+            "color": "#059669",
+            "badgeBg": "#D1FAE5",
+            "kpi1": "22.0%",
+            "kpi2": "HOLGADO",
+            "reflexion": "Tener las cuentas saneadas te permite disfrutar de la jubilación con la serenidad que te has ganado."
+      },
+      "5": {
+            "num": 5,
+            "title": "Nivel 5: Soberanía Financiera y Patrimonio Protegido",
+            "desc": "Tranquilidad total. Gastos mínimos fijos, vivienda pagada y colchón de seguridad intocable.",
+            "color": "#7C3AED",
+            "badgeBg": "#EDE9FE",
+            "kpi1": "> 30%",
+            "kpi2": "IMPECABLE",
+            "reflexion": "El mayor lujo de la madurez no es acumular cosas superfluas, sino vivir libre de preocupaciones monetarias."
+      }
+};
+    const TOTAL_LEVELS = 5;
+
+    let manualLevelOverride = null;
+    let isLargeText = false;
+    let synth = window.speechSynthesis;
+    let currentUtterance = null;
+    let isSpeaking = false;
+
+    function updateSimulation() {
+      
+      const val_rngPension = parseInt(document.getElementById('rngPension').value);
+      document.getElementById('lbl_rngPension').innerText = val_rngPension + " €/mes";
+        
+      const val_rngCesta = parseInt(document.getElementById('rngCesta').value);
+      document.getElementById('lbl_rngCesta').innerText = val_rngCesta + " €/mes";
+        
+
+      let checks = 0;
+      document.querySelectorAll('.check-custom').forEach(chk => {
+        if (chk.checked) checks++;
+      });
+
+      let calculatedLvl = 1;
+      const totalChecks = document.querySelectorAll('.check-custom').length;
+      const checkRatio = checks / Math.max(1, totalChecks);
+
+      if (checkRatio >= 0.25) calculatedLvl = 2;
+      if (checkRatio >= 0.50) calculatedLvl = Math.min(TOTAL_LEVELS, 3);
+      if (checkRatio >= 0.75) calculatedLvl = Math.min(TOTAL_LEVELS, 4);
+      if (checkRatio >= 1.00) calculatedLvl = TOTAL_LEVELS;
+
+      const activeLvl = manualLevelOverride !== null ? manualLevelOverride : calculatedLvl;
+      renderLevel(activeLvl);
+    }
+
+    function selectManualLevel(lvl) {
+      manualLevelOverride = lvl;
+      renderLevel(lvl);
+      if (isSpeaking) {
+        stopSpeaking();
+        speakDiagnosis();
+      }
+    }
+
+    function renderLevel(lvl) {
+      const data = LEVEL_DATA[lvl] || LEVEL_DATA[TOTAL_LEVELS];
+
+      document.getElementById('heroNum').innerText = data.num;
+      document.getElementById('heroNum').style.color = data.color;
+      document.getElementById('heroCircle').style.borderColor = data.color;
+      document.getElementById('heroBadge').style.color = data.color;
+      document.getElementById('heroBadge').style.borderColor = data.color + '40';
+      document.getElementById('statusHero').style.borderColor = data.color;
+      document.getElementById('statusHero').style.backgroundColor = data.badgeBg;
+
+      document.getElementById('heroTitle').innerText = data.title;
+      document.getElementById('heroDesc').innerText = data.desc;
+      document.getElementById('valKpi1').innerText = data.kpi1 || "18.5%";
+      document.getElementById('valKpi2').innerText = data.kpi2 || "ESTABLE";
+      document.getElementById('txtReflexion').innerText = data.reflexion;
+
+      for (let i = 1; i <= TOTAL_LEVELS; i++) {
+        const card = document.getElementById('cardLvl' + i);
+        if (card) {
+          if (i === data.num) {
+            card.classList.add('active');
+            card.style.borderColor = data.color;
+            card.style.backgroundColor = data.badgeBg;
+          } else {
+            card.classList.remove('active');
+            card.style.borderColor = '#E7E5E4';
+            card.style.backgroundColor = '#FAFAF9';
+          }
+        }
+      }
+    }
+
+    function speakDiagnosis() {
+      if (!('speechSynthesis' in window)) {
+        alert("Tu navegador no soporta la lectura por voz.");
+        return;
+      }
+
+      if (isSpeaking) {
+        stopSpeaking();
+        return;
+      }
+
+      const title = document.getElementById('heroTitle').innerText;
+      const desc = document.getElementById('heroDesc').innerText;
+      const reflexion = document.getElementById('txtReflexion').innerText;
+      const textToRead = `${title}. ${desc}. Reflexión importante: ${reflexion}`;
+
+      currentUtterance = new SpeechSynthesisUtterance(textToRead);
+      currentUtterance.lang = 'es-ES';
+      currentUtterance.rate = 0.95;
+
+      const voices = synth.getVoices();
+      const spanishVoice = voices.find(v => v.lang.startsWith('es') || v.lang.includes('es-ES'));
+      if (spanishVoice) currentUtterance.voice = spanishVoice;
+
+      currentUtterance.onstart = () => {
+        isSpeaking = true;
+        document.getElementById('speak-main-label').innerText = "Detener Voz";
+        document.getElementById('speak-btn-bottom-label').innerText = "Detener Lectura de Voz";
+        document.getElementById('btn-speak-main').classList.add('is-speaking');
+      };
+
+      currentUtterance.onend = () => {
+        stopSpeaking();
+      };
+
+      currentUtterance.onerror = () => {
+        stopSpeaking();
+      };
+
+      synth.speak(currentUtterance);
+    }
+
+    function stopSpeaking() {
+      if (synth.speaking || synth.pending) {
+        synth.cancel();
+      }
+      isSpeaking = false;
+      document.getElementById('speak-main-label').innerText = "Escuchar Diagnóstico";
+      document.getElementById('speak-btn-bottom-label').innerText = "Escuchar Explicación Completa";
+      document.getElementById('btn-speak-main').classList.remove('is-speaking');
+    }
+
+    function toggleFontSize() {
+      isLargeText = !isLargeText;
+      const htmlEl = document.documentElement;
+      const lbl = document.getElementById('font-size-label');
+      if (isLargeText) {
+        htmlEl.classList.add('large-text');
+        lbl.innerText = "Letra: Grande (+)";
+      } else {
+        htmlEl.classList.remove('large-text');
+        lbl.innerText = "Letra: Normal";
+      }
+    }
+
+    function resetSimulation() {
+      manualLevelOverride = null;
+      document.querySelectorAll('input[type="range"]').forEach(r => {
+        r.value = r.defaultValue || r.getAttribute('value');
+      });
+      document.querySelectorAll('.check-custom').forEach(c => {
+        c.checked = true;
+      });
+      stopSpeaking();
+      updateSimulation();
+    }
+
+    function openGeminiModal() {
+      document.getElementById('modalGemini').classList.remove('hidden');
+      document.getElementById('modalGemini').classList.add('flex');
+    }
+
+    function closeGeminiModal() {
+      document.getElementById('modalGemini').classList.add('hidden');
+      document.getElementById('modalGemini').classList.remove('flex');
+    }
+
+    function copyToClipboard() {
+      const txt = document.getElementById('txtPromptArea').value;
+      navigator.clipboard.writeText(txt).then(() => {
+        const btn = document.getElementById('btnCopyPrompt');
+        btn.innerHTML = "<span>✅ ¡Copiado con Éxito!</span>";
+        btn.classList.remove('bg-amber-600', 'hover:bg-amber-700');
+        btn.classList.add('bg-emerald-600');
+        setTimeout(() => {
+          btn.innerHTML = "<span>📋 Copiar Prompt</span>";
+          btn.classList.remove('bg-emerald-600');
+          btn.classList.add('bg-amber-600', 'hover:bg-amber-700');
+          closeGeminiModal();
+        }, 1400);
+      }).catch(() => {
+        alert("Selecciona y copia el texto manualmente.");
+      });
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      updateSimulation();
+      if ('speechSynthesis' in window) {
+        speechSynthesis.onvoiceschanged = () => {};
+      }
+    });
+  </script>
+</body>
+</html>

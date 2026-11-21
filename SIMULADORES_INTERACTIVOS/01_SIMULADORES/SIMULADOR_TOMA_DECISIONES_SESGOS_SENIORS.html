@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Los 6 Niveles de Toma de Decisiones y Filtro de Sesgos (+65) • Sesión 14 [NIV-014]</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@600;800&display=swap" rel="stylesheet">
+  <style>
+    /* =========================================================================
+       REGLAS BASE Y ERGONOMÍA SENIOR (3 COLUMNAS SIN SUPERPOSICIONES)
+       ========================================================================= */
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
+    :root {
+      --base-font-size: 16px;
+    }
+
+    html {
+      font-size: var(--base-font-size);
+    }
+
+    html.large-text {
+      --base-font-size: 18.5px;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow-x: hidden;
+      background: #F4F1EA;
+      color: #1C1917;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      line-height: 1.45;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+    }
+
+    .app-shell {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      width: 100%;
+      overflow: hidden;
+    }
+
+    .top-bar {
+      flex-shrink: 0;
+      background: #FFFFFF;
+      border-bottom: 2px solid #D6D3D1;
+      padding: 10px 16px;
+      width: 100%;
+    }
+
+    .three-cols {
+      flex: 1;
+      min-height: 0;
+      width: 100%;
+      display: flex;
+      flex-direction: row;
+      gap: 12px;
+      padding: 12px;
+      overflow: hidden;
+    }
+
+    .col {
+      min-width: 0;
+      height: 100%;
+      overflow-y: auto;
+      background: #FFFFFF;
+      border: 1px solid #E7E5E4;
+      border-radius: 14px;
+      padding: 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .step-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 9999px;
+    }
+
+    .card-step {
+      border: 2px solid #E7E5E4;
+      border-radius: 12px;
+      padding: 14px;
+      background: #FAFAF9;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+
+    .card-step:hover {
+      border-color: #CBD5E1;
+      background: #FFFFFF;
+    }
+
+    .card-step.active {
+      border-color: #D97706;
+      background: #FFFBEB;
+      box-shadow: 0 4px 14px rgba(217, 119, 6, 0.15);
+    }
+
+    input[type="range"] {
+      width: 100%;
+      height: 8px;
+      border-radius: 4px;
+      background: #E2E8F0;
+      outline: none;
+      -webkit-appearance: none;
+      cursor: pointer;
+      accent-color: #D97706;
+    }
+
+    .check-custom {
+      accent-color: #059669;
+      width: 1.25rem;
+      height: 1.25rem;
+      cursor: pointer;
+    }
+
+    .is-speaking {
+      animation: pulse-ring 1.4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+
+    @keyframes pulse-ring {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    @media (max-width: 1024px) {
+      .app-shell {
+        height: auto;
+        min-height: 100vh;
+        overflow-y: auto;
+      }
+      .three-cols {
+        flex-direction: column;
+        height: auto;
+        overflow: visible;
+      }
+      .col {
+        height: auto;
+        overflow: visible;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-shell">
+
+    <!-- BARRA SUPERIOR PERSISTENTE (TOP BAR) -->
+    <header class="top-bar flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <span class="bg-amber-100 text-amber-900 border border-amber-300 font-extrabold text-xs px-2.5 py-1 rounded-md tracking-wider font-mono">
+          [NIV-014] SESIÓN 14
+        </span>
+        <div>
+          <h1 class="text-base sm:text-lg font-extrabold text-stone-900 leading-tight">
+            Los 6 Niveles de Toma de Decisiones y Filtro de Sesgos (+65)
+          </h1>
+          <p class="text-xs text-stone-500 font-medium hidden sm:block">
+            Autodiagnóstico de Prudencia, Pausa Reflexiva y Neutralización del Sesgo de Confirmación
+          </p>
+        </div>
+      </div>
+
+      <div class="flex items-center flex-wrap gap-2">
+        <button id="btn-speak-main" onclick="speakDiagnosis()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold bg-emerald-700 hover:bg-emerald-800 text-white transition-colors shadow-sm">
+          <span>🔊</span>
+          <span id="speak-main-label">Escuchar Diagnóstico</span>
+        </button>
+
+        <button onclick="toggleFontSize()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold bg-stone-100 hover:bg-stone-200 text-stone-800 border border-stone-300 transition-colors">
+          <span>🔍</span>
+          <span id="font-size-label">Letra: Normal</span>
+        </button>
+
+        <button onclick="resetSimulation()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold bg-stone-100 hover:bg-stone-200 text-stone-800 border border-stone-300 transition-colors">
+          <span>🔄</span>
+          <span>Reiniciar</span>
+        </button>
+
+        <button onclick="openGeminiModal()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold bg-amber-600 hover:bg-amber-700 text-white transition-colors shadow-sm">
+          <span>📋</span>
+          <span>Prompt Gemini</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- CUERPO PRINCIPAL: 3 COLUMNAS SIN SOLAPAMIENTO -->
+    <main class="three-cols">
+
+      <!-- COLUMNA 1: PARÁMETROS VITALES -->
+      <section class="col w-full lg:w-1/3">
+        <div class="border-b border-stone-200 pb-2">
+          <span class="step-badge bg-blue-100 text-blue-800 border border-blue-300">
+            Paso 1 • Tiempo de Análisis y Prudencia
+          </span>
+          <h2 class="text-base font-bold text-stone-900 mt-1">
+            Datos y Parámetros Vitales
+          </h2>
+          <p class="text-xs text-stone-600">
+            Evalúa cómo tomas decisiones importantes de salud, familia o dinero ante ofertas o presiones.
+          </p>
+        </div>
+
+        
+        <!-- Slider rngTiempoDecision -->
+        <div class="bg-stone-50 border border-stone-200 rounded-xl p-3.5 flex flex-col gap-2">
+          <div class="flex justify-between items-center text-xs sm:text-sm font-semibold text-stone-800">
+            <span>Días de reflexión antes de un compromiso relevante:</span>
+            <span id="lbl_rngTiempoDecision" class="font-mono text-sm font-extrabold text-amber-700 bg-amber-100 px-2 py-0.5 rounded border border-amber-300">
+              7 días
+            </span>
+          </div>
+          <input type="range" id="rngTiempoDecision" min="1" max="20" value="7" oninput="updateSimulation()">
+          <div class="flex justify-between text-[11px] text-stone-400 font-mono">
+            <span>1 día (Rápido)</span>
+            <span>7 días</span>
+            <span>20 días (Pausado)</span>
+          </div>
+        </div>
+        
+        <!-- Slider rngSegundaOpinion -->
+        <div class="bg-stone-50 border border-stone-200 rounded-xl p-3.5 flex flex-col gap-2">
+          <div class="flex justify-between items-center text-xs sm:text-sm font-semibold text-stone-800">
+            <span>Hábito de pedir segunda opinión a expertos:</span>
+            <span id="lbl_rngSegundaOpinion" class="font-mono text-sm font-extrabold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded border border-emerald-300">
+              8 /10
+            </span>
+          </div>
+          <input type="range" id="rngSegundaOpinion" min="1" max="10" value="8" oninput="updateSimulation()">
+          <div class="flex justify-between text-[11px] text-stone-400 font-mono">
+            <span>1 (Decido solo)</span>
+            <span>8</span>
+            <span>10 (Consulto siempre)</span>
+          </div>
+        </div>
+        
+
+        <!-- Checklist Pilares -->
+        <div class="flex flex-col gap-2">
+          <span class="text-xs font-bold text-stone-700 uppercase tracking-wide">
+            Pilares y Prácticas Clave:
+          </span>
+
+          
+          <label class="flex items-start gap-3 p-2.5 rounded-lg border border-stone-200 hover:bg-stone-50 cursor-pointer">
+            <input type="checkbox" id="chkRegla24h" checked class="check-custom mt-0.5" onchange="updateSimulation()">
+            <div class="text-xs sm:text-sm leading-tight text-stone-800">
+              <strong class="text-stone-900 block">Regla de las 24 horas ante ventas o llamadas:</strong>
+              Jamás compro ni contrato nada por teléfono en el momento; pido la documentación por escrito.
+            </div>
+          </label>
+        
+          <label class="flex items-start gap-3 p-2.5 rounded-lg border border-stone-200 hover:bg-stone-50 cursor-pointer">
+            <input type="checkbox" id="chkBuscoContras" checked class="check-custom mt-0.5" onchange="updateSimulation()">
+            <div class="text-xs sm:text-sm leading-tight text-stone-800">
+              <strong class="text-stone-900 block">Búsqueda activa de inconvenientes:</strong>
+              Antes de decidir algo importante, me pregunto qué podría salir mal y qué precio tendría rectificar.
+            </div>
+          </label>
+        
+          <label class="flex items-start gap-3 p-2.5 rounded-lg border border-stone-200 hover:bg-stone-50 cursor-pointer">
+            <input type="checkbox" id="chkCeroPresionSocial" checked class="check-custom mt-0.5" onchange="updateSimulation()">
+            <div class="text-xs sm:text-sm leading-tight text-stone-800">
+              <strong class="text-stone-900 block">Inmunidad a la prisa ajena:</strong>
+              Si alguien me mete prisa para firmar o decidir, sé de inmediato que el beneficiado es él y no yo.
+            </div>
+          </label>
+        
+          <label class="flex items-start gap-3 p-2.5 rounded-lg border border-stone-200 hover:bg-stone-50 cursor-pointer">
+            <input type="checkbox" id="chkAceptoRectificar" checked class="check-custom mt-0.5" onchange="updateSimulation()">
+            <div class="text-xs sm:text-sm leading-tight text-stone-800">
+              <strong class="text-stone-900 block">Capacidad de rectificar sin orgullo:</strong>
+              Si me doy cuenta de que elegí un camino equivocado, cambio de rumbo con serenidad sin tozudez.
+            </div>
+          </label>
+        
+        </div>
+      </section>
+
+      <!-- COLUMNA 2: DIAGNÓSTICO Y RECONOCIMIENTO -->
+      <section class="col w-full lg:w-1/3">
+        <div class="border-b border-stone-200 pb-2">
+          <span class="step-badge bg-amber-100 text-amber-800 border border-amber-300">
+            Paso 2 • Tu Diagnóstico
+          </span>
+          <h2 class="text-base font-bold text-stone-900 mt-1">
+            Evaluación y Estado Activo
+          </h2>
+          <p class="text-xs text-stone-600">
+            El valor real de tu experiencia analizado con rigor y cercanía.
+          </p>
+        </div>
+
+        <!-- Tarjeta Hero Diagnóstico -->
+        <div id="statusHero" class="border-2 rounded-2xl p-4 sm:p-5 flex flex-col gap-3 transition-all" style="border-color:#D97706; background:#FFFBEB;">
+          <div class="flex items-center justify-between">
+            <span id="heroBadge" class="font-mono text-xs font-extrabold uppercase px-2.5 py-1 rounded bg-white border font-bold" style="color:#D97706; border-color:#FDE68A;">
+              NIVEL ALCANZADO
+            </span>
+            <div id="heroCircle" class="w-10 h-10 rounded-full flex items-center justify-center font-extrabold font-mono text-lg bg-white shadow-sm border-2" style="border-color:#D97706; color:#D97706;">
+              <span id="heroNum">6</span>
+            </div>
+          </div>
+
+          <div>
+            <h3 id="heroTitle" class="text-base sm:text-lg font-extrabold text-stone-900 leading-snug">
+              Cargando nivel...
+            </h3>
+            <p id="heroDesc" class="text-xs sm:text-sm text-stone-700 mt-1.5 leading-relaxed">
+              Cargando descripción...
+            </p>
+          </div>
+
+          <!-- Métricas de Impacto -->
+          <div class="grid grid-cols-2 gap-2 pt-2 border-t border-amber-200">
+            <div class="bg-white/80 p-2.5 rounded-lg border border-amber-200 text-center">
+              <span class="block text-[11px] text-stone-500 font-bold uppercase">Índice de Acierto:</span>
+              <span id="valKpi1" class="font-mono text-base font-extrabold text-amber-900">94%</span>
+            </div>
+            <div class="bg-white/80 p-2.5 rounded-lg border border-amber-200 text-center">
+              <span class="block text-[11px] text-stone-500 font-bold uppercase">Serenidad:</span>
+              <span id="valKpi2" class="font-mono text-base font-extrabold text-emerald-800">MAGISTRAL</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Diploma de Reflexión Positiva -->
+        <div class="bg-emerald-50 border border-emerald-300 rounded-xl p-3.5 flex flex-col gap-2">
+          <div class="flex items-center gap-2 text-emerald-900 font-bold text-xs sm:text-sm">
+            <span>🌱</span>
+            <span>Por qué tu valor es insustituible por la IA:</span>
+          </div>
+          <p id="txtReflexion" class="text-xs sm:text-sm text-emerald-950 leading-relaxed font-medium">
+            Los algoritmos deciden en milisegundos buscando maximizar métricas cuantitativas. Solo la madurez humana sabe que a veces la mejor decisión es no hacer nada, esperar con calma y dejar que el tiempo aclare las aguas.
+          </p>
+        </div>
+
+        <!-- Botón Reproducir Voz -->
+        <button onclick="speakDiagnosis()" class="w-full py-3 px-4 rounded-xl bg-stone-900 hover:bg-stone-800 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-sm transition-all mt-auto">
+          <span>🔊</span>
+          <span id="speak-btn-bottom-label">Escuchar Explicación Completa</span>
+        </button>
+      </section>
+
+      <!-- COLUMNA 3: LOS NIVELES DEL ESCALAFÓN -->
+      <section class="col w-full lg:w-1/3">
+        <div class="border-b border-stone-200 pb-2">
+          <span class="step-badge bg-emerald-100 text-emerald-800 border border-emerald-300">
+            Paso 3 • La Pirámide
+          </span>
+          <h2 class="text-base font-bold text-stone-900 mt-1">
+            Los 6 Niveles del Escalafón
+          </h2>
+          <p class="text-xs text-stone-600">
+            Pulsa en cualquier tarjeta para explorar sus pautas y reflexiones.
+          </p>
+        </div>
+
+        <div class="flex flex-col gap-3">
+          
+        <!-- Tarjeta Nivel 1 -->
+        <div id="cardLvl1" onclick="selectManualLevel(1)" class="card-step flex flex-col gap-2">
+          <div class="flex items-center justify-between">
+            <span class="step-badge" style="background:#FEE2E2; color:#DC2626; border:1px solid #DC262640;">
+              NIVEL 1
+            </span>
+            <div class="w-6 h-6 rounded-full flex items-center justify-center font-mono font-extrabold text-xs" style="background:#FEE2E2; color:#DC2626;">
+              1
+            </div>
+          </div>
+          <h3 class="text-sm font-extrabold text-stone-900 leading-snug">
+            Nivel 1: Decisión Impulsiva o Presionada
+          </h3>
+          <p class="text-xs text-stone-600 leading-relaxed">
+            Cedes ante la insistencia de comerciales o tomas decisiones en caliente guiado por el enfado o el miedo.
+          </p>
+        </div>
+        
+        <!-- Tarjeta Nivel 2 -->
+        <div id="cardLvl2" onclick="selectManualLevel(2)" class="card-step flex flex-col gap-2">
+          <div class="flex items-center justify-between">
+            <span class="step-badge" style="background:#FFEDD5; color:#EA580C; border:1px solid #EA580C40;">
+              NIVEL 2
+            </span>
+            <div class="w-6 h-6 rounded-full flex items-center justify-center font-mono font-extrabold text-xs" style="background:#FFEDD5; color:#EA580C;">
+              2
+            </div>
+          </div>
+          <h3 class="text-sm font-extrabold text-stone-900 leading-snug">
+            Nivel 2: Prudencia Básica pero Dudas Frecuentes
+          </h3>
+          <p class="text-xs text-stone-600 leading-relaxed">
+            Sospechas de las prisas pero a veces te cuesta decir que no por educación o compromiso social.
+          </p>
+        </div>
+        
+        <!-- Tarjeta Nivel 3 -->
+        <div id="cardLvl3" onclick="selectManualLevel(3)" class="card-step flex flex-col gap-2">
+          <div class="flex items-center justify-between">
+            <span class="step-badge" style="background:#DBEAFE; color:#2563EB; border:1px solid #2563EB40;">
+              NIVEL 3
+            </span>
+            <div class="w-6 h-6 rounded-full flex items-center justify-center font-mono font-extrabold text-xs" style="background:#DBEAFE; color:#2563EB;">
+              3
+            </div>
+          </div>
+          <h3 class="text-sm font-extrabold text-stone-900 leading-snug">
+            Nivel 3: Análisis Sistemático de Opciones
+          </h3>
+          <p class="text-xs text-stone-600 leading-relaxed">
+            Pides presupuestos, comparas alternativas y no firmas nada sin leer la letra pequeña con calma.
+          </p>
+        </div>
+        
+        <!-- Tarjeta Nivel 4 -->
+        <div id="cardLvl4" onclick="selectManualLevel(4)" class="card-step flex flex-col gap-2">
+          <div class="flex items-center justify-between">
+            <span class="step-badge" style="background:#D1FAE5; color:#059669; border:1px solid #05966940;">
+              NIVEL 4
+            </span>
+            <div class="w-6 h-6 rounded-full flex items-center justify-center font-mono font-extrabold text-xs" style="background:#D1FAE5; color:#059669;">
+              4
+            </div>
+          </div>
+          <h3 class="text-sm font-extrabold text-stone-900 leading-snug">
+            Nivel 4: Filtro Activo contra Falacias y Sesgos
+          </h3>
+          <p class="text-xs text-stone-600 leading-relaxed">
+            Sabes que lo barato sale caro, detectas las promesas vacías y sabes pedir segundas opiniones médicas.
+          </p>
+        </div>
+        
+        <!-- Tarjeta Nivel 5 -->
+        <div id="cardLvl5" onclick="selectManualLevel(5)" class="card-step flex flex-col gap-2">
+          <div class="flex items-center justify-between">
+            <span class="step-badge" style="background:#FEF3C7; color:#D97706; border:1px solid #D9770640;">
+              NIVEL 5
+            </span>
+            <div class="w-6 h-6 rounded-full flex items-center justify-center font-mono font-extrabold text-xs" style="background:#FEF3C7; color:#D97706;">
+              5
+            </div>
+          </div>
+          <h3 class="text-sm font-extrabold text-stone-900 leading-snug">
+            Nivel 5: Juicio Experto, Sosiego y Templanza
+          </h3>
+          <p class="text-xs text-stone-600 leading-relaxed">
+            Decides con paz interior absoluta. Tus hijos y amigos acuden a ti buscando consejo porque transmites claridad.
+          </p>
+        </div>
+        
+        <!-- Tarjeta Nivel 6 -->
+        <div id="cardLvl6" onclick="selectManualLevel(6)" class="card-step flex flex-col gap-2">
+          <div class="flex items-center justify-between">
+            <span class="step-badge" style="background:#EDE9FE; color:#7C3AED; border:1px solid #7C3AED40;">
+              NIVEL 6
+            </span>
+            <div class="w-6 h-6 rounded-full flex items-center justify-center font-mono font-extrabold text-xs" style="background:#EDE9FE; color:#7C3AED;">
+              6
+            </div>
+          </div>
+          <h3 class="text-sm font-extrabold text-stone-900 leading-snug">
+            Nivel 6: Sabiduría Magistral y Consejo Paternal Certero
+          </h3>
+          <p class="text-xs text-stone-600 leading-relaxed">
+            Faro ético de la familia. Tus decisiones no solo son acertadas, sino que siembran concordia y unión en todo tu entorno.
+          </p>
+        </div>
+        
+        </div>
+      </section>
+
+    </main>
+
+  </div>
+
+  <!-- MODAL PARA COPIAR PROMPT DE GEMINI -->
+  <div id="modalGemini" class="fixed inset-0 bg-stone-900/60 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
+    <div class="bg-white rounded-2xl max-w-xl w-full p-6 shadow-2xl border border-stone-200 flex flex-col gap-4">
+      <div class="flex justify-between items-center border-b border-stone-200 pb-3">
+        <div class="flex items-center gap-2">
+          <span class="text-xl">📋</span>
+          <h3 class="font-extrabold text-stone-900 text-base sm:text-lg">Prompt Oficial para Gemini</h3>
+        </div>
+        <button onclick="closeGeminiModal()" class="text-stone-400 hover:text-stone-700 font-extrabold text-xl p-1">&times;</button>
+      </div>
+
+      <p class="text-xs text-stone-600">
+        Copia este texto y pégalo directamente en <strong>Gemini</strong> (<a href="https://gemini.google.com" target="_blank" class="text-amber-700 underline font-bold">gemini.google.com</a>) para profundizar en tu diagnóstico con la IA:
+      </p>
+
+      <textarea id="txtPromptArea" readonly class="w-full h-40 p-3 bg-stone-50 border border-stone-300 rounded-xl text-xs sm:text-sm font-mono text-stone-800 leading-relaxed resize-none focus:outline-none">Actúa como un filósofo del juicio práctico y la toma de decisiones serenas. Explícame qué es el 'sesgo de confirmación' y cómo nos engaña a todos haciéndonos buscar solo lo que nos da la razón. Dame 3 consejos de oro para tomar decisiones médicas o económicas de calado en la madurez con el máximo acierto y cero arrepentimientos.</textarea>
+
+      <div class="flex justify-end gap-3 pt-2">
+        <button onclick="closeGeminiModal()" class="px-4 py-2 rounded-lg text-xs sm:text-sm font-bold bg-stone-100 hover:bg-stone-200 text-stone-700">
+          Cerrar
+        </button>
+        <button onclick="copyToClipboard()" id="btnCopyPrompt" class="px-5 py-2 rounded-lg text-xs sm:text-sm font-extrabold bg-amber-600 hover:bg-amber-700 text-white shadow-sm flex items-center gap-2">
+          <span>📋 Copiar Prompt</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT REACTIVO Y SÍNTESIS DE VOZ -->
+  <script>
+    const LEVEL_DATA = {
+      "1": {
+            "num": 1,
+            "title": "Nivel 1: Decisión Impulsiva o Presionada",
+            "desc": "Cedes ante la insistencia de comerciales o tomas decisiones en caliente guiado por el enfado o el miedo.",
+            "color": "#DC2626",
+            "badgeBg": "#FEE2E2",
+            "kpi1": "40%",
+            "kpi2": "REACTIVA",
+            "reflexion": "La prisa es la mejor aliada del engaño. Aprende a decir: 'Me lo voy a pensar con la almohada y ya le diré'."
+      },
+      "2": {
+            "num": 2,
+            "title": "Nivel 2: Prudencia Básica pero Dudas Frecuentes",
+            "desc": "Sospechas de las prisas pero a veces te cuesta decir que no por educación o compromiso social.",
+            "color": "#EA580C",
+            "badgeBg": "#FFEDD5",
+            "kpi1": "60%",
+            "kpi2": "INDECISA",
+            "reflexion": "Decir 'no' con educación y firmeza es la herramienta de libertad más poderosa que existe."
+      },
+      "3": {
+            "num": 3,
+            "title": "Nivel 3: Análisis Sistemático de Opciones",
+            "desc": "Pides presupuestos, comparas alternativas y no firmas nada sin leer la letra pequeña con calma.",
+            "color": "#2563EB",
+            "badgeBg": "#DBEAFE",
+            "kpi1": "78%",
+            "kpi2": "ORDENADA",
+            "reflexion": "Tu método de contrastar datos antes de actuar te evita el 90% de los disgustos cotidianos."
+      },
+      "4": {
+            "num": 4,
+            "title": "Nivel 4: Filtro Activo contra Falacias y Sesgos",
+            "desc": "Sabes que lo barato sale caro, detectas las promesas vacías y sabes pedir segundas opiniones médicas.",
+            "color": "#059669",
+            "badgeBg": "#D1FAE5",
+            "kpi1": "90%",
+            "kpi2": "FIRME",
+            "reflexion": "Tu experiencia vital te ha enseñado que los atajos mágicos no existen: el sentido común nunca falla."
+      },
+      "5": {
+            "num": 5,
+            "title": "Nivel 5: Juicio Experto, Sosiego y Templanza",
+            "desc": "Decides con paz interior absoluta. Tus hijos y amigos acuden a ti buscando consejo porque transmites claridad.",
+            "color": "#D97706",
+            "badgeBg": "#FEF3C7",
+            "kpi1": "98%",
+            "kpi2": "MAGISTRAL",
+            "reflexion": "Has alcanzado la cima del buen juicio: saber qué batallas merecen la pena y cuáles es mejor dejar pasar."
+      },
+      "6": {
+            "num": 6,
+            "title": "Nivel 6: Sabiduría Magistral y Consejo Paternal Certero",
+            "desc": "Faro ético de la familia. Tus decisiones no solo son acertadas, sino que siembran concordia y unión en todo tu entorno.",
+            "color": "#7C3AED",
+            "badgeBg": "#EDE9FE",
+            "kpi1": "100%",
+            "kpi2": "INQUEBRANTABLE",
+            "reflexion": "Tu serenidad al decidir es el mayor ancla de seguridad para las generaciones que vienen detrás de ti."
+      }
+};
+    const TOTAL_LEVELS = 6;
+
+    let manualLevelOverride = null;
+    let isLargeText = false;
+    let synth = window.speechSynthesis;
+    let currentUtterance = null;
+    let isSpeaking = false;
+
+    function updateSimulation() {
+      
+      const val_rngTiempoDecision = parseInt(document.getElementById('rngTiempoDecision').value);
+      document.getElementById('lbl_rngTiempoDecision').innerText = val_rngTiempoDecision + " días";
+        
+      const val_rngSegundaOpinion = parseInt(document.getElementById('rngSegundaOpinion').value);
+      document.getElementById('lbl_rngSegundaOpinion').innerText = val_rngSegundaOpinion + " /10";
+        
+
+      let checks = 0;
+      document.querySelectorAll('.check-custom').forEach(chk => {
+        if (chk.checked) checks++;
+      });
+
+      let calculatedLvl = 1;
+      const totalChecks = document.querySelectorAll('.check-custom').length;
+      const checkRatio = checks / Math.max(1, totalChecks);
+
+      if (checkRatio >= 0.25) calculatedLvl = 2;
+      if (checkRatio >= 0.50) calculatedLvl = Math.min(TOTAL_LEVELS, 3);
+      if (checkRatio >= 0.75) calculatedLvl = Math.min(TOTAL_LEVELS, 4);
+      if (checkRatio >= 1.00) calculatedLvl = TOTAL_LEVELS;
+
+      const activeLvl = manualLevelOverride !== null ? manualLevelOverride : calculatedLvl;
+      renderLevel(activeLvl);
+    }
+
+    function selectManualLevel(lvl) {
+      manualLevelOverride = lvl;
+      renderLevel(lvl);
+      if (isSpeaking) {
+        stopSpeaking();
+        speakDiagnosis();
+      }
+    }
+
+    function renderLevel(lvl) {
+      const data = LEVEL_DATA[lvl] || LEVEL_DATA[TOTAL_LEVELS];
+
+      document.getElementById('heroNum').innerText = data.num;
+      document.getElementById('heroNum').style.color = data.color;
+      document.getElementById('heroCircle').style.borderColor = data.color;
+      document.getElementById('heroBadge').style.color = data.color;
+      document.getElementById('heroBadge').style.borderColor = data.color + '40';
+      document.getElementById('statusHero').style.borderColor = data.color;
+      document.getElementById('statusHero').style.backgroundColor = data.badgeBg;
+
+      document.getElementById('heroTitle').innerText = data.title;
+      document.getElementById('heroDesc').innerText = data.desc;
+      document.getElementById('valKpi1').innerText = data.kpi1 || "94%";
+      document.getElementById('valKpi2').innerText = data.kpi2 || "MAGISTRAL";
+      document.getElementById('txtReflexion').innerText = data.reflexion;
+
+      for (let i = 1; i <= TOTAL_LEVELS; i++) {
+        const card = document.getElementById('cardLvl' + i);
+        if (card) {
+          if (i === data.num) {
+            card.classList.add('active');
+            card.style.borderColor = data.color;
+            card.style.backgroundColor = data.badgeBg;
+          } else {
+            card.classList.remove('active');
+            card.style.borderColor = '#E7E5E4';
+            card.style.backgroundColor = '#FAFAF9';
+          }
+        }
+      }
+    }
+
+    function speakDiagnosis() {
+      if (!('speechSynthesis' in window)) {
+        alert("Tu navegador no soporta la lectura por voz.");
+        return;
+      }
+
+      if (isSpeaking) {
+        stopSpeaking();
+        return;
+      }
+
+      const title = document.getElementById('heroTitle').innerText;
+      const desc = document.getElementById('heroDesc').innerText;
+      const reflexion = document.getElementById('txtReflexion').innerText;
+      const textToRead = `${title}. ${desc}. Reflexión importante: ${reflexion}`;
+
+      currentUtterance = new SpeechSynthesisUtterance(textToRead);
+      currentUtterance.lang = 'es-ES';
+      currentUtterance.rate = 0.95;
+
+      const voices = synth.getVoices();
+      const spanishVoice = voices.find(v => v.lang.startsWith('es') || v.lang.includes('es-ES'));
+      if (spanishVoice) currentUtterance.voice = spanishVoice;
+
+      currentUtterance.onstart = () => {
+        isSpeaking = true;
+        document.getElementById('speak-main-label').innerText = "Detener Voz";
+        document.getElementById('speak-btn-bottom-label').innerText = "Detener Lectura de Voz";
+        document.getElementById('btn-speak-main').classList.add('is-speaking');
+      };
+
+      currentUtterance.onend = () => {
+        stopSpeaking();
+      };
+
+      currentUtterance.onerror = () => {
+        stopSpeaking();
+      };
+
+      synth.speak(currentUtterance);
+    }
+
+    function stopSpeaking() {
+      if (synth.speaking || synth.pending) {
+        synth.cancel();
+      }
+      isSpeaking = false;
+      document.getElementById('speak-main-label').innerText = "Escuchar Diagnóstico";
+      document.getElementById('speak-btn-bottom-label').innerText = "Escuchar Explicación Completa";
+      document.getElementById('btn-speak-main').classList.remove('is-speaking');
+    }
+
+    function toggleFontSize() {
+      isLargeText = !isLargeText;
+      const htmlEl = document.documentElement;
+      const lbl = document.getElementById('font-size-label');
+      if (isLargeText) {
+        htmlEl.classList.add('large-text');
+        lbl.innerText = "Letra: Grande (+)";
+      } else {
+        htmlEl.classList.remove('large-text');
+        lbl.innerText = "Letra: Normal";
+      }
+    }
+
+    function resetSimulation() {
+      manualLevelOverride = null;
+      document.querySelectorAll('input[type="range"]').forEach(r => {
+        r.value = r.defaultValue || r.getAttribute('value');
+      });
+      document.querySelectorAll('.check-custom').forEach(c => {
+        c.checked = true;
+      });
+      stopSpeaking();
+      updateSimulation();
+    }
+
+    function openGeminiModal() {
+      document.getElementById('modalGemini').classList.remove('hidden');
+      document.getElementById('modalGemini').classList.add('flex');
+    }
+
+    function closeGeminiModal() {
+      document.getElementById('modalGemini').classList.add('hidden');
+      document.getElementById('modalGemini').classList.remove('flex');
+    }
+
+    function copyToClipboard() {
+      const txt = document.getElementById('txtPromptArea').value;
+      navigator.clipboard.writeText(txt).then(() => {
+        const btn = document.getElementById('btnCopyPrompt');
+        btn.innerHTML = "<span>✅ ¡Copiado con Éxito!</span>";
+        btn.classList.remove('bg-amber-600', 'hover:bg-amber-700');
+        btn.classList.add('bg-emerald-600');
+        setTimeout(() => {
+          btn.innerHTML = "<span>📋 Copiar Prompt</span>";
+          btn.classList.remove('bg-emerald-600');
+          btn.classList.add('bg-amber-600', 'hover:bg-amber-700');
+          closeGeminiModal();
+        }, 1400);
+      }).catch(() => {
+        alert("Selecciona y copia el texto manualmente.");
+      });
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      updateSimulation();
+      if ('speechSynthesis' in window) {
+        speechSynthesis.onvoiceschanged = () => {};
+      }
+    });
+  </script>
+</body>
+</html>
