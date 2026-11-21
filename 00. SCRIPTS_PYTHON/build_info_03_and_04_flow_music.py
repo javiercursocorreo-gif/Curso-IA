@@ -276,48 +276,48 @@ def build_info_003b_pdf(output_path):
     pdf.set_fill_color(1.0, 1.0, 1.0)
     pdf.set_stroke_color(0.85, 0.25, 0.2)
     pdf.set_line_width(1.0)
-    pdf.rect(30, 612, 552, 94, fill=True, stroke=True)
+    pdf.rect(30, 610, 552, 95, fill=True, stroke=True)
 
-    pdf.draw_text(42, 693, '4. EL GRAN SALTO: DE LA FOTO AISLADA A LA MINI-PELICULA NARRATIVA (15-20 SEGUNDOS)', font='F2', size=9.0, r=0.75, g=0.15, b=0.1)
+    pdf.draw_text(42, 691, '4. EL GRAN SALTO: DE LA FOTO AISLADA A LA MINI-PELICULA NARRATIVA (15-20 SEGUNDOS)', font='F2', size=9.0, r=0.75, g=0.15, b=0.1)
     t4 = (
         "Un clip suelto de 5 segundos es solo un efecto visual; el verdadero cine nace cuando conectas tres planos con continuidad dramatica.\n"
         "• El Tríptico Clásico de Dirección: 1) Plano General (Establece el lugar y la atmosfera). 2) Plano Medio (Presenta al personaje en accion). "
         "3) Primer Plano (Detalle emocional o reaccion que resuelve la escena).\n"
         "• Presupuesto Diario Gratuito: Rodar 3 planos continuos consume 30 creditos de Flow (10 por clip). ¡Te sobran 20 creditos para repetir o ajustar!"
     )
-    y4 = 678
+    y4 = 675
     for par in t4.split('\n'):
         for l in wrap_text(par, 114):
             pdf.draw_text(42, y4, l, font='F2' if '•' in l and ':' in l else 'F1', size=7.3, r=0.15, g=0.2, b=0.25)
             y4 -= 10.8
 
-    # Sección 5: El Personaje Ancla (Anchor Image)
+    # Sección 5: El Personaje Ancla (Anchor Image) - ALTURA AMPLIADA PARA QUE NO SE SALGA EL TEXTO
     pdf.set_fill_color(1.0, 1.0, 1.0)
     pdf.set_stroke_color(0.2, 0.45, 0.8)
     pdf.set_line_width(1.0)
-    pdf.rect(30, 508, 552, 98, fill=True, stroke=True)
+    pdf.rect(30, 482, 552, 120, fill=True, stroke=True)
 
-    pdf.draw_text(42, 591, '5. EL SECRETO TECNICO: EL "PERSONAJE ANCLA" (ANCHOR IMAGE) PARA CERO MUTACIONES', font='F2', size=9.0, r=0.1, g=0.3, b=0.65)
+    pdf.draw_text(42, 588, '5. EL SECRETO TECNICO: EL "PERSONAJE ANCLA" (ANCHOR IMAGE) PARA CERO MUTACIONES', font='F2', size=9.0, r=0.1, g=0.3, b=0.65)
     t5 = (
         "El mayor reto de la IA en video es que el rostro, el pelo y la ropa cambian de un plano a otro. Para solucionarlo usamos un 'Personaje Ancla':\n"
         "• Paso 1 (Crear la Hoja de Referencia en Gemini): Pide una imagen frontal limpia y nitida del protagonista con su vestimenta caracteristica.\n"
         "• Paso 2 (Subir como Ancla en Flow): En Google Flow, arrastra esa foto fija a la casilla de referencia (@personaje).\n"
         "• Paso 3 (Bloqueo de Identidad): Flow preservara las facciones, patillas, sombrero, capa y correajes exactos en todos los angulos de camara."
     )
-    y5 = 576
+    y5 = 572
     for par in t5.split('\n'):
         for l in wrap_text(par, 114):
             pdf.draw_text(42, y5, l, font='F2' if '•' in l and ':' in l else 'F1', size=7.3, r=0.15, g=0.2, b=0.25)
-            y5 -= 10.8
+            y5 -= 10.5
 
     # Sección 6: Caso Práctico Curro Jiménez
     pdf.set_fill_color(1.0, 1.0, 1.0)
     pdf.set_stroke_color(0.8, 0.5, 0.1)
     pdf.set_line_width(1.0)
-    pdf.rect(30, 95, 552, 407, fill=True, stroke=True)
+    pdf.rect(30, 95, 552, 379, fill=True, stroke=True)
 
-    pdf.draw_text(42, 487, '6. CASO PRACTICO REAL: RECREANDO UNA ESCENA DE "CURRO JIMENEZ" (SERRANIA DE RONDA)', font='F2', size=9.0, r=0.7, g=0.35, b=0.05)
-    pdf.draw_text(42, 474, 'Sigue este rodaje guiado paso a paso para crear una mini-película histórica con total coherencia visual:', font='F3', size=7.2, r=0.4, g=0.45, b=0.5)
+    pdf.draw_text(42, 460, '6. CASO PRACTICO REAL: RECREANDO UNA ESCENA DE "CURRO JIMENEZ" (SERRANIA DE RONDA)', font='F2', size=9.0, r=0.7, g=0.35, b=0.05)
+    pdf.draw_text(42, 447, 'Sigue este rodaje guiado paso a paso para crear una mini-película histórica con total coherencia visual:', font='F3', size=7.2, r=0.4, g=0.45, b=0.5)
 
     cj_steps = [
         ("PASO 1 • EL PROMPT DE DIRECCION EN GEMINI (GENERAR EL GUION DE PLANOS):",
@@ -336,7 +336,7 @@ def build_info_003b_pdf(output_path):
          "Objetivo: Transmitir tension dramatica y el alma del personaje. 3 planos x 10 = 30 creditos empleados. ¡Una escena de cine completa!")
     ]
 
-    y6 = 457
+    y6 = 432
     for step_item in cj_steps:
         st_title = step_item[0]
         st_desc = step_item[1]
