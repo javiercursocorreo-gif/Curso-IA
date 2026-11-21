@@ -303,24 +303,25 @@ def build_info_003b_pdf(output_path):
 
     pdf.draw_text(42, 252, '➔ Gemini te entregara en segundos tus 3 Prompts de Rodaje en espanol listos para llevar a Google Flow.', font='F2', size=7.3, r=0.05, g=0.45, b=0.25)
 
-    # Sección 5: Guía Rápida de Visionado y Montaje en Casa
+    # Sección 5: Cómo Unir tus 3 Clips con el Editor Gratuito de Windows (Clipchamp)
     pdf.set_fill_color(0.98, 0.98, 1.0)
     pdf.set_stroke_color(0.8, 0.5, 0.1)
     pdf.set_line_width(1.0)
     pdf.rect(30, 95, 552, 133, fill=True, stroke=True)
 
-    pdf.draw_text(42, 214, '5. GUIA RAPIDA: COMO VER Y COMPARTIR TU MINI-PELICULA EN CASA (SENCILLO Y SIN PROGRAMAS)', font='F2', size=8.5, r=0.7, g=0.35, b=0.05)
+    pdf.draw_text(42, 214, '5. COMO UNIR TUS 3 CLIPS EN UN SOLO VIDEO CON EL EDITOR DE WINDOWS (CLIPCHAMP)', font='F2', size=8.3, r=0.7, g=0.35, b=0.05)
 
     v_text = (
-        "• Descarga de clips: Al terminar de generar cada toma en Google Flow, pulsa el boton Descargar en la esquina del video (obtendras Toma 1, Toma 2 y Toma 3).\n"
-        "• Visionado directo: Abre tu carpeta de descargas, selecciona los 3 videos juntos y pulsa Reproducir en la app Fotos / Reproductor de tu ordenador o tablet.\n"
-        "• Montaje opcional (un solo archivo): Si deseas unirlos en un unico video para compartirlo con familiares por WhatsApp, puedes arrastrarlos a la aplicacion gratuita de tu sistema (Clipchamp en Windows o iMovie en Mac / iPad).\n"
-        "• ¡Mision Cumplida!: Has rodado una escena de accion historica con continuidad cinematografica profesional y coste cero."
+        "Si quieres juntar tus 3 tomas de Google Flow en una sola pelicula continua de 15 segundos para enviarla por WhatsApp a tu familia:\n"
+        "• 1. Abrir el Editor Gratuito: En la barra de busqueda de tu ordenador Windows (lupa abajo a la izquierda), escribe Clipchamp (o Editor de video) y abre la aplicacion gratuita integrada.\n"
+        "• 2. Anadir tus 3 Videos: Pulsa en Crear un nuevo video. Haz clic en Importar multimedia y selecciona los 3 videos descargados de Google Flow (Toma 1, Toma 2 y Toma 3).\n"
+        "• 3. Ordenar en la Linea de Tiempo: Arrastra los 3 videos a la pista inferior horizontal, colocandolos uno detras de otro en fila (primero el paisaje, luego Curro a caballo y al final su primer plano).\n"
+        "• 4. Guardar tu Pelicula Final: Pulsa arriba a la derecha en el boton Exportar y elige 1080p (HD). ¡En pocos segundos tendras tu archivo de video completo listo para disfrutar!"
     )
-    y6 = 200
+    y6 = 199
     for par in v_text.split('\n'):
-        for l in wrap_text(par, 114):
-            pdf.draw_text(42, y6, l, font='F1', size=7.1, r=0.15, g=0.2, b=0.25)
+        for l in wrap_text(par, 112):
+            pdf.draw_text(42, y6, l, font='F2' if any(k in l for k in ['• 1.', '• 2.', '• 3.', '• 4.']) else 'F1', size=7.1, r=0.15, g=0.2, b=0.25)
             y6 -= 9.5
 
     # Pie institucional página 2
