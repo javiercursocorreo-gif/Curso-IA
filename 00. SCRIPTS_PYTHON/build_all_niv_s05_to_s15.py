@@ -25,14 +25,16 @@ SESSIONS_BASE = os.path.join(BASE_DIR, "CLASES/EXPORTACION_FICHAS_CLASSROOM_PDF/
 
 def escape_pdf_text(text):
     text = str(text)
+    for em in ['🛡️', '🛡', '🚀', '✨', '⭐', '💡', '📌', '🎉', '📄', '⚙️', '🔧', '🧭', '🌲', '⚡', '🎬', '🎥', '🍿', '🎵', '🎹', '🎼', '🏛️', '🏛', '«', '»']:
+        text = text.replace(em, '')
     text = text.replace('\\', '\\\\').replace('(', '\\(').replace(')', '\\)')
     replacements = {
         'á': '\xe1', 'é': '\xe9', 'í': '\xed', 'ó': '\xf3', 'ú': '\xfa',
         'Á': '\xc1', 'É': '\xc9', 'Í': '\xcd', 'Ó': '\xd3', 'Ú': '\xda',
         'ñ': '\xf1', 'Ñ': '\xd1', 'ü': '\xfc', 'Ü': '\xdc',
-        '«': '<<', '»': '>>', '•': '-', '—': '-', '–': '-',
-        'º': 'o', 'ª': 'a', '¿': '\xbf', '¡': '\xa1',
-        '➔': '->', '→': '->', '’': "'", '‘': "'", '“': '"', '”': '"'
+        '•': '-', '—': '-', '–': '-', 'º': 'o', 'ª': 'a',
+        '¿': '\xbf', '¡': '\xa1', '➔': '->', '→': '->',
+        '’': "'", '‘': "'", '“': '"', '”': '"'
     }
     for k, v in replacements.items():
         text = text.replace(k, v)
@@ -208,7 +210,7 @@ def render_niv_worksheet(data):
 
     p3_title = 'GARANTIA OFICIAL • Copia de Respaldo Oficial Garantizada (BKP en el Mapa):'
     p3_desc = 'Si deseas abrir la aplicacion terminada y depurada con voz y diseno senior, pulsa en el Cuadro de Mando del curso:'
-    p3_btn = f'«🛡️ Abrir {data["sim_title"]} (HTML)» para interactuar de inmediato con tus datos reales.'
+    p3_btn = f'<<Abrir {data["sim_title"]} (HTML)» para interactuar de inmediato con tus datos reales.'
     pdf.draw_text(42, 603, p3_title, font='F2', size=8.0, r=0.7, g=0.3, b=0.05)
     pdf.draw_text(42, 593, p3_desc, font='F1', size=7.8, r=0.15, g=0.2, b=0.25)
     pdf.draw_text(42, 583, p3_btn, font='F2', size=7.8, r=0.05, g=0.5, b=0.3)
@@ -285,22 +287,46 @@ def render_niv_worksheet(data):
 
     pdf.draw_text(42, 80, f'APLICACION OFICIAL GARANTIZADA (BKP): {data["sim_file"].upper()}', font='F2', size=8.8, r=0.2, g=0.85, b=0.5)
     pdf.draw_text(42, 65, f'Si deseas abrir la aplicacion terminada y depurada, en el Cuadro de Mando de la Sesion {session_num:02d} haz clic en:', font='F1', size=7.6, r=0.8, g=0.85, b=0.9)
-    pdf.draw_text(42, 52, f'«🛡️ Abrir {data["sim_title"]} (HTML)» para interactuar al instante con datos reales.', font='F2', size=7.8, r=0.2, g=0.85, b=0.5)
+    pdf.draw_text(42, 52, f'<<Abrir {data["sim_title"]} (HTML)» para interactuar al instante con datos reales.', font='F2', size=7.8, r=0.2, g=0.85, b=0.5)
 
     pdf.end_page()
     pdf.write_to_file(output_path)
     print(f"✅ [{tag_code}] Ficha NIV generada con éxito (1 página completa): {output_path}")
 
-    # Sincronización en carpetas de bloque
-    alt_paths = [
-        os.path.join(BASE_DIR, "CLASES/EXPORTACION_FICHAS_CLASSROOM_PDF/09. [NIV] BLOQUE_9_ESCALAFONES_Y_NIVELES_CULTURA101/Lote_01_al_20", output_filename.replace("9. ", "")),
-        os.path.join(BASE_DIR, "CLASES/EXPORTACION_FICHAS_CLASSROOM_PDF/[NIV] BLOQUE_10_ESCALAFONES_Y_NIVELES_CULTURA101/Lote_01_al_20", output_filename.replace("9. ", ""))
-    ]
-    for alt in alt_paths:
+        # Sincronización exhaustiva en Bloque 9, Bloque 10 y Carpeta de Sesión
+    canonical_names = {
+        5: ["NIV-005_Los 5 Niveles de la Evolución del Dinero.pdf", "NIV-005_Los_5_Niveles_de_la_Evolucin_del_Dinero.pdf"],
+        6: ["NIV-006_Calculadora de Poder Adquisitivo y Cesta de la Compra.pdf", "NIV-006_Calculadora_de_Poder_Adquisitivo_y_Cesta.pdf", "NIV-006_Los 6 Niveles del Poder Adquisitivo y Coste de Vida Global.pdf"],
+        7: ["NIV-007_Los 5 Niveles de Automatización del Trabajo Humano.pdf", "NIV-007_Los_5_Niveles_de_Automatizacion_e_IA_en_el_Hogar.pdf", "NIV-007_Los_5_Niveles_de_Automatizacin_e_IA_en_e.pdf"],
+        8: ["NIV-008_Los 6 Niveles de Persuasión e Influencia de Masas.pdf", "NIV-008_Radar_Antimanipulacin_Los_6_Niveles_de_P.pdf"],
+        9: ["NIV-009_Los 5 Niveles de Seguridad Ciudadana y Prevención Urbana.pdf", "NIV-009_Semforo_de_Seguridad_Ciudadana_y_Prevenc.pdf"],
+        10: ["NIV-010_Los 6 Niveles de Alfabetización Financiera Personal.pdf", "NIV-010_Los_6_Niveles_de_Alfabetizacin_y_Blindaj.pdf"],
+        11: ["NIV-011_Los 7 Niveles de Inteligencia Cognitiva y Conciencia.pdf", "NIV-011_Los_7_Niveles_de_Inteligencia_Cognitiva.pdf"],
+        12: ["NIV-012_Los 6 Niveles de Conciencia y Alerta Neurológica.pdf", "NIV-012_Los_6_Niveles_de_Conciencia_Ritmos_Circa.pdf"],
+        13: ["NIV-013_Los 5 Niveles de la Memoria y Retención Biológica.pdf", "NIV-013_Los_5_Niveles_de_Memoria_Prctica_y_Reten.pdf"],
+        14: ["NIV-014_Los 6 Niveles de Toma de Decisiones y Sesgos Cognitivos.pdf", "NIV-014_Los_6_Niveles_de_Toma_de_Decisiones_y_Fi.pdf"],
+        15: ["NIV-015_Los 5 Niveles de Resiliencia y Salud Mental.pdf", "NIV-015_Los_5_Niveles_de_Resiliencia_Emocional_y.pdf"]
+    }
+
+    # Copiar a Bloque 9 y Bloque 10
+    b9_dir = os.path.join(BASE_DIR, "CLASES/EXPORTACION_FICHAS_CLASSROOM_PDF/09. [NIV] BLOQUE_9_ESCALAFONES_Y_NIVELES_CULTURA101/Lote_01_al_20")
+    b10_dir = os.path.join(BASE_DIR, "CLASES/EXPORTACION_FICHAS_CLASSROOM_PDF/[NIV] BLOQUE_10_ESCALAFONES_Y_NIVELES_CULTURA101/Lote_01_al_20")
+    sess_dir = os.path.join(SESSIONS_BASE, f"{session_num:02d}_Sesion")
+
+    for cname in canonical_names.get(session_num, []):
+        for target_dir in [b9_dir, b10_dir]:
+            try:
+                os.makedirs(target_dir, exist_ok=True)
+                shutil.copy2(output_path, os.path.join(target_dir, cname))
+            except Exception as e:
+                print(f"Error copiando a {target_dir}: {e}")
+        
+        # También en la carpeta de sesión con prefijo 9. y sin prefijo
         try:
-            os.makedirs(os.path.dirname(alt), exist_ok=True)
-            shutil.copy2(output_path, alt)
-        except Exception:
+            shutil.copy2(output_path, os.path.join(sess_dir, cname))
+            if not cname.startswith("9. "):
+                shutil.copy2(output_path, os.path.join(sess_dir, f"9. {cname}"))
+        except Exception as e:
             pass
 
 # ==============================================================================
