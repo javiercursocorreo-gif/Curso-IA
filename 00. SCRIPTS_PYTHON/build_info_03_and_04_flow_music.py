@@ -175,7 +175,7 @@ def build_info_003b_pdf(output_path):
         "Google Flow (https://labs.google/flow) es la herramienta de Google que genera clips de cine en movimiento "
         "de 5 segundos con fisica realista y movimientos profesionales de camara a partir de prompts de texto.\n"
         "• Acceso directo con tu cuenta de Google (Gmail): Sin pagos, sin suscripciones y sin tarjetas de credito.\n"
-        "• 50 Creditos diarios renovables a las 00:00: Cada clip de 5 segundos consume 10 creditos (hasta 5 videos gratis diarios).\n"
+        "• 50 Creditos diarios renovables a las 00:00: Cada clip de 5 segundos consume 12 creditos (hasta 4 videos gratis al dia).\n"
         "• Metodologia Directa en 3 Pasos (Sin fotos intermedias): 1) Copiar el prompt de la ficha a Gemini. "
         "2) Gemini redacta tus 3 prompts de camara. 3) Copiar sucesivamente cada prompt en Flow y generar el clip."
     )
@@ -186,74 +186,56 @@ def build_info_003b_pdf(output_path):
             pdf.draw_text(42, y_pos, l, font='F2' if '•' in l and ':' in l else 'F1', size=7.4, r=0.15, g=0.2, b=0.25)
             y_pos -= 11.2
 
-    # Sección 2: Los 4 Movimientos de Cámara Cinemática Avanzada
-    pdf.set_fill_color(1.0, 1.0, 1.0) # Fondo blanco
-    pdf.set_stroke_color(0.2, 0.45, 0.8)
-    pdf.set_line_width(1.0)
-    pdf.rect(30, 265, 552, 325, fill=True, stroke=True)
-
-    pdf.draw_text(42, 574, '2. LOS 4 MOVIMIENTOS CINEMATICOS DE CAMARA PROFESIONAL (ANALISIS DE DIRECCION)', font='F2', size=9.2, r=0.1, g=0.3, b=0.65)
-    pdf.draw_text(42, 561, 'Aprende a dirigir la camara virtual con las tecnicas maestras de realizacion cinematografica:', font='F3', size=7.2, r=0.4, g=0.45, b=0.5)
+    # Sección 2: Los 4 Movimientos Cinemáticos de Cámara (4 tarjetas individuales)
+    pdf.draw_text(34, 578, '2. LOS 4 MOVIMIENTOS CINEMATICOS DE CAMARA (LOS QUE APLICARA GEMINI EN TUS PROMPTS):', font='F2', size=8.8, r=0.1, g=0.3, b=0.65)
 
     moves = [
-        ("1. ORBIT (Giro 360 Grados Orbital):",
-         "La camara rota circularmente alrededor del sujeto principal manteniendolo siempre en el centro del encuadre. "
-         "Aporta volumen y tridimensionalidad majestuosa. Ideal para estatuas, bodegones, mesas de trabajo o edificios.",
-         "Ejemplo de Prompt: \"Camara orbital lenta girando 360 grados alrededor del sujeto con iluminacion calida cinematica.\""),
+        ("1. DRONE VIEW (Vuelo Aereo / Perspectiva Cenital):",
+         "La camara sobrevuela como un dron desde gran altura, ascendiendo o descendiendo suavemente para mostrar grandes paisajes, desfiladeros o montanas. Aporta sensacion de escala majestuosa y vuelo sereno.",
+         "🎬 Efecto en pantalla: Vuelo aereo suave sobre la Serrania de Ronda al amanecer desvelando el camino real.",
+         (0.1, 0.45, 0.75)),
 
-        ("2. DRONE VIEW (Vuelo Aereo / Perspectiva Cenital):",
-         "La camara sobrevuela como un dron desde gran altura, ascendiendo o descendiendo en linea recta para mostrar grandes paisajes, "
-         "vistas aereas de ciudades o patios arquitectonicos. Proporciona escala colosal y sensacion de vuelo sereno.",
-         "Ejemplo de Prompt: \"Plano aereo con dron ascendiendo suavemente para desvelar la escena principal a camara lenta.\""),
+        ("2. ORBIT (Giro 360 Grados Orbital):",
+         "La camara rota circularmente alrededor del sujeto principal manteniendolo siempre en el centro del encuadre. Aporta volumen y tridimensionalidad cinematografica al personaje, estatua o vehiculo.",
+         "🎬 Efecto en pantalla: Giro circular lento alrededor de Curro Jimenez sobre su caballo en el risco rocoso.",
+         (0.75, 0.25, 0.1)),
 
-        ("3. BULLET TIME (Tiempo Congelado / Camara Ultralenta):",
-         "El tiempo se detiene casi por completo mientras la camara se aproxima con suavidad milimetrica al foco de tension dramatica. "
-         "Perfecto para chispas de luz, gotas suspendidas o el instante en que dos manos casi se tocan en obras renacentistas.",
-         "Ejemplo de Prompt: \"Efecto camara ultralenta (bullet time) acercandose al punto exacto con luz constante y suave.\""),
+        ("3. TRACKING (Camara de Seguimiento en Movimiento):",
+         "La camara se desplaza en paralelo acompanando al sujeto mientras cabalga o camina por el sendero. Mantiene el dinamismo y la sensacion de viaje y aventura sin movimientos bruscos.",
+         "🎬 Efecto en pantalla: La camara acompana de lado el avance elegante del caballo al paso.",
+         (0.1, 0.55, 0.3)),
 
-        ("4. REVEAL (Camara de Revelacion Progresiva):",
-         "La camara emerge desde el suelo, desde detras de una pared o asciende tras un obstaculo para descubrir el sujeto principal. "
-         "Crea suspense, emocion visual y un impacto dramatico perfecto al desvelar rostros restaurados o tesoros ocultos.",
-         "Ejemplo de Prompt: \"Camara lenta de revelacion ascendiendo desde el suelo para descubrir la mirada del personaje.\"")
+        ("4. BULLET TIME / ZOOM IN (Camara Ultralenta y Acercamiento Dramatico):",
+         "El tiempo parece detenerse mientras la camara se aproxima con suavidad milimetrica al foco emocional de la escena, como la mirada decidida del heroe o el brillo de su sombrero y trabuco.",
+         "🎬 Efecto en pantalla: Acercamiento suave a camara lenta hacia la mirada decidida bajo el sombrero calanes.",
+         (0.5, 0.2, 0.7))
     ]
 
-    y_m = 544
-    for m_title, m_desc, m_ex in moves:
-        pdf.draw_text(42, y_m, m_title, font='F2', size=7.8, r=0.1, g=0.35, b=0.65)
-        y_m -= 10
-        for l in wrap_text(m_desc, 115):
-            pdf.draw_text(42, y_m, l, font='F1', size=7.2, r=0.2, g=0.25, b=0.3)
-            y_m -= 9.5
-        for l in wrap_text(m_ex, 115):
-            pdf.draw_text(42, y_m, l, font='F3', size=6.8, r=0.7, g=0.3, b=0.05)
-            y_m -= 9.5
-        y_m -= 5
+    card_h = 104
+    gap = 14
+    y_top = 568
+    for i, (m_title, m_desc, m_ex, col) in enumerate(moves):
+        y_card = y_top - i * (card_h + gap)
+        pdf.set_fill_color(0.98, 0.99, 1.0)
+        pdf.set_stroke_color(col[0], col[1], col[2])
+        pdf.set_line_width(0.8)
+        pdf.rect(30, y_card - card_h, 552, card_h, fill=True, stroke=True)
 
-    # Sección 3: Consejos prácticos de rodaje senior
-    pdf.set_fill_color(1.0, 1.0, 1.0)
-    pdf.set_stroke_color(0.8, 0.5, 0.1)
-    pdf.set_line_width(1.0)
-    pdf.rect(30, 95, 552, 160, fill=True, stroke=True)
-
-    pdf.draw_text(42, 238, '3. CONSEJO SENIOR: LA REGLA DE ORO DEL RODAJE DIGITAL CON IA', font='F2', size=9.0, r=0.7, g=0.35, b=0.05)
-    
-    tips = (
-        "• Menos es mas: Evita pedir carreras rapidas o acrobacias complejas. La IA destaca con movimientos suaves, lentos y serenos.\n"
-        "• Luz constante: Incluye siempre en tu prompt palabras como 'luz calida constante' o 'reflejos suaves' para evitar parpadeos.\n"
-        "• Integracion en tus 5 fichas: En esta sesion 03, hemos anadido al pie de tus 5 fichas de imagen ([EST], [PRAC], [INT], [FUT], [ARTE]) "
-        "el prompt exacto de Flow para aplicar cada uno de estos movimientos sin que tengas que inventar nada."
-    )
-    y_t = 222
-    for par in tips.split('\n'):
-        for l in wrap_text(par, 114):
-            pdf.draw_text(42, y_t, l, font='F1', size=7.4, r=0.2, g=0.25, b=0.3)
-            y_t -= 10.5
+        pdf.draw_text(42, y_card - 18, m_title, font='F2', size=8.2, r=col[0], g=col[1], b=col[2])
+        yc = y_card - 32
+        for l in wrap_text(m_desc, 112):
+            pdf.draw_text(42, yc, l, font='F1', size=7.2, r=0.2, g=0.25, b=0.3)
+            yc -= 10.0
+        yc -= 2.0
+        for l in wrap_text(m_ex, 112):
+            pdf.draw_text(42, yc, l, font='F3', size=7.0, r=col[0]*0.8, g=col[1]*0.8, b=col[2]*0.8)
+            yc -= 9.5
 
     # Pie institucional página 1
     pdf.set_stroke_color(0.8, 0.85, 0.9)
     pdf.line(30, 85, 582, 85)
     pdf.draw_text(36, 72, 'CURSO DE INTELIGENCIA ARTIFICIAL PARA MAYORES (60+) • SESION 03 • TALLER GOOGLE FLOW [INFO-003B] • PAGINA 1 DE 2', font='F2', size=7.2, r=0.15, g=0.35, b=0.55)
-    pdf.draw_text(36, 60, 'Herramienta: Google Flow (https://labs.google/flow) • 50 Creditos Diarios Gratuitos • Cine con IA', font='F3', size=6.8, r=0.45, g=0.45, b=0.55)
+    pdf.draw_text(36, 60, 'Herramienta: Google Flow (https://labs.google/flow) • 50 Creditos Diarios Gratuitos • Cine con IA en Espanol', font='F3', size=6.8, r=0.45, g=0.45, b=0.55)
 
     # =========================================================================
     # PÁGINA 2: TALLER AVANZADO DE RECREACIÓN DE SERIES Y PERSONAJE ANCLA
@@ -273,20 +255,20 @@ def build_info_003b_pdf(output_path):
     pdf.draw_text(36, 750, 'SESION 03 • TALLER CINEMATOGRAFICO AVANZADO • GOOGLE FLOW & GEMINI [INFO-003B]', font='F2', size=8.5, r=1, g=1, b=1)
     pdf.draw_text(36, 730, 'Caso Práctico Real: Mini-Película de Curro Jiménez (De Gemini a Google Flow)', font='F2', size=11.5, r=1, g=1, b=1)
 
-    # Sección 4: El Método Directo en 3 Pasos
+    # Sección 3: El Método Directo en 3 Pasos
     pdf.set_fill_color(1.0, 1.0, 1.0)
     pdf.set_stroke_color(0.85, 0.25, 0.2)
     pdf.set_line_width(1.0)
     pdf.rect(30, 565, 552, 140, fill=True, stroke=True)
 
-    pdf.draw_text(42, 690, '4. EL METODO DIRECTO EN 3 PASOS (CERO FOTOS INTERMEDIAS NI DESCARGAS RARAS)', font='F2', size=9.0, r=0.75, g=0.15, b=0.1)
+    pdf.draw_text(42, 690, '3. EL METODO DIRECTO EN 3 PASOS (CERO FOTOS INTERMEDIAS NI DESCARGAS RARAS)', font='F2', size=9.0, r=0.75, g=0.15, b=0.1)
     s4_text = (
         "• PASO 1 (El Guion en Gemini): Copias el prompt de abajo y lo pegas en Gemini. Gemini actua como director de cine: "
         "aplica las tecnicas de camara, mantiene el personaje de Curro identico en las 3 tomas y te entrega 3 prompts en espanol listos para Flow.\n"
         "• PASO 2 (El Rodaje en Flow): Entras a Google Flow (https://labs.google/flow) y ruedas clip a clip. Pegas el Prompt 1 "
-        "y pulsas Generar (10 creditos); luego el Prompt 2 (10 creditos); y finalmente el Prompt 3 (10 creditos).\n"
+        "y pulsas Generar (12 creditos); luego el Prompt 2 (12 creditos); y finalmente el Prompt 3 (12 creditos).\n"
         "• PASO 3 (Tu Mini-Pelicula): Obtienes 3 clips de 5 segundos (15 segundos de cine historico) con el mismo Curro sin mutaciones. "
-        "Presupuesto: 30 creditos consumidos de los 50 gratuitos diarios. ¡Te sobran 20 creditos cada dia!"
+        "Presupuesto: 3 tomas x 12 = 36 creditos consumidos de los 50 gratuitos diarios. ¡Te sobran 14 creditos cada dia!"
     )
     y4 = 674
     for par in s4_text.split('\n'):
@@ -294,13 +276,13 @@ def build_info_003b_pdf(output_path):
             pdf.draw_text(42, y4, l, font='F2' if '•' in l and ':' in l else 'F1', size=7.2, r=0.15, g=0.2, b=0.25)
             y4 -= 10.0
 
-    # Sección 5: El Prompt Maestro de Dirección para Gemini
+    # Sección 4: El Prompt Maestro de Dirección para Gemini
     pdf.set_fill_color(1.0, 1.0, 1.0)
     pdf.set_stroke_color(0.2, 0.45, 0.8)
     pdf.set_line_width(1.0)
     pdf.rect(30, 240, 552, 312, fill=True, stroke=True)
 
-    pdf.draw_text(42, 538, '5. EL PROMPT MAESTRO DE DIRECCION (COPIA ESTE TEXTO Y PEGALO EN GEMINI)', font='F2', size=9.0, r=0.1, g=0.3, b=0.65)
+    pdf.draw_text(42, 538, '4. EL PROMPT MAESTRO DE DIRECCION (COPIA ESTE TEXTO Y PEGALO EN GEMINI)', font='F2', size=9.0, r=0.1, g=0.3, b=0.65)
     pdf.draw_text(42, 526, 'Este prompt ya incluye todas las ordenes tecnicas de rodaje y coherencia para que tu no tengas que inventar nada:', font='F3', size=7.1, r=0.4, g=0.45, b=0.5)
 
     p_master = (
@@ -321,13 +303,13 @@ def build_info_003b_pdf(output_path):
 
     pdf.draw_text(42, 252, '➔ Gemini te entregara en segundos tus 3 Prompts de Rodaje en espanol listos para llevar a Google Flow.', font='F2', size=7.3, r=0.05, g=0.45, b=0.25)
 
-    # Sección 6: Guía Rápida de Visionado y Montaje en Casa
+    # Sección 5: Guía Rápida de Visionado y Montaje en Casa
     pdf.set_fill_color(0.98, 0.98, 1.0)
     pdf.set_stroke_color(0.8, 0.5, 0.1)
     pdf.set_line_width(1.0)
     pdf.rect(30, 95, 552, 133, fill=True, stroke=True)
 
-    pdf.draw_text(42, 214, '6. GUIA RAPIDA: COMO VER Y COMPARTIR TU MINI-PELICULA EN CASA (SENCILLO Y SIN PROGRAMAS)', font='F2', size=8.5, r=0.7, g=0.35, b=0.05)
+    pdf.draw_text(42, 214, '5. GUIA RAPIDA: COMO VER Y COMPARTIR TU MINI-PELICULA EN CASA (SENCILLO Y SIN PROGRAMAS)', font='F2', size=8.5, r=0.7, g=0.35, b=0.05)
 
     v_text = (
         "• Descarga de clips: Al terminar de generar cada toma en Google Flow, pulsa el boton Descargar en la esquina del video (obtendras Toma 1, Toma 2 y Toma 3).\n"
@@ -420,7 +402,7 @@ def build_worksheet_with_flow(
     pdf.set_line_width(1.2)
     pdf.rect(30, 235, 552, 200, fill=True, stroke=True)
 
-    pdf.draw_text(42, 420, '3. AMPLIACION: ¡DALE VIDA EN VIDEO CON GOOGLE FLOW! (Gasta 10 de tus 50 puntos diarios)', font='F2', size=8.8, r=0.75, g=0.3, b=0.02)
+    pdf.draw_text(42, 420, '3. AMPLIACION: ¡DALE VIDA EN VIDEO CON GOOGLE FLOW! (Gasta 12 de tus 50 puntos diarios)', font='F2', size=8.8, r=0.75, g=0.3, b=0.02)
     
     steps_txt = [
         "1. Descarga la imagen: Haz clic en la imagen generada en Gemini y pulsa en 'Descargar' (la flecha).",
@@ -454,7 +436,7 @@ def build_worksheet_with_flow(
     pdf.set_stroke_color(0.8, 0.85, 0.9)
     pdf.line(30, 222, 582, 222)
     pdf.draw_text(36, 208, f'CURSO DE INTELIGENCIA ARTIFICIAL PARA MAYORES (60+) • SESION 03 • {tag_code}', font='F2', size=7.2, r=0.15, g=0.35, b=0.55)
-    pdf.draw_text(36, 196, 'Metodologia Dual: Gemini (Imagen Fija) + Google Flow (Animacion de Camara • 10 Creditos)', font='F3', size=6.8, r=0.45, g=0.45, b=0.55)
+    pdf.draw_text(36, 196, 'Metodologia Dual: Gemini (Imagen Fija) + Google Flow (Animacion de Camara • 12 Creditos)', font='F3', size=6.8, r=0.45, g=0.45, b=0.55)
 
     pdf.end_page()
     pdf.write_to_file(output_path)
