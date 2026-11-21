@@ -370,37 +370,8 @@ def build_worksheet_with_flow(output_path, tag_code, num_str, title, desc_concep
 def main():
     print("=== [INICIO ACTUALIZACION SESION 04 CON GOOGLE FLOW] ===")
 
-    # 1. Reubicación de infografías en cadena:
-    # INFO-005 en S05 -> INFO-006 en S06
-    old_info5_pdf = os.path.join(S05_DIR, "1. INFO-005_El_Plan_Maestro_de_Integracion_Vertical_de_IA.pdf")
-    old_info5_jpg = os.path.join(S05_DIR, "1. INFO-005_El_Plan_Maestro_de_Integracion_Vertical_de_IA.jpg")
-    new_info6_pdf = os.path.join(S06_DIR, "1. INFO-006_El_Plan_Maestro_de_Integracion_Vertical_de_IA.pdf")
-    new_info6_jpg = os.path.join(S06_DIR, "1. INFO-006_El_Plan_Maestro_de_Integracion_Vertical_de_IA.jpg")
-    if os.path.exists(old_info5_pdf):
-        shutil.copy2(old_info5_pdf, new_info6_pdf)
-    if os.path.exists(old_info5_jpg):
-        shutil.copy2(old_info5_jpg, new_info6_jpg)
-    print("📦 Infografía 'Plan Maestro' movida a Sesión 06 como INFO-006")
-
-    # INFO-004 en S04 -> INFO-005 en S05
-    old_info4_pdf = os.path.join(S04_DIR, "1. INFO-004_La_IA_es_la_Maquina_Mas_Grande_de_la_Historia.pdf")
-    old_info4_jpg = os.path.join(S04_DIR, "1. INFO-004_La_IA_es_la_Maquina_Mas_Grande_de_la_Historia.jpg")
-    new_info5_pdf = os.path.join(S05_DIR, "1. INFO-005_La_IA_es_la_Maquina_Mas_Grande_de_la_Historia.pdf")
-    new_info5_jpg = os.path.join(S05_DIR, "1. INFO-005_La_IA_es_la_Maquina_Mas_Grande_de_la_Historia.jpg")
-    if os.path.exists(old_info4_pdf):
-        shutil.copy2(old_info4_pdf, new_info5_pdf)
-        os.remove(old_info4_pdf)
-    if os.path.exists(old_info4_jpg):
-        shutil.copy2(old_info4_jpg, new_info5_jpg)
-        os.remove(old_info4_jpg)
-    print("📦 Infografía 'La Máquina Más Grande' movida a Sesión 05 como INFO-005")
-
-    # 2. Generar INFO-004: Taller Google Flow en Sesión 04
-    info4_dest = os.path.join(S04_DIR, "1. INFO-004_Taller_Google_Flow_Video_con_IA.pdf")
-    build_info_004_pdf(info4_dest)
-
-    # 3. Generar las 5 fichas de imagen con ampliación Google Flow
-    # 3.1. EST-004
+    # Generar las 5 fichas de imagen con ampliación Google Flow
+    # 1. EST-004
     p_est = os.path.join(S04_DIR, "2. EST-004_IMPRESIONISTA Y POST-IMPRESIONISTA - Campo de Amapolas.pdf")
     build_worksheet_with_flow(
         output_path=p_est,

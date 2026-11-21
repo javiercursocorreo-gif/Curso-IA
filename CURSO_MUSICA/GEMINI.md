@@ -2,6 +2,14 @@
 - Prohibición Total de Ventanas de Aprobación en el Chat: Queda terminantemente prohibido ejecutar acciones o herramientas que hagan saltar botones de "Submit", "Aprobar" o confirmaciones en el editor del usuario.
 - Modo Terminal Externa 100% Desatendido: Toda creación de fichas didácticas, reescritura de scripts y edición de mapas se entrega integrada dentro del bloque de comandos de terminal correlativo ([COMANDO XX]) para ejecución desatendida y sin interrupciones.
 
+# PROTOCOLO DE ARRANQUE MATUTINO: RECORDATORIO OBLIGATORIO DE TAREAS PENDIENTES
+- **Aviso Matutino Obligatorio en el Primer Mensaje del Día:**
+  - Al recibir el **primer mensaje de cada jornada** (tanto si se abre un chat nuevo como si el usuario continúa en un hilo de días anteriores), el asistente debe anteponer obligatoriamente en su respuesta el **Cuadro de Mando Diario de Tareas Pendientes**:
+    1. 📌 **Lote Programado del Día:** La sesión y tareas exactas que corresponden realizar hoy (ej. ampliación Google Flow en 5 fichas de imagen, visualización directa en `[COD]` y `[NIV]`).
+    2. 📊 **Estado de Avance:** Resumen de sesiones completadas al 100% y siguientes en el calendario.
+    3. ⏳ **Contabilidad de Infografías NLM en Cola:** Estado exacto de las infografías asignadas y pendientes para que el usuario decida si ese día aporta una nueva infografía de impacto o se procede con el lote técnico sin infografía.
+  - *Excepción Autorizada a la Regla de Silencio:* Este cuadro de mando matutino es un requerimiento operativo indispensable de seguimiento; NO constituye charla ni relleno y debe emitirse siempre sin excepción al comenzar la jornada.
+
 # REGLA DE ORO: TRABAJO EN SILENCIO, CERO INTERRUPCIONES Y EJECUCIÓN DIRECTA
 1. **Trabajar Siempre en Silencio:**
    - El asistente debe trabajar de forma 100% silenciosa: cero charlas, cero explicaciones innecesarias y cero comentarios de relleno.
@@ -75,15 +83,40 @@
 - **Fuentes Científicas Reales e Hiperrealistas:** Prohibido el uso de geometrías toscas, esferas lisas o modelos abstractos ("huevos"). Todos los activos visuales deben ser fotografías científicas de alta resolución o escaneos reales procedentes de repositorios científicos acreditados (NIH, NASA, microtomografía CT, microscopía electrónica TEM, CyArk, etc.).
 - **Prohibición Total de Imágenes Generadas por IA (GenAI):** Queda terminantemente prohibido generar o incrustar imágenes falsas o aproximaciones artísticas de IA cuando se trata de contenidos biológicos, anatómicos o astronómicos. Búsqueda obligatoria en repositorios abiertos de ciencia real (Wikimedia Commons, NASA JPL, USGS, NIH).
 
-## Metodología Didáctica: La Triple Salvaguarda Pedagógica
-1. **Taller Interactivo de Pruebas:** Para que el alumno experimente la generación de código con Gemini y vea su aplicación nacer en directo.
-2. **Simulador 3D Oficial Garantizado:** Botón directo a la aplicación final hiperrealista depurada, asegurando que el 100% de los alumnos disfrute de la experiencia completa sin atascos ni dependencias de variabilidad de la IA.
+## Protocolo de Doble Verificación Elephant-Goldfish (Subagente Efímero sin Sesgo de Contexto)
+- **Definición y Objetivo:** Para evitar la «ceguera de contexto» o fatiga cognitiva en sesiones largas (donde el modelo acumula miles de tokens y pasa por alto sus propios fallos de maquetación, sintaxis o enlaces), se adopta la arquitectura oficial *Elephant-Goldfish* de Google.
+- **El Elefante (Coordinador con Memoria):** Es el agente principal del chat. Conoce la historia completa, el calendario, las reglas de oro y las necesidades del usuario. Diseña, planifica y genera el código, ficha o script.
+- **El Pez de Colores / Goldfish (Auditor con Mente Limpia):** Es un subagente independiente (`invoke_subagent`) que nace con **cero memoria previa** (mente virgen). Recibe ÚNICAMENTE el archivo recién compilado y una lista de control estricta (ej. número de páginas exacto, solapamientos, sintaxis de código, identificadores canónicos de NASA Eyes).
+- **Ciclo de Vida Efímero (Cero Residuos ni Fósiles):** Una vez emitido su veredicto en pocos segundos, el subagente se destruye de inmediato mediante la acción `kill` (`manage_subagents`), eliminando sus procesos, liberando memoria y asegurando que no quede ningún archivo residual ni proceso zombi en el sistema.
+
+## Metodología Didáctica: La Triple Salvaguarda Pedagógica y Visualización Directa (Cero Código Intermedio)
+- **Cero Código Intermedio para Alumnos Sénior (+65):** Queda terminantemente prohibido obligar al alumno sénior a manipular, leer, copiar o ejecutar bloques de código fuente (HTML, JavaScript, Three.js). Los bloques de código generan ansiedad tecnológica y fricción innecesaria.
+- **Visualización Directa en Pantalla (Canvas / Vista Previa):** El prompt que el alumno copia en Gemini solicita directamente: *«Diseña y ejecuta directamente en pantalla (en modo vista previa interactiva / Canvas) un simulador visual sobre... Muestra directamente el simulador en funcionamiento sin obligarme a revisar el código fuente.»*
+- **Estructura Didáctica Oficial en 2 Pasos:**
+  1. **Paso 1 (Creación Directa):** Pegar el prompt en Gemini ➔ La aplicación interactiva nace directamente en pantalla lista para interactuar.
+  2. **Paso 2 (Diálogo y Reflexión):** El alumno explora los controles y plantea a Gemini las 3 preguntas clave de reflexión formuladas en la ficha.
+- **Copia de Respaldo Garantizada (BKP Oficial en el Mapa):** En el mapa interactivo se eliminan los botones y archivos residuales de talleres intermedios (`PROBADOR_CODIGO_IA.html`) y se conserva exclusivamente el botón de respaldo oficial BKP (`Ver Simulador 3D (BKP) ↗` o `Abrir Micro-App (HTML) ↗`), asegurando que el 100% de los alumnos disfrute de la experiencia completa sin atascos de red o servidor.
+- **Orden de Botones en Tarjetas Especiales:** En las tarjetas `[NIV]`: 1º Ficha Guía & Prompt de Gemini (PDF), 2º Abrir Micro-Aplicación Oficial BKP (HTML). En las tarjetas `[FRAC]`: 1º Vídeo MP4, 2º Ficha Didáctica PDF.
 
 ## Estándar de la Etiqueta [NIV]: Micro-Aplicaciones de Diagnóstico y Vida Real
 - Micro-herramientas funcionales de autodiagnóstico, cálculo biomédico o simulación de la vida real orientadas a la toma de decisiones prácticas mediante IA y lógica interactiva.
 
 ## Regla de Despliegue: Subida Automática e Inmediata a GitHub (GitHub Pages & Classroom)
 - **Subida Automática Obligatoria en Cada Corrección:** Cada vez que se cree, modifique o corrija cualquier recurso de los cursos (fichas PDF, HTML, simuladores, mapas interactivos, temarios o paneles CSV), el asistente debe dejar los archivos compilados, commiteados y proporcionar OBLIGATORIAMENTE el bloque correlativo con `git push origin main` al final del turno para que los cambios se reflejen de inmediato en GitHub Pages y Google Classroom sin que el usuario tenga que recordarlo.
+- **Aseguramiento Estricto de Commits y Verificación de Subida (Cero Fallos de Despliegue):**
+  - **Problema Histórico:** En varias ocasiones se han generado recursos corregidos o nuevos que no quedaron subidos efectivamente al repositorio remoto de GitHub, provocando que los alumnos y el usuario sigan visualizando archivos antiguos o descalibrados.
+  - **Protocolo de Verificación Obligatorio:**
+    1. **Pre-Commit Total en el Asistente:** Antes de cerrar la respuesta, el asistente debe añadir y commitear todos los archivos modificados (`git add -A && git commit -m "..."`).
+    2. **Pipeline de Subida Blindado en el Bloque de Terminal:** Cada bloque ejecutable debe incluir la sincronización completa y la comprobación final de estado:
+       ```bash
+       git add -A
+       git commit -m "..." || true
+       git push origin main
+       echo "=== VERIFICACIÓN DE SUBIDA A GITHUB ==="
+       git status -s
+       git log -1 --oneline
+       ```
+    3. **Cero Commits Huérfanos:** Prohibido dejar la rama local por delante de `origin/main` (`ahead of origin/main`). Todo cambio debe quedar reflejado de inmediato en el remoto.
 - Jamás dejar una corrección de clase pendiente de sincronización con GitHub.
 
 # SEGUIMIENTO DE CLASES Y CALENDARIO (CURSO-ROBOTICA-IA-COMUN)
@@ -102,11 +135,40 @@
 - **Carruseles de Partituras por Estilos y Sonidos Afines (CURSO_MUSICA):**
   - ✅ **Carrusel 1 Baladas Lentas 6/8:** Completado en `CARRUSEL_01_BALADAS_6_8.html` (#25 Can't Help Falling in Love + #26 Unchained Melody).
   - ⏳ **Regla de Migración y Nuevos Carruseles:** Conforme se crean nuevos carruseles (Boleros Latinos, Clásicos Italianos, Baladas 4/4, Cine), las canciones incorporadas **desaparecen de la lista general suelta** y quedan integradas en el bloque de su carrusel. En el repertorio (2 columnas optimizadas para iPad vertical), el **título del bloque es el enlace directo al carrusel**, manteniendo acceso individual debajo a cada partitura.
-- **Integración Diaria de la Pareja Fractal (Sesiones 01 a 15 de CURSO-IA):**
-  - Cada mañana al recibir el primer mensaje del día (tanto si el usuario continúa en el mismo chat del día anterior como si abre uno nuevo), el asistente debe incluir el recordatorio del lote fractal pendiente del día: **1º Fractal de la Naturaleza** + **2º Fractal Matemático Puro**, listo para ser ejecutado cuando el usuario lo indique.
+- **Actualización Diaria de Sesión Integral: Pareja Fractal + Visualización Directa + Ampliación Google Flow + Infografías [INFO] (Sesiones 01 a 15 de CURSO-IA):**
+  - Cada mañana al recibir el primer mensaje del día (tanto si el usuario continúa en el mismo chat del día anterior como si abre uno nuevo), el asistente debe incluir el recordatorio del lote pendiente del día:
+    1. **Pareja Fractal del Día:** 1º Fractal de la Naturaleza + 2º Fractal Matemático Puro (unificados en tarjetas PACK: 1º Vídeo MP4, 2º Ficha PDF).
+    2. **Actualización al Estándar de Visualización Directa (Cero Código):**
+       - **Ítem `[COD]`:** Prompt en Gemini pidiendo directamente ejecutar en pantalla (Canvas / Vista previa sin código intermedio), ficha PDF a 2 pasos didácticos con `NativePDFWriter`, purga de probador intermedio (`PROBADOR_CODIGO_IA.html`) y conservación exclusiva del botón BKP oficial (`Ver Simulador 3D (BKP) ↗`).
+       - **Ítem `[NIV]`:** Ficha PDF con prompt de visualización directa, micro-app con ergonomía senior (letra grande 18.5px, voz `es-ES`, reset, sin solapamientos) y orden de botones (1º Ficha/Prompt PDF, 2º Abrir App BKP).
+    3. **Ampliación Oficial a Vídeo con Google Flow (50 Créditos Diarios):**
+       - En las **5 fichas de imagen de la sesión** (`[EST]`, `[PRAC]`, `[INT]`, `[FUT]`, `[ARTE]`), incluir el bloque inferior de ampliación a vídeo:
+         * 📌 Pasos recordatorio rápidos (descargar imagen de Gemini, subir a `https://labs.google/flow`, pegar prompt y generar).
+         * 💬 Prompt de movimiento cinemático calibrado para esa imagen exacta (consumo de 10 créditos por clip).
+    4. **Integración de Infografías NLM [INFO]:** Preguntar activamente al usuario si tiene nuevas infografías o resúmenes visuales de NotebookLM para catalogarlas en el Bloque 15 (`15. [INFO] BLOQUE_15_INFOGRAFIAS_Y_NOVEDADES_IA`) e inyectarlas correlativamente en las sesiones correspondientes (`INFO-001`, `INFO-002`...).
   - **Estado de avance (1 sesión por día):**
-    - ✅ **Sesión 03:** Completada (Brécol Romanesco `[FRAC-060]` + Triángulo de Sierpinski `[FRAC-022]` renumerado a 17 recursos).
-    - ⏳ **Próxima sesión a integrar:** **Sesión 04** (Mundo Fibonacci `[FRAC-040]` + Mandelbrot Valle Caballitos `[FRAC-002]`), seguida sucesivamente de Sesiones 05 a 15.
+    - ✅ **Sesión 01:** Pulmones 3D `[COD-001]` + Tranquilidad Jubilación `[NIV-001]` (Visualización directa, purga de probador y BKP).
+    - ✅ **Sesión 02:** Corazón 3D `[COD-002]` + Radar Anti-Estafas `[NIV-002]` (Visualización directa, purga de probador y BKP).
+    - ✅ **Sesión 03:** Novedades Gemini/Gmail `[INFO-003]` + Google Flow Cámara `[INFO-003B]` + Cómic con IA `[CUENT-003]` (Cervantes y Shakespeare - 4 fichas) + Pompeya 3D `[COD-003]` + Vivienda `[NIV-003]`.
+    - ✅ **Sesión 04:** Cómics con NLM `[CUENT-004]` + Infografía NLM `[INFO-004]` (*«La IA es la Máquina Más Grande de la Historia»* - 7 pisos y 4 frenos físicos) + PDF Widescreen 16:9 + Visor HD.
+    - ✅ **Sesión 05:** Google Flow oficial `[INFO-005]` (50 créditos diarios) + Ampliación a vídeo en sus 5 fichas de imagen (`EST-005`, `PRAC-005`, `INT-005`, `FUT-005`, `ARTE-005`) + Visualización Directa en `[COD-005]` Sistema Solar 3D y `[NIV-005]` Evolución del Dinero (+65).
+    - ✅ **Sesión 06:** Ampliación Google Flow en 5 fichas de imagen (`EST-006`, `PRAC-006`, `INT-006`, `FUT-006`, `ARTE-006`) + Visualización Directa en `[COD-006]` Simulador Cerebro 3D y `[NIV-006]` Calculadora de Poder Adquisitivo y Cesta (+65) + Infografía NLM Widescreen 16:9 y Visor HD `[INFO-006]` *«El Plan Maestro de Integración Vertical en IA»*.
+    - ⏳ **Próxima sesión (Lote de mañana): Sesión 07:**
+      * Incorporar la **Ampliación Google Flow** en sus 5 fichas de imagen (`EST-007`, `PRAC-007`, `INT-007`, `FUT-007`, `ARTE-007`).
+      * Visualización Directa en `[COD-007]` y `[NIV-007]`.
+    - ⏳ **Sesiones 08 a 15 (Actualización Integral Completa en Bloque):** Visualización Directa (`[COD]` + `[NIV]` + BKP) + Ampliación Google Flow (5 fichas) + Infografía `[INFO]`.
+    - ✅ **Sesiones 03 a 15 (Catálogo Oficial de Fractales [FRAC] Unificado):** Completado al 100% en todas las sesiones.
+
+  - **Contabilidad Oficial y Cola de Infografías NLM [INFO] (Backlog Dinámico):**
+    * Solo se generan e inyectan infografías cuando el usuario encuentra y entrega noticias de IA de alto impacto que llamen la atención. Las infografías pendientes quedan en cola ordenada para ser inyectadas conforme se aporten:
+      - `[INFO-001]` (Sesión 01): ⏳ Pendiente infografía NLM de impacto
+      - `[INFO-002]` (Sesión 02): ⏳ Pendiente infografía NLM de impacto
+      - `[INFO-003]` (Sesión 03): ✅ Ficha temática Novedades Gemini, Gmail y Buscador IA + Taller Google Flow [INFO-003B] + Cómic [CUENT-003]
+      - `[INFO-004]` (Sesión 04): ✅ Infografía NLM *«La IA es la Máquina Más Grande de la Historia»* (7 pisos y 4 frenos físicos) + PDF Widescreen 16:9 + Visor HD
+      - `[INFO-005]` (Sesión 05): ✅ Ficha Didáctica Taller Oficial Google Flow (50 créditos diarios)
+      - `[INFO-006]` (Sesión 06): ✅ Infografía NLM *«El Plan Maestro de Integración Vertical en IA»* + PDF Widescreen 16:9 + Visor HD
+      - `[INFO-007]` (Sesión 07): ⏳ Reserva disponible: *«La Ruptura de Internet: Agentes de IA vs Modelo Publicitario»* (lista para asignar o sustituir por nueva noticia de impacto)
+      - `[INFO-008]` a `[INFO-015]`: ⏳ Cola de infografías pendientes de nuevas noticias que llamen la atención (se inyectarán correlativamente conforme el usuario las entregue).
 
 # MÓDULO ESPECIALIZADO DE MÚSICA Y WEB MIDI (CURSO_MUSICA)
 - **Repertorio Korg EK-50 & Atril Digital Web MIDI:**
@@ -155,6 +217,37 @@
       - **Nota(s) destino (donde cae el dedo):** Destacadas en **ámbar** (`#f59e0b`).
     * Píldora explicativa mínima al final: `G y E fijos · Solo baja C a B (1 semitono)`.
   - **Cero Distracción:** Diseñado para lectura rápida a 50 cm de distancia mientras se toca el teclado, sin desviar la atención de la partitura.
+- **Estándar Cifra Club (`cifraclub.com`) para Letras y Acordes (Atril Digital / 2ª Página):**
+  - **Fuente de Referencia Armónica Canónica:** Para las canciones del repertorio de entrenamiento activo, la fuente oficial para la colocación de acordes y letra es **Cifra Club (`cifraclub.com`)**.
+  - **Sustitución de Partituras Complejas por Letras con Acordes:** En la segunda página / modal a pantalla completa (`modal-score-scroll-container` o `modal-atril-fullscreen`), en lugar de partituras gráficas tradicionales densas, se presenta la letra completa con los acordes superpuestos exactamente encima de cada palabra y compás tal como vienen en Cifra Club.
+  - **Ergonomía OLED para iPad:** Fondo negro puro OLED (`#000000`), acordes en color contrastado y tipografía grande (18px-24px), letra blanca nítida, cabecera fija HUD Korg EK-50 con los 2 estilos y timbres, botón `⚡ Reset Korg` y control de batería seguro.
+- **Estándar Oficial de Navegación del Repertorio por Botones de Estilo (2 Capas para iPad):**
+  - **Primera Página Limpia (Solo Botones de Estilo):** La vista inicial de `REPERTORIO_KORG_EK50.html` e `index.html` se mantiene 100% limpia y sin listas sueltas de canciones desplegadas. Muestra exclusivamente la cuadrícula táctil con los botones interactivos por estilo/categoría:
+    1. `🇮🇹 Grandes Clásicos Italianos`
+    2. `🏛️ Música Clásica & Sacra`
+    3. `🌴 Boleros & Ritmos Latinos`
+    4. `🎡 Carrusel 1 · Baladas 6/8`
+    5. `🌊 Baladas Pop, Soul & Rock 4/4`
+    6. `🎬 Bandas Sonoras de Cine & Chanson`
+    7. `📖 Manual Maestro & Guía Técnica`
+  - **Segunda Capa (Listado de Canciones por Estilo):** Al pulsar un botón de estilo, se despliega la lista interior correspondiente con las canciones seleccionadas/trabajadas en **ROJO** (`song-row song-red`) y el resto en blanco (`song-row`). Incluye barra fija superior e inferior con `◀ Volver a Estilos` y soporte de URL hash (`#italianos`, `#boleros`, etc.) compatible con el botón de retroceso del navegador/iPad.
+  - **Retiro de "Mis 10 Canciones" y `REPERTORIO_ACTIVO.html`:** Al ampliarse el repertorio activo a más de 10 obras, se prescinde de `REPERTORIO_ACTIVO.html`. Todas las canciones trabajadas se identifican unificadamente en rojo en el repertorio general.
+  - **Botón `R` Universal en Fichas:** En todas las fichas de canciones, el botón superior izquierdo `[ R ]` redirige siempre al repertorio general: `REPERTORIO_KORG_EK50.html?v=218`.
+- **Regla de 2 Ritmos Seleccionables Obligatorios en el HUD Flotante (Línea 1):**
+  - Toda ficha musical en estándar Louis Armstrong (`CANCION_34_WHAT_A_WONDERFUL_WORLD.html`) debe ofrecer obligatoriamente en la Línea 1 de su cabecera HUD flotante **dos ritmos de acompañamiento a elegir** (ej. `041 Love Ballad` y `051 Slow Rock 2`, o `174 Beguine 1` y `171 Bolero Latino`, o `154 New Age` y `041 Love Ballad`) junto al botón de recarga `🔄 v218`. La Línea 2 se reserva para los Keyboard Sets Korg canónicos (MSB 33).
+- **Consolidación de Comandos Acumulativos a Petición del Usuario:**
+  - Cuando el usuario indique agrupar comandos pendientes desde una ejecución anterior (ej. desde el comando 149), el asistente debe sintetizarlos en un único bloque de terminal correlativo para ejecución desatendida.
+- **Estándar Canónico Oficial de Fichas de Atril Virtual (Plantilla Maestra Louis Armstrong):**
+  - **Plantilla Oficial Universal:** La ficha de **What a Wonderful World (`CANCION_34_WHAT_A_WONDERFUL_WORLD.html`)** es el **modelo de referencia absoluto** para todas las canciones seleccionadas en el repertorio y para cualquier nueva canción que se incorpore en el futuro.
+  - **Estructura Arquitectónica Obligatoria en 5 Bloques:**
+    1. **Cabecera `header-banner`:** Título y autor, badge de tonalidad y barra de navegación superior con 5 botones: `🎼 1. Partitura Cifra Club (con Botonera Korg)`, `🎼 2. Modo Atril Grande (sin Botonera)`, `🌐 MuseScore Web`, `◀ Volver al Repertorio` (hacia `REPERTORIO_KORG_EK50.html?v=218`) y recarga de versión sin caché (`🔄 vXXX`).
+    2. **Calibración Web MIDI:** Selector de registro de octava (Estándar 0 y +12 st) y caja didáctica `Recordatorio Sencillo: Formación de Acordes Tríada` (Mayor 4+3, Menor 3+4, Suspendido 5+2, Disminuido 3+3).
+    3. **Guía Didáctica y Modo Fingered:** Instrucciones concisas para activar el modo `Fingered` en la pantalla LCD del Korg EK-50 (`Setting` -> `Chord Scan` -> `Fingered`) y particularidades armónicas de la obra.
+    4. **Progresión Armónica Canónica en Cajas Didácticas:** Desglose por secciones (Tema A, Tema B, etc.) con cajas `.part-card` y tiras de píldoras `.chord-strip` con `.chord-pill` por compás.
+    5. **Modal Fullscreen con HUD en 2 Líneas Equilibradas:**
+       - **Línea 1:** Estilo 1 + Estilo 2 (ambos en Canal 16) + Botón de recarga de versión `🔄 vXXX`.
+       - **Línea 2:** Timbres Korg canónicos (Banco Maestro MSB 33) + Botón de emergencia `⚡ Reset Korg` (o `X` cerrar).
+       - **Visor Cifra Club OLED:** Fondo negro puro (`#000000`), acordes en amarillo/ámbar (`#fbbf24`), texto en blanco nítido, sin cortes, Smart Dimming de batería a 45 minutos y NoSleep activo.
 
 # PROTOCOLO DE CIERRE DE CHAT Y ENTREGA DE HERENCIA UNIVERSAL
 - **Activación:** Cuando el usuario indique que quiere cerrar el chat (ej. *"quiero cerrar el chat"*, *"cierra el chat"*, *"dame la frase de cierre"*, *"vamos a pasar a otro chat"*, etc.):

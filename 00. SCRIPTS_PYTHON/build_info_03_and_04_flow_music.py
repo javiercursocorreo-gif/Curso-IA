@@ -167,82 +167,82 @@ def build_info_003b_pdf(output_path):
     pdf.set_fill_color(1.0, 1.0, 1.0) # Fondo blanco para impresión limpia
     pdf.set_stroke_color(0.85, 0.25, 0.2)
     pdf.set_line_width(1.0)
-    pdf.rect(30, 585, 552, 115, fill=True, stroke=True)
+    pdf.rect(30, 600, 552, 105, fill=True, stroke=True)
 
-    pdf.draw_text(42, 684, '1. EL ESTUDIO DE CINE DE GOOGLE: 50 CREDITOS DIARIOS GRATUITOS', font='F2', size=9.2, r=0.75, g=0.15, b=0.1)
+    pdf.draw_text(42, 688, '1. EL ESTUDIO DE CINE DE GOOGLE: 50 CREDITOS DIARIOS GRATUITOS', font='F2', size=9.2, r=0.75, g=0.15, b=0.1)
     
     t1 = (
-        "Google Flow (https://labs.google/flow) es la nueva herramienta de Google que transforma cualquier fotografia o imagen "
+        "Google Flow (https://labs.google/flow) es la herramienta de Google que transforma cualquier imagen "
         "creada en Gemini en un clip de cine en movimiento de 5 segundos con fisica realista y camara profesional.\n"
         "• Acceso directo con tu cuenta de Google (Gmail): Sin pagos, sin suscripciones y sin tarjetas de credito.\n"
         "• 50 Creditos diarios renovables a las 00:00: Cada clip de 5 segundos consume 10 creditos (hasta 5 videos gratis diarios).\n"
-        "• Flujo en 3 pasos: 1) Descargas la imagen de Gemini. 2) La subes a Google Flow. 3) Pegas el prompt de camara y pulsas 'Generar'."
+        "• Flujo en 3 pasos: 1) Descargar en Gemini. 2) Arrastrar desde descargas a Flow. 3) Pegar el prompt y pulsar 'Generar Video'."
     )
-    y_pos = 668
+    y_pos = 672
     for par in t1.split('\n'):
         lines = wrap_text(par, 114)
         for l in lines:
-            pdf.draw_text(42, y_pos, l, font='F2' if '•' in l and ':' in l else 'F1', size=7.5, r=0.15, g=0.2, b=0.25)
-            y_pos -= 11.5
+            pdf.draw_text(42, y_pos, l, font='F2' if '•' in l and ':' in l else 'F1', size=7.4, r=0.15, g=0.2, b=0.25)
+            y_pos -= 11.2
 
     # Sección 2: Los 4 Movimientos de Cámara Cinemática Avanzada
     pdf.set_fill_color(1.0, 1.0, 1.0) # Fondo blanco
     pdf.set_stroke_color(0.2, 0.45, 0.8)
     pdf.set_line_width(1.0)
-    pdf.rect(30, 310, 552, 265, fill=True, stroke=True)
+    pdf.rect(30, 265, 552, 325, fill=True, stroke=True)
 
-    pdf.draw_text(42, 558, '2. LOS 4 MOVIMIENTOS CINEMATICOS DE CAMARA PROFESIONAL (ANALISIS DE DIRECCION)', font='F2', size=9.2, r=0.1, g=0.3, b=0.65)
-    pdf.draw_text(42, 545, 'Aprende a dirigir la camara virtual con las tecnicas maestras de realizacion cinematografica:', font='F3', size=7.2, r=0.4, g=0.45, b=0.5)
+    pdf.draw_text(42, 574, '2. LOS 4 MOVIMIENTOS CINEMATICOS DE CAMARA PROFESIONAL (ANALISIS DE DIRECCION)', font='F2', size=9.2, r=0.1, g=0.3, b=0.65)
+    pdf.draw_text(42, 561, 'Aprende a dirigir la camara virtual con las tecnicas maestras de realizacion cinematografica:', font='F3', size=7.2, r=0.4, g=0.45, b=0.5)
 
     moves = [
         ("1. ORBIT (Giro 360 Grados Orbital):",
-         "La camara rota circularmente alrededor del sujeto u objeto principal manteniendolo siempre en el centro del encuadre. "
-         "Ideal para estatuas, bodegones, mesas de trabajo historicas o edificios emblemáticos. Aporta majestuosidad y volumen tridimensional.",
-         "Ejemplo de Prompt: \"Camara orbital lenta girando 360 grados alrededor de la mesa de madera con iluminacion calida de velas.\""),
+         "La camara rota circularmente alrededor del sujeto principal manteniendolo siempre en el centro del encuadre. "
+         "Aporta volumen y tridimensionalidad majestuosa. Ideal para estatuas, bodegones, mesas de trabajo o edificios.",
+         "Ejemplo de Prompt: \"Camara orbital lenta girando 360 grados alrededor del sujeto con iluminacion calida cinematica.\""),
 
         ("2. DRONE VIEW (Vuelo Aereo / Perspectiva Cenital):",
          "La camara sobrevuela como un dron desde gran altura, ascendiendo o descendiendo en linea recta para mostrar grandes paisajes, "
-         "ciudades del futuro o descensos por galerias arquitectonicas. Proporciona escala colosal y sensacion de vuelo sereno.",
-         "Ejemplo de Prompt: \"Plano aereo con dron ascendiendo suavemente por la fachada acristalada de los rascacielos hidroponicos.\""),
+         "vistas aereas de ciudades o patios arquitectonicos. Proporciona escala colosal y sensacion de vuelo sereno.",
+         "Ejemplo de Prompt: \"Plano aereo con dron ascendiendo suavemente para desvelar la escena principal a camara lenta.\""),
 
         ("3. BULLET TIME (Tiempo Congelado / Camara Ultralenta):",
-         "El tiempo se detiene casi por completo mientras la camara se aproxima con suavidad milimetrica al foco de maxima tension dramatica. "
-         "Perfecto para chispas de luz, gotas suspendidas o el instante en que dos dedos casi se tocan en obras renacentistas.",
-         "Ejemplo de Prompt: \"Efecto camara ultralenta (bullet time) acercandose al punto exacto donde los dedos casi se tocan.\""),
+         "El tiempo se detiene casi por completo mientras la camara se aproxima con suavidad milimetrica al foco de tension dramatica. "
+         "Perfecto para chispas de luz, gotas suspendidas o el instante en que dos manos casi se tocan en obras renacentistas.",
+         "Ejemplo de Prompt: \"Efecto camara ultralenta (bullet time) acercandose al punto exacto con luz constante y suave.\""),
 
         ("4. REVEAL (Camara de Revelacion Progresiva):",
          "La camara emerge desde el suelo, desde detras de una pared o asciende tras un obstaculo para descubrir el sujeto principal. "
          "Crea suspense, emocion visual y un impacto dramatico perfecto al desvelar rostros restaurados o tesoros ocultos.",
-         "Ejemplo de Prompt: \"Camara lenta de revelacion ascendiendo desde el suelo para descubrir la mirada restaurada de los personajes.\"")
+         "Ejemplo de Prompt: \"Camara lenta de revelacion ascendiendo desde el suelo para descubrir la mirada del personaje.\"")
     ]
 
-    y_m = 530
+    y_m = 544
     for m_title, m_desc, m_ex in moves:
         pdf.draw_text(42, y_m, m_title, font='F2', size=7.8, r=0.1, g=0.35, b=0.65)
         y_m -= 10
-        for l in wrap_text(m_desc, 114):
-            pdf.draw_text(42, y_m, l, font='F1', size=7.3, r=0.2, g=0.25, b=0.3)
-            y_m -= 10
-        for l in wrap_text(m_ex, 114):
-            pdf.draw_text(42, y_m, l, font='F3', size=7.0, r=0.7, g=0.3, b=0.05)
-            y_m -= 10
-        y_m -= 3
+        for l in wrap_text(m_desc, 115):
+            pdf.draw_text(42, y_m, l, font='F1', size=7.2, r=0.2, g=0.25, b=0.3)
+            y_m -= 9.5
+        for l in wrap_text(m_ex, 115):
+            pdf.draw_text(42, y_m, l, font='F3', size=6.8, r=0.7, g=0.3, b=0.05)
+            y_m -= 9.5
+        y_m -= 5
 
     # Sección 3: Consejos prácticos de rodaje senior
     pdf.set_fill_color(1.0, 1.0, 1.0)
     pdf.set_stroke_color(0.8, 0.5, 0.1)
     pdf.set_line_width(1.0)
-    pdf.rect(30, 205, 552, 95, fill=True, stroke=True)
+    pdf.rect(30, 95, 552, 160, fill=True, stroke=True)
 
-    pdf.draw_text(42, 285, '3. CONSEJO SENIOR: LA REGLA DE ORO DEL RODAJE DIGITAL CON IA', font='F2', size=9.0, r=0.7, g=0.35, b=0.05)
+    pdf.draw_text(42, 238, '3. CONSEJO SENIOR: LA REGLA DE ORO DEL RODAJE DIGITAL CON IA', font='F2', size=9.0, r=0.7, g=0.35, b=0.05)
     
     tips = (
-        "• Menos es mas: Evita pedir carreras rapidas o acrobacias. La IA destaca con movimientos suaves, lentos y serenos.\n"
+        "• Menos es mas: Evita pedir carreras rapidas o acrobacias complejas. La IA destaca con movimientos suaves, lentos y serenos.\n"
         "• Luz constante: Incluye siempre en tu prompt palabras como 'luz calida constante' o 'reflejos suaves' para evitar parpadeos.\n"
         "• Integracion en tus 5 fichas: En esta sesion 03, hemos anadido al pie de tus 5 fichas de imagen ([EST], [PRAC], [INT], [FUT], [ARTE]) "
         "el prompt exacto de Flow para aplicar cada uno de estos movimientos sin que tengas que inventar nada."
     )
-    y_t = 270
+    y_t = 222
     for par in tips.split('\n'):
         for l in wrap_text(par, 114):
             pdf.draw_text(42, y_t, l, font='F1', size=7.4, r=0.2, g=0.25, b=0.3)
@@ -250,9 +250,9 @@ def build_info_003b_pdf(output_path):
 
     # Pie institucional
     pdf.set_stroke_color(0.8, 0.85, 0.9)
-    pdf.line(30, 195, 582, 195)
-    pdf.draw_text(36, 180, 'CURSO DE INTELIGENCIA ARTIFICIAL PARA MAYORES (60+) • SESION 03 • TALLER GOOGLE FLOW [INFO-003B]', font='F2', size=7.2, r=0.15, g=0.35, b=0.55)
-    pdf.draw_text(36, 168, 'Herramienta: Google Flow (https://labs.google/flow) • 50 Creditos Diarios Gratuitos • Cine con IA', font='F3', size=6.8, r=0.45, g=0.45, b=0.55)
+    pdf.line(30, 85, 582, 85)
+    pdf.draw_text(36, 72, 'CURSO DE INTELIGENCIA ARTIFICIAL PARA MAYORES (60+) • SESION 03 • TALLER GOOGLE FLOW [INFO-003B]', font='F2', size=7.2, r=0.15, g=0.35, b=0.55)
+    pdf.draw_text(36, 60, 'Herramienta: Google Flow (https://labs.google/flow) • 50 Creditos Diarios Gratuitos • Cine con IA', font='F3', size=6.8, r=0.45, g=0.45, b=0.55)
 
     pdf.end_page()
     pdf.write_to_file(output_path)
