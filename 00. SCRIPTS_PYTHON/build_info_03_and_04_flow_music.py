@@ -248,15 +248,121 @@ def build_info_003b_pdf(output_path):
             pdf.draw_text(42, y_t, l, font='F1', size=7.4, r=0.2, g=0.25, b=0.3)
             y_t -= 10.5
 
-    # Pie institucional
+    # Pie institucional página 1
     pdf.set_stroke_color(0.8, 0.85, 0.9)
     pdf.line(30, 85, 582, 85)
-    pdf.draw_text(36, 72, 'CURSO DE INTELIGENCIA ARTIFICIAL PARA MAYORES (60+) • SESION 03 • TALLER GOOGLE FLOW [INFO-003B]', font='F2', size=7.2, r=0.15, g=0.35, b=0.55)
+    pdf.draw_text(36, 72, 'CURSO DE INTELIGENCIA ARTIFICIAL PARA MAYORES (60+) • SESION 03 • TALLER GOOGLE FLOW [INFO-003B] • PAGINA 1 DE 2', font='F2', size=7.2, r=0.15, g=0.35, b=0.55)
     pdf.draw_text(36, 60, 'Herramienta: Google Flow (https://labs.google/flow) • 50 Creditos Diarios Gratuitos • Cine con IA', font='F3', size=6.8, r=0.45, g=0.45, b=0.55)
+
+    # =========================================================================
+    # PÁGINA 2: TALLER AVANZADO DE RECREACIÓN DE SERIES Y PERSONAJE ANCLA
+    # =========================================================================
+    pdf.end_page()
+    pdf.start_page()
+
+    # Marco exterior elegante
+    pdf.set_fill_color(0.99, 0.99, 1.0)
+    pdf.set_stroke_color(0.85, 0.25, 0.2)
+    pdf.set_line_width(1.5)
+    pdf.rect(20, 20, 572, 752, fill=True, stroke=True)
+
+    # Cabecera página 2
+    pdf.set_fill_color(0.82, 0.18, 0.15)
+    pdf.rect(24, 714, 564, 54, fill=True, stroke=False)
+    pdf.draw_text(36, 750, 'SESION 03 • TALLER CINEMATOGRAFICO AVANZADO • GOOGLE FLOW & GEMINI [INFO-003B]', font='F2', size=8.5, r=1, g=1, b=1)
+    pdf.draw_text(36, 730, 'Recreación de Series Míticas y Personajes Consistentes: El Rodaje en 3 Planos', font='F2', size=11.5, r=1, g=1, b=1)
+
+    # Sección 4: El Gran Salto a la Narrativa
+    pdf.set_fill_color(1.0, 1.0, 1.0)
+    pdf.set_stroke_color(0.85, 0.25, 0.2)
+    pdf.set_line_width(1.0)
+    pdf.rect(30, 612, 552, 94, fill=True, stroke=True)
+
+    pdf.draw_text(42, 693, '4. EL GRAN SALTO: DE LA FOTO AISLADA A LA MINI-PELICULA NARRATIVA (15-20 SEGUNDOS)', font='F2', size=9.0, r=0.75, g=0.15, b=0.1)
+    t4 = (
+        "Un clip suelto de 5 segundos es solo un efecto visual; el verdadero cine nace cuando conectas tres planos con continuidad dramatica.\n"
+        "• El Tríptico Clásico de Dirección: 1) Plano General (Establece el lugar y la atmosfera). 2) Plano Medio (Presenta al personaje en accion). "
+        "3) Primer Plano (Detalle emocional o reaccion que resuelve la escena).\n"
+        "• Presupuesto Diario Gratuito: Rodar 3 planos continuos consume 30 creditos de Flow (10 por clip). ¡Te sobran 20 creditos para repetir o ajustar!"
+    )
+    y4 = 678
+    for par in t4.split('\n'):
+        for l in wrap_text(par, 114):
+            pdf.draw_text(42, y4, l, font='F2' if '•' in l and ':' in l else 'F1', size=7.3, r=0.15, g=0.2, b=0.25)
+            y4 -= 10.8
+
+    # Sección 5: El Personaje Ancla (Anchor Image)
+    pdf.set_fill_color(1.0, 1.0, 1.0)
+    pdf.set_stroke_color(0.2, 0.45, 0.8)
+    pdf.set_line_width(1.0)
+    pdf.rect(30, 508, 552, 98, fill=True, stroke=True)
+
+    pdf.draw_text(42, 591, '5. EL SECRETO TECNICO: EL "PERSONAJE ANCLA" (ANCHOR IMAGE) PARA CERO MUTACIONES', font='F2', size=9.0, r=0.1, g=0.3, b=0.65)
+    t5 = (
+        "El mayor reto de la IA en video es que el rostro, el pelo y la ropa cambian de un plano a otro. Para solucionarlo usamos un 'Personaje Ancla':\n"
+        "• Paso 1 (Crear la Hoja de Referencia en Gemini): Pide una imagen frontal limpia y nitida del protagonista con su vestimenta caracteristica.\n"
+        "• Paso 2 (Subir como Ancla en Flow): En Google Flow, arrastra esa foto fija a la casilla de referencia (@personaje).\n"
+        "• Paso 3 (Bloqueo de Identidad): Flow preservara las facciones, patillas, sombrero, capa y correajes exactos en todos los angulos de camara."
+    )
+    y5 = 576
+    for par in t5.split('\n'):
+        for l in wrap_text(par, 114):
+            pdf.draw_text(42, y5, l, font='F2' if '•' in l and ':' in l else 'F1', size=7.3, r=0.15, g=0.2, b=0.25)
+            y5 -= 10.8
+
+    # Sección 6: Caso Práctico Curro Jiménez
+    pdf.set_fill_color(1.0, 1.0, 1.0)
+    pdf.set_stroke_color(0.8, 0.5, 0.1)
+    pdf.set_line_width(1.0)
+    pdf.rect(30, 95, 552, 407, fill=True, stroke=True)
+
+    pdf.draw_text(42, 487, '6. CASO PRACTICO REAL: RECREANDO UNA ESCENA DE "CURRO JIMENEZ" (SERRANIA DE RONDA)', font='F2', size=9.0, r=0.7, g=0.35, b=0.05)
+    pdf.draw_text(42, 474, 'Sigue este rodaje guiado paso a paso para crear una mini-película histórica con total coherencia visual:', font='F3', size=7.2, r=0.4, g=0.45, b=0.5)
+
+    cj_steps = [
+        ("PASO 1 • EL PROMPT DE DIRECCION EN GEMINI (GENERAR EL GUION DE PLANOS):",
+         "Pega este prompt en Gemini: \"Actua como showrunner y director de cine. Disena el desglose tecnico de una escena de 3 planos continuos basada en la mitica serie espanola 'Curro Jimenez' ambientada en la Serrania de Ronda (1808). Define el entorno serrano, el personaje ancla 'Curro Jimenez' (sombrero calanes, patillas, capa espanola, trabuco de chispa y caballo tordo) y redacta los prompts exactos de camara para Google Flow.\""),
+
+        ("PLANO 1 (ESTABLECIMIENTO • 10 CREDITOS) • DRONE VIEW EN LA SERRANIA:",
+         "Prompt para Google Flow: \"Plano aereo con dron (Drone View) descendiendo suavemente sobre los tajos escarpados y pinares de la Serrania de Ronda al atardecer, desvelando una senda de montana solitaria entre olivares bajo la calida luz dorada andaluza, cinematografico 4K.\"",
+         "Objetivo: Sumergir al espectador en el territorio historico de los bandoleros antes de mostrar al protagonista."),
+
+        ("PLANO 2 (PRESENTACION DEL HEROE • 10 CREDITOS) • ORBIT CON ANCHOR IMAGE ACTIVA:",
+         "Prompt para Google Flow (con la foto ancla de Curro subida): \"Camara orbital lenta girando 180 grados alrededor de @CurroJimenez sobre su caballo tordo en el borde del risco rocoso, el viento agitando su capa negra, sosteniendo con serenidad su trabuco mientras vigila el camino real.\"",
+         "Objetivo: Presentar la figura imponente de Curro Jiménez con volumen 3D y coherencia absoluta en su rostro y atuendo."),
+
+        ("PLANO 3 (CLIMAX EMOCIONAL • 10 CREDITOS) • BULLET TIME / CAMARA ULTRALENTA:",
+         "Prompt para Google Flow (con la foto ancla de Curro subida): \"Efecto bullet time en camara ultralenta cerrandose en primer plano cinematografico sobre la mirada decidida y valiente de @CurroJimenez bajo el ala del sombrero calanes, destello de sol en el metal del trabuco, luz calida constante.\"",
+         "Objetivo: Transmitir tension dramatica y el alma del personaje. 3 planos x 10 = 30 creditos empleados. ¡Una escena de cine completa!")
+    ]
+
+    y6 = 457
+    for step_item in cj_steps:
+        st_title = step_item[0]
+        st_desc = step_item[1]
+        st_obj = step_item[2] if len(step_item) > 2 else None
+
+        col_r, col_g, col_b = (0.1, 0.35, 0.65) if 'PASO 1' in st_title else (0.75, 0.25, 0.1)
+        pdf.draw_text(42, y6, st_title, font='F2', size=7.6, r=col_r, g=col_g, b=col_b)
+        y6 -= 9.5
+        for l in wrap_text(st_desc, 115):
+            pdf.draw_text(42, y6, l, font='F1' if 'PASO 1' in st_title else 'F3', size=7.0, r=0.15, g=0.2, b=0.25)
+            y6 -= 9.0
+        if st_obj:
+            for l in wrap_text(st_obj, 115):
+                pdf.draw_text(42, y6, l, font='F1', size=6.8, r=0.35, g=0.4, b=0.45)
+                y6 -= 8.5
+        y6 -= 4
+
+    # Pie institucional página 2
+    pdf.set_stroke_color(0.8, 0.85, 0.9)
+    pdf.line(30, 85, 582, 85)
+    pdf.draw_text(36, 72, 'CURSO DE INTELIGENCIA ARTIFICIAL PARA MAYORES (60+) • SESION 03 • TALLER GOOGLE FLOW [INFO-003B] • PAGINA 2 DE 2', font='F2', size=7.2, r=0.15, g=0.35, b=0.55)
+    pdf.draw_text(36, 60, 'Recreacion de Series Clasicas • Curro Jimenez (Serrania de Ronda) • Consistencia de Personajes (Anchor Image)', font='F3', size=6.8, r=0.45, g=0.45, b=0.55)
 
     pdf.end_page()
     pdf.write_to_file(output_path)
-    print(f"✅ Ficha INFO-003B generada con éxito: {output_path}")
+    print(f"✅ Ficha INFO-003B generada con éxito (2 páginas completas): {output_path}")
 
 # ==============================================================================
 # 2. ACTUALIZACIÓN DE LAS 5 FICHAS DE IMAGEN EN SESIÓN 03
@@ -552,14 +658,14 @@ def update_maps():
         os.path.join(S03_DIR, "MAPA_CLASE_SESION_03.html"),
         os.path.join(S03_DIR, "MAPA_SESION_03.html")
     ]
-    card_info_03b = '''                    <div class="file-card file-card-special" style="background: rgba(234, 67, 53, 0.08); border-color: rgba(234, 67, 53, 0.35);">
-                        <a href="1B.%20INFO-003B_Taller_Google_Flow_Camara_Cinematica.pdf" target="_blank" class="file-card-special-top" title="Abrir Ficha Didáctica / Taller (PDF)">
+    card_info_03b_new = '''                    <div class="file-card file-card-special" style="background: rgba(234, 67, 53, 0.08); border-color: rgba(234, 67, 53, 0.35);">
+                        <a href="2.%20INFO-003B_Taller_Google_Flow_Camara_Cinematica.pdf" target="_blank" class="file-card-special-top" title="Abrir Ficha Didáctica / Taller (PDF)">
                             <div class="file-left">
-                                <span class="file-num">#01B [INFO]</span>
+                                <span class="file-num">#02 [INFO]</span>
                                 <span class="file-tag tag-pdf" style="background:#ea4335; color:#fff;">TALLER VÍDEO</span>
                                 <div class="file-details">
-                                    <span class="file-title">Taller Rápido: Google Flow y los 4 Movimientos Cinemáticos de Cámara</span>
-                                    <span class="file-desc">Estudio de Cine con IA • Orbit, Drone View, Bullet Time y Reveal (50 Créditos/Día)</span>
+                                    <span class="file-title">Taller Oficial: Google Flow, Cámara Cinemática y Recreación de Series</span>
+                                    <span class="file-desc">Estudio de Cine con IA • 4 Movimientos de Cámara, Personajes Consistentes (Curro Jiménez) y Rodaje en 3 Planos (50 Créditos/Día)</span>
                                 </div>
                             </div>
                             <span class="file-arrow">↗</span>
@@ -567,35 +673,69 @@ def update_maps():
                         <a href="https://labs.google/flow" target="_blank" class="btn-launch-interactive" style="background:linear-gradient(135deg, #ea4335, #c5221f); border-color:#f28b82;" title="Abrir Plataforma Oficial Google Flow">
                             🎬 Abrir Google Flow (Web Oficial) ↗
                         </a>
-                        <a href="1B.%20INFO-003B_Taller_Google_Flow_Camara_Cinematica.pdf" target="_blank" class="btn-launch-interactive" style="margin-top:6px; background:linear-gradient(135deg, #334155, #1e293b); border-color:#64748b;" title="Abrir Ficha Didáctica y Prompts (PDF)">
-                            📄 Abrir Ficha Didáctica y Prompts de Cámara (PDF) ↗
+                        <a href="2.%20INFO-003B_Taller_Google_Flow_Camara_Cinematica.pdf" target="_blank" class="btn-launch-interactive" style="margin-top:6px; background:linear-gradient(135deg, #334155, #1e293b); border-color:#64748b;" title="Abrir Ficha Didáctica, Prompts de Cámara y Taller de Series (PDF)">
+                            📄 Abrir Ficha Didáctica, Prompts de Cámara y Taller de Series (PDF) ↗
                         </a>
-                    </div>
-'''
+                    </div>'''
+
     for mpath in s03_maps:
         if os.path.exists(mpath):
             with open(mpath, 'r', encoding='utf-8') as f:
                 content = f.read()
-            if "INFO-003B" not in content:
-                # Insertar tras el primer bloque de INFO-003
-                target = '</a>\n                    </div>\n                    <a href="2.'
-                replacement = '</a>\n                    </div>\n' + card_info_03b + '                    <a href="2.'
-                if target in content:
-                    content = content.replace(target, replacement, 1)
-                else:
-                    # Alternativa buscando por 1. INFO-003
-                    idx = content.find('1.%20INFO-003_Novedades_Gemini_Gmail_y_Buscador_IA.pdf')
-                    if idx != -1:
-                        end_card = content.find('</div>', idx)
-                        end_card = content.find('</div>', end_card + 6)
-                        if end_card != -1:
-                            end_card += 6
-                            content = content[:end_card] + '\n' + card_info_03b + content[end_card:]
-                # Actualizar contador de recursos de fase 1
-                content = content.replace('<span class="branch-count">4 recursos</span>', '<span class="branch-count">5 recursos</span>')
-                with open(mpath, 'w', encoding='utf-8') as f:
-                    f.write(content)
-                print(f"🗺️ Mapa Sesión 03 actualizado: {os.path.basename(mpath)}")
+
+            # Renumerar hacia atrás para evitar colisiones
+            renumber_map = [
+                ('#20 [MEM]', '#21 [MEM]'),
+                ('#19 [MOVIL]', '#20 [MOVIL]'),
+                ('#18 [PAT]', '#19 [PAT]'),
+                ('#17 [TRUC]', '#18 [TRUC]'),
+                ('#16 [NIV]', '#17 [NIV]'),
+                ('#15 [TXT]', '#16 [TXT]'),
+                ('#14 [NAT]', '#15 [NAT]'),
+                ('#13 [FUT]', '#14 [FUT]'),
+                ('#12 [MEC]', '#13 [MEC]'),
+                ('#11 [INT]', '#12 [INT]'),
+                ('#10 [COD]', '#11 [COD]'),
+                ('#09 [FRAC]', '#10 [FRAC]'),
+                ('#08 [PRAC]', '#09 [PRAC]'),
+                ('#07 [ARTE]', '#08 [ARTE]'),
+                ('#06 [EST]', '#07 [EST]'),
+                ('#05 [COMICS]', '#06 [COMICS]'),
+                ('#04 [COMICS]', '#05 [COMICS]'),
+                ('#03 [COMICS]', '#04 [COMICS]'),
+                ('#02 [COMICS]', '#03 [COMICS]'),
+            ]
+            for old_num, new_num in renumber_map:
+                content = content.replace(f'<span class="file-num">{old_num}</span>', f'<span class="file-num">{new_num}</span>')
+
+            # Reemplazar la tarjeta de INFO-003B (tanto si tenía 1B como si era antigua)
+            if '1B.%20INFO-003B_Taller_Google_Flow_Camara_Cinematica.pdf' in content:
+                # Localizar inicio del div de la tarjeta 01B
+                start_idx = content.find('1B.%20INFO-003B_Taller_Google_Flow_Camara_Cinematica.pdf')
+                div_start = content.rfind('<div class="file-card file-card-special"', 0, start_idx)
+                # Localizar fin de ese div (tiene 2 </div> internos)
+                div_end = content.find('</div>', start_idx)
+                div_end = content.find('</div>', div_end + 6)
+                if div_start != -1 and div_end != -1:
+                    div_end += 6
+                    content = content[:div_start] + card_info_03b_new.strip() + content[div_end:]
+            elif '2.%20INFO-003B_Taller_Google_Flow_Camara_Cinematica.pdf' in content:
+                # Ya tiene la nueva URL, asegurar el bloque completo
+                start_idx = content.find('2.%20INFO-003B_Taller_Google_Flow_Camara_Cinematica.pdf')
+                div_start = content.rfind('<div class="file-card file-card-special"', 0, start_idx)
+                div_end = content.find('</div>', start_idx)
+                div_end = content.find('</div>', div_end + 6)
+                if div_start != -1 and div_end != -1:
+                    div_end += 6
+                    content = content[:div_start] + card_info_03b_new.strip() + content[div_end:]
+
+            # Ajustar contador de rama a 10 recursos
+            content = content.replace('<span class="branch-count">9 recursos</span>', '<span class="branch-count">10 recursos</span>')
+            content = content.replace('<span class="branch-count">8 recursos</span>', '<span class="branch-count">10 recursos</span>')
+
+            with open(mpath, 'w', encoding='utf-8') as f:
+                f.write(content)
+            print(f"🗺️ Mapa Sesión 03 actualizado con éxito: {os.path.basename(mpath)}")
 
     # 2. MAPA SESIÓN 04
     s04_maps = [
@@ -627,7 +767,6 @@ def update_maps():
             with open(mpath, 'r', encoding='utf-8') as f:
                 content = f.read()
             if "INFO-004B" not in content:
-                # Insertar tras el primer bloque de INFO-004
                 target = '</a>\n                    </div>\n                    <a href="11.CUENT-004'
                 replacement = '</a>\n                    </div>\n' + card_info_04b + '                    <a href="11.CUENT-004'
                 if target in content:
@@ -640,7 +779,6 @@ def update_maps():
                         if end_card != -1:
                             end_card += 6
                             content = content[:end_card] + '\n' + card_info_04b + content[end_card:]
-                # Actualizar contador de recursos de fase 1
                 content = content.replace('<span class="branch-count">8 recursos</span>', '<span class="branch-count">9 recursos</span>')
                 with open(mpath, 'w', encoding='utf-8') as f:
                     f.write(content)
@@ -654,12 +792,21 @@ def main():
     print("=== [DESPLIEGUE OFICIAL: INFO-003B (FLOW) Y INFO-004B (MUSIC)] ===")
     print("=================================================================")
 
-    # 1. Generar INFO-003B en S03 y Bloque 15
-    p_info_003b_s03 = os.path.join(S03_DIR, "1B. INFO-003B_Taller_Google_Flow_Camara_Cinematica.pdf")
+    # 1. Generar INFO-003B en S03 y Bloque 15 (Nuevo nombre con prefijo 2.)
+    p_info_003b_s03 = os.path.join(S03_DIR, "2. INFO-003B_Taller_Google_Flow_Camara_Cinematica.pdf")
     p_info_003b_b15 = os.path.join(BLOQUE_15_DIR, "INFO-003B_Taller_Google_Flow_Camara_Cinematica.pdf")
     build_info_003b_pdf(p_info_003b_s03)
     shutil.copy2(p_info_003b_s03, p_info_003b_b15)
     print(f"📦 Copiado a Bloque 15: {p_info_003b_b15}")
+
+    # Limpiar archivo viejo 1B si existía en S03
+    old_1b = os.path.join(S03_DIR, "1B. INFO-003B_Taller_Google_Flow_Camara_Cinematica.pdf")
+    if os.path.exists(old_1b):
+        try:
+            os.remove(old_1b)
+            print(f"🗑️ Eliminado archivo antiguo con prefijo 1B: {old_1b}")
+        except Exception as e:
+            print(f"Aviso al limpiar 1B: {e}")
 
     # 2. Actualizar 5 fichas de imagen de Sesión 03 con Google Flow
     update_all_s03_image_fiches()
