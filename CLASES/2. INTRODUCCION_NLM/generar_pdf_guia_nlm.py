@@ -494,12 +494,11 @@ def generar_pdf_completo():
         title_color=(0.15, 0.35, 0.65)
     )
     flow.add_prompt_box(
-        "PROMPT RECOMENDADO PARA PRESENTACIÓN SOBRIA Y ELEGANTE:",
-        "Crea una presentación con un estilo visual sobrio, elegante y de crónica documental histórica. "
-        "Utiliza una paleta espacial limpia (azul marino profundo, gris grafito y blanco de alto contraste), "
-        "con tipografía grande y muy legible para personas mayores. Estructura las diapositivas equilibrando el rigor técnico "
-        "de la NASA con la emoción humana del recuerdo familiar en Madrid, incorporando frases textuales entrecomilladas y "
-        "evitando totalmente ilustraciones infantiles o colores estridentes."
+        "PROMPT DE ESTILO – NARRATIVO Y CINEMATOGRÁFICO:",
+        "Crea una presentación con estructura narrativa, como si contara una historia.\n"
+        "Empieza con una situación cotidiana, introduce un problema y muestra cómo la tecnología lo resuelve paso a paso.\n"
+        "Utiliza transiciones suaves, imágenes sugerentes y títulos que guíen al espectador como si siguiera un relato visual.\n"
+        "El objetivo es que el alumnado sienta que está “siguiendo una historia”, no estudiando teoría."
     )
 
     # BOTÓN 2: INFOGRAFÍAS
