@@ -3,9 +3,10 @@
 """
 build_mem_flow_music_and_sync_maps.py
 1. Inyecta en las fichas [MEM-003] a [MEM-015] el Paso 3: Postal Sonora con Google Flow Music (Música 60s, 70s y 80s).
-2. Genera los PDFs nativos con nombres exactos en 100. [SESSIONS]... y en 13. [MEM]...
-3. Renumera limpiamente y sin excepciones todos los mapas de Sesión 03 a 15 (MAPA_SESION_XX.html y MAPA_CLASE_SESION_XX.html),
-   eliminando cualquier #XX residual y dejando una secuencia 100% continua (#01 al #16/#17/#18).
+2. Genera los PDFs nativos con codificación WinAnsiEncoding estándar, asegurando que todos los acentos (á, é, í, ó, ú, ñ, ¿, ¡, etc.)
+   se muestren impecablemente en cualquier visor de PDF (Preview, Acrobat, Chrome, iPad).
+3. Corrige cualquier falta ortográfica en encabezados, instrucciones y preguntas.
+4. Renumera limpiamente y sin excepciones todos los mapas de Sesión 03 a 15 (MAPA_SESION_XX.html y MAPA_CLASE_SESION_XX.html).
 """
 
 import os
@@ -19,7 +20,7 @@ MEM_DIR_LOTE1 = os.path.join(BASE_DIR, "CLASES", "EXPORTACION_FICHAS_CLASSROOM_P
 
 # Importar la lista de items base
 sys.path.append(os.path.join(BASE_DIR, "00. SCRIPTS_PYTHON"))
-from actualizar_memoria_construcciones_historicas import MEM_NUEVOS_ITEMS, escape_pdf_text, wrap_text, sanitize_filename
+from actualizar_memoria_construcciones_historicas import MEM_NUEVOS_ITEMS, sanitize_filename
 
 # Diccionario de Prompts Musicales calibrados en estilos de los años 60, 70 y 80
 MUSIC_FLOW_PROMPTS = {
@@ -77,7 +78,48 @@ MUSIC_FLOW_PROMPTS = {
     }
 }
 
-class NativePDFWriter:
+def escape_pdf_text(text):
+    text = str(text)
+    text = text.replace('\\', '\\\\').replace('(', '\\(').replace(')', '\\)')
+    replacements = {
+        'á': '\xe1', 'é': '\xe9', 'í': '\xed', 'ó': '\xf3', 'ú': '\xfa',
+        'Á': '\xc1', 'É': '\xc9', 'Í': '\xcd', 'Ó': '\xd3', 'Ú': '\xda',
+        'ñ': '\xf1', 'Ñ': '\xd1', 'ü': '\xfc', 'Ü': '\xdc',
+        'ï': '\xef', 'Ï': '\xcf',
+        '«': '<<', '»': '>>', '•': '-', '—': '-', '–': '-', '…': '...',
+        'º': '\xba', 'ª': '\xaa', '¿': '\xbf', '¡': '\xa1',
+        '➔': '->', '→': '->', '’': "'", '‘': "'", '“': '"', '”': '"'
+    }
+    for k, v in replacements.items():
+        text = text.replace(k, v)
+    return text
+
+def wrap_text(text, max_chars):
+    paragraphs = str(text).split('\n')
+    lines = []
+    for p in paragraphs:
+        p = p.strip()
+        if not p:
+            continue
+        words = p.split(' ')
+        cur = []
+        cur_len = 0
+        for w in words:
+            if not w:
+                continue
+            if cur_len + len(w) + 1 <= max_chars:
+                cur.append(w)
+                cur_len += len(w) + 1
+            else:
+                if cur:
+                    lines.append(' '.join(cur))
+                cur = [w]
+                cur_len = len(w)
+        if cur:
+            lines.append(' '.join(cur))
+    return lines or ['']
+
+class RobustNativePDFWriter:
     def __init__(self, page_width=612.0, page_height=792.0): # Letter estándar
         self.w = page_width
         self.h = page_height
@@ -101,67 +143,82 @@ class NativePDFWriter:
         self.current_stream.append(f"{width:.2f} w\n")
 
     def rect(self, x, y, width, height, fill=True, stroke=True):
-        op = "B\n" if (fill and stroke) else ("f\n" if fill else "S\n")
-        self.current_stream.append(f"{x:.2f} {y:.2f} {width:.2f} {height:.2f} re {op}")
+        op = "B" if (fill and stroke) else ("f" if fill else "S")
+        self.current_stream.append(f"{x:.2f} {y:.2f} {width:.2f} {height:.2f} re {op}\n")
 
     def line(self, x1, y1, x2, y2):
         self.current_stream.append(f"{x1:.2f} {y1:.2f} m {x2:.2f} {y2:.2f} l S\n")
 
     def draw_text(self, x, y, text, font="F1", size=10, r=0, g=0, b=0):
         self.set_fill_color(r, g, b)
-        clean = escape_pdf_text(text)
-        self.current_stream.append(f"BT /{font} {size:.1f} Tf {x:.2f} {y:.2f} Td ({clean}) Tj ET\n")
+        escaped = escape_pdf_text(text)
+        self.current_stream.append(f"BT /{font} {size:.1f} Tf {x:.2f} {y:.2f} Td ({escaped}) Tj ET\n")
 
     def write_to_file(self, filename):
-        objects = []
-        objects.append("<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>") # 1
-        objects.append("<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>") # 2
-        objects.append("<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Oblique >>") # 3
+        os.makedirs(os.path.dirname(filename), exist_ok=True)
+        page_obj_indices = []
+        content_obj_indices = []
+        cur_obj_idx = 6
 
-        page_obj_ids = []
-        for i, page_data in enumerate(self.pages):
-            content_idx = len(objects) + 1
-            length = len(page_data.encode('latin1', errors='replace'))
-            objects.append(f"<< /Length {length} >>\nstream\n{page_data}endstream")
+        for _ in self.pages:
+            page_obj_indices.append(cur_obj_idx)
+            cur_obj_idx += 1
+            content_obj_indices.append(cur_obj_idx)
+            cur_obj_idx += 1
 
-            page_idx = len(objects) + 1
-            page_obj = (
-                f"<< /Type /Page /Parent 5 0 R\n"
-                f"   /MediaBox [0 0 {self.w:.2f} {self.h:.2f}]\n"
-                f"   /Contents {content_idx} 0 R\n"
-                f"   /Resources << /Font << /F1 1 0 R /F2 2 0 R /F3 3 0 R >> >>\n>>"
-            )
-            objects.append(page_obj)
-            page_obj_ids.append(page_idx)
+        kids_str = " ".join([f"{idx} 0 R" for idx in page_obj_indices])
+        pages_dict = f"<< /Type /Pages /Kids [{kids_str}] /Count {len(self.pages)} >>".encode("ascii")
 
-        pages_idx = len(objects) + 1
-        kids_str = " ".join([f"{pid} 0 R" for pid in page_obj_ids])
-        objects.append(f"<< /Type /Pages /Kids [{kids_str}] /Count {len(self.pages)} >>")
+        # Configuración estándar con /Encoding /WinAnsiEncoding para renderizar perfectamente todos los acentos en español
+        all_objs = [
+            b"<< /Type /Catalog /Pages 2 0 R >>",
+            pages_dict,
+            b"<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>",
+            b"<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>",
+            b"<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Oblique /Encoding /WinAnsiEncoding >>",
+        ]
 
-        catalog_idx = len(objects) + 1
-        objects.append(f"<< /Type /Catalog /Pages {pages_idx} 0 R >>")
+        for i, page_stream in enumerate(self.pages):
+            content_idx = content_obj_indices[i]
+            p_obj = (
+                f"<< /Type /Page /Parent 2 0 R /MediaBox [0 0 {self.w} {self.h}] "
+                f"/Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> "
+                f"/Contents {content_idx} 0 R >>"
+            ).encode("ascii")
+            all_objs.append(p_obj)
+
+            s_bytes = page_stream.encode("latin1", errors="replace")
+            c_obj = f"<< /Length {len(s_bytes)} >>\nstream\n".encode("ascii") + s_bytes + b"\nendstream"
+            all_objs.append(c_obj)
 
         with open(filename, "wb") as f:
             f.write(b"%PDF-1.4\n")
-            xref_offsets = [0]
-            for i, obj in enumerate(objects):
-                offset = f.tell()
-                xref_offsets.append(offset)
-                f.write(f"{i+1} 0 obj\n{obj}\nendobj\n".encode('latin1', errors='replace'))
+            offsets = []
+            cur_offset = f.tell()
 
-            xref_start = f.tell()
-            f.write(f"xref\n0 {len(objects)+1}\n".encode('latin1'))
+            for i, obj in enumerate(all_objs):
+                offsets.append(cur_offset)
+                obj_num = i + 1
+                f.write(f"{obj_num} 0 obj\n".encode("ascii"))
+                f.write(obj)
+                f.write(b"\nendobj\n")
+                cur_offset = f.tell()
+
+            xref_offset = cur_offset
+            f.write(b"xref\n")
+            f.write(f"0 {len(all_objs) + 1}\n".encode("ascii"))
             f.write(b"0000000000 65535 f \n")
-            for offset in xref_offsets[1:]:
-                f.write(f"{offset:010d} 00000 n \n".encode('latin1'))
+            for off in offsets:
+                f.write(f"{off:010d} 00000 n \n".encode("ascii"))
 
-            f.write(
-                f"trailer\n<< /Size {len(objects)+1} /Root {catalog_idx} 0 R >>\n"
-                f"startxref\n{xref_start}\n%%EOF\n".encode('latin1')
-            )
+            f.write(b"trailer\n")
+            f.write(f"<< /Size {len(all_objs) + 1} /Root 1 0 R >>\n".encode("ascii"))
+            f.write(b"startxref\n")
+            f.write(f"{xref_offset}\n".encode("ascii"))
+            f.write(b"%%EOF\n")
 
 def create_mem_flow_music_pdf(output_path, item):
-    writer = NativePDFWriter(page_width=612.0, page_height=792.0) # Letter
+    writer = RobustNativePDFWriter(page_width=612.0, page_height=792.0) # Letter
     margin_x = 40.0
     content_w = writer.w - (margin_x * 2) # 532.0 pt
 
@@ -172,9 +229,9 @@ def create_mem_flow_music_pdf(output_path, item):
     writer.rect(margin_x, writer.h - 24, content_w, 3.5, fill=True, stroke=False)
 
     y = writer.h - 42
-    writer.draw_text(margin_x, y, "CURSO DE INTELIGENCIA ARTIFICIAL Y TECNOLOGIA PARA ADULTOS MAYORES (60+)", "F2", 8.2, 0.72, 0.53, 0.04)
+    writer.draw_text(margin_x, y, "CURSO DE INTELIGENCIA ARTIFICIAL Y TECNOLOGÍA PARA ADULTOS MAYORES (60+)", "F2", 8.2, 0.72, 0.53, 0.04)
     y -= 13
-    writer.draw_text(margin_x, y, "BLOQUE 13: CAPSULA DE LA MEMORIA [MEM] - GRANDES OBRAS Y POSTAL SONORA", "F2", 10.0, 0.1, 0.05, 0.2)
+    writer.draw_text(margin_x, y, "BLOQUE 13: CÁPSULA DE LA MEMORIA [MEM] • GRANDES OBRAS Y POSTAL SONORA", "F2", 10.0, 0.1, 0.05, 0.2)
     y -= 8
 
     writer.set_stroke_color(0.72, 0.53, 0.04)
@@ -185,11 +242,11 @@ def create_mem_flow_music_pdf(output_path, item):
     # Título del Ítem
     writer.draw_text(margin_x, y, f"{item['id_code']} {item['titulo_completo']}", "F2", 11.2, 0.1, 0.05, 0.2)
     y -= 13
-    writer.draw_text(margin_x, y, f"Patrimonio: {item['lugar_epoca']}", "F3", 8.5, 0.45, 0.45, 0.45)
+    writer.draw_text(margin_x, y, f"Patrimonio Histórico: {item['lugar_epoca']}", "F3", 8.5, 0.45, 0.45, 0.45)
     y -= 14
 
     # 1. Contexto Histórico
-    writer.draw_text(margin_x, y, "Objetivo Didactico y Contexto Historico:", "F2", 8.8, 0.72, 0.53, 0.04)
+    writer.draw_text(margin_x, y, "Objetivo Didáctico y Contexto Histórico:", "F2", 8.8, 0.72, 0.53, 0.04)
     y -= 11
     for line in wrap_text(item['concepto'], 96):
         writer.draw_text(margin_x, y, line, "F1", 8.2, 0.18, 0.22, 0.28)
@@ -198,7 +255,7 @@ def create_mem_flow_music_pdf(output_path, item):
     y -= 4
 
     # 2. Paso 1: Generar la Recreación Histórica con IA (Gemini)
-    writer.draw_text(margin_x, y, "Paso 1: Recrear la Escena de Construccion con IA en Gemini (gemini.google.com)", "F2", 8.8, 0.72, 0.53, 0.04)
+    writer.draw_text(margin_x, y, "Paso 1: Recrear la Escena de Construcción con IA en Gemini (gemini.google.com)", "F2", 8.8, 0.72, 0.53, 0.04)
     y -= 8
 
     p_lines = wrap_text(f'"{item["prompt"]}"', 92)
@@ -210,7 +267,7 @@ def create_mem_flow_music_pdf(output_path, item):
     writer.rect(margin_x, y - prompt_box_h, content_w, prompt_box_h, fill=True, stroke=True)
 
     ty = y - 12
-    writer.draw_text(margin_x + 8, ty, "Copia este prompt exacto y pegalo en Gemini Web para generar la imagen documental:", "F2", 7.8, 0.1, 0.05, 0.2)
+    writer.draw_text(margin_x + 8, ty, "Copia este prompt exacto y pégalo en Gemini Web para generar la imagen documental:", "F2", 7.8, 0.1, 0.05, 0.2)
     ty -= 11.5
     for pl in p_lines:
         writer.draw_text(margin_x + 8, ty, pl, "F3", 7.6, 0.1, 0.05, 0.2)
@@ -219,10 +276,10 @@ def create_mem_flow_music_pdf(output_path, item):
     y -= (prompt_box_h + 10)
 
     # 3. Paso 2: Reto y Preguntas de Investigación con Gemini
-    writer.draw_text(margin_x, y, "Paso 2: Preguntas de Ingenieria y Vida Cotidiana para el Dialogo con Gemini", "F2", 8.8, 0.72, 0.53, 0.04)
+    writer.draw_text(margin_x, y, "Paso 2: Preguntas de Ingeniería y Vida Cotidiana para el Diálogo con Gemini", "F2", 8.8, 0.72, 0.53, 0.04)
     y -= 8
 
-    q1_lines = wrap_text(f"1. Ingenieria de epoca: {item['pregunta1']}", 92)
+    q1_lines = wrap_text(f"1. Ingeniería de época: {item['pregunta1']}", 92)
     q2_lines = wrap_text(f"2. Entorno y vida cotidiana: {item['pregunta2']}", 92)
     tips_box_h = 20 + ((len(q1_lines) + len(q2_lines)) * 10.5) + 6
 
@@ -250,7 +307,7 @@ def create_mem_flow_music_pdf(output_path, item):
         "prompt": "Orquesta sinfónica cálida y evocadora al estilo de las bandas sonoras épicas de los años 60 y 70, cuerdas majestuosas, guitarra acústica y aire nostálgico, 75 BPM."
     })
 
-    writer.draw_text(margin_x, y, "Paso 3: Postal Sonora con Google Flow Music (Ambientacion Musical 60s, 70s y 80s)", "F2", 8.8, 0.72, 0.53, 0.04)
+    writer.draw_text(margin_x, y, "Paso 3: Postal Sonora con Google Flow Music (Ambientación Musical 60s, 70s y 80s)", "F2", 8.8, 0.72, 0.53, 0.04)
     y -= 8
 
     m_lines = wrap_text(f'"{music_info["prompt"]}"', 92)
@@ -268,7 +325,7 @@ def create_mem_flow_music_pdf(output_path, item):
         writer.draw_text(margin_x + 8, ty, ml, "F3", 7.6, 0.05, 0.15, 0.35)
         ty -= 10.5
     ty -= 3
-    writer.draw_text(margin_x + 8, ty, "Productor IA: Puedes pedirle a Gemini conversacional ajustar la mezcla: \"Quiero darle un aire mas calido con guitarra de 12 cuerdas\".", "F1", 7.0, 0.35, 0.4, 0.45)
+    writer.draw_text(margin_x + 8, ty, "Productor IA: Puedes pedirle a Gemini conversacional ajustar la mezcla: \"Quiero darle un aire más cálido con guitarra acústica al estilo de los años 70\".", "F1", 7.0, 0.35, 0.4, 0.45)
 
     y -= (music_box_h + 10)
 
@@ -276,14 +333,14 @@ def create_mem_flow_music_pdf(output_path, item):
     writer.set_stroke_color(0.85, 0.88, 0.92)
     writer.set_line_width(0.6)
     writer.line(margin_x, 26, margin_x + content_w, 26)
-    writer.draw_text(margin_x, 16, f"Curso de Inteligencia Artificial para Seniors • Sesion {item['num']:02d} • {item['id_code']} {item['titulo_corto']} • Postal Sonora", "F1", 7.4, 0.45, 0.48, 0.52)
-    writer.draw_text(margin_x + content_w - 180, 16, "Patrimonio Historico y Tecnico de Espana", "F2", 7.4, 0.72, 0.53, 0.04)
+    writer.draw_text(margin_x, 16, f"Curso de Inteligencia Artificial para Seniors • Sesión {item['num']:02d} • {item['id_code']} {item['titulo_corto']} • Postal Sonora", "F1", 7.4, 0.45, 0.48, 0.52)
+    writer.draw_text(margin_x + content_w - 180, 16, "Patrimonio Histórico y Técnico de España", "F2", 7.4, 0.72, 0.53, 0.04)
 
     writer.end_page()
     writer.write_to_file(output_path)
 
 def update_all_mem_pdfs():
-    print("=== [1] ACTUALIZANDO FICHAS MEM CON GOOGLE FLOW MUSIC ===")
+    print("=== [1] ACTUALIZANDO FICHAS MEM CON ENCODING WINANSI COMPLETO Y POSTAL SONORA ===")
     for item in MEM_NUEVOS_ITEMS:
         num = item['num']
         session_folder = f"{num:02d}_Sesion"
@@ -294,22 +351,12 @@ def update_all_mem_pdfs():
 
         # 1. Guardar en carpeta de sesión
         if os.path.exists(session_path):
-            # Limpiar cualquier PDF de MEM que no sea el canónico
-            for f in os.listdir(session_path):
-                if f.startswith("14.") and "MEM" in f and f.endswith(".pdf"):
-                    old_p = os.path.join(session_path, f)
-                    if f != pdf_name:
-                        os.remove(old_p)
             session_pdf = os.path.join(session_path, pdf_name)
             create_mem_flow_music_pdf(session_pdf, item)
-            print(f"  [S{num:02d}] Generado: {pdf_name}")
+            print(f"  [S{num:02d}] Generado (WinAnsi OK): {pdf_name}")
 
         # 2. Guardar en bloque Lote_01_al_20
         lote_pdf_name = f"{item['id_code'][1:-1]}_{safe_title}.pdf"
-        # Limpiar cualquier versión truncada incorrecta en el lote
-        for f in os.listdir(MEM_DIR_LOTE1):
-            if f.startswith(f"MEM-{num:02d}_") and f.endswith(".pdf") and f != lote_pdf_name:
-                os.remove(os.path.join(MEM_DIR_LOTE1, f))
         lote_pdf = os.path.join(MEM_DIR_LOTE1, lote_pdf_name)
         create_mem_flow_music_pdf(lote_pdf, item)
 
@@ -328,12 +375,9 @@ def renumber_and_clean_map(map_path, session_num):
     new_html = html
     for idx in range(len(matches) - 1, -1, -1):
         m = matches[idx]
-        cur_num_str = m.group(1)
         tag = m.group(2) or ""
-        
         target_num = idx + 1
         new_card_str = f'<span class="file-num">#{target_num:02d}{tag}</span>'
-        
         new_html = new_html[:m.start()] + new_card_str + new_html[m.end():]
 
     # Actualizar títulos de contador si existen
