@@ -528,22 +528,22 @@ def build_info_004b_pdf(output_path):
     pdf.set_fill_color(0.08, 0.45, 0.28)
     pdf.rect(24, 714, 564, 54, fill=True, stroke=False)
     pdf.draw_text(36, 750, 'SESION 04 • NOVEDADES Y TALLER TECNOLOGICO IA [INFO-004B]', font='F2', size=8.5, r=1, g=1, b=1)
-    pdf.draw_text(36, 730, 'Taller Oficial: Google Music AI (Banda Sonora, Tarareo y De Foto a Música)', font='F2', size=11.5, r=1, g=1, b=1)
+    pdf.draw_text(36, 730, 'Taller Oficial: Google Flow Music (Productor IA, Tarareo y Banda Sonora para tus Imagenes)', font='F2', size=11.2, r=1, g=1, b=1)
 
-    # Sección 1: Qué es Google Music AI y por qué emociona a los seniors
+    # Sección 1: Qué es Google Flow Music y el Productor IA
     pdf.set_fill_color(1.0, 1.0, 1.0) # Fondo blanco
     pdf.set_stroke_color(0.1, 0.6, 0.35)
     pdf.set_line_width(1.0)
     pdf.rect(30, 585, 552, 115, fill=True, stroke=True)
 
-    pdf.draw_text(42, 684, '1. LA REVOLUCION DE LA MUSICA CON IA: EMOCION Y BANDAS SONORAS EN SEGUNDOS', font='F2', size=9.2, r=0.08, g=0.45, b=0.25)
+    pdf.draw_text(42, 684, '1. GOOGLE FLOW MUSIC: TU ESTUDIO DE GRABACION Y PRODUCTOR VIRTUAL CON IA', font='F2', size=9.2, r=0.08, g=0.45, b=0.25)
     
     t1 = (
-        "Google Music AI (tecnologia Lyria integrada en el ecosistema de Google Flow) permite crear musica original y bandas sonoras "
-        "de alta calidad en pocos segundos sin necesidad de saber solfeo ni tocar ningun instrumento tradicional.\n"
-        "• Duracion al segundo exacto: Puedes pedirle que componga exactamente 5 segundos de musica para sincronizar con tu video de Flow.\n"
-        "• Image-to-Music (De Imagen a Musica): Sube una fotografia y la IA analiza la luz, el color y la epoca para componer la banda sonora.\n"
-        "• Audio-to-Music (El Milagro del Tarareo): Tarareas unos segundos con tu voz al microfono y la IA lo convierte en una orquesta o piano."
+        "Google Flow Music (tecnologia Lyria de Google DeepMind en labs.google) crea canciones y bandas sonoras completas "
+        "con voces e instrumentacion realista en segundos, adaptada a la musica de los anos 60, 70 y 80 de nuestra juventud.\n"
+        "• Productor Virtual IA (Gemini): Habla con el en espanol como en un estudio real (\"haz el piano mas suave\", \"voz mas calida\").\n"
+        "• Image-to-Music (De Imagen a Musica): Sube cualquier imagen generada en clase para que la IA componga su banda sonora a medida.\n"
+        "• Audio-to-Music (El Milagro del Tarareo): Tarareas 4 notas al microfono y la IA lo transforma en una orquesta o balada de los 70."
     )
     y_pos = 668
     for par in t1.split('\n'):
@@ -558,26 +558,26 @@ def build_info_004b_pdf(output_path):
     pdf.rect(30, 275, 552, 300, fill=True, stroke=True)
 
     pdf.draw_text(42, 560, '2. LOS 3 EJERCICIOS PRACTICOS DE AULA: APRENDE PASO A PASO', font='F2', size=9.2, r=0.1, g=0.3, b=0.65)
-    pdf.draw_text(42, 547, 'Practicas guiadas disenadas para despertar la creatividad musical y los recuerdos familiares:', font='F3', size=7.2, r=0.4, g=0.45, b=0.5)
+    pdf.draw_text(42, 547, 'Practicas guiadas para crear musica de los anos 60, 70 y 80 y sonorizar las imagenes del curso:', font='F3', size=7.2, r=0.4, g=0.45, b=0.5)
 
     exercises = [
-        ("EJERCICIO 1 • EL MILAGRO DEL TARAREO (DEL MICROFONO A LA CANCION):",
-         "1. Pulsa el icono del microfono en Google Music AI y tararea 4 notas sencillas con tu propia voz ('na, na, na...').\n"
-         "2. Elige el estilo deseado escribiendo en el recuadro de texto.\n"
-         "3. Prompt Maestro de Estilo: \"Transforma este tarareo en una balada acustica suave con piano de cola clasico, cuarteto de cuerdas calido y tempo lento y sereno. Duracion exacta: 15 segundos.\"\n"
-         "Resultado: Tu tarareo casero se transforma en una pieza de estudio digna de una pelicula clasica."),
+        ("EJERCICIO 1 • EL MILAGRO DEL TARAREO (DEL MICROFONO A LA BALADA POP-ROCK):",
+         "1. Pulsa el icono del microfono en Google Flow Music y tararea 4 notas sencillas con tu propia voz ('na, na, na...').\n"
+         "2. Elige el estilo escribiendo en el recuadro de peticion o chatea con el Productor Virtual IA.\n"
+         "3. Prompt Maestro: \"Transforma este tarareo en una balada acustica pop-rock anos 70 al estilo de Los Secretos o Eagles, con guitarras de doce cuerdas, bajo calido y melodia emotiva. Duracion: 15 segundos.\"\n"
+         "Resultado: Tu tarareo casero se convierte en una produccion de estudio con la magia del pop clasico."),
 
-        ("EJERCICIO 2 • DE LA FOTO DE PAISAJE A LA SUITE ORQUESTAL (IMAGE-TO-MUSIC):",
-         "1. Descarga una imagen de naturaleza creada en Gemini (un amanecer en el mar, un campo de lavanda o montana nevada).\n"
-         "2. Subela al visor musical de Google Music y selecciona duracion de 10 segundos.\n"
-         "3. Prompt Maestro de Estilo: \"Musica orquestal serena inspirada en este paisaje, con flauta travesera melancolica, cuerdas amplias y sensacion de paz profunda al atardecer.\"\n"
-         "Resultado: La IA lee los colores calidos y genera una armonia que encaja a la perfeccion con la atmosfera visual."),
+        ("EJERCICIO 2 • DE CUALQUIER IMAGEN A LA BANDA SONORA ORIGINAL (IMAGE-TO-MUSIC):",
+         "1. Descarga cualquier imagen creada en Gemini (paisajes, monumentos de [MEM], arte de Botticelli o escenas de futuro).\n"
+         "2. Subela a Google Flow Music y pulsa 'Generar musica inspirada en esta imagen'.\n"
+         "3. Prompt Maestro: \"Banda sonora instrumental inspirada en esta imagen, con guitarras calidas, sintetizador suave anos 80 y atmosfera de paz serena. Duracion: 10 segundos.\"\n"
+         "Resultado: Cada imagen fija del curso cobra vida con su propia postal sonora sincronizada a medida."),
 
-        ("EJERCICIO 3 • FOTO FAMILIAR DE LOS ANOS 70 A LA BALADA NOSTALGICA:",
-         "1. Generamos primero en Gemini la foto modelo con el prompt: \"Fotografia familiar de 1978 en color analogico calido: abuelos, padres y ninos sonrientes junto a un Seat 127 blanco en la playa de Cullera, sol de verano y ropa de epoca.\"\n"
-         "2. Subimos la foto familiar generada a Google Music AI.\n"
-         "3. Prompt Maestro de Musica: \"Balada melodica espanola anos 70 al estilo de Nino Bravo o Mocedades, guitarra acustica doce cuerdas, bajo dulce y nostalgia luminosa de vacaciones familiares.\"\n"
-         "Resultado: Una banda sonora conmovedora que revive la magia de aquellos veranos inolvidables.")
+        ("EJERCICIO 3 • FOTO FAMILIAR DE LOS ANOS 70-80 A LA CANCION NOSTALGICA:",
+         "1. Generamos en Gemini una imagen evocadora: \"Fotografia familiar de 1978 en color calido: tarde de verano junto a un Seat 127 blanco, risas y ropa de epoca.\"\n"
+         "2. Subimos la foto familiar generada a Google Flow Music.\n"
+         "3. Prompt Maestro de Cancion: \"Cancion melodica espanola de finales de los 70 al estilo de Nino Bravo o Mocedades, con piano luminoso, cuerdas orquestales y nostalgia de vacaciones inolvidables.\"\n"
+         "4. Diálogo con el Productor: Escribe en el chat: \"Haz que la voz entre despacio y anade un solo de guitarra acustica al final\".")
     ]
 
     y_e = 532
@@ -586,21 +586,22 @@ def build_info_004b_pdf(output_path):
         y_e -= 10
         for par in ex_body.split('\n'):
             for l in wrap_text(par, 114):
-                is_prompt = 'Prompt Maestro' in l or '"' in l
+                is_prompt = 'Prompt Maestro' in l or '"' in l or 'Diálogo' in l
                 pdf.draw_text(42, y_e, l, font='F2' if is_prompt else 'F1', size=7.2, r=0.7 if is_prompt else 0.2, g=0.3 if is_prompt else 0.25, b=0.05 if is_prompt else 0.3)
                 y_e -= 9.5
         y_e -= 3
 
-    # Sección 3: La unión de vídeo y música a partir de ahora
+    # Sección 3: Poner música a las imágenes de todas las etiquetas
     pdf.set_fill_color(1.0, 1.0, 1.0)
     pdf.set_stroke_color(0.8, 0.5, 0.1)
     pdf.set_line_width(1.0)
     pdf.rect(30, 205, 552, 60, fill=True, stroke=True)
 
-    pdf.draw_text(42, 252, '3. EL NUEVO ESTANDAR: A PARTIR DE AHORA, CADA VIDEO FLOW CON SU BANDA SONORA', font='F2', size=8.8, r=0.7, g=0.35, b=0.05)
+    pdf.draw_text(42, 252, '3. EL NUEVO ESTANDAR: PONER MUSICA A LAS IMAGENES FIJAS DE TODAS LAS ETIQUETAS', font='F2', size=8.8, r=0.7, g=0.35, b=0.05)
     t3 = (
-        "En las proximas sesiones, cada vez que creemos un clip en Google Flow con los movimientos de camara aprendidos, "
-        "le anadiremos su pista de audio generada en Google Music. Asi obtendremos obras completas con imagen, movimiento y musica."
+        "Los clips animados de Google Flow ya generan su propio sonido ambiental. La verdadera joya creativa consiste en sonorizar "
+        "las imagenes fijas de clase ([EST], [PRAC], [INT], [FUT], [ARTE], [MEM]): subiendo la imagen a Google Flow Music, "
+        "cada alumno convierte sus ilustraciones en una Postal Sonora completa con su banda sonora original exclusiva."
     )
     y_t = 238
     for l in wrap_text(t3, 114):
@@ -610,8 +611,8 @@ def build_info_004b_pdf(output_path):
     # Pie institucional
     pdf.set_stroke_color(0.8, 0.85, 0.9)
     pdf.line(30, 195, 582, 195)
-    pdf.draw_text(36, 180, 'CURSO DE INTELIGENCIA ARTIFICIAL PARA MAYORES (60+) • SESION 04 • TALLER GOOGLE MUSIC AI [INFO-004B]', font='F2', size=7.2, r=0.15, g=0.35, b=0.55)
-    pdf.draw_text(36, 168, 'Herramienta: Google Music AI (Lyria / Flow Music) • De la Foto al Recuerdo Sonoro • Tarareo con Microfono', font='F3', size=6.8, r=0.45, g=0.45, b=0.55)
+    pdf.draw_text(36, 180, 'CURSO DE INTELIGENCIA ARTIFICIAL PARA MAYORES (60+) • SESION 04 • TALLER GOOGLE FLOW MUSIC [INFO-004B]', font='F2', size=7.2, r=0.15, g=0.35, b=0.55)
+    pdf.draw_text(36, 168, 'Herramienta: Google Flow Music (flowmusic.google) • Productor Virtual Gemini • Postales Sonoras para tus Imagenes', font='F3', size=6.8, r=0.45, g=0.45, b=0.55)
 
     pdf.end_page()
     pdf.write_to_file(output_path)
