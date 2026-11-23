@@ -2,7 +2,8 @@
 # -*- coding: utf-8 -*-
 """
 build_mem_flow_music_and_sync_maps.py
-1. Inyecta en las fichas [MEM-003] a [MEM-015] el Paso 3: Postal Sonora con Google Flow Music (Música 60s, 70s y 80s).
+1. Inyecta en las fichas [MEM-003] a [MEM-015] el Paso 3: Visor Fotográfico Cinemático y Postal Sonora en Gemini (Canvas / Vista Previa)
+   con la ambientación musical histórica y auténtica de cada época y monumento.
 2. Genera los PDFs nativos con codificación WinAnsiEncoding estándar, asegurando que todos los acentos (á, é, í, ó, ú, ñ, ¿, ¡, etc.)
    se muestren impecablemente en cualquier visor de PDF (Preview, Acrobat, Chrome, iPad).
 3. Corrige cualquier falta ortográfica en encabezados, instrucciones y preguntas.
@@ -22,59 +23,189 @@ MEM_DIR_LOTE1 = os.path.join(BASE_DIR, "CLASES", "EXPORTACION_FICHAS_CLASSROOM_P
 sys.path.append(os.path.join(BASE_DIR, "00. SCRIPTS_PYTHON"))
 from actualizar_memoria_construcciones_historicas import MEM_NUEVOS_ITEMS, sanitize_filename
 
-# Diccionario de Prompts Musicales calibrados en estilos de los años 60, 70 y 80
+# Diccionario de Prompts de Visor Fotográfico Cinemático calibrados por época histórica
 MUSIC_FLOW_PROMPTS = {
     3: {
-        "estilo": "Orquesta y Guitarra Clásica Española • Años 60",
-        "prompt": "Composición solemne y castiza para orquesta de cuerda y guitarra española virtuosa al estilo clásico de los años 60, trompeta noble lejana, castañuelas sutiles y aire ilustrado de época, 80 BPM, producción analógica cálida."
+        "estilo": "Música Palaciega Neoclásica • Siglo XVIII",
+        "prompt_canvas": (
+            "Actúa como editor y compositor multimedia. A partir de esta recreación histórica que acabo de subir:\n"
+            "1. Analiza la escena: la construcción neoclásica de la Puerta de Alcalá hacia 1776 (diseño de Francesco Sabatini para el rey Carlos III), los andamios de madera de pino, los canteros labrando granito de Colmenar y las carretas de bueyes en el camino rural del Retiro.\n"
+            "2. Compón una pieza musical breve (10 a 15 segundos) de época neoclásica española (siglo XVIII):\n"
+            "   - ESTILO OBLIGATORIO: Aire solemne e ilustrado de la corte de Carlos III (estilo marcha militar dieciochesca con caja / tambor de granaderos, flauta o música palaciega de cámara dieciochesca).\n"
+            "   - PROHIBIDO: Sonidos electrónicos modernos, violín pop íntimo, guitarras eléctricas o fanfarrias de Hollywood.\n"
+            "3. Ejecuta directamente en pantalla (en modo vista previa interactiva / Canvas) un Visor Fotográfico Cinemático:\n"
+            "   - Fotografía centrada en alta resolución con un suave y lento movimiento cinemático (efecto Ken Burns).\n"
+            "   - Música de la corte del siglo XVIII integrada con botón táctil grande de 'Reproducir / Pausar Música'.\n"
+            "   - Botón 'Descargar Visor (.html)' para guardarlo en el Mac y disfrutarlo sin conexión."
+        )
     },
     4: {
-        "estilo": "Banda Sonora Sinfónica Épica • Años 60",
-        "prompt": "Orquesta sinfónica cinematográfica evocadora y solemne al estilo de las bandas sonoras de los años 60, metales nobles, cuerdas majestuosas, timbales lejanos y un crescendo triunfal nostálgico, 75 BPM, calidad analógica cálida."
+        "estilo": "Música de Salón y Violín Íntimo • c. 1905",
+        "prompt_canvas": (
+            "Actúa como editor y compositor multimedia. A partir de esta fotografía histórica que acabo de subir:\n"
+            "1. Analiza la imagen: capta el ambiente madrileño de principios del siglo XX (c. 1905-1910) durante la construcción del Palacio de Comunicaciones en la Plaza de Cibeles (arquitectos Palacios y Otamendi), los primeros tranvías y la elegancia de la época.\n"
+            "2. Compón una pieza musical breve (10 a 15 segundos) de época:\n"
+            "   - ESTILO OBLIGATORIO: Violín íntimo y piano clásico de salón de principios de siglo, pausado, nostálgico y muy emotivo.\n"
+            "   - PROHIBIDO: Fanfarrias estruendosas, sintetizadores modernos o percusión pesada.\n"
+            "3. Ejecuta directamente en pantalla (en modo vista previa interactiva / Canvas) un Visor Fotográfico Cinemático:\n"
+            "   - Fotografía centrada en alta resolución con un suave y lento movimiento cinemático (efecto Ken Burns).\n"
+            "   - Música de salón de época integrada con botón táctil grande de 'Reproducir / Pausar Música'.\n"
+            "   - Botón 'Descargar Visor (.html)' para guardarlo en el Mac y disfrutarlo sin conexión."
+        )
     },
     5: {
-        "estilo": "Balada Melódica Instrumental • Años 70",
-        "prompt": "Balada instrumental melódica de principios de los años 70, guitarra acústica de 12 cuerdas, piano vertical cálido, bajo melódico suave, sección de viento madera nostálgica y aire cosmopolita otoñal, 80 BPM."
+        "estilo": "Chotis Castizo de Organillo y Zarzuela • 1912",
+        "prompt_canvas": (
+            "Actúa como editor y compositor multimedia. A partir de esta fotografía histórica que acabo de subir:\n"
+            "1. Analiza la imagen: la gran demolición urbana y apertura de la Gran Vía de Madrid hacia 1912, apisonadoras de vapor, carretas de escombros y los primeros edificios modernos en construcción.\n"
+            "2. Compón una pieza musical breve (10 a 15 segundos) de época madrileña:\n"
+            "   - ESTILO OBLIGATORIO: Chotis castizo de organillo tradicional o melodía alegre de zarzuela madrileña con piano de época y aire bullicioso callejero.\n"
+            "   - PROHIBIDO: Música contemporánea, sintetizadores o ritmos electrónicos.\n"
+            "3. Ejecuta directamente en pantalla (en modo vista previa interactiva / Canvas) un Visor Fotográfico Cinemático:\n"
+            "   - Fotografía centrada en alta resolución con suave movimiento cinemático (efecto Ken Burns).\n"
+            "   - Música castiza integrada con botón táctil grande de 'Reproducir / Pausar Música'.\n"
+            "   - Botón 'Descargar Visor (.html)' para guardarlo en el Mac y disfrutarlo sin conexión."
+        )
     },
     6: {
-        "estilo": "Folk-Rock Progresivo y Coral Sacro • Años 70",
-        "prompt": "Música orquestal coral con aire de folk acústico y progresivo de los años 70, coros solemnes a capella mezclados con laúd, flauta travesera y cuerdas profundas, atmósfera espiritual y grandiosa, 65 BPM."
+        "estilo": "Canto Gregoriano Polifónico y Órgano Gótico • Siglo XV",
+        "prompt_canvas": (
+            "Actúa como editor y compositor multimedia. A partir de esta recreación histórica que acabo de subir:\n"
+            "1. Analiza la escena: la construcción medieval de la Catedral de Burgos en el siglo XV, el alzamiento de las agujas góticas caladas de Juan de Colonia y las grúas de rueda de pisar sobre el río Arlanzón.\n"
+            "2. Compón una pieza musical breve (10 a 15 segundos) sacra y gótica:\n"
+            "   - ESTILO OBLIGATORIO: Canto gregoriano polifónico medieval solemne, órgano gótico profundo y resonancia de piedra catedralicia.\n"
+            "   - PROHIBIDO: Guitarras modernas, baterías, fanfarrias orquestales o electrónica.\n"
+            "3. Ejecuta directamente en pantalla (en modo vista previa interactiva / Canvas) un Visor Fotográfico Cinemático:\n"
+            "   - Imagen centrada en alta resolución con suave movimiento cinemático (efecto Ken Burns).\n"
+            "   - Canto gregoriano integrado con botón táctil grande de 'Reproducir / Pausar Música'.\n"
+            "   - Botón 'Descargar Visor (.html)' para guardarlo en el Mac y disfrutarlo sin conexión."
+        )
     },
     7: {
-        "estilo": "Concierto para Guitarra Española y Cuerda • Años 60",
-        "prompt": "Composición solemne para guitarra clásica española y orquesta de cuerda al estilo de Joaquín Rodrigo (años 60), ritmo pausado renacentista con producción cálida de vinilo analógico, ecos de granito y sierra, 68 BPM."
+        "estilo": "Polifonía Renacentista Española • Tomás Luis de Victoria (1575)",
+        "prompt_canvas": (
+            "Actúa como editor y compositor multimedia. A partir de esta recreación histórica que acabo de subir:\n"
+            "1. Analiza la escena: la construcción renacentista del Monasterio de El Escorial hacia 1575 (Juan de Herrera y Felipe II), los ingenios mecánicos de elevación de granito y la ladera de Guadarrama.\n"
+            "2. Compón una pieza musical breve (10 a 15 segundos) del Renacimiento español:\n"
+            "   - ESTILO OBLIGATORIO: Polifonía sacra y cortesana renacentista (estilo Tomás Luis de Victoria), vihuela clásica y coro de cámara sereno y majestuoso.\n"
+            "   - PROHIBIDO: Instrumentos modernos, orquestas estridentes o percusión de cine.\n"
+            "3. Ejecuta directamente en pantalla (en modo vista previa interactiva / Canvas) un Visor Fotográfico Cinemático:\n"
+            "   - Imagen centrada en alta resolución con suave movimiento cinemático (efecto Ken Burns).\n"
+            "   - Música renacentista integrada con botón táctil grande de 'Reproducir / Pausar Música'.\n"
+            "   - Botón 'Descargar Visor (.html)' para guardarlo en el Mac y disfrutarlo sin conexión."
+        )
     },
     8: {
-        "estilo": "Sinfonía Cinematográfica y Ancestral • Años 70-80",
-        "prompt": "Tema instrumental épico y reflexivo de finales de los 70 / principios de los 80, percusión terrenal resonante, vientos de madera ancestrales, sintetizador atmosférico cálido analógico y cuerdas cinematográficas, 72 BPM."
+        "estilo": "Música Marcial y Solemne del Imperio Romano • Siglo I-II d.C.",
+        "prompt_canvas": (
+            "Actúa como editor y compositor multimedia. A partir de esta recreación histórica que acabo de subir:\n"
+            "1. Analiza la escena: la ingeniería romana levantando las arquerías dobles del Acueducto de Segovia (siglo I-II d.C.) sin argamasa mediante grúas trispastos y tenazas de hierro.\n"
+            "2. Compón una pieza musical breve (10 a 15 segundos) del Imperio Romano clásico:\n"
+            "   - ESTILO OBLIGATORIO: Aire solemne y marcial romano, viento de bronce antiguo (cornu / buccina), tambores lentos de legión y atmósfera de gran obra imperial.\n"
+            "   - PROHIBIDO: Melodías pop, violines modernos o sintetizadores.\n"
+            "3. Ejecuta directamente en pantalla (en modo vista previa interactiva / Canvas) un Visor Fotográfico Cinemático:\n"
+            "   - Imagen centrada en alta resolución con suave movimiento cinemático (efecto Ken Burns).\n"
+            "   - Música romana integrada con botón táctil grande de 'Reproducir / Pausar Música'.\n"
+            "   - Botón 'Descargar Visor (.html)' para guardarlo en el Mac y disfrutarlo sin conexión."
+        )
     },
     9: {
-        "estilo": "Pop Sinfónico Romántico e Instrumental • Años 70",
-        "prompt": "Pieza lírica y romántica al estilo del pop sinfónico instrumental de los años 70 (Augusto Algueró / Manuel Alejandro), piano de cola cristalino, arpa brillante, flauta y sección de violines en un jardín de cristal, 76 BPM."
+        "estilo": "Vals Romántico Decimonónico y Arpa • 1887",
+        "prompt_canvas": (
+            "Actúa como editor y compositor multimedia. A partir de esta fotografía histórica que acabo de subir:\n"
+            "1. Analiza la imagen: el montaje de la estructura ligera de hierro fundido curvado y láminas de cristal en el Parque del Retiro de Madrid (1887, Ricardo Velázquez Bosco) sobre el estanque.\n"
+            "2. Compón una pieza musical breve (10 a 15 segundos) del romanticismo decimonónico:\n"
+            "   - ESTILO OBLIGATORIO: Vals romántico de salón decimonónico (estilo época alfonsina de 1880), arpa cristalina, flauta dulce y sección de violines líricos y elegantes.\n"
+            "   - PROHIBIDO: Ritmos pesados, percusión moderna o electrónica.\n"
+            "3. Ejecuta directamente en pantalla (en modo vista previa interactiva / Canvas) un Visor Fotográfico Cinemático:\n"
+            "   - Fotografía centrada en alta resolución con suave movimiento cinemático (efecto Ken Burns).\n"
+            "   - Vals decimonónico integrado con botón táctil grande de 'Reproducir / Pausar Música'.\n"
+            "   - Botón 'Descargar Visor (.html)' para guardarlo en el Mac y disfrutarlo sin conexión."
+        )
     },
     10: {
-        "estilo": "Tema Rítmico de Viaje y Progreso • Años 70",
-        "prompt": "Tema dinámico y majestuoso de los años 70 con ritmo constante de tren de vapor, guitarra de 12 cuerdas con picking rítmico, contrabajo con cuerpo, metales cálidos y sensación de viaje hacia el progreso, 88 BPM."
+        "estilo": "Marcha Sinfónica del Vapor y Ferrocarril • c. 1890",
+        "prompt_canvas": (
+            "Actúa como editor y compositor multimedia. A partir de esta fotografía histórica que acabo de subir:\n"
+            "1. Analiza la imagen: el montaje de la gran marquesina de hierro de 152 metros en la Estación de Atocha hacia 1890 (Alberto de Palacio), remachadores y locomotoras de vapor primitivas.\n"
+            "2. Compón una pieza musical breve (10 a 15 segundos) de la Revolución Industrial ferroviaria:\n"
+            "   - ESTILO OBLIGATORIO: Marcha sinfónica del ferrocarril a vapor de finales del siglo XIX, ritmo constante y majestuoso de tren, cuerdas enérgicas y sensación de viaje hacia el progreso.\n"
+            "   - PROHIBIDO: Sintetizadores electrónicos o baterías modernas.\n"
+            "3. Ejecuta directamente en pantalla (en modo vista previa interactiva / Canvas) un Visor Fotográfico Cinemático:\n"
+            "   - Fotografía centrada en alta resolución con suave movimiento cinemático (efecto Ken Burns).\n"
+            "   - Marcha de vapor integrada con botón táctil grande de 'Reproducir / Pausar Música'.\n"
+            "   - Botón 'Descargar Visor (.html)' para guardarlo en el Mac y disfrutarlo sin conexión."
+        )
     },
     11: {
-        "estilo": "Folk Instrumental Vasco y Sinfónico • Años 70",
-        "prompt": "Folk acústico vasco e instrumental de los años 70, acordeón melancólico, flauta tradicional, guitarras de cuerda de acero y oleaje de cuerda sinfónica evocando la bruma marina y el hierro industrial, 74 BPM."
+        "estilo": "Folk Marinero e Industrial Vasco • 1892",
+        "prompt_canvas": (
+            "Actúa como editor y compositor multimedia. A partir de esta fotografía histórica que acabo de subir:\n"
+            "1. Analiza la imagen: la construcción del Puente Colgante de Vizcaya en 1892 (Alberto de Palacio y Arnodin), las torres de 61 metros sobre la ría del Nervión y el tendido de cables de acero.\n"
+            "2. Compón una pieza musical breve (10 a 15 segundos) marinera e industrial vasca de época:\n"
+            "   - ESTILO OBLIGATORIO: Folk acústico vasco de finales del siglo XIX, acordeón tradicional melancólico, flauta de viento marina y oleaje de cuerda sinfónica de la ría industrial.\n"
+            "   - PROHIBIDO: Música electrónica, pop o fanfarrias estridentes.\n"
+            "3. Ejecuta directamente en pantalla (en modo vista previa interactiva / Canvas) un Visor Fotográfico Cinemático:\n"
+            "   - Fotografía centrada en alta resolución con suave movimiento cinemático (efecto Ken Burns).\n"
+            "   - Música de la ría integrada con botón táctil grande de 'Reproducir / Pausar Música'.\n"
+            "   - Botón 'Descargar Visor (.html)' para guardarlo en el Mac y disfrutarlo sin conexión."
+        )
     },
     12: {
-        "estilo": "Obertura Teatral y Vals Sinfónico • Años 60",
-        "prompt": "Obertura orquestal grandiosa al estilo clásico cinematográfico de los 60, fanfarria noble de trompas, cuerdas virtuosas en staccato y un vals majestuoso que revive el brillo de las butacas de terciopelo, 84 BPM."
+        "estilo": "Obertura de Ópera Romántica Clásica • c. 1845",
+        "prompt_canvas": (
+            "Actúa como editor y compositor multimedia. A partir de esta recreación histórica que acabo de subir:\n"
+            "1. Analiza la imagen: la construcción del Teatro Real de Madrid frente al Palacio Real en la década de 1840, muros de granito y cerchas de madera para la caja escénica en la Plaza de Oriente.\n"
+            "2. Compón una pieza musical breve (10 a 15 segundos) de ópera clásica decimonónica:\n"
+            "   - ESTILO OBLIGATORIO: Obertura de ópera romántica clásica (estilo Bel Canto de mediados del siglo XIX), metales nobles, cuerdas virtuosas y un vals solemne de butaca de terciopelo.\n"
+            "   - PROHIBIDO: Pop moderno, sintetizadores o ritmos electrónicos.\n"
+            "3. Ejecuta directamente en pantalla (en modo vista previa interactiva / Canvas) un Visor Fotográfico Cinemático:\n"
+            "   - Imagen centrada en alta resolución con suave movimiento cinemático (efecto Ken Burns).\n"
+            "   - Obertura operística integrada con botón táctil grande de 'Reproducir / Pausar Música'.\n"
+            "   - Botón 'Descargar Visor (.html)' para guardarlo en el Mac y disfrutarlo sin conexión."
+        )
     },
     13: {
-        "estilo": "Poema Místico y Cuerdas Líricas • Años 70",
-        "prompt": "Poema sonoro místico y lírico de los años 70, guitarras acústicas arpegiadas, campanas tubulares lejanas, coro etéreo y violonchelo solista cantando a las esculturas de piedra viviente, 66 BPM."
+        "estilo": "Poema Místico y Campanas Etéreas • c. 1915",
+        "prompt_canvas": (
+            "Actúa como editor y compositor multimedia. A partir de esta fotografía histórica que acabo de subir:\n"
+            "1. Analiza la imagen: la construcción de la Fachada del Nacimiento de la Sagrada Familia hacia 1915 con Antoni Gaudí en persona dirigiendo la obra entre los campos del Ensanche barcelonés.\n"
+            "2. Compón una pieza musical breve (10 a 15 segundos) del modernismo místico catalán:\n"
+            "   - ESTILO OBLIGATORIO: Poema sonoro místico y lírico de principios del siglo XX, cuerdas contemplativas, campanas tubulares etéreas y violonchelo solista cantando a las esculturas de piedra viva.\n"
+            "   - PROHIBIDO: Fanfarrias comerciales, música electrónica o percusión de cine de acción.\n"
+            "3. Ejecuta directamente en pantalla (en modo vista previa interactiva / Canvas) un Visor Fotográfico Cinemático:\n"
+            "   - Fotografía centrada en alta resolución con suave movimiento cinemático (efecto Ken Burns).\n"
+            "   - Poema místico integrado con botón táctil grande de 'Reproducir / Pausar Música'.\n"
+            "   - Botón 'Descargar Visor (.html)' para guardarlo en el Mac y disfrutarlo sin conexión."
+        )
     },
     14: {
-        "estilo": "Tango Dramático Instrumental • Años 60-70",
-        "prompt": "Tango instrumental nostálgico y dramático de los años 60/70, bandoneón expresivo, violín desgarrador, piano rítmico y contrabajo marcando el abismo bajo la estructura de hierro, 70 BPM."
+        "estilo": "Melodía Decimonónica Madrileña para Celosía de Hierro • 1874",
+        "prompt_canvas": (
+            "Actúa como editor y compositor multimedia. A partir de esta fotografía histórica que acabo de subir:\n"
+            "1. Analiza la imagen: la construcción de la celosía metálica del primer Viaducto de Segovia en Madrid (1874, Eugenio Barrón), salvando la profunda hondonada sobre las casas bajas tradicionales.\n"
+            "2. Compón una pieza musical breve (10 a 15 segundos) madrileña decimonónica:\n"
+            "   - ESTILO OBLIGATORIO: Melodía madrileña decimonónica sobria y nostálgica, cuerda dramática de época, guitarra clásica española y aire solemne de gran puente de hierro forjado.\n"
+            "   - PROHIBIDO: Sintetizadores modernos, efectos digitales o fanfarrias estridentes.\n"
+            "3. Ejecuta directamente en pantalla (en modo vista previa interactiva / Canvas) un Visor Fotográfico Cinemático:\n"
+            "   - Fotografía centrada en alta resolución con suave movimiento cinemático (efecto Ken Burns).\n"
+            "   - Música decimonónica integrada con botón táctil grande de 'Reproducir / Pausar Música'.\n"
+            "   - Botón 'Descargar Visor (.html)' para guardarlo en el Mac y disfrutarlo sin conexión."
+        )
     },
     15: {
-        "estilo": "Jazz Balada Nocturno y Urbano • Años 60",
-        "prompt": "Jazz balada nocturno y elegante al estilo de los años 60, saxofón tenor aterciopelado con sordina, piano de club con reverberación natural, escobillas suaves de batería y contrabajo profundo, 64 BPM."
+        "estilo": "Swing y Big Band Elegante de Posguerra • Años 50",
+        "prompt_canvas": (
+            "Actúa como editor y compositor multimedia. A partir de esta fotografía histórica que acabo de subir:\n"
+            "1. Analiza la imagen: la construcción en hormigón armado del Edificio España y la Torre de Madrid en los años 50 (hermanos Otamendi), grúas torre y el nacimiento del skyline moderno de Madrid.\n"
+            "2. Compón una pieza musical breve (10 a 15 segundos) de los años 50:\n"
+            "   - ESTILO OBLIGATORIO: Orquesta de posguerra española, swing clásico y big band elegante de los años 50, saxofón tenor aterciopelado con sordina, piano de club acústico y contrabajo suave.\n"
+            "   - PROHIBIDO: Música contemporánea, electrónica o sintetizadores modernos.\n"
+            "3. Ejecuta directamente en pantalla (en modo vista previa interactiva / Canvas) un Visor Fotográfico Cinemático:\n"
+            "   - Fotografía centrada en alta resolución con suave movimiento cinemático (efecto Ken Burns).\n"
+            "   - Swing de los años 50 integrado con botón táctil grande de 'Reproducir / Pausar Música'.\n"
+            "   - Botón 'Descargar Visor (.html)' para guardarlo en el Mac y disfrutarlo sin conexión."
+        )
     }
 }
 
@@ -231,7 +362,7 @@ def create_mem_flow_music_pdf(output_path, item):
     y = writer.h - 42
     writer.draw_text(margin_x, y, "CURSO DE INTELIGENCIA ARTIFICIAL Y TECNOLOGÍA PARA ADULTOS MAYORES (60+)", "F2", 8.2, 0.72, 0.53, 0.04)
     y -= 13
-    writer.draw_text(margin_x, y, "BLOQUE 13: CÁPSULA DE LA MEMORIA [MEM] • GRANDES OBRAS Y POSTAL SONORA", "F2", 10.0, 0.1, 0.05, 0.2)
+    writer.draw_text(margin_x, y, "BLOQUE 13: CÁPSULA DE LA MEMORIA [MEM] • GRANDES OBRAS Y VISOR CINEMÁTICO", "F2", 10.0, 0.1, 0.05, 0.2)
     y -= 8
 
     writer.set_stroke_color(0.72, 0.53, 0.04)
@@ -259,21 +390,21 @@ def create_mem_flow_music_pdf(output_path, item):
     y -= 8
 
     p_lines = wrap_text(f'"{item["prompt"]}"', 92)
-    prompt_box_h = 20 + (len(p_lines) * 10.5)
+    prompt_box_h = 18 + (len(p_lines) * 10.0)
 
     writer.set_fill_color(0.98, 0.96, 0.91) # Crema / pergamino claro
     writer.set_stroke_color(0.72, 0.53, 0.04)
     writer.set_line_width(1.0)
     writer.rect(margin_x, y - prompt_box_h, content_w, prompt_box_h, fill=True, stroke=True)
 
-    ty = y - 12
+    ty = y - 11
     writer.draw_text(margin_x + 8, ty, "Copia este prompt exacto y pégalo en Gemini Web para generar la imagen documental:", "F2", 7.8, 0.1, 0.05, 0.2)
-    ty -= 11.5
+    ty -= 11.0
     for pl in p_lines:
-        writer.draw_text(margin_x + 8, ty, pl, "F3", 7.6, 0.1, 0.05, 0.2)
-        ty -= 10.5
+        writer.draw_text(margin_x + 8, ty, pl, "F3", 7.4, 0.1, 0.05, 0.2)
+        ty -= 10.0
 
-    y -= (prompt_box_h + 10)
+    y -= (prompt_box_h + 9)
 
     # 3. Paso 2: Reto y Preguntas de Investigación con Gemini
     writer.draw_text(margin_x, y, "Paso 2: Preguntas de Ingeniería y Vida Cotidiana para el Diálogo con Gemini", "F2", 8.8, 0.72, 0.53, 0.04)
@@ -281,66 +412,72 @@ def create_mem_flow_music_pdf(output_path, item):
 
     q1_lines = wrap_text(f"1. Ingeniería de época: {item['pregunta1']}", 92)
     q2_lines = wrap_text(f"2. Entorno y vida cotidiana: {item['pregunta2']}", 92)
-    tips_box_h = 20 + ((len(q1_lines) + len(q2_lines)) * 10.5) + 6
+    tips_box_h = 18 + ((len(q1_lines) + len(q2_lines)) * 10.0) + 4
 
     writer.set_fill_color(1.0, 1.0, 1.0)
     writer.set_stroke_color(0.72, 0.53, 0.04)
     writer.set_line_width(1.0)
     writer.rect(margin_x, y - tips_box_h, content_w, tips_box_h, fill=True, stroke=True)
 
-    ty = y - 12
+    ty = y - 11
     writer.draw_text(margin_x + 8, ty, "Escribe o dicta por voz estas dos preguntas a Gemini tras observar la imagen:", "F2", 7.8, 0.72, 0.53, 0.04)
-    ty -= 12
+    ty -= 11.5
     for ql in q1_lines:
-        writer.draw_text(margin_x + 8, ty, ql, "F1", 7.6, 0.15, 0.2, 0.26)
-        ty -= 10.5
-    ty -= 3
+        writer.draw_text(margin_x + 8, ty, ql, "F1", 7.4, 0.15, 0.2, 0.26)
+        ty -= 10.0
+    ty -= 2.5
     for ql in q2_lines:
-        writer.draw_text(margin_x + 8, ty, ql, "F1", 7.6, 0.15, 0.2, 0.26)
-        ty -= 10.5
+        writer.draw_text(margin_x + 8, ty, ql, "F1", 7.4, 0.15, 0.2, 0.26)
+        ty -= 10.0
 
-    y -= (tips_box_h + 10)
+    y -= (tips_box_h + 9)
 
-    # 4. Paso 3: Postal Sonora con Google Flow Music (Música Décadas 60s, 70s y 80s)
+    # 4. Paso 3: Visor Fotográfico Cinemático y Postal Sonora en Gemini (Canvas / Vista Previa)
     music_info = MUSIC_FLOW_PROMPTS.get(item['num'], {
-        "estilo": "Banda Sonora Cinematográfica Épica • Años 60-70",
-        "prompt": "Orquesta sinfónica cálida y evocadora al estilo de las bandas sonoras épicas de los años 60 y 70, cuerdas majestuosas, guitarra acústica y aire nostálgico, 75 BPM."
+        "estilo": "Música Histórica de Época",
+        "prompt_canvas": (
+            "Actúa como editor y compositor multimedia. A partir de esta fotografía histórica que acabo de subir:\n"
+            "1. Analiza la época y el entorno arquitectónico de la escena.\n"
+            "2. Compón una pieza musical breve (10 a 15 segundos) adaptada al 100% a la época histórica.\n"
+            "3. Ejecuta directamente en pantalla (en modo vista previa / Canvas) un Visor Fotográfico Cinemático con efecto Ken Burns y música integrada."
+        )
     })
 
-    writer.draw_text(margin_x, y, "Paso 3: Postal Sonora con Google Flow Music (Ambientación Musical 60s, 70s y 80s)", "F2", 8.8, 0.72, 0.53, 0.04)
+    writer.draw_text(margin_x, y, "Paso 3: Visor Fotográfico Cinemático y Postal Sonora en Gemini (Canvas / Vista Previa)", "F2", 8.8, 0.72, 0.53, 0.04)
     y -= 8
 
-    m_lines = wrap_text(f'"{music_info["prompt"]}"', 92)
-    music_box_h = 20 + (len(m_lines) * 10.5) + 16
+    m_prompt = music_info["prompt_canvas"]
+    m_lines = wrap_text(m_prompt, 92)
+    music_box_h = 20 + (len(m_lines) * 9.6) + 14
 
     writer.set_fill_color(0.96, 0.98, 1.0) # Azul suave tenue
     writer.set_stroke_color(0.2, 0.45, 0.8) # Azul medio
     writer.set_line_width(1.0)
     writer.rect(margin_x, y - music_box_h, content_w, music_box_h, fill=True, stroke=True)
 
-    ty = y - 12
-    writer.draw_text(margin_x + 8, ty, f"Entra en labs.google/flow (o music-fx) y pega este prompt musical ({music_info['estilo']}):", "F2", 7.8, 0.1, 0.25, 0.6)
-    ty -= 12
+    ty = y - 11
+    writer.draw_text(margin_x + 8, ty, f"Descarga la imagen del Paso 1, súbela a Gemini y copia este prompt ({music_info['estilo']}):", "F2", 7.8, 0.1, 0.25, 0.6)
+    ty -= 11.0
     for ml in m_lines:
-        writer.draw_text(margin_x + 8, ty, ml, "F3", 7.6, 0.05, 0.15, 0.35)
-        ty -= 10.5
-    ty -= 3
-    writer.draw_text(margin_x + 8, ty, "Productor IA: Puedes pedirle a Gemini conversacional ajustar la mezcla: \"Quiero darle un aire más cálido con guitarra acústica al estilo de los años 70\".", "F1", 7.0, 0.35, 0.4, 0.45)
+        writer.draw_text(margin_x + 8, ty, ml, "F3", 7.2, 0.05, 0.15, 0.35)
+        ty -= 9.6
+    ty -= 2.5
+    writer.draw_text(margin_x + 8, ty, "Consejo: En el visor puedes pulsar 'Publish' arriba a la derecha en Gemini para compartir el enlace del visor por WhatsApp.", "F1", 7.0, 0.35, 0.4, 0.45)
 
-    y -= (music_box_h + 10)
+    y -= (music_box_h + 8)
 
     # Pie de página
     writer.set_stroke_color(0.85, 0.88, 0.92)
     writer.set_line_width(0.6)
     writer.line(margin_x, 26, margin_x + content_w, 26)
-    writer.draw_text(margin_x, 16, f"Curso de Inteligencia Artificial para Seniors • Sesión {item['num']:02d} • {item['id_code']} {item['titulo_corto']} • Postal Sonora", "F1", 7.4, 0.45, 0.48, 0.52)
+    writer.draw_text(margin_x, 16, f"Curso de Inteligencia Artificial para Seniors • Sesión {item['num']:02d} • {item['id_code']} {item['titulo_corto']} • Visor Cinemático", "F1", 7.4, 0.45, 0.48, 0.52)
     writer.draw_text(margin_x + content_w - 180, 16, "Patrimonio Histórico y Técnico de España", "F2", 7.4, 0.72, 0.53, 0.04)
 
     writer.end_page()
     writer.write_to_file(output_path)
 
 def update_all_mem_pdfs():
-    print("=== [1] ACTUALIZANDO FICHAS MEM CON ENCODING WINANSI COMPLETO Y POSTAL SONORA ===")
+    print("=== [1] ACTUALIZANDO FICHAS MEM CON VISOR CINEMÁTICO HISTÓRICO Y WINANSI COMPLETO ===")
     for item in MEM_NUEVOS_ITEMS:
         num = item['num']
         session_folder = f"{num:02d}_Sesion"
