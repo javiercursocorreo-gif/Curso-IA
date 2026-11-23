@@ -614,6 +614,21 @@ def generar_pdf_completo():
         title_color=(0.15, 0.25, 0.40)
     )
 
+    # BOTÓN 7: GAMIFICACIÓN AVANZADA - CONVERTIR EL TEMARIO EN VIDEOJUEGOS WEB («HAZME UN SITIO:»)
+    flow.add_card_box(
+        "FUNCIÓN AVANZADA: CONVERTIR EL TEMARIO EN UN VIDEOJUEGO WEB («HAZME UN SITIO:»)",
+        [
+            "El secreto de los videojuegos en NotebookLM: No existe un botón rotulado 'videojuego'; se activa escribiendo en el chat: «Hazme un sitio: un videojuego para estudiar [tema] con mis fuentes...».",
+            "La magia de Studio: En 4 a 8 minutos, en el panel Studio aparece un sitio web interactivo autónomo con reloj de cuenta atrás, niveles, vidas, gráficos animados en SVG y explicación con la cita exacta de la fuente al fallar.",
+            "Los 12 Trucos de Paco Vida: 1. Di para quién es (edad o nivel). 2. Dale números exactos (preguntas, niveles, segundos). 3. Define qué pasa al acertar y al fallar (confeti, chispas). 4. Que al fallar te explique el error citando la fuente. 5. Temario de datos concretos (fechas, cifras, leyes) mejor que opinión.",
+            "Catálogo de 20 Encargos: Concurso por niveles, Parejas de cartas (memory), Sala de escape (escape room), Línea de tiempo histórica (tren de vapor), Ahorcado (globo aerostático), Crucigrama, Tablero con dado y Ruleta. Consulta la guía anexa 'GUIA_20_ENCARGOS_ESTUDIA_JUGANDO_NOTEBOOKLM.pdf' y el tutorial en vídeo en el mapa de clase."
+        ],
+        badge_text="VIDEOJUEGOS IA",
+        border_color=(0.45, 0.20, 0.65),
+        bg_color=(0.97, 0.95, 0.99),
+        title_color=(0.45, 0.20, 0.65)
+    )
+
     # -------------------------------------------------------------
     # SECCIÓN 6: EJERCICIO MAESTRO FINAL - CUADERNOS ANTERIORES Y LA GRAN INFOGRAFÍA
     # -------------------------------------------------------------
