@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laboratorio Científico: El Atasco Fantasma (Experimento de Sugiyama 2008)</title>
+    <style>
+        :root {
+            --bg-color: #090d16;
+            --panel-bg: rgba(15, 23, 42, 0.85);
+            --border-color: rgba(56, 189, 248, 0.25);
+            --primary: #38bdf8;
+            --accent-green: #22c55e;
+            --accent-amber: #f59e0b;
+            --accent-red: #ef4444;
+            --accent-purple: #c084fc;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: radial-gradient(circle at 50% 20%, #172554 0%, #090d16 70%, #030712 100%);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        header {
+            padding: 18px 24px 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(12px);
+            background: rgba(10, 15, 29, 0.7);
+            z-index: 10;
+        }
+
+        .header-title-box h1 {
+            font-size: 1.35rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #fff;
+            letter-spacing: -0.02em;
+        }
+
+        .tag-pill {
+            background: rgba(56, 189, 248, 0.15);
+            color: var(--primary);
+            border: 1px solid rgba(56, 189, 248, 0.35);
+            border-radius: 9999px;
+            padding: 3px 12px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .main-layout {
+            display: flex;
+            flex: 1;
+            padding: 20px;
+            gap: 20px;
+            max-width: 1440px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* Lienzo de Simulación */
+        .simulation-container {
+            flex: 1;
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            backdrop-filter: blur(16px);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+            min-height: 600px;
+            overflow: hidden;
+        }
+
+        #trackCanvas {
+            width: 100%;
+            height: 100%;
+            max-width: 650px;
+            max-height: 650px;
+        }
+
+        /* Banner de Estado de la Onda */
+        .shockwave-hud {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(15, 23, 42, 0.88);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            padding: 12px 18px;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            font-size: 0.85rem;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            pointer-events: none;
+        }
+
+        .hud-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .hud-label {
+            color: var(--text-muted);
+        }
+
+        .hud-val {
+            font-weight: 700;
+            font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 0.8rem;
+            margin-top: 4px;
+        }
+
+        .status-stable {
+            background: rgba(34, 197, 94, 0.18);
+            color: #4ade80;
+            border: 1px solid rgba(34, 197, 94, 0.4);
+        }
+
+        .status-critical {
+            background: rgba(245, 158, 11, 0.18);
+            color: #fbbf24;
+            border: 1px solid rgba(245, 158, 11, 0.4);
+        }
+
+        .status-jam {
+            background: rgba(239, 68, 68, 0.22);
+            color: #f87171;
+            border: 1px solid rgba(239, 68, 68, 0.5);
+            animation: pulseAlert 1.2s infinite;
+        }
+
+        @keyframes pulseAlert {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.85; transform: scale(1.02); }
+        }
+
+        /* Panel de Control Lateral */
+        .controls-panel {
+            width: 420px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .card {
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 18px;
+            backdrop-filter: blur(16px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .card-header {
+            font-size: 0.92rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding-bottom: 8px;
+        }
+
+        /* Botones de Escenario Rápido */
+        .preset-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-bottom: 14px;
+        }
+
+        .btn-preset {
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: var(--text-main);
+            padding: 10px 8px;
+            border-radius: 8px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .btn-preset:hover {
+            border-color: var(--primary);
+            background: rgba(56, 189, 248, 0.15);
+            transform: translateY(-1px);
+        }
+
+        .btn-preset.active {
+            background: rgba(56, 189, 248, 0.25);
+            border-color: var(--primary);
+            color: #fff;
+            box-shadow: 0 0 12px rgba(56, 189, 248, 0.35);
+        }
+
+        .preset-badge {
+            font-size: 0.68rem;
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-weight: 700;
+        }
+
+        /* Control Deslizante de Coches */
+        .slider-group {
+            margin-bottom: 16px;
+        }
+
+        .slider-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .slider-val {
+            color: var(--primary);
+            font-weight: 700;
+            font-size: 0.95rem;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #1e293b;
+            outline: none;
+            cursor: pointer;
+            accent-color: var(--primary);
+        }
+
+        /* Botón de Frenazo Manual */
+        .btn-brake {
+            width: 100%;
+            background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
+            color: white;
+            border: none;
+            padding: 13px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 4px 16px rgba(239, 68, 68, 0.35);
+            transition: all 0.15s ease;
+        }
+
+        .btn-brake:hover {
+            filter: brightness(1.1);
+            transform: scale(1.01);
+        }
+
+        .btn-brake:active {
+            transform: scale(0.98);
+        }
+
+        /* Modo de Conducción (Humano vs IA) */
+        .mode-toggle-group {
+            display: flex;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 4px;
+            gap: 4px;
+            margin-bottom: 14px;
+        }
+
+        .mode-btn {
+            flex: 1;
+            padding: 8px 10px;
+            border: none;
+            border-radius: 7px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            background: transparent;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .mode-btn.active {
+            background: rgba(56, 189, 248, 0.25);
+            color: #fff;
+            border: 1px solid rgba(56, 189, 248, 0.4);
+        }
+
+        .mode-btn.ai-active {
+            background: rgba(192, 132, 252, 0.25);
+            color: #e9d5ff;
+            border: 1px solid rgba(192, 132, 252, 0.4);
+        }
+
+        /* Explicación Científica */
+        .science-box {
+            font-size: 0.82rem;
+            line-height: 1.5;
+            color: #cbd5e1;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .science-step {
+            display: flex;
+            gap: 8px;
+            align-items: flex-start;
+        }
+
+        .step-num {
+            background: rgba(56, 189, 248, 0.2);
+            color: var(--primary);
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.72rem;
+            font-weight: 700;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .highlight {
+            color: #38bdf8;
+            font-weight: 600;
+        }
+
+        /* Leyenda de Colores */
+        .legend {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            font-size: 0.75rem;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .legend-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-title-box">
+            <h1>🚗 El Atasco Fantasma • Experimento de Yuki Sugiyama (2008)</h1>
+            <span class="tag-pill">INFO-008 • DINÁMICA DE SISTEMAS E IA</span>
+        </div>
+        <div style="font-size: 0.82rem; color: var(--text-muted);">
+            Circuito Circular de 230 metros a 30 km/h
+        </div>
+    </header>
+
+    <div class="main-layout">
+        <!-- Lienzo de la Pista Circular -->
+        <div class="simulation-container">
+            <div class="shockwave-hud">
+                <div class="hud-row">
+                    <span class="hud-label">Coches en Pista:</span>
+                    <span class="hud-val" id="hudCarCount">20</span>
+                </div>
+                <div class="hud-row">
+                    <span class="hud-label">Espaciado Medio:</span>
+                    <span class="hud-val" id="hudSpacing">11.5 m</span>
+                </div>
+                <div class="hud-row">
+                    <span class="hud-label">Velocidad Media:</span>
+                    <span class="hud-val" id="hudAvgSpeed" style="color: #4ade80;">30.0 km/h</span>
+                </div>
+                <div class="hud-row">
+                    <span class="hud-label">Velocidad Mínima:</span>
+                    <span class="hud-val" id="hudMinSpeed">28.5 km/h</span>
+                </div>
+                <div class="hud-row">
+                    <span class="hud-label">Dirección Onda:</span>
+                    <span class="hud-val" id="hudShockwave" style="color: #94a3b8;">Sin onda</span>
+                </div>
+                <div id="hudStatusBadge" class="status-badge status-stable">
+                    🟢 FLUJO UNIFORME ESTABLE
+                </div>
+            </div>
+
+            <canvas id="trackCanvas" width="700" height="700"></canvas>
+        </div>
+
+        <!-- Panel Lateral de Controles e Investigación -->
+        <div class="controls-panel">
+            <!-- Escenarios Clave -->
+            <div class="card">
+                <div class="card-header">
+                    <span>🧪 1. Selecciona el Escenario</span>
+                    <span style="font-size: 0.75rem; color: var(--primary);">EXPERIMENTO REAL</span>
+                </div>
+
+                <div class="preset-grid">
+                    <button class="btn-preset active" id="btnPreset20" onclick="setPreset(20)">
+                        <span>20 Coches</span>
+                        <span class="preset-badge" style="background: rgba(34, 197, 94, 0.2); color: #4ade80;">Estable</span>
+                    </button>
+                    <button class="btn-preset" id="btnPreset22" onclick="setPreset(22)">
+                        <span>22 Coches</span>
+                        <span class="preset-badge" style="background: rgba(245, 158, 11, 0.2); color: #fbbf24;">Sugiyama</span>
+                    </button>
+                    <button class="btn-preset" id="btnPreset25" onclick="setPreset(25)">
+                        <span>25 Coches</span>
+                        <span class="preset-badge" style="background: rgba(239, 68, 68, 0.2); color: #f87171;">Espontáneo</span>
+                    </button>
+                </div>
+
+                <div class="slider-group">
+                    <div class="slider-header">
+                        <span>Ajuste Manual de Vehículos:</span>
+                        <span class="slider-val" id="sliderVal">20</span>
+                    </div>
+                    <input type="range" id="carSlider" min="16" max="30" value="20" oninput="onSliderChange(this.value)">
+                </div>
+
+                <!-- Modo Conducción Humana vs IA -->
+                <div style="font-size: 0.8rem; font-weight: 600; margin-bottom: 6px; color: var(--text-muted);">
+                    Modo de Reacción:
+                </div>
+                <div class="mode-toggle-group">
+                    <button class="mode-btn active" id="btnHumanMode" onclick="setMode('human')">
+                        👤 Conductor Humano (1.0s retraso)
+                    </button>
+                    <button class="mode-btn" id="btnAiMode" onclick="setMode('ai')">
+                        🤖 IA Autónoma (0ms V2V)
+                    </button>
+                </div>
+
+                <!-- Botón de Provocar Frenazo -->
+                <button class="btn-brake" onclick="triggerBrakeEvent()">
+                    ⚠️ Provocar Frenazo en Coche Líder (#1)
+                </button>
+            </div>
+
+            <!-- Explicación Científica Directa -->
+            <div class="card">
+                <div class="card-header">
+                    <span>🔬 2. La Física Detrás del Fenómeno</span>
+                </div>
+                <div class="science-box">
+                    <div class="science-step">
+                        <span class="step-num">A</span>
+                        <div>
+                            <span class="highlight">Con 20 Coches (Flujo Estable):</span> La distancia media es suficiente (&gt;11.5 m). Aunque un coche frene o varíe de velocidad, la perturbación se absorbe suavemente sin detener el tráfico.
+                        </div>
+                    </div>
+                    <div class="science-step">
+                        <span class="step-num">B</span>
+                        <div>
+                            <span class="highlight">Con 22 Coches (Umbral Sugiyama):</span> Es el límite crítico del experimento de 2008. Al pisar el freno un solo vehículo, el retraso de reacción humano amplifica el frenazo hacia atrás hasta provocar un <b style="color: #f87171;">atasco fantasma completo a 0 km/h</b>.
+                        </div>
+                    </div>
+                    <div class="science-step">
+                        <span class="step-num">C</span>
+                        <div>
+                            <span class="highlight">Con 23 o más Coches (Inestabilidad Espontánea):</span> <b>¡No hace falta que nadie frene!</b> La densidad supera el umbral crítico; las micro-fluctuaciones biológicas involuntarias de los conductores desencadenan el atasco de forma 100% inevitable.
+                        </div>
+                    </div>
+                    <div class="science-step">
+                        <span class="step-num">D</span>
+                        <div>
+                            <span class="highlight">La Solución de la IA:</span> Con vehículos autónomos conectados (V2V), la reacción es instantánea. Incluso con 26 o 28 coches, la IA mantiene el flujo perfecto a 30 km/h sin atascos.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="legend">
+                    <div class="legend-item">
+                        <span class="legend-dot" style="background: #22c55e;"></span>
+                        <span>Fluido (&gt;25 km/h)</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-dot" style="background: #f59e0b;"></span>
+                        <span>Frenando (10-25)</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-dot" style="background: #ef4444;"></span>
+                        <span>Atascado (&lt;10 km/h)</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('trackCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // Constantes del Circuito
+        const TRACK_CIRCUMFERENCE_M = 230; // 230 metros (Experimento Sugiyama)
+        const TARGET_SPEED_KMH = 30; // 30 km/h objetivo
+        const TARGET_SPEED_MS = TARGET_SPEED_KMH / 3.6; // ~8.33 m/s
+
+        let numCars = 20;
+        let driveMode = 'human'; // 'human' o 'ai'
+        let cars = [];
+        let shockwaveAngle = null;
+
+        // Modelo de Vehículo (Optimal Velocity Model con retraso y reacción humana)
+        class Car {
+            constructor(id, s) {
+                this.id = id;
+                this.s = s; // Posición angular a lo largo de la pista (0 a 1)
+                this.v = TARGET_SPEED_MS; // Velocidad actual en m/s
+                this.targetV = TARGET_SPEED_MS;
+                this.isBraking = false;
+                this.externalBrakeTimer = 0;
+                this.reactionDelayTimer = 0;
+            }
+
+            update(dt, leadCarDistanceM) {
+                // Si tiene perturbación manual forzada
+                if (this.externalBrakeTimer > 0) {
+                    this.externalBrakeTimer -= dt;
+                    this.v = Math.max(0, this.v - 6.5 * dt); // Fuerte desaceleración
+                    this.isBraking = true;
+                } else {
+                    let desiredSpeed = TARGET_SPEED_MS;
+
+                    if (driveMode === 'human') {
+                        // Comportamiento Humano:
+                        // 1. Inyectar micro-ruido biológico (nadie mantiene el pie en el acelerador al 100% fijo)
+                        const noise = (Math.random() - 0.5) * 0.45;
+
+                        // 2. Distancia segura deseada en función de la velocidad
+                        const safeDistanceM = 3.5 + this.v * 0.95; // 3.5m longitud + margen de 1 segundo
+
+                        if (leadCarDistanceM < safeDistanceM) {
+                            // Frenado proporcional no lineal con amplificación
+                            const delta = safeDistanceM - leadCarDistanceM;
+                            desiredSpeed = Math.max(0, this.v - (delta * 1.8 + noise));
+                            this.isBraking = true;
+                        } else {
+                            // Aceleración suave hacia la velocidad objetivo
+                            desiredSpeed = Math.min(TARGET_SPEED_MS, this.v + 1.2 * dt + noise);
+                            this.isBraking = false;
+                        }
+
+                        // Retardo de reacción humano (filtro paso bajo)
+                        const reactionRate = 2.2; // ~0.45 s de tiempo característico
+                        this.v += (desiredSpeed - this.v) * Math.min(1, dt * reactionRate);
+
+                    } else {
+                        // Comportamiento Autónomo (IA Conectada V2V):
+                        // Comunicación instantánea, tiempo de reacción 0, amortiguación crítica perfecta
+                        const optimalGap = TRACK_CIRCUMFERENCE_M / numCars;
+                        const error = leadCarDistanceM - optimalGap;
+                        desiredSpeed = TARGET_SPEED_MS + error * 0.8;
+                        this.v += (desiredSpeed - this.v) * Math.min(1, dt * 6.0);
+                        this.isBraking = desiredSpeed < this.v - 0.5;
+                    }
+                }
+
+                // Asegurar que no sea negativa
+                this.v = Math.max(0, this.v);
+
+                // Avanzar a lo largo del circuito circular
+                const deltaS = (this.v * dt) / TRACK_CIRCUMFERENCE_M;
+                this.s = (this.s + deltaS) % 1.0;
+            }
+        }
+
+        // Inicializar coches uniformemente distribuidos
+        function initCars(count) {
+            numCars = count;
+            cars = [];
+            for (let i = 0; i < numCars; i++) {
+                const s = i / numCars;
+                cars.push(new Car(i + 1, s));
+            }
+        }
+
+        function setPreset(val) {
+            document.querySelectorAll('.btn-preset').forEach(b => b.classList.remove('active'));
+            if (val === 20) document.getElementById('btnPreset20').classList.add('active');
+            if (val === 22) document.getElementById('btnPreset22').classList.add('active');
+            if (val === 25) document.getElementById('btnPreset25').classList.add('active');
+
+            document.getElementById('carSlider').value = val;
+            document.getElementById('sliderVal').textContent = val;
+            initCars(val);
+        }
+
+        function onSliderChange(val) {
+            document.querySelectorAll('.btn-preset').forEach(b => b.classList.remove('active'));
+            if (val == 20) document.getElementById('btnPreset20').classList.add('active');
+            if (val == 22) document.getElementById('btnPreset22').classList.add('active');
+            if (val == 25) document.getElementById('btnPreset25').classList.add('active');
+
+            document.getElementById('sliderVal').textContent = val;
+            initCars(parseInt(val));
+        }
+
+        function setMode(mode) {
+            driveMode = mode;
+            if (mode === 'human') {
+                document.getElementById('btnHumanMode').className = 'mode-btn active';
+                document.getElementById('btnAiMode').className = 'mode-btn';
+            } else {
+                document.getElementById('btnHumanMode').className = 'mode-btn';
+                document.getElementById('btnAiMode').className = 'mode-btn ai-active';
+            }
+        }
+
+        function triggerBrakeEvent() {
+            // El coche #1 frena bruscamente durante 1.8 segundos
+            if (cars.length > 0) {
+                cars[0].externalBrakeTimer = 1.8;
+            }
+        }
+
+        // Bucle de Animación y Simulación
+        let lastTime = performance.now();
+
+        function animate(now) {
+            const dt = Math.min(0.05, (now - lastTime) / 1000);
+            lastTime = now;
+
+            // 1. Actualizar coches
+            let minSpeed = Infinity;
+            let sumSpeed = 0;
+            let stoppedCars = 0;
+
+            for (let i = 0; i < cars.length; i++) {
+                const current = cars[i];
+                const lead = cars[(i + 1) % cars.length];
+
+                // Calcular distancia en metros hacia el coche delantero
+                let distFraction = lead.s - current.s;
+                if (distFraction < 0) distFraction += 1.0;
+                const leadDistanceM = distFraction * TRACK_CIRCUMFERENCE_M;
+
+                current.update(dt, leadDistanceM);
+
+                const speedKmh = current.v * 3.6;
+                sumSpeed += speedKmh;
+                if (speedKmh < minSpeed) minSpeed = speedKmh;
+                if (speedKmh < 8) stoppedCars++;
+            }
+
+            const avgSpeed = sumSpeed / cars.length;
+
+            // 2. Actualizar HUD
+            document.getElementById('hudCarCount').textContent = numCars;
+            document.getElementById('hudSpacing').textContent = (TRACK_CIRCUMFERENCE_M / numCars).toFixed(1) + ' m';
+            document.getElementById('hudAvgSpeed').textContent = avgSpeed.toFixed(1) + ' km/h';
+            document.getElementById('hudMinSpeed').textContent = minSpeed.toFixed(1) + ' km/h';
+
+            const badge = document.getElementById('hudStatusBadge');
+            const shockHud = document.getElementById('hudShockwave');
+
+            if (minSpeed < 6) {
+                badge.className = 'status-badge status-jam';
+                badge.innerHTML = '🚨 ¡ONDA DE ATASCO FANTASMA ACTIVA!';
+                shockHud.textContent = '⏪ Viaja hacia atrás (~18 km/h)';
+                shockHud.style.color = '#f87171';
+            } else if (minSpeed < 20) {
+                badge.className = 'status-badge status-critical';
+                badge.innerHTML = '⚠️ PERTURBACIÓN DETECTADA (INESTABLE)';
+                shockHud.textContent = '↔️ Onda oscilante';
+                shockHud.style.color = '#fbbf24';
+            } else {
+                badge.className = 'status-badge status-stable';
+                badge.innerHTML = '🟢 FLUJO UNIFORME ESTABLE';
+                shockHud.textContent = 'Sin onda (flujo libre)';
+                shockHud.style.color = '#94a3b8';
+            }
+
+            // 3. Renderizar Gráficos
+            renderTrack();
+
+            requestAnimationFrame(animate);
+        }
+
+        function renderTrack() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const radius = 240;
+            const trackWidth = 56;
+
+            // Asfalto
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+            ctx.strokeStyle = '#1e293b';
+            ctx.lineWidth = trackWidth;
+            ctx.stroke();
+
+            // Bordillos exterior e interior
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, radius + trackWidth / 2, 0, Math.PI * 2);
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, radius - trackWidth / 2, 0, Math.PI * 2);
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            // Línea discontinua central
+            ctx.beginPath();
+            ctx.setLineDash([12, 14]);
+            ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            ctx.setLineDash([]);
+            ctx.restore();
+
+            // Dibujar Centro Informativo
+            ctx.save();
+            ctx.textAlign = 'center';
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+            ctx.font = '600 13px -apple-system, sans-serif';
+            ctx.fillText('CIRCUITO 230 METROS', centerX, centerY - 25);
+
+            ctx.fillStyle = driveMode === 'human' ? '#38bdf8' : '#c084fc';
+            ctx.font = '700 15px -apple-system, sans-serif';
+            ctx.fillText(driveMode === 'human' ? '👤 MODO HUMANO' : '🤖 MODO AUTÓNOMO IA', centerX, centerY);
+
+            ctx.fillStyle = '#64748b';
+            ctx.font = '12px ui-monospace, monospace';
+            ctx.fillText('Sentido de marcha: Horario ↻', centerX, centerY + 24);
+            ctx.restore();
+
+            // Dibujar Coches
+            for (let car of cars) {
+                const angle = car.s * Math.PI * 2 - Math.PI / 2; // Iniciar arriba
+                const carX = centerX + Math.cos(angle) * radius;
+                const carY = centerY + Math.sin(angle) * radius;
+
+                // Color según velocidad
+                const speedKmh = car.v * 3.6;
+                let carColor = '#22c55e'; // Verde
+                if (speedKmh < 10) {
+                    carColor = '#ef4444'; // Rojo (atasco)
+                } else if (speedKmh < 24) {
+                    carColor = '#f59e0b'; // Amarillo (frenada)
+                }
+
+                ctx.save();
+                ctx.translate(carX, carY);
+                ctx.rotate(angle + Math.PI / 2); // Orientar en dirección horaria
+
+                // Sombra del coche
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+                ctx.fillRect(-8, -14, 16, 28);
+
+                // Carrocería del coche
+                ctx.fillStyle = carColor;
+                ctx.beginPath();
+                ctx.roundRect(-7, -13, 14, 26, 4);
+                ctx.fill();
+
+                // Techo / Cristales
+                ctx.fillStyle = '#0f172a';
+                ctx.fillRect(-5, -6, 10, 11);
+
+                // Faros delanteros
+                ctx.fillStyle = '#fef08a';
+                ctx.fillRect(-6, 11, 3, 2);
+                ctx.fillRect(3, 11, 3, 2);
+
+                // Luces de freno traseras (se iluminan intensamente si está frenando)
+                if (car.isBraking || speedKmh < 12) {
+                    ctx.fillStyle = '#ff0000';
+                    ctx.shadowColor = '#ef4444';
+                    ctx.shadowBlur = 8;
+                    ctx.fillRect(-6, -13, 4, 3);
+                    ctx.fillRect(2, -13, 4, 3);
+                } else {
+                    ctx.fillStyle = '#7f1d1d';
+                    ctx.fillRect(-6, -13, 3, 2);
+                    ctx.fillRect(3, -13, 3, 2);
+                }
+
+                // Número de coche
+                ctx.shadowBlur = 0;
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 8px monospace';
+                ctx.textAlign = 'center';
+                ctx.fillText(car.id, 0, 3);
+
+                ctx.restore();
+            }
+        }
+
+        // Iniciar
+        initCars(20);
+        requestAnimationFrame(animate);
+    </script>
+</body>
+</html>
