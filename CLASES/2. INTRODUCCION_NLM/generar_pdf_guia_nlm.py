@@ -478,6 +478,24 @@ def generar_pdf_completo():
         "principales con ejemplos prácticos reales, enseñando cómo usarlos en modo automático o guiados con prompts de estilo:"
     )
 
+    # GUÍA DE CONTROLES DEL VISOR EN STUDIO (ANTES DEL BOTÓN 1)
+    flow.add_card_box(
+        "GUÍA DE NAVEGACIÓN: ICONOS Y VENTANAS DEL VISOR DE STUDIO",
+        [
+            "Al abrir cualquier resultado generado en Studio (informe, mapa, notas o fichas), dispones de estos controles clave en la esquina superior derecha:",
+            "1. Dos Flechitas Enfrentadas (>< que se miran entre sí): Arriba del todo a la derecha. Sirven para cerrar la ventana del visor y volver a la lista de notas de Studio.",
+            "2. Los 4 Iconos de la Barra Superior:",
+            "   - Compartir: Invitar a otras personas o enviar un enlace de acceso al cuaderno.",
+            "   - Flechita Inclinada con Recuadro: Abre el documento en una pestaña independiente del navegador.",
+            "   - Expandir a Pantalla Completa: Oculta paneles laterales para leer o estudiar sin distracciones.",
+            "   - Tres Puntitos de Menú: Opciones adicionales como renombrar la nota o eliminar el resultado."
+        ],
+        badge_text="CONTROLES",
+        border_color=(0.10, 0.45, 0.65),
+        bg_color=(0.94, 0.97, 1.00),
+        title_color=(0.10, 0.40, 0.60)
+    )
+
     # BOTÓN 1: PRESENTACIONES
     flow.add_card_box(
         "BOTÓN 1: PRESENTACIÓN (SLIDES) CON PROMPT DE ESTILO Y REVISIÓN EN VIVO",
@@ -583,24 +601,6 @@ def generar_pdf_completo():
         title_color=(0.35, 0.20, 0.60)
     )
 
-    # GUÍA DE CONTROLES DEL VISOR EN STUDIO
-    flow.add_card_box(
-        "GUÍA DE NAVEGACIÓN: ICONOS Y VENTANAS DEL VISOR DE STUDIO",
-        [
-            "Al abrir cualquier resultado generado en Studio (informe, mapa, notas o fichas), dispones de estos controles clave en la esquina superior derecha:",
-            "1. Dos Flechitas Enfrentadas (>< que se miran entre sí): Arriba del todo a la derecha. Sirven para cerrar la ventana del visor y volver a la lista de notas de Studio.",
-            "2. Los 4 Iconos de la Barra Superior:",
-            "   - Compartir: Invitar a otras personas o enviar un enlace de acceso al cuaderno.",
-            "   - Flechita Inclinada con Recuadro: Abre el documento en una pestaña independiente del navegador.",
-            "   - Expandir a Pantalla Completa: Oculta paneles laterales para leer o estudiar sin distracciones.",
-            "   - Tres Puntitos de Menú: Opciones adicionales como renombrar la nota o eliminar el resultado."
-        ],
-        badge_text="CONTROLES",
-        border_color=(0.10, 0.45, 0.65),
-        bg_color=(0.94, 0.97, 1.00),
-        title_color=(0.10, 0.40, 0.60)
-    )
-
     # BOTÓN 6: INFORME (NUEVA FUNCIÓN OFICIAL)
     flow.add_card_box(
         "BOTÓN 6: INFORME (NUEVA FUNCIÓN OFICIAL DE DOCUMENTO ESTRUCTURADO)",
@@ -613,21 +613,6 @@ def generar_pdf_completo():
         border_color=(0.20, 0.35, 0.50),
         bg_color=(0.95, 0.97, 0.98),
         title_color=(0.15, 0.25, 0.40)
-    )
-
-    # BOTÓN 7: GAMIFICACIÓN AVANZADA - CONVERTIR EL TEMARIO EN VIDEOJUEGOS WEB («HAZME UN SITIO:»)
-    flow.add_card_box(
-        "FUNCIÓN AVANZADA: CONVERTIR EL TEMARIO EN UN VIDEOJUEGO WEB («HAZME UN SITIO:»)",
-        [
-            "El secreto de los videojuegos en NotebookLM: No existe un botón rotulado 'videojuego'; se activa escribiendo en el chat: «Hazme un sitio: un videojuego para estudiar [tema] con mis fuentes...».",
-            "La magia de Studio: En 4 a 8 minutos, en el panel Studio aparece un sitio web interactivo autónomo con reloj de cuenta atrás, niveles, vidas, gráficos animados en SVG y explicación con la cita exacta de la fuente al fallar.",
-            "Los 12 Trucos de Paco Vida: 1. Di para quién es (edad o nivel). 2. Dale números exactos (preguntas, niveles, segundos). 3. Define qué pasa al acertar y al fallar (confeti, chispas). 4. Que al fallar te explique el error citando la fuente. 5. Temario de datos concretos (fechas, cifras, leyes) mejor que opinión.",
-            "Catálogo de 20 Encargos: Concurso por niveles, Parejas de cartas (memory), Sala de escape (escape room), Línea de tiempo histórica (tren de vapor), Ahorcado (globo aerostático), Crucigrama, Tablero con dado y Ruleta. Consulta la guía anexa 'GUIA_20_ENCARGOS_ESTUDIA_JUGANDO_NOTEBOOKLM.pdf' y el tutorial en vídeo en el mapa de clase."
-        ],
-        badge_text="VIDEOJUEGOS IA",
-        border_color=(0.45, 0.20, 0.65),
-        bg_color=(0.97, 0.95, 0.99),
-        title_color=(0.45, 0.20, 0.65)
     )
 
     # -------------------------------------------------------------
