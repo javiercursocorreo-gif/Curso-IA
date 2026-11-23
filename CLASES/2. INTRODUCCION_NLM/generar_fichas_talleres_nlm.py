@@ -5,6 +5,9 @@ generar_fichas_talleres_nlm.py
 Genera las dos fichas pedagógicas oficiales para Monográfico 2:
 1. FICHA_TALLER_VIDEOJUEGOS_EDUCATIVOS_NOTEBOOKLM.pdf
 2. FICHA_TALLER_PROFESOR_CORRECTOR_DE_APUNTES_NOTEBOOKLM.pdf
+
+Diseño 100% calibrado, tipografía sobria y elegante (tamaño 12-13pt máximo en título, 
+cero letras gigantescas, fondos limpios amigables con impresión y estructura de 2 páginas).
 100% Python nativo estándar (sin dependencias externas).
 """
 
@@ -15,7 +18,6 @@ OUTPUT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 def escape_pdf_text(text):
     text = str(text)
-    # Strip emojis and high unicode to avoid latin1 issues
     clean_chars = []
     for ch in text:
         if ord(ch) < 256:
@@ -36,7 +38,7 @@ def escape_pdf_text(text):
         text = text.replace(k, v)
     return text
 
-def wrap_text(text, max_chars):
+def wrap_text(text, max_chars=78):
     paragraphs = str(text).split('\n')
     lines = []
     for p in paragraphs:
@@ -59,360 +61,374 @@ def wrap_text(text, max_chars):
                 cur_len = len(w)
         if cur:
             lines.append(' '.join(cur))
-    return lines
+    return lines or ['']
 
-class SimplePDFBuilder:
-    def __init__(self, title, doc_tag="MONOGRÁFICO 2"):
-        self.title = title
-        self.doc_tag = doc_tag
+class RobustPDFWriter:
+    def __init__(self, w=595, h=842):
+        self.w = w
+        self.h = h
         self.pages = []
-        self.cur_page_ops = []
-        self.page_num = 1
-        self.page_width = 595.28  # A4
-        self.page_height = 841.89
-        self.margin_left = 50
-        self.margin_right = 50
-        self.margin_top = 50
-        self.margin_bottom = 50
-        self.content_width = self.page_width - self.margin_left - self.margin_right
-        self.cursor_y = self.page_height - self.margin_top
-        self.start_new_page(first=True)
+        self.current_stream = []
 
-    def start_new_page(self, first=False):
-        if not first:
-            self.finalize_page()
-            self.page_num += 1
-        self.cur_page_ops = []
-        self.cursor_y = self.page_height - self.margin_top
-        self.draw_header_footer()
+    def new_page(self):
+        if self.current_stream:
+            self.pages.append("".join(self.current_stream))
+            self.current_stream = []
 
-    def finalize_page(self):
-        self.pages.append(list(self.cur_page_ops))
+    def set_fill_color(self, r, g, b):
+        self.current_stream.append(f"{r:.3f} {g:.3f} {b:.3f} rg\n")
 
-    def draw_header_footer(self):
-        # Header banner
-        ops = self.cur_page_ops
-        ops.append("q")
-        ops.append("0.05 0.08 0.15 rg") # Dark blue top bar
-        ops.append("0 815 595.28 27 re f")
-        ops.append("1 1 1 rg")
-        ops.append("BT /F1 9 Tf 50 824 Td (%s - %s) Tj ET" % (
-            escape_pdf_text(self.doc_tag), escape_pdf_text(self.title[:55])
-        ))
-        # Gold accent line
-        ops.append("0.9 0.7 0.2 rg")
-        ops.append("0 812 595.28 3 re f")
-        # Footer
-        ops.append("0.6 0.6 0.6 rg")
-        ops.append("BT /F2 8 Tf 50 25 Td (Curso de Inteligencia Artificial para Alumnos Senior | Material Didactico Oficial) Tj ET")
-        ops.append("BT /F1 8 Tf 520 25 Td (Pagina %d) Tj ET" % self.page_num)
-        ops.append("Q")
-        self.cursor_y = 780
+    def set_stroke_color(self, r, g, b):
+        self.current_stream.append(f"{r:.3f} {g:.3f} {b:.3f} RG\n")
 
-    def check_space(self, needed_pt):
-        if self.cursor_y - needed_pt < self.margin_bottom + 20:
-            self.start_new_page()
+    def set_line_width(self, w):
+        self.current_stream.append(f"{w:.2f} w\n")
 
-    def add_title_block(self, main_title, subtitle, badge_text, badge_color=(0.14, 0.45, 0.9)):
-        self.check_space(110)
-        ops = self.cur_page_ops
-        ops.append("q")
-        # Badge
-        r, g, b = badge_color
-        ops.append(f"{r} {g} {b} rg")
-        ops.append(f"50 {self.cursor_y - 18} 140 18 re f")
-        ops.append("1 1 1 rg")
-        ops.append(f"BT /F1 9 Tf 58 {self.cursor_y - 13} Td ({escape_pdf_text(badge_text)}) Tj ET")
-        self.cursor_y -= 26
+    def rect(self, x, y, w, h, fill=True, stroke=True):
+        op = "B\n" if (fill and stroke) else ("f\n" if fill else "S\n")
+        self.current_stream.append(f"{x:.2f} {y:.2f} {w:.2f} {h:.2f} re {op}")
 
-        # Main Title
-        ops.append("0.08 0.12 0.25 rg")
-        ops.append(f"BT /F1 18 Tf 50 {self.cursor_y - 16} Td ({escape_pdf_text(main_title)}) Tj ET")
-        self.cursor_y -= 26
+    def line(self, x1, y1, x2, y2):
+        self.current_stream.append(f"{x1:.2f} {y1:.2f} m {x2:.2f} {y2:.2f} l S\n")
 
-        # Subtitle
-        ops.append("0.35 0.4 0.5 rg")
-        lines = wrap_text(subtitle, 85)
-        for line in lines:
-            ops.append(f"BT /F2 10 Tf 50 {self.cursor_y - 10} Td ({escape_pdf_text(line)}) Tj ET")
-            self.cursor_y -= 14
+    def draw_text(self, x, y, text, font="F1", size=9.0, r=0.0, g=0.0, b=0.0):
+        escaped = escape_pdf_text(text)
+        self.current_stream.append(f"BT /{font} {size:.1f} Tf {x:.2f} {y:.2f} Td {r:.3f} {g:.3f} {b:.3f} rg ({escaped}) Tj ET\n")
 
-        ops.append("0.85 0.88 0.92 rg")
-        ops.append(f"50 {self.cursor_y - 4} {self.content_width} 1 re f")
-        ops.append("Q")
-        self.cursor_y -= 16
+    def save(self, filename):
+        if self.current_stream:
+            self.pages.append("".join(self.current_stream))
+            self.current_stream = []
 
-    def add_section_header(self, text, icon=""):
-        full_text = f"{icon} {text}".strip()
-        self.check_space(40)
-        ops = self.cur_page_ops
-        ops.append("q")
-        ops.append("0.1 0.2 0.45 rg")
-        ops.append(f"BT /F1 13 Tf 50 {self.cursor_y - 12} Td ({escape_pdf_text(full_text)}) Tj ET")
-        ops.append("0.2 0.45 0.85 rg")
-        ops.append(f"50 {self.cursor_y - 16} 220 2 re f")
-        ops.append("Q")
-        self.cursor_y -= 26
+        f1_idx, f2_idx, f3_idx = 3, 4, 5
+        page_obj_indices = []
+        content_obj_indices = []
+        cur_obj_idx = 6
 
-    def add_paragraph(self, text, size=9.5, color=(0.15, 0.18, 0.22)):
-        lines = wrap_text(text, 82)
-        self.check_space(len(lines) * 14 + 8)
-        ops = self.cur_page_ops
-        ops.append("q")
-        r, g, b = color
-        ops.append(f"{r} {g} {b} rg")
-        for line in lines:
-            ops.append(f"BT /F2 {size} Tf 50 {self.cursor_y - 9} Td ({escape_pdf_text(line)}) Tj ET")
-            self.cursor_y -= 13.5
-        ops.append("Q")
-        self.cursor_y -= 6
+        for _ in self.pages:
+            page_obj_indices.append(cur_obj_idx)
+            cur_obj_idx += 1
+            content_obj_indices.append(cur_obj_idx)
+            cur_obj_idx += 1
 
-    def add_callout_box(self, title, text, bg_color=(0.94, 0.97, 1.0), border_color=(0.25, 0.5, 0.9)):
-        lines = wrap_text(text, 78)
-        box_h = 24 + len(lines) * 13 + 10
-        self.check_space(box_h + 10)
-        ops = self.cur_page_ops
-        ops.append("q")
-        br, bg, bb = bg_color
-        ops.append(f"{br} {bg} {bb} rg")
-        ops.append(f"50 {self.cursor_y - box_h} {self.content_width} {box_h} re f")
-        dr, dg, db = border_color
-        ops.append(f"{dr} {dg} {db} RG 1.5 w")
-        ops.append(f"50 {self.cursor_y - box_h} {self.content_width} {box_h} re S")
-        ops.append(f"{dr} {dg} {db} rg")
-        ops.append(f"BT /F1 10.5 Tf 62 {self.cursor_y - 16} Td ({escape_pdf_text(title)}) Tj ET")
-        ops.append("0.1 0.15 0.2 rg")
-        cur_y = self.cursor_y - 30
-        for line in lines:
-            ops.append(f"BT /F2 9.2 Tf 62 {cur_y} Td ({escape_pdf_text(line)}) Tj ET")
-            cur_y -= 13
-        ops.append("Q")
-        self.cursor_y -= (box_h + 10)
+        kids_str = " ".join([f"{idx} 0 R" for idx in page_obj_indices])
+        pages_dict = f"<< /Type /Pages /Kids [{kids_str}] /Count {len(self.pages)} >>".encode('ascii')
 
-    def add_prompt_box(self, prompt_title, prompt_text):
-        lines = wrap_text(prompt_text, 76)
-        box_h = 24 + len(lines) * 12.5 + 12
-        self.check_space(box_h + 10)
-        ops = self.cur_page_ops
-        ops.append("q")
-        ops.append("0.97 0.98 0.99 rg") # Very light grey
-        ops.append(f"50 {self.cursor_y - box_h} {self.content_width} {box_h} re f")
-        ops.append("0.4 0.45 0.5 RG 1 w")
-        ops.append(f"50 {self.cursor_y - box_h} {self.content_width} {box_h} re S")
-        # Header strip
-        ops.append("0.2 0.25 0.35 rg")
-        ops.append(f"50 {self.cursor_y - 20} {self.content_width} 20 re f")
-        ops.append("1 1 1 rg")
-        ops.append(f"BT /F1 9 Tf 60 {self.cursor_y - 14} Td ({escape_pdf_text(prompt_title)}) Tj ET")
-        # Text
-        ops.append("0.05 0.1 0.18 rg")
-        cur_y = self.cursor_y - 34
-        for line in lines:
-            ops.append(f"BT /F2 8.8 Tf 60 {cur_y} Td ({escape_pdf_text(line)}) Tj ET")
-            cur_y -= 12.5
-        ops.append("Q")
-        self.cursor_y -= (box_h + 12)
+        all_objs = [
+            b"<< /Type /Catalog /Pages 2 0 R >>",
+            pages_dict,
+            b"<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>",
+            b"<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>",
+            b"<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Oblique /Encoding /WinAnsiEncoding >>"
+        ]
 
-    def add_table_row(self, col1, col2, is_header=False):
-        self.check_space(26)
-        ops = self.cur_page_ops
-        ops.append("q")
-        if is_header:
-            ops.append("0.15 0.25 0.45 rg")
-            ops.append(f"50 {self.cursor_y - 20} {self.content_width} 20 re f")
-            ops.append("1 1 1 rg")
-            ops.append(f"BT /F1 9 Tf 58 {self.cursor_y - 14} Td ({escape_pdf_text(col1)}) Tj ET")
-            ops.append(f"BT /F1 9 Tf 230 {self.cursor_y - 14} Td ({escape_pdf_text(col2)}) Tj ET")
-        else:
-            ops.append("0.96 0.97 0.98 rg")
-            ops.append(f"50 {self.cursor_y - 20} {self.content_width} 20 re f")
-            ops.append("0.8 0.85 0.9 RG 0.5 w")
-            ops.append(f"50 {self.cursor_y - 20} {self.content_width} 20 re S")
-            ops.append("0.1 0.2 0.35 rg")
-            ops.append(f"BT /F1 8.8 Tf 58 {self.cursor_y - 14} Td ({escape_pdf_text(col1)}) Tj ET")
-            ops.append("0.2 0.25 0.3 rg")
-            ops.append(f"BT /F2 8.5 Tf 230 {self.cursor_y - 14} Td ({escape_pdf_text(col2[:75])}) Tj ET")
-        ops.append("Q")
-        self.cursor_y -= 22
+        for p_idx, c_idx in zip(page_obj_indices, content_obj_indices):
+            p_obj = f"<< /Type /Page /Parent 2 0 R /MediaBox [0 0 {self.w} {self.h}] /Contents {c_idx} 0 R /Resources << /Font << /F1 {f1_idx} 0 R /F2 {f2_idx} 0 R /F3 {f3_idx} 0 R >> >> >>".encode('ascii')
+            p_stream = self.pages[(p_idx - 6) // 2]
+            c_bytes = p_stream.encode('latin-1', errors='replace')
+            c_obj = f"<< /Length {len(c_bytes)} >>\nstream\n".encode('ascii') + c_bytes + b"\nendstream"
+            all_objs.append(p_obj)
+            all_objs.append(c_obj)
 
-    def save_pdf(self, output_path):
-        self.finalize_page()
-        # Build raw PDF structure
-        objs = []
-        def add_obj(data):
-            objs.append(data)
-            return len(objs)
-
-        # 1. Catalog
-        # 2. Outlines
-        # 3. Pages
-        # 4. Font 1 (Helvetica-Bold)
-        # 5. Font 2 (Helvetica)
-        add_obj("<< /Type /Catalog /Pages 3 0 R >>")
-        add_obj("<< /Type /Outlines /Count 0 >>")
-
-        # Will update obj 3 after pages are created
-        page_refs = []
-        font_bold_id = 4
-        font_reg_id = 5
-        add_obj("<< /Type /Font /Subtype /Type1 /Name /F1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>")
-        add_obj("<< /Type /Font /Subtype /Type1 /Name /F2 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>")
-
-        content_ids = []
-        for p_ops in self.pages:
-            content_str = "\n".join(p_ops)
-            content_id = add_obj(f"<< /Length {len(content_str)} >>\nstream\n{content_str}\nendstream")
-            content_ids.append(content_id)
-
-        for cid in content_ids:
-            page_id = add_obj(f"<< /Type /Page /Parent 3 0 R /MediaBox [0 0 {self.page_width} {self.page_height}] /Contents {cid} 0 R /Resources << /Font << /F1 {font_bold_id} 0 R /F2 {font_reg_id} 0 R >> >> >>")
-            page_refs.append(f"{page_id} 0 R")
-
-        objs[2] = f"<< /Type /Pages /Kids [{' '.join(page_refs)}] /Count {len(page_refs)} >>"
-
-        # Write xref and trailer
-        with open(output_path, 'wb') as f:
-            f.write(b"%PDF-1.4\n%\xe2\xe3\xcf\xd3\n")
+        with open(filename, "wb") as f:
+            f.write(b"%PDF-1.4\n")
             offsets = []
-            for i, o in enumerate(objs):
+            for obj in all_objs:
                 offsets.append(f.tell())
-                f.write(f"{i+1} 0 obj\n{o}\nendobj\n".encode('latin1'))
+                obj_id = len(offsets)
+                f.write(f"{obj_id} 0 obj\n".encode('ascii'))
+                f.write(obj)
+                f.write(b"\nendobj\n")
 
-            xref_pos = f.tell()
-            f.write(f"xref\n0 {len(objs)+1}\n0000000000 65535 f \n".encode('latin1'))
+            xref_start = f.tell()
+            f.write(f"xref\n0 {len(offsets) + 1}\n0000000000 65535 f \n".encode('ascii'))
             for off in offsets:
-                f.write(f"{off:010d} 00000 n \n".encode('latin1'))
+                f.write(f"{off:010d} 00000 n \n".encode('ascii'))
 
-            f.write(f"trailer\n<< /Size {len(objs)+1} /Root 1 0 R >>\nstartxref\n{xref_pos}\n%%EOF\n".encode('latin1'))
-        print(f"PDF generado con éxito ({len(self.pages)} págs): {output_path}")
+            f.write(f"trailer\n<< /Size {len(offsets) + 1} /Root 1 0 R >>\nstartxref\n{xref_start}\n%%EOF\n".encode('ascii'))
+        print(f"Ficha generada con éxito ({len(self.pages)} págs): {filename}")
 
-def build_videojuegos_pdf():
-    pdf = SimplePDFBuilder(
-        title="Taller Videojuegos Educativos en Gemini Notebook (Hazme un sitio)",
-        doc_tag="MONOGRÁFICO 2: GEMINI NOTEBOOK & STUDIO"
-    )
-    pdf.add_title_block(
-        main_title="Creación de Videojuegos Educativos con Gemini Notebook",
-        subtitle="Metodología paso a paso para transformar fuentes documentales en minijuegos interactivos de aprendizaje mediante la instrucción 'Hazme un sitio:' en el panel Studio.",
-        badge_text="TALLER PRÁCTICO 1 • STUDIO INTERACTIVO",
-        badge_color=(0.9, 0.25, 0.2)
-    )
+class RetoPDFBuilder:
+    def __init__(self, filename, title_badge, title_main, subtitle_main, border_color=(0.15, 0.35, 0.65)):
+        self.filename = filename
+        self.pdf = RobustPDFWriter()
+        self.title_badge = title_badge
+        self.title_main = title_main
+        self.subtitle_main = subtitle_main
+        self.border_color = border_color
+        self.margin_x = 40
+        self.content_w = 515
+        self.cur_y = 800
 
-    pdf.add_section_header("1. Concepto y Funcionamiento de 'Hazme un sitio'", "🎮")
-    pdf.add_paragraph(
-        "En la nueva versión de Gemini Notebook, la pestaña 'Studio' (o la barra de prompts con fuentes activas) "
-        "permite compilar aplicaciones web completas e interactivas sin necesidad de que el alumno programe una sola línea. "
-        "Al comenzar el encargo con las palabras mágicas 'Hazme un sitio:', Gemini Notebook activa su motor de generación de interfaces interactivas "
-        "y empaqueta el contenido directamente en un simulador visual con lógica en JavaScript, gráficos SVG limpios y un diseño adaptado a seniors."
-    )
-    pdf.add_paragraph(
-        "El videojuego se nutre EXCLUSIVAMENTE de los documentos que el alumno ha marcado como fuentes activas (PDFs, apuntes, libros de texto o páginas web). "
-        "Esto garantiza rigor científico absoluto: las preguntas, retos y respuestas correctas se fundamentan al 100% en los textos subidos, sin inventos ni alucinaciones."
-    )
+    def draw_banner_p1(self):
+        # Cabecera sobria y limpia (Fondo blanco, caja con borde elegante, tipografía 12.5pt)
+        self.pdf.set_fill_color(1.0, 1.0, 1.0)
+        self.pdf.set_stroke_color(self.border_color[0], self.border_color[1], self.border_color[2])
+        self.pdf.set_line_width(1.2)
+        self.pdf.rect(self.margin_x, 744, self.content_w, 64, fill=True, stroke=True)
 
-    pdf.add_callout_box(
-        "Las 4 Reglas de Oro del Minijuego Educativo Senior",
-        "1. Preguntas Directas con Retroalimentación: 3 a 5 preguntas basadas en las fuentes con explicación al fallar.\n"
-        "2. Mecánica Dinámica Amigable: Marcador de tiempo (60 seg) y vidas (3 corazones) para generar emoción sin frustración.\n"
-        "3. Ilustración SVG de Alta Calidad: Elementos visuales vectoriales integrados que representan la temática de la misión.\n"
-        "4. Citas Rigurosas [1]: Cada explicación tras un fallo debe indicar la página y fuente de donde procede el dato verificado.",
-        bg_color=(0.98, 0.95, 0.92),
-        border_color=(0.9, 0.45, 0.1)
-    )
+        self.pdf.draw_text(self.margin_x + 14, 792, self.title_badge.upper(), font="F2", size=8.2, r=self.border_color[0], g=self.border_color[1], b=self.border_color[2])
+        self.pdf.draw_text(self.margin_x + 14, 772, self.title_main, font="F2", size=12.5, r=0.10, g=0.15, b=0.25)
+        self.pdf.draw_text(self.margin_x + 14, 754, self.subtitle_main, font="F1", size=8.2, r=0.35, g=0.40, b=0.48)
+        self.cur_y = 730
 
-    pdf.add_section_header("2. Caso Real Aplicado: Misión Apolo 11 (Historia y Ciencia)", "🚀")
-    pdf.add_paragraph(
-        "Para este taller utilizamos las fuentes oficiales del Apolo 11 (crónicas de la NASA, manuales del módulo lunar Eagle y datos históricos). "
-        "El objetivo es que el alumno deba tomar decisiones de vuelo y responder preguntas técnicas y humanas para lograr el alunizaje en el Mar de la Tranquilidad."
-    )
+    def draw_header_p2(self, p2_label):
+        self.pdf.set_fill_color(0.97, 0.98, 0.99)
+        self.pdf.set_stroke_color(self.border_color[0], self.border_color[1], self.border_color[2])
+        self.pdf.set_line_width(0.8)
+        self.pdf.rect(self.margin_x, 794, self.content_w, 20, fill=True, stroke=True)
+        self.pdf.draw_text(self.margin_x + 10, 800, p2_label.upper(), font="F2", size=8.2, r=self.border_color[0], g=self.border_color[1], b=self.border_color[2])
+        self.pdf.draw_text(self.margin_x + self.content_w - 200, 800, "GEMINI NOTEBOOK • CURSO DE IA SENIOR", font="F1", size=7.5, r=0.4, g=0.45, b=0.55)
+        self.cur_y = 778
 
-    pdf.add_prompt_box(
-        "PROMPT MAESTRO PARA GEMINI NOTEBOOK (Copiar y pegar en Studio):",
-        "Hazme un sitio: un videojuego educativo interactivo sobre la Misión Apolo 11 basado estrictamente en mis fuentes.\n"
-        "Estructura y reglas obligatorias:\n"
-        "1. Pantalla de Bienvenida: Título 'Misión Apolo 11: Rumbo a la Luna', botón grande 'Iniciar Descenso Lunar' y resumen de la misión.\n"
-        "2. Mecánica de Juego: 3 vidas (corazones) y contador de 60 segundos de combustible. Cada respuesta correcta te acerca a la superficie.\n"
-        "3. Batería de 5 Preguntas: Preguntas con 3 opciones sobre la alarma 1202, combustible restante, Armstrong, Aldrin y Collins.\n"
-        "4. Explicación Didáctica al Fallar: Si el jugador falla, muestra una ventana con la explicación exacta y la cita documental [1].\n"
-        "5. Gráficos Visuales: Incorpora un dibujo SVG elegante del Módulo Lunar Eagle sobrevolando los cráteres lunares con estrellas de fondo.\n"
-        "6. Ergonomía Senior: Tipografía grande (mínimo 18px), botones con alto contraste y diseño adaptable a pantalla completa."
-    )
+    def draw_footer(self, p_num):
+        self.pdf.set_stroke_color(0.82, 0.84, 0.88)
+        self.pdf.set_line_width(0.5)
+        self.pdf.line(self.margin_x, 32, self.margin_x + self.content_w, 32)
+        self.pdf.draw_text(self.margin_x, 21, f"Curso de IA - Monografico 2: Gemini Notebook - {self.title_main[:55]}", font="F1", size=7.5, r=0.4, g=0.45, b=0.5)
+        self.pdf.draw_text(self.margin_x + self.content_w - 75, 21, f"Pagina {p_num} de 2", font="F2", size=8.0, r=0.2, g=0.25, b=0.35)
 
-    pdf.add_section_header("3. Cómo Probar y Compartir el Videojuego", "📲")
-    pdf.add_table_row("Paso", "Acción Recomendada en Gemini Notebook", is_header=True)
-    pdf.add_table_row("Paso 1: Pegar", "Pega el prompt en la barra inferior de Studio teniendo marcadas las fuentes del Apolo 11.")
-    pdf.add_table_row("Paso 2: Generar", "Gemini Notebook procesará las fuentes y compilará el juego interactivo en la vista previa.")
-    pdf.add_table_row("Paso 3: Jugar", "Pulsa 'Iniciar' y responde las preguntas observando cómo desciende el módulo lunar.")
-    pdf.add_table_row("Paso 4: Compartir", "Pulsa el botón 'Compartir / Publicar' en la esquina superior para enviar el enlace a tus compañeros.")
+    def add_section_title(self, title, color_rgb=None):
+        c = color_rgb or self.border_color
+        self.pdf.set_fill_color(c[0], c[1], c[2])
+        self.pdf.rect(self.margin_x, self.cur_y - 2, self.content_w, 16, fill=True, stroke=False)
+        self.pdf.draw_text(self.margin_x + 8, self.cur_y + 3, title.upper(), font="F2", size=8.0, r=1.0, g=1.0, b=1.0)
+        self.cur_y -= 23
 
-    pdf.save_pdf(os.path.join(OUTPUT_DIR, "FICHA_TALLER_VIDEOJUEGOS_EDUCATIVOS_NOTEBOOKLM.pdf"))
+    def add_card_white(self, title, lines_list, border_color=(0.78, 0.82, 0.88), title_color=None):
+        tc = title_color or self.border_color
+        line_spacing = 12.8
+        rendered_lines = []
+        for it in lines_list:
+            it_wrapped = wrap_text(it, max_chars=78)
+            rendered_lines.append(it_wrapped)
 
-def build_corrector_pdf():
-    pdf = SimplePDFBuilder(
-        title="Taller El Profesor que Corrige tus Apuntes en Gemini Notebook",
-        doc_tag="MONOGRÁFICO 2: GEMINI NOTEBOOK & LIBROS DE TEXTO"
-    )
-    pdf.add_title_block(
-        main_title="El Profesor que Corrige tus Apuntes (Con el Libro Delante)",
-        subtitle="Cómo utilizar la nueva biblioteca de libros de texto integrados y gratuitos de Gemini Notebook para auditar, corregir y completar tus propios resúmenes con citas directas.",
-        badge_text="TALLER PRÁCTICO 2 • AUDITORÍA DE CONOCIMIENTO",
-        badge_color=(0.15, 0.65, 0.35)
-    )
+        total_lines = sum(len(l) for l in rendered_lines)
+        h_box = 20 + (total_lines * line_spacing) + 8
 
-    pdf.add_section_header("1. La Revolución de las Fuentes: Libros de Texto Gratuitos", "📚")
-    pdf.add_paragraph(
-        "Una de las mayores innovaciones de la última versión de Gemini Notebook es la incorporación directa de libros de texto oficiales y gratuitos "
-        "procedentes de bibliotecas académicas abiertas (como OpenStax y Open Textbook Library). "
-        "Al pulsar sobre '+ Añadir fuentes', el alumno dispone de un selector directo de 'Libros de texto' ordenados por materias (Biología, Historia, Física, Economía, Anatomía). "
-        "Ya no es necesario escanear cientos de páginas ni buscar archivos piratas: el libro completo de referencia queda precargado como fuente de verdad absoluta."
-    )
+        self.pdf.set_fill_color(1.0, 1.0, 1.0)
+        self.pdf.set_stroke_color(border_color[0], border_color[1], border_color[2])
+        self.pdf.set_line_width(0.8)
+        self.pdf.rect(self.margin_x, self.cur_y - h_box + 14, self.content_w, h_box, fill=True, stroke=True)
 
-    pdf.add_callout_box(
-        "¿Por qué auditar apuntes con un Libro de Texto Oficial?",
-        "• Detección Inmediata de Errores Conceptuales: Señala si confundiste un término o una cifra clave.\n"
-        "• Omisiones Críticas: Te avisa de puntos fundamentales que el libro explica y tú olvidaste anotar.\n"
-        "• Citas de Página [1]: Cada corrección incluye el número de página exacto del libro oficial para consultar.\n"
-        "• Cero Alucinaciones: La corrección se circunscribe únicamente al texto académico validado.",
-        bg_color=(0.93, 0.98, 0.94),
-        border_color=(0.2, 0.7, 0.35)
-    )
+        self.pdf.draw_text(self.margin_x + 10, self.cur_y, title, font="F2", size=8.8, r=tc[0], g=tc[1], b=tc[2])
+        
+        y_text = self.cur_y - 14
+        for block in rendered_lines:
+            for l in block:
+                self.pdf.draw_text(self.margin_x + 10, y_text, l, font="F1", size=8.5, r=0.20, g=0.25, b=0.30)
+                y_text -= line_spacing
+            y_text -= 1.0
 
-    pdf.add_section_header("2. Metodología de Trabajo en 3 Fases", "🔬")
-    pdf.add_paragraph(
-        "Para convertir a Gemini Notebook en tu tutor privado implacable, se sigue un procedimiento estructurado en 3 pasos:"
-    )
-    pdf.add_table_row("Fase", "Descripción de la Tarea Didáctica", is_header=True)
-    pdf.add_table_row("1. La Fuente Canónica", "Selecciona y activa en '+ Añadir fuentes' el libro de texto oficial de la materia.")
-    pdf.add_table_row("2. Subir tus Apuntes", "Sube tus notas (en texto, documento Word, PDF o fotografía de tu libreta manuscrita).")
-    pdf.add_table_row("3. Ejecutar la Auditoría", "Lanza el prompt de corrección cruzada para que compare punto por punto ambos textos.")
+        self.cur_y -= (h_box + 8)
 
-    pdf.add_section_header("3. Los 3 Prompts Maestros del Profesor Corrector", "✍️")
-    pdf.add_prompt_box(
-        "PROMPT 1: AUDITORÍA DE ERRORES Y CONFUSIONES (Cruzar mis notas con el libro)",
-        "Actúa como un profesor universitario riguroso pero pedagógico. Tengo dos fuentes activas:\n"
-        "- Fuente 1: El libro de texto oficial de referencia.\n"
-        "- Fuente 2: Mis notas y apuntes personales de clase.\n\n"
-        "Compara mis apuntes con el libro de texto y redacta un informe con 3 apartados:\n"
-        "1. Errores o imprecisiones en mis notas: Frases de mis apuntes que contradicen o distorsionan lo que dice el libro.\n"
-        "2. Citas textuales del libro [1]: Indica exactamente la página y el párrafo donde el libro aclara cada punto.\n"
-        "3. Nivel de gravedad: Califica cada fallo como (Leve, Moderado o Crítico) y redacta la versión corregida de mi frase."
-    )
+    def add_prompt_card(self, title, prompt_lines):
+        line_spacing = 12.2
+        rendered_lines = []
+        for it in prompt_lines:
+            it_wrapped = wrap_text(it, max_chars=76)
+            rendered_lines.append(it_wrapped)
 
-    pdf.add_prompt_box(
-        "PROMPT 2: EL MAPA DE VACÍOS (Lo que olvidé anotar)",
-        "Analiza el tema cubierto en mis apuntes y compáralo con el capítulo correspondiente del libro de texto oficial.\n"
-        "Identifica los 3 conceptos o datos fundamentales que el libro explica detalladamente pero que yo he omitido por completo en mis notas.\n"
-        "Redáctalos en forma de ficha de ampliación con lenguaje claro y citas [1] para que pueda incorporarlos a mi libreta."
+        total_lines = sum(len(l) for l in rendered_lines)
+        h_box = 20 + (total_lines * line_spacing) + 8
+
+        self.pdf.set_fill_color(0.98, 0.98, 0.99)
+        self.pdf.set_stroke_color(0.70, 0.74, 0.80)
+        self.pdf.set_line_width(0.8)
+        self.pdf.rect(self.margin_x, self.cur_y - h_box + 14, self.content_w, h_box, fill=True, stroke=True)
+
+        self.pdf.draw_text(self.margin_x + 10, self.cur_y, title, font="F2", size=8.6, r=0.15, g=0.20, b=0.30)
+        
+        y_text = self.cur_y - 14
+        for block in rendered_lines:
+            for l in block:
+                self.pdf.draw_text(self.margin_x + 10, y_text, l, font="F1", size=8.2, r=0.08, g=0.12, b=0.20)
+                y_text -= line_spacing
+            y_text -= 1.0
+
+        self.cur_y -= (h_box + 8)
+
+    def save(self):
+        self.pdf.save(self.filename)
+
+def build_videojuegos_pdf_clean():
+    pdf_path = os.path.join(OUTPUT_DIR, "FICHA_TALLER_VIDEOJUEGOS_EDUCATIVOS_NOTEBOOKLM.pdf")
+    builder = RetoPDFBuilder(
+        filename=pdf_path,
+        title_badge="TALLER PRÁCTICO 1 • GEMINI NOTEBOOK & STUDIO",
+        title_main="Taller: Creación de Videojuegos Educativos con Gemini Notebook",
+        subtitle_main="Transformación de fuentes documentales en minijuegos interactivos mediante la instrucción 'Hazme un sitio:'",
+        border_color=(0.85, 0.25, 0.20)
     )
 
-    pdf.add_prompt_box(
-        "PROMPT 3: EL EXAMEN DE SIMULACRO PERSONALIZADO",
-        "Diseña un test de 5 preguntas sobre los puntos más débiles de mis apuntes detectados en la auditoría anterior.\n"
-        "Por cada pregunta, incluye 3 opciones (A, B, C) y explica por qué la correcta coincide con la doctrina del libro de texto."
+    # === PÁGINA 1 ===
+    builder.draw_banner_p1()
+
+    builder.add_section_title("1. CONCEPTO CLAVE: ¿QUÉ SIGNIFICA 'HAZME UN SITIO:'?", color_rgb=(0.85, 0.25, 0.20))
+    builder.add_card_white(
+        title="El comando del sistema que activa el motor web de Gemini",
+        lines_list=[
+            "- 'Hazme un sitio:' NO es el título del videojuego ni aparece en la pantalla del alumno.",
+            "- Es el 'prompt de activación' interno (trigger) de Google para indicarle a Gemini que no responda con texto plano ni con un resumen escrito, sino que compile una página web completa (sitio HTML/JS/CSS interactivo).",
+            "- Al anteponer 'Hazme un sitio:', el motor genera directamente la vista previa en Studio con botones táctiles, contador de vidas y lógica interactiva sin que el alumno tenga que programar.",
+            "- El juego se nutre exclusivamente de las fuentes activas (PDFs y apuntes), garantizando rigor y cero inventos."
+        ],
+        border_color=(0.85, 0.40, 0.35),
+        title_color=(0.80, 0.20, 0.15)
     )
 
-    pdf.save_pdf(os.path.join(OUTPUT_DIR, "FICHA_TALLER_PROFESOR_CORRECTOR_DE_APUNTES_NOTEBOOKLM.pdf"))
+    builder.add_section_title("2. CASO REAL APLICADO: MISIÓN APOLO 11 (HISTORIA Y CIENCIA)", color_rgb=(0.85, 0.25, 0.20))
+    builder.add_card_white(
+        title="Objetivo pedagógico en el aula senior",
+        lines_list=[
+            "- Fuentes activas: Crónicas oficiales de la NASA y manual del módulo lunar Eagle de la Clase 2.",
+            "- Misión del alumno: Responder preguntas técnicas e históricas para lograr el alunizaje en el Mar de la Tranquilidad.",
+            "- Las 4 reglas de oro: 3 vidas (corazones), 60 segundos de tiempo, gráficos SVG vectoriales y citas documentales [1] al fallar."
+        ],
+        border_color=(0.85, 0.50, 0.45),
+        title_color=(0.75, 0.20, 0.15)
+    )
+
+    builder.add_section_title("3. PROMPT MAESTRO PARA COPIAR Y PEGAR EN STUDIO", color_rgb=(0.85, 0.25, 0.20))
+    builder.add_prompt_card(
+        title="Prompt estructurado (pegar en la barra inferior de Gemini Notebook con fuentes activas):",
+        prompt_lines=[
+            "Hazme un sitio: un videojuego educativo interactivo sobre la Misión Apolo 11 basado estrictamente en mis fuentes.",
+            "Reglas y diseño obligatorio para alumnos mayores (+65):",
+            "1. Portada: Título 'Misión Apolo 11: Rumbo a la Luna' y botón grande 'Iniciar Descenso Lunar'.",
+            "2. Mecánica: 3 vidas (corazones) y contador de 60 segundos. Cada acierto desciende la nave hacia la superficie.",
+            "3. Batería de 5 preguntas sobre la alarma 1202, combustible restante, Armstrong, Aldrin y Collins.",
+            "4. Retroalimentación con rigor [1]: Al fallar, muestra una ventana con la cita exacta de la fuente.",
+            "5. Gráfico SVG: Ilustración vectorial del Módulo Lunar Eagle sobrevolando los cráteres lunares.",
+            "6. Ergonomía senior: Letra grande (18px), botones de alto contraste y pantalla completa táctil."
+        ]
+    )
+
+    builder.draw_footer(1)
+
+    # === PÁGINA 2 ===
+    builder.pdf.new_page()
+    builder.draw_header_p2("GUÍA DE EJECUCIÓN, PRUEBA Y COMPARTICIÓN")
+
+    builder.add_section_title("4. PASO A PASO DIDÁCTICO EN EL AULA (FLUJO EN 4 ETAPAS)", color_rgb=(0.85, 0.25, 0.20))
+    builder.add_card_white(
+        title="Procedimiento en el ordenador o tablet del alumno",
+        lines_list=[
+            "Paso 1 (Marcar fuentes): Comprobar en el panel izquierdo que los documentos del Apolo 11 están seleccionados.",
+            "Paso 2 (Pegar prompt): Copiar el texto del recuadro anterior y pegarlo en la barra de Studio.",
+            "Paso 3 (Generación en directo): Gemini compilará el juego interactivo en modo vista previa sin mostrar código.",
+            "Paso 4 (Probar y compartir): Jugar la partida y usar el botón superior 'Compartir / Publicar' para enviar el enlace a WhatsApp."
+        ],
+        border_color=(0.85, 0.50, 0.45),
+        title_color=(0.75, 0.20, 0.15)
+    )
+
+    builder.add_section_title("5. PREGUNTAS DE REFLEXIÓN TRAS LA PARTIDA", color_rgb=(0.85, 0.25, 0.20))
+    builder.add_card_white(
+        title="Diálogo guiado con el profesor",
+        lines_list=[
+            "1. Rigor vs. Alucinación: ¿Pudo el juego inventar alguna pregunta que no figurase en el manual de la NASA?",
+            "2. Accesibilidad: ¿Resultó legible la tipografía de 18px y comprensible el marcador de tiempo y vidas?",
+            "3. Ampliación a otros temas: ¿Cómo adaptar este mismo prompt a la historia familiar, recetas o viajes?"
+        ],
+        border_color=(0.80, 0.82, 0.88),
+        title_color=(0.20, 0.25, 0.35)
+    )
+
+    builder.draw_footer(2)
+    builder.save()
+
+def build_corrector_pdf_clean():
+    pdf_path = os.path.join(OUTPUT_DIR, "FICHA_TALLER_PROFESOR_CORRECTOR_DE_APUNTES_NOTEBOOKLM.pdf")
+    builder = RetoPDFBuilder(
+        filename=pdf_path,
+        title_badge="TALLER PRÁCTICO 2 • GEMINI NOTEBOOK & AUDITORÍA",
+        title_main="Taller: El Profesor que Corrige tus Apuntes (Con el Libro Delante)",
+        subtitle_main="Auditoría cruzada de notas personales frente a los Libros de Texto Gratuitos integrados en Gemini Notebook",
+        border_color=(0.15, 0.55, 0.30)
+    )
+
+    # === PÁGINA 1 ===
+    builder.draw_banner_p1()
+
+    builder.add_section_title("1. LA REVOLUCIÓN DE LAS FUENTES: LIBROS DE TEXTO GRATUITOS", color_rgb=(0.15, 0.55, 0.30))
+    builder.add_card_white(
+        title="Biblioteca académica abierta integrada (OpenStax y Open Textbook Library)",
+        lines_list=[
+            "- Al pulsar sobre '+ Añadir fuentes', Gemini Notebook ofrece un catálogo de 'Libros de texto' gratuitos precargados.",
+            "- El alumno no necesita escanear manuales pesados: dispone del libro universitario oficial de la materia en 1 clic.",
+            "- Al cruzar tus notas personales contra el libro, Gemini actúa como un tutor implacable con citas exactas [1]."
+        ],
+        border_color=(0.35, 0.70, 0.45),
+        title_color=(0.10, 0.45, 0.25)
+    )
+
+    builder.add_section_title("2. PROCEDIMIENTO METODOLÓGICO EN 3 FASES", color_rgb=(0.15, 0.55, 0.30))
+    builder.add_card_white(
+        title="Fases de trabajo",
+        lines_list=[
+            "Fase 1 (La Fuente Canónica): Activar el libro de texto oficial gratuito de la materia (Biología, Historia o Economía).",
+            "Fase 2 (Subir tus Apuntes): Subir tus notas de clase (documento Word, PDF o fotografía de tu libreta manuscrita).",
+            "Fase 3 (Lanzar la Auditoría): Ejecutar el prompt cruzado para que evalúe precisión, omisiones y conceptos erróneos."
+        ],
+        border_color=(0.35, 0.70, 0.45),
+        title_color=(0.10, 0.45, 0.25)
+    )
+
+    builder.add_section_title("3. PROMPT MAESTRO 1: AUDITORÍA DE ERRORES Y CITAS [1]", color_rgb=(0.15, 0.55, 0.30))
+    builder.add_prompt_card(
+        title="Prompt de corrección cruzada (copiar y pegar en Gemini Notebook):",
+        prompt_lines=[
+            "Actúa como un profesor riguroso pero pedagógico. Tengo dos fuentes activas:",
+            "- Fuente 1: El libro de texto oficial de referencia.",
+            "- Fuente 2: Mis notas y apuntes personales de clase.",
+            "Compara mis apuntes con el libro de texto y redacta un informe estructurado:",
+            "1. Errores o imprecisiones: Señala frases de mis notas que contradigan lo que afirma el libro.",
+            "2. Citas textuales [1]: Cita exactamente la página y párrafo del libro oficial que aclara el punto.",
+            "3. Versión corregida: Redacta la frase correcta con lenguaje claro para que pueda actualizar mi libreta."
+        ]
+    )
+
+    builder.draw_footer(1)
+
+    # === PÁGINA 2 ===
+    builder.pdf.new_page()
+    builder.draw_header_p2("PROMPTS COMPLEMENTARIOS Y AUDITORÍA PROFUNDA")
+
+    builder.add_section_title("4. PROMPT MAESTRO 2: EL MAPA DE VACÍOS (LO QUE OLVIDÉ ANOTAR)", color_rgb=(0.15, 0.55, 0.30))
+    builder.add_prompt_card(
+        title="Prompt para detectar omisiones críticas:",
+        prompt_lines=[
+            "Analiza el tema cubierto en mis apuntes y compáralo con el capítulo correspondiente del libro de texto oficial.",
+            "Identifica los 3 conceptos fundamentales que el libro explica con detalle pero que yo he omitido por completo en mis notas.",
+            "Redáctalos como una ficha de ampliación con lenguaje comprensible y citas de página [1] para enriquecer mi estudio."
+        ]
+    )
+
+    builder.add_section_title("5. PROMPT MAESTRO 3: SIMULACRO DE TEST PERSONALIZADO", color_rgb=(0.15, 0.55, 0.30))
+    builder.add_prompt_card(
+        title="Prompt para autoevaluación en clase:",
+        prompt_lines=[
+            "Diseña un examen tipo test de 5 preguntas centrado en los puntos más débiles de mis apuntes detectados en la auditoría.",
+            "Cada pregunta debe tener 3 opciones (A, B, C) y una explicación detallada indicando por qué la opción correcta coincide con el libro."
+        ]
+    )
+
+    builder.add_section_title("6. VALOR EDUCATIVO PARA PERSONAS MAYORES", color_rgb=(0.15, 0.55, 0.30))
+    builder.add_card_white(
+        title="Tranquilidad cognitiva y aprendizaje guiado",
+        lines_list=[
+            "- Elimina la inseguridad de dudar si los apuntes tomados a mano contienen errores.",
+            "- Enseña a apoyarse en fuentes canónicas validadas en lugar de buscar respuestas dudosas en internet.",
+            "- Desarrolla el pensamiento crítico comparativo y la precisión conceptual a cualquier edad."
+        ],
+        border_color=(0.80, 0.82, 0.88),
+        title_color=(0.20, 0.25, 0.35)
+    )
+
+    builder.draw_footer(2)
+    builder.save()
 
 if __name__ == "__main__":
-    build_videojuegos_pdf()
-    build_corrector_pdf()
+    build_videojuegos_pdf_clean()
+    build_corrector_pdf_clean()
