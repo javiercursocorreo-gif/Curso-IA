@@ -432,7 +432,7 @@ def create_mem_flow_music_pdf(output_path, item):
 
     y -= (tips_box_h + 9)
 
-    # 4. Paso 3: Visor Fotográfico Cinemático y Postal Sonora en Gemini (Canvas / Vista Previa)
+    # 4. Paso 3: Visor Fotográfico Cinemático y Postal Sonora en Google Flow Music (https://labs.google/flow)
     music_info = MUSIC_FLOW_PROMPTS.get(item['num'], {
         "estilo": "Música Histórica de Época",
         "prompt_canvas": (
@@ -443,7 +443,7 @@ def create_mem_flow_music_pdf(output_path, item):
         )
     })
 
-    writer.draw_text(margin_x, y, "Paso 3: Visor Fotográfico Cinemático y Postal Sonora en Gemini (Canvas / Vista Previa)", "F2", 8.8, 0.72, 0.53, 0.04)
+    writer.draw_text(margin_x, y, "Paso 3: Visor Fotográfico Cinemático y Postal Sonora en Google Flow Music (https://labs.google/flow)", "F2", 8.8, 0.72, 0.53, 0.04)
     y -= 8
 
     m_prompt = music_info["prompt_canvas"]
@@ -456,7 +456,7 @@ def create_mem_flow_music_pdf(output_path, item):
     writer.rect(margin_x, y - music_box_h, content_w, music_box_h, fill=True, stroke=True)
 
     ty = y - 11
-    writer.draw_text(margin_x + 8, ty, f"Descarga la imagen del Paso 1, súbela a Gemini y copia este prompt ({music_info['estilo']}):", "F2", 7.8, 0.1, 0.25, 0.6)
+    writer.draw_text(margin_x + 8, ty, f"Descarga la imagen del Paso 1, súbela a Google Flow Music (https://labs.google/flow) y copia este prompt ({music_info['estilo']}):", "F2", 7.6, 0.1, 0.25, 0.6)
     ty -= 11.0
     for ml in m_lines:
         writer.draw_text(margin_x + 8, ty, ml, "F3", 7.2, 0.05, 0.15, 0.35)
