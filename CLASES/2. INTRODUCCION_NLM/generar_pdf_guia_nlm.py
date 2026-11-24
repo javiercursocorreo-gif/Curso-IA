@@ -151,19 +151,50 @@ class FlowLayoutPDF:
         self.page_num = 1
         self.w.start_page()
 
+    def new_page(self):
+        self.w.end_page()
+        self.page_num += 1
+        self.w.start_page()
+        self.y = self.top_y
+
     def check_space(self, height_needed):
         if self.y - height_needed < self.bottom_y:
-            self.w.end_page()
-            self.page_num += 1
-            self.w.start_page()
-            self.y = self.top_y
+            self.new_page()
+
+    def add_major_section_header(self, number_str, title, subtitle=None, color_rgb=(0.12, 0.25, 0.55), force_new_page=True):
+        # Inicia en página nueva para que los alumnos lo encuentren de inmediato al hacer scroll
+        # (salvo en la página 1 si es la primera sección tras la cabecera principal)
+        if force_new_page and (self.page_num > 1 or self.y < self.top_y - 120):
+            self.new_page()
+        
+        # Barra superior de acento
+        self.w.set_fill_color(color_rgb[0], color_rgb[1], color_rgb[2])
+        self.w.rect(self.margin_x, self.y - 2, self.content_w, 4, fill=True, stroke=False)
+        self.y -= 14
+
+        # Caja destacada para el título grande (tamaño 14.5pt)
+        h_box = 32 if subtitle else 28
+        self.w.set_fill_color(color_rgb[0] * 0.15 + 0.85, color_rgb[1] * 0.15 + 0.85, color_rgb[2] * 0.15 + 0.85)
+        self.w.set_stroke_color(color_rgb[0], color_rgb[1], color_rgb[2])
+        self.w.set_line_width(1.2)
+        self.w.rect(self.margin_x, self.y - h_box + 16, self.content_w, h_box, fill=True, stroke=True)
+
+        # Número y Título grande en negrita
+        full_title = f"{number_str}. {title.upper()}"
+        self.w.draw_text(self.margin_x + 12, self.y, full_title, "F2", 13.5, color_rgb[0], color_rgb[1], color_rgb[2])
+        
+        if subtitle:
+            self.w.draw_text(self.margin_x + 12, self.y - 14, subtitle, "F1", 8.8, 0.30, 0.35, 0.45)
+            self.y -= (h_box + 10)
+        else:
+            self.y -= (h_box + 8)
 
     def add_section_header(self, title, color_rgb=(0.12, 0.25, 0.55)):
         self.check_space(38)
         self.y -= 10
         self.w.set_fill_color(color_rgb[0], color_rgb[1], color_rgb[2])
         self.w.rect(self.margin_x, self.y - 4, self.content_w, 20, fill=True, stroke=False)
-        self.w.draw_text(self.margin_x + 10, self.y + 2, title.upper(), "F2", 9.2, 1, 1, 1)
+        self.w.draw_text(self.margin_x + 10, self.y + 2, title.upper(), "F2", 9.5, 1, 1, 1)
         self.y -= 26
 
     def add_paragraph(self, text, font="F1", size=8.5, color=(0.2, 0.22, 0.26), line_spacing=13, max_chars=84):
@@ -261,7 +292,7 @@ def generar_pdf_completo():
     flow.y -= 16
 
     # SECCIÓN 1: DE LO PÚBLICO A LO PRIVADO
-    flow.add_section_header("1. EL GRAN CAMBIO: DE LO PÚBLICO (BUSCADORES) A TU ARCHIVADOR PRIVADO", (0.15, 0.35, 0.65))
+    flow.add_major_section_header("1", "EL GRAN CAMBIO: DE LO PÚBLICO A TU ARCHIVADOR PRIVADO", "Diferencias fundamentales entre el buscador abierto y tu cuaderno cerrado con candado", (0.15, 0.35, 0.65))
 
     flow.add_paragraph(
         "A diferencia del Gemini abierto o ChatGPT (que leen todo internet y pueden especular o inventar datos), "
@@ -310,7 +341,7 @@ def generar_pdf_completo():
     # -------------------------------------------------------------
     # SECCIÓN 2: EL MAPA DE LA PANTALLA REAL (3 ZONAS)
     # -------------------------------------------------------------
-    flow.add_section_header("2. EL MAPA DE LA PANTALLA REAL: LAS TRES COLUMNAS PRINCIPALES", (0.30, 0.20, 0.55))
+    flow.add_major_section_header("2", "EL MAPA DE LA PANTALLA REAL: LAS TRES COLUMNAS PRINCIPALES", "Estructura de la interfaz: Fuentes a la izquierda, Conversación al centro y Fábrica Studio a la derecha", (0.30, 0.20, 0.55))
 
     flow.add_paragraph("La pantalla de Gemini Notebook está dividida en 3 columnas limpias y organizadas de izquierda a derecha:")
 
@@ -359,7 +390,7 @@ def generar_pdf_completo():
     # -------------------------------------------------------------
     # SECCIÓN 3: CASO DE ESTUDIO (LA LLEGADA A LA LUNA 1969)
     # -------------------------------------------------------------
-    flow.add_section_header("3. CASO DE ESTUDIO: LA LLEGADA A LA LUNA (20 DE JULIO DE 1969)", (0.08, 0.48, 0.35))
+    flow.add_major_section_header("3", "CASO DE ESTUDIO: LA LLEGADA A LA LUNA (20 DE JULIO DE 1969)", "Tres fuentes reales complementarias: Memoria personal, rigor científico y vídeo conmemorativo", (0.08, 0.48, 0.35))
 
     flow.add_paragraph("Para realizar las prácticas del taller, disponemos en la carpeta de 3 fuentes reales complementarias:")
 
@@ -404,7 +435,7 @@ def generar_pdf_completo():
     # -------------------------------------------------------------
     # SECCIÓN 4: FASE 1 DEL TALLER (ZONA CENTRAL, CITAS Y CHINCHETA)
     # -------------------------------------------------------------
-    flow.add_section_header("4. TALLER PRÁCTICO: FASE 1 (ZONA CENTRAL, CITAS Y CHINCHETA)", (0.15, 0.35, 0.65))
+    flow.add_major_section_header("4", "TALLER PRÁCTICO: FASE 1 (ZONA CENTRAL, CITAS Y CHINCHETA)", "Guía automática, aislamiento con casillas [v], verificación de citas [1] y anclaje a Studio", (0.15, 0.35, 0.65))
 
     flow.add_card_box(
         "PASO 1.1: OBSERVACIÓN DE LA GUÍA DEL CUADERNO AUTOMÁTICA",
@@ -471,7 +502,7 @@ def generar_pdf_completo():
     # -------------------------------------------------------------
     # SECCIÓN 5: CASOS DE PRUEBA EXHAUSTIVOS EN EL PANEL STUDIO
     # -------------------------------------------------------------
-    flow.add_section_header("5. PANEL STUDIO: CASOS DE PRUEBA EXHAUSTIVOS BOTÓN A BOTÓN", (0.75, 0.42, 0.10))
+    flow.add_major_section_header("5", "PANEL STUDIO: CASOS DE PRUEBA EXHAUSTIVOS BOTÓN A BOTÓN", "La fábrica creativa de productos terminados probada botón a botón con ejemplos reales", (0.75, 0.42, 0.10))
 
     flow.add_paragraph(
         "El Panel Studio es la fábrica de productos terminados. A continuación probaremos cada uno de sus botones "
@@ -555,6 +586,7 @@ def generar_pdf_completo():
     )
 
     # BOTÓN 3: RESUMEN DE VÍDEO
+    flow.check_space(110)
     flow.add_card_box(
         "BOTÓN 3: RESUMEN DE VÍDEO (FUSIÓN MULTIMEDIA EN 1 CLIC Y PASO A PASO)",
         [
@@ -571,6 +603,7 @@ def generar_pdf_completo():
     )
 
     # BOTÓN 4: AUDIO OVERVIEW
+    flow.new_page() # Página dedicada para los botones de audio, mapas y estudio activo
     flow.add_card_box(
         "BOTÓN 4: AUDIO OVERVIEW (LA TERTULIA DE RADIO / PODCAST A 2 VOCES)",
         [
@@ -584,27 +617,57 @@ def generar_pdf_completo():
         title_color=(0.75, 0.42, 0.10)
     )
 
-    # BOTÓN 5: ESTUDIO ACTIVO PARA HIJOS Y NIETOS (MAPA MENTAL, CUESTIONARIO Y FICHAS)
+    # BOTÓN 5: MAPA MENTAL
     flow.add_card_box(
-        "BOTÓN 5: ESTUDIO ACTIVO (MAPA MENTAL, CUESTIONARIO Y FICHAS DIDÁCTICAS)",
+        "BOTÓN 5: MAPA MENTAL (DESCARGA EN PNG Y ALTERNATIVA PDF)",
         [
-            "Para qué sirve: Herramientas pedagógicas interactivas para repasar, memorizar y ayudar a estudiar a hijos y nietos.",
-            "1. Mapa Mental y Descarga en PNG: Pulsa 'Mapa mental' en Studio. Al pinchar en el mapa se abre a pantalla completa. A la izquierda en la barra superior verás una flechita hacia abajo (Descargar): al pulsarla, se descarga inmediatamente a tu ordenador como imagen PNG en alta resolución.",
-            "2. Alternativa Descargable en Texto / PDF (Chat Central): El propio Gemini te ofrece esta opción en el chat: «Si prefieres tener el esquema estructurado en un archivo descargable (como un documento PDF o texto listo para guardar), dime y te lo preparo». Pídeselo en el chat y te redactará el esquema completo por niveles listo para exportar.",
-            "3. Cuestionario (Quiz Interactivo): Genera preguntas tipo test de las fuentes. Importante: El cuestionario NO se puede descargar a archivo; se responde interactivamente en la pantalla del cuaderno.",
-            "4. Fichas Didácticas / Flashcards (Volteo y Marcador): Te muestra la pregunta, pero NO se escribe la respuesta en ningún sitio. Piensas la solución, pinchas sobre la tarjeta para voltearla y ver la respuesta. Abajo verás un contador que arranca en 0 con dos botones: pulsa el Check verde (v) si habías acertado o el Aspa roja (x) si habías fallado para llevar tu puntuación. Tampoco se pueden descargar a archivo."
+            "Botón propio en Studio: 'Mapa mental'.",
+            "Para qué sirve: Estructura visualmente las ideas y conceptos clave de tus fuentes en ramas jerárquicas navegables.",
+            "Descarga directa en imagen PNG: Al pinchar sobre el mapa generado se abre a pantalla completa. En la esquina superior izquierda de la barra verás una flechita hacia abajo (Descargar): al pulsarla, se guarda de inmediato en tu ordenador como imagen PNG en alta definición.",
+            "Alternativa descargable en Texto / PDF (Chat Central): El propio Gemini ofrece en el chat: «Si prefieres tener el esquema estructurado en un archivo descargable (como un documento PDF o texto listo para guardar), dime y te lo preparo». Solo pídeselo en el chat y te redactará el esquema completo por niveles listo para exportar."
         ],
-        badge_text="ESTUDIO ACTIVO",
+        badge_text="MAPA MENTAL",
         border_color=(0.35, 0.20, 0.60),
         bg_color=(0.97, 0.95, 0.99),
         title_color=(0.35, 0.20, 0.60)
     )
 
-    # BOTÓN 6: INFORME (NUEVA FUNCIÓN OFICIAL)
+    # BOTÓN 6: CUESTIONARIO (QUIZ INTERACTIVO)
+    flow.new_page() # Página dedicada para Cuestionario, Fichas Didácticas e Informe Oficial
     flow.add_card_box(
-        "BOTÓN 6: INFORME (NUEVA FUNCIÓN OFICIAL DE DOCUMENTO ESTRUCTURADO)",
+        "BOTÓN 6: CUESTIONARIO / QUIZ INTERACTIVO (EVALUACIÓN EN PANTALLA)",
         [
-            "Nueva función Informe: Las antiguas opciones de preguntas frecuentes y cronología han sido sustituidas por la función oficial 'Informe'.",
+            "Botón propio en Studio: 'Cuestionario' (Quiz).",
+            "Para qué sirve: Diseña baterías de preguntas interactivas tipo test a partir de los documentos subidos para repasar y comprobar lo aprendido.",
+            "Funcionamiento en pantalla: Cada pregunta ofrece opciones múltiples directamente seleccionables con el ratón. Te indica al instante si has acertado o fallado, explicando el porqué con citas de tus fuentes.",
+            "Aviso de descarga: El cuestionario interactivo NO se puede descargar a archivo físico; está pensado para responderse y entrenar directamente en la pantalla de Gemini Notebook."
+        ],
+        badge_text="CUESTIONARIO",
+        border_color=(0.10, 0.45, 0.65),
+        bg_color=(0.94, 0.97, 1.00),
+        title_color=(0.10, 0.40, 0.60)
+    )
+
+    # BOTÓN 7: FICHAS DIDÁCTICAS / FLASHCARDS
+    flow.add_card_box(
+        "BOTÓN 7: FICHAS DIDÁCTICAS / FLASHCARDS (VOLTEO Y MARCADOR)",
+        [
+            "Botón propio en Studio: 'Fichas didácticas' (Flashcards).",
+            "Para qué sirve: Tarjetas interactivas de memorización activa y repaso rápido con hijos y nietos.",
+            "Mecánica de volteo: Muestra el anverso con una pregunta o concepto clave. NO se escribe la respuesta en ningún sitio: piensas la solución mentalmente y haces clic sobre la tarjeta para voltearla al reverso y descubrir la respuesta correcta.",
+            "Marcador de aciertos y fallos: Debajo de la tarjeta verás un contador que arranca en 0 con dos botones interactivos: pulsa el Check verde (v) si habías acertado o el Aspa roja (x) si habías fallado para llevar tu registro de puntos. Al igual que el cuestionario, no se descarga a archivo."
+        ],
+        badge_text="FLASHCARDS",
+        border_color=(0.70, 0.35, 0.10),
+        bg_color=(0.99, 0.96, 0.92),
+        title_color=(0.70, 0.35, 0.10)
+    )
+
+    # BOTÓN 8: INFORME (NUEVA FUNCIÓN OFICIAL)
+    flow.add_card_box(
+        "BOTÓN 8: INFORME (NUEVA FUNCIÓN OFICIAL DE DOCUMENTO ESTRUCTURADO)",
+        [
+            "Botón propio en Studio: 'Informe' (sustituye a las antiguas preguntas frecuentes y cronología).",
             "Para qué sirve: Genera un informe documental riguroso, formal y estructurado de todas tus fuentes seleccionadas, organizando antecedentes, análisis detallado y conclusiones.",
             "Cómo utilizarlo: Pulsa directamente el botón 'Informe' en el panel Studio. Obtendrás un texto ejecutivo completo, listo para estudiar, imprimir o compartir con hijos, nietos o colegas."
         ],
@@ -617,7 +680,7 @@ def generar_pdf_completo():
     # -------------------------------------------------------------
     # SECCIÓN 6: EJERCICIO MAESTRO FINAL - CUADERNOS ANTERIORES Y LA GRAN INFOGRAFÍA
     # -------------------------------------------------------------
-    flow.add_section_header("6. DESCUBRIMIENTO MÁGICO: TUS CUADERNOS ANTERIORES Y LA GRAN INFOGRAFÍA", (0.45, 0.20, 0.65))
+    flow.add_major_section_header("6", "DESCUBRIMIENTO MÁGICO: TUS CUADERNOS ANTERIORES Y LA GRAN INFOGRAFÍA", "Sincronización total entre Gemini y NotebookLM: Cruce del Corazón 3D con el Radar Anti-Estafas", (0.45, 0.20, 0.65))
 
     flow.add_card_box(
         "LA CONEXIÓN SORPRESA: GEMINI Y NOTEBOOKLM COMPARTEN LA MISMA MENTE",
@@ -674,7 +737,7 @@ def generar_pdf_completo():
     # -------------------------------------------------------------
     # SECCIÓN 7: CHECKLIST DE AUTOEVALUACIÓN DEL ALUMNO
     # -------------------------------------------------------------
-    flow.add_section_header("7. CHECKLIST DE AUTOEVALUACIÓN Y COMPETENCIAS DEL ALUMNO", (0.12, 0.25, 0.55))
+    flow.add_major_section_header("7", "CHECKLIST DE AUTOEVALUACIÓN Y COMPETENCIAS DEL ALUMNO", "Lista de control para validar el dominio de todas las habilidades aprendidas en clase", (0.12, 0.25, 0.55))
 
     checklist_items = [
         ("Paso 1", "Sé entrar en Chrome con mi cuenta Gmail y pulsar 'Nuevo cuaderno'."),
@@ -684,11 +747,12 @@ def generar_pdf_completo():
         ("Paso 5", "Sé hacer preguntas en el chat y pulsar las citas [1] para verificar el texto subrayado en amarillo."),
         ("Paso 6", "Sé guardar respuestas clave en el corcho permanente de Studio con el icono de la Chincheta (Pin)."),
         ("Paso 6B", "Sé escribir en el chat 'Haz una web' y ver cómo genera una página web completa sin programar."),
-        ("Paso 7", "Sé generar Presentaciones paso a paso con esquema previo y usar 'Revisar' en vivo."),
-        ("Paso 8", "Sé crear Infografías probando al menos 2 estilos distintos (Científico y Anime)."),
-        ("Paso 9", "Sé crear un Resumen de vídeo paso a paso fundiendo fuentes en una pieza audiovisual."),
-        ("Paso 10", "Sé escuchar la tertulia de radio Audio Overview y generar un Informe estructurado en Studio."),
-        ("Paso 11", "Sé abrir mis cuadernos anteriores de clase y cruzar fuentes para crear infografías comparativas.")
+        ("Paso 7", "Sé generar Presentaciones (Botón 1) paso a paso con esquema previo y usar 'Revisar' en vivo."),
+        ("Paso 8", "Sé crear Infografías (Botón 2) probando al menos 2 estilos distintos (Científico y Anime)."),
+        ("Paso 9", "Sé crear un Resumen de vídeo (Botón 3) paso a paso fundiendo fuentes en una pieza audiovisual."),
+        ("Paso 10", "Sé escuchar la tertulia de radio Audio Overview (Botón 4) con dos locutores conversando."),
+        ("Paso 11", "Sé descargar el Mapa Mental en PNG (Botón 5), entrenar con el Cuestionario (Botón 6) y repasar con Fichas (Botón 7)."),
+        ("Paso 12", "Sé generar un Informe estructurado (Botón 8) y abrir cuadernos de clases pasadas para cruzar fuentes.")
     ]
 
     flow.check_space(len(checklist_items) * 16 + 20)
