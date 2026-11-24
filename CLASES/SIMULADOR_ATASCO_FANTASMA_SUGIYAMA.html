@@ -486,9 +486,9 @@
                     </button>
                 </div>
 
-                <!-- Botón de Provocar Frenazo -->
-                <button class="btn-brake" onclick="triggerBrakeEvent()">
-                    ⚠️ Provocar Frenazo en Coche Líder (#1)
+                <!-- Botón de Provocar Frenazo / Reanudar Marcha (Toggle) -->
+                <button class="btn-brake" id="btnBrakeToggle" onclick="toggleBrakeEvent()">
+                    🛑 Provocar Frenazo en Coche Líder (#1)
                 </button>
             </div>
 
@@ -555,6 +555,7 @@
         let driveMode = 'human'; // 'human' o 'ai'
         let cars = [];
         let shockwaveAngle = null;
+        let isLeadCarBraking = false;
 
         // Modelo de Vehículo (Optimal Velocity Model con retraso y reacción humana)
         class Car {
@@ -564,15 +565,14 @@
                 this.v = TARGET_SPEED_MS; // Velocidad actual en m/s
                 this.targetV = TARGET_SPEED_MS;
                 this.isBraking = false;
-                this.externalBrakeTimer = 0;
+                this.externalBrakeHold = false;
                 this.reactionDelayTimer = 0;
             }
 
             update(dt, leadCarDistanceM) {
-                // Si tiene perturbación manual forzada
-                if (this.externalBrakeTimer > 0) {
-                    this.externalBrakeTimer -= dt;
-                    this.v = Math.max(0, this.v - 6.5 * dt); // Fuerte desaceleración
+                // Si tiene frenado manual activo y mantenido por el usuario
+                if (this.externalBrakeHold) {
+                    this.v = Math.max(0, this.v - 7.5 * dt); // Fuerte desaceleración hasta detenerse
                     this.isBraking = true;
                 } else {
                     let desiredSpeed = TARGET_SPEED_MS;
@@ -624,6 +624,13 @@
         function initCars(count) {
             numCars = count;
             cars = [];
+            isLeadCarBraking = false;
+            const btn = document.getElementById('btnBrakeToggle');
+            if (btn) {
+                btn.style.background = 'linear-gradient(135deg, #ef4444 0%, #b91c1c 100%)';
+                btn.style.boxShadow = '0 4px 16px rgba(239, 68, 68, 0.35)';
+                btn.innerHTML = '🛑 Provocar Frenazo en Coche Líder (#1)';
+            }
             for (let i = 0; i < numCars; i++) {
                 const s = i / numCars;
                 cars.push(new Car(i + 1, s));
@@ -662,10 +669,20 @@
             }
         }
 
-        function triggerBrakeEvent() {
-            // El coche #1 frena bruscamente durante 1.8 segundos
-            if (cars.length > 0) {
-                cars[0].externalBrakeTimer = 1.8;
+        function toggleBrakeEvent() {
+            if (cars.length === 0) return;
+            const btn = document.getElementById('btnBrakeToggle');
+            isLeadCarBraking = !isLeadCarBraking;
+            cars[0].externalBrakeHold = isLeadCarBraking;
+
+            if (isLeadCarBraking) {
+                btn.style.background = 'linear-gradient(135deg, #16a34a 0%, #15803d 100%)';
+                btn.style.boxShadow = '0 4px 16px rgba(22, 163, 74, 0.4)';
+                btn.innerHTML = '🟢 Soltar Freno y Reanudar Marcha (#1)';
+            } else {
+                btn.style.background = 'linear-gradient(135deg, #ef4444 0%, #b91c1c 100%)';
+                btn.style.boxShadow = '0 4px 16px rgba(239, 68, 68, 0.35)';
+                btn.innerHTML = '🛑 Provocar Frenazo en Coche Líder (#1)';
             }
         }
 
@@ -804,38 +821,42 @@
 
                 ctx.save();
                 ctx.translate(carX, carY);
-                ctx.rotate(angle + Math.PI / 2); // Orientar en dirección horaria
+                // angle + Math.PI / 2 apunta tangencialmente hacia adelante en sentido horario
+                ctx.rotate(angle + Math.PI / 2);
+
+                // Longitud del coche (26px a lo largo del eje X, tangente a la curva)
+                // Anchura del coche (14px a lo largo del eje Y, ancho del carril)
 
                 // Sombra del coche
-                ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
-                ctx.fillRect(-8, -14, 16, 28);
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.45)';
+                ctx.fillRect(-14, -8, 28, 16);
 
-                // Carrocería del coche
+                // Carrocería del coche (orientada longitudinalmente a lo largo de la pista)
                 ctx.fillStyle = carColor;
                 ctx.beginPath();
-                ctx.roundRect(-7, -13, 14, 26, 4);
+                ctx.roundRect(-13, -7, 26, 14, 4);
                 ctx.fill();
 
-                // Techo / Cristales
+                // Techo / Cristales / Parabrisas (delantero a la derecha +X, trasero a la izquierda -X)
                 ctx.fillStyle = '#0f172a';
-                ctx.fillRect(-5, -6, 10, 11);
+                ctx.fillRect(-6, -5, 11, 10);
 
-                // Faros delanteros
+                // Faros delanteros (en el morro, hacia +X)
                 ctx.fillStyle = '#fef08a';
-                ctx.fillRect(-6, 11, 3, 2);
-                ctx.fillRect(3, 11, 3, 2);
+                ctx.fillRect(11, -5, 2, 3);
+                ctx.fillRect(11, 2, 2, 3);
 
-                // Luces de freno traseras (se iluminan intensamente si está frenando)
+                // Luces de freno traseras (en la zaga, hacia -X)
                 if (car.isBraking || speedKmh < 12) {
                     ctx.fillStyle = '#ff0000';
                     ctx.shadowColor = '#ef4444';
                     ctx.shadowBlur = 8;
-                    ctx.fillRect(-6, -13, 4, 3);
-                    ctx.fillRect(2, -13, 4, 3);
+                    ctx.fillRect(-13, -5, 3, 3);
+                    ctx.fillRect(-13, 2, 3, 3);
                 } else {
                     ctx.fillStyle = '#7f1d1d';
-                    ctx.fillRect(-6, -13, 3, 2);
-                    ctx.fillRect(3, -13, 3, 2);
+                    ctx.fillRect(-13, -5, 2, 3);
+                    ctx.fillRect(-13, 2, 2, 3);
                 }
 
                 // Número de coche
@@ -843,7 +864,8 @@
                 ctx.fillStyle = '#ffffff';
                 ctx.font = 'bold 8px monospace';
                 ctx.textAlign = 'center';
-                ctx.fillText(car.id, 0, 3);
+                ctx.textBaseline = 'middle';
+                ctx.fillText(car.id, 0, 0);
 
                 ctx.restore();
             }
