@@ -570,63 +570,85 @@
             }
 
             update(dt, leadCarDistanceM) {
-                // Si tiene frenado manual forzado y activo (botón pulsado)
+                // Dimensión física del vehículo: 4.2 metros.
+                // Distancia mínima de seguridad absoluta parachoques-con-parachoques: 5.0 metros
+                const MIN_HARD_GAP = 5.2;
+
+                // Si está peligrosamente cerca, forzar detención total para IMPEDIR físicamente el solapamiento
+                if (leadCarDistanceM <= MIN_HARD_GAP) {
+                    this.v = 0.0;
+                    this.isBraking = true;
+                    return;
+                }
+
+                // Si tiene frenado manual forzado (botón activado por el usuario)
                 if (this.externalBrakeHold) {
-                    this.v = Math.max(0, this.v - 8.0 * dt); // Fuerte desaceleración hasta detenerse (0 km/h)
+                    this.v = Math.max(0, this.v - 8.5 * dt); // Fuerte desaceleración hasta detenerse (0 km/h)
                     this.isBraking = true;
                 } else {
                     let desiredSpeed = TARGET_SPEED_MS;
 
                     if (driveMode === 'human') {
-                        // Modelo de Velocidad Óptima (Bando / Sugiyama) con limitación por distancia al coche delantero
-                        // 1. Distancia de parada segura mínima (3.8 metros, longitud de coche + margen)
-                        const safeStopGap = 3.8;
-                        // 2. Distancia a partir de la cual se puede ir a velocidad máxima libre (12.5 metros)
-                        const freeFlowGap = 12.5;
+                        // Conducción Humana:
+                        // 1. Distancia de seguridad dinámica con retraso de percepción
+                        const safeStopGap = 6.0;
+                        const freeFlowGap = 13.0;
 
                         if (leadCarDistanceM <= safeStopGap) {
-                            // Demasiado cerca: frenar a fondo
                             desiredSpeed = 0.0;
                         } else if (leadCarDistanceM >= freeFlowGap) {
-                            // Espacio completamente libre por delante: velocidad objetivo (30 km/h)
                             desiredSpeed = TARGET_SPEED_MS;
                         } else {
-                            // Zona de transición no lineal: relación suave entre distancia y velocidad
                             const fraction = (leadCarDistanceM - safeStopGap) / (freeFlowGap - safeStopGap);
-                            desiredSpeed = TARGET_SPEED_MS * Math.pow(fraction, 1.25);
+                            desiredSpeed = TARGET_SPEED_MS * Math.pow(fraction, 1.3);
                         }
 
-                        // Micro-variación biológica involuntaria humana (nadie mantiene el acelerador perfecto)
+                        // Fluctuación humana involuntaria en acelerador
                         const noise = (Math.random() - 0.5) * 0.25;
                         desiredSpeed = Math.max(0, desiredSpeed + noise);
 
-                        // Aceleración y frenado físico realista:
                         if (desiredSpeed > this.v) {
-                            // Acelerar con par motor ágil (2.8 m/s²) para arrancar con firmeza al quedar libre
                             this.v = Math.min(desiredSpeed, this.v + 2.8 * dt);
                             this.isBraking = false;
                         } else {
-                            // Frenar con retraso humano (tiempo de reacción y freno proporcional hasta 6.5 m/s²)
-                            this.v = Math.max(desiredSpeed, this.v - 6.2 * dt);
+                            this.v = Math.max(desiredSpeed, this.v - 6.5 * dt);
                             this.isBraking = (desiredSpeed < this.v - 0.8);
                         }
 
                     } else {
-                        // Comportamiento Autónomo (IA Conectada V2V):
-                        // Comunicación instantánea, tiempo de reacción 0, amortiguación crítica perfecta
-                        const optimalGap = TRACK_CIRCUMFERENCE_M / numCars;
-                        const error = leadCarDistanceM - optimalGap;
-                        desiredSpeed = TARGET_SPEED_MS + error * 0.8;
-                        this.v += (desiredSpeed - this.v) * Math.min(1, dt * 6.0);
-                        this.isBraking = desiredSpeed < this.v - 0.5;
+                        // Conducción Autónoma IA Conectada (V2V - Vehicle to Vehicle):
+                        // Comunicación continua a velocidad de la luz entre todos los coches de la pista.
+                        // La IA modula la velocidad de forma colectiva para mantener distancias idénticas y disolver atascos.
+                        const idealSpacing = TRACK_CIRCUMFERENCE_M / numCars;
+                        const gapError = leadCarDistanceM - idealSpacing;
+
+                        // Si el coche delantero está a distancia óptima, velocidad perfecta
+                        // Si está cerca, desacelera suavemente; si tiene hueco, recupera de inmediato a 30 km/h
+                        let aiSpeed = TARGET_SPEED_MS;
+                        if (leadCarDistanceM < 8.0) {
+                            aiSpeed = TARGET_SPEED_MS * ((leadCarDistanceM - MIN_HARD_GAP) / (8.0 - MIN_HARD_GAP));
+                        } else {
+                            aiSpeed = TARGET_SPEED_MS + Math.min(2.5, Math.max(-2.5, gapError * 0.5));
+                        }
+
+                        // Ajuste preciso de IA sin titubeos ni retraso biológico
+                        if (aiSpeed > this.v) {
+                            this.v = Math.min(aiSpeed, this.v + 4.5 * dt);
+                            this.isBraking = false;
+                        } else {
+                            this.v = Math.max(aiSpeed, this.v - 5.0 * dt);
+                            this.isBraking = (aiSpeed < this.v - 0.5);
+                        }
                     }
                 }
 
                 // Asegurar que no sea negativa
                 this.v = Math.max(0, this.v);
 
-                // Avanzar a lo largo del circuito circular
-                const deltaS = (this.v * dt) / TRACK_CIRCUMFERENCE_M;
+                // Avanzar a lo largo del circuito circular sin permitir jamás rebasar el parachoques del coche delantero
+                const maxAllowedDistance = Math.max(0, leadCarDistanceM - MIN_HARD_GAP);
+                const actualAdvance = Math.min(this.v * dt, maxAllowedDistance);
+                const deltaS = actualAdvance / TRACK_CIRCUMFERENCE_M;
                 this.s = (this.s + deltaS) % 1.0;
             }
         }
@@ -677,6 +699,14 @@
             } else {
                 document.getElementById('btnHumanMode').className = 'mode-btn';
                 document.getElementById('btnAiMode').className = 'mode-btn ai-active';
+                // Si la IA toma el control, soltar cualquier freno forzado y sincronizar la flota
+                if (isLeadCarBraking) {
+                    toggleBrakeEvent();
+                }
+                // Impulso suave de armonización para reequilibrar la onda de atasco inmediatamente
+                cars.forEach(c => {
+                    c.v = Math.max(c.v, TARGET_SPEED_MS * 0.7);
+                });
             }
         }
 
