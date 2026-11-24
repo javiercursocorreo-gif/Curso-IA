@@ -570,35 +570,46 @@
             }
 
             update(dt, leadCarDistanceM) {
-                // Si tiene frenado manual activo y mantenido por el usuario
+                // Si tiene frenado manual forzado y activo (botón pulsado)
                 if (this.externalBrakeHold) {
-                    this.v = Math.max(0, this.v - 7.5 * dt); // Fuerte desaceleración hasta detenerse
+                    this.v = Math.max(0, this.v - 8.0 * dt); // Fuerte desaceleración hasta detenerse (0 km/h)
                     this.isBraking = true;
                 } else {
                     let desiredSpeed = TARGET_SPEED_MS;
 
                     if (driveMode === 'human') {
-                        // Comportamiento Humano:
-                        // 1. Inyectar micro-ruido biológico (nadie mantiene el pie en el acelerador al 100% fijo)
-                        const noise = (Math.random() - 0.5) * 0.45;
+                        // Modelo de Velocidad Óptima (Bando / Sugiyama) con limitación por distancia al coche delantero
+                        // 1. Distancia de parada segura mínima (3.8 metros, longitud de coche + margen)
+                        const safeStopGap = 3.8;
+                        // 2. Distancia a partir de la cual se puede ir a velocidad máxima libre (12.5 metros)
+                        const freeFlowGap = 12.5;
 
-                        // 2. Distancia segura deseada en función de la velocidad
-                        const safeDistanceM = 3.5 + this.v * 0.95; // 3.5m longitud + margen de 1 segundo
-
-                        if (leadCarDistanceM < safeDistanceM) {
-                            // Frenado proporcional no lineal con amplificación
-                            const delta = safeDistanceM - leadCarDistanceM;
-                            desiredSpeed = Math.max(0, this.v - (delta * 1.8 + noise));
-                            this.isBraking = true;
+                        if (leadCarDistanceM <= safeStopGap) {
+                            // Demasiado cerca: frenar a fondo
+                            desiredSpeed = 0.0;
+                        } else if (leadCarDistanceM >= freeFlowGap) {
+                            // Espacio completamente libre por delante: velocidad objetivo (30 km/h)
+                            desiredSpeed = TARGET_SPEED_MS;
                         } else {
-                            // Aceleración suave hacia la velocidad objetivo
-                            desiredSpeed = Math.min(TARGET_SPEED_MS, this.v + 1.2 * dt + noise);
-                            this.isBraking = false;
+                            // Zona de transición no lineal: relación suave entre distancia y velocidad
+                            const fraction = (leadCarDistanceM - safeStopGap) / (freeFlowGap - safeStopGap);
+                            desiredSpeed = TARGET_SPEED_MS * Math.pow(fraction, 1.25);
                         }
 
-                        // Retardo de reacción humano (filtro paso bajo)
-                        const reactionRate = 2.2; // ~0.45 s de tiempo característico
-                        this.v += (desiredSpeed - this.v) * Math.min(1, dt * reactionRate);
+                        // Micro-variación biológica involuntaria humana (nadie mantiene el acelerador perfecto)
+                        const noise = (Math.random() - 0.5) * 0.25;
+                        desiredSpeed = Math.max(0, desiredSpeed + noise);
+
+                        // Aceleración y frenado físico realista:
+                        if (desiredSpeed > this.v) {
+                            // Acelerar con par motor ágil (2.8 m/s²) para arrancar con firmeza al quedar libre
+                            this.v = Math.min(desiredSpeed, this.v + 2.8 * dt);
+                            this.isBraking = false;
+                        } else {
+                            // Frenar con retraso humano (tiempo de reacción y freno proporcional hasta 6.5 m/s²)
+                            this.v = Math.max(desiredSpeed, this.v - 6.2 * dt);
+                            this.isBraking = (desiredSpeed < this.v - 0.8);
+                        }
 
                     } else {
                         // Comportamiento Autónomo (IA Conectada V2V):
