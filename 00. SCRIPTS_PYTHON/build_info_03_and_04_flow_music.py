@@ -163,13 +163,21 @@ def build_info_003b_pdf(output_path):
     pdf.draw_text(36, 750, 'SESION 03 • NOVEDADES Y TALLER TECNOLOGICO IA [INFO-003B]', font='F2', size=8.5, r=1, g=1, b=1)
     pdf.draw_text(36, 730, 'Taller Oficial: Google Flow y los 4 Movimientos Cinemáticos de Cámara', font='F2', size=11.5, r=1, g=1, b=1)
 
-    # Sección 1: Qué es Flow y los 50 créditos
-    pdf.set_fill_color(1.0, 1.0, 1.0) # Fondo blanco para impresión limpia
+    # 1. TÍTULO MAYOR 1 (PÁGINA 1)
+    # Barra de acento y caja destacada para título mayor (13.0pt)
+    pdf.set_fill_color(0.85, 0.25, 0.2)
+    pdf.rect(30, 706, 552, 3, fill=True, stroke=False)
+    pdf.set_fill_color(0.98, 0.92, 0.92)
     pdf.set_stroke_color(0.85, 0.25, 0.2)
     pdf.set_line_width(1.0)
-    pdf.rect(30, 600, 552, 105, fill=True, stroke=True)
+    pdf.rect(30, 680, 552, 24, fill=True, stroke=True)
+    pdf.draw_text(42, 687, '1. EL ESTUDIO DE CINE DE GOOGLE: 50 CRÉDITOS DIARIOS GRATUITOS', font='F2', size=12.5, r=0.75, g=0.15, b=0.1)
 
-    pdf.draw_text(42, 688, '1. EL ESTUDIO DE CINE DE GOOGLE: 50 CREDITOS DIARIOS GRATUITOS', font='F2', size=9.2, r=0.75, g=0.15, b=0.1)
+    # Tarjeta de contenido Sección 1
+    pdf.set_fill_color(1.0, 1.0, 1.0)
+    pdf.set_stroke_color(0.85, 0.25, 0.2)
+    pdf.set_line_width(0.8)
+    pdf.rect(30, 584, 552, 90, fill=True, stroke=True)
     
     t1 = (
         "Google Flow (https://labs.google/flow) es la herramienta de Google que genera clips de cine en movimiento "
@@ -179,15 +187,21 @@ def build_info_003b_pdf(output_path):
         "• Metodologia Directa en 3 Pasos (Sin fotos intermedias): 1) Copiar el prompt de la ficha a Gemini. "
         "2) Gemini redacta tus 3 prompts de camara. 3) Copiar sucesivamente cada prompt en Flow y generar el clip."
     )
-    y_pos = 672
+    y_pos = 660
     for par in t1.split('\n'):
         lines = wrap_text(par, 114)
         for l in lines:
             pdf.draw_text(42, y_pos, l, font='F2' if '•' in l and ':' in l else 'F1', size=7.4, r=0.15, g=0.2, b=0.25)
             y_pos -= 11.2
 
-    # Sección 2: Los 4 Movimientos Cinemáticos de Cámara (4 tarjetas individuales)
-    pdf.draw_text(34, 578, '2. LOS 4 MOVIMIENTOS CINEMATICOS DE CAMARA (LOS QUE APLICARA GEMINI EN TUS PROMPTS):', font='F2', size=8.8, r=0.1, g=0.3, b=0.65)
+    # 2. TÍTULO MAYOR 2 (PÁGINA 1)
+    pdf.set_fill_color(0.1, 0.3, 0.65)
+    pdf.rect(30, 574, 552, 3, fill=True, stroke=False)
+    pdf.set_fill_color(0.92, 0.95, 0.99)
+    pdf.set_stroke_color(0.1, 0.3, 0.65)
+    pdf.set_line_width(1.0)
+    pdf.rect(30, 548, 552, 24, fill=True, stroke=True)
+    pdf.draw_text(42, 555, '2. LOS 4 MOVIMIENTOS CINEMÁTICOS DE CÁMARA (DIRECCIÓN DE ESCENA)', font='F2', size=12.5, r=0.1, g=0.3, b=0.65)
 
     moves = [
         ("1. DRONE VIEW (Vuelo Aereo / Perspectiva Cenital):",
@@ -211,9 +225,9 @@ def build_info_003b_pdf(output_path):
          (0.5, 0.2, 0.7))
     ]
 
-    card_h = 104
-    gap = 14
-    y_top = 568
+    card_h = 100
+    gap = 10
+    y_top = 538
     for i, (m_title, m_desc, m_ex, col) in enumerate(moves):
         y_card = y_top - i * (card_h + gap)
         pdf.set_fill_color(0.98, 0.99, 1.0)
@@ -255,13 +269,21 @@ def build_info_003b_pdf(output_path):
     pdf.draw_text(36, 750, 'SESION 03 • TALLER CINEMATOGRAFICO AVANZADO • GOOGLE FLOW & GEMINI [INFO-003B]', font='F2', size=8.5, r=1, g=1, b=1)
     pdf.draw_text(36, 730, 'Caso Práctico Real: Mini-Película de Curro Jiménez (De Gemini a Google Flow)', font='F2', size=11.5, r=1, g=1, b=1)
 
-    # Sección 3: El Método Directo en 3 Pasos
-    pdf.set_fill_color(1.0, 1.0, 1.0)
+    # 3. TÍTULO MAYOR 3 (PÁGINA 2)
+    pdf.set_fill_color(0.85, 0.25, 0.2)
+    pdf.rect(30, 706, 552, 3, fill=True, stroke=False)
+    pdf.set_fill_color(0.98, 0.92, 0.92)
     pdf.set_stroke_color(0.85, 0.25, 0.2)
     pdf.set_line_width(1.0)
-    pdf.rect(30, 565, 552, 140, fill=True, stroke=True)
+    pdf.rect(30, 680, 552, 24, fill=True, stroke=True)
+    pdf.draw_text(42, 687, '3. EL MÉTODO DIRECTO EN 3 PASOS (CERO FOTOS INTERMEDIAS)', font='F2', size=12.5, r=0.75, g=0.15, b=0.1)
 
-    pdf.draw_text(42, 690, '3. EL METODO DIRECTO EN 3 PASOS (CERO FOTOS INTERMEDIAS NI DESCARGAS RARAS)', font='F2', size=9.0, r=0.75, g=0.15, b=0.1)
+    # Tarjeta Sección 3
+    pdf.set_fill_color(1.0, 1.0, 1.0)
+    pdf.set_stroke_color(0.85, 0.25, 0.2)
+    pdf.set_line_width(0.8)
+    pdf.rect(30, 565, 552, 110, fill=True, stroke=True)
+
     s4_text = (
         "• PASO 1 (El Guion en Gemini): Copias el prompt de abajo y lo pegas en Gemini. Gemini actua como director de cine: "
         "aplica las tecnicas de camara, mantiene el personaje de Curro identico en las 3 tomas y te entrega 3 prompts en espanol listos para Flow.\n"
@@ -270,20 +292,28 @@ def build_info_003b_pdf(output_path):
         "• PASO 3 (Tu Mini-Pelicula): Obtienes 3 clips de 5 segundos (15 segundos de cine historico) con el mismo Curro sin mutaciones. "
         "Presupuesto: 3 tomas x 12 = 36 creditos consumidos de los 50 gratuitos diarios. ¡Te sobran 14 creditos cada dia!"
     )
-    y4 = 674
+    y4 = 658
     for par in s4_text.split('\n'):
         for l in wrap_text(par, 114):
             pdf.draw_text(42, y4, l, font='F2' if '•' in l and ':' in l else 'F1', size=7.2, r=0.15, g=0.2, b=0.25)
             y4 -= 10.0
 
-    # Sección 4: El Prompt Maestro de Dirección para Gemini
-    pdf.set_fill_color(1.0, 1.0, 1.0)
+    # 4. TÍTULO MAYOR 4 (PÁGINA 2)
+    pdf.set_fill_color(0.2, 0.45, 0.8)
+    pdf.rect(30, 555, 552, 3, fill=True, stroke=False)
+    pdf.set_fill_color(0.93, 0.96, 1.0)
     pdf.set_stroke_color(0.2, 0.45, 0.8)
     pdf.set_line_width(1.0)
-    pdf.rect(30, 240, 552, 312, fill=True, stroke=True)
+    pdf.rect(30, 529, 552, 24, fill=True, stroke=True)
+    pdf.draw_text(42, 536, '4. EL PROMPT MAESTRO DE DIRECCIÓN (COPIA Y PEGA EN GEMINI)', font='F2', size=12.5, r=0.1, g=0.3, b=0.65)
 
-    pdf.draw_text(42, 538, '4. EL PROMPT MAESTRO DE DIRECCION (COPIA ESTE TEXTO Y PEGALO EN GEMINI)', font='F2', size=9.0, r=0.1, g=0.3, b=0.65)
-    pdf.draw_text(42, 526, 'Este prompt ya incluye todas las ordenes tecnicas de rodaje y coherencia para que tu no tengas que inventar nada:', font='F3', size=7.1, r=0.4, g=0.45, b=0.5)
+    # Tarjeta Sección 4
+    pdf.set_fill_color(1.0, 1.0, 1.0)
+    pdf.set_stroke_color(0.2, 0.45, 0.8)
+    pdf.set_line_width(0.8)
+    pdf.rect(30, 248, 552, 276, fill=True, stroke=True)
+
+    pdf.draw_text(42, 510, 'Este prompt ya incluye todas las ordenes tecnicas de rodaje y coherencia para que tu no tengas que inventar nada:', font='F3', size=7.1, r=0.4, g=0.45, b=0.5)
 
     p_master = (
         "\"Actua como director de cine profesional. Disena una escena cinematografica de 3 planos continuos inspirada en la mitica serie espanola 'Curro Jimenez' ambientada en la Serrania de Ronda (1808).\n"
@@ -295,21 +325,28 @@ def build_info_003b_pdf(output_path):
         "   - TOMA 2 (5s): Plano medio de Curro a caballo vigilando el camino real con CAMARA ORBITAL o SEGUIMIENTO (Orbit / Tracking).\n"
         "   - TOMA 3 (5s): Primer plano dramatico de su mirada decidida bajo el sombrero calanes con ZOOM IN lento o BULLET TIME.\""
     )
-    y5 = 510
+    y5 = 496
     for par in p_master.split('\n'):
         for l in wrap_text(par, 114):
             pdf.draw_text(42, y5, l, font='F2' if any(k in l for k in ['1)', '2)', '3)', '- TOMA']) else 'F1', size=7.0, r=0.15, g=0.2, b=0.25)
             y5 -= 9.5
 
-    pdf.draw_text(42, 252, '➔ Gemini te entregara en segundos tus 3 Prompts de Rodaje en espanol listos para llevar a Google Flow.', font='F2', size=7.3, r=0.05, g=0.45, b=0.25)
+    pdf.draw_text(42, 256, '➔ Gemini te entregara en segundos tus 3 Prompts de Rodaje en espanol listos para llevar a Google Flow.', font='F2', size=7.3, r=0.05, g=0.45, b=0.25)
 
-    # Sección 5: Cómo Unir tus 3 Clips con el Editor Gratuito de Windows (Clipchamp)
-    pdf.set_fill_color(0.98, 0.98, 1.0)
+    # 5. TÍTULO MAYOR 5 (PÁGINA 2)
+    pdf.set_fill_color(0.8, 0.5, 0.1)
+    pdf.rect(30, 238, 552, 3, fill=True, stroke=False)
+    pdf.set_fill_color(0.99, 0.96, 0.91)
     pdf.set_stroke_color(0.8, 0.5, 0.1)
     pdf.set_line_width(1.0)
-    pdf.rect(30, 95, 552, 133, fill=True, stroke=True)
+    pdf.rect(30, 212, 552, 24, fill=True, stroke=True)
+    pdf.draw_text(42, 219, '5. CÓMO UNIR TUS 3 CLIPS EN UN SOLO VÍDEO (CLIPCHAMP)', font='F2', size=12.0, r=0.7, g=0.35, b=0.05)
 
-    pdf.draw_text(42, 214, '5. COMO UNIR TUS 3 CLIPS EN UN SOLO VIDEO CON EL EDITOR DE WINDOWS (CLIPCHAMP)', font='F2', size=8.3, r=0.7, g=0.35, b=0.05)
+    # Tarjeta Sección 5
+    pdf.set_fill_color(0.98, 0.98, 1.0)
+    pdf.set_stroke_color(0.8, 0.5, 0.1)
+    pdf.set_line_width(0.8)
+    pdf.rect(30, 95, 552, 113, fill=True, stroke=True)
 
     v_text = (
         "Si quieres juntar tus 3 tomas de Google Flow en una sola pelicula continua de 15 segundos para enviarla por WhatsApp a tu familia:\n"
@@ -318,7 +355,7 @@ def build_info_003b_pdf(output_path):
         "• 3. Ordenar en la Linea de Tiempo: Arrastra los 3 videos a la pista inferior horizontal, colocandolos uno detras de otro en fila (primero el paisaje, luego Curro a caballo y al final su primer plano).\n"
         "• 4. Guardar tu Pelicula Final: Pulsa arriba a la derecha en el boton Exportar y elige 1080p (HD). ¡En pocos segundos tendras tu archivo de video completo listo para disfrutar!"
     )
-    y6 = 199
+    y6 = 194
     for par in v_text.split('\n'):
         for l in wrap_text(par, 112):
             pdf.draw_text(42, y6, l, font='F2' if any(k in l for k in ['• 1.', '• 2.', '• 3.', '• 4.']) else 'F1', size=7.1, r=0.15, g=0.2, b=0.25)

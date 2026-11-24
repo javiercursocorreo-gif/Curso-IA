@@ -188,6 +188,36 @@ class RetoPDFBuilder:
         self.pdf.draw_text(self.margin_x, 21, f"Curso de IA - Monografico 2: Gemini Notebook - {self.title_main[:55]}", font="F1", size=7.5, r=0.4, g=0.45, b=0.5)
         self.pdf.draw_text(self.margin_x + self.content_w - 75, 21, f"Pagina {p_num} de 2", font="F2", size=8.0, r=0.2, g=0.25, b=0.35)
 
+    def add_major_section_header(self, num_str, title, subtitle=None, color_rgb=None, force_new_page=False):
+        if force_new_page and self.cur_y < 760:
+            self.pdf.new_page()
+            self.cur_y = 794
+
+        c = color_rgb or self.border_color
+        
+        # Barra superior de acento
+        self.pdf.set_fill_color(c[0], c[1], c[2])
+        self.pdf.rect(self.margin_x, self.cur_y - 2, self.content_w, 3, fill=True, stroke=False)
+        self.cur_y -= 12
+
+        # Caja destacada para el título grande (13.5pt)
+        h_box = 30 if subtitle else 24
+        bg_r = c[0] * 0.12 + 0.88
+        bg_g = c[1] * 0.12 + 0.88
+        bg_b = c[2] * 0.12 + 0.88
+        self.pdf.set_fill_color(bg_r, bg_g, bg_b)
+        self.pdf.set_stroke_color(c[0], c[1], c[2])
+        self.pdf.set_line_width(1.0)
+        self.pdf.rect(self.margin_x, self.cur_y - h_box + 14, self.content_w, h_box, fill=True, stroke=True)
+
+        full_title = f"{num_str}. {title.upper()}"
+        self.pdf.draw_text(self.margin_x + 10, self.cur_y, full_title, font="F2", size=13.0, r=c[0], g=c[1], b=c[2])
+        if subtitle:
+            self.pdf.draw_text(self.margin_x + 10, self.cur_y - 13, subtitle, font="F1", size=8.2, r=0.25, g=0.30, b=0.38)
+            self.cur_y -= (h_box + 8)
+        else:
+            self.cur_y -= (h_box + 6)
+
     def add_section_title(self, title, color_rgb=None):
         c = color_rgb or self.border_color
         self.pdf.set_fill_color(c[0], c[1], c[2])
@@ -264,7 +294,7 @@ def build_videojuegos_pdf_clean():
     # === PÁGINA 1 ===
     builder.draw_banner_p1()
 
-    builder.add_section_title("1. CONCEPTO CLAVE: ¿QUÉ SIGNIFICA 'HAZME UN SITIO:'?", color_rgb=(0.85, 0.25, 0.20))
+    builder.add_major_section_header("1", "CONCEPTO CLAVE: ¿QUÉ SIGNIFICA 'HAZME UN SITIO:'?", "El comando de activación del motor web interactivo de Google", color_rgb=(0.85, 0.25, 0.20))
     builder.add_card_white(
         title="El comando del sistema que activa el motor web de Gemini",
         lines_list=[
@@ -277,7 +307,7 @@ def build_videojuegos_pdf_clean():
         title_color=(0.80, 0.20, 0.15)
     )
 
-    builder.add_section_title("2. CASO REAL APLICADO: MISIÓN APOLO 11 (HISTORIA Y CIENCIA)", color_rgb=(0.85, 0.25, 0.20))
+    builder.add_major_section_header("2", "CASO REAL APLICADO: MISIÓN APOLO 11 (HISTORIA Y CIENCIA)", "Simulador interactivo del alunizaje con fuentes de la NASA", color_rgb=(0.85, 0.25, 0.20))
     builder.add_card_white(
         title="Objetivo pedagógico en el aula senior",
         lines_list=[
@@ -289,7 +319,7 @@ def build_videojuegos_pdf_clean():
         title_color=(0.75, 0.20, 0.15)
     )
 
-    builder.add_section_title("3. PROMPT MAESTRO PARA COPIAR Y PEGAR EN STUDIO", color_rgb=(0.85, 0.25, 0.20))
+    builder.add_major_section_header("3", "PROMPT MAESTRO PARA COPIAR Y PEGAR EN STUDIO", "Instrucciones de diseño y ergonomía senior listas para ejecutar", color_rgb=(0.85, 0.25, 0.20))
     builder.add_prompt_card(
         title="Prompt estructurado (pegar en la barra inferior de Gemini Notebook con fuentes activas):",
         prompt_lines=[
@@ -310,7 +340,7 @@ def build_videojuegos_pdf_clean():
     builder.pdf.new_page()
     builder.draw_header_p2("GUÍA DE EJECUCIÓN, PRUEBA Y COMPARTICIÓN")
 
-    builder.add_section_title("4. PASO A PASO DIDÁCTICO EN EL AULA (FLUJO EN 4 ETAPAS)", color_rgb=(0.85, 0.25, 0.20))
+    builder.add_major_section_header("4", "PASO A PASO DIDÁCTICO EN EL AULA (FLUJO EN 4 ETAPAS)", "De la selección de fuentes a la publicación en WhatsApp", color_rgb=(0.85, 0.25, 0.20))
     builder.add_card_white(
         title="Procedimiento en el ordenador o tablet del alumno",
         lines_list=[
@@ -323,7 +353,7 @@ def build_videojuegos_pdf_clean():
         title_color=(0.75, 0.20, 0.15)
     )
 
-    builder.add_section_title("5. PREGUNTAS DE REFLEXIÓN TRAS LA PARTIDA", color_rgb=(0.85, 0.25, 0.20))
+    builder.add_major_section_header("5", "PREGUNTAS DE REFLEXIÓN TRAS LA PARTIDA", "Diálogo guiado con el profesor sobre rigor y aprendizaje", color_rgb=(0.85, 0.25, 0.20))
     builder.add_card_white(
         title="Diálogo guiado con el profesor",
         lines_list=[
@@ -351,7 +381,7 @@ def build_corrector_pdf_clean():
     # === PÁGINA 1 ===
     builder.draw_banner_p1()
 
-    builder.add_section_title("1. LA REVOLUCIÓN DE LAS FUENTES: LIBROS DE TEXTO GRATUITOS", color_rgb=(0.15, 0.55, 0.30))
+    builder.add_major_section_header("1", "LA REVOLUCIÓN DE LAS FUENTES: LIBROS DE TEXTO GRATUITOS", "Biblioteca académica abierta integrada (OpenStax y Open Textbook Library)", color_rgb=(0.15, 0.55, 0.30))
     builder.add_card_white(
         title="Biblioteca académica abierta integrada (OpenStax y Open Textbook Library)",
         lines_list=[
@@ -363,7 +393,7 @@ def build_corrector_pdf_clean():
         title_color=(0.10, 0.45, 0.25)
     )
 
-    builder.add_section_title("2. PROCEDIMIENTO METODOLÓGICO EN 3 FASES", color_rgb=(0.15, 0.55, 0.30))
+    builder.add_major_section_header("2", "PROCEDIMIENTO METODOLÓGICO EN 3 FASES", "De la fuente canónica al informe de auditoría con citas [1]", color_rgb=(0.15, 0.55, 0.30))
     builder.add_card_white(
         title="Fases de trabajo",
         lines_list=[
@@ -375,7 +405,7 @@ def build_corrector_pdf_clean():
         title_color=(0.10, 0.45, 0.25)
     )
 
-    builder.add_section_title("3. PROMPT MAESTRO 1: AUDITORÍA DE ERRORES Y CITAS [1]", color_rgb=(0.15, 0.55, 0.30))
+    builder.add_major_section_header("3", "PROMPT MAESTRO 1: AUDITORÍA DE ERRORES Y CITAS [1]", "Instrucción de corrección pedagógica estructurada con citas", color_rgb=(0.15, 0.55, 0.30))
     builder.add_prompt_card(
         title="Prompt de corrección cruzada (copiar y pegar en Gemini Notebook):",
         prompt_lines=[
@@ -395,7 +425,7 @@ def build_corrector_pdf_clean():
     builder.pdf.new_page()
     builder.draw_header_p2("PROMPTS COMPLEMENTARIOS Y AUDITORÍA PROFUNDA")
 
-    builder.add_section_title("4. PROMPT MAESTRO 2: EL MAPA DE VACÍOS (LO QUE OLVIDÉ ANOTAR)", color_rgb=(0.15, 0.55, 0.30))
+    builder.add_major_section_header("4", "PROMPT MAESTRO 2: EL MAPA DE VACÍOS (LO QUE OLVIDÉ ANOTAR)", "Detección de omisiones críticas frente al manual oficial", color_rgb=(0.15, 0.55, 0.30))
     builder.add_prompt_card(
         title="Prompt para detectar omisiones críticas:",
         prompt_lines=[
@@ -405,7 +435,7 @@ def build_corrector_pdf_clean():
         ]
     )
 
-    builder.add_section_title("5. PROMPT MAESTRO 3: SIMULACRO DE TEST PERSONALIZADO", color_rgb=(0.15, 0.55, 0.30))
+    builder.add_major_section_header("5", "PROMPT MAESTRO 3: SIMULACRO DE TEST PERSONALIZADO", "Autoevaluación sobre los puntos débiles detectados", color_rgb=(0.15, 0.55, 0.30))
     builder.add_prompt_card(
         title="Prompt para autoevaluación en clase:",
         prompt_lines=[
@@ -414,7 +444,7 @@ def build_corrector_pdf_clean():
         ]
     )
 
-    builder.add_section_title("6. VALOR EDUCATIVO PARA PERSONAS MAYORES", color_rgb=(0.15, 0.55, 0.30))
+    builder.add_major_section_header("6", "VALOR EDUCATIVO PARA PERSONAS MAYORES", "Tranquilidad cognitiva, rigor y aprendizaje guiado", color_rgb=(0.15, 0.55, 0.30))
     builder.add_card_white(
         title="Tranquilidad cognitiva y aprendizaje guiado",
         lines_list=[
