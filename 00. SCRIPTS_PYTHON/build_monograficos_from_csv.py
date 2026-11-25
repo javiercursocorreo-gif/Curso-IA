@@ -180,6 +180,24 @@ CSV_ROWS = [
         "num": 7,
         "file_suffix": "7_MAPA_GESTION_PROYECTO",
         "tema": "Monográfico 7. Mapa de Gestión del Proyecto con IA (Arquitectura y Flujo de Trabajo)",
+        "titulo": "Guía Maestra: Arquitectura, Instalación y Gobernanza en Antigravity (PDF)",
+        "desc": "Fuente Única de la Verdad: Ecosistema integral de trabajo para el profesor y kit completo de puesta en marcha para alumnos.",
+        "url": GITHUB_BASE + "CLASES/7.%20MAPA_GESTION_PROYECTO_CON_IA/ARQUITECTURA_Y_SOLUCIONES_ANTIGRAVITY.pdf",
+        "type": "pdf"
+    },
+    {
+        "num": 7,
+        "file_suffix": "7_MAPA_GESTION_PROYECTO",
+        "tema": "Monográfico 7. Mapa de Gestión del Proyecto con IA (Arquitectura y Flujo de Trabajo)",
+        "titulo": "Descargar Kit de Inicio en 1 Clic para Alumnos (ZIP)",
+        "desc": "Plantilla descargable con AGENTS.md precalibrado, reglas de oro y estructura lista para usar sin consola.",
+        "url": GITHUB_BASE + "CLASES/7.%20MAPA_GESTION_PROYECTO_CON_IA/WORKSPACE-ANTIGRAVITY-PLANTILLA.zip",
+        "type": "launch"
+    },
+    {
+        "num": 7,
+        "file_suffix": "7_MAPA_GESTION_PROYECTO",
+        "tema": "Monográfico 7. Mapa de Gestión del Proyecto con IA (Arquitectura y Flujo de Trabajo)",
         "titulo": "Infografía Interactiva: Mapa de Gestión del Proyecto con IA (HTML)",
         "desc": "Cómo creamos y publicamos este curso en equipo: el profesor, Antigravity en el PC, sincronización en GitHub y distribución automática en Google Classroom para los alumnos.",
         "url": GITHUB_BASE + "CLASES/7.%20MAPA_GESTION_PROYECTO_CON_IA/%2A.App_SIMULACION.html",

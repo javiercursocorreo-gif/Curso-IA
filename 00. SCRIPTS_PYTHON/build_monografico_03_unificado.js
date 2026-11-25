@@ -4,8 +4,11 @@
  * Genera el documento único simplificado para el Monográfico 3:
  * "MONOGRAFICO_3_COMO_CREAR_UN_CUENTO_ILUSTRADO_CON_IA.pdf"
  * 
- * Incorpora el truco maestro de "Personalizar Audio (Customize)" para que el podcast
- * de NotebookLM narre el cuento con voces y ternura infantil en vez de analizarlo.
+ * Incorpora:
+ * - Paso 1: Argumento y Cuento con [ X] en rojo y sin frase sobrante.
+ * - Opción alternativa para historias propias.
+ * - Paso 2: Guion en viñetas con diálogos.
+ * - Paso 3: Presentación de cómic multi-viñeta estilo Pixar 3D.
  */
 
 const fs = require('fs');
@@ -208,9 +211,9 @@ function buildPdf() {
   pdf.drawText(48, 712, "Guía integral en 3 pasos: Del argumento al cómic en láminas en Google Gemini", 'F1', 9.0, 0.85, 0.90, 0.98);
 
   // 2. SECCIÓN: INTRODUCCIÓN AL PROYECTO
-  const box1Top = 692;
+  const box1Top = 690;
   const box1W = 540;
-  const box1H = 114;
+  const box1H = 118;
   const box1Bottom = box1Top - box1H;
 
   pdf.setFillColor(1, 1, 1);
@@ -220,44 +223,44 @@ function buildPdf() {
 
   let curY = box1Top - 15;
   pdf.drawText(50, curY, "PROYECTO: TU CÓMIC FAMILIAR EN 3 PASOS DIRECTOS", 'F2', 10.0, 0.06, 0.09, 0.16);
-  curY -= 13;
+  curY -= 14;
 
-  const introText1 = "Creamos un auténtico cómic infantil ilustrado para nuestros nietos o familia sin necesidad de dibujar ni programar. Diseñamos el guion en viñetas y diálogos en Gemini, y generamos la presentación final del cómic en láminas con estilo Pixar 3D.";
+  const introText1 = "Creamos un auténtico cómic infantil ilustrado para nuestros nietos o familia sin necesidad de dibujar ni programar. Diseñamos el argumento y guion en viñetas y diálogos en Gemini, y generamos la presentación final del cómic en láminas con estilo Pixar 3D.";
   const wrappedIntro1 = wrapText(introText1, 95);
   for (const line of wrappedIntro1) {
     pdf.drawText(50, curY, line, 'F1', 8.5, 0.25, 0.28, 0.35);
-    curY -= 11.0;
+    curY -= 11.5;
   }
 
-  curY -= 2;
+  curY -= 3;
   const stepsList = [
     "• Paso 1 (Google Gemini): Diseñas el argumento y personajes adaptados a la edad del niño.",
-    "• Paso 2 (Google Gemini): Conviertes la historia en guion de cómic de 6 páginas con 3 viñetas y diálogos.",
-    "• Paso 3 (Google Gemini): Creas la presentación de cómic en cuadrículas con bocadillos estilo 3D."
+    "• Paso 2 (Google Gemini): Conviertes la historia en guion de cómic de 6 páginas con 3 viñetas y diálogos directos.",
+    "• Paso 3 (Google Gemini): Creas la presentación de cómic en cuadrículas con bocadillos estilo Pixar 3D."
   ];
   for (const step of stepsList) {
     pdf.drawText(50, curY, step, 'F1', 8.3, 0.20, 0.23, 0.30);
-    curY -= 10.5;
+    curY -= 11.0;
   }
 
   // 3. SECCIÓN: PASO 1 (CREAR EL CUADERNO Y EL ARGUMENTO)
-  let paso1Top = box1Bottom - 10;
+  let paso1Top = box1Bottom - 14;
   pdf.setFillColor(0.15, 0.23, 0.36);
   pdf.rect(36, paso1Top - 20, 540, 20, true, false);
   pdf.drawText(50, paso1Top - 15, "PASO 1: CREAR EL CUADERNO «CUENTOS» Y EL ARGUMENTO EN GOOGLE GEMINI", 'F2', 9.5, 1, 1, 1);
 
-  curY = paso1Top - 32;
+  curY = paso1Top - 34;
   const paso1Desc = "1. Abre Google Gemini y crea un nuevo chat o cuaderno llamado «CUENTOS».\n" +
                     "2. Pega este prompt: Gemini redactará el argumento con valores y personajes según la edad del niño.";
   const linesPaso1Desc = paso1Desc.split('\n');
   for (const line of linesPaso1Desc) {
-    pdf.drawText(36, curY, line, 'F1', 8.4, 0.22, 0.25, 0.32);
-    curY -= 11.0;
+    pdf.drawText(36, curY, line, 'F1', 8.5, 0.22, 0.25, 0.32);
+    curY -= 11.5;
   }
 
   // Caja de Prompt Paso 1
-  curY -= 3;
-  const promptBoxH = 136;
+  curY -= 4;
+  const promptBoxH = 150;
   const promptBoxBottom = curY - promptBoxH;
   pdf.setFillColor(0.08, 0.11, 0.18);
   pdf.setStrokeColor(0.25, 0.35, 0.50);
@@ -269,84 +272,62 @@ function buildPdf() {
   const prompt1Content = 
 `Actúa como un guionista de cómics infantiles profesional.
 Escribe el argumento y personajes para un cómic de aventuras familiares sobre:
-"El Viaje en Globo del Abuelo y la Gata Luna" (o el tema que elijas).
+"El Viaje en Globo del Abuelo y la Gata Luna".
 
 DATOS OBLIGATORIOS PARA LA HISTORIA:
-1. EDAD DEL NIÑO: Este cómic es para un niño de [indica edad, ej: 6] años.
+1. EDAD DEL NIÑO: Este cómic es para un niño de [ X] años.
    Ajusta estrictamente el vocabulario, la ternura y la madurez a su nivel.
 2. VALORES: Debe transmitir curiosidad, aventura, confianza mutua y cariño.
 3. TONO: Muy visual, ágil, con diálogos expresivos y final reconfortante y feliz.`;
 
   const linesPrompt1 = prompt1Content.split('\n');
-  let p1Y = curY - 27;
+  let p1Y = curY - 28;
   for (const l of linesPrompt1) {
-    pdf.drawText(50, p1Y, l, 'F4', 7.8, 0.92, 0.95, 1.0);
-    p1Y -= 9.5;
+    if (l.includes('[ X]')) {
+      const parts = l.split('[ X]');
+      const prefix = parts[0];
+      const suffix = parts[1];
+      // Courier font (F4) at 7.8pt: width per char = 7.8 * 0.6 = 4.68 pt
+      pdf.drawText(50, p1Y, prefix, 'F4', 7.8, 0.92, 0.95, 1.0);
+      const xRed = 50 + prefix.length * 4.68;
+      pdf.drawText(xRed, p1Y, '[ X]', 'F5', 8.2, 0.95, 0.20, 0.20); // Bold Courier in vivid RED!
+      const xSuffix = xRed + 4 * 4.68;
+      pdf.drawText(xSuffix, p1Y, suffix, 'F4', 7.8, 0.92, 0.95, 1.0);
+    } else {
+      pdf.drawText(50, p1Y, l, 'F4', 7.8, 0.92, 0.95, 1.0);
+    }
+    p1Y -= 10.5;
   }
 
-  // 4. NUEVA SECCIÓN DIDÁCTICA: NOVEDADES EN GOOGLE GEMINI (CREAR NOTA, WEB Y FAST RESEARCH)
-  const nlmTop = promptBoxBottom - 10;
-  pdf.setFillColor(0.02, 0.44, 0.55);
-  pdf.rect(36, nlmTop - 20, 540, 20, true, false);
-  pdf.drawText(50, nlmTop - 15, "GOOGLE GEMINI: CÓMO AÑADIR TUS FUENTES («CREAR NOTA», «WEB» Y «FAST RESEARCH»)", 'F2', 9.5, 1, 1, 1);
-
-  const nlmBoxH = 118;
-  const nlmBoxBottom = nlmTop - 20 - nlmBoxH;
-  pdf.setFillColor(1, 1, 1);
-  pdf.setStrokeColor(0.75, 0.85, 0.92);
-  pdf.setLineWidth(1);
-  pdf.rect(36, nlmBoxBottom, 540, nlmBoxH, true, true);
-
-  let nlmY = nlmTop - 34;
-
-  // 1. Crear nota
-  pdf.drawText(48, nlmY, "1. BOTÓN «+ CREAR NOTA» (Add Note):", 'F2', 8.8, 0.05, 0.40, 0.50);
-  nlmY -= 11.0;
-  const tNota = "Permite escribir o pegar texto directamente en Google Gemini sin subir ningún archivo desde el ordenador. Sirve para guardar el guion del cómic, tus propias ideas o notas de trabajo. Es una fuente viva e interna editable.";
-  for (const l of wrapText(tNota, 98)) {
-    pdf.drawText(48, nlmY, l, 'F1', 8.0, 0.25, 0.28, 0.35);
-    nlmY -= 10.0;
-  }
-
-  // 2. Desplegable Web
-  nlmY -= 2;
-  pdf.drawText(48, nlmY, "2. DESPLEGABLE «WEB» (Enlaces URL y Vídeos de YouTube):", 'F2', 8.8, 0.05, 0.40, 0.50);
-  nlmY -= 11.0;
-  const tWeb = "Permite pegar cualquier enlace de una página web, blog o vídeo de YouTube. Google Gemini descarga el texto o transcribe el audio del vídeo automáticamente y lo convierte en fuente de consulta en segundos.";
-  for (const l of wrapText(tWeb, 98)) {
-    pdf.drawText(48, nlmY, l, 'F1', 8.0, 0.25, 0.28, 0.35);
-    nlmY -= 10.0;
-  }
-
-  // 3. Desplegable Fast Research
-  nlmY -= 2;
-  pdf.drawText(48, nlmY, "3. DESPLEGABLE «FAST RESEARCH» (Investigación Rápida con IA):", 'F2', 8.8, 0.05, 0.40, 0.50);
-  nlmY -= 11.0;
-  const tFast = "Escribes un tema o pregunta clave (ej. «curiosidades sobre globos aerostáticos») y la IA rastrea la web, selecciona fuentes fiables y las añade al cuaderno automáticamente sin que tengas que buscar tú en Google.";
-  for (const l of wrapText(tFast, 98)) {
-    pdf.drawText(48, nlmY, l, 'F1', 8.0, 0.25, 0.28, 0.35);
-    nlmY -= 10.0;
-  }
-
-  // 5. CAJA DE OPCIÓN ALTERNATIVA (HISTORIA PROPIA)
-  const altTop = nlmBoxBottom - 8;
-  const altBoxH = 46;
+  // 4. CAJA DE OPCIÓN ALTERNATIVA (HISTORIA PROPIA)
+  const altTop = promptBoxBottom - 18;
+  const altBoxH = 82;
   const altBottom = altTop - altBoxH;
 
   pdf.setFillColor(0.97, 0.98, 1.0);
-  pdf.setStrokeColor(0.85, 0.88, 0.95);
+  pdf.setStrokeColor(0.80, 0.85, 0.94);
+  pdf.setLineWidth(1);
   pdf.rect(36, altBottom, 540, altBoxH, true, true);
 
-  pdf.drawText(48, altTop - 13, "OPCIÓN ALTERNATIVA (Si ya tienes una historia propia escrita):", 'F2', 8.2, 0.45, 0.25, 0.85);
+  pdf.drawText(48, altTop - 15, "OPCIÓN ALTERNATIVA (Si ya tienes una historia propia escrita):", 'F2', 9.0, 0.45, 0.25, 0.85);
   
-  const notaAlt = "Usa el botón «+ Crear nota» en Google Gemini y pega tu historia directa, o pídele: «Te pego mi historia: adáptala a cómic para un niño de [X] años manteniendo el argumento y resaltando diálogos entre personajes.»";
-  const wrappedAlt = wrapText(notaAlt, 99);
-  
-  let altTextY = altTop - 24;
-  for (const l of wrappedAlt) {
-    pdf.drawText(48, altTextY, l, 'F1', 7.8, 0.30, 0.33, 0.40);
-    altTextY -= 9.5;
+  let altTextY = altTop - 30;
+  const tAltDesc = "Si ya tienes una historia propia redactada por ti o tu familia, no necesitas crear un argumento nuevo. Puedes pegarla directamente en Google Gemini y pedirle:";
+  for (const l of wrapText(tAltDesc, 96)) {
+    pdf.drawText(48, altTextY, l, 'F1', 8.2, 0.25, 0.28, 0.35);
+    altTextY -= 11.0;
   }
+
+  altTextY -= 2;
+  const pAltPart1 = "«Te pego mi historia: adáptala a guion de cómic para un niño de ";
+  const pAltPart2 = " años manteniendo";
+  pdf.drawText(48, altTextY, pAltPart1, 'F2', 8.0, 0.30, 0.20, 0.60);
+  // Measure width in Helvetica-Bold (approx 4.8pt per char for 8pt)
+  const xAltRed = 48 + 268;
+  pdf.drawText(xAltRed, altTextY, "[ X]", 'F5', 8.2, 0.95, 0.20, 0.20);
+  pdf.drawText(xAltRed + 19, altTextY, pAltPart2, 'F2', 8.0, 0.30, 0.20, 0.60);
+  altTextY -= 10.5;
+  pdf.drawText(48, altTextY, "el argumento original y resaltando los diálogos directos entre personajes.»", 'F2', 8.0, 0.30, 0.20, 0.60);
 
   // Pie de página 1
   pdf.setStrokeColor(0.80, 0.83, 0.88);
@@ -366,14 +347,8 @@ DATOS OBLIGATORIOS PARA LA HISTORIA:
   pdf.setFillColor(0.985, 0.988, 0.995);
   pdf.rect(0, 0, 612, 792, true, false);
 
-  // Cabecera compacta página 2
-  pdf.setFillColor(0.06, 0.09, 0.16);
-  pdf.rect(36, 736, 540, 26, true, false);
-  pdf.drawText(48, 746, "MONOGRÁFICO 3: CÓMIC ILUSTRADO CON IA  •  PASOS 2 Y 3", 'F2', 9.5, 1, 1, 1);
-  pdf.drawText(470, 746, "GUÍA DIDÁCTICA", 'F5', 8.5, 0.22, 0.74, 0.97);
-
-  // 1. SECCIÓN: PASO 2 (GUIÓN DE CÓMIC CON VIÑETAS Y DIÁLOGOS)
-  curY = 726;
+  // 1. SECCIÓN: PASO 2 (GUIÓN DE CÓMIC CON VIÑETAS Y DIÁLOGOS) - Comienza arriba limpio
+  curY = 750;
   pdf.setFillColor(0.45, 0.22, 0.78);
   pdf.rect(36, curY - 20, 540, 20, true, false);
   pdf.drawText(50, curY - 15, "PASO 2: CONVERTIR EL CUENTO EN GUION DE CÓMIC CON VIÑETAS (En Gemini)", 'F2', 9.8, 1, 1, 1);
@@ -419,7 +394,7 @@ Genera ahora el guion completo de cómic en viñetas con diálogos.`;
   }
 
   // 2. SECCIÓN: PASO 3 (PRESENTACIÓN DE CÓMIC MULTI-VIÑETA EN GOOGLE GEMINI)
-  curY = curY - prompt2BoxH - 12;
+  curY = curY - prompt2BoxH - 14;
   pdf.setFillColor(0.05, 0.55, 0.40);
   pdf.rect(36, curY - 20, 540, 20, true, false);
   pdf.drawText(50, curY - 15, "PASO 3: GENERAR LA PRESENTACIÓN DE CÓMIC MULTI-VIÑETA (En Google Gemini)", 'F2', 9.8, 1, 1, 1);
@@ -464,7 +439,7 @@ Genera ahora el cómic completo de 6 páginas con viñetas y bocadillos.`;
   }
 
   // 3. SECCIÓN: CÓMO DESCARGAR, IMPRIMIR Y COMPARTIR TU CÓMIC TERMINADO
-  curY = curY - prompt3BoxH - 12;
+  curY = curY - prompt3BoxH - 14;
   pdf.setFillColor(0.08, 0.28, 0.48);
   pdf.rect(36, curY - 20, 540, 20, true, false);
   pdf.drawText(50, curY - 15, "RESULTADO FINAL: CÓMO DESCARGAR, IMPRIMIR Y COMPARTIR TU CÓMIC", 'F2', 9.8, 1, 1, 1);
