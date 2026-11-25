@@ -3,13 +3,18 @@
 """
 build_pdf_arquitectura_soluciones_antigravity.py
 Genera la Guía Maestra Técnica y Didáctica Definitiva (Fuente Única de la Verdad):
-'SOLUCIONES DE ARQUITECTURA Y GOBERNANZA EN GOOGLE ANTIGRAVITY'
-(Estructurada en 5 Fases Lógicas con Doble Bloque Señalizado:
- Azul = Caso Real del Profesor / Verde = Kit de Inicio Rápido del Alumno)
+'GUÍA DE ARQUITECTURA, INSTALACIÓN Y GOBERNANZA EN GOOGLE ANTIGRAVITY'
+(Estructurada en 6 Fases desde CERO:
+ Fase 0: Descarga e Instalación en Windows y Mac (Por qué elegir el IDE)
+ Fase 1: Fundamentos y Arquitectura Monorepo
+ Fase 2: Configuración del Motor (Settings)
+ Fase 3: Protocolos de Comportamiento (AGENTS.md)
+ Fase 4: Capacidades Avanzadas (Subagentes y UI)
+ Fase 5: Puesta en Marcha con Doble Bloque: Maestro del Profesor y Kit Alumnos)
 
 Destinos sincronizados:
-1. /Users/externo/Library/Mobile Documents/com~apple~CloudDocs/PERSONAL/CLASES DE TECNOLOGÍA/00. ARQUITECTURA SISTEMA CON IA/
-2. /Users/externo/Library/Mobile Documents/com~apple~CloudDocs/PERSONAL/CLASES DE TECNOLOGÍA/CURSO-IA/CLASES/7. MAPA_GESTION_PROYECTO_CON_IA/
+1. 00. ARQUITECTURA SISTEMA CON IA/
+2. CURSO-IA/CLASES/7. MAPA_GESTION_PROYECTO_CON_IA/
 """
 
 import os
@@ -76,7 +81,7 @@ def compilar_html():
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Soluciones de Arquitectura y Gobernanza en Google Antigravity</title>
+    <title>Guía de Arquitectura, Instalación y Gobernanza en Google Antigravity</title>
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; line-height: 1.6; color: #1e293b; max-width: 980px; margin: 40px auto; padding: 0 24px; }
         h1 { color: #0f172a; border-bottom: 2px solid #0284c7; padding-bottom: 12px; font-size: 2.1rem; }
@@ -103,24 +108,61 @@ def compilar_html():
     </style>
 </head>
 <body>
-    <h1>Soluciones de Arquitectura y Gobernanza en Google Antigravity</h1>
-    <p><strong>Guía Maestra y Fuente Única de la Verdad (Ecosistema Completo y Kit de Alumnos)</strong><br>
-    <em>Diseño de sistemas agénticos, prevención del 'Vibe Coding', parámetros de motor, trabajo desatendido en silencio y despliegue rápido.</em></p>
+    <h1>Guía de Arquitectura, Instalación y Gobernanza en Google Antigravity</h1>
+    <p><strong>Manual Maestro y Fuente Única de la Verdad (Ecosistema Completo y Kit de Inicio para Alumnos)</strong><br>
+    <em>Desde la descarga de la herramienta y configuración del motor hasta la gobernanza agéntica profesional y el trabajo desatendido en silencio.</em></p>
 
     <div class="quote-box">
         «El verdadero peligro no es que la inteligencia artificial escriba código, sino que el humano pierda el gobierno sobre la arquitectura. El código se delega; el rigor, la jerarquía de ficheros, la memoria y la verificación jamás.»<br>
         <strong>— Marco de Gobernanza Agéntica en Google Antigravity</strong>
     </div>
 
+    <!-- FASE 0 -->
+    <div class="phase-header">FASE 0: DESCARGA E INSTALACIÓN (PARTIR DE CERO EN WINDOWS Y MAC)</div>
+
+    <h2>0.1 ¿Qué Versión Descargar? La Diferencia Crítica: Desktop vs. IDE</h2>
+    <p>Al acceder a la web oficial de descarga de Google Antigravity, la plataforma presenta distintas opciones:</p>
+    <ul>
+        <li><strong>Antigravity Desktop (App de Escritorio):</strong> Es una aplicación visual muy básica, orientada casi exclusivamente a chatear. <em>Inconveniente:</em> Oculta el árbol de carpetas, no muestra las diferencias exactas de código (diffs rojos/verdes) y no tiene consola de ejecución integrada, quedándose corta de inmediato.</li>
+        <li><strong>Antigravity IDE (Entorno Integrado basado en VS Code - NUESTRA ELECCIÓN OFICIAL):</strong> Es la herramienta profesional definitiva. En una única pantalla integra el explorador de archivos a la izquierda, el editor de código central, la terminal de comandos abajo y el copiloto de IA a la derecha.</li>
+    </ul>
+
+    <div class="solution-box">
+        <strong>💡 Recomendación Oficial del Curso:</strong> Instala siempre <strong>Antigravity IDE</strong>. Aunque seas principiante, verás en tiempo real cómo la IA crea tus carpetas y archivos en el disco, teniendo el 100% del control visual de lo que ocurre en tu ordenador.
+    </div>
+
+    <h2>0.2 Proceso de Instalación Paso a Paso</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Sistema Operativo</th>
+                <th>Enlace / Instalador</th>
+                <th>Pasos de Instalación</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Windows 10 / 11</strong></td>
+                <td>Descargar el instalador <code>.exe</code> (versión Windows x64)</td>
+                <td>1. Ejecuta el archivo descargado.<br>2. Sigue el asistente ("Siguiente", "Instalar").<br>3. Al terminar, abre <strong>Google Antigravity</strong> e inicia sesión con tu cuenta de Google.</td>
+            </tr>
+            <tr>
+                <td><strong>macOS (Apple Silicon / Intel)</strong></td>
+                <td>Descargar el instalador <code>.dmg</code> (versión Mac Universal o Apple Silicon)</td>
+                <td>1. Abre el archivo <code>.dmg</code>.<br>2. Arrastra el icono de Antigravity a la carpeta <strong>Aplicaciones</strong>.<br>3. Abre la app desde Spotlight o Launchpad e inicia sesión con tu cuenta de Google.</td>
+            </tr>
+        </tbody>
+    </table>
+
     <!-- FASE 1 -->
     <div class="phase-header">FASE 1: FUNDAMENTOS Y ARQUITECTURA DEL ESPACIO DE TRABAJO</div>
 
-    <h2>1.1 De la Ilusión del 'Vibe Coding' a la Gobernanza Real</h2>
-    <p>Desarrollar mediante lenguaje natural ("vibe coding") permite generar código rápidamente, pero sin arquitectura acumula silenciosamente cuatro patologías críticas conocidas como <strong>Las 4 D del peligro de la IA</strong>:</p>
+    <h2>1.1 De la Ilusión del 'Vibe Coding' a la Gobernanza Real (Las 4 D)</h2>
+    <p>Generar código mediante lenguaje natural sin arquitectura acumula silenciosamente cuatro patologías críticas conocidas como <strong>Las 4 D del peligro de la IA</strong>:</p>
 
     <div class="danger-box">
         <span class="badge badge-danger">1. Duplicación</span>: Reinvención constante de funciones y utilidades en archivos dispersos.<br>
-        <span class="badge badge-solution">Solución</span>: <code>ESTADO_GLOBAL_PROYECTOS.md</code> como inventario centralizado previo obligatorio y librerías comunes.
+        <span class="badge badge-solution">Solución</span>: <code>ESTADO_GLOBAL_PROYECTOS.md</code> como inventario técnico centralizado previo obligatorio.
     </div>
 
     <div class="danger-box">
@@ -129,12 +171,12 @@ def compilar_html():
     </div>
 
     <div class="danger-box">
-        <span class="badge badge-danger">3. Deluge (Diluvio)</span>: Inflación de dependencias externas superfluas (npm, frameworks pesados) para tareas sencillas.<br>
+        <span class="badge badge-danger">3. Deluge (Diluvio)</span>: Inflación de dependencias externas superfluas (npm, frameworks pesados) para tareas simples.<br>
         <span class="badge badge-solution">Solución</span>: Regla de cero herramientas nuevas, uso de herramientas nativas del sistema operativo y micro-apps atómicas.
     </div>
 
     <div class="danger-box">
-        <span class="badge badge-danger">4. Deception (Engaño)</span>: Código que compila pero oculta datos simulados falsos, APIs bloqueadas o activos inertes.<br>
+        <span class="badge badge-danger">4. Deception (Engaño)</span>: Código que compila pero oculta datos falsos, APIs bloqueadas o activos inertes.<br>
         <span class="badge badge-solution">Solución</span>: Autocomprobación previa obligatoria, marcas temporales UTC en sondas históricas y copias BKP garantizadas.
     </div>
 
@@ -222,7 +264,7 @@ def compilar_html():
     <!-- FASE 5 -->
     <div class="phase-header">FASE 5: PUESTA EN MARCHA AUTOMATIZADA (DOBLE BLOQUE SEÑALIZADO)</div>
 
-    <!-- BLOQUE A: PROFESOR -->
+    <!-- BLOQUE PROFESOR -->
     <div class="box-profesor">
         <span class="badge badge-profesor">📘 PARTE MAESTRA: CASO REAL DE ESTUDIO (ECOSISTEMA DEL PROFESOR)</span>
         <h3>Estructura Real Completa en macOS iCloud Drive</h3>
@@ -258,34 +300,39 @@ echo "=== [FIN SUPERCOMANDO MAESTRO] (EXITOSO) ==="
         </div>
     </div>
 
-    <!-- BLOQUE B: ALUMNO -->
+    <!-- BLOQUE ALUMNO -->
     <div class="box-alumno">
         <span class="badge badge-alumno">🟢 PARTE DEL ALUMNO: GUÍA PASO A PASO PARA MONTARLO EN TU PC</span>
-        <h3>Tu Carpeta Raíz Limpia (Windows o Mac)</h3>
-        <p>Para montar tu propio entorno sin mezclarte con las carpetas privadas del curso, crea o descomprime tu propia carpeta raíz soberana:</p>
+        <h3>Paso 1: ¿Dónde Copiar y Descomprimir este Archivo ZIP? (Windows o Mac)</h3>
+        <p>Para no dejar archivos perdidos en la carpeta de Descargas, sigue este orden exacto:</p>
         <ul>
-            <li><strong>En Windows:</strong> <code>C:\WORKSPACE-ANTIGRAVITY\</code> (o en <code>C:\Users\TuNombre\WORKSPACE-ANTIGRAVITY\</code>).</li>
-            <li><strong>En Mac:</strong> <code>~/WORKSPACE-ANTIGRAVITY/</code>.</li>
+            <li><strong>Si usas Windows:</strong><br>
+                1. Ve al explorador y <strong>copia</strong> el archivo <code>WORKSPACE-ANTIGRAVITY-PLANTILLA.zip</code> en tu carpeta <strong>Documentos</strong> (o en <code>C:\</code>).<br>
+                2. Haz clic derecho sobre el ZIP allí mismo y pulsa <strong>"Extraer todo..."</strong>.<br>
+                3. Al descomprimirlo en ese destino, te quedará tu carpeta lista: <code>Documentos\WORKSPACE-ANTIGRAVITY\</code>.
+            </li>
+            <li><strong>Si usas Mac:</strong><br>
+                1. Abre el Finder y <strong>copia</strong> el archivo <code>WORKSPACE-ANTIGRAVITY-PLANTILLA.zip</code> en tu carpeta <strong>Documentos</strong> (o en tu carpeta de usuario).<br>
+                2. Haz doble clic sobre el ZIP allí mismo para descomprimirlo.<br>
+                3. Te quedará tu carpeta lista: <code>Documentos/WORKSPACE-ANTIGRAVITY/</code>.
+            </li>
         </ul>
 
-        <h3>Paso 1: Descarga e Instalación en 1 Clic (Sin Comandos Raros)</h3>
+        <h3>Paso 2: Abrir la Carpeta en Antigravity IDE</h3>
         <ol>
-            <li>Descarga el archivo <strong><code>WORKSPACE-ANTIGRAVITY-PLANTILLA.zip</code></strong> desde el mapa interactivo de clase.</li>
-            <li>Descomprime la carpeta en la ruta indicada (ej. <code>C:\WORKSPACE-ANTIGRAVITY</code>).</li>
-            <li>Abre Google Antigravity, pulsa <strong>File > Open Folder</strong> (Abrir Carpeta) y selecciona esa carpeta.</li>
+            <li>Abre <strong>Google Antigravity IDE</strong>.</li>
+            <li>En el menú superior pulsa en <strong>File > Open Folder...</strong> (Abrir Carpeta...).</li>
+            <li>Selecciona la carpeta que acabas de descomprimir en el Paso 1.</li>
             <li>¡Listo! Tu Antigravity ya tiene las reglas de Cero-Submits y la configuración técnica profesional preactivada.</li>
         </ol>
 
-        <h3>Paso 2: Cómo usar tu Terminal sin Miedo (El Trabajo en Silencio)</h3>
-        <p>Aunque la instalación sea con el ZIP, <strong>esta metodología se basa en que la IA trabaje en silencio y tú mandes en la terminal</strong>:</p>
+        <h3>Paso 3: Cómo Usar tu Terminal sin Miedo (El Trabajo en Silencio)</h3>
         <ol>
-            <li><strong>Abre tu Terminal:</strong>
-                <ul>
-                    <li>En Windows: Pulsa la tecla <code>Windows</code>, escribe <strong><code>cmd</code></strong> (o <strong><code>Terminal</code></strong>) y pulsa <code>Enter</code>.</li>
-                    <li>En Mac: Pulsa <code>Cmd + Espacio</code>, escribe <strong><code>Terminal</code></strong> y pulsa <code>Enter</code>.</li>
-                </ul>
+            <li><strong>Abre tu consola:</strong><br>
+                • En Windows: Pulsa la tecla <code>Windows</code>, escribe <strong><code>cmd</code></strong> (o Terminal) y pulsa <code>Enter</code>.<br>
+                • En Mac: Pulsa <code>Cmd + Espacio</code>, escribe <strong><code>Terminal</code></strong> y pulsa <code>Enter</code>.
             </li>
-            <li><strong>Pídele cosas a la IA en Antigravity:</strong> Trabajarás normalmente en el chat. La IA procesará en silencio sin interrumpirte con ventanas emergentes.</li>
+            <li><strong>Pídele cosas a la IA en Antigravity:</strong> Trabajarás en el chat normalmente. La IA procesará en silencio sin abrirte popups molestos.</li>
             <li><strong>Ejecuta el Comando Final:</strong> Al terminar, la IA te entregará un bloque de código que empieza por <code>echo</code>. Lo copias, lo pegas en tu ventana negra de la terminal y pulsas <code>Enter</code>. ¡Verás cómo se aplica todo en tu PC con control total!</li>
         </ol>
     </div>
@@ -301,14 +348,19 @@ echo "=== [FIN SUPERCOMANDO MAESTRO] (EXITOSO) ==="
         </thead>
         <tbody>
             <tr>
+                <td><strong>Fase 0: Instalación desde Cero</strong></td>
+                <td>Didáctica / Setup</td>
+                <td>Guía de descarga para Windows/Mac explicando por qué elegir Antigravity IDE frente a Desktop.</td>
+            </tr>
+            <tr>
                 <td><strong>Guía Única Señalizada</strong></td>
-                <td>Gobernanza / Didáctica</td>
+                <td>Gobernanza</td>
                 <td>Fuente única de la verdad con Bloque Maestro (Profesor) y Bloque Alumno (Kit de Inicio).</td>
             </tr>
             <tr>
                 <td><strong>Plantilla ZIP en 1 Clic</strong></td>
-                <td>Despliegue Alumnos</td>
-                <td>Inicio rápido para Windows/Mac sin scripts de terminal complejos para la instalación.</td>
+                <td>Despliegue</td>
+                <td>Inicio rápido para Windows/Mac copiando a Documentos y descomprimiendo en destino.</td>
             </tr>
             <tr>
                 <td><strong>Monorepo Raíz Única</strong></td>
@@ -327,18 +379,18 @@ echo "=== [FIN SUPERCOMANDO MAESTRO] (EXITOSO) ==="
             </tr>
             <tr>
                 <td><strong>Elephant-Goldfish</strong></td>
-                <td>Memoria / Contexto</td>
+                <td>Memoria</td>
                 <td>Auditoría con mente virgen y destrucción inmediata sin fugas de memoria.</td>
             </tr>
             <tr>
-                <td><strong>Subagentes en Paralelo</strong></td>
+                <td><strong>Subagentes Paralelos</strong></td>
                 <td>Concurrencia</td>
                 <td>Ejecución paralela para tareas pesadas sin saturar el hilo principal.</td>
             </tr>
             <tr>
                 <td><strong>Generative UI Nativo</strong></td>
-                <td>Experiencia Visual</td>
-                <td>Widgets y cuadros de mando interactivos embebidos sin exponer código intermedio.</td>
+                <td>Visualización</td>
+                <td>Widgets y cuadros de mando interactivos embebidos sin exponer código.</td>
             </tr>
         </tbody>
     </table>
@@ -351,14 +403,14 @@ echo "=== [FIN SUPERCOMANDO MAESTRO] (EXITOSO) ==="
         f.write(html_content)
     with open(BKP_HTML_MONO, "w", encoding="utf-8") as f:
         f.write(html_content)
-    print(f"✅ HTML generado en carpeta noble y monográfico 6.", flush=True)
+    print("✅ HTML generado con Fase 0 e IDE incorporados.", flush=True)
 
     try:
         subprocess.run(["textutil", "-convert", "docx", HTML_NOBLE, "-output", DOCX_NOBLE], check=True)
         shutil.copyfile(DOCX_NOBLE, DOCX_MONO)
-        print(f"✅ DOCX generado y sincronizado.", flush=True)
+        print("✅ DOCX generado y sincronizado.", flush=True)
     except Exception as e:
-        print(f"⚠️ Aviso generando DOCX: {e}", flush=True)
+        print(f"⚠️ Aviso DOCX: {e}", flush=True)
 
 def compilar_pdf_reportlab():
     doc = SimpleDocTemplate(
@@ -374,98 +426,56 @@ def compilar_pdf_reportlab():
 
     styles = getSampleStyleSheet()
 
-    title_style = ParagraphStyle(
-        'DocTitle',
-        parent=styles['Normal'],
-        fontName='Helvetica-Bold',
-        fontSize=15,
-        leading=18,
-        textColor=colors.HexColor('#0F172A'),
-        spaceAfter=4
-    )
+    title_style = ParagraphStyle('DocTitle', parent=styles['Normal'], fontName='Helvetica-Bold', fontSize=14.5, leading=17.5, textColor=colors.HexColor('#0F172A'), spaceAfter=4)
+    subtitle_style = ParagraphStyle('DocSubtitle', parent=styles['Normal'], fontName='Helvetica', fontSize=8.2, leading=11, textColor=colors.HexColor('#475569'), spaceAfter=7)
+    phase_style = ParagraphStyle('PhaseStyle', parent=styles['Normal'], fontName='Helvetica-Bold', fontSize=9, leading=11.5, textColor=colors.HexColor('#FFFFFF'), backColor=colors.HexColor('#0284C7'), borderPadding=4, spaceBefore=7, spaceAfter=4, keepWithNext=True)
+    h1_style = ParagraphStyle('H1', parent=styles['Normal'], fontName='Helvetica-Bold', fontSize=8.5, leading=11.5, textColor=colors.HexColor('#0369A1'), spaceBefore=5, spaceAfter=2.5, keepWithNext=True)
+    body_style = ParagraphStyle('Body', parent=styles['Normal'], fontName='Helvetica', fontSize=7.4, leading=10.2, textColor=colors.HexColor('#1E293B'), spaceAfter=3.5)
+    code_banner_style = ParagraphStyle('CodeBanner', parent=styles['Normal'], fontName='Courier', fontSize=6.2, leading=8.2, textColor=colors.HexColor('#F8FAFC'), backColor=colors.HexColor('#1E293B'), borderColor=colors.HexColor('#38BDF8'), borderWidth=1, borderPadding=3.5, spaceAfter=3.5)
 
-    subtitle_style = ParagraphStyle(
-        'DocSubtitle',
-        parent=styles['Normal'],
-        fontName='Helvetica',
-        fontSize=8.5,
-        leading=11.5,
-        textColor=colors.HexColor('#475569'),
-        spaceAfter=8
-    )
+    danger_title = ParagraphStyle('DT', parent=styles['Normal'], fontName='Helvetica-Bold', fontSize=7.6, leading=9.5, textColor=colors.HexColor('#B91C1C'), spaceAfter=1)
+    danger_body = ParagraphStyle('DB', parent=styles['Normal'], fontName='Helvetica', fontSize=7, leading=9.2, textColor=colors.HexColor('#7F1D1D'))
+    sol_title = ParagraphStyle('ST', parent=styles['Normal'], fontName='Helvetica-Bold', fontSize=7.6, leading=9.5, textColor=colors.HexColor('#15803D'), spaceAfter=1)
+    sol_body = ParagraphStyle('SB', parent=styles['Normal'], fontName='Helvetica', fontSize=7, leading=9.2, textColor=colors.HexColor('#14532D'))
+    feat_title = ParagraphStyle('FT', parent=styles['Normal'], fontName='Helvetica-Bold', fontSize=7.8, leading=10, textColor=colors.HexColor('#0369A1'), spaceAfter=1.5)
+    feat_body = ParagraphStyle('FB', parent=styles['Normal'], fontName='Helvetica', fontSize=7, leading=9.4, textColor=colors.HexColor('#0F172A'))
 
-    phase_style = ParagraphStyle(
-        'PhaseStyle',
-        parent=styles['Normal'],
-        fontName='Helvetica-Bold',
-        fontSize=9.5,
-        leading=12,
-        textColor=colors.HexColor('#FFFFFF'),
-        backColor=colors.HexColor('#0284C7'),
-        borderPadding=4,
-        spaceBefore=8,
-        spaceAfter=5,
-        keepWithNext=True
-    )
-
-    h1_style = ParagraphStyle(
-        'Heading1Custom',
-        parent=styles['Normal'],
-        fontName='Helvetica-Bold',
-        fontSize=9,
-        leading=12,
-        textColor=colors.HexColor('#0369A1'),
-        spaceBefore=6,
-        spaceAfter=3,
-        keepWithNext=True
-    )
-
-    body_style = ParagraphStyle(
-        'BodyCustom',
-        parent=styles['Normal'],
-        fontName='Helvetica',
-        fontSize=7.6,
-        leading=10.5,
-        textColor=colors.HexColor('#1E293B'),
-        spaceAfter=4
-    )
-
-    code_banner_style = ParagraphStyle(
-        'CodeBannerStyle',
-        parent=styles['Normal'],
-        fontName='Courier',
-        fontSize=6.5,
-        leading=8.5,
-        textColor=colors.HexColor('#F8FAFC'),
-        backColor=colors.HexColor('#1E293B'),
-        borderColor=colors.HexColor('#38BDF8'),
-        borderWidth=1,
-        borderPadding=4,
-        spaceAfter=4
-    )
-
-    danger_title = ParagraphStyle('DT', parent=styles['Normal'], fontName='Helvetica-Bold', fontSize=7.8, leading=10, textColor=colors.HexColor('#B91C1C'), spaceAfter=1)
-    danger_body = ParagraphStyle('DB', parent=styles['Normal'], fontName='Helvetica', fontSize=7.2, leading=9.5, textColor=colors.HexColor('#7F1D1D'))
-    sol_title = ParagraphStyle('ST', parent=styles['Normal'], fontName='Helvetica-Bold', fontSize=7.8, leading=10, textColor=colors.HexColor('#15803D'), spaceAfter=1)
-    sol_body = ParagraphStyle('SB', parent=styles['Normal'], fontName='Helvetica', fontSize=7.2, leading=9.5, textColor=colors.HexColor('#14532D'))
-    feat_title = ParagraphStyle('FT', parent=styles['Normal'], fontName='Helvetica-Bold', fontSize=8, leading=10.5, textColor=colors.HexColor('#0369A1'), spaceAfter=2)
-    feat_body = ParagraphStyle('FB', parent=styles['Normal'], fontName='Helvetica', fontSize=7.2, leading=9.8, textColor=colors.HexColor('#0F172A'))
-
-    table_header = ParagraphStyle('TH', parent=styles['Normal'], fontName='Helvetica-Bold', fontSize=7, leading=9, textColor=colors.HexColor('#0F172A'))
-    table_cell = ParagraphStyle('TC', parent=styles['Normal'], fontName='Helvetica', fontSize=6.8, leading=8.8, textColor=colors.HexColor('#334155'))
-    table_cell_bold = ParagraphStyle('TCB', parent=styles['Normal'], fontName='Helvetica-Bold', fontSize=6.8, leading=8.8, textColor=colors.HexColor('#0F172A'))
+    table_header = ParagraphStyle('TH', parent=styles['Normal'], fontName='Helvetica-Bold', fontSize=6.8, leading=8.8, textColor=colors.HexColor('#0F172A'))
+    table_cell = ParagraphStyle('TC', parent=styles['Normal'], fontName='Helvetica', fontSize=6.6, leading=8.5, textColor=colors.HexColor('#334155'))
+    table_cell_bold = ParagraphStyle('TCB', parent=styles['Normal'], fontName='Helvetica-Bold', fontSize=6.6, leading=8.5, textColor=colors.HexColor('#0F172A'))
 
     story = []
 
-    # Encabezado
-    story.append(Paragraph("Soluciones de Arquitectura y Gobernanza en Google Antigravity", title_style))
-    story.append(Paragraph("<b>Guía Maestra y Fuente Única de la Verdad (Ecosistema Completo y Kit de Alumnos)</b><br/>Diseño de sistemas agénticos, prevención del 'Vibe Coding', parámetros de motor, trabajo desatendido en silencio y despliegue rápido.", subtitle_style))
+    story.append(Paragraph("Guía de Arquitectura, Instalación y Gobernanza en Google Antigravity", title_style))
+    story.append(Paragraph("<b>Manual Maestro y Fuente Única de la Verdad (Ecosistema Completo y Kit de Alumnos)</b><br/>Desde la descarga del IDE y configuración del motor hasta la gobernanza agéntica y el trabajo desatendido.", subtitle_style))
     story.append(HRFlowable(width="100%", thickness=1.5, color=colors.HexColor("#0284C7"), spaceAfter=5, spaceBefore=0))
+
+    # FASE 0
+    story.append(Paragraph("FASE 0: DESCARGA E INSTALACIÓN (PARTIR DE CERO EN WINDOWS Y MAC)", phase_style))
+    story.append(Paragraph("0.1 ¿Por qué elegir Antigravity IDE frente a la App de Escritorio?", h1_style))
+    story.append(Paragraph("Google ofrece dos opciones: la <b>App de Escritorio</b> (un chat conversacional cerrado que oculta las carpetas y los diffs de código) y el <b>Antigravity IDE</b> (entorno profesional basado en VS Code). <b>Recomendación Oficial:</b> Instalar siempre el IDE para tener en una sola ventana el explorador de archivos a la izquierda, el editor central, la terminal integrada abajo y el chat de IA a la derecha.", body_style))
+
+    table_f0_data = [
+        [Paragraph("Sistema Operativo", table_header), Paragraph("Instalador Oficial", table_header), Paragraph("Proceso de Instalación en 3 Pasos", table_header)],
+        [Paragraph("<b>Windows 10 / 11</b>", table_cell_bold), Paragraph("Instalador <code>.exe</code> (x64)", table_cell), Paragraph("1. Descargar y ejecutar .exe.<br/>2. Seguir el asistente.<br/>3. Abrir Antigravity e iniciar sesión con Google.", table_cell)],
+        [Paragraph("<b>macOS (Apple / Intel)</b>", table_cell_bold), Paragraph("Instalador <code>.dmg</code>", table_cell), Paragraph("1. Abrir .dmg.<br/>2. Arrastrar a /Aplicaciones.<br/>3. Abrir app e iniciar sesión con Google.", table_cell)]
+    ]
+    t_f0 = Table(table_f0_data, colWidths=[105, 110, 308.27])
+    t_f0.setStyle(TableStyle([
+        ('BACKGROUND', (0,0), (-1,0), colors.HexColor('#F1F5F9')),
+        ('BOX', (0,0), (-1,-1), 0.8, colors.HexColor('#94A3B8')),
+        ('INNERGRID', (0,0), (-1,-1), 0.5, colors.HexColor('#CBD5E1')),
+        ('TOPPADDING', (0,0), (-1,-1), 2),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 2),
+        ('LEFTPADDING', (0,0), (-1,-1), 4),
+        ('RIGHTPADDING', (0,0), (-1,-1), 4),
+    ]))
+    story.append(t_f0)
+    story.append(Spacer(1, 3))
 
     # FASE 1
     story.append(Paragraph("FASE 1: FUNDAMENTOS Y ARQUITECTURA DEL ESPACIO DE TRABAJO", phase_style))
     story.append(Paragraph("1.1 De la Ilusión del 'Vibe Coding' a la Gobernanza Real (Las 4 D)", h1_style))
-    story.append(Paragraph("Generar código instantáneo sin arquitectura acumula silenciosamente cuatro patologías críticas conocidas como <b>Las 4 D del peligro de la IA</b> (<i>Duplicación</i>, <i>Drift</i>, <i>Deluge</i> y <i>Deception</i>).", body_style))
 
     def make_section_box(num_str, title_str, danger_text, sol_text):
         p_danger = [Paragraph(f"⚠️ {num_str} PELIGRO: {title_str.upper()}", danger_title), Paragraph(danger_text, danger_body)]
@@ -473,8 +483,8 @@ def compilar_pdf_reportlab():
         t_danger.setStyle(TableStyle([
             ('BACKGROUND', (0,0), (-1,-1), colors.HexColor("#FEF2F2")),
             ('BOX', (0,0), (-1,-1), 0.8, colors.HexColor("#F87171")),
-            ('TOPPADDING', (0,0), (-1,-1), 2.5),
-            ('BOTTOMPADDING', (0,0), (-1,-1), 2.5),
+            ('TOPPADDING', (0,0), (-1,-1), 2),
+            ('BOTTOMPADDING', (0,0), (-1,-1), 2),
             ('LEFTPADDING', (0,0), (-1,-1), 5),
             ('RIGHTPADDING', (0,0), (-1,-1), 5),
         ]))
@@ -484,20 +494,20 @@ def compilar_pdf_reportlab():
         t_sol.setStyle(TableStyle([
             ('BACKGROUND', (0,0), (-1,-1), colors.HexColor("#F0FDF4")),
             ('BOX', (0,0), (-1,-1), 0.8, colors.HexColor("#4ADE80")),
-            ('TOPPADDING', (0,0), (-1,-1), 2.5),
-            ('BOTTOMPADDING', (0,0), (-1,-1), 2.5),
+            ('TOPPADDING', (0,0), (-1,-1), 2),
+            ('BOTTOMPADDING', (0,0), (-1,-1), 2),
             ('LEFTPADDING', (0,0), (-1,-1), 5),
             ('RIGHTPADDING', (0,0), (-1,-1), 5),
         ]))
-        return KeepTogether([t_danger, Spacer(1, 2), t_sol, Spacer(1, 3)])
+        return KeepTogether([t_danger, Spacer(1, 1.5), t_sol, Spacer(1, 2.5)])
 
-    story.append(make_section_box("1.", "Duplicación", "Reescritura de utilidades y funciones redundantes en archivos dispersos.", "Documento vivo ESTADO_GLOBAL_PROYECTOS.md como inventario técnico obligatorio antes de codificar."))
+    story.append(make_section_box("1.", "Duplicación", "Reescritura de utilidades y funciones redundantes en archivos dispersos.", "Documento vivo ESTADO_GLOBAL_PROYECTOS.md como inventario técnico previo obligatorio."))
     story.append(make_section_box("2.", "Drift (Deriva)", "Ceguera de contexto en sesiones largas, pérdida de arquitectura y abreviaturas inventadas.", "Arquitectura Elephant-Goldfish, catálogos canónicos exactos (NASA Eyes) y doble contador correlativo."))
     story.append(make_section_box("3.", "Deluge (Diluvio)", "Inflación de dependencias (npm, frameworks pesados) para tareas simples.", "Regla de cero herramientas nuevas, herramientas nativas del sistema operativo y micro-apps atómicas."))
     story.append(make_section_box("4.", "Deception (Engaño)", "Código que compila pero oculta datos falsos, APIs bloqueadas o activos inertes.", "Autocomprobación obligatoria, calibración temporal UTC en sondas históricas y copias BKP garantizadas."))
 
     story.append(Paragraph("1.2 Arquitectura Monorepo de Raíz Única", h1_style))
-    story.append(Paragraph("Para evitar bloqueos por cruce de carpetas y alertas de seguridad de <i>Non-Workspace File Access</i>, todo el ecosistema cuelga de una <b>única carpeta raíz</b>. Al fijar el workspace en el directorio padre, el agente opera siempre en un entorno reconocido con acceso fluido a todos los submódulos.", body_style))
+    story.append(Paragraph("Para evitar bloqueos por cruce de carpetas y alertas de <i>Non-Workspace File Access</i>, todo el ecosistema cuelga de una <b>única carpeta raíz</b>. Al fijar el workspace en el directorio padre, el agente opera en un entorno reconocido con acceso fluido a todos los submódulos.", body_style))
 
     # FASE 2
     story.append(Paragraph("FASE 2: CONFIGURACIÓN BASE DEL MOTOR (SETTINGS DE ANTIGRAVITY)", phase_style))
@@ -515,8 +525,8 @@ def compilar_pdf_reportlab():
         ('BACKGROUND', (0,0), (-1,0), colors.HexColor('#F1F5F9')),
         ('BOX', (0,0), (-1,-1), 0.8, colors.HexColor('#94A3B8')),
         ('INNERGRID', (0,0), (-1,-1), 0.5, colors.HexColor('#CBD5E1')),
-        ('TOPPADDING', (0,0), (-1,-1), 2),
-        ('BOTTOMPADDING', (0,0), (-1,-1), 2),
+        ('TOPPADDING', (0,0), (-1,-1), 1.8),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 1.8),
         ('LEFTPADDING', (0,0), (-1,-1), 4),
         ('RIGHTPADDING', (0,0), (-1,-1), 4),
     ]))
@@ -532,12 +542,12 @@ def compilar_pdf_reportlab():
     t_sil_box.setStyle(TableStyle([
         ('BACKGROUND', (0,0), (-1,-1), colors.HexColor("#F0FDF4")),
         ('BOX', (0,0), (-1,-1), 0.8, colors.HexColor("#22C55E")),
-        ('TOPPADDING', (0,0), (-1,-1), 3),
-        ('BOTTOMPADDING', (0,0), (-1,-1), 3),
+        ('TOPPADDING', (0,0), (-1,-1), 2.5),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 2.5),
         ('LEFTPADDING', (0,0), (-1,-1), 5),
         ('RIGHTPADDING', (0,0), (-1,-1), 5),
     ]))
-    story.append(KeepTogether([t_sil_box, Spacer(1, 3)]))
+    story.append(KeepTogether([t_sil_box, Spacer(1, 2.5)]))
 
     story.append(Paragraph("3.2 Elephant-Goldfish, Doble Contador y Salvaguarda Senior (+65)", h1_style))
     story.append(Paragraph("• <b>Elephant-Goldfish:</b> Coordinador con memoria vs. subagentes efímeros limpios con autodestrucción inmediata.<br/>• <b>Doble Contador Correlativo:</b> Contador General de Clases y Contador de Música independientes.<br/>• <b>La Triple Salvaguarda Pedagógica (+65):</b> Cero código intermedio para alumnos senior; aplicaciones en modo Canvas/Vista Previa directa con copia de respaldo oficial BKP en mapas.", body_style))
@@ -560,48 +570,47 @@ def compilar_pdf_reportlab():
     t_prof.setStyle(TableStyle([
         ('BACKGROUND', (0,0), (-1,-1), colors.HexColor("#F0F9FF")),
         ('BOX', (0,0), (-1,-1), 1, colors.HexColor("#0284C7")),
-        ('TOPPADDING', (0,0), (-1,-1), 3),
-        ('BOTTOMPADDING', (0,0), (-1,-1), 3),
+        ('TOPPADDING', (0,0), (-1,-1), 2.5),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 2.5),
         ('LEFTPADDING', (0,0), (-1,-1), 5),
         ('RIGHTPADDING', (0,0), (-1,-1), 5),
     ]))
-    story.append(KeepTogether([t_prof, Spacer(1, 4)]))
+    story.append(KeepTogether([t_prof, Spacer(1, 3)]))
 
     # BLOQUE ALUMNO
     p_alum = [
         Paragraph("🟢 PARTE DEL ALUMNO: GUÍA PASO A PASO PARA MONTARLO EN TU PC (WINDOWS / MAC)", feat_title),
-        Paragraph("<b>1. Tu Carpeta Raíz:</b> En Windows: <code>C:\\WORKSPACE-ANTIGRAVITY\\</code> | En Mac: <code>~/WORKSPACE-ANTIGRAVITY/</code>.<br/><b>2. Descarga en 1 Clic:</b> Descarga <code>WORKSPACE-ANTIGRAVITY-PLANTILLA.zip</code> desde el mapa interactivo de clase, descomprímelo en tu ruta y ábrelo en Antigravity con <i>File &gt; Open Folder</i>.<br/><b>3. Cómo usar tu Terminal sin Miedo (El Trabajo en Silencio):</b><br/>• Abre tu consola: en Windows pulsa tecla Windows y escribe <code>cmd</code>; en Mac abre <code>Terminal</code>.<br/>• Pídele cosas a la IA en Antigravity: trabajará en silencio sin abrir popups molestos.<br/>• Al terminar, copia el bloque que empiece por <code>echo</code>, pégalo en tu terminal y pulsa Enter. ¡Verás cómo se aplica todo con control total!", feat_body)
+        Paragraph("<b>1. Dónde Copiar y Descomprimir:</b> Copia <code>WORKSPACE-ANTIGRAVITY-PLANTILLA.zip</code> en tu carpeta <b>Documentos</b> (o C:\\ en Windows) y descomprímelo allí mismo para que te quede <code>Documentos\\WORKSPACE-ANTIGRAVITY\\</code>.<br/><b>2. Abrir en Antigravity IDE:</b> Pulsa <i>File &gt; Open Folder...</i> y selecciona esa carpeta.<br/><b>3. Usar la Terminal sin Miedo:</b> Abre tu consola (CMD en Windows / Terminal en Mac). Pídele cosas a la IA en el chat y, cuando termine en silencio, copia el bloque <code>echo</code> que te entregue, pégalo en la terminal y pulsa Enter para aplicar los cambios con control total.", feat_body)
     ]
     t_alum = Table([[p_alum]], colWidths=[PAGE_WIDTH])
     t_alum.setStyle(TableStyle([
         ('BACKGROUND', (0,0), (-1,-1), colors.HexColor("#F0FDF4")),
         ('BOX', (0,0), (-1,-1), 1, colors.HexColor("#16A34A")),
-        ('TOPPADDING', (0,0), (-1,-1), 3),
-        ('BOTTOMPADDING', (0,0), (-1,-1), 3),
+        ('TOPPADDING', (0,0), (-1,-1), 2.5),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 2.5),
         ('LEFTPADDING', (0,0), (-1,-1), 5),
         ('RIGHTPADDING', (0,0), (-1,-1), 5),
     ]))
-    story.append(KeepTogether([t_alum, Spacer(1, 4)]))
+    story.append(KeepTogether([t_alum, Spacer(1, 3)]))
 
     # Catálogo
     table_cat_data = [
         [Paragraph("Hito / Versión", table_header), Paragraph("Ámbito", table_header), Paragraph("Impacto y Beneficio Operativo", table_header)],
+        [Paragraph("<b>Fase 0: Instalación desde Cero</b>", table_cell_bold), Paragraph("Setup / IDE", table_cell), Paragraph("Descarga para Windows/Mac argumentando la superioridad del IDE frente a Desktop.", table_cell)],
         [Paragraph("<b>Guía Única Señalizada</b>", table_cell_bold), Paragraph("Gobernanza", table_cell), Paragraph("Fuente única de la verdad con Bloque Maestro (Profesor) y Bloque Alumno (Kit).", table_cell)],
-        [Paragraph("<b>Plantilla ZIP en 1 Clic</b>", table_cell_bold), Paragraph("Despliegue", table_cell), Paragraph("Inicio rápido para Windows/Mac sin comandos complejos de terminal.", table_cell)],
+        [Paragraph("<b>Plantilla ZIP en 1 Clic</b>", table_cell_bold), Paragraph("Despliegue", table_cell), Paragraph("Copia directa a Documentos y extracción en destino sin rutas perdidas.", table_cell)],
         [Paragraph("<b>Monorepo Raíz Única</b>", table_cell_bold), Paragraph("Workspace", table_cell), Paragraph("Todas las áreas bajo una misma raíz para cero bloqueos de permisos.", table_cell)],
         [Paragraph("<b>Trabajo en Silencio</b>", table_cell_bold), Paragraph("Metodología", table_cell), Paragraph("Ejecución silenciosa en sandbox y entrega de bloque bash único al final.", table_cell)],
-        [Paragraph("<b>Cero-Submits</b>", table_cell_bold), Paragraph("Flujo de Trabajo", table_cell), Paragraph("Cero ventanas emergentes de aprobación en el editor durante la sesión.", table_cell)],
-        [Paragraph("<b>Elephant-Goldfish</b>", table_cell_bold), Paragraph("Memoria", table_cell), Paragraph("Auditoría con mente virgen y destrucción inmediata sin fugas de memoria.", table_cell)],
-        [Paragraph("<b>Subagentes Paralelos</b>", table_cell_bold), Paragraph("Concurrencia", table_cell), Paragraph("Ejecución paralela para tareas pesadas sin saturar el hilo principal.", table_cell)],
-        [Paragraph("<b>Generative UI Nativo</b>", table_cell_bold), Paragraph("Visualización", table_cell), Paragraph("Widgets y cuadros de mando interactivos embebidos sin exponer código.", table_cell)]
+        [Paragraph("<b>Cero-Submits</b>", table_cell_bold), Paragraph("Flujo", table_cell), Paragraph("Cero ventanas emergentes de aprobación en el editor durante la sesión.", table_cell)],
+        [Paragraph("<b>Elephant-Goldfish</b>", table_cell_bold), Paragraph("Memoria", table_cell), Paragraph("Auditoría con mente virgen y destrucción inmediata sin fugas de memoria.", table_cell)]
     ]
     t_cat = Table(table_cat_data, colWidths=[120, 95, 308.27])
     t_cat.setStyle(TableStyle([
         ('BACKGROUND', (0,0), (-1,0), colors.HexColor('#F1F5F9')),
         ('BOX', (0,0), (-1,-1), 0.8, colors.HexColor('#94A3B8')),
         ('INNERGRID', (0,0), (-1,-1), 0.5, colors.HexColor('#CBD5E1')),
-        ('TOPPADDING', (0,0), (-1,-1), 2),
-        ('BOTTOMPADDING', (0,0), (-1,-1), 2),
+        ('TOPPADDING', (0,0), (-1,-1), 1.8),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 1.8),
         ('LEFTPADDING', (0,0), (-1,-1), 4),
         ('RIGHTPADDING', (0,0), (-1,-1), 4),
     ]))
@@ -611,7 +620,7 @@ def compilar_pdf_reportlab():
     
     shutil.copyfile(PDF_NOBLE, PDF_MONO)
     shutil.copyfile(PDF_NOBLE, BKP_PDF_MONO)
-    print(f"✅ PDF generado y sincronizado en carpeta noble y monográfico 6.", flush=True)
+    print("✅ PDF generado y sincronizado con Fase 0 e IDE.", flush=True)
 
 if __name__ == "__main__":
     compilar_html()
