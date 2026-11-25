@@ -157,7 +157,7 @@ def compilar_html():
                     <li>3.5 La Triple Salvaguarda Pedagógica (+65) y Cero Código Intermedio</li>
                     <li>3.6 Orquestación Concurrente: Subagentes Efímeros en Paralelo (invoke_subagent / kill)</li>
                     <li>3.7 Visualización Directa y Paneles Vivos: Generative UI en Antigravity (&lt;agent-embed&gt;)</li>
-                    <li>3.8 Despliegue Continuo y Blindado a GitHub (Pages & Classroom)</li>
+                    <li>3.8 Pipeline de Despliegue Continuo: GitHub como BKP Blindado y Servidor Web Global (GitHub Pages)</li>
                 </ul>
             </li>
             <li><strong><a class="toc-link" href="#fase4">FASE 4: PUESTA EN MARCHA DEL ESPACIO DE TRABAJO (PLANTILLA EN 1 CLIC)</a></strong>
@@ -434,8 +434,18 @@ echo "========================================================"
         </ul>
     </div>
 
-    <h2>3.8 Despliegue Continuo y Blindado a GitHub (Pages & Classroom)</h2>
-    <p>Garantía de que ninguna corrección quede huérfana en local: cada bloque ejecutable incluye la sincronización obligatoria con <code>origin/main</code> para reflejar cambios en tiempo real en la nube.</p>
+    <h2>3.8 Pipeline de Despliegue Continuo: GitHub como BKP Blindado y Servidor Web Global (GitHub Pages)</h2>
+    <div class="feature-box">
+        <span class="badge badge-feature">Copia de Seguridad en la Nube y Servidor Web Instantáneo</span><br>
+        <strong>🌐 La Doble Función Estratégica de GitHub en Nuestro Ecosistema:</strong>
+        <p>En el flujo de trabajo tradicional, los archivos se quedan atrapados en el disco duro del ordenador. En nuestra arquitectura, cada bloque ejecutable termina obligatoriamente con la subida a GitHub (<code>git push origin main</code>), cumpliendo dos funciones vitales simultáneas:</p>
+        <ul>
+            <li><strong>1. Respaldo Automático e Inmutable (BKP en la Nube):</strong> Cada línea de código, cada PDF generado y cada simulación interactiva queda archivada en un historial cronológico commit a commit. Si el ordenador local falla, se rompe el disco o se borra un archivo por accidente, el proyecto íntegro con meses de trabajo se recupera al 100% en segundos simplemente clonando el repositorio. Cero riesgo de pérdida de datos.</li>
+            <li><strong>2. Servidor Web Global Instantáneo (GitHub Pages):</strong> GitHub no actúa como un mero disco duro pasivo. Mediante el servicio gratuito <strong>GitHub Pages</strong>, transforma de forma automática todo el repositorio en un <strong>servidor web de producción accesible desde cualquier lugar del mundo</strong>. Cada archivo HTML interactivo, simulador 3D, visor fotográfico cinemático o cuadro de mando de Classroom cuenta con una URL pública inmediata.</li>
+            <li><strong>Acceso Multi-Dispositivo Universal (Alumnos y Profesor):</strong> El profesor puede abrir los recursos en la pantalla del aula y los alumnos pueden interactuar con ellos desde su iPad, tablet Android, iPhone o PC personal sin necesidad de configurar servidores locales (Apache, Nginx), sin abrir puertos de red y sin pagar hosting web alguno.</li>
+            <li><strong>Inyección Anti-Caché para Actualizaciones en Tiempo Real (<code>?v=...</code>):</strong> Para solucionar el clásico problema de que el navegador del alumno o del aula retenga en memoria caché la versión antigua de un documento o simulación, el sistema inyecta automáticamente un parámetro forzador de versión fresca (ej. <code>?v=20261125b</code>). Esto obliga a los navegadores (Safari, Chrome) a descargar la versión recién corregida al primer clic sin exigir a los alumnos mayores que sepan vaciar la caché de su navegador.</li>
+        </ul>
+    </div>
 
     <!-- FASE 4 -->
     <div id="fase4" class="phase-header">FASE 4: PUESTA EN MARCHA DEL ESPACIO DE TRABAJO (PLANTILLA EN 1 CLIC)</div>
@@ -655,7 +665,7 @@ def compilar_pdf_reportlab():
         Paragraph("3.5 La Triple Salvaguarda Pedagógica (+65) y Cero Código Intermedio", toc_sub),
         Paragraph("3.6 Orquestación Concurrente: Subagentes Efímeros en Paralelo (invoke_subagent / kill)", toc_sub),
         Paragraph("3.7 Visualización Directa y Paneles Vivos: Generative UI en Antigravity (<agent-embed>)", toc_sub),
-        Paragraph("3.8 Despliegue Continuo y Blindado a GitHub (Pages & Classroom)", toc_sub),
+        Paragraph("3.8 Pipeline de Despliegue Continuo: GitHub como BKP Blindado y Servidor Web Global (GitHub Pages)", toc_sub),
         Spacer(1, 2),
         Paragraph("<b>FASE 4: PUESTA EN MARCHA DEL ESPACIO DE TRABAJO (PLANTILLA EN 1 CLIC)</b>", toc_phase),
         Paragraph("4.1 La Solución Definitiva: Plantilla Universal en 1 Clic (WORKSPACE-ANTIGRAVITY-PLANTILLA.zip)", toc_sub),
@@ -920,8 +930,8 @@ def compilar_pdf_reportlab():
     story.append(Paragraph("3.7 Visualización Directa y Paneles Vivos: Generative UI en Antigravity", h1_style))
     story.append(Paragraph("Con <b>Generative UI</b>, Antigravity renderiza directamente componentes interactivos funcionales en el chat y en el panel lateral mediante <code>&lt;agent-embed src=\"...\"&gt;</code>, utilizando Tailwind CSS y tokens semánticos nativos (<code>var(--foreground)</code>, <code>var(--card)</code>, <code>var(--primary)</code>) con total adaptabilidad a temas claros y oscuros sin requerir ventanas de confirmación.", body_style))
 
-    story.append(Paragraph("3.8 Despliegue Continuo y Blindado a GitHub (Pages & Classroom)", h1_style))
-    story.append(Paragraph("Garantía de que ninguna corrección quede huérfana en local: cada bloque ejecutable incluye la sincronización obligatoria con <code>origin/main</code> para reflejar cambios en tiempo real en la nube.", body_style))
+    story.append(Paragraph("3.8 Pipeline de Despliegue Continuo: GitHub como BKP Blindado y Servidor Web Global (GitHub Pages)", h1_style))
+    story.append(Paragraph("En nuestro flujo de trabajo, cada bloque ejecutable concluye obligatoriamente con la subida a GitHub (<code>git push origin main</code>), cumpliendo dos funciones vitales simultáneas: <b>1) Respaldo Automático e Inmutable (BKP en la Nube):</b> cada archivo, PDF y simulación interactiva queda archivado con historial commit a commit; ante cualquier fallo local o rotura de disco, el proyecto íntegro se restaura al 100% en segundos sin riesgo de pérdida. <b>2) Servidor Web Global Instantáneo (GitHub Pages):</b> mediante GitHub Pages, todo el repositorio se transforma de forma gratuita en un servidor web de producción donde cada archivo HTML interactivo o simulación 3D dispone de una URL pública inmediata, permitiendo que el profesor y los alumnos (+65) abran los recursos desde iPad, tablet o cualquier ordenador sin instalar servidores locales (Apache/Nginx) ni pagar hosting. Además, la inyección automática de parámetros anti-caché (<code>?v=...</code>) garantiza que los navegadores descarguen siempre la versión recién modificada al primer clic.", body_style))
     story.append(Spacer(1, 6))
 
     # FASE 4: PUESTA EN MARCHA DEL ESPACIO DE TRABAJO (PLANTILLA EN 1 CLIC)
