@@ -158,6 +158,7 @@ def compilar_html():
                     <li>3.6 Orquestación Concurrente: Subagentes Efímeros en Paralelo (invoke_subagent / kill)</li>
                     <li>3.7 Visualización Directa y Paneles Vivos: Generative UI en Antigravity (&lt;agent-embed&gt;)</li>
                     <li>3.8 Pipeline de Despliegue Continuo: GitHub como BKP Blindado y Servidor Web Global (GitHub Pages)</li>
+                    <li>3.9 Arquitectura Modular de Skills (SKILL.md): Automatización sin Prompts Largos</li>
                 </ul>
             </li>
             <li><strong><a class="toc-link" href="#fase4">FASE 4: PUESTA EN MARCHA DEL ESPACIO DE TRABAJO (PLANTILLA EN 1 CLIC)</a></strong>
@@ -447,6 +448,17 @@ echo "========================================================"
         </ul>
     </div>
 
+    <h2>3.9 Arquitectura Modular de Skills (SKILL.md): Automatización sin Prompts Largos</h2>
+    <div class="feature-box">
+        <span class="badge badge-feature">Especialización por Tarea (Adiós a Repetir Prompts)</span><br>
+        <strong>🧩 Gobernanza Global (<code>AGENTS.md</code>) vs. Skills Modulares (<code>SKILL.md</code>):</strong>
+        <p>Mientras <code>AGENTS.md</code> fija las reglas permanentes de todo el espacio de trabajo (cero-submits, tono, despliegue), los <strong>Skills</strong> encapsulan procedimientos especializados bajo demanda en archivos <code>SKILL.md</code> (globales o por carpeta en <code>.agent/skills/</code>), evitando escribir prompts largos repetitivos y eliminando el olvido de restricciones (<em>Drift</em>).</p>
+        <ul>
+            <li><strong>Anatomía Oficial de 4 Bloques:</strong> Todo Skill maestro se estructura en: <strong>1) Rol y Objetivo</strong> (misión exacta), <strong>2) Restricciones Negativas (<em>Never Do</em>)</strong> (prohibiciones tajantes para evitar relleno o alucinaciones), <strong>3) Estructura de Entrada</strong> (qué archivos o datos espera) y <strong>4) Formato de Entrega</strong> (tabla, PDF, HTML o salida validada).</li>
+            <li><strong>Catálogo Previsto de Skills Generales del Ecosistema:</strong> <code>ficha-senior</code> (maquetación pedagógica +65 sin código), <code>despliegue-seguro</code> (anti-caché, commit y verificación en <code>CURSO-IA</code>), <code>nasa-eyes-calibrado</code> (catálogo orbital 3D y HUD de 380px) y <code>sincronizador-copilot</code> (réplica automática hacia la guía corporativa).</li>
+        </ul>
+    </div>
+
     <!-- FASE 4 -->
     <div id="fase4" class="phase-header">FASE 4: PUESTA EN MARCHA DEL ESPACIO DE TRABAJO (PLANTILLA EN 1 CLIC)</div>
 
@@ -666,6 +678,7 @@ def compilar_pdf_reportlab():
         Paragraph("3.6 Orquestación Concurrente: Subagentes Efímeros en Paralelo (invoke_subagent / kill)", toc_sub),
         Paragraph("3.7 Visualización Directa y Paneles Vivos: Generative UI en Antigravity (<agent-embed>)", toc_sub),
         Paragraph("3.8 Pipeline de Despliegue Continuo: GitHub como BKP Blindado y Servidor Web Global (GitHub Pages)", toc_sub),
+        Paragraph("3.9 Arquitectura Modular de Skills (SKILL.md): Automatización sin Prompts Largos", toc_sub),
         Spacer(1, 2),
         Paragraph("<b>FASE 4: PUESTA EN MARCHA DEL ESPACIO DE TRABAJO (PLANTILLA EN 1 CLIC)</b>", toc_phase),
         Paragraph("4.1 La Solución Definitiva: Plantilla Universal en 1 Clic (WORKSPACE-ANTIGRAVITY-PLANTILLA.zip)", toc_sub),
@@ -932,6 +945,9 @@ def compilar_pdf_reportlab():
 
     story.append(Paragraph("3.8 Pipeline de Despliegue Continuo: GitHub como BKP Blindado y Servidor Web Global (GitHub Pages)", h1_style))
     story.append(Paragraph("En nuestro flujo de trabajo, cada bloque ejecutable concluye obligatoriamente con la subida a GitHub (<code>git push origin main</code>), cumpliendo dos funciones vitales simultáneas: <b>1) Respaldo Automático e Inmutable (BKP en la Nube):</b> cada archivo, PDF y simulación interactiva queda archivado con historial commit a commit; ante cualquier fallo local o rotura de disco, el proyecto íntegro se restaura al 100% en segundos sin riesgo de pérdida. <b>2) Servidor Web Global Instantáneo (GitHub Pages):</b> mediante GitHub Pages, todo el repositorio se transforma de forma gratuita en un servidor web de producción donde cada archivo HTML interactivo o simulación 3D dispone de una URL pública inmediata, permitiendo que el profesor y los alumnos (+65) abran los recursos desde iPad, tablet o cualquier ordenador sin instalar servidores locales (Apache/Nginx) ni pagar hosting. Además, la inyección automática de parámetros anti-caché (<code>?v=...</code>) garantiza que los navegadores descarguen siempre la versión recién modificada al primer clic.", body_style))
+
+    story.append(Paragraph("3.9 Arquitectura Modular de Skills (SKILL.md): Automatización sin Prompts Largos", h1_style))
+    story.append(Paragraph("Mientras <code>AGENTS.md</code> fija las reglas globales permanentes del espacio de trabajo, los <b>Skills</b> encapsulan procedimientos especializados bajo demanda en archivos <code>SKILL.md</code> (<code>.agent/skills/</code>), eliminando la fatiga de escribir prompts largos y el olvido de restricciones (<i>Drift</i>). Cada Skill sigue una anatomía de 4 bloques: <b>1) Rol y Objetivo</b>, <b>2) Restricciones Negativas (<i>Never Do</i>)</b>, <b>3) Estructura de Entrada</b> y <b>4) Formato de Entrega</b>. Nuestro catálogo general previsto incluye <code>ficha-senior</code> (maquetación +65), <code>despliegue-seguro</code> (anti-caché y push), <code>nasa-eyes-calibrado</code> (mallas orbitales 3D) y <code>sincronizador-copilot</code> (réplica continua hacia la guía corporativa).", body_style))
     story.append(Spacer(1, 6))
 
     # FASE 4: PUESTA EN MARCHA DEL ESPACIO DE TRABAJO (PLANTILLA EN 1 CLIC)
