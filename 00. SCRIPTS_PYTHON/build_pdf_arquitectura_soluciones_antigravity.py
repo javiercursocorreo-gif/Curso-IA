@@ -155,7 +155,7 @@ def compilar_html():
                     <li>3.3 Protocolo Cognitivo Elephant-Goldfish (Memoria vs. Auditoría Virgen)</li>
                     <li>3.4 Contador Correlativo de Comandos y Trazabilidad Cronológica</li>
                     <li>3.5 La Triple Salvaguarda Pedagógica (+65) y Cero Código Intermedio</li>
-                    <li>3.6 Orquestación Concurrente: Subagentes Efímeros en Paralelo (invoke_subagent / kill)</li>
+                    <li>3.6 Orquestación Concurrente: Subagentes Efímeros, Enjambre (/swarm) y Verificación en Navegador</li>
                     <li>3.7 Visualización Directa y Paneles Vivos: Generative UI en Antigravity (&lt;agent-embed&gt;)</li>
                     <li>3.8 Pipeline de Despliegue Continuo: GitHub como BKP Blindado y Servidor Web Global (GitHub Pages)</li>
                     <li>3.9 Arquitectura Modular de Skills (SKILL.md): Automatización sin Prompts Largos</li>
@@ -344,7 +344,7 @@ def compilar_html():
         <h3>5. Selección de Modelo y Enrutamiento Inteligente (Model Selection)</h3>
         <p>Permite alternar entre los distintos motores neuronales de la familia Gemini según la carga cognitiva requerida.</p>
         <ul>
-            <li><strong>Gemini Pro (Coordinador / Elefante):</strong> Diseñado para razonamiento profundo, visión holística del calendario, planificación de lotes y mantenimiento de la arquitectura sin derivas.</li>
+            <li><strong>Gemini Pro / Gemini 4 (Hydrogen Medium / Neon / Carbon):</strong> Motores avanzados de cuarta generación para el agente coordinador (Elefante): razonamiento agéntico profundo, orquestación multi-agente, visión holística del calendario y mantenimiento de la arquitectura sin derivas.</li>
             <li><strong>Gemini Flash (Subagentes / Goldfish):</strong> Modelo ligero de bajísima latencia para subagentes paralelos asignados a tareas atómicas (comprobar sintaxis, auditar límites de páginas o verificar enlaces) en fracciones de segundo.</li>
         </ul>
     </div>
@@ -411,15 +411,16 @@ echo "========================================================"
     <h2>3.5 La Triple Salvaguarda Pedagógica (+65) y Cero Código Intermedio</h2>
     <p>Prohibición tajante de exponer al alumno senior a código fuente (HTML, JavaScript, Three.js). Los prompts generan aplicaciones interactivas en modo Canvas / Vista Previa directa, respaldadas por un botón BKP local probado en cada mapa.</p>
 
-    <h2>3.6 Orquestación Concurrente: Subagentes Efímeros en Paralelo</h2>
+    <h2>3.6 Orquestación Concurrente: Subagentes Efímeros, Enjambre (/swarm) y Verificación en Navegador</h2>
     <div class="feature-box">
-        <span class="badge badge-feature">Alta Concurrencia y Mente Limpia</span><br>
-        <strong>⚡ Multiplicador de Velocidad y Cero Proceso Residual:</strong>
-        <p>A medida que los proyectos crecen en complejidad, realizar tareas pesadas dentro de la misma conversación del agente coordinador genera saturación cognitiva. La solución adoptada es la delegación en <strong>subagentes paralelos efímeros</strong>:</p>
+        <span class="badge badge-feature">Alta Concurrencia, Enjambres /swarm y Auto-Verificación</span><br>
+        <strong>⚡ Multiplicador de Velocidad, Tablón Compartido y Pruebas Reales:</strong>
+        <p>A medida que los proyectos crecen en complejidad, realizar tareas pesadas dentro de una única conversación genera saturación cognitiva. Antigravity resuelve esto en dos niveles complementarios:</p>
         <ul>
-            <li><strong>Lanzamiento Atómico (<code>invoke_subagent</code>):</strong> Se despliegan múltiples agentes independientes en paralelo, cada uno acotado a un objetivo específico y con un contexto 100% limpio (aislamiento de fallos).</li>
-            <li><strong>Destrucción Inmediata (<code>manage_subagents: kill</code>):</strong> Una vez verificado el resultado, el subagente se destruye de inmediato. Cero consumo de memoria residual, cero archivos zombi en disco.</li>
-            <li><strong>Autonomía Silenciosa:</strong> Trabajan de forma desatendida respetando escrupulosamente el <em>Protocolo de Cero Submits</em>, entregando únicamente datos consolidados al agente principal.</li>
+            <li><strong>Nivel 1 — Subagentes Paralelos Efímeros (<code>invoke_subagent</code> / <code>kill</code>):</strong> Ideales para tareas independientes y auditorías atómicas (compilar un PDF, comprobar límites de página o validar enlaces). Nacen con contexto limpio y se destruyen al instante tras emitir su dictamen (cero procesos zombi).</li>
+            <li><strong>Nivel 2 — Enjambre Coordinado (<code>/swarm</code>):</strong> Para proyectos grandes de varias piezas simultáneas (ej. construir una app web completa con interfaz, lógica y pruebas), despliega un equipo de especialistas (planificador, autores en copias aisladas <code>share</code>/<code>branch</code>, monitor de bloqueos y verificador) coordinados sobre un tablón común.</li>
+            <li><strong>Verificación Visual Automática en Navegador:</strong> Antes de dar por buena cualquier aplicación o simulador web, el sistema abre el navegador integrado y comprueba funcionalmente su carga y comportamiento real (cero trabajo de depuración para el usuario).</li>
+            <li><strong>Comandos Rápidos Nativos (Slash Commands):</strong> Control directo del flujo desde el chat mediante <code>/plan</code> (planificación previa), <code>/swarm</code> (enjambre multi-agente), <code>/teamwork</code> (equipo autónomo), <code>/boost</code> (análisis profundo) y <code>/compact</code> (liberar memoria del chat).</li>
         </ul>
     </div>
 
@@ -675,7 +676,7 @@ def compilar_pdf_reportlab():
         Paragraph("3.3 Protocolo Cognitivo Elephant-Goldfish (Memoria vs. Auditoría Virgen)", toc_sub),
         Paragraph("3.4 Contador Correlativo de Comandos y Trazabilidad Cronológica", toc_sub),
         Paragraph("3.5 La Triple Salvaguarda Pedagógica (+65) y Cero Código Intermedio", toc_sub),
-        Paragraph("3.6 Orquestación Concurrente: Subagentes Efímeros en Paralelo (invoke_subagent / kill)", toc_sub),
+        Paragraph("3.6 Orquestación Concurrente: Subagentes Efímeros, Enjambre (/swarm) y Verificación en Navegador", toc_sub),
         Paragraph("3.7 Visualización Directa y Paneles Vivos: Generative UI en Antigravity (<agent-embed>)", toc_sub),
         Paragraph("3.8 Pipeline de Despliegue Continuo: GitHub como BKP Blindado y Servidor Web Global (GitHub Pages)", toc_sub),
         Paragraph("3.9 Arquitectura Modular de Skills (SKILL.md): Automatización sin Prompts Largos", toc_sub),
@@ -887,7 +888,7 @@ def compilar_pdf_reportlab():
 
     story.append(make_param_card(
         "Parámetro 5:", "Selección de Modelo y Enrutamiento Inteligente (Model Selection)",
-        "Permite alternar entre motores neuronales: <b>Gemini Pro</b> para el Elefante (coordinador con visión holística, razonamiento profundo y arquitectura) y <b>Gemini Flash</b> para subagentes rápidos (Goldfish para tareas atómicas y auditorías instantáneas)."
+        "Permite alternar entre motores neuronales: <b>Gemini Pro / Gemini 4 (Hydrogen Medium, Neon, Carbon)</b> para el Elefante (coordinador con razonamiento agéntico profundo y orquestación) y <b>Gemini Flash</b> para subagentes rápidos (Goldfish para tareas atómicas y auditorías instantáneas)."
     ))
 
     story.append(make_param_card(
@@ -937,8 +938,8 @@ def compilar_pdf_reportlab():
     story.append(Paragraph("3.5 La Triple Salvaguarda Pedagógica (+65) y Cero Código Intermedio", h1_style))
     story.append(Paragraph("Prohibición tajante de exponer al alumno senior a código fuente (HTML, JavaScript, Three.js). Los prompts generan aplicaciones interactivas en modo Canvas / Vista Previa directa, respaldadas por un botón BKP local probado en cada mapa.", body_style))
 
-    story.append(Paragraph("3.6 Orquestación Concurrente: Subagentes Efímeros en Paralelo", h1_style))
-    story.append(Paragraph("A medida que los proyectos crecen en complejidad, realizar tareas pesadas dentro de la misma conversación genera saturación cognitiva. La solución adoptada es la delegación en <b>subagentes paralelos efímeros</b> (<code>invoke_subagent</code>): se despliegan múltiples agentes independientes en paralelo con contexto 100% limpio y, tras verificar el resultado, se destruyen de inmediato (<code>manage_subagents: kill</code>) garantizando cero procesos zombi ni consumo residual de memoria.", body_style))
+    story.append(Paragraph("3.6 Orquestación Concurrente: Subagentes Efímeros, Enjambre (/swarm) y Verificación en Navegador", h1_style))
+    story.append(Paragraph("Antigravity escala en dos niveles: <b>1) Subagentes paralelos efímeros</b> (<code>invoke_subagent</code> / <code>kill</code>) para tareas independientes con contexto limpio que se destruyen al terminar sin procesos zombi; y <b>2) Enjambre coordinado (<code>/swarm</code>)</b> para proyectos complejos con varios especialistas trabajando en paralelo sobre copias aisladas (<code>share</code>/<code>branch</code>) y tablón compartido. Además, incorpora <b>verificación visual en navegador</b> antes de entregar y <b>Slash Commands nativos</b> (<code>/plan</code>, <code>/swarm</code>, <code>/teamwork</code>, <code>/boost</code>, <code>/compact</code>).", body_style))
 
     story.append(Paragraph("3.7 Visualización Directa y Paneles Vivos: Generative UI en Antigravity", h1_style))
     story.append(Paragraph("Con <b>Generative UI</b>, Antigravity renderiza directamente componentes interactivos funcionales en el chat y en el panel lateral mediante <code>&lt;agent-embed src=\"...\"&gt;</code>, utilizando Tailwind CSS y tokens semánticos nativos (<code>var(--foreground)</code>, <code>var(--card)</code>, <code>var(--primary)</code>) con total adaptabilidad a temas claros y oscuros sin requerir ventanas de confirmación.", body_style))
