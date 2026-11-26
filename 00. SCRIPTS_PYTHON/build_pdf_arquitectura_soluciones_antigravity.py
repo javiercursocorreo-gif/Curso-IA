@@ -159,6 +159,7 @@ def compilar_html():
                     <li>3.7 Visualización Directa y Paneles Vivos: Generative UI en Antigravity (&lt;agent-embed&gt;)</li>
                     <li>3.8 Pipeline de Despliegue Continuo: GitHub como BKP Blindado y Servidor Web Global (GitHub Pages)</li>
                     <li>3.9 Arquitectura Modular de Skills (SKILL.md): Automatización sin Prompts Largos</li>
+                    <li>3.10 Automatización Autónoma: Agentes Remotos, Workspace (Solo Borradores) y Modo Voz</li>
                 </ul>
             </li>
             <li><strong><a class="toc-link" href="#fase4">FASE 4: PUESTA EN MARCHA DEL ESPACIO DE TRABAJO (PLANTILLA EN 1 CLIC)</a></strong>
@@ -344,7 +345,7 @@ def compilar_html():
         <h3>5. Selección de Modelo y Enrutamiento Inteligente (Model Selection)</h3>
         <p>Permite alternar entre los distintos motores neuronales de la familia Gemini según la carga cognitiva requerida.</p>
         <ul>
-            <li><strong>Gemini Pro / Gemini 4 (Hydrogen Medium / Neon / Carbon):</strong> Motores avanzados de cuarta generación para el agente coordinador (Elefante): razonamiento agéntico profundo, orquestación multi-agente, visión holística del calendario y mantenimiento de la arquitectura sin derivas.</li>
+            <li><strong>Gemini Pro / Gemini 4 (Hydrogen Medium / Neon / Carbon):</strong> Motores avanzados de cuarta generación en cuenta Pro de pago. Regla de eficiencia: usar <strong>Hydrogen Medium / Neon</strong> para el ritmo diario y reservar <strong>Orchestrator / Pro</strong> (3-4 veces más costoso en tiempo y cuota) únicamente para arquitectura compleja.</li>
             <li><strong>Gemini Flash (Subagentes / Goldfish):</strong> Modelo ligero de bajísima latencia para subagentes paralelos asignados a tareas atómicas (comprobar sintaxis, auditar límites de páginas o verificar enlaces) en fracciones de segundo.</li>
         </ul>
     </div>
@@ -419,8 +420,8 @@ echo "========================================================"
         <ul>
             <li><strong>Nivel 1 — Subagentes Paralelos Efímeros (<code>invoke_subagent</code> / <code>kill</code>):</strong> Ideales para tareas independientes y auditorías atómicas (compilar un PDF, comprobar límites de página o validar enlaces). Nacen con contexto limpio y se destruyen al instante tras emitir su dictamen (cero procesos zombi).</li>
             <li><strong>Nivel 2 — Enjambre Coordinado (<code>/swarm</code>):</strong> Para proyectos grandes de varias piezas simultáneas (ej. construir una app web completa con interfaz, lógica y pruebas), despliega un equipo de especialistas (planificador, autores en copias aisladas <code>share</code>/<code>branch</code>, monitor de bloqueos y verificador) coordinados sobre un tablón común.</li>
-            <li><strong>Verificación Visual Automática en Navegador:</strong> Antes de dar por buena cualquier aplicación o simulador web, el sistema abre el navegador integrado y comprueba funcionalmente su carga y comportamiento real (cero trabajo de depuración para el usuario).</li>
-            <li><strong>Comandos Rápidos Nativos (Slash Commands):</strong> Control directo del flujo desde el chat mediante <code>/plan</code> (planificación previa), <code>/swarm</code> (enjambre multi-agente), <code>/teamwork</code> (equipo autónomo), <code>/boost</code> (análisis profundo) y <code>/compact</code> (liberar memoria del chat).</li>
+            <li><strong>Verificación Visual y Comentarios Directos en Pantalla (<em>Pin &amp; Comment</em>):</strong> Antes de dar por buena cualquier aplicación o simulador web, el sistema comprueba su carga real en el navegador. Además, el usuario puede señalar visualmente cualquier elemento en pantalla, dejar un comentario (ej. <em>«más grande y en verde»</em>) y pedirle que repase los comentarios para ajustarlo al instante sin describir rutas ni código.</li>
+            <li><strong>Activación Natural sin Memorizar Comandos <code>/</code>:</strong> Aunque existen atajos de teclado opcionales (<code>/plan</code>, <code>/swarm</code>, <code>/teamwork</code>, <code>/boost</code>, <code>/compact</code>), <strong>no es necesario recordarlos ni dictarlos al hablar</strong>: basta con expresar la intención en lenguaje natural para que el coordinador active automáticamente la planificación, los subagentes o el flujo adecuado.</li>
         </ul>
     </div>
 
@@ -453,10 +454,21 @@ echo "========================================================"
     <div class="feature-box">
         <span class="badge badge-feature">Especialización por Tarea (Adiós a Repetir Prompts)</span><br>
         <strong>🧩 Gobernanza Global (<code>AGENTS.md</code>) vs. Skills Modulares (<code>SKILL.md</code>):</strong>
-        <p>Mientras <code>AGENTS.md</code> fija las reglas permanentes de todo el espacio de trabajo (cero-submits, tono, despliegue), los <strong>Skills</strong> encapsulan procedimientos especializados bajo demanda en archivos <code>SKILL.md</code> (globales o por carpeta en <code>.agent/skills/</code>), evitando escribir prompts largos repetitivos y eliminando el olvido de restricciones (<em>Drift</em>).</p>
+        <p>Mientras <code>AGENTS.md</code> fija las reglas permanentes de todo el espacio de trabajo (cero-submits, tono, despliegue), los <strong>Skills</strong> encapsulan procedimientos especializados bajo demanda en archivos <code>SKILL.md</code> (globales o por carpeta en <code>.agent/skills/</code>), evitando escribir prompts largos repetitivos y eliminando el olvido de restricciones (<em>Drift</em>). Se <strong>activan automáticamente por contexto</strong> al hablar con naturalidad, sin necesidad de memorizar ni pronunciar comandos.</p>
         <ul>
             <li><strong>Anatomía Oficial de 4 Bloques:</strong> Todo Skill maestro se estructura en: <strong>1) Rol y Objetivo</strong> (misión exacta), <strong>2) Restricciones Negativas (<em>Never Do</em>)</strong> (prohibiciones tajantes para evitar relleno o alucinaciones), <strong>3) Estructura de Entrada</strong> (qué archivos o datos espera) y <strong>4) Formato de Entrega</strong> (tabla, PDF, HTML o salida validada).</li>
             <li><strong>Catálogo Previsto de Skills Generales del Ecosistema:</strong> <code>ficha-senior</code> (maquetación pedagógica +65 sin código), <code>despliegue-seguro</code> (anti-caché, commit y verificación en <code>CURSO-IA</code>), <code>nasa-eyes-calibrado</code> (catálogo orbital 3D y HUD de 380px) y <code>sincronizador-copilot</code> (réplica automática hacia la guía corporativa).</li>
+        </ul>
+    </div>
+
+    <h2>3.10 Automatización Autónoma: Agentes Remotos, Workspace (Solo Borradores) y Modo Voz</h2>
+    <div class="feature-box">
+        <span class="badge badge-feature">Ejecución en Segundo Plano y Conexión Google Workspace</span><br>
+        <strong>☁️ Operativa en la Nube, Seguridad en Comunicaciones y Dictado Continuo:</strong>
+        <ul>
+            <li><strong>Agentes Remotos (Nube) vs. <code>Automations</code> Locales:</strong> Las tareas programadas locales requieren el ordenador encendido y ven todo el monorepo; los <strong>Agentes Remotos</strong> trabajan en servidores de Google con el portátil cerrado, aunque exigen subir los archivos de contexto necesarios (no ven el disco local).</li>
+            <li><strong>Conexión Google Workspace y Regla «Solo Borradores» (<em>Draft-only</em>):</strong> Al vincular Gmail, Docs, Sheets y Calendar (o usar el modo <strong>Tarea</strong> en Gemini Web para volcar PDFs de horarios a Calendar), se impone la salvaguarda obligatoria de <strong>crear únicamente borradores</strong> en Gmail, prohibiendo cualquier envío automático sin revisión humana previa.</li>
+            <li><strong>Modo Voz en Paralelo:</strong> Permite dictar instrucciones por voz de forma continua mientras el agente ejecuta cambios en segundo plano, eliminando tiempos muertos entre turnos.</li>
         </ul>
     </div>
 
@@ -680,6 +692,7 @@ def compilar_pdf_reportlab():
         Paragraph("3.7 Visualización Directa y Paneles Vivos: Generative UI en Antigravity (<agent-embed>)", toc_sub),
         Paragraph("3.8 Pipeline de Despliegue Continuo: GitHub como BKP Blindado y Servidor Web Global (GitHub Pages)", toc_sub),
         Paragraph("3.9 Arquitectura Modular de Skills (SKILL.md): Automatización sin Prompts Largos", toc_sub),
+        Paragraph("3.10 Automatización Autónoma: Agentes Remotos, Workspace (Solo Borradores) y Modo Voz", toc_sub),
         Spacer(1, 2),
         Paragraph("<b>FASE 4: PUESTA EN MARCHA DEL ESPACIO DE TRABAJO (PLANTILLA EN 1 CLIC)</b>", toc_phase),
         Paragraph("4.1 La Solución Definitiva: Plantilla Universal en 1 Clic (WORKSPACE-ANTIGRAVITY-PLANTILLA.zip)", toc_sub),
@@ -888,7 +901,7 @@ def compilar_pdf_reportlab():
 
     story.append(make_param_card(
         "Parámetro 5:", "Selección de Modelo y Enrutamiento Inteligente (Model Selection)",
-        "Permite alternar entre motores neuronales: <b>Gemini Pro / Gemini 4 (Hydrogen Medium, Neon, Carbon)</b> para el Elefante (coordinador con razonamiento agéntico profundo y orquestación) y <b>Gemini Flash</b> para subagentes rápidos (Goldfish para tareas atómicas y auditorías instantáneas)."
+        "Alternancia inteligente en cuenta Pro de pago: <b>Gemini 4 (Hydrogen Medium / Neon)</b> para el ritmo diario con máxima eficiencia y <b>Orchestrator / Pro</b> (3-4 veces más costoso en tiempo y cuota) reservado para arquitectura compleja; y <b>Gemini Flash</b> para subagentes rápidos (Goldfish)."
     ))
 
     story.append(make_param_card(
@@ -939,7 +952,7 @@ def compilar_pdf_reportlab():
     story.append(Paragraph("Prohibición tajante de exponer al alumno senior a código fuente (HTML, JavaScript, Three.js). Los prompts generan aplicaciones interactivas en modo Canvas / Vista Previa directa, respaldadas por un botón BKP local probado en cada mapa.", body_style))
 
     story.append(Paragraph("3.6 Orquestación Concurrente: Subagentes Efímeros, Enjambre (/swarm) y Verificación en Navegador", h1_style))
-    story.append(Paragraph("Antigravity escala en dos niveles: <b>1) Subagentes paralelos efímeros</b> (<code>invoke_subagent</code> / <code>kill</code>) para tareas independientes con contexto limpio que se destruyen al terminar sin procesos zombi; y <b>2) Enjambre coordinado (<code>/swarm</code>)</b> para proyectos complejos con varios especialistas trabajando en paralelo sobre copias aisladas (<code>share</code>/<code>branch</code>) y tablón compartido. Además, incorpora <b>verificación visual en navegador</b> antes de entregar y <b>Slash Commands nativos</b> (<code>/plan</code>, <code>/swarm</code>, <code>/teamwork</code>, <code>/boost</code>, <code>/compact</code>).", body_style))
+    story.append(Paragraph("Antigravity escala en dos niveles: <b>1) Subagentes paralelos efímeros</b> (<code>invoke_subagent</code> / <code>kill</code>) para auditorías atómicas con contexto limpio sin procesos zombi; y <b>2) Enjambre coordinado (<code>/swarm</code>)</b> para proyectos complejos con especialistas en copias aisladas (<code>share</code>/<code>branch</code>). Incluye <b>verificación visual y comentarios directos en pantalla (<i>Pin &amp; Comment</i>)</b> para corregir elementos señalándolos en el visor. <b>Sin memorizar comandos <code>/</code>:</b> aunque existen atajos opcionales (<code>/plan</code>, <code>/swarm</code>, <code>/compact</code>), basta con hablar en lenguaje natural para que el sistema los active automáticamente.", body_style))
 
     story.append(Paragraph("3.7 Visualización Directa y Paneles Vivos: Generative UI en Antigravity", h1_style))
     story.append(Paragraph("Con <b>Generative UI</b>, Antigravity renderiza directamente componentes interactivos funcionales en el chat y en el panel lateral mediante <code>&lt;agent-embed src=\"...\"&gt;</code>, utilizando Tailwind CSS y tokens semánticos nativos (<code>var(--foreground)</code>, <code>var(--card)</code>, <code>var(--primary)</code>) con total adaptabilidad a temas claros y oscuros sin requerir ventanas de confirmación.", body_style))
@@ -948,7 +961,10 @@ def compilar_pdf_reportlab():
     story.append(Paragraph("En nuestro flujo de trabajo, cada bloque ejecutable concluye obligatoriamente con la subida a GitHub (<code>git push origin main</code>), cumpliendo dos funciones vitales simultáneas: <b>1) Respaldo Automático e Inmutable (BKP en la Nube):</b> cada archivo, PDF y simulación interactiva queda archivado con historial commit a commit; ante cualquier fallo local o rotura de disco, el proyecto íntegro se restaura al 100% en segundos sin riesgo de pérdida. <b>2) Servidor Web Global Instantáneo (GitHub Pages):</b> mediante GitHub Pages, todo el repositorio se transforma de forma gratuita en un servidor web de producción donde cada archivo HTML interactivo o simulación 3D dispone de una URL pública inmediata, permitiendo que el profesor y los alumnos (+65) abran los recursos desde iPad, tablet o cualquier ordenador sin instalar servidores locales (Apache/Nginx) ni pagar hosting. Además, la inyección automática de parámetros anti-caché (<code>?v=...</code>) garantiza que los navegadores descarguen siempre la versión recién modificada al primer clic.", body_style))
 
     story.append(Paragraph("3.9 Arquitectura Modular de Skills (SKILL.md): Automatización sin Prompts Largos", h1_style))
-    story.append(Paragraph("Mientras <code>AGENTS.md</code> fija las reglas globales permanentes del espacio de trabajo, los <b>Skills</b> encapsulan procedimientos especializados bajo demanda en archivos <code>SKILL.md</code> (<code>.agent/skills/</code>), eliminando la fatiga de escribir prompts largos y el olvido de restricciones (<i>Drift</i>). Cada Skill sigue una anatomía de 4 bloques: <b>1) Rol y Objetivo</b>, <b>2) Restricciones Negativas (<i>Never Do</i>)</b>, <b>3) Estructura de Entrada</b> y <b>4) Formato de Entrega</b>. Nuestro catálogo general previsto incluye <code>ficha-senior</code> (maquetación +65), <code>despliegue-seguro</code> (anti-caché y push), <code>nasa-eyes-calibrado</code> (mallas orbitales 3D) y <code>sincronizador-copilot</code> (réplica continua hacia la guía corporativa).", body_style))
+    story.append(Paragraph("Mientras <code>AGENTS.md</code> fija las reglas globales permanentes, los <b>Skills</b> encapsulan procedimientos especializados en <code>SKILL.md</code> (<code>.agent/skills/</code>), eliminando la fatiga de prompts y el <i>Drift</i>, y <b>activándose automáticamente por contexto</b> sin dictar comandos. Siguen 4 bloques: <b>Rol y Objetivo</b>, <b>Restricciones Negativas (<i>Never Do</i>)</b>, <b>Entrada</b> y <b>Formato de Entrega</b>. Catálogo previsto: <code>ficha-senior</code>, <code>despliegue-seguro</code>, <code>nasa-eyes-calibrado</code> y <code>sincronizador-copilot</code>.", body_style))
+
+    story.append(Paragraph("3.10 Automatización Autónoma: Agentes Remotos, Workspace (Solo Borradores) y Modo Voz", h1_style))
+    story.append(Paragraph("Diferenciación clave entre <b><code>Automations</code> locales</b> (ven el monorepo pero requieren PC encendido) y <b>Agentes Remotos</b> (operan en la nube con el portátil cerrado subiendo los archivos base). Al conectar <b>Google Workspace</b> (Gmail, Docs, Sheets, Calendar o modo <b>Tarea</b> para volcar PDFs a Calendar), rige la regla de <b>«Solo Borradores» (<i>Draft-only</i>)</b> en Gmail hasta revisión humana. El <b>Modo Voz en paralelo</b> permite dictar continuamente mientras el agente trabaja en segundo plano.", body_style))
     story.append(Spacer(1, 6))
 
     # FASE 4: PUESTA EN MARCHA DEL ESPACIO DE TRABAJO (PLANTILLA EN 1 CLIC)
