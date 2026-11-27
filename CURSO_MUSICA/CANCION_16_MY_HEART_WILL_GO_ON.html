@@ -1032,9 +1032,9 @@ And my heart will go on and on!
     }
 
     var CANONICAL_KBD_MAP = {"001": {"lsb": 0, "pc": 0, "name": "001 Grand Piano"}, "005": {"lsb": 0, "pc": 4, "name": "005 E.GrandPiano"}, "006": {"lsb": 0, "pc": 5, "name": "006 Piano&Pad"}, "009": {"lsb": 0, "pc": 8, "name": "009 Funky Clavi"}, "011": {"lsb": 1, "pc": 0, "name": "011 Stage E.P."}, "015": {"lsb": 1, "pc": 6, "name": "015 Span.Guitar"}, "018": {"lsb": 1, "pc": 9, "name": "018 Clean Guitar"}, "029": {"lsb": 2, "pc": 8, "name": "029 Harmonica"}, "034": {"lsb": 3, "pc": 3, "name": "034 Hot BX3"}, "037": {"lsb": 3, "pc": 12, "name": "037 Full Organ"}, "038": {"lsb": 3, "pc": 13, "name": "038 Jazz Organ"}, "048": {"lsb": 4, "pc": 7, "name": "048 Solo Violin"}, "051": {"lsb": 5, "pc": 0, "name": "051 Aco.Guitar"}, "053": {"lsb": 5, "pc": 2, "name": "053 Jazz Guitar"}, "056": {"lsb": 5, "pc": 5, "name": "056 Dist.Guitar"}, "061": {"lsb": 6, "pc": 0, "name": "061 The Strings"}, "062": {"lsb": 6, "pc": 1, "name": "062 Bow Strings"}, "066": {"lsb": 6, "pc": 5, "name": "066 Oct.Strings"}, "071": {"lsb": 7, "pc": 0, "name": "071 Oooh&Aahs"}, "086": {"lsb": 8, "pc": 5, "name": "086 Trp. & Trb.1"}, "091": {"lsb": 9, "pc": 0, "name": "091 Grd.Accordion"}, "095": {"lsb": 9, "pc": 4, "name": "095 Horns&Ens."}, "101": {"lsb": 10, "pc": 0, "name": "101 Tenor Sax"}, "107": {"lsb": 10, "pc": 6, "name": "107 Flute"}, "109": {"lsb": 10, "pc": 8, "name": "109 ClarinetEns"}, "113": {"lsb": 11, "pc": 2, "name": "113 ThreeFlutes"}, "114": {"lsb": 11, "pc": 5, "name": "114 Whistels"}, "116": {"lsb": 11, "pc": 5, "name": "116 Three Pipes"}, "118": {"lsb": 11, "pc": 9, "name": "118 Wind Sect."}};
-    let reverbActual = 42;
-    let chorusActual = 15;
-    let brilloActual = 64;
+    let reverbActual = 95;
+    let chorusActual = 90;
+    let brilloActual = 118;
 
     async function ajustarEfectosMidi(rev, cho, brillo, btn = null) {
         if (btn) dispararDestelloBoton(btn);
@@ -1157,13 +1157,17 @@ And my heart will go on and on!
             await enviarMidiGlobal([0xCF, pc]);
             await new Promise(r => setTimeout(r, 40));
 
-            // 3. Calibración acústica de directo (respetando efectos activos)
+            // 3. Calibración acústica de directo (114 y 071 con CC74=118 por defecto)
+            const esBrillo118 = (numStr === '114' || numStr === '071');
+            const revSend = esBrillo118 ? 95 : reverbActual;
+            const choSend = esBrillo118 ? 90 : chorusActual;
+            const cutSend = esBrillo118 ? 118 : brilloActual;
             [0, 1, 2, 3].forEach(ch => {
                 enviarMidiGlobal([0xB0 | ch, 0x07, 122]);
                 enviarMidiGlobal([0xB0 | ch, 0x0B, 127]);
-                enviarMidiGlobal([0xB0 | ch, 0x5B, reverbActual]);
-                enviarMidiGlobal([0xB0 | ch, 0x5D, chorusActual]);
-                enviarMidiGlobal([0xB0 | ch, 0x4A, brilloActual]);
+                enviarMidiGlobal([0xB0 | ch, 0x5B, revSend]);
+                enviarMidiGlobal([0xB0 | ch, 0x5D, choSend]);
+                enviarMidiGlobal([0xB0 | ch, 0x4A, cutSend]);
             });
 
             const log = document.getElementById('log-midi');
