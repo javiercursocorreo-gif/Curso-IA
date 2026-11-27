@@ -298,6 +298,36 @@
             font-weight: 700;
             text-transform: uppercase;
         }
+        .section-row-inline {
+            display: inline-flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 4px;
+        }
+        .inline-songbook-btn {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: #1e293b;
+            color: #fde68a;
+            border: 1px solid #f59e0b;
+            border-radius: 8px;
+            padding: 4px 12px;
+            font-size: 0.84rem;
+            font-weight: 800;
+            cursor: pointer;
+            touch-action: manipulation;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.45);
+            transition: all 0.18s ease;
+        }
+        .inline-songbook-btn.active-inline-sound {
+            background: linear-gradient(180deg, #d97706 0%, #b45309 100%);
+            color: #ffffff;
+            border-color: #fbbf24;
+            box-shadow: 0 0 12px rgba(245,158,11,0.55);
+        }
     </style>
 </head>
 <body>
@@ -685,7 +715,7 @@
 <span class="chord" style="color:#fbbf24;">[INTRODUCCIÓN - RITMO BEGUINE 174 / 175]</span>
 || <span class="chord">C</span>  |  <span class="chord">Am</span>  |  <span class="chord">Em</span>  |  <span class="chord">F</span>  |  <span class="chord">G</span>  ||
 
-<span class="chord" style="color:#fbbf24;">[PARTE 1]</span>
+<span class="section-row-inline"><span class="chord" style="color:#fbbf24;">[PARTE 1]</span> <button type="button" class="inline-songbook-btn active-inline-sound" data-sound="037" onclick="cargarKeyboardSet('037', this)">🎹 037 Full Organ</button> <button type="button" class="inline-songbook-btn" data-sound="051" onclick="cargarKeyboardSet('051', this)">🎸 Nylon Guitar (051)</button></span>
 <span class="chord">C</span>          <span class="chord">Am</span>
 Cuando calienta el sol aquí en la
 <span class="chord">Em</span>
@@ -697,13 +727,13 @@ Es tu palpitar, es tu cara, es tu pelo,
 <span class="chord">Em</span>        <span class="chord">F</span>                     <span class="chord">G</span>
 son tus besos, me estremezco, ¡oh, oh, oh!
 
-<span class="chord" style="color:#fbbf24;">[ESTRIBILLO]</span>
+<span class="section-row-inline"><span class="chord" style="color:#fbbf24;">[ESTRIBILLO]</span> <button type="button" class="inline-songbook-btn" data-sound="095" onclick="cargarKeyboardSet('095', this)">🎺 095 Horns&amp;Ens.</button> <button type="button" class="inline-songbook-btn" data-sound="037" onclick="cargarKeyboardSet('037', this)">🎹 037 Full Organ</button></span>
 <span class="chord">C</span>      <span class="chord">Am</span>    <span class="chord">Dm</span>
 Cuando calienta el sol,
 <span class="chord">G</span>      <span class="chord">C</span>     <span class="chord">Am</span>    <span class="chord">Dm</span>    <span class="chord">G</span>
 cuando calienta el sol...
 
-<span class="chord" style="color:#fbbf24;">[PARTE 2]</span>
+<span class="section-row-inline"><span class="chord" style="color:#fbbf24;">[PARTE 2]</span> <button type="button" class="inline-songbook-btn" data-sound="037" onclick="cargarKeyboardSet('037', this)">🎹 037 Full Organ</button> <button type="button" class="inline-songbook-btn" data-sound="051" onclick="cargarKeyboardSet('051', this)">🎸 Nylon Guitar (051)</button></span>
 <span class="chord">C</span>          <span class="chord">Am</span>
 Cuando calienta el sol aquí en la
 <span class="chord">Em</span>
@@ -715,7 +745,7 @@ Es tu palpitar, tu recuerdo, mi locura,
 <span class="chord">Em</span>        <span class="chord">F</span>                     <span class="chord">G</span>
 mi delirio, me estremezco, ¡oh, oh, oh!
 
-<span class="chord" style="color:#fbbf24;">[FINAL Y CIERRE]</span>
+<span class="section-row-inline"><span class="chord" style="color:#fbbf24;">[FINAL Y CIERRE]</span> <button type="button" class="inline-songbook-btn" data-sound="095" onclick="cargarKeyboardSet('095', this)">🎺 095 Horns&amp;Ens.</button> <button type="button" class="inline-songbook-btn" data-sound="037" onclick="cargarKeyboardSet('037', this)">🎹 037 Full Organ</button></span>
 <span class="chord">C</span>      <span class="chord">Am</span>    <span class="chord">Dm</span>
 Cuando calienta el sol,
 <span class="chord">G</span>      <span class="chord">C</span>     <span class="chord">Am</span>    <span class="chord">Dm</span>
@@ -1114,7 +1144,7 @@ cuando calienta el sol,
         resetDimTimer();
     }
 
-    // SMART DIMMING SEGURO (45 MINUTOS TRAS INACTIVIDAD)
+    // SMART DIMMING SEGURO (10 MINUTOS TRAS INACTIVIDAD PARA AHORRO DE BATERÍA)
     function resetDimTimer() {
         if (dimTimer) clearTimeout(dimTimer);
         const ov = document.getElementById('smart-dim-overlay');
@@ -1130,7 +1160,7 @@ cuando calienta el sol,
                 ov.style.opacity = '1';
                 ov.style.pointerEvents = 'auto';
             }
-        }, 45 * 60 * 1000);
+        }, 10 * 60 * 1000);
     }
     function despertarPantallaManual(e) {
         if (e) e.stopPropagation();
@@ -1239,6 +1269,12 @@ cuando calienta el sol,
         if (btn) dispararDestelloBoton(btn);
         habilitarNoSleep();
         actualizarSonidoUI(codigo);
+        document.querySelectorAll('.inline-songbook-btn').forEach(b => {
+            const match = btn && btn.classList && btn.classList.contains('inline-songbook-btn')
+                ? (b === btn)
+                : (b.getAttribute('data-sound') === String(codigo));
+            b.classList.toggle('active-inline-sound', match);
+        });
 
         if (!midiOutput && (!midiAccessInstance || obtenerSalidasDisponibles().length === 0)) {
             await conectarMIDI();
@@ -1276,11 +1312,16 @@ cuando calienta el sol,
             await enviarMidiGlobal([0xCF, pc]);
             await new Promise(r => setTimeout(r, 40));
 
-            // 3. Calibración acústica de directo
+            // 3. Calibración acústica de directo (037 y 051 Nylon Guitar con Reverb 95, Chorus 90, CC74=118 y Volumen 127)
+            const esNylonOrgan = (numStr === '037' || numStr === '051');
             [0, 1, 2, 3].forEach(ch => {
-                enviarMidiGlobal([0xB0 | ch, 0x07, 122]);
+                enviarMidiGlobal([0xB0 | ch, 0x07, esNylonOrgan ? 127 : 124]);
                 enviarMidiGlobal([0xB0 | ch, 0x0B, 127]);
-                enviarMidiGlobal([0xB0 | ch, 0x5B, 42]);
+                enviarMidiGlobal([0xB0 | ch, 0x5B, esNylonOrgan ? 95 : 42]);
+                if (esNylonOrgan) {
+                    enviarMidiGlobal([0xB0 | ch, 0x5D, 90]);
+                    enviarMidiGlobal([0xB0 | ch, 0x4A, 118]);
+                }
             });
 
             const log = document.getElementById('log-midi');
