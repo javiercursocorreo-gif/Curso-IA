@@ -138,14 +138,15 @@ def build():
     ))
     story.append(Spacer(1, 7))
 
-    # Paso 3 (Final: 3 escenarios completos)
+    # Paso 3 (Final: 1 escenario por envío con marco IKEA RÖDALM)
     story.append(make_prompt_box(
-        "PASO 3 (FINAL) · Genera los 3 escenarios completos con cuadros reales y marco IKEA RÖDALM",
-        "<i>«Ahora genera <b>3 imágenes finales distintas</b> usando <b>3 veces exactamente la misma habitación del Paso 1</b> "
-        "(sin cambiar muebles, luz ni paredes), colocando en cada una la plantilla 1, la plantilla 2 y la plantilla 3 a escala real. "
-        "Cada cuadro debe aparecer ya relleno con <b>fotografías artísticas en blanco y negro</b> (o en color cálido), "
-        "montadas con paspartú blanco y marco negro mate fino estilo <b>IKEA RÖDALM</b> "
-        "(https://www.ikea.com/es/es/p/rodalm-marco-negro-20548918/) con sombras naturales sobre la pared.»</i>",
+        "PASO 3 (FINAL) · Coloca la plantilla elegida con marco IKEA RÖDALM (Repite para 1, 2 y 3)",
+        "<i>«Toma exactamente la misma habitación del Paso 1 (sin cambiar muebles, luz ni paredes) y coloca centrada "
+        "en la pared vacía la <b>Plantilla [1]</b> del Paso 2, respetando la escala real. Cada cuadro debe ir ya montado "
+        "con <b>fotografías artísticas en blanco y negro</b> (o en color cálido), paspartú blanco y marco negro mate fino "
+        "estilo <b>IKEA RÖDALM</b> (https://www.ikea.com/es/es/p/rodalm-marco-negro-20548918/).»</i><br/>"
+        "<font color='#0369A1'><b>Nota en clase:</b> Gemini genera 1 foto por cada mensaje. Envía este prompt para la "
+        "<b>Plantilla 1</b> y, si quieres comparar, vuelve a enviarlo cambiando solo <b>Plantilla 2</b> y <b>Plantilla 3</b>.</font>",
         "#F0FDF4", "#16A34A", styles
     ))
     story.append(Spacer(1, 8))
