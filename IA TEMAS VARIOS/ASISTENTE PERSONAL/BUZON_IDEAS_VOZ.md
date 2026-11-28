@@ -48,3 +48,5 @@
 - [ ] **[28/11/2026 16:28 - iPhone]**: https://www.youtube.com/watch?v=Gb2338YH_d8
 - [ ] **[28/11/2026 16:33 - iPhone]**: https://www.youtube.com/watch?v=qhx2kV-r7sk
 - [ ] **[28/11/2026 16:59 - iPhone]**: https://youtube.com/watch?v=uhUfqT7sL-U&is=puMZXZWjhvDYMPmN
+- [ ] **[28/11/2026 21:07 - iPhone]**: https://youtube.com/shorts/Mh72PK2BBoQ?is=uAgGhvUXaIK8Yess
+- [ ] **[28/11/2026 21:35 - iPhone]**: https://youtube.com/watch?v=yNU-nhrMNgA&is=tvuX5hltvrzAR6UL
