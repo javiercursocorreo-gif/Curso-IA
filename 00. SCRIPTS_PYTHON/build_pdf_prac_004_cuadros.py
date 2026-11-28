@@ -17,7 +17,7 @@ BASE = "/Users/externo/Library/Mobile Documents/com~apple~CloudDocs/PERSONAL/CLA
 S04_PDF = os.path.join(BASE, "100. [SESSIONS] TERNAS_LISTAS_PARA_CLASSROOM/04_Sesion/3. PRAC-004_Decoracion_Pared_Cuadros_IKEA.pdf")
 BLQ_PDF = os.path.join(BASE, "03. [PRAC] BLOQUE_3_TALLERES_DE_PROMPTS_PRACTICOS/Lote_01_al_20/3. PRAC-004_Decoracion_Pared_Cuadros_IKEA.pdf")
 BLQ_PDF_ALT = os.path.join(BASE, "03. [PRAC] BLOQUE_3_TALLERES_DE_PROMPTS_PRACTICOS/Lote_01_al_20/PRAC-004_Decoracion_Pared_Cuadros_IKEA.pdf")
-SAMPLE_IMG = "/Users/externo/.gemini/antigravity/brain/71e76d04-d89c-407b-aa1b-bc899421438a/opcion_2_195x105_bn_1795866886641.jpg"
+SAMPLE_IMG = os.path.join(BASE, "100. [SESSIONS] TERNAS_LISTAS_PARA_CLASSROOM/04_Sesion/SALON_EJEMPLO_PRAC_004.jpg")
 
 
 def make_prompt_box(title, prompt_text, bg_hex, border_hex, styles):
