@@ -182,15 +182,16 @@ def compilar_html():
         <li><strong>Cambio de Pestaña según tu Sistema Operativo:</strong> Si estás en un ordenador con <strong>Windows</strong> o con <strong>Linux</strong>, es obligatorio fijarse en las pestañas superiores de la página de descarga y hacer clic en la pestaña <strong>"Windows"</strong> (o "Linux") para que se descargue el instalador ejecutable <code>.exe</code> adecuado.</li>
     </ul>
 
-    <h2>0.2 Antigravity Desktop vs. Antigravity IDE (Por qué elegir el IDE)</h2>
-    <p>Google ofrece dos interfaces para interactuar con la plataforma en tu ordenador (Mac o PC):</p>
+    <h2>0.2 Ecosistema Antigravity 2.0 (5 Componentes) y Por qué Elegir el IDE</h2>
+    <p>Google Antigravity 2.0 ofrece cinco componentes oficiales según el entorno de uso (Mac, PC o Linux):</p>
     <ul>
-        <li><strong>Antigravity Desktop (App de Escritorio):</strong> Es una aplicación visual muy básica, orientada casi exclusivamente a chatear. <em>Inconveniente:</em> Oculta el árbol de carpetas, no muestra las diferencias exactas de código (diffs rojos/verdes) y no tiene consola de ejecución integrada, quedándose corta de inmediato.</li>
-        <li><strong>Antigravity IDE (Entorno Integrado basado en VS Code - NUESTRA ELECCIÓN OFICIAL):</strong> Es la herramienta profesional definitiva. En una única pantalla integra el explorador de archivos a la izquierda, el editor de código central, la terminal de comandos abajo y el copiloto de IA a la derecha.</li>
+        <li><strong>1. Antigravity App (Escritorio):</strong> Centro de comando independiente para orquestar agentes en paralelo y tareas programadas, pero <em>oculta</em> el árbol de archivos y la terminal integrada.</li>
+        <li><strong>2. Antigravity IDE (Entorno Integrado basado en VS Code - NUESTRA ELECCIÓN EN CLASE):</strong> Integra explorador de archivos, editor, diffs visuales, terminal y copiloto de IA en una sola pantalla.</li>
+        <li><strong>3. Antigravity CLI (<code>agy</code>), 4. SDK Python (<code>google-antigravity</code>) y 5. Extensiones para IDEs</strong> (VS Code, JetBrains, Zed, Xcode y Eclipse): Reemplazan oficialmente a los antiguos <em>Gemini CLI</em> y <em>Gemini Code Assist</em> (retirados en junio de 2026).</li>
     </ul>
 
     <div class="solution-box">
-        <strong>💡 Recomendación Oficial del Curso:</strong> Instala siempre <strong>Antigravity IDE</strong>. Aunque seas principiante, verás en tiempo real cómo la IA crea tus carpetas y archivos en el disco, teniendo el 100% del control visual de lo que ocurre en tu ordenador (Mac o PC).
+        <strong>💡 Recomendación Oficial y Aviso Enterprise:</strong> En tus proyectos y clases instala siempre <strong>Antigravity IDE</strong> para tener control visual al 100%. <em>Nota corporativa:</em> en cuentas empresariales <strong>Gemini Enterprise</strong>, el IDE independiente no está soportado; las empresas despliegan mediante <strong>Antigravity App</strong>, <strong>CLI (<code>agy</code>)</strong> o <strong>Extensiones de IDE</strong>.
     </div>
 
     <h2>0.3 Inicio de Sesión: El Consejo de Oro de la Cuenta de Google Gemini</h2>
@@ -313,10 +314,10 @@ def compilar_html():
     <div class="param-box">
         <span class="badge badge-param">Parámetro 2</span>
         <h3>2. Modo Sandbox y Aislamiento de Procesos (Terminal Sandbox)</h3>
-        <p>Define la jaula de seguridad y contención en la que corren los procesos del asistente.</p>
+        <p>Define la jaula de seguridad a nivel de sistema operativo en la que corren los procesos del asistente.</p>
         <ul>
-            <li><strong>Aislamiento de Recursos:</strong> En modo estándar (<code>BypassSandbox: false</code>), el agente tiene permisos plenos de lectura y escritura dentro de la carpeta raíz del proyecto y directorios temporales, pero no puede acceder a otras carpetas privadas del Mac o PC ni modificar configuraciones de red del sistema anfitrión.</li>
-            <li><strong>Eliminación de Fricción:</strong> Permite auto-aprobar comandos sin intervención del usuario, garantizando el cumplimiento estricto del <em>Protocolo de Cero Submits</em>.</li>
+            <li><strong>Motores Nativos de Aislamiento:</strong> Utiliza <code>seatbelt</code> en macOS, <code>bubblewrap</code> en Linux y contenedores <strong>gVisor</strong> en la nube. En modo estándar (<code>BypassSandbox: false</code>), el agente opera libremente dentro del workspace sin poder tocar carpetas privadas ni la red del anfitrión.</li>
+            <li><strong>Eliminación de Fricción y Buenas Prácticas:</strong> Permite auto-aprobar comandos sin ventanas de confirmación (<em>Cero Submits</em>). Para auditorías de solo lectura puede forzarse <code>--mode plan</code>, evitando siempre el modo <code>Turbo / Always proceed</code> en proyectos reales y auditando periódicamente <code>~/.gemini/antigravity/mcp_config.json</code>.</li>
         </ul>
     </div>
 
@@ -342,21 +343,21 @@ def compilar_html():
 
     <div class="param-box">
         <span class="badge badge-param">Parámetro 5</span>
-        <h3>5. Selección de Modelo y Enrutamiento Inteligente (Model Selection)</h3>
-        <p>Permite alternar entre los distintos motores neuronales de la familia Gemini según la carga cognitiva requerida.</p>
+        <h3>5. Selección de Modelo y Orquestación Híbrida (Model Selection)</h3>
+        <p>Permite alternar entre los motores de la familia Gemini 4 según la carga cognitiva requerida.</p>
         <ul>
-            <li><strong>Gemini Pro / Gemini 4 (Hydrogen Medium / Neon / Carbon):</strong> Motores avanzados de cuarta generación en cuenta Pro de pago. Regla de eficiencia: usar <strong>Hydrogen Medium / Neon</strong> (ajustando el nivel de pensamiento entre <em>Low/Medium</em> para UI rápida, <em>High</em> para uso diario y <em>Extra High</em> para auditorías y defensa frente a <em>Prompt Injection</em>) y reservar <strong>Orchestrator / Pro</strong> (3-4 veces más costoso en cuota) para arquitectura compleja. <em>Plan B:</em> posibilidad de conectar clave API propia de Google AI Studio ante agotamiento puntual de cuota.</li>
-            <li><strong>Gemini Flash (Subagentes / Goldfish):</strong> Modelo ligero de bajísima latencia para subagentes paralelos asignados a tareas atómicas (comprobar sintaxis, auditar límites de páginas o verificar enlaces) en fracciones de segundo.</li>
+            <li><strong>Catálogo Gemini 4 y Orchestrator Híbrido:</strong> Incluye <code>gemini-4-argon</code> (74.8% en SWE-bench), <code>gemini-4-carbon</code> (planificación profunda), <code>gemini-4-neon</code> y <code>gemini-4-hydrogen</code> (ejecutor rápido). Usar <strong>Hydrogen Medium / Neon</strong> en el día a día y <strong>Orchestrator Híbrido</strong> (Carbon planifica + Hydrogen ejecuta) logra casi la misma precisión reduciendo un <strong>24% el consumo de cuota</strong> y acelerando un <strong>19%</strong> la ejecución. <em>Nota:</em> modelos externos como Claude 5.5 siguen usando modelos Gemini en segundo plano para resumir contexto.</li>
+            <li><strong>Gemini Flash (Subagentes / Goldfish):</strong> Modelo ligero de bajísima latencia para subagentes paralelos asignados a tareas atómicas (comprobar sintaxis, auditar páginas o verificar enlaces). <em>Plan B:</em> conectar clave API propia de Google AI Studio ante agotamiento puntual de cuota.</li>
         </ul>
     </div>
 
     <div class="param-box">
         <span class="badge badge-param">Parámetro 6</span>
-        <h3>6. Jerarquía de Reglas del Proyecto (AGENTS.md y GEMINI.md)</h3>
-        <p>El núcleo de gobernanza que subordina el comportamiento de la IA a las instrucciones formales del usuario.</p>
+        <h3>6. Jerarquía de Reglas y Divulgación Progresiva (AGENTS.md y GEMINI.md)</h3>
+        <p>El núcleo de gobernanza que subordina el comportamiento de la IA evitando el «Impuesto de Ventana de Contexto» (<em>context window tax</em>).</p>
         <ul>
-            <li><strong>Prioridad Jerárquica:</strong> Las reglas ubicadas en los archivos <code>AGENTS.md</code> y <code>GEMINI.md</code> de la raíz del workspace tienen <strong>prioridad absoluta</strong> sobre cualquier configuración general de la aplicación.</li>
-            <li><strong>Persistencia de Estándares:</strong> Es aquí donde quedan blindados los compromisos innegociables: Cero-Submits, Cuadro de Mando Matutino, Contador Correlativo, Estándar de Fichas Largas y Despliegue Automático a GitHub.</li>
+            <li><strong>Prioridad Jerárquica sin Saturación:</strong> <code>AGENTS.md</code> y <code>GEMINI.md</code> fijan las reglas irrenunciables (Cero-Submits, Cuadro Matutino, Contador Correlativo, Despliegue a GitHub). Para no saturar la atención del modelo con un archivo gigante, las tareas especializadas se separan en <code>.agents/skills/</code> (<strong>Divulgación Progresiva</strong>).</li>
+            <li><strong>Patrón Determinista Plan-and-Execute:</strong> Incrustar listas de verificación Markdown (<code>* [ ] ...</code>) en las directrices obliga al agente a ejecutar y marcar cada paso de forma secuencial sin desviarse.</li>
         </ul>
     </div>
 
@@ -447,6 +448,7 @@ echo "========================================================"
             <li><strong>2. Servidor Web Global Instantáneo (GitHub Pages):</strong> GitHub no actúa como un mero disco duro pasivo. Mediante el servicio gratuito <strong>GitHub Pages</strong>, transforma de forma automática todo el repositorio en un <strong>servidor web de producción accesible desde cualquier lugar del mundo</strong>. Cada archivo HTML interactivo, simulador 3D, visor fotográfico cinemático o cuadro de mando de Classroom cuenta con una URL pública inmediata.</li>
             <li><strong>Acceso Multi-Dispositivo Universal (Alumnos y Profesor):</strong> El profesor puede abrir los recursos en la pantalla del aula y los alumnos pueden interactuar con ellos desde su iPad, tablet Android, iPhone o PC personal sin necesidad de configurar servidores locales (Apache, Nginx), sin abrir puertos de red y sin pagar hosting web alguno.</li>
             <li><strong>Inyección Anti-Caché para Actualizaciones en Tiempo Real (<code>?v=...</code>):</strong> Para solucionar el clásico problema de que el navegador del alumno o del aula retenga en memoria caché la versión antigua de un documento o simulación, el sistema inyecta automáticamente un parámetro forzador de versión fresca (ej. <code>?v=20261125b</code>). Esto obliga a los navegadores (Safari, Chrome) a descargar la versión recién corregida al primer clic sin exigir a los alumnos mayores que sepan vaciar la caché de su navegador.</li>
+            <li><strong>Los 4 Frenos Organizacionales de Git:</strong> Dado que el código generado por IA puede introducir hasta 1.7× más defectos sutiles, en proyectos críticos se aplican 4 frenos: 1) revisión humana obligatoria en el merge, 2) >60% de cobertura en pruebas automatizadas, 3) escaneo estricto de seguridad y 4) despliegues graduales (<em>Canary</em>).</li>
         </ul>
     </div>
 
@@ -548,6 +550,11 @@ echo "========================================================"
                 <td><strong>Monorepo Raíz Única</strong></td>
                 <td>Workspace</td>
                 <td>Todas las áreas bajo una misma raíz para cero bloqueos de permisos.</td>
+            </tr>
+            <tr>
+                <td><strong>Antigravity 2.0, Orchestrator y Divulgación Progresiva</strong></td>
+                <td>Motor / Seguridad</td>
+                <td>5 componentes (App/IDE/CLI/SDK/Ext), ahorro −24% cuota con Carbon+Hydrogen, Sandbox nativo (<code>seatbelt</code>/<code>bubblewrap</code>), anti-patrón <em>Dependency Rabbit Hole</em> (código heredado solo lectura) y logs de diagnóstico (<code>language_server.log</code> / <code>cli.log</code>).</td>
             </tr>
             <tr>
                 <td><strong>Trabajo en Silencio</strong></td>
@@ -723,13 +730,14 @@ def compilar_pdf_reportlab():
     story.append(Paragraph("• <b>Cambio de Pestaña según tu Sistema Operativo:</b> Si estás en un ordenador con <b>Windows</b> o con <b>Linux</b>, es obligatorio fijarse en las pestañas superiores de la página de descarga y hacer clic en la pestaña <b>'Windows'</b> (o 'Linux') para que se descargue el instalador ejecutable <code>.exe</code> adecuado.", bullet_style))
     story.append(Spacer(1, 3))
 
-    story.append(Paragraph("0.2 Antigravity Desktop vs. Antigravity IDE (Por qué elegir el IDE)", h1_style))
-    story.append(Paragraph("Google ofrece dos interfaces para interactuar con la plataforma en tu ordenador (Mac o PC):", body_style))
-    story.append(Paragraph("• <b>Antigravity Desktop (App de Escritorio):</b> Es una aplicación visual muy básica, orientada casi exclusivamente a chatear. <i>Inconveniente:</i> Oculta el árbol de carpetas, no muestra las diferencias exactas de código (diffs rojos/verdes) y no tiene consola de ejecución integrada, quedándose corta de inmediato.", bullet_style))
-    story.append(Paragraph("• <b>Antigravity IDE (Entorno Integrado basado en VS Code - NUESTRA ELECCIÓN OFICIAL):</b> Es la herramienta profesional definitiva. En una única pantalla integra el explorador de archivos a la izquierda, el editor de código central, la terminal de comandos abajo y el copiloto de IA a la derecha.", bullet_style))
+    story.append(Paragraph("0.2 Ecosistema Antigravity 2.0 (5 Componentes) y Por qué Elegir el IDE", h1_style))
+    story.append(Paragraph("Google Antigravity 2.0 ofrece cinco componentes oficiales según el entorno de uso (Mac, PC o Linux):", body_style))
+    story.append(Paragraph("• <b>1. Antigravity App (Escritorio):</b> Centro de comando independiente para orquestar agentes en paralelo y tareas programadas, pero <i>oculta</i> el árbol de archivos y la terminal integrada.", bullet_style))
+    story.append(Paragraph("• <b>2. Antigravity IDE (Entorno Integrado basado en VS Code - NUESTRA ELECCIÓN EN CLASE):</b> Integra explorador de archivos, editor, diffs visuales, terminal y copiloto de IA en una sola pantalla.", bullet_style))
+    story.append(Paragraph("• <b>3. Antigravity CLI (<code>agy</code>), 4. SDK Python y 5. Extensiones para IDEs</b> (VS Code, JetBrains, Zed, Xcode): Reemplazan oficialmente a los antiguos <i>Gemini CLI</i> y <i>Gemini Code Assist</i> (retirados en junio de 2026).", bullet_style))
     
     p_rec = [
-        Paragraph("💡 <b>Recomendación Oficial del Curso:</b> Instala siempre <b>Antigravity IDE</b>. Aunque seas principiante, verás en tiempo real cómo la IA crea tus carpetas y archivos en el disco, teniendo el 100% del control visual de lo que ocurre en tu ordenador (Mac o PC).", sol_body)
+        Paragraph("💡 <b>Recomendación Oficial y Aviso Enterprise:</b> En tus proyectos y clases instala siempre <b>Antigravity IDE</b> para tener control visual al 100%. <i>Nota corporativa:</i> en cuentas empresariales <b>Gemini Enterprise</b>, el IDE independiente no está soportado; las empresas despliegan mediante <b>Antigravity App</b>, <b>CLI (<code>agy</code>)</b> o <b>Extensiones de IDE</b>.", sol_body)
     ]
     t_rec = Table([[p_rec]], colWidths=[PAGE_WIDTH])
     t_rec.setStyle(TableStyle([
@@ -890,7 +898,7 @@ def compilar_pdf_reportlab():
 
     story.append(make_param_card(
         "Parámetro 2:", "Modo Sandbox y Aislamiento de Procesos (Terminal Sandbox)",
-        "Define la jaula de contención. En modo estándar (<code>BypassSandbox: false</code>), el agente tiene permisos plenos de lectura y escritura dentro de la carpeta raíz del proyecto y directorios temporales, pero no puede acceder a otras carpetas privadas del Mac o PC ni alterar la red. Esto permite auto-aprobar comandos sin intervención del usuario, garantizando Cero-Submits."
+        "Usa aislamiento nativo del SO (<code>seatbelt</code> en macOS, <code>bubblewrap</code> en Linux y <b>gVisor</b> en la nube). En modo estándar (<code>BypassSandbox: false</code>), el agente opera dentro del workspace sin tocar carpetas privadas ni la red del anfitrión, logrando Cero-Submits. Para auditorías de solo lectura se usa <code>--mode plan</code>, evitando <code>Turbo / Always proceed</code> en producción y auditando <code>~/.gemini/antigravity/mcp_config.json</code>."
     ))
 
     story.append(make_param_card(
@@ -904,13 +912,13 @@ def compilar_pdf_reportlab():
     ))
 
     story.append(make_param_card(
-        "Parámetro 5:", "Selección de Modelo y Enrutamiento Inteligente (Model Selection)",
-        "Alternancia inteligente en cuenta Pro: <b>Gemini 4 (Hydrogen Medium / Neon)</b> con niveles de pensamiento ajustables (<i>Low/Medium</i> UI rápida, <i>High</i> diario, <i>Extra High</i> auditoría/anti-inyección) y <b>Orchestrator / Pro</b> (3-4x más pesado) para arquitectura compleja; <i>Plan B:</i> API Key propia de AI Studio ante límites de cuota."
+        "Parámetro 5:", "Selección de Modelo y Orquestación Híbrida (Model Selection)",
+        "Catálogo Gemini 4: <code>gemini-4-argon</code> (74.8% SWE-bench), <code>gemini-4-carbon</code>, <code>gemini-4-neon</code> y <code>gemini-4-hydrogen</code>. Usar <b>Orchestrator Híbrido</b> (Carbon planifica + Hydrogen ejecuta) ahorra un <b>24% de cuota</b> y acelera un <b>19%</b>. <i>Nota:</i> modelos externos como Claude 5.5 siguen consumiendo tokens Gemini en segundo plano para resumir contexto. <i>Plan B:</i> API Key propia de AI Studio."
     ))
 
     story.append(make_param_card(
-        "Parámetro 6:", "Jerarquía de Reglas del Proyecto (AGENTS.md y GEMINI.md)",
-        "Las reglas ubicadas en los archivos <code>AGENTS.md</code> y <code>GEMINI.md</code> de la raíz del workspace tienen <b>prioridad jerárquica absoluta</b> sobre cualquier menú visual de la aplicación. Aquí residen los compromisos innegociables: Cero-Submits, Cuadro Matutino, Contador Correlativo y Despliegue a GitHub."
+        "Parámetro 6:", "Jerarquía de Reglas y Divulgación Progresiva (AGENTS.md y GEMINI.md)",
+        "<code>AGENTS.md</code> y <code>GEMINI.md</code> fijan las reglas irrenunciables (Cero-Submits, Cuadro Matutino, Contador Correlativo, Despliegue a GitHub). Para evitar el «Impuesto de Ventana de Contexto» (<i>context window tax</i>), las tareas especializadas se separan en <code>.agents/skills/</code> (<b>Divulgación Progresiva</b>) y se guían con checklists Markdown (<code>* [ ] ...</code>, patrón <i>Plan-and-Execute</i>)."
     ))
     story.append(Spacer(1, 6))
 
@@ -1017,7 +1025,8 @@ def compilar_pdf_reportlab():
         [Paragraph("<b>Cero-Submits</b>", table_cell_bold), Paragraph("Flujo", table_cell), Paragraph("Cero ventanas emergentes de aprobación en el editor durante la sesión.", table_cell)],
         [Paragraph("<b>Elephant-Goldfish</b>", table_cell_bold), Paragraph("Memoria", table_cell), Paragraph("Auditoría con mente virgen y destrucción inmediata sin fugas de memoria.", table_cell)],
         [Paragraph("<b>Subagentes Paralelos</b>", table_cell_bold), Paragraph("Concurrencia", table_cell), Paragraph("Ejecución paralela para tareas pesadas sin saturar el hilo principal.", table_cell)],
-        [Paragraph("<b>Generative UI Nativo</b>", table_cell_bold), Paragraph("Visualización", table_cell), Paragraph("Widgets y cuadros de mando interactivos embebidos sin exponer código.", table_cell)]
+        [Paragraph("<b>Generative UI Nativo</b>", table_cell_bold), Paragraph("Visualización", table_cell), Paragraph("Widgets y cuadros de mando interactivos embebidos sin exponer código.", table_cell)],
+        [Paragraph("<b>Antigravity 2.0 y Seguridad</b>", table_cell_bold), Paragraph("Motor / Git", table_cell), Paragraph("5 componentes, ahorro −24% Orchestrator, Sandbox nativo, 4 Frenos de Git, anti-patrón <i>Dependency Rabbit Hole</i> y logs (<code>language_server.log</code> / <code>cli.log</code>).", table_cell)]
     ]
     t_cat = Table(table_cat_data, colWidths=[115, 90, 318.27])
     t_cat.setStyle(TableStyle([
