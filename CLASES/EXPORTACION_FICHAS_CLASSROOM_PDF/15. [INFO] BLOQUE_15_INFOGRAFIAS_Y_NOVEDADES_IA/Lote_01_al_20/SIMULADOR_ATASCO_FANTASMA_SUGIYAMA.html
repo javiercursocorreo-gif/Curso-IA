@@ -556,23 +556,39 @@
         let cars = [];
         let shockwaveAngle = null;
         let isLeadCarBraking = false;
+        let histTick = 0;
 
-        // Modelo de Vehículo (Optimal Velocity Model con retraso y reacción humana)
+        // Curva de Velocidad Óptima (Optimal Velocity Model de Bando/Sugiyama)
+        const MIN_HARD_GAP = 5.2;
+        function optimalVelocity(gapM) {
+            if (gapM <= MIN_HARD_GAP) return 0.0;
+            const dc = 8.45;
+            const w = 0.95;
+            const tMin = Math.tanh((MIN_HARD_GAP - dc) / w);
+            const val = (Math.tanh((gapM - dc) / w) - tMin) / (1.0 - tMin);
+            return Math.max(0.0, Math.min(TARGET_SPEED_MS, TARGET_SPEED_MS * val));
+        }
+
+        // Modelo de Vehículo (Optimal Velocity Model con retraso humano real y ruido correlacionado)
         class Car {
-            constructor(id, s) {
+            constructor(id, s, initGapM) {
                 this.id = id;
                 this.s = s; // Posición angular a lo largo de la pista (0 a 1)
-                this.v = TARGET_SPEED_MS; // Velocidad actual en m/s
-                this.targetV = TARGET_SPEED_MS;
+                this.v = optimalVelocity(initGapM); // Velocidad inicial de equilibrio
                 this.isBraking = false;
                 this.externalBrakeHold = false;
-                this.reactionDelayTimer = 0;
+                this.gapHistory = new Array(12).fill(initGapM); // ~0.60s de retraso humano
+                this.noise = 0.0;
+                this.noiseTimer = Math.random() * 1.5;
             }
 
-            update(dt, leadCarDistanceM) {
-                // Dimensión física del vehículo: 4.2 metros.
-                // Distancia mínima de seguridad absoluta parachoques-con-parachoques: 5.0 metros
-                const MIN_HARD_GAP = 5.2;
+            update(dt, leadCarDistanceM, recordHist) {
+                if (recordHist) {
+                    this.gapHistory.push(leadCarDistanceM);
+                    if (this.gapHistory.length > 12) {
+                        this.gapHistory.shift();
+                    }
+                }
 
                 // Si está peligrosamente cerca, forzar detención total para IMPEDIR físicamente el solapamiento
                 if (leadCarDistanceM <= MIN_HARD_GAP) {
@@ -586,33 +602,27 @@
                     this.v = Math.max(0, this.v - 8.5 * dt); // Fuerte desaceleración hasta detenerse (0 km/h)
                     this.isBraking = true;
                 } else {
-                    let desiredSpeed = TARGET_SPEED_MS;
-
                     if (driveMode === 'human') {
                         // Conducción Humana:
-                        // 1. Distancia de seguridad dinámica con retraso de percepción
-                        const safeStopGap = 6.0;
-                        const freeFlowGap = 13.0;
+                        // Retraso de reacción humano (~0.60s) al percibir que el coche delantero se acerca
+                        const delayedGap = this.gapHistory[0];
+                        const perceivedGap = leadCarDistanceM < delayedGap ? delayedGap : leadCarDistanceM;
 
-                        if (leadCarDistanceM <= safeStopGap) {
-                            desiredSpeed = 0.0;
-                        } else if (leadCarDistanceM >= freeFlowGap) {
-                            desiredSpeed = TARGET_SPEED_MS;
-                        } else {
-                            const fraction = (leadCarDistanceM - safeStopGap) / (freeFlowGap - safeStopGap);
-                            desiredSpeed = TARGET_SPEED_MS * Math.pow(fraction, 1.3);
+                        // Micro-fluctuación biológica sostenida (cambia cada 1.0 - 2.0 s)
+                        this.noiseTimer -= dt;
+                        if (this.noiseTimer <= 0) {
+                            this.noiseTimer = 1.0 + Math.random() * 1.0;
+                            this.noise = (Math.random() - 0.5) * 0.8;
                         }
 
-                        // Fluctuación humana involuntaria en acelerador
-                        const noise = (Math.random() - 0.5) * 0.25;
-                        desiredSpeed = Math.max(0, desiredSpeed + noise);
+                        const desiredSpeed = Math.max(0.0, Math.min(TARGET_SPEED_MS, optimalVelocity(perceivedGap) + this.noise));
 
                         if (desiredSpeed > this.v) {
-                            this.v = Math.min(desiredSpeed, this.v + 2.8 * dt);
+                            this.v = Math.min(desiredSpeed, this.v + 3.8 * dt);
                             this.isBraking = false;
                         } else {
-                            this.v = Math.max(desiredSpeed, this.v - 6.5 * dt);
-                            this.isBraking = (desiredSpeed < this.v - 0.8);
+                            this.v = Math.max(desiredSpeed, this.v - 4.8 * dt);
+                            this.isBraking = (desiredSpeed < this.v - 0.6);
                         }
 
                     } else {
@@ -622,13 +632,9 @@
                         const idealSpacing = TRACK_CIRCUMFERENCE_M / numCars;
                         const gapError = leadCarDistanceM - idealSpacing;
 
-                        // Si el coche delantero está a distancia óptima, velocidad perfecta
-                        // Si está cerca, desacelera suavemente; si tiene hueco, recupera de inmediato a 30 km/h
-                        let aiSpeed = TARGET_SPEED_MS;
-                        if (leadCarDistanceM < 8.0) {
-                            aiSpeed = TARGET_SPEED_MS * ((leadCarDistanceM - MIN_HARD_GAP) / (8.0 - MIN_HARD_GAP));
-                        } else {
-                            aiSpeed = TARGET_SPEED_MS + Math.min(2.5, Math.max(-2.5, gapError * 0.5));
+                        let aiSpeed = TARGET_SPEED_MS + Math.min(2.5, Math.max(-2.5, gapError * 0.9));
+                        if (leadCarDistanceM < 6.8) {
+                            aiSpeed = TARGET_SPEED_MS * ((leadCarDistanceM - MIN_HARD_GAP) / (6.8 - MIN_HARD_GAP));
                         }
 
                         // Ajuste preciso de IA sin titubeos ni retraso biológico
@@ -658,15 +664,17 @@
             numCars = count;
             cars = [];
             isLeadCarBraking = false;
+            histTick = 0;
             const btn = document.getElementById('btnBrakeToggle');
             if (btn) {
                 btn.style.background = 'linear-gradient(135deg, #ef4444 0%, #b91c1c 100%)';
                 btn.style.boxShadow = '0 4px 16px rgba(239, 68, 68, 0.35)';
                 btn.innerHTML = '🛑 Provocar Frenazo en Coche Líder (#1)';
             }
+            const initGap = TRACK_CIRCUMFERENCE_M / numCars;
             for (let i = 0; i < numCars; i++) {
                 const s = i / numCars;
-                cars.push(new Car(i + 1, s));
+                cars.push(new Car(i + 1, s, initGap));
             }
         }
 
@@ -734,6 +742,13 @@
             const dt = Math.min(0.05, (now - lastTime) / 1000);
             lastTime = now;
 
+            histTick += dt;
+            let recordHist = false;
+            if (histTick >= 0.05) {
+                histTick -= 0.05;
+                recordHist = true;
+            }
+
             // 1. Actualizar coches
             let minSpeed = Infinity;
             let sumSpeed = 0;
@@ -748,7 +763,7 @@
                 if (distFraction < 0) distFraction += 1.0;
                 const leadDistanceM = distFraction * TRACK_CIRCUMFERENCE_M;
 
-                current.update(dt, leadDistanceM);
+                current.update(dt, leadDistanceM, recordHist);
 
                 const speedKmh = current.v * 3.6;
                 sumSpeed += speedKmh;
