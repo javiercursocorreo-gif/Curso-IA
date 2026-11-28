@@ -15,31 +15,9 @@
 ---
 
 ## 🎬 3. VÍDEOS Y RECURSOS PENDIENTES DE REVISIÓN
-- [ ] **[#03]** **[27/11/2026 20:25 - iPhone]**: https://youtube.com/watch?v=XD7QkzzxQ1I&is=D4W0DoxH3rUM6xy6
+- [ ] **[#03]** **[28/11/2026 11:44 - iPhone]**: https://www.youtube.com/watch?v=puBfH7v6I2Q
 
-- [ ] **[#04]** **[27/11/2026 20:06 - iPhone]**: https://youtube.com/watch?v=9Y-bOQkXh-I&is=wf-kMW0dIQJj5cgm
-
-- [ ] **[#05]** **[27/11/2026 19:26 - iPhone]**: https://youtube.com/watch?v=k5mKu42qu0Y&is=s1eor6BFMq5HvOgg
-
-- [ ] **[#06]** **[27/11/2026 19:23 - iPhone]**: https://youtube.com/watch?v=tLrZWFJkeR0&is=d6Amt3NT2PVntLB6
-
-- [ ] **[#07]** **[27/11/2026 19:23 - iPhone]**: https://youtube.com/watch?v=PHRcDVu-skc&is=NUC8mZ9IXDX5Osxr
-
-- [ ] **[#08]** **[27/11/2026 19:18 - iPhone]**: https://youtube.com/watch?v=A0sM8-wfLS0&is=tcUYpL5_RvdO4Rrf
-
-- [ ] **[#09]** **[27/11/2026 19:18 - iPhone]**: https://youtube.com/watch?v=utl3hFiv6-g&is=_q8-dwA_QsnQcuGS
-
-- [ ] **[#10]** **[27/11/2026 19:16 - iPhone]**: https://youtube.com/watch?v=_YIAcXZg9Yk&is=Lvl1GEoiibCuVJNQ
-
-- [ ] **[#11]** **[27/11/2026 19:13 - iPhone]**: https://youtube.com/watch?v=YvoLxTQgre8&is=jjFJMlIMUruEtU--
-
-- [ ] **[#12]** **[27/11/2026 19:12 - iPhone]**: https://youtube.com/watch?v=iDUhGEwyFIo&is=NWGOqEIhB9ji5wt0
-
-- [ ] **[#13]** **[27/11/2026 19:11 - iPhone]**: https://youtube.com/shorts/6uaUteZ2eFg?is=jpW7TuVq52jR8goj
-
-- [ ] **[#14]** **[27/11/2026 19:10 - iPhone]**: https://youtube.com/watch?v=FktvHK4fZ0E&is=PQEC13mqlSuxNKhe
-
-- [ ] **[#15]** **[27/11/2026 19:02 - iPhone]**: https://youtube.com/watch?v=twf_f7IpjcM&is=kqfieyWjgcYhKWm4
+- [ ] **[#04]** **[28/11/2026 11:36 - iPhone]**: https://www.youtube.com/shorts/kYqg78X9ERc
 
 *(Bandeja limpia: todos los vídeos enviados hasta el 27/11/2026 han sido analizados e integrados en el histórico).*
 
@@ -47,6 +25,8 @@
 
 ## ✅ TAREAS COMPLETADAS Y ARCHIVADAS
 *Las ideas que indiques que ya se han resuelto o que pidas borrar se mueven aquí como histórico.*
+- [x] **[27/11/2026]**: **Revisión de 2 Vídeos de YouTube (`XD7QkzzxQ1I`, `9Y-bOQkXh-I`)**: `XD7QkzzxQ1I` (Gemini + Google Flow + Clipchamp) confirma nuestro flujo actual de `CURSO-IA`; `9Y-bOQkXh-I` (*Voice Mode* con Gemini Live) confirma la sección `3.10` / `4.4` sin cambios necesarios en `v1.0`.
+- [x] **[27/11/2026]**: **Revisión de 11 Vídeos de YouTube (`k5mKu42qu0Y`, `tLrZWFJkeR0`, `PHRcDVu-skc`, `A0sM8-wfLS0`, `utl3hFiv6-g`, `_YIAcXZg9Yk`, `YvoLxTQgre8`, `iDUhGEwyFIo`, `6uaUteZ2eFg`, `FktvHK4fZ0E`, `twf_f7IpjcM`)**: Extraídas e integradas las mejoras útiles manteniendo `v1.0` (*Blueprint Previo* + *Scout ➔ Maker ➔ Checker*, *Carpeta Limpia Zero-Noise*, *Zero-Idle Dispatcher*, *Orchestrator*, `/grill-me`, `/swarm` por cuota y criterio de *Remote Agents* / *Knowledge Work*).
 - [x] **[27/11/2026]**: **Revisión de 6 Vídeos de YouTube (`QjMYTYwqYKw`, `sYWFGSFCUEA`, `htPE839ovkM`, `0-lP8JApwiY`, `3al-Ec-nSzs`, `2WmacsUXpOQ`)**: Extraídas las mejoras reales (Fábrica de Conocimiento en 3 Pilares, Agente Curador, niveles de pensamiento Neon, `/btw`, `Cmd+L`, Plan B API Key) e integradas en ambas guías maestras.
 - [x] **[22/11/2026]**: **CURSO-IA**: Cerradas todas las tareas pendientes de IA (Sesiones 01 a 15 al 100%, 11 micro-apps [NIV] a 3 columnas, 75 fichas de imagen con Google Flow, fractales BKP y monográficos).
 - [x] **[22/11/2026]**: **Salud y Biomecánica**: Retiradas las tareas de citas médicas, analítica y entrega de informe de alergología.
@@ -60,3 +40,4 @@
 - [x] **[07/11/2026]**: **Caldera Saunier Duval**: Mantenimiento preventivo anual y verificación de presión.
 - [x] **[07/11/2026]**: Conexión y sincronización automática del Atajo de Siri del iPhone con el Mac vía iCloud (`BUZON_IDEAS.txt`).
 - [x] **[07/11/2026]**: Recompilación con maquetado dinámico y ajuste de líneas del PDF de Alergología.
+- [ ] **[28/11/2026 11:33 - iPhone]**: https://mail.google.com/mail/u/0/#inbox/KtbxLwgVSfrqpNrMXLqSHwLkXFlmCnWcwg?projector=1
