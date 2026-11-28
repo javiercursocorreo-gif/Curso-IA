@@ -14,17 +14,19 @@
 
 ---
 
-## 🎬 3. VÍDEOS Y RECURSOS PENDIENTES DE REVISIÓN
-- [ ] **[#03]** **[28/11/2026 11:44 - iPhone]**: https://www.youtube.com/watch?v=puBfH7v6I2Q
+## 🌐 3. WEB DEL CENTRO DE MAYORES (FRONTEND & BACKEND)
+- [ ] **[#03]** **Depuración Backend e Integración Real Frontend ↔ Backend**: Terminar la depuración de la parte de Backend de la Web para Mayores (`GRUPO DE TRABAJO. WEB DEL CENTRO DE MAYORES`) y ejecutar pruebas de integración reales entre Frontend y Backend.
 
-- [ ] **[#04]** **[28/11/2026 11:36 - iPhone]**: https://www.youtube.com/shorts/kYqg78X9ERc
+---
 
-*(Bandeja limpia: todos los vídeos enviados hasta el 27/11/2026 han sido analizados e integrados en el histórico).*
+## 🎬 4. VÍDEOS Y RECURSOS PENDIENTES DE REVISIÓN
+*(Bandeja limpia: todos los vídeos enviados hasta el 28/11/2026 han sido analizados e integrados en el histórico).*
 
 ---
 
 ## ✅ TAREAS COMPLETADAS Y ARCHIVADAS
 *Las ideas que indiques que ya se han resuelto o que pidas borrar se mueven aquí como histórico.*
+- [x] **[28/11/2026]**: **Revisión de 2 Vídeos de YouTube (`kYqg78X9ERc`, `puBfH7v6I2Q`)**: `kYqg78X9ERc` (conectar cuaderno NotebookLM dentro de Gemini para usar *Nano Banana* con personaje/marca coherente) y `puBfH7v6I2Q` (artefactos gratuitos en NotebookLM: mapas históricos adaptados a costas, líneas temporales, juegos 3D y duelos RPG). Útiles para ampliar ejemplos de **Monográfico 2 / 3 en `CURSO-IA`**; sin cambios necesarios en arquitectura/gobernanza (`v1.0`).
 - [x] **[27/11/2026]**: **Revisión de 2 Vídeos de YouTube (`XD7QkzzxQ1I`, `9Y-bOQkXh-I`)**: `XD7QkzzxQ1I` (Gemini + Google Flow + Clipchamp) confirma nuestro flujo actual de `CURSO-IA`; `9Y-bOQkXh-I` (*Voice Mode* con Gemini Live) confirma la sección `3.10` / `4.4` sin cambios necesarios en `v1.0`.
 - [x] **[27/11/2026]**: **Revisión de 11 Vídeos de YouTube (`k5mKu42qu0Y`, `tLrZWFJkeR0`, `PHRcDVu-skc`, `A0sM8-wfLS0`, `utl3hFiv6-g`, `_YIAcXZg9Yk`, `YvoLxTQgre8`, `iDUhGEwyFIo`, `6uaUteZ2eFg`, `FktvHK4fZ0E`, `twf_f7IpjcM`)**: Extraídas e integradas las mejoras útiles manteniendo `v1.0` (*Blueprint Previo* + *Scout ➔ Maker ➔ Checker*, *Carpeta Limpia Zero-Noise*, *Zero-Idle Dispatcher*, *Orchestrator*, `/grill-me`, `/swarm` por cuota y criterio de *Remote Agents* / *Knowledge Work*).
 - [x] **[27/11/2026]**: **Revisión de 6 Vídeos de YouTube (`QjMYTYwqYKw`, `sYWFGSFCUEA`, `htPE839ovkM`, `0-lP8JApwiY`, `3al-Ec-nSzs`, `2WmacsUXpOQ`)**: Extraídas las mejoras reales (Fábrica de Conocimiento en 3 Pilares, Agente Curador, niveles de pensamiento Neon, `/btw`, `Cmd+L`, Plan B API Key) e integradas en ambas guías maestras.
@@ -41,3 +43,6 @@
 - [x] **[07/11/2026]**: Conexión y sincronización automática del Atajo de Siri del iPhone con el Mac vía iCloud (`BUZON_IDEAS.txt`).
 - [x] **[07/11/2026]**: Recompilación con maquetado dinámico y ajuste de líneas del PDF de Alergología.
 - [ ] **[28/11/2026 11:33 - iPhone]**: https://mail.google.com/mail/u/0/#inbox/KtbxLwgVSfrqpNrMXLqSHwLkXFlmCnWcwg?projector=1
+- [ ] **[28/11/2026 16:20 - iPhone]**: https://www.youtube.com/watch?v=0lw0_3WM5XY
+- [ ] **[28/11/2026 16:21 - iPhone]**: https://www.youtube.com/watch?v=_zdmHaYPlvE
+- [ ] **[28/11/2026 16:28 - iPhone]**: https://www.youtube.com/watch?v=Gb2338YH_d8
